@@ -1,35 +1,104 @@
+using BSharp.Data;
+using BSharp.Data.Model.Identity;
+using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 
 namespace BSharp
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IConfiguration _config;
+
+        public Startup(IConfiguration config)
         {
-            Configuration = configuration;
+            _config = config;
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            ////////// Register all DB contexts
+            services.AddDbContext<ShardingContext>(opt =>
+                opt.UseSqlServer(_config.GetConnectionString(Constants.ShardingConnection)));
 
-            // In production, the Angular files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
+            services.AddDbContext<ConfigurationContext>(opt =>
+                opt.UseSqlServer(_config.GetConnectionString("ConfigurationConnection")));
+
+            services.AddDbContext<IdentityContext>(opt =>
+                opt.UseSqlServer(_config.GetConnectionString("IdentityConnection")));
+
+            services.AddDbContext<LocalizationContext>(opt =>
+                opt.UseSqlServer(_config.GetConnectionString("LocalizationConnection")));
+
+
+            ////////// This DB context contains the shardlets, and unlike the others it acquires its connection string
+            // dynamically when it is constructed using IShardResolver, therefore this context cannot be
+            // be registered in the DI the usual way like the other contexts
+            services.AddScoped<ApplicationContext>();
+
+
+            ////////// Here we register a distributed cache, the default is SQL server unless
+            // a Redis cache is specified in a configuration provider
+            var redisConfig = _config.GetSection("RedisCache");
+            if (redisConfig.Exists())
             {
-                configuration.RootPath = "ClientApp/dist";
+                services.AddDistributedRedisCache(options =>
+                {
+                    options.Configuration = redisConfig["Configuration"];
+                    options.InstanceName = redisConfig["InstanceName"];
+                });
+            }
+            else
+            {
+                services.AddDistributedSqlServerCache(opt =>
+                {
+                    opt.ConnectionString = _config.GetConnectionString("LocalizationConnection");
+                    opt.SchemaName = "dbo";
+                    opt.TableName = "DistributedCache";
+                });
+            }
+
+
+            ////////// Add all our custom services
+            services.AddMultiTenancy();
+            services.AddSharding();
+            services.AddSqlLocalization();
+
+
+            ////////// Register identity based on IdentityContext
+            services.AddIdentityCore<ApplicationUser>(opt =>
+            {
+                // Make the password requirement less annoying, and compensate by increasing required length
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequiredLength = 7;
+            })
+            .AddEntityFrameworkStores<IdentityContext>()
+            .AddDefaultTokenProviders();
+
+
+            ////////// Register MVC using the most up to date version
+            services.AddMvc()
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+
+            ////////// In production, the Angular files will be served from this directory
+            services.AddSpaStaticFiles(config =>
+            {
+                config.RootPath = "ClientApp/dist";
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -41,6 +110,20 @@ namespace BSharp
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
+            app.UseRequestLocalization(opt =>
+            {
+                var defaultUICulture = _config.GetSection("Localization")["DefaultUICulture"];
+                var defaultCulture = _config.GetSection("Localization")["DefaultCulture"];
+
+                opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUICulture);
+
+                // Formatting numbers, dates, etc.
+                opt.AddSupportedCultures(defaultCulture);
+
+                // UI strings that we have localized.
+                opt.SupportedUICultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -55,9 +138,6 @@ namespace BSharp
 
             app.UseSpa(spa =>
             {
-                // To learn more about options for serving an Angular SPA from ASP.NET Core,
-                // see https://go.microsoft.com/fwlink/?linkid=864501
-
                 spa.Options.SourcePath = "ClientApp";
 
                 if (env.IsDevelopment())
