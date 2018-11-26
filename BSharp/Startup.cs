@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Globalization;
 
 namespace BSharp
@@ -63,6 +64,7 @@ namespace BSharp
                     opt.ConnectionString = _config.GetConnectionString("LocalizationConnection");
                     opt.SchemaName = "dbo";
                     opt.TableName = "DistributedCache";
+                    opt.ExpiredItemsDeletionInterval = TimeSpan.FromDays(15); 
                 });
             }
 

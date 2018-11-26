@@ -25,17 +25,13 @@ namespace BSharp.Services.SqlLocalization
     {
         private const string CORE = "core";
         private const string HTTP_CONTEXT_FLAG_NAME = "IsCacheUpdated";
+        private const int DISTRIBUTED_CACHE_EXPIRATION_DAYS = 30;
 
         /// <summary>
         /// Local Cache
         /// </summary>
         private static ConcurrentDictionary<string, LocalCacheItem> _localCache
             = new ConcurrentDictionary<string, LocalCacheItem>();
-
-        /// <summary>
-        /// Concurrency Locks
-        /// </summary>
-        private static ReaderWriterLockSlim _localizationLock = new ReaderWriterLockSlim();
 
         private readonly IConfiguration _config;
         private readonly IDistributedCache _distributedCache;
@@ -172,7 +168,7 @@ namespace BSharp.Services.SqlLocalization
                     // Either the cache was flushed, or has been illegally tampered with,
                     // simply reset the cache to NOW, to invalidate all local caches
                     distVersion = Guid.NewGuid().ToString();
-                    _distributedCache.SetString(cacheKey, distVersion);
+                    _distributedCache.SetString(cacheKey, distVersion, GetDistributedCacheOptions());
 
                     // NOTE: This should work fine with concurrency, the worst that could happen is
                     // that if multiple nodes independently find that the distributed cache is blank
@@ -205,7 +201,7 @@ namespace BSharp.Services.SqlLocalization
                 {
                     var ctx = scope.ServiceProvider.GetRequiredService<LocalizationContext>();
                     var freshTranslations = ctx.CoreTranslations
-                        .Where(e => e.Tier == Constants.CSharp && staleCacheKeys.Contains(e.Culture))
+                        .Where(e => (e.Tier == Constants.CSharp || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.Culture))
                         .ToList()
                         .Select(e => new TranslationDTO { CacheKey = CacheKey(e.Culture, CORE), Name = e.Name, Value = e.Value });
 
@@ -224,7 +220,7 @@ namespace BSharp.Services.SqlLocalization
                     string tenantId = _tenantIdProvider.GetTenantId().ToString();
                     var ctx = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
                     var freshTranslations = ctx.Translations
-                        .Where(e => e.Tier == Constants.CSharp && staleCacheKeys.Contains(e.Culture))
+                        .Where(e => (e.Tier == Constants.CSharp || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.Culture))
                         .ToList()
                         .Select(e => new TranslationDTO { CacheKey = CacheKey(e.Culture, tenantId), Name = e.Name, Value = e.Value });
 
@@ -269,7 +265,21 @@ namespace BSharp.Services.SqlLocalization
         {
             var cacheKey = CacheKey(cultureName, tenantId?.ToString() ?? CORE);
             var value = Guid.NewGuid().ToString();
-            await _distributedCache.SetStringAsync(cacheKey, value);
+            await _distributedCache.SetStringAsync(cacheKey, value, GetDistributedCacheOptions());
+        }
+
+        /// <summary>
+        /// Creates the distributed cache options, and sets the absolute expiry time
+        /// </summary>
+        /// <returns></returns>
+        private DistributedCacheEntryOptions GetDistributedCacheOptions()
+        {
+            var opt = new DistributedCacheEntryOptions();
+
+            opt.AbsoluteExpiration = DateTimeOffset.Now.AddDays(DISTRIBUTED_CACHE_EXPIRATION_DAYS);
+            opt.SlidingExpiration = null;
+
+            return opt;
         }
 
         /// <summary>

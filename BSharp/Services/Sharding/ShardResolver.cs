@@ -41,7 +41,7 @@ namespace BSharp.Services.Sharding
         public string GetShardConnectionString()
         {
             // When generating migrations, and when applying the migrations in Program.cs
-            // when running the solution in development, it is useful to have a default 
+            // while running the solution in development, it is convenient to have a default 
             // connection string that doesn't depend on tenant Id
             if (!_tenantIdProvider.IsTenantIdAvailable())
             {

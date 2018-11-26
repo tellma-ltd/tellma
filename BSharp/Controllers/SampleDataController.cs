@@ -2,36 +2,43 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BSharp.Data;
 using BSharp.Services.MultiTenancy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace BSharp.Controllers
 {
     [Route("api/[controller]")]
     public class SampleDataController : Controller
     {
-        public SampleDataController(ITenantIdProvider tenantIdProvider)
+        public SampleDataController(ApplicationContext ctx, IStringLocalizer<SampleDataController> localizer)
         {
-            _tenantIdProvider = tenantIdProvider;
+            _ctx = ctx;
+            _localizer = localizer;
         }
 
-        private static string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-        private readonly ITenantIdProvider _tenantIdProvider;
+        private readonly ApplicationContext _ctx;
+        private readonly IStringLocalizer<SampleDataController> _localizer;
+
+        //[HttpGet("[action]")]
+        //public IEnumerable<WeatherForecast> WeatherForecasts()
+        //{
+        //    var rng = new Random();
+        //    return _ctx.Translations.Select(e => new WeatherForecast
+        //    {
+        //        DateFormatted = e.Name,
+        //        TemperatureC = rng.Next(-20, 55),
+        //        Summary = e.Value
+        //    });
+        //}
 
         [HttpGet("[action]")]
-        public IEnumerable<WeatherForecast> WeatherForecasts()
+        public string WeatherForecasts()
         {
-            int tenantId = _tenantIdProvider.GetTenantId();
             var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            });
+            return _localizer["BlueSky"];
         }
 
         public class WeatherForecast

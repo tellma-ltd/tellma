@@ -9,5 +9,7 @@ namespace BSharp.Services.Utilities
     {
         public const string ShardingConnection = nameof(ShardingConnection);
         public const string CSharp = "C#";
+        public const string Client = "Client";
+        public const string Shared = "Shared";
     }
 }

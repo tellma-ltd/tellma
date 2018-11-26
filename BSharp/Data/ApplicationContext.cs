@@ -18,20 +18,19 @@ namespace BSharp.Data
         private readonly ITenantIdProvider _tenantIdProvider;
 
         public ApplicationContext(IShardResolver shardProvider, ITenantIdProvider tenantIdProvider) : 
-            base(CreateDbOptions(shardProvider, tenantIdProvider))
+            base(CreateOptions(shardProvider))
         {
             _tenantIdProvider = tenantIdProvider;
         }
 
         /// <summary>
         /// This trick makes it possible to injected the ApplicationContext into other components via DI as usual
-        /// but it automatically configures itself with the correct options. Taken from this Microsoft sample:
-        /// https://github.com/Microsoft/WingtipTicketsSaaS-MultiTenantDB/blob/master/App/src/Events-TenantUserApp.EF/TenantsDB/TenantDbContext.cs
+        /// but it automatically configures itself with the correct options. Taken from this Microsoft sample: https://bit.ly/2TIEFMA
         /// </summary>
         /// <param name="shardResolver">The service that resolves the shard connection string</param>
         /// <param name="tenantIdProvider">The service that retrieves tenants Ids from the headers</param>
         /// <returns></returns>
-        private static DbContextOptions<ApplicationContext> CreateDbOptions(IShardResolver shardResolver, ITenantIdProvider tenantIdProvider)
+        private static DbContextOptions<ApplicationContext> CreateOptions(IShardResolver shardResolver)
         {
             var connectionString = shardResolver.GetShardConnectionString();
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
@@ -41,7 +40,6 @@ namespace BSharp.Data
         }
 
         public DbSet<Translation> Translations { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -53,6 +51,12 @@ namespace BSharp.Data
                 .HasKey("TenantId", nameof(Translation.Tier), nameof(Translation.Culture), nameof(Translation.Name));
         }
 
+        /// <summary>
+        /// Adds a shadow property "TenantId" to the entity collection, adds an index
+        /// on that shadow property, and adds a query filter based on the tenantIdProvider
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder"></param>
         private void AddTenantId<T>(ModelBuilder builder) where T : class
         {
             string tenantId = "TenantId";
@@ -66,35 +70,43 @@ namespace BSharp.Data
             builder.Entity<T>()
                 .HasQueryFilter(e => EF.Property<int?>(e, tenantId) == _tenantIdProvider.GetTenantId());
         }
+
+        #region Design Time Factory
+
+        /// <summary>
+        /// Since the ApplicationContext does not have the usual DbContext constructor and is not registered
+        /// in the DI container the usual way, this factory implementation below is necessary for the migration
+        /// tools to be able to create an instance of the context at design time
+        /// </summary>
+        public class DesignTimeApplicationContextFactory : IDesignTimeDbContextFactory<ApplicationContext>
+        {
+            public ApplicationContext CreateDbContext(string[] args)
+            {
+                return new ApplicationContext(new DesignTimeShardResolver(), new DesignTimeTenantIdProvider());
+            }
+
+            private class DesignTimeShardResolver : IShardResolver
+            {
+                public string GetShardConnectionString()
+                {
+                    return "<FakeConnectionString>";
+                }
+            }
+
+            private class DesignTimeTenantIdProvider : ITenantIdProvider
+            {
+                public int GetTenantId()
+                {
+                    return -1;
+                }
+
+                public bool IsTenantIdAvailable()
+                {
+                    return true;
+                }
+            }
+        }
+
+        #endregion
     }
-
-    public class DesignTimeApplicationContextFactory : IDesignTimeDbContextFactory<ApplicationContext>
-    {
-        public ApplicationContext CreateDbContext(string[] args)
-        {
-            return new ApplicationContext(new DesignTimeShardResolver(), new DesignTimeTenantIdProvider());
-        }
-
-        private class DesignTimeShardResolver : IShardResolver
-        {
-            public string GetShardConnectionString()
-            {
-                return "Fake Connection String";
-            }
-        }
-
-        private class DesignTimeTenantIdProvider : ITenantIdProvider
-        {
-            public int GetTenantId()
-            {
-                return -1;
-            }
-
-            public bool IsTenantIdAvailable()
-            {
-                return true;
-            }
-        }
-    }
-
 }
