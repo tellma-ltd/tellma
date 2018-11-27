@@ -20,16 +20,6 @@ namespace BSharp.Data.Migrations.Localization
                     table.PrimaryKey("PK_CoreTranslations", x => new { x.Tier, x.Culture, x.Name });
                 });
 
-            migrationBuilder.InsertData(
-                table: "CoreTranslations",
-                columns: new[] { "Tier", "Culture", "Name", "Value" },
-                values: new object[] { "C#", "en", "CouldNotRetrieveTheRecordWithId{0}", "Sorry, could not retrieve the record with Id {0}" });
-
-            migrationBuilder.InsertData(
-                table: "CoreTranslations",
-                columns: new[] { "Tier", "Culture", "Name", "Value" },
-                values: new object[] { "C#", "ar", "CouldNotRetrieveTheRecordWithId{0}", "المعذرة لم يتم العثور على البيان ذي المفتاح {0}" });
-
             migrationBuilder.Sql(
                 @"CREATE TABLE [dbo].[DistributedCache](
 	                [Id] [nvarchar](449) NOT NULL,

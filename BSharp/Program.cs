@@ -31,7 +31,7 @@ namespace BSharp
                         scope.ServiceProvider.GetRequiredService<ApplicationContext>().Database.Migrate();
                      //   scope.ServiceProvider.GetRequiredService<ConfigurationContext>().Database.Migrate();
                         scope.ServiceProvider.GetRequiredService<LocalizationContext>().Database.Migrate();
-                      //  scope.ServiceProvider.GetRequiredService<IdentityContext>().Database.Migrate();
+                        scope.ServiceProvider.GetRequiredService<IdentityContext>().Database.Migrate();
                     }
                     catch (Exception ex)
                     {

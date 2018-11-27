@@ -1,6 +1,7 @@
 using BSharp.Data;
 using BSharp.Data.Model.Identity;
 using BSharp.Services.Utilities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BSharp
 {
@@ -40,9 +42,9 @@ namespace BSharp
                 opt.UseSqlServer(_config.GetConnectionString("LocalizationConnection")));
 
 
-            ////////// This DB context contains the shardlets, and unlike the others it acquires its connection string
-            // dynamically when it is constructed using IShardResolver, therefore this context cannot be
-            // be registered in the DI the usual way like the other contexts
+            ////////// This DB context contains the shardlets, and unlike the others it acquires its connection
+            // string dynamicall using IShardResolver when it is constructed, therefore this context cannot be
+            // be registered in the DI the usual way like the others
             services.AddScoped<ApplicationContext>();
 
 
@@ -75,16 +77,8 @@ namespace BSharp
             services.AddSqlLocalization();
 
 
-            ////////// Register identity based on IdentityContext
-            services.AddIdentityCore<ApplicationUser>(opt =>
-            {
-                // Make the password requirement less annoying, and compensate by increasing required length
-                opt.Password.RequireLowercase = false;
-                opt.Password.RequireUppercase = false;
-                opt.Password.RequiredLength = 7;
-            })
-            .AddEntityFrameworkStores<IdentityContext>()
-            .AddDefaultTokenProviders();
+            ////////// TODO: Register and configure identity related services
+            // services.AddApplicationIdentity(_config);
 
 
             ////////// Register MVC using the most up to date version
@@ -115,8 +109,8 @@ namespace BSharp
 
             app.UseRequestLocalization(opt =>
             {
-                var defaultUICulture = _config.GetSection("Localization")["DefaultUICulture"];
-                var defaultCulture = _config.GetSection("Localization")["DefaultCulture"];
+                var defaultUICulture = _config.GetSection("Localization")["DefaultUICulture"] ?? "en";
+                var defaultCulture = _config.GetSection("Localization")["DefaultCulture"] ?? "en-GB";
 
                 opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUICulture);
 

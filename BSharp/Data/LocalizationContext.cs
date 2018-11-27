@@ -19,20 +19,21 @@ namespace BSharp.Data
 
             // TODO replace with real stuff
             builder.Entity<CoreTranslation>()
-                .HasData(new CoreTranslation
-                {
-                    Tier = Constants.CSharp,
-                    Culture = "en",
-                    Name = "CouldNotRetrieveTheRecordWithId{0}",
-                    Value = "Sorry, could not retrieve the record with Id {0}"
-                },
-                new CoreTranslation
-                {
-                    Tier = Constants.CSharp,
-                    Culture = "ar",
-                    Name = "CouldNotRetrieveTheRecordWithId{0}",
-                    Value = "المعذرة لم يتم العثور على البيان ذي المفتاح {0}"
-                });
+                //.HasData(new CoreTranslation
+                //{
+                //    Tier = Constants.CSharp,
+                //    Culture = "en",
+                //    Name = "CouldNotRetrieveTheRecordWithId{0}",
+                //    Value = "Sorry, could not retrieve the record with Id {0}"
+                //},
+                //new CoreTranslation
+                //{
+                //    Tier = Constants.CSharp,
+                //    Culture = "ar",
+                //    Name = "CouldNotRetrieveTheRecordWithId{0}",
+                //    Value = "المعذرة لم يتم العثور على البيان ذي المفتاح {0}"
+                //})
+                ;
         }
     }
 }
