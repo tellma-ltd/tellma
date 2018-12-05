@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace BSharp.Data.Model.Application
 {
@@ -39,5 +40,15 @@ namespace BSharp.Data.Model.Application
 
         [Required]
         public string ModifiedBy { get; set; }
+
+
+        internal static void OnModelCreating(ModelBuilder builder)
+        {
+            // IsActive defaults to TRUE
+            builder.Entity<MeasurementUnit>().Property(e => e.IsActive).HasDefaultValue(true);
+
+            // Code is unique
+            builder.Entity<MeasurementUnit>().HasIndex("TenantId", nameof(Code)).IsUnique();
+        }
     }
 }

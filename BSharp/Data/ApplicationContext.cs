@@ -95,9 +95,12 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
         {
             base.OnModelCreating(builder);
 
-            // Add tenant Ids
+            // Translations
             AddTenantId<Translation>(builder, nameof(Translation.Culture), nameof(Translation.Name));
+
+            // Measurement Units
             AddTenantId<MeasurementUnit>(builder);
+            MeasurementUnit.OnModelCreating(builder);
         }
 
         /// <summary>
