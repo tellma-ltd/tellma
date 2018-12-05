@@ -156,10 +156,10 @@ FROM @ValidationErrors;
             var indexedIds = await _db.Saving.FromSql($@"
 -- Procedure: MeasurementUnitsSave
 SET NOCOUNT ON;
-DECLARE @IndexedIds dbo.IndexedIdList, @TenantId INT, @Now DATETIMEOFFSET(7), @UserId NVARCHAR(450);
-SELECT @TenantId = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
-SELECT @UserId = SESSION_CONTEXT(N'UserId');
-SELECT @Now = SYSDATETIMEOFFSET();
+	DECLARE @IndexedIds [dbo].[IndexedIdList];
+	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
 
 -- Updates
 	MERGE INTO [dbo].MeasurementUnits AS t
