@@ -71,7 +71,7 @@ namespace BSharp.Services.SqlLocalization
             string neutralUICulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? specificUICulture : CultureInfo.CurrentUICulture.Parent.Name;
 
             // We refresh the cache once per request, and we track this using a flag in the HTTP Context object
-            var isUpdated = _httpContextAccessor.HttpContext.Items[HTTP_CONTEXT_FLAG_NAME];
+            var isUpdated = _httpContextAccessor.HttpContext == null ? false : _httpContextAccessor.HttpContext.Items[HTTP_CONTEXT_FLAG_NAME];
             if (isUpdated == null || !(bool)isUpdated)
             {
                 // The list of cultures to update;
@@ -98,7 +98,10 @@ namespace BSharp.Services.SqlLocalization
                 // Set the flag, to prevent another cache refresh within the same scope
                 // Note: this is thread safe, since only one thread at a time will get
                 // a copy of the HTTP context, since it is scoped per request
-                _httpContextAccessor.HttpContext.Items[HTTP_CONTEXT_FLAG_NAME] = true;
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    _httpContextAccessor.HttpContext.Items[HTTP_CONTEXT_FLAG_NAME] = true;
+                }
             }
 
             var coreSpecificTranslations = _localCache[CacheKey(specificUICulture, CORE)]?.Translations;

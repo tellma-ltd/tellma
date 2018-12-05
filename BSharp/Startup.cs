@@ -103,7 +103,7 @@ namespace BSharp
                     // To response size
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
 
             // Configure some custom behavior for API controllers
