@@ -11,15 +11,9 @@ namespace BSharp.Services.MultiTenancy
     public interface ITenantIdProvider
     {
         /// <summary>
-        /// Retrieves the tenant Id from the request headers, and throws an Exception if none is supplied
+        /// Retrieves the tenant Id from the request headers, or null if none is available
         /// </summary>
         /// <returns>An int32 representing the tenantId</returns>
-        int GetTenantId();
-
-        /// <summary>
-        /// Determines whether or not the tenant Id was supplied in the request
-        /// </summary>
-        /// <returns></returns>
-        bool IsTenantIdAvailable();
+        int? GetTenantId();
     }
 }

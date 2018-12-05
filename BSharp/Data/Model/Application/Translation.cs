@@ -9,11 +9,11 @@ namespace BSharp.Data.Model.Application
     /// <summary>
     /// Represents a tenant-specific translation
     /// </summary>
-    public class Translation
+    public class Translation : ModelForSaveBase, IAuditedModel
     {
         [Required]
         [MaxLength(50)]
-        public string Tier { get; set; } // Client, C#, SQL, Other
+        public string Tier { get; set; } // Client, Server, Shared
 
         [Required]
         [MaxLength(50)]
@@ -26,5 +26,14 @@ namespace BSharp.Data.Model.Application
         [Required]
         [MaxLength(2048)]
         public string Value { get; set; } // The resource value
+
+        // IAuditedModel
+        public DateTimeOffset CreatedAt { get; set; }
+
+        public string CreatedBy { get; set; }
+
+        public DateTimeOffset ModifiedAt { get; set; }
+
+        public string ModifiedBy { get; set; }
     }
 }

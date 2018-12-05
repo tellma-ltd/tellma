@@ -104,7 +104,7 @@ namespace BSharp.Services.SqlLocalization
             var coreSpecificTranslations = _localCache[CacheKey(specificUICulture, CORE)]?.Translations;
             var coreNeutralUICulture = _localCache[CacheKey(neutralUICulture, CORE)]?.Translations;
             var coreDefaultTranslations = _localCache[CacheKey(defaultUICulture, CORE)]?.Translations;
-            if (_tenantIdProvider.IsTenantIdAvailable())
+            if (_tenantIdProvider.HasTenantId())
             {
                 // If the request scope contains a tenant Id, return also the translations of that tenant Id
                 string tenantId = _tenantIdProvider.GetTenantId().ToString();
@@ -147,7 +147,7 @@ namespace BSharp.Services.SqlLocalization
                 cachesToCheck.Add(new CacheInfo { CultureName = cultureName, TenantId = CORE });
 
                 // The cache representing the tenant translations in that specific culture
-                if (_tenantIdProvider.IsTenantIdAvailable())
+                if (_tenantIdProvider.HasTenantId())
                 {
                     string tenantId = _tenantIdProvider.GetTenantId().ToString();
                     cachesToCheck.Add(new CacheInfo { CultureName = cultureName, TenantId = tenantId });
@@ -201,7 +201,7 @@ namespace BSharp.Services.SqlLocalization
                 {
                     var ctx = scope.ServiceProvider.GetRequiredService<LocalizationContext>();
                     var freshTranslations = ctx.CoreTranslations
-                        .Where(e => (e.Tier == Constants.CSharp || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.Culture))
+                        .Where(e => (e.Tier == Constants.Server || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.Culture))
                         .ToList()
                         .Select(e => new TranslationDTO { CacheKey = CacheKey(e.Culture, CORE), Name = e.Name, Value = e.Value });
 
@@ -220,7 +220,7 @@ namespace BSharp.Services.SqlLocalization
                     string tenantId = _tenantIdProvider.GetTenantId().ToString();
                     var ctx = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
                     var freshTranslations = ctx.Translations
-                        .Where(e => (e.Tier == Constants.CSharp || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.Culture))
+                        .Where(e => (e.Tier == Constants.Server || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.Culture))
                         .ToList()
                         .Select(e => new TranslationDTO { CacheKey = CacheKey(e.Culture, tenantId), Name = e.Name, Value = e.Value });
 

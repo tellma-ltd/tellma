@@ -1,19 +1,20 @@
+using AutoMapper;
 using BSharp.Data;
-using BSharp.Data.Model.Identity;
+using BSharp.Services.Migrations;
 using BSharp.Services.Utilities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
 
 namespace BSharp
 {
@@ -28,27 +29,31 @@ namespace BSharp
 
         public void ConfigureServices(IServiceCollection services)
         {
-            ////////// Register all DB contexts
+            // Register all DB contexts
             services.AddDbContext<ShardingContext>(opt =>
-                opt.UseSqlServer(_config.GetConnectionString(Constants.ShardingConnection)));
+                opt.UseSqlServer(_config.GetConnectionString(Constants.ShardingConnection))
+                .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
 
             services.AddDbContext<ConfigurationContext>(opt =>
-                opt.UseSqlServer(_config.GetConnectionString("ConfigurationConnection")));
+                opt.UseSqlServer(_config.GetConnectionString("ConfigurationConnection"))
+                .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
 
             services.AddDbContext<IdentityContext>(opt =>
-                opt.UseSqlServer(_config.GetConnectionString("IdentityConnection")));
+                opt.UseSqlServer(_config.GetConnectionString("IdentityConnection"))
+                .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
 
             services.AddDbContext<LocalizationContext>(opt =>
-                opt.UseSqlServer(_config.GetConnectionString("LocalizationConnection")));
+                opt.UseSqlServer(_config.GetConnectionString("LocalizationConnection"))
+                .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
 
 
-            ////////// This DB context contains the shardlets, and unlike the others it acquires its connection
+            // This DB context contains the shardlets, and unlike the others it acquires its connection
             // string dynamicall using IShardResolver when it is constructed, therefore this context cannot be
             // be registered in the DI the usual way like the others
             services.AddScoped<ApplicationContext>();
 
 
-            ////////// Here we register a distributed cache, the default is SQL server unless
+            // Here we register a distributed cache, the default is SQL server unless
             // a Redis cache is specified in a configuration provider
             var redisConfig = _config.GetSection("RedisCache");
             if (redisConfig.Exists())
@@ -66,33 +71,64 @@ namespace BSharp
                     opt.ConnectionString = _config.GetConnectionString("LocalizationConnection");
                     opt.SchemaName = "dbo";
                     opt.TableName = "DistributedCache";
-                    opt.ExpiredItemsDeletionInterval = TimeSpan.FromDays(15); 
+                    opt.ExpiredItemsDeletionInterval = TimeSpan.FromDays(15);
                 });
             }
 
 
-            ////////// Add all our custom services
+            // Add all our custom services
             services.AddMultiTenancy();
             services.AddSharding();
             services.AddSqlLocalization();
 
 
-            ////////// TODO: Register and configure identity related services
-            // services.AddApplicationIdentity(_config);
+            // TODO: Register and configure identity related services properly
+            services.AddApplicationIdentity();
 
 
-            ////////// Register MVC using the most up to date version
+            // Register MVC using the most up to date version
             services.AddMvc()
                 .AddViewLocalization()
                 .AddDataAnnotationsLocalization()
+                .AddJsonOptions(options =>
+                {
+                    // The JSON options below instruct the serializer to keep property names in PascalCase, 
+                    // even though this violates convention, it makes a few things easier since both client and server
+                    // sides get to see and communicate identical property names, for example 'api/customers?orderby='Name'
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new DefaultNamingStrategy()
+                    };
+
+                    // To response size
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
 
-            ////////// In production, the Angular files will be served from this directory
+            // Configure some custom behavior for API controllers
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                // This overrides the default behavior, when there are validation
+                // errors we return a 422 unprocessable entity, instead of the default
+                // 400 bad request, this makes it easier for clients to easily distinguish 
+                // such kind of errors and handle them in a special way, for example:
+                // by showing them on the fields with a red color
+                options.InvalidModelStateResponseFactory = ctx =>
+                {
+                    return new UnprocessableEntityObjectResult(ctx.ModelState);
+                };
+            });
+
+
+            // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(config =>
             {
                 config.RootPath = "ClientApp/dist";
             });
+
+            // AutoMapper https://automapper.org/
+            services.AddAutoMapper();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -107,6 +143,7 @@ namespace BSharp
                 app.UseHsts();
             }
 
+            // Picks out the culture from the request string and sets it in the current thread
             app.UseRequestLocalization(opt =>
             {
                 var defaultUICulture = _config.GetSection("Localization")["DefaultUICulture"] ?? "en";
@@ -125,6 +162,7 @@ namespace BSharp
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            // Serves the API
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -132,10 +170,10 @@ namespace BSharp
                     template: "{controller}/{action=Index}/{id?}");
             });
 
+            // Serves the Angular client
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-
                 if (env.IsDevelopment())
                 {
                     spa.UseAngularCliServer(npmScript: "start");

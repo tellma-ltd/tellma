@@ -21,24 +21,7 @@ namespace BSharp.Services.MultiTenancy
             _accessor = accessor;
         }
 
-        public int GetTenantId()
-        {
-            int? tenantId = GetTenantIdInternal();
-
-            if(tenantId == null)
-            {
-                throw new InvalidOperationException("The TenantId was not specified");
-            }
-
-            return tenantId.Value;
-        }
-
-        public bool IsTenantIdAvailable()
-        {
-            return GetTenantIdInternal() != null;
-        }
-
-        private int? GetTenantIdInternal()
+        public int? GetTenantId()
         {
             string tenantIdString;
 
