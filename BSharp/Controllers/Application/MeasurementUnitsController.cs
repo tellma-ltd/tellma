@@ -96,13 +96,14 @@ namespace BSharp.Controllers.Application
 SET NOCOUNT ON;
 DECLARE @ValidationErrors dbo.ValidationErrorList;
 
--- (1)
-INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-SELECT '[' + CAST(MUI.[Index] AS NVARCHAR(255)) + '].Code' As [Key], N'TheCode{{0}}IsUsed' As [ErrorName],
-	MUI.Code AS Argument1, NULL AS Argument2,NULL AS Argument3,NULL AS Argument4, NULL AS Argument5
-FROM @MeasurementUnits MUI 
-JOIN dbo.MeasurementUnits MDB ON MUI.Code = MDB.Code
-WHERE MUI.Id IS NULL OR MUI.Id <> MDB.Id;
+	-- Code must be unique
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
+	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Code' As [Key], N'TheCode{{0}}IsUsed' As [ErrorName],
+		FE.Code AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
+	FROM @MeasurementUnits FE 
+	JOIN [dbo].MeasurementUnits BE ON FE.Code = BE.Code
+	WHERE (FE.Id IS NULL) OR (FE.Id <> BE.Id);
+	-- Add further logic
 
 SELECT TOP {remainingErrorCount} [Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]
 FROM @ValidationErrors;
@@ -155,37 +156,54 @@ FROM @ValidationErrors;
             var indexedIds = await _db.Saving.FromSql($@"
 -- Procedure: MeasurementUnitsSave
 SET NOCOUNT ON;
-DECLARE @IndexedIds dbo.IndexedIdList, @TenantId INT, @Now DATETIMEOFFSET(7), @UserId NVARCHAR(450);
-SELECT @TenantId = CONVERT(INT, SESSION_CONTEXT(N'TenantId')); 
-SELECT @UserId = SESSION_CONTEXT(N'UserId');
-SELECT @Now =SYSDATETIMEOFFSET();
+	DECLARE @IndexedIds [dbo].[IndexedIdList];
+	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
 
-INSERT INTO @IndexedIds([Id], [Index])
-SELECT x.[Id], x.[Index]
-FROM
-(
-	MERGE INTO dbo.MeasurementUnits AS t
+-- Updates
+	MERGE INTO [dbo].MeasurementUnits AS t
 	USING (
-		SELECT @TenantId AS [TenantId], [Id], [Name1], [Name2], [Code], [UnitType], [UnitAmount], [BaseAmount]
-		FROM @Entities 
-		WHERE [EntityState] IN (N'Inserted', N'Updated')
-	) AS s ON t.[TenantId] = s.[TenantId] AND t.Id = s.Id
-	WHEN MATCHED THEN
+		SELECT [Id], [Code], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount]
+		FROM @MeasurementUnits 
+		WHERE [EntityState] = N'Updated'
+	) AS s ON (t.Id = s.Id)
+	WHEN MATCHED 
+	AND (
+			t.[UnitType]	<> s.[UnitType] OR
+			t.[Name1]		<> s.[Name1] OR
+			t.[Name2]		<> s.[Name2] OR
+			t.[UnitAmount]	<> s.[UnitAmount] OR
+			t.[BaseAmount]	<> s.[BaseAmount] OR
+		ISNULL(t.[Code], N'') <> ISNULL(s.[Code], N'')
+	)	
+	THEN
 		UPDATE SET 
-			t.[Name1]           = s.[Name1],         
-			t.[Name2]           = s.[Name2],                   
-			t.[Code]            = s.[Code],
-			t.[UnitType]        = s.[UnitType],
-			t.[UnitAmount]      = s.[UnitAmount],             
-			t.[BaseAmount]      = s.[BaseAmount],
-			t.[ModifiedAt]      = @Now,
-			t.[ModifiedBy]      = @UserId
-	WHEN NOT MATCHED THEN
-		INSERT ([TenantId], [Name1], [Name2], [Code], [UnitType], [UnitAmount], [BaseAmount], [IsActive], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
-		VALUES (@TenantId, s.[Name1], s.[Name2], s.[Code], s.[UnitType], s.[UnitAmount], s.[BaseAmount], 1, @Now, @UserId, @Now, @UserId)
+			t.[UnitType]	= s.[UnitType],
+			t.[Name1]		= s.[Name1],
+            t.[Name2]		= s.[Name2],
+			t.[UnitAmount]	= s.[UnitAmount],
+			t.[BaseAmount]	= s.[BaseAmount],
+			t.[Code]		= s.[Code],
+			t.[ModifiedAt]	= @Now,
+			t.[ModifiedBy]	= @UserId;
 
-	OUTPUT INSERTED.[Id] As [Id], s.[Index] As [Index]
-) AS x;
+-- Inserts
+	INSERT INTO @IndexedIds([Index], [Id])
+	SELECT x.[Index], x.[Id]
+	FROM
+	(
+		MERGE INTO [dbo].MeasurementUnits AS t
+		USING (
+			SELECT [Index], [Id], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount], [Code]
+			FROM @MeasurementUnits
+			WHERE [EntityState] = N'Inserted'
+		) AS s ON (t.Id = s.Id)
+		WHEN NOT MATCHED THEN
+			INSERT ([TenantId], [UnitType], [Name1],[Name2], [UnitAmount], [BaseAmount], [Code], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
+			VALUES (@TenantId, s.[UnitType], s.[Name1], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
+		OUTPUT s.[Index] AS [Index], inserted.[Id] 
+	) AS x;
 
 SELECT * FROM @IndexedIds;
 
