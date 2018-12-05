@@ -1,19 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using BSharp.Data;
 using BSharp.Services.Sharding;
-using BSharp.Services.Utilities;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 using static BSharp.Data.ApplicationContext;
 
 namespace BSharp
@@ -32,7 +25,7 @@ namespace BSharp
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
 
-        public static IWebHost BuildWebHost(string[] args) => 
+        public static IWebHost BuildWebHost(string[] args) =>
             CreateWebHostBuilder(args).Build();
 
         /// <summary>
@@ -54,8 +47,19 @@ namespace BSharp
                         //   scope.ServiceProvider.GetRequiredService<ConfigurationContext>().Database.Migrate();
 
 
-                        // (2) Sharding Context migrated the usual way
-                        scope.ServiceProvider.GetRequiredService<ShardingContext>().Database.Migrate();
+                        // (2) Sharding Context migrated the usual way and add one tenant for dev
+                        var shardingContext = scope.ServiceProvider.GetRequiredService<ShardingContext>();
+                        shardingContext.Database.Migrate();
+                        if (!shardingContext.Tenants.Any())
+                        {
+                            shardingContext.Tenants.Add(new Data.Model.Sharding.Tenant {
+                                Id = 101,
+                                Name = "Contoso, Inc.",
+                                ShardId = 1
+                            });
+
+                            shardingContext.SaveChanges();
+                        }
 
 
                         // (3) Identity Context migrated the usual way
@@ -64,7 +68,7 @@ namespace BSharp
 
                         // (4) Application Context requires special handling in development, don't resolve it with DI
                         var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
-                        var appContext = new ApplicationContext(shardResolver, 
+                        var appContext = new ApplicationContext(shardResolver,
                             new DesignTimeTenantIdProvider(), new DesignTimeUserIdProvider());
 
                         appContext.Database.Migrate();

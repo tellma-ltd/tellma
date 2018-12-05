@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BSharp.Data.Migrations.Application
@@ -11,7 +12,8 @@ namespace BSharp.Data.Migrations.Application
                 name: "MeasurementUnits",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name1 = table.Column<string>(maxLength: 255, nullable: false),
                     Name2 = table.Column<string>(maxLength: 255, nullable: true),
                     Code = table.Column<string>(maxLength: 255, nullable: true),

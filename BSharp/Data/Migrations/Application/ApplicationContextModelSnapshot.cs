@@ -23,7 +23,9 @@ namespace BSharp.Data.Migrations.Application
                 {
                     b.Property<int>("TenantId");
 
-                    b.Property<int>("Id");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<double>("BaseAmount");
 

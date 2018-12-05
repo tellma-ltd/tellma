@@ -122,6 +122,9 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
             if (keys.Count == 0)
             {
                 keys.Add("Id");
+                builder.Entity<T>()
+                    .Property("Id")
+                    .ValueGeneratedOnAdd();
             }
 
             keys = keys.Prepend(tenantId).ToList();
