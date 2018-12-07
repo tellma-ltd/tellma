@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BSharp.Services.ImportExport
+{
+    public class ExcelHandler : FileHandlerBase
+    {
+        public override AbstractDataFile Parse(byte[] fileBytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override byte[] Parse(AbstractDataFile abstractFile)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

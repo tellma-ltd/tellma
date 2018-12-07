@@ -75,10 +75,11 @@ namespace BSharp.Services.SqlLocalization
             if (isUpdated == null || !(bool)isUpdated)
             {
                 // The list of cultures to update;
-                List<string> culturesToFreshenUp = new List<string>();
-
-                // Update localization cache for the default application culture
-                culturesToFreshenUp.Add(defaultUICulture);
+                List<string> culturesToFreshenUp = new List<string>
+                {
+                    // Update localization cache for the default application culture
+                    defaultUICulture
+                };
 
                 // Update localization cache for the current request culture, if different
                 if (specificUICulture != defaultUICulture)
@@ -277,10 +278,11 @@ namespace BSharp.Services.SqlLocalization
         /// <returns></returns>
         private DistributedCacheEntryOptions GetDistributedCacheOptions()
         {
-            var opt = new DistributedCacheEntryOptions();
-
-            opt.AbsoluteExpiration = DateTimeOffset.Now.AddDays(DISTRIBUTED_CACHE_EXPIRATION_DAYS);
-            opt.SlidingExpiration = null;
+            var opt = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpiration = DateTimeOffset.Now.AddDays(DISTRIBUTED_CACHE_EXPIRATION_DAYS),
+                SlidingExpiration = null
+            };
 
             return opt;
         }

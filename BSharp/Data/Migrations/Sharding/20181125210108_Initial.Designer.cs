@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BSharp.Data.Migrations.Sharding
 {
-    [DbContext(typeof(ShardingContext))]
+    [DbContext(typeof(ManagerContext))]
     [Migration("20181125210108_Initial")]
     partial class Initial
     {

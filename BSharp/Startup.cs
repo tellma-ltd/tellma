@@ -29,27 +29,14 @@ namespace BSharp
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Register all DB contexts
-            services.AddDbContext<ShardingContext>(opt =>
+            // Register the manager context
+            services.AddDbContext<ManagerContext>(opt =>
                 opt.UseSqlServer(_config.GetConnectionString(Constants.ShardingConnection))
                 .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
 
-            services.AddDbContext<ConfigurationContext>(opt =>
-                opt.UseSqlServer(_config.GetConnectionString("ConfigurationConnection"))
-                .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
-
-            services.AddDbContext<IdentityContext>(opt =>
-                opt.UseSqlServer(_config.GetConnectionString("IdentityConnection"))
-                .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
-
-            services.AddDbContext<LocalizationContext>(opt =>
-                opt.UseSqlServer(_config.GetConnectionString("LocalizationConnection"))
-                .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
-
-
-            // This DB context contains the shardlets, and unlike the others it acquires its connection
-            // string dynamicall using IShardResolver when it is constructed, therefore this context cannot be
-            // be registered in the DI the usual way like the others
+            // The application context contains the shardlets, and unlike the manager context it acquires its connection
+            // string dynamically using IShardResolver when it is constructed, therefore this context cannot be
+            // be registered in the DI the usual way with AddDbContext<T>()
             services.AddScoped<ApplicationContext>();
 
 

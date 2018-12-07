@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BSharp.Data.Migrations.Sharding
 {
-    [DbContext(typeof(ShardingContext))]
+    [DbContext(typeof(ManagerContext))]
     partial class ShardingContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

@@ -76,7 +76,7 @@ namespace BSharp.Services.Sharding
                     {
                         using (var scope = _serviceProvider.CreateScope())
                         {
-                            var ctx = scope.ServiceProvider.GetRequiredService<ShardingContext>();
+                            var ctx = scope.ServiceProvider.GetRequiredService<ManagerContext>();
                             shardConnString = ctx.Tenants.Include(e => e.Shard)
                                 .FirstOrDefault(e => e.Id == tenantId)?.Shard?.ConnectionString;
                         }

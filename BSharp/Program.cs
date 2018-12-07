@@ -48,7 +48,7 @@ namespace BSharp
 
 
                         // (2) Sharding Context migrated the usual way and add one tenant for dev
-                        var shardingContext = scope.ServiceProvider.GetRequiredService<ShardingContext>();
+                        var shardingContext = scope.ServiceProvider.GetRequiredService<ManagerContext>();
                         shardingContext.Database.Migrate();
                         if (!shardingContext.Tenants.Any())
                         {

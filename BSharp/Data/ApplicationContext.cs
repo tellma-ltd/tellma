@@ -1,4 +1,4 @@
-﻿using BSharp.Data.Model.Application;
+﻿using BSharp.Data.Model;
 using BSharp.Services.Identity;
 using BSharp.Services.Migrations;
 using BSharp.Services.MultiTenancy;
