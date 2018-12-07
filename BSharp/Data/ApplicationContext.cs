@@ -15,6 +15,11 @@ using System.Linq;
 // dotnet ef migrations add Initial -c=ApplicationContext -o=Data/Migrations/Application
 namespace BSharp.Data
 {
+    /// <summary>
+    /// The context containing all tables with TenantId, this context can be sharded across multiple databases
+    /// and it automatically routes itself to the correct database using the registered IShardResolver service,
+    /// Application tables such as Agents and Events all live herex
+    /// </summary>
     public class ApplicationContext : DbContext
     {
         // The database tables are listed below

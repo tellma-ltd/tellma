@@ -1,18 +1,19 @@
 ﻿using AutoMapper;
-using BSharp.Controllers.Application.DTO;
-using BSharp.Controllers.Shared;
-using M = BSharp.Data.Model.Application;
+using BSharp.Controllers.DTO;
+using M = BSharp.Data.Model;
 
-namespace BSharp.Controllers.Application.Mapper
+namespace BSharp.Services.Mapper
 {
-    public class ApplicationProfile : Profile
+    public class MapperProfile : Profile
     {
-        public ApplicationProfile()
+        public MapperProfile()
         {
-            // For every type we have 3 mappings:
+            // For every save-able entity we have 3 mappings:
             // 1 - Mapping from DtoForSave to Model
             // 2 - Mapping from Model to Dto
-            // 3 - Mapping from Model to Dto
+            // 3 - Mapping from Model to DtoForSaveBase
+            // The 3rd mapping is to support a scenario where we want to map a model object of an unkown type
+            // to its corresponding DTO, with the following syntax _mapper.Map<DtoForSaveBase>(model)
 
             // Measurement Units
             CreateMap<MeasurementUnitForSave, M.MeasurementUnit>();
@@ -20,7 +21,7 @@ namespace BSharp.Controllers.Application.Mapper
         }
 
         /// <summary>
-        /// Syntaxtic sugar, maps the model type to both the DTO and the DTO base
+        /// Syntactic sugar, maps the model type to both the DTO and the DTO base
         /// </summary>
         /// <typeparam name="TModel"></typeparam>
         /// <typeparam name="TDto"></typeparam>

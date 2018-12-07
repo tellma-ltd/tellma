@@ -5,7 +5,16 @@ using System.Threading.Tasks;
 
 namespace BSharp.Services.ImportExport
 {
-    public class CsvHandler
+    public class CsvHandler : FileHandlerBase
     {
+        public override AbstractDataFile Parse(byte[] fileBytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override byte[] Compose(AbstractDataFile abstractFile)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

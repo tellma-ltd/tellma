@@ -1,12 +1,6 @@
-﻿using BSharp.Data;
-using BSharp.Services.SqlLocalization;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+﻿using BSharp.Services.SqlLocalization;
 using Microsoft.Extensions.Localization;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

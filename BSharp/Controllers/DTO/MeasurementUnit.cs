@@ -1,8 +1,7 @@
-﻿using BSharp.Controllers.Shared;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BSharp.Controllers.Application.DTO
+namespace BSharp.Controllers.DTO
 {
     /// <summary>
     /// All savable DTOs must inherit from <see cref="DtoForSaveKeyBase{TKey}"/>

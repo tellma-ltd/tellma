@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BSharp.Data.Migrations.Identity
+namespace BSharp.Data.Migrations.Manager
 {
     public partial class Initial : Migration
     {
@@ -31,6 +31,34 @@ namespace BSharp.Data.Migrations.Identity
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CoreTranslations",
+                columns: table => new
+                {
+                    Culture = table.Column<string>(maxLength: 50, nullable: false),
+                    Name = table.Column<string>(maxLength: 450, nullable: false),
+                    Tier = table.Column<string>(maxLength: 50, nullable: false),
+                    Value = table.Column<string>(maxLength: 2048, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CoreTranslations", x => new { x.Culture, x.Name });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Shards",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 255, nullable: true),
+                    ConnectionString = table.Column<string>(maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shards", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,6 +122,30 @@ namespace BSharp.Data.Migrations.Identity
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Tenants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    ShardId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tenants_Shards_ShardId",
+                        column: x => x.ShardId,
+                        principalTable: "Shards",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Shards",
+                columns: new[] { "Id", "ConnectionString", "Name" },
+                values: new object[] { 1, "<ShardManager>", "Shard Manager" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
                 table: "AspNetUserClaims",
@@ -115,6 +167,11 @@ namespace BSharp.Data.Migrations.Identity
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tenants_ShardId",
+                table: "Tenants",
+                column: "ShardId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -129,7 +186,16 @@ namespace BSharp.Data.Migrations.Identity
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CoreTranslations");
+
+            migrationBuilder.DropTable(
+                name: "Tenants");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Shards");
         }
     }
 }

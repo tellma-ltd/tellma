@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Controllers.Shared
+namespace BSharp.Controllers.DTO
 {
     public class GetByIdResponse<TDto> where TDto : DtoForSaveBase
     {

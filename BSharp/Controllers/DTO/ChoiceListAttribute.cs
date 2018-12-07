@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Controllers.Shared
+namespace BSharp.Controllers.DTO
 {
     /// <summary>
     /// Custom validation attribute, checks whether the set value is one

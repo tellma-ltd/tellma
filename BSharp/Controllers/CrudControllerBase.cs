@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using BSharp.Controllers.Shared;
+using BSharp.Controllers.DTO;
+using BSharp.Services.ImportExport;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,13 +9,14 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Model = BSharp.Data.Model.Application;
+using Model = BSharp.Data.Model;
 
-namespace BSharp.Controllers.Application
+namespace BSharp.Controllers
 {
     [ApiController]
     public abstract class CrudControllerBase<TModel, TDto, TDtoForSave, TKey> : ControllerBase
@@ -149,7 +151,7 @@ namespace BSharp.Controllers.Application
         }
 
         [HttpPost]
-        public virtual async Task<ActionResult<List<TDto>>> Save([FromBody] List<TDtoForSave> entities)
+        public virtual async Task<ActionResult<List<TDto>>> Save([FromBody] List<TDtoForSave> entities, [FromQuery] SaveArguments args)
         {
             // Note here we use lists https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=netcore-2.1
             // since the order is symantically relevant for reporting validation errors on the entities
@@ -165,7 +167,7 @@ namespace BSharp.Controllers.Application
                 }
 
                 // Save
-                var dbEntities = await SaveAsync(entities);
+                var dbEntities = await SaveAsync(entities, args.ReturnEntities);
 
                 // Map
                 var result = Map(dbEntities);
@@ -228,9 +230,43 @@ namespace BSharp.Controllers.Application
             return await Task.FromResult(File(new byte[0], "excel"));
         }
 
-        [HttpPost("import")]
-        public virtual async Task<ActionResult> Import(IFormFile file)
+        [HttpGet("template")]
+        public virtual async Task<FileResult> Template()
         {
+            // TODO Return the template for this particular DTO
+            return await Task.FromResult(File(new byte[0], "excel"));
+        }
+
+        [HttpPost("import")]
+        public virtual async Task<ActionResult> Import(IFormFile file, [FromQuery] ImportArguments args)
+        {
+            var memStream = new MemoryStream();
+            file.OpenReadStream().CopyTo(memStream);
+            var fileAsBytes = memStream.ToArray();
+
+            FileHandlerBase handler;
+
+            if (file.ContentType == "text/csv" || file.FileName.EndsWith(".csv"))
+            {
+                handler = new CsvHandler();
+            }
+            else if (file.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.FileName.EndsWith(".xlsx"))
+            {
+                handler = new ExcelHandler();
+            }
+            else
+            {
+                throw new FormatException("Unknown file format");
+            }
+
+            var abstractFile = handler.Parse(fileAsBytes);
+
+            // Get the column names from the abstract files with indexes
+
+            // Get the 
+
+            // map the file to the 
+
             // Very useful gem
             var model = new List<TModel>();
             ObjectValidator.Validate(ControllerContext, null, null, model);
@@ -238,6 +274,18 @@ namespace BSharp.Controllers.Application
             // TODO Import
             return await Task.FromResult(Ok());
         }
+
+        [HttpPost("parse")]
+        public virtual async Task<ActionResult<List<TDtoForSave>>> Parse(IFormFile file)
+        {
+            // TODO: This method doesn't import the file in the DB, it simply parses it to 
+            // DTOs that are ripe for saving, and returns those DTOs to the requester
+            // This supports scenarios where only part of the required fields are present
+            // in the imported file, or to support previewing the import before committing it
+            return await Task.FromResult(Ok());
+        }
+
+
 
         // Abstract and virtual members
 
@@ -266,7 +314,7 @@ namespace BSharp.Controllers.Application
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        protected abstract Task<List<TModel>> SaveAsync(List<TDtoForSave> entities);
+        protected abstract Task<List<TModel>> SaveAsync(List<TDtoForSave> entities, bool returnEntities);
 
         /// <summary>
         /// Deletes the entities specified by the list of Ids
@@ -471,7 +519,6 @@ namespace BSharp.Controllers.Application
             return relatedEntities;
         }
 
-        
         /// <summary>
         /// Performs server side validation on the entities, this method is expected to 
         /// call AddModelError on the controller's ModelState if there is a validation problem,

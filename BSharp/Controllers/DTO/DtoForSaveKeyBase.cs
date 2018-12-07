@@ -1,4 +1,4 @@
-﻿namespace BSharp.Controllers.Shared
+﻿namespace BSharp.Controllers.DTO
 {
     /// <summary>
     /// The base class for all DTOs of HTTP resources that can be modified

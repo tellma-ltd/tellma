@@ -196,14 +196,14 @@ namespace BSharp.Services.SqlLocalization
             ////// Efficiently retrieve a fresh list of translations for all stale caches
             List<TranslationDTO> allFreshTranslations = new List<TranslationDTO>();
 
-            // First pass for core translations, those are retrieved from LocalizationContext
+            // First pass for core translations, those are retrieved from ManagerContext
             var coreStaleCaches = staleCaches.Where(e => e.TenantId == CORE);
             if (coreStaleCaches.Any())
             {
                 var staleCacheKeys = coreStaleCaches.Select(e => e.CultureName);
                 using (var scope = _serviceProvider.CreateScope())
                 {
-                    var ctx = scope.ServiceProvider.GetRequiredService<LocalizationContext>();
+                    var ctx = scope.ServiceProvider.GetRequiredService<ManagerContext>();
                     var freshTranslations = ctx.CoreTranslations
                         .Where(e => (e.Tier == Constants.Server || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.Culture))
                         .ToList()

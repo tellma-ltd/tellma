@@ -1,4 +1,5 @@
 using BSharp.Data;
+using BSharp.Data.Model;
 using BSharp.Services.Sharding;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -43,47 +44,34 @@ namespace BSharp
                 {
                     try
                     {
-                        // (1) Configuration Context migrated the usual way
-                        //   scope.ServiceProvider.GetRequiredService<ConfigurationContext>().Database.Migrate();
-
-
-                        // (2) Sharding Context migrated the usual way and add one tenant for dev
-                        var shardingContext = scope.ServiceProvider.GetRequiredService<ManagerContext>();
-                        shardingContext.Database.Migrate();
-                        if (!shardingContext.Tenants.Any())
+                        // (1) Manager Context migrated the usual way, add one tenant for dev and all translations
+                        var managerContext = scope.ServiceProvider.GetRequiredService<ManagerContext>();
+                        managerContext.Database.Migrate();
+                        if (!managerContext.Tenants.Any())
                         {
-                            shardingContext.Tenants.Add(new Data.Model.Sharding.Tenant {
+                            managerContext.Tenants.Add(new Data.Model.Tenant {
                                 Id = 101,
                                 Name = "Contoso, Inc.",
                                 ShardId = 1
                             });
 
-                            shardingContext.SaveChanges();
+                            managerContext.SaveChanges();
                         }
 
+                        // Translations are seeded here for a better development experience since they change 
+                        // frequently, in the future this seeding will be moved to migrations instead
+                        var dbTranslations = managerContext.CoreTranslations.ToList();
+                        managerContext.Database.ExecuteSqlCommand("TRUNCATE TABLE CoreTranslations");
+                        managerContext.CoreTranslations.AddRange(CoreTranslation._TRANSLATIONS);
+                        managerContext.SaveChanges();
 
-                        // (3) Identity Context migrated the usual way
-                        scope.ServiceProvider.GetRequiredService<IdentityContext>().Database.Migrate();
 
-
-                        // (4) Application Context requires special handling in development, don't resolve it with DI
+                        // (2) Application Context requires special handling in development, don't resolve it with DI
                         var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
                         var appContext = new ApplicationContext(shardResolver,
                             new DesignTimeTenantIdProvider(), new DesignTimeUserIdProvider());
 
                         appContext.Database.Migrate();
-
-
-                        // (5) Localization Context migration and seeding
-                        var localizationCtx = scope.ServiceProvider.GetRequiredService<LocalizationContext>();
-                        localizationCtx.Database.Migrate();
-
-                        // Translations are seeded here for a better development experience since they change 
-                        // frequently, in the future this seeding will be moved to migrations instead
-                        var dbTranslations = localizationCtx.CoreTranslations.ToList();
-                        localizationCtx.Database.ExecuteSqlCommand("TRUNCATE TABLE CoreTranslations");
-                        localizationCtx.CoreTranslations.AddRange(LocalizationContext._TRANSLATIONS);
-                        localizationCtx.SaveChanges();
                     }
                     catch (Exception ex)
                     {

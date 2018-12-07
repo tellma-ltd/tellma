@@ -46,7 +46,7 @@ namespace BSharp.Services.Sharding
             // connection string that doesn't depend on tenant Id
             if (!_tenantIdProvider.HasTenantId())
             {
-                return _config.GetConnectionString(Constants.ShardingConnection);
+                return _config.GetConnectionString(Constants.ManagerConnection);
             }
 
             string shardConnString = null;
@@ -90,7 +90,7 @@ namespace BSharp.Services.Sharding
                         // purpose behind it is to make it easier to do development and also to set-up small instances that do not require sharding 
                         else if (shardConnString == SHARD_MANAGER_PLACEHOLDER)
                         {
-                            shardConnString = _config.GetConnectionString(Constants.ShardingConnection);
+                            shardConnString = _config.GetConnectionString(Constants.ManagerConnection);
                         }
 
                         // ELSE: this is a normal shard
@@ -115,7 +115,7 @@ namespace BSharp.Services.Sharding
                             else
                             {
                                 // If the password of the shard is not set but the password of the shard manager is, use the shard manager's
-                                string shardManagerConnection = _config.GetConnectionString(Constants.ShardingConnection);
+                                string shardManagerConnection = _config.GetConnectionString(Constants.ManagerConnection);
                                 var shardManagerConnBuilder = new SqlConnectionStringBuilder(shardManagerConnection);
 
                                 if (!string.IsNullOrWhiteSpace(shardManagerConnBuilder.Password))

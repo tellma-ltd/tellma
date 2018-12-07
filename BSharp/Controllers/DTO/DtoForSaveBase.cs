@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Controllers.Shared
+namespace BSharp.Controllers.DTO
 {
     /// <summary>
     /// Only for type-safety during development, i.e to prevent the silly 

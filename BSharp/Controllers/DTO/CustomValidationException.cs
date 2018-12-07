@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 
-namespace BSharp.Controllers.Shared
+namespace BSharp.Controllers.DTO
 {
     /// <summary>
     /// An exception that represents custom validation errors

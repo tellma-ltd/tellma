@@ -8,6 +8,6 @@ namespace BSharp.Services.ImportExport
     public abstract class FileHandlerBase
     {
         public abstract AbstractDataFile Parse(byte[] fileBytes);
-        public abstract byte[] Parse(AbstractDataFile abstractFile);
+        public abstract byte[] Compose(AbstractDataFile abstractFile);
     }
 }

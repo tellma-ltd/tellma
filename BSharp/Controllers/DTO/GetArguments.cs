@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Controllers.Shared
+namespace BSharp.Controllers.DTO
 {
     /// <summary>
     /// DTO that carries the parameters for most Http GET all requests

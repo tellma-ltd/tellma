@@ -1,6 +1,4 @@
-﻿using BSharp.Data.Model.Identity;
-using BSharp.Data.Model.Localization;
-using BSharp.Data.Model.Sharding;
+﻿using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

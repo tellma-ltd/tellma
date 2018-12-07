@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using BSharp.Controllers.Application.DTO;
-using BSharp.Controllers.Shared;
+using BSharp.Controllers.DTO;
 using BSharp.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +11,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using M = BSharp.Data.Model.Application;
+using M = BSharp.Data.Model;
 
-namespace BSharp.Controllers.Application
+namespace BSharp.Controllers
 {
     [Route("api/measurement-units")]
     public class MeasurementUnitsController : CrudControllerBase<M.MeasurementUnit, MeasurementUnit, MeasurementUnitForSave, int?>
@@ -143,7 +142,7 @@ FROM @ValidationErrors;
             }
         }
 
-        protected override async Task<List<M.MeasurementUnit>> SaveAsync(List<MeasurementUnitForSave> entities)
+        protected override async Task<List<M.MeasurementUnit>> SaveAsync(List<MeasurementUnitForSave> entities, bool returnEntities)
         {
             // Add created entities
             DataTable entitiesTable = DataTable(entities, addIndex: true);
@@ -153,7 +152,7 @@ FROM @ValidationErrors;
                 SqlDbType = SqlDbType.Structured
             };
 
-            var indexedIds = await _db.Saving.FromSql($@"
+            string saveSql = $@"
 -- Procedure: MeasurementUnitsSave
 SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
@@ -204,33 +203,44 @@ SET NOCOUNT ON;
 			VALUES (@TenantId, s.[UnitType], s.[Name1], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
 		OUTPUT s.[Index] AS [Index], inserted.[Id] 
 	) AS x;
-
-SELECT * FROM @IndexedIds;
-
-", entitiesTvp).ToListAsync();
-
-            // Load the entities using their Ids
-            DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
-            var idsTvp = new SqlParameter("@Ids", idsTable)
+";
+            // Optimization
+            if(!returnEntities)
             {
-                TypeName = $"dbo.IdList",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            var savedEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp).ToListAsync();
-
-
-            // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
-            Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-            var sortedSavedEntities = new List<M.MeasurementUnit>(savedEntities.Count);
-            foreach (var item in savedEntities)
-            {
-                int index = indices[item.Id];
-                sortedSavedEntities[index] = item;
+                // IF no returned items are expected, simply execute a non-Query and return an empty list;
+                await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp);
+                return new List<M.MeasurementUnit>();
             }
+            else
+            {
+                // If returned items are expected, append a select statement to the SQL command
+                saveSql = saveSql += "SELECT * FROM @IndexedIds;";
 
-            // Return the sorted collection
-            return sortedSavedEntities;
+                // Retrieve the map from Indexes to Ids
+                var indexedIds = await _db.Saving.FromSql(saveSql, entitiesTvp).ToListAsync();
+
+                // Load the entities using their Ids
+                DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"dbo.IdList",
+                    SqlDbType = SqlDbType.Structured
+                };
+                var savedEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp).ToListAsync();
+
+
+                // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
+                Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
+                var sortedSavedEntities = new List<M.MeasurementUnit>(savedEntities.Count);
+                foreach (var item in savedEntities)
+                {
+                    int index = indices[item.Id];
+                    sortedSavedEntities[index] = item;
+                }
+
+                // Return the sorted collection
+                return sortedSavedEntities;
+            }
         }
 
         protected override async Task DeleteAsync(List<int?> ids)

@@ -12,7 +12,7 @@ namespace BSharp.Services.ImportExport
             throw new NotImplementedException();
         }
 
-        public override byte[] Parse(AbstractDataFile abstractFile)
+        public override byte[] Compose(AbstractDataFile abstractFile)
         {
             throw new NotImplementedException();
         }

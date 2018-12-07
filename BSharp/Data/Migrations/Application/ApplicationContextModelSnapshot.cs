@@ -15,11 +15,11 @@ namespace BSharp.Data.Migrations.Application
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("BSharp.Data.Model.Application.MeasurementUnit", b =>
+            modelBuilder.Entity("BSharp.Data.Model.MeasurementUnit", b =>
                 {
                     b.Property<int>("TenantId");
 
@@ -37,7 +37,9 @@ namespace BSharp.Data.Migrations.Application
                     b.Property<string>("CreatedBy")
                         .IsRequired();
 
-                    b.Property<bool>("IsActive");
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
 
                     b.Property<DateTimeOffset>("ModifiedAt");
 
@@ -59,10 +61,14 @@ namespace BSharp.Data.Migrations.Application
 
                     b.HasKey("TenantId", "Id");
 
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique()
+                        .HasFilter("[Code] IS NOT NULL");
+
                     b.ToTable("MeasurementUnits");
                 });
 
-            modelBuilder.Entity("BSharp.Data.Model.Application.Translation", b =>
+            modelBuilder.Entity("BSharp.Data.Model.Translation", b =>
                 {
                     b.Property<int>("TenantId");
 
