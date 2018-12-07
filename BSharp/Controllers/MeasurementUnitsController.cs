@@ -160,49 +160,32 @@ SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
 
--- Updates
-	MERGE INTO [dbo].MeasurementUnits AS t
-	USING (
-		SELECT [Id], [Code], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount]
-		FROM @MeasurementUnits 
-		WHERE [EntityState] = N'Updated'
-	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED 
-	AND (
-			t.[UnitType]	<> s.[UnitType] OR
-			t.[Name1]		<> s.[Name1] OR
-			t.[Name2]		<> s.[Name2] OR
-			t.[UnitAmount]	<> s.[UnitAmount] OR
-			t.[BaseAmount]	<> s.[BaseAmount] OR
-		ISNULL(t.[Code], N'') <> ISNULL(s.[Code], N'')
-	)	
-	THEN
-		UPDATE SET 
-			t.[UnitType]	= s.[UnitType],
-			t.[Name1]		= s.[Name1],
-            t.[Name2]		= s.[Name2],
-			t.[UnitAmount]	= s.[UnitAmount],
-			t.[BaseAmount]	= s.[BaseAmount],
-			t.[Code]		= s.[Code],
-			t.[ModifiedAt]	= @Now,
-			t.[ModifiedBy]	= @UserId;
-
--- Inserts
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
 		MERGE INTO [dbo].MeasurementUnits AS t
 		USING (
-			SELECT [Index], [Id], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount], [Code]
-			FROM @MeasurementUnits
-			WHERE [EntityState] = N'Inserted'
+			SELECT [Index], [Id], [Code], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount]
+			FROM @MeasurementUnits 
+			WHERE [EntityState] IN (N'Inserted', N'Updated')
 		) AS s ON (t.Id = s.Id)
+		WHEN MATCHED 
+		THEN
+			UPDATE SET 
+				t.[UnitType]	= s.[UnitType],
+				t.[Name1]		= s.[Name1],
+				t.[Name2]		= s.[Name2],
+				t.[UnitAmount]	= s.[UnitAmount],
+				t.[BaseAmount]	= s.[BaseAmount],
+				t.[Code]		= s.[Code],
+				t.[ModifiedAt]	= @Now,
+				t.[ModifiedBy]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([TenantId], [UnitType], [Name1],[Name2], [UnitAmount], [BaseAmount], [Code], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
-			VALUES (@TenantId, s.[UnitType], s.[Name1], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
-		OUTPUT s.[Index] AS [Index], inserted.[Id] 
-	) AS x;
+				INSERT ([TenantId], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount], [Code], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
+				VALUES (@TenantId, s.[UnitType], s.[Name1], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
+			OUTPUT s.[Index], inserted.[Id] 
+	) As x
 ";
             // Optimization
             if(!returnEntities)
