@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
+using BSharp.Controllers.Misc;
 using BSharp.Services.ImportExport;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,13 +17,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Model = BSharp.Data.Model;
+using M = BSharp.Data.Model;
 
 namespace BSharp.Controllers
 {
     [ApiController]
     public abstract class CrudControllerBase<TModel, TDto, TDtoForSave, TKey> : ControllerBase
-        where TModel : Model.ModelForSaveBase
+        where TModel : M.ModelForSaveBase
         where TDtoForSave : DtoForSaveBase
         where TDto : TDtoForSave
     {
@@ -50,8 +53,6 @@ namespace BSharp.Controllers
 
                 // Get a readonly query
                 IQueryable<TModel> query = GetBaseQuery().AsNoTracking();
-                var dtoType = typeof(TDto);
-                var modelType = typeof(TModel);
 
                 // Include inactive
                 query = IncludeInactive(query, inactive: args.Inactive);
@@ -124,6 +125,10 @@ namespace BSharp.Controllers
 
                 // Load
                 var dbEntity = await query.FirstOrDefaultAsync();
+                if (dbEntity == null)
+                {
+                    throw new NotFoundException<TKey>(id);
+                }
 
                 // Flatten Related Entities
                 var relatedEntities = FlattenRelatedEntities(dbEntity);
@@ -133,7 +138,6 @@ namespace BSharp.Controllers
 
                 // TODO apply the SELECT
 
-
                 // Return
                 var result = new GetByIdResponse<TDto>
                 {
@@ -142,6 +146,10 @@ namespace BSharp.Controllers
                 };
 
                 return Ok(result);
+            }
+            catch (NotFoundException<TKey> ex)
+            {
+                return NotFound(ex.Ids);
             }
             catch (Exception ex)
             {
@@ -163,11 +171,11 @@ namespace BSharp.Controllers
                 await ValidateAsync(entities);
                 if (!ModelState.IsValid)
                 {
-                    throw new CustomValidationException(ModelState);
+                    throw new UnprocessableEntityException(ModelState);
                 }
 
                 // Save
-                var dbEntities = await SaveAsync(entities, args.ReturnEntities);
+                var dbEntities = await PersistAsync(entities, args.ReturnEntities);
 
                 // Map
                 var result = Map(dbEntities);
@@ -175,7 +183,7 @@ namespace BSharp.Controllers
                 // Return
                 return Ok(result);
             }
-            catch (CustomValidationException ex)
+            catch (UnprocessableEntityException ex)
             {
                 return UnprocessableEntity(ex.ModelState);
             }
@@ -193,7 +201,7 @@ namespace BSharp.Controllers
             {
                 // TODO: Authorize DELETE
 
-                await DeleteAsync(ids);
+                await DeleteImplAsync(ids);
                 return Ok();
             }
             catch (Exception ex)
@@ -203,18 +211,60 @@ namespace BSharp.Controllers
             }
         }
 
-        [HttpPut]
-        public virtual async Task<ActionResult<List<TDto>>> Action([FromBody] ActionArguments<TKey> args)
-        {
-            var ids = args.Ids;
-            var action = args.Action;
 
+
+        // Not Done
+        [HttpGet("export")]
+        public virtual async Task<ActionResult> Export([FromQuery] GetArguments args)
+        {
+            // TODO Export
+            return await Task.FromResult(File(new byte[0], "excel"));
+        }
+
+        // Not Done
+        [HttpGet("template")]
+        public virtual ActionResult Template()
+        {
             try
             {
-                // TODO: Authorize Action
+                var specs = GetFileSpecs();
+                var props = typeof(TDtoForSave).GetProperties();
 
-                var results = await ActionAsync(ids, action);
-                return Ok(results);
+                using (var memStream = new MemoryStream())
+                {
+                    using (var excelPackage = new ExcelPackage(memStream))
+                    {
+                        var cells = excelPackage.Workbook.Worksheets.Add("Support Requests").Cells;
+                        int row = 1;
+                        int col = 1;
+                        var cols = "_ABCDEFGHIJKLMNOPQRSTUVWXYZ".Select(c => c + "").ToArray();
+
+                        for (int i = 0; i < props.Length; i++)
+                        {
+                            // Get the display name from the specs (1)
+                            string displayName = "TODO";
+
+                            // Get the number format from the specs if any (2)
+                            string numberFormat = "yyyy-mm-dd";
+
+                            // Get the number format from the specs if any (3)
+                            HorizontalAlignment? alignment = HorizontalAlignment.Left;
+
+                            cells[cols[col] + row].Value = displayName;
+                            cells[$"{cols[col]}:{cols[col]}"].Style.HorizontalAlignment = (ExcelHorizontalAlignment)alignment;
+                            if (!string.IsNullOrWhiteSpace(numberFormat))
+                            {
+                                cells[$"{cols[col]}:{cols[col]}"].Style.Numberformat.Format = numberFormat;
+                            }
+                            col++;
+                        }
+
+                        // Save the Excel package to the memory stream and return it
+                        excelPackage.Save();
+                        return File(fileStream: memStream,
+                            contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -223,66 +273,117 @@ namespace BSharp.Controllers
             }
         }
 
-        [HttpGet("export")]
-        public virtual async Task<FileResult> Export([FromQuery] GetArguments args)
-        {
-            // TODO Export
-            return await Task.FromResult(File(new byte[0], "excel"));
-        }
-
-        [HttpGet("template")]
-        public virtual async Task<FileResult> Template()
-        {
-            // TODO Return the template for this particular DTO
-            return await Task.FromResult(File(new byte[0], "excel"));
-        }
-
+        // Not Done
         [HttpPost("import")]
-        public virtual async Task<ActionResult> Import(IFormFile file, [FromQuery] ImportArguments args)
+        public virtual async Task<ActionResult<ImportResult>> Import(IFormFile file, [FromQuery] ImportArguments args)
         {
-            var memStream = new MemoryStream();
-            file.OpenReadStream().CopyTo(memStream);
-            var fileAsBytes = memStream.ToArray();
+            try
+            {
+                var dtos = await ParseImplAsync(file, args);
 
+
+                // Get the column names from the abstract files
+
+                // Get the 
+
+                // map the file to the 
+
+                // Very useful gem
+                var model = new List<TModel>();
+                ObjectValidator.Validate(ControllerContext, null, null, model);
+
+                // TODO Use correct values
+                var result = new ImportResult
+                {
+                    Inserted = 50,
+                    Updated = 0,
+                    Deleted = 0
+                };
+                return Ok(result);
+            }
+            catch(UnprocessableEntityException ex)
+            {
+                return UnprocessableEntity(ex.ModelState);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Done
+        [HttpPost("parse")]
+        public virtual async Task<ActionResult<List<TDtoForSave>>> Parse(IFormFile file, ParseArguments args)
+        {
+            // This method doesn't import the file in the DB, it simply parses it to 
+            // DTOs that are ripe for saving, and returns those DTOs to the requester
+            // This supports scenarios where only part of the required fields are present
+            // in the imported file, or to support previewing the import before committing it
+            try
+            {
+                var dtos = await ParseImplAsync(file, args);
+                return Ok(dtos);
+            }
+            catch (UnprocessableEntityException ex)
+            {
+                return UnprocessableEntity(ex.ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Done
+        protected virtual async Task<List<TDtoForSave>> ParseImplAsync(IFormFile file, ParseArguments args)
+        {
+            var abstractGrid = ToAbstractGrid(file, args);
+
+            if (abstractGrid.Count < 2)
+            {
+                ModelState.AddModelError("", _localizer["Error_EmptyImportFile"]);
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            var dtosForSave = await ToDtosForSave(abstractGrid);
+            return dtosForSave;
+        }
+
+        // Done
+        protected virtual AbstractDataGrid ToAbstractGrid(IFormFile file, ParseArguments args)
+        {
+            // Determine an appropriate file handler based on the file metadata
             FileHandlerBase handler;
-
             if (file.ContentType == "text/csv" || file.FileName.EndsWith(".csv"))
             {
                 handler = new CsvHandler();
             }
             else if (file.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.FileName.EndsWith(".xlsx"))
             {
-                handler = new ExcelHandler();
+                handler = new ExcelHandler(_localizer);
             }
             else
             {
-                throw new FormatException("Unknown file format");
+                throw new FormatException(_localizer["UnknownFileFormat"]);
             }
 
-            var abstractFile = handler.Parse(fileAsBytes);
-
-            // Get the column names from the abstract files with indexes
-
-            // Get the 
-
-            // map the file to the 
-
-            // Very useful gem
-            var model = new List<TModel>();
-            ObjectValidator.Validate(ControllerContext, null, null, model);
-
-            // TODO Import
-            return await Task.FromResult(Ok());
+            using(var fileStream = file.OpenReadStream())
+            {
+                // Use the handler to unpack the file into an abstract grid and return it
+                AbstractDataGrid abstractGrid = handler.ToAbstractGrid(fileStream);
+                return abstractGrid;
+            }
         }
 
-        [HttpPost("parse")]
-        public virtual async Task<ActionResult<List<TDtoForSave>>> Parse(IFormFile file)
+        // Not Done
+        protected abstract Task<List<TDtoForSave>> ToDtosForSave(AbstractDataGrid grid);
+
+        // Not Done
+        protected virtual FileSpecs GetFileSpecs()
         {
-            // TODO: This method doesn't import the file in the DB, it simply parses it to 
-            // DTOs that are ripe for saving, and returns those DTOs to the requester
-            // This supports scenarios where only part of the required fields are present
-            // in the imported file, or to support previewing the import before committing it
-            return await Task.FromResult(Ok());
+            throw new NotImplementedException();
         }
 
 
@@ -314,16 +415,21 @@ namespace BSharp.Controllers
         /// </summary>
         /// <param name="entities"></param>
         /// <returns></returns>
-        protected abstract Task<List<TModel>> SaveAsync(List<TDtoForSave> entities, bool returnEntities);
+        protected abstract Task<List<TModel>> PersistAsync(List<TDtoForSave> entities, bool returnEntities);
 
         /// <summary>
         /// Deletes the entities specified by the list of Ids
         /// </summary>
         /// <param name="ids"></param>
         /// <returns></returns>
-        protected abstract Task DeleteAsync(List<TKey> ids);
+        protected abstract Task DeleteImplAsync(List<TKey> ids);
 
-        protected abstract Task<List<TModel>> ActionAsync(List<TKey> entities, string action);
+        /// <summary>
+        /// Performs server side validation on the entities, this method is expected to 
+        /// call AddModelError on the controller's ModelState if there is a validation problem,
+        /// the method should NOT do validation that is already handled by validation attributes
+        /// </summary>
+        protected abstract Task ValidateAsync(List<TDtoForSave> entities);
 
         /// <summary>
         /// Maps a list of the controller models to a list of concrete controller DTOs
@@ -338,7 +444,7 @@ namespace BSharp.Controllers
         /// assumes that the default DTO has been mapped to every model type in AutoMapper by mapping 
         /// it to type <see cref="DtoForSaveBase"/>
         /// </summary>
-        protected virtual IEnumerable<DtoForSaveBase> MapRelatedEntities(IEnumerable<Model.ModelForSaveBase> relatedEntities)
+        protected virtual IEnumerable<DtoForSaveBase> MapRelatedEntities(IEnumerable<M.ModelForSaveBase> relatedEntities)
         {
             return relatedEntities.Select(e => _mapper.Map<DtoForSaveBase>(e));
         }
@@ -487,15 +593,15 @@ namespace BSharp.Controllers
         {
             // An inline function that recursively traverses the model tree and adds all entities
             // that have a base type of Model.ModelForSaveBase to the provided HashSet
-            void Flatten(Model.ModelForSaveBase model, HashSet<Model.ModelForSaveBase> accRelatedModels)
+            void Flatten(M.ModelForSaveBase model, HashSet<M.ModelForSaveBase> accRelatedModels)
             {
 
                 foreach (var prop in model.GetType().GetProperties())
                 {
-                    if (prop.PropertyType.IsSubclassOf(typeof(Model.ModelForSaveBase)))
+                    if (prop.PropertyType.IsSubclassOf(typeof(M.ModelForSaveBase)))
                     {
                         // Navigation property
-                        if (prop.GetValue(model) is Model.ModelForSaveBase relatedModel && !accRelatedModels.Contains(relatedModel))
+                        if (prop.GetValue(model) is M.ModelForSaveBase relatedModel && !accRelatedModels.Contains(relatedModel))
                         {
                             Flatten(model, accRelatedModels);
                             accRelatedModels.Add(relatedModel);
@@ -506,7 +612,7 @@ namespace BSharp.Controllers
                 }
             }
 
-            var relatedModels = new HashSet<Model.ModelForSaveBase>();
+            var relatedModels = new HashSet<M.ModelForSaveBase>();
             foreach (var model in models)
             {
                 Flatten(model, relatedModels);
@@ -517,16 +623,6 @@ namespace BSharp.Controllers
                 .ToDictionary(g => g.Key, g => g.Select(e => _mapper.Map<DtoForSaveBase>(e)));
 
             return relatedEntities;
-        }
-
-        /// <summary>
-        /// Performs server side validation on the entities, this method is expected to 
-        /// call AddModelError on the controller's ModelState if there is a validation problem,
-        /// the method should NOT do validation that is already handled by validation attributes
-        /// </summary>
-        protected virtual Task ValidateAsync(List<TDtoForSave> entities)
-        {
-            return Task.CompletedTask;
         }
 
         /// <summary>

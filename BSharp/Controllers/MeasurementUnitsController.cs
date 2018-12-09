@@ -142,7 +142,7 @@ FROM @ValidationErrors;
             }
         }
 
-        protected override async Task<List<M.MeasurementUnit>> SaveAsync(List<MeasurementUnitForSave> entities, bool returnEntities)
+        protected override async Task<List<M.MeasurementUnit>> PersistAsync(List<MeasurementUnitForSave> entities, bool returnEntities)
         {
             // Add created entities
             DataTable entitiesTable = DataTable(entities, addIndex: true);
@@ -226,7 +226,7 @@ SET NOCOUNT ON;
             }
         }
 
-        protected override async Task DeleteAsync(List<int?> ids)
+        protected override async Task DeleteImplAsync(List<int?> ids)
         {
             // Prepare a list of Ids to delete
             DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
