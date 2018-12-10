@@ -4,6 +4,7 @@ using BSharp.Controllers.Misc;
 using BSharp.Services.ImportExport;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -279,18 +280,29 @@ namespace BSharp.Controllers
         {
             try
             {
-                var dtos = await ParseImplAsync(file, args);
+                // Parse the file into DTOs for save, and also retrieve the map
+                var (dtos, errorKeyMap) = await ParseImplAsync(file, args); // This should check for primary code consistency!
 
+                // Validate the DTOs
+                ObjectValidator.Validate(ControllerContext, null, null, dtos);
 
-                // Get the column names from the abstract files
+                if (!ModelState.IsValid)
+                {
+                    var modelStateCopy = new ModelStateDictionary(ModelState);
+                    ModelState.Clear();
+                    List<string> errors = new List<string>();
+                    foreach (var error in modelStateCopy)
+                    {
+                        var key = errorKeyMap(error.Key);
+                        foreach (var errorMessage in error.Value.Errors)
+                        {
+                            ModelState.AddModelError(key, errorMessage.ErrorMessage);
+                        }
+                    }
+                    // TODO: Map the erros to columns and rows
+                }
 
-                // Get the 
-
-                // map the file to the 
-
-                // Very useful gem
-                var model = new List<TModel>();
-                ObjectValidator.Validate(ControllerContext, null, null, model);
+                // TODO: Save the DTOs with SaveImplAsync, keeping the args in mind
 
                 // TODO Use correct values
                 var result = new ImportResult
@@ -299,13 +311,14 @@ namespace BSharp.Controllers
                     Updated = 0,
                     Deleted = 0
                 };
+
                 return Ok(result);
             }
-            catch(UnprocessableEntityException ex)
+            catch (UnprocessableEntityException ex)
             {
                 return UnprocessableEntity(ex.ModelState);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
                 return BadRequest(ex.Message);
@@ -337,18 +350,17 @@ namespace BSharp.Controllers
         }
 
         // Done
-        protected virtual async Task<List<TDtoForSave>> ParseImplAsync(IFormFile file, ParseArguments args)
+        protected virtual async Task<(List<TDtoForSave>, Func<string, string>)> ParseImplAsync(IFormFile file, ParseArguments args)
         {
             var abstractGrid = ToAbstractGrid(file, args);
-
             if (abstractGrid.Count < 2)
             {
                 ModelState.AddModelError("", _localizer["Error_EmptyImportFile"]);
                 throw new UnprocessableEntityException(ModelState);
             }
 
-            var dtosForSave = await ToDtosForSave(abstractGrid);
-            return dtosForSave;
+            var (dtosForSave, keyMap) = await ToDtosForSave(abstractGrid);
+            return (dtosForSave, keyMap);
         }
 
         // Done
@@ -369,7 +381,7 @@ namespace BSharp.Controllers
                 throw new FormatException(_localizer["UnknownFileFormat"]);
             }
 
-            using(var fileStream = file.OpenReadStream())
+            using (var fileStream = file.OpenReadStream())
             {
                 // Use the handler to unpack the file into an abstract grid and return it
                 AbstractDataGrid abstractGrid = handler.ToAbstractGrid(fileStream);
@@ -378,7 +390,7 @@ namespace BSharp.Controllers
         }
 
         // Not Done
-        protected abstract Task<List<TDtoForSave>> ToDtosForSave(AbstractDataGrid grid);
+        protected abstract Task<(List<TDtoForSave>, Func<string, string>)> ToDtosForSave(AbstractDataGrid grid);
 
         // Not Done
         protected virtual FileSpecs GetFileSpecs()
