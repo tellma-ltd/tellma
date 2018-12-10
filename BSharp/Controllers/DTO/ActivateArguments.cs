@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.DTO
 {
-    public class ActionArguments<TKey>
+    public class ActivateArguments<TKey>
     {
-        [Required]
-        public string Action { get; set; }
-
         [Required]
         public List<TKey> Ids { get; set; }
     }

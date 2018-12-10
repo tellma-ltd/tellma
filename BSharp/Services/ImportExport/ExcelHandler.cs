@@ -1,20 +1,82 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Localization;
+using OfficeOpenXml;
+using System;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace BSharp.Services.ImportExport
 {
     public class ExcelHandler : FileHandlerBase
     {
-        public override AbstractDataFile Parse(byte[] fileBytes)
+        private readonly IStringLocalizer _localizer;
+
+        public ExcelHandler(IStringLocalizer localizer)
         {
-            throw new NotImplementedException();
+            _localizer = localizer;
         }
 
-        public override byte[] Compose(AbstractDataFile abstractFile)
+        public override AbstractDataGrid ToAbstractGrid(Stream fileStream)
         {
-            throw new NotImplementedException();
+            using (var excelPackage = new ExcelPackage(fileStream))
+            {
+                // Determine which sheet is to be imported
+                var sheet = excelPackage.Workbook.Worksheets.SingleOrDefault();
+                if (sheet == null)
+                {
+                    sheet = excelPackage.Workbook.Worksheets.SingleOrDefault(e => e.Name == _localizer["Data"]);
+                }
+
+                if (sheet == null)
+                {
+                    throw new FormatException(_localizer["Error.ExcelContainsMultipleSheetsNameOne{0}Short", _localizer["Data"]]);
+                }
+
+                // This code copies all the cells in the Excel field to an abstract 2-D string representation
+                var cells = sheet.Cells;
+                int maxCol = cells.Columns;
+                int maxRow = cells.Rows;
+                var abstractGrid = new AbstractDataGrid(maxCol, maxRow); // TODO verify
+
+                // Loop over the Excel and copy the data to the abstract grid
+                for (int row = 1; row <= maxRow; row++)
+                {
+                    abstractGrid.AddRow();
+                    for (int column = 1; column <= maxCol; column++)
+                    {
+                        var cell = cells[row, column];
+                        abstractGrid[row - 1][column - 1] = cell.Value?.ToString();
+                    }
+                }
+
+                return abstractGrid;
+            }
+        }
+
+        public override Stream ToFileStream(AbstractDataGrid abstractGrid)
+        {
+            // The memory stream will contain the Excel
+            var memStream = new MemoryStream();
+            using (var excelPackage = new ExcelPackage(memStream))
+            {
+                // Prepare the sheet and set RTL direction
+                var sheet = excelPackage.Workbook.Worksheets.Add(_localizer["Data"]);
+                sheet.View.RightToLeft = abstractGrid.IsRightToLeft;
+                
+                // Loop over the abstract grid and copy its contents to the Excel sheet
+                for (int r = 0; r < abstractGrid.Count; r++)
+                {
+                    var row = abstractGrid[r];
+                    for (int c = 0; c < row.Length; c++)
+                    {
+                        sheet.Cells[r + 1, c + 1].Value = row[c]?.Content;
+                    }
+                }
+
+                // Save to the memory stream
+                excelPackage.Save();
+            }
+
+            return memStream;
         }
     }
 }

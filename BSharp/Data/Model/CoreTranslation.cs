@@ -46,13 +46,64 @@ namespace BSharp.Data.Model
 
         // Note: English language comes built into the application, we also add Arabic for development
         // purposes to test localization where one language is RTL, so Arabic also ends up being built-in
-        internal static CoreTranslation[] _TRANSLATIONS = {
+        // Other languages can be added at runtime by localizing all the below codes
+        internal static CoreTranslation[] TRANSLATIONS = {
+
+            // Server Errors
             En(Constants.Server, "TheCode{0}IsDuplicated", "The code '{0}' is duplicated"),
             Ar(Constants.Server, "TheCode{0}IsDuplicated", "الكود ’{0}’ مكرر"),
 
             En(Constants.Server, "TheCode{0}IsUsed", "The code '{0}' is already used"),
             Ar(Constants.Server, "TheCode{0}IsUsed", "الكود ’{0}’ مستخدم حاليا"),
 
+            En(Constants.Server, "Error.EmptyImportFile", "The imported file is empty"),
+            Ar(Constants.Server, "Error.EmptyImportFile", "الملف المحمل ليس فيه بيانات"),
+
+            En(Constants.Server, "Error.UnknownFileFormat", "Unknown file format"),
+            Ar(Constants.Server, "Error.UnknownFileFormat", "صيغة الملف غير معروفة"),
+
+            En(Constants.Server, "Error.ExcelContainsMultipleSheetsNameOne{0}", "The imported Excel file contains multiple sheets, please mark one of them with the name '{0}'"),
+            Ar(Constants.Server, "Error.ExcelContainsMultipleSheetsNameOne{0}", "ملف الإكسل الذي رفعته يحتوي على أوراق متعدده، سم إحداهن بالاسم ’{0}’"),
+
+
+            // Field Labels
+            En(Constants.Shared, "MeasurementUnit_Code", "Code"),
+            Ar(Constants.Shared, "MeasurementUnit_Code", "الكود"),
+
+            En(Constants.Shared, "MeasurementUnit_UnitType", "Unit Type"),
+            Ar(Constants.Shared, "MeasurementUnit_UnitType", "التصنيف"),
+
+            En(Constants.Shared, "MeasurementUnit_UnitAmount", "Amount in this Unit"),
+            Ar(Constants.Shared, "MeasurementUnit_UnitAmount", "الكمية بالوحدة الحالية"),
+
+            En(Constants.Shared, "MeasurementUnit_BaseAmount", "Amount in base Unit"),
+            Ar(Constants.Shared, "MeasurementUnit_BaseAmount", "الكمية بالوحدة الأساسية"),
+
+            En(Constants.Shared, "MeasurementUnit_IsActive", "Is Active"),
+            Ar(Constants.Shared, "MeasurementUnit_IsActive", "منشط"),
+
+            En(Constants.Shared, "CreatedBy", "Created By"),
+            Ar(Constants.Shared, "CreatedBy", "الإنشاء من قبل"),
+
+            En(Constants.Shared, "CreatedAt", "Created At"),
+            Ar(Constants.Shared, "CreatedAt", "زمن الإنشاء"),
+
+            En(Constants.Shared, "ModifiedBy", "Modified By"),
+            Ar(Constants.Shared, "ModifiedBy", "آخر تعديل من قبل"),
+
+            En(Constants.Shared, "ModifiedAt", "Modified At"),
+            Ar(Constants.Shared, "ModifiedAt", "زمن آخر تعديل"),
+
+            En(Constants.Shared, "Data", "Data"),
+            Ar(Constants.Shared, "Data", "البيانات"),
+
+
+            // Choice lists
+            En(Constants.Shared, "Yes", "Yes"),
+            Ar(Constants.Shared, "Yes", "نعم"),
+
+            En(Constants.Shared, "No", "No"),
+            Ar(Constants.Shared, "No", "لا"),
         };
 
         private static CoreTranslation En(string tier, string name, string value)

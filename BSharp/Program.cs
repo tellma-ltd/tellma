@@ -62,7 +62,7 @@ namespace BSharp
                         // frequently, in the future this seeding will be moved to migrations instead
                         var dbTranslations = managerContext.CoreTranslations.ToList();
                         managerContext.Database.ExecuteSqlCommand("TRUNCATE TABLE CoreTranslations");
-                        managerContext.CoreTranslations.AddRange(CoreTranslation._TRANSLATIONS);
+                        managerContext.CoreTranslations.AddRange(CoreTranslation.TRANSLATIONS);
                         managerContext.SaveChanges();
 
 
