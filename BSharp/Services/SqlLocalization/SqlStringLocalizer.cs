@@ -22,45 +22,13 @@ namespace BSharp.Services.SqlLocalization
         private static CancellationTokenSource _source = new CancellationTokenSource();
 
         // below are the dictionaries 
-        private readonly Dictionary<string, string> _coreSpecificTranslations;
-        private readonly Dictionary<string, string> _coreNeutralTranslations;
-        private readonly Dictionary<string, string> _coreDefaultTranslations;
-        private readonly Dictionary<string, string> _tenantSpecificTranslations;
-        private readonly Dictionary<string, string> _tenantNeutralTranslations;
-        private readonly Dictionary<string, string> _tenantDefaultTranslations;
+        private readonly SqlStringLocalizerFactory _factory;
+        private CascadingTranslations _translations;
+        private object _translationsLock = new object();
 
-        public SqlStringLocalizer(
-            Dictionary<string, string> coreSpecificTranslations,
-            Dictionary<string, string> coreNeutralTranslations,
-            Dictionary<string, string> coreDefaultTranslations)
+        public SqlStringLocalizer(SqlStringLocalizerFactory factory)
         {
-            _coreSpecificTranslations = coreSpecificTranslations ?? 
-                throw new ArgumentNullException(nameof(coreSpecificTranslations));
-
-            _coreNeutralTranslations = coreNeutralTranslations ?? 
-                throw new ArgumentNullException(nameof(coreNeutralTranslations));
-
-            _coreDefaultTranslations = coreDefaultTranslations ?? 
-                throw new ArgumentNullException(nameof(coreDefaultTranslations));
-        }
-
-        public SqlStringLocalizer(
-            Dictionary<string, string> coreSpecificTranslations,
-            Dictionary<string, string> coreNeutralTranslations,
-            Dictionary<string, string> coreDefaultTranslations,
-            Dictionary<string, string> tenantSpecificTranslations,
-            Dictionary<string, string> tenantNeutralTranslations,
-            Dictionary<string, string> tenantDefaultTranslations) : 
-            this(coreSpecificTranslations, coreNeutralTranslations, coreDefaultTranslations)
-        {
-            _tenantSpecificTranslations = tenantSpecificTranslations ?? 
-                throw new ArgumentNullException(nameof(tenantSpecificTranslations));
-
-            _tenantNeutralTranslations = tenantNeutralTranslations ?? 
-                throw new ArgumentNullException(nameof(tenantNeutralTranslations));
-
-            _tenantDefaultTranslations = tenantDefaultTranslations ?? 
-                throw new ArgumentNullException(nameof(tenantDefaultTranslations));
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         /// <summary>
@@ -115,28 +83,28 @@ namespace BSharp.Services.SqlLocalization
         /// <returns></returns>
         private string Localize(string name)
         {
-            // Prepare the translation dictionaries in order of precedence
-            Dictionary<string, string>[] translationDictionaries =  {
-                _tenantSpecificTranslations, // highest precedence
-                _coreSpecificTranslations,
-                _tenantNeutralTranslations,
-                _coreNeutralTranslations,
-                _tenantDefaultTranslations,
-                _coreDefaultTranslations // lowest precedence
-            };
-            
-            // Go over them one by one and return the first hit
-            for(int i=0; i< translationDictionaries.Length; i++)
+            lock (_translationsLock)
             {
-                var translationDictionary = translationDictionaries[i];
-                if (translationDictionary != null && translationDictionary.ContainsKey(name))
+                // This is to workaround the behavior of certain MVC libraries
+                // Which cache the IStringLocalizer across multiple scopes,
+                // even though the culture is scoped and the localizer is a singleton
+                if (_translations == null || CultureInfo.CurrentUICulture.Name != _translations.CultureName)
                 {
-                    return translationDictionary[name];
+                    _translations = _factory.GetTranslationsForCurrentCulture();
                 }
-            }
 
-            // If all is a miss, return the name as is, forgiveness here is a virtue.
-            return name;
+                // Go over the dictionaries one by one and return the first hit
+                foreach (var translationDictionary in _translations.InDescendingOrderOfPrecedence())
+                {
+                    if (translationDictionary != null && translationDictionary.ContainsKey(name))
+                    {
+                        return translationDictionary[name];
+                    }
+                }
+
+                // If all is a miss, return the name as is, forgiveness here is a virtue.
+                return name;
+            }
         }
     }
 }

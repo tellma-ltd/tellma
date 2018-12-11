@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -25,7 +23,7 @@ namespace BSharp.Controllers
     [ApiController]
     public abstract class CrudControllerBase<TModel, TDto, TDtoForSave, TKey> : ControllerBase
         where TModel : M.ModelForSaveBase
-        where TDtoForSave : DtoForSaveBase
+        where TDtoForSave : DtoForSaveKeyBase<TKey>
         where TDto : TDtoForSave
     {
         // Constants
@@ -50,61 +48,8 @@ namespace BSharp.Controllers
         {
             try
             {
-                // TODO Authorize for GET
-
-                // Get a readonly query
-                IQueryable<TModel> query = GetBaseQuery().AsNoTracking();
-
-                // Include inactive
-                query = IncludeInactive(query, inactive: args.Inactive);
-
-                // Search
-                query = Search(query, args.Search);
-
-                // Filter
-                query = Filter(query, args.Filter);
-
-                // Before ordering or paging, retrieve the total count
-                int totalCount = query.Count();
-
-                // OrderBy
-                query = OrderBy(query, args.OrderBy, args.Desc);
-
-                // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
-                var top = args.Top;
-                var skip = args.Skip;
-                top = Math.Min(top, MaximumPageSize());
-                query = query.Skip(skip).Take(top);
-
-                // Apply the expand, which has the general format 'Expand=A,B/C,D'
-                query = Expand(query, args.Expand);
-
-                // Load the data, transform it and wrap it in some metadata
-                var memoryList = await query.ToListAsync();
-
-                // Flatten related entities and map each to its respective DTO 
-                var relatedEntities = FlattenRelatedEntities(memoryList);
-
-                // Map the primary result to DTOs as well
-                var resultData = Map(memoryList);
-
-                // TODO apply the SELECT
-
-                // Prepare the result in a response object
-                var result = new GetResponse<TDto>
-                {
-                    Skip = skip,
-                    Top = resultData.Count(),
-                    OrderBy = args.OrderBy,
-                    Desc = args.Desc,
-                    TotalCount = totalCount,
-                    Data = resultData,
-                    RelatedEntities = relatedEntities
-                };
-
-                // Finally return the result
+                var result = await GetImplAsync(args);
                 return Ok(result);
-
             }
             catch (Exception ex)
             {
@@ -166,22 +111,7 @@ namespace BSharp.Controllers
             // since the order is symantically relevant for reporting validation errors on the entities
             try
             {
-                // TODO Authorize POST
-
-                // Validate
-                await ValidateAsync(entities);
-                if (!ModelState.IsValid)
-                {
-                    throw new UnprocessableEntityException(ModelState);
-                }
-
-                // Save
-                var dbEntities = await PersistAsync(entities, args.ReturnEntities);
-
-                // Map
-                var result = Map(dbEntities);
-
-                // Return
+                var result = await SaveImplAsync(entities, args);
                 return Ok(result);
             }
             catch (UnprocessableEntityException ex)
@@ -212,60 +142,15 @@ namespace BSharp.Controllers
             }
         }
 
-
-
-        // Not Done
         [HttpGet("export")]
-        public virtual async Task<ActionResult> Export([FromQuery] GetArguments args)
-        {
-            // TODO Export
-            return await Task.FromResult(File(new byte[0], "excel"));
-        }
-
-        // Not Done
-        [HttpGet("template")]
-        public virtual ActionResult Template()
+        public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args)
         {
             try
             {
-                var specs = GetFileSpecs();
-                var props = typeof(TDtoForSave).GetProperties();
-
-                using (var memStream = new MemoryStream())
-                {
-                    using (var excelPackage = new ExcelPackage(memStream))
-                    {
-                        var cells = excelPackage.Workbook.Worksheets.Add("Support Requests").Cells;
-                        int row = 1;
-                        int col = 1;
-                        var cols = "_ABCDEFGHIJKLMNOPQRSTUVWXYZ".Select(c => c + "").ToArray();
-
-                        for (int i = 0; i < props.Length; i++)
-                        {
-                            // Get the display name from the specs (1)
-                            string displayName = "TODO";
-
-                            // Get the number format from the specs if any (2)
-                            string numberFormat = "yyyy-mm-dd";
-
-                            // Get the number format from the specs if any (3)
-                            HorizontalAlignment? alignment = HorizontalAlignment.Left;
-
-                            cells[cols[col] + row].Value = displayName;
-                            cells[$"{cols[col]}:{cols[col]}"].Style.HorizontalAlignment = (ExcelHorizontalAlignment)alignment;
-                            if (!string.IsNullOrWhiteSpace(numberFormat))
-                            {
-                                cells[$"{cols[col]}:{cols[col]}"].Style.Numberformat.Format = numberFormat;
-                            }
-                            col++;
-                        }
-
-                        // Save the Excel package to the memory stream and return it
-                        excelPackage.Save();
-                        return File(fileStream: memStream,
-                            contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                    }
-                }
+                // Get abstract grid
+                var response = await GetImplAsync(args);
+                var abstractFile = ToAbstractGrid(response, args);
+                return ToFileResult(abstractFile, args.Format);
             }
             catch (Exception ex)
             {
@@ -274,42 +159,54 @@ namespace BSharp.Controllers
             }
         }
 
-        // Not Done
+        [HttpGet("template")]
+        public virtual ActionResult Template([FromQuery] TemplateArguments args)
+        {
+            try
+            {
+                var abstractFile = GetImportTemplate();
+                // return ToFileResult(abstractFile, args.Format);
+                return Ok(abstractFile);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("import")]
         public virtual async Task<ActionResult<ImportResult>> Import(IFormFile file, [FromQuery] ImportArguments args)
         {
             try
             {
-                // Parse the file into DTOs for save, and also retrieve the map
-                var (dtos, errorKeyMap) = await ParseImplAsync(file, args); // This should check for primary code consistency!
+                // Parse the file into DTOs + map back to row numbers (The way source code is compiled into machine code + symbol file)
+                var (dtos, rowNumberFromErrorKeyMap) = await ParseImplAsync(file, args); // This should check for primary code consistency!
 
-                // Validate the DTOs
+                // Validation
                 ObjectValidator.Validate(ControllerContext, null, null, dtos);
-
                 if (!ModelState.IsValid)
                 {
-                    var modelStateCopy = new ModelStateDictionary(ModelState);
-                    ModelState.Clear();
-                    List<string> errors = new List<string>();
-                    foreach (var error in modelStateCopy)
-                    {
-                        var key = errorKeyMap(error.Key);
-                        foreach (var errorMessage in error.Value.Errors)
-                        {
-                            ModelState.AddModelError(key, errorMessage.ErrorMessage);
-                        }
-                    }
-                    // TODO: Map the erros to columns and rows
+                    var mappedModelState = MapModelState(ModelState, rowNumberFromErrorKeyMap);
+                    throw new UnprocessableEntityException(mappedModelState);
                 }
 
-                // TODO: Save the DTOs with SaveImplAsync, keeping the args in mind
+                // Saving
+                try
+                {
+                    await SaveImplAsync(dtos, new SaveArguments { ReturnEntities = false });
+                }
+                catch (UnprocessableEntityException ex)
+                {
+                    var mappedModelState = MapModelState(ex.ModelState, rowNumberFromErrorKeyMap);
+                    throw new UnprocessableEntityException(mappedModelState);
+                }
 
-                // TODO Use correct values
                 var result = new ImportResult
                 {
-                    Inserted = 50,
-                    Updated = 0,
-                    Deleted = 0
+                    Inserted = dtos.Count(e => e.EntityState == "Inserted"),
+                    Updated = dtos.Count(e => e.EntityState == "Updated"),
+                    Deleted = dtos.Count(e => e.EntityState == "Deleted")
                 };
 
                 return Ok(result);
@@ -325,7 +222,6 @@ namespace BSharp.Controllers
             }
         }
 
-        // Done
         [HttpPost("parse")]
         public virtual async Task<ActionResult<List<TDtoForSave>>> Parse(IFormFile file, ParseArguments args)
         {
@@ -349,8 +245,7 @@ namespace BSharp.Controllers
             }
         }
 
-        // Done
-        protected virtual async Task<(List<TDtoForSave>, Func<string, string>)> ParseImplAsync(IFormFile file, ParseArguments args)
+        protected virtual async Task<(List<TDtoForSave>, Func<string, int>)> ParseImplAsync(IFormFile file, ParseArguments args)
         {
             var abstractGrid = ToAbstractGrid(file, args);
             if (abstractGrid.Count < 2)
@@ -359,18 +254,17 @@ namespace BSharp.Controllers
                 throw new UnprocessableEntityException(ModelState);
             }
 
-            var (dtosForSave, keyMap) = await ToDtosForSave(abstractGrid);
+            var (dtosForSave, keyMap) = await ToDtosForSave(abstractGrid, args);
             return (dtosForSave, keyMap);
         }
 
-        // Done
         protected virtual AbstractDataGrid ToAbstractGrid(IFormFile file, ParseArguments args)
         {
             // Determine an appropriate file handler based on the file metadata
             FileHandlerBase handler;
             if (file.ContentType == "text/csv" || file.FileName.EndsWith(".csv"))
             {
-                handler = new CsvHandler();
+                handler = new CsvHandler(_localizer);
             }
             else if (file.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.FileName.EndsWith(".xlsx"))
             {
@@ -378,7 +272,7 @@ namespace BSharp.Controllers
             }
             else
             {
-                throw new FormatException(_localizer["UnknownFileFormat"]);
+                throw new FormatException(_localizer["Error_UnknownFileFormat"]);
             }
 
             using (var fileStream = file.OpenReadStream())
@@ -390,14 +284,13 @@ namespace BSharp.Controllers
         }
 
         // Not Done
-        protected abstract Task<(List<TDtoForSave>, Func<string, string>)> ToDtosForSave(AbstractDataGrid grid);
+        protected abstract Task<(List<TDtoForSave>, Func<string, int>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args);
 
         // Not Done
-        protected virtual FileSpecs GetFileSpecs()
-        {
-            throw new NotImplementedException();
-        }
+        protected abstract AbstractDataGrid GetImportTemplate();
 
+        // Not Done
+        protected abstract AbstractDataGrid ToAbstractGrid(GetResponse<TDto> response, ExportArguments args);
 
 
         // Abstract and virtual members
@@ -430,6 +323,92 @@ namespace BSharp.Controllers
         protected abstract Task<List<TModel>> PersistAsync(List<TDtoForSave> entities, bool returnEntities);
 
         /// <summary>
+        /// Returns the entities as per the specifications in the get request
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        protected virtual async Task<GetResponse<TDto>> GetImplAsync(GetArguments args)
+        {
+            // TODO Authorize for GET
+
+            // Get a readonly query
+            IQueryable<TModel> query = GetBaseQuery().AsNoTracking();
+
+            // Include inactive
+            query = IncludeInactive(query, inactive: args.Inactive);
+
+            // Search
+            query = Search(query, args.Search);
+
+            // Filter
+            query = Filter(query, args.Filter);
+
+            // Before ordering or paging, retrieve the total count
+            int totalCount = query.Count();
+
+            // OrderBy
+            query = OrderBy(query, args.OrderBy, args.Desc);
+
+            // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
+            var top = args.Top;
+            var skip = args.Skip;
+            top = Math.Min(top, MaximumPageSize());
+            query = query.Skip(skip).Take(top);
+
+            // Apply the expand, which has the general format 'Expand=A,B/C,D'
+            query = Expand(query, args.Expand);
+
+            // Load the data, transform it and wrap it in some metadata
+            var memoryList = await query.ToListAsync();
+
+            // Flatten related entities and map each to its respective DTO 
+            var relatedEntities = FlattenRelatedEntities(memoryList);
+
+            // Map the primary result to DTOs as well
+            var resultData = Map(memoryList);
+
+            // TODO apply the SELECT
+
+            // Prepare the result in a response object
+            var result = new GetResponse<TDto>
+            {
+                Skip = skip,
+                Top = resultData.Count(),
+                OrderBy = args.OrderBy,
+                Desc = args.Desc,
+                TotalCount = totalCount,
+                Data = resultData,
+                RelatedEntities = relatedEntities
+            };
+
+            // Finally return the result
+            return result;
+        }
+
+        /// <summary>
+        /// Saves the entities (Insert or Update) into the database after authorization and validation
+        /// </summary>
+        /// <returns>Optionally returns the same entities in their persisted READ form</returns>
+        protected virtual async Task<List<TDto>> SaveImplAsync(List<TDtoForSave> entities, SaveArguments args)
+        {
+            // TODO Authorize POST
+
+            // Validate
+            await ValidateAsync(entities);
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Save
+            var dbEntities = await PersistAsync(entities, args.ReturnEntities);
+
+            // Map and return
+            var result = Map(dbEntities);
+            return result;
+        }
+
+        /// <summary>
         /// Deletes the entities specified by the list of Ids
         /// </summary>
         /// <param name="ids"></param>
@@ -446,9 +425,9 @@ namespace BSharp.Controllers
         /// <summary>
         /// Maps a list of the controller models to a list of concrete controller DTOs
         /// </summary>
-        protected virtual IEnumerable<TDto> Map(IEnumerable<TModel> models)
+        protected virtual List<TDto> Map(List<TModel> models)
         {
-            return _mapper.Map<IEnumerable<TDto>>(models);
+            return _mapper.Map<List<TDto>>(models);
         }
 
         /// <summary>
@@ -698,5 +677,54 @@ namespace BSharp.Controllers
 
             return _dataTableCache[(entities, addIndex)];
         }
+
+        private ModelStateDictionary MapModelState(ModelStateDictionary modelState, Func<string, int> rowNumberFromErrorKeyMap)
+        {
+            // Inline function for mapping a model state on DTOs to a model state on Excel rows
+            // Copy the errors to another collection
+            var mappedModelState = new ModelStateDictionary(maxAllowedErrors: 200);
+
+            // Transform the errors to the current collection
+            foreach (var error in modelState)
+            {
+                var rowNumber = rowNumberFromErrorKeyMap(error.Key);
+                foreach (var errorMessage in error.Value.Errors)
+                {
+                    var key = RowValidationKey(rowNumber);
+                    mappedModelState.AddModelError(key, errorMessage.ErrorMessage);
+                }
+            }
+
+            return mappedModelState;
+        }
+
+        private FileResult ToFileResult(AbstractDataGrid abstractFile, string format)
+        {
+            // Get abstract grid
+
+            FileHandlerBase handler;
+            string contentType;
+            if (format == FileFormats.Xlsx)
+            {
+                handler = new ExcelHandler(_localizer);
+                contentType = MimeTypes.Xlsx;
+            }
+            else if (format == FileFormats.Csv)
+            {
+                handler = new CsvHandler(_localizer);
+                contentType = MimeTypes.Csv;
+            }
+            else
+            {
+                throw new FormatException(_localizer["Error_UnknownFileFormat"]);
+            }
+
+            var fileStream = handler.ToFileStream(abstractFile);
+            //return File(fileStream: fileStream, contentType: mimeType);
+
+            return File(((MemoryStream)fileStream).ToArray(), contentType);
+        }
+
+        protected string RowValidationKey(int rowNumber) => _localizer["Row{0}", rowNumber];
     }
 }

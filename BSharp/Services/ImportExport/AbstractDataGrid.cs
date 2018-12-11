@@ -13,7 +13,7 @@ namespace BSharp.Services.ImportExport
         /// <summary>
         /// Set to true if the file will be read from left to right (When this is supported by the specific format)
         /// </summary>
-        public bool IsRightToLeft { get; set; } = CultureInfo.CurrentCulture.TextInfo.IsRightToLeft;
+        public bool IsRightToLeft { get; set; } = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
 
         /// <summary>
         /// The fixed size of each row

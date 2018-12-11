@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
 using BSharp.Data;
+using BSharp.Services.ImportExport;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -10,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
@@ -19,13 +22,27 @@ namespace BSharp.Controllers
     public class MeasurementUnitsController : CrudControllerBase<M.MeasurementUnit, MeasurementUnit, MeasurementUnitForSave, int?>
     {
         private readonly ApplicationContext _db;
+        private readonly IModelMetadataProvider _metadataProvider;
         private readonly IStringLocalizer<MeasurementUnitsController> _localizer;
 
-        public MeasurementUnitsController(ApplicationContext db, ILogger<MeasurementUnitsController> logger,
+        public MeasurementUnitsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<MeasurementUnitsController> logger,
             IStringLocalizer<MeasurementUnitsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
         {
             _db = db;
+            _metadataProvider = metadataProvider;
             _localizer = localizer;
+        }
+
+        [HttpPut("activate")]
+        public virtual ActionResult<List<MeasurementUnit>> Activate([FromBody] List<int> Ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPut("deactivate")]
+        public virtual ActionResult<List<MeasurementUnit>> Deactivate([FromBody] List<int> Ids)
+        {
+            throw new NotImplementedException();
         }
 
         protected override IQueryable<M.MeasurementUnit> GetBaseQuery()
@@ -188,7 +205,7 @@ SET NOCOUNT ON;
 	) As x
 ";
             // Optimization
-            if(!returnEntities)
+            if (!returnEntities)
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
                 await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp);
@@ -240,7 +257,34 @@ SET NOCOUNT ON;
             await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp);
         }
 
-        protected override Task<List<M.MeasurementUnit>> ActionAsync(List<int?> entities, string action)
+        protected override Task<(List<MeasurementUnitForSave>, Func<string, int>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override AbstractDataGrid GetImportTemplate()
+        {
+            // Get the properties of the DTO for Save, excluding Id or EntityState
+            var type = typeof(MeasurementUnitForSave);
+            var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+            // The result that will be returned
+            var result = new AbstractDataGrid(props.Length, 1);
+
+            // Add the header
+            var header = result[result.AddRow()];
+            for (int i = 0; i < props.Length; i++)
+            {
+                var prop = props[i];
+                var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
+                // var display = _localizer["MeasurementUnit_Code"].Value;
+                header[i] = display;
+            }
+
+            return result;
+        }
+
+        protected override AbstractDataGrid ToAbstractGrid(GetResponse<MeasurementUnit> response, ExportArguments args)
         {
             throw new NotImplementedException();
         }

@@ -10,15 +10,27 @@ namespace BSharp.Services.ImportExport
     /// </summary>
     public class AbstractDataCell
     {
+        /// <summary>
+        /// Specifies how the numbers need to be formatted, for file formats that support formatting
+        /// </summary>
+        public string NumberFormat { get; set; }
+
+        /// <summary>
+        /// The horizontal alignment
+        /// </summary>
         public HorizontalAlignment HorizontalAlignment { get; set; }
-        public string Content { get; set; }
+
+        /// <summary>
+        /// The content of the cell
+        /// </summary>
+        public object Content { get; set; }
 
         public static implicit operator AbstractDataCell(string str)
         {
             return new AbstractDataCell
             {
                 Content = str,
-                HorizontalAlignment = HorizontalAlignment.Left
+                HorizontalAlignment = HorizontalAlignment.Default
             };
         }
     }

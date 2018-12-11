@@ -60,8 +60,10 @@ namespace BSharp
 
                         // Translations are seeded here for a better development experience since they change 
                         // frequently, in the future this seeding will be moved to migrations instead
-                        var dbTranslations = managerContext.CoreTranslations.ToList();
-                        managerContext.Database.ExecuteSqlCommand("TRUNCATE TABLE CoreTranslations");
+                        var existingTranslations = managerContext.CoreTranslations.ToArray();
+                        managerContext.CoreTranslations.RemoveRange(existingTranslations);
+                        managerContext.SaveChanges();
+
                         managerContext.CoreTranslations.AddRange(CoreTranslation.TRANSLATIONS);
                         managerContext.SaveChanges();
 
