@@ -1,8 +1,4 @@
-﻿using BSharp.Data;
-using BSharp.Services.MultiTenancy;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,15 +12,9 @@ namespace BSharp.Services.SqlLocalization
     /// </summary>
     public class SqlStringLocalizer : IStringLocalizer
     {
-        /// <summary>
-        ///  This is used to clear the cache on demand
-        /// </summary>
-        private static CancellationTokenSource _source = new CancellationTokenSource();
-
-        // below are the dictionaries 
         private readonly SqlStringLocalizerFactory _factory;
         private CascadingTranslations _translations;
-        private object _translationsLock = new object();
+        private ReaderWriterLockSlim _translationsLock = new ReaderWriterLockSlim();
 
         public SqlStringLocalizer(SqlStringLocalizerFactory factory)
         {
@@ -83,14 +73,20 @@ namespace BSharp.Services.SqlLocalization
         /// <returns></returns>
         private string Localize(string name)
         {
+            // Just in case 2 threads with 2 different cultures invoked the same localizer concurrently
+            // (It probably never happens, but I have seen signs that some MVC libraries might do that)
             lock (_translationsLock)
             {
                 // This is to workaround the behavior of certain MVC libraries
-                // Which cache the IStringLocalizer across multiple scopes,
-                // even though the culture is scoped and the localizer is a singleton
+                // which seem to re-use the same IStringLocalizer across multiple requests,
+                // even though the current UI culture is a scoped value and the localizer is transient
                 if (_translations == null || CultureInfo.CurrentUICulture.Name != _translations.CultureName)
                 {
-                    _translations = _factory.GetTranslationsForCurrentCulture();
+                    // Check again inside the writer lock
+                    if (_translations == null || CultureInfo.CurrentUICulture.Name != _translations.CultureName)
+                    {
+                        _translations = _factory.GetTranslationsForCurrentCulture();
+                    }
                 }
 
                 // Go over the dictionaries one by one and return the first hit

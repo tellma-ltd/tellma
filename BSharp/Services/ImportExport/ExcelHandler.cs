@@ -29,7 +29,7 @@ namespace BSharp.Services.ImportExport
 
                 if (sheet == null)
                 {
-                    throw new FormatException(_localizer["Error_ExcelContainsMultipleSheetsNameOne{0}Short", _localizer["Data"]]);
+                    throw new FormatException(_localizer["Error_ExcelContainsMultipleSheetsNameOne0", _localizer["Data"]]);
                 }
 
                 // This code copies all the cells in the Excel field to an abstract 2-D string representation
@@ -45,7 +45,7 @@ namespace BSharp.Services.ImportExport
                     for (int column = 1; column <= maxCol; column++)
                     {
                         var cell = cells[row, column];
-                        abstractGrid[row - 1][column - 1] = cell.Value?.ToString();
+                        abstractGrid[row - 1][column - 1] = AbstractDataCell.Cell(cell.Value);
                     }
                 }
 

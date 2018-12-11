@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
+using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
 using Microsoft.AspNetCore.Mvc;
@@ -257,9 +258,150 @@ SET NOCOUNT ON;
             await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp);
         }
 
-        protected override Task<(List<MeasurementUnitForSave>, Func<string, int>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
+        protected override async Task<(List<MeasurementUnitForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
         {
-            throw new NotImplementedException();
+            // Get the properties of the DTO for Save, excluding Id or EntityState
+            string mode = args.Mode;
+            var readType = typeof(MeasurementUnit);
+            var saveType = typeof(MeasurementUnitForSave);
+
+            var readProps = readType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(readType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
+
+            var saveProps = saveType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(saveType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
+
+            // Maps the index of the grid column to a property on the DtoForSave
+            var saveColumnMap = new List<(int Index, PropertyInfo Property)>(grid.RowSize);
+
+            // Make sure all column header labels are recognizable
+            // and construct the save column map
+            var firstRow = grid[0];
+            for (int c = 0; c < firstRow.Length; c++)
+            {
+                var column = firstRow[c];
+                string headerLabel = column.Content?.ToString();
+
+                if (saveProps.ContainsKey(headerLabel))
+                {
+                    var prop = saveProps[headerLabel];
+                    saveColumnMap.Add((c, prop));
+                }
+                else if (readProps.ContainsKey(headerLabel))
+                {
+                    // All good, just ignore
+                }
+                else
+                {
+                    AddRowError(1, _localizer["Error_Column0NotRecognizable", headerLabel]);
+                }
+            }
+
+            // Milestone 1: columns in the abstract grid mapped
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Construct the result using the map generated earlier
+            List<MeasurementUnitForSave> result = new List<MeasurementUnitForSave>(grid.Count - 1);
+            foreach (var row in grid.Skip(1)) // Skip the header
+            {
+                var entity = new MeasurementUnitForSave();
+                foreach (var col in saveColumnMap)
+                {
+                    var value = row[col.Index].Content;
+                    var prop = col.Property;
+
+                    prop.SetValue(entity, value); // TODO casting here to be done
+                }
+
+                result.Add(entity);
+            }
+
+            // Milestone 2: DTOs created
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // For each entity, set the Id and EntityState depending on import mode
+            if (mode == "Insert")
+            {
+                // For Insert mode, all are marked inserted and all Ids are null
+                // Any duplicate codes will be handled later in the validation
+                result.ForEach(e => e.Id = null);
+                result.ForEach(e => e.EntityState = "Inserted");
+            }
+            else
+            {
+                // For all other modes besides Insert, we need to match the entity codes to Ids by querying the DB
+                // First Get a list of indexed codes
+                var indexedCodes = new List<(int Index, string Code)>(result.Count);
+                for (int i = 0; i < result.Count; i++)
+                {
+                    var code = result[i].Code;
+                    indexedCodes.Add((i, code));
+                }
+
+                // TODO Load the code Ids from the database
+
+                if (mode == "Merge")
+                {
+                    // TODO set Id
+                    // TODO set EntityState
+                }
+                else
+                {
+                    // In the case of update and delete: codes are required
+                    foreach (var (index, code) in indexedCodes.Where(e => string.IsNullOrWhiteSpace(e.Code)))
+                    {
+                        AddRowError(index + 2, _localizer["Error_CodeIsRequiredForImportModeUpdateAndDelete"]);
+                    }
+                    result.ForEach(e => e.EntityState = "Updated");
+
+                    if (mode == "Update")
+                    {
+                        // TODO set Id
+                        result.ForEach(e => e.EntityState = "Updated");
+                    }
+                    else if (mode == "Delete")
+                    {
+                        // TODO set Id
+                        result.ForEach(e => e.EntityState = "Deleted");
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Unknown save mode"); // Developer bug
+                    }
+                }
+            }
+
+            // Milestone 3: 
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Function maps any future validation errors back to specific row
+            int? errorKeyMap(string key)
+            {
+                int? rowNumber = null;
+                if (key != null && key.StartsWith("["))
+                {
+                    var indexStr = key.TrimStart('[').Split(']')[0];
+                    if (int.TryParse(indexStr, out int index))
+                    {
+                        // Add 2:
+                        // 1 for the header in the abstract grid
+                        // 1 for the difference between index and number
+                        rowNumber = index + 2;
+                    }
+                }
+                return rowNumber;
+            }
+
+            return (result, errorKeyMap);
         }
 
         protected override AbstractDataGrid GetImportTemplate()
@@ -278,7 +420,7 @@ SET NOCOUNT ON;
                 var prop = props[i];
                 var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
                 // var display = _localizer["MeasurementUnit_Code"].Value;
-                header[i] = display;
+                header[i] = AbstractDataCell.Cell(display);
             }
 
             return result;

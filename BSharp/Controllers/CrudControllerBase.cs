@@ -165,8 +165,8 @@ namespace BSharp.Controllers
             try
             {
                 var abstractFile = GetImportTemplate();
-                // return ToFileResult(abstractFile, args.Format);
-                return Ok(abstractFile);
+                return ToFileResult(abstractFile, args.Format);
+                // return Ok(abstractFile);
             }
             catch (Exception ex)
             {
@@ -245,7 +245,7 @@ namespace BSharp.Controllers
             }
         }
 
-        protected virtual async Task<(List<TDtoForSave>, Func<string, int>)> ParseImplAsync(IFormFile file, ParseArguments args)
+        protected virtual async Task<(List<TDtoForSave>, Func<string, int?>)> ParseImplAsync(IFormFile file, ParseArguments args)
         {
             var abstractGrid = ToAbstractGrid(file, args);
             if (abstractGrid.Count < 2)
@@ -254,7 +254,13 @@ namespace BSharp.Controllers
                 throw new UnprocessableEntityException(ModelState);
             }
 
+            // Change the abstract grid to DTOs for save, and make sure no errors resulted that weren't thrown
             var (dtosForSave, keyMap) = await ToDtosForSave(abstractGrid, args);
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
             return (dtosForSave, keyMap);
         }
 
@@ -284,7 +290,7 @@ namespace BSharp.Controllers
         }
 
         // Not Done
-        protected abstract Task<(List<TDtoForSave>, Func<string, int>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args);
+        protected abstract Task<(List<TDtoForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args);
 
         // Not Done
         protected abstract AbstractDataGrid GetImportTemplate();
@@ -678,7 +684,7 @@ namespace BSharp.Controllers
             return _dataTableCache[(entities, addIndex)];
         }
 
-        private ModelStateDictionary MapModelState(ModelStateDictionary modelState, Func<string, int> rowNumberFromErrorKeyMap)
+        private ModelStateDictionary MapModelState(ModelStateDictionary modelState, Func<string, int?> rowNumberFromErrorKeyMap)
         {
             // Inline function for mapping a model state on DTOs to a model state on Excel rows
             // Copy the errors to another collection
@@ -687,11 +693,19 @@ namespace BSharp.Controllers
             // Transform the errors to the current collection
             foreach (var error in modelState)
             {
-                var rowNumber = rowNumberFromErrorKeyMap(error.Key);
+                int? rowNumber = rowNumberFromErrorKeyMap(error.Key);
                 foreach (var errorMessage in error.Value.Errors)
                 {
-                    var key = RowValidationKey(rowNumber);
-                    mappedModelState.AddModelError(key, errorMessage.ErrorMessage);
+                    if (rowNumber != null)
+                    {
+                        // Error is specific to a row
+                        AddRowError(rowNumber.Value, errorMessage.ErrorMessage);
+                    }
+                    else
+                    {
+                        // Error is general to the imported file
+                        mappedModelState.AddModelError(error.Key, errorMessage.ErrorMessage);
+                    }
                 }
             }
 
@@ -725,6 +739,11 @@ namespace BSharp.Controllers
             return File(((MemoryStream)fileStream).ToArray(), contentType);
         }
 
-        protected string RowValidationKey(int rowNumber) => _localizer["Row{0}", rowNumber];
+        /// <summary>
+        /// Syntactic sugar for localizing an error, prefixing it with "Row N: " and adding it to ModelState with an appropriate key
+        /// </summary>
+        protected void AddRowError(int rowNumber, string errorMessage) =>
+            ModelState.AddModelError($"Row{rowNumber}", _localizer["Row{0}", rowNumber] + ": " + errorMessage);
+        
     }
 }

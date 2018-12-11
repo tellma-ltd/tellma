@@ -25,11 +25,11 @@ namespace BSharp.Services.ImportExport
         /// </summary>
         public object Content { get; set; }
 
-        public static implicit operator AbstractDataCell(string str)
+        public static AbstractDataCell Cell(object o)
         {
             return new AbstractDataCell
             {
-                Content = str,
+                Content = o,
                 HorizontalAlignment = HorizontalAlignment.Default
             };
         }

@@ -60,9 +60,7 @@ namespace BSharp
 
                         // Translations are seeded here for a better development experience since they change 
                         // frequently, in the future this seeding will be moved to migrations instead
-                        var existingTranslations = managerContext.CoreTranslations.ToArray();
-                        managerContext.CoreTranslations.RemoveRange(existingTranslations);
-                        managerContext.SaveChanges();
+                        managerContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[CoreTranslations]");
 
                         managerContext.CoreTranslations.AddRange(CoreTranslation.TRANSLATIONS);
                         managerContext.SaveChanges();
