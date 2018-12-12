@@ -688,7 +688,7 @@ namespace BSharp.Controllers
         {
             // Inline function for mapping a model state on DTOs to a model state on Excel rows
             // Copy the errors to another collection
-            var mappedModelState = new ModelStateDictionary(maxAllowedErrors: 200);
+            var mappedModelState = new ModelStateDictionary();
 
             // Transform the errors to the current collection
             foreach (var error in modelState)
@@ -699,7 +699,7 @@ namespace BSharp.Controllers
                     if (rowNumber != null)
                     {
                         // Error is specific to a row
-                        AddRowError(rowNumber.Value, errorMessage.ErrorMessage);
+                        AddRowError(rowNumber.Value, errorMessage.ErrorMessage, mappedModelState);
                     }
                     else
                     {
@@ -742,8 +742,8 @@ namespace BSharp.Controllers
         /// <summary>
         /// Syntactic sugar for localizing an error, prefixing it with "Row N: " and adding it to ModelState with an appropriate key
         /// </summary>
-        protected void AddRowError(int rowNumber, string errorMessage) =>
-            ModelState.AddModelError($"Row{rowNumber}", _localizer["Row{0}", rowNumber] + ": " + errorMessage);
+        protected void AddRowError(int rowNumber, string errorMessage, ModelStateDictionary modelState = null) =>
+            (modelState ?? ModelState).AddModelError($"Row{rowNumber}", _localizer["Row{0}", rowNumber] + ": " + errorMessage);
         
     }
 }

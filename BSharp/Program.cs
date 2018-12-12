@@ -49,9 +49,17 @@ namespace BSharp
                         managerContext.Database.Migrate();
                         if (!managerContext.Tenants.Any())
                         {
-                            managerContext.Tenants.Add(new Data.Model.Tenant {
+                            managerContext.Tenants.Add(new Data.Model.Tenant
+                            {
                                 Id = 101,
                                 Name = "Contoso, Inc.",
+                                ShardId = 1
+                            });
+
+                            managerContext.Tenants.Add(new Data.Model.Tenant
+                            {
+                                Id = 102,
+                                Name = "Fabrikam & Co.",
                                 ShardId = 1
                             });
 

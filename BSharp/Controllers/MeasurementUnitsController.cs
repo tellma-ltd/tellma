@@ -24,26 +24,105 @@ namespace BSharp.Controllers
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
+        private readonly ILogger<MeasurementUnitsController> _logger;
         private readonly IStringLocalizer<MeasurementUnitsController> _localizer;
+        private readonly IMapper _mapper;
 
         public MeasurementUnitsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<MeasurementUnitsController> logger,
             IStringLocalizer<MeasurementUnitsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
         {
             _db = db;
             _metadataProvider = metadataProvider;
+            _logger = logger;
             _localizer = localizer;
+            _mapper = mapper;
         }
 
         [HttpPut("activate")]
-        public virtual ActionResult<List<MeasurementUnit>> Activate([FromBody] List<int> Ids)
+        public async Task<ActionResult<List<MeasurementUnit>>> Activate([FromBody] List<int> ids, bool returnEntities = true)
         {
-            throw new NotImplementedException();
+            return await ActivateDeactivate(ids, returnEntities, isActive: true);
         }
 
         [HttpPut("deactivate")]
-        public virtual ActionResult<List<MeasurementUnit>> Deactivate([FromBody] List<int> Ids)
+        public async Task<ActionResult<List<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, bool returnEntities = true)
         {
-            throw new NotImplementedException();
+            return await ActivateDeactivate(ids, returnEntities, isActive: false);
+        }
+
+        private async Task<ActionResult<List<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, bool isActive)
+        {
+            try
+            {
+                // TODO Authorize Activate
+
+                // TODO Validate (No used units, no duplicate Ids)
+
+                var isActiveParam = new SqlParameter("@IsActive", isActive);
+
+                DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
+                var idsTvp = new SqlParameter("@IndexedIds", idsTable)
+                {
+                    TypeName = $"dbo.IndexedIdList",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                string sql = @"
+DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
+
+MERGE INTO [dbo].MeasurementUnits AS t
+	USING (
+		SELECT [Id]
+		FROM @IndexedIds
+	) AS s ON (t.Id = s.Id)
+	WHEN MATCHED AND (t.IsActive <> @IsActive)
+	THEN
+		UPDATE SET 
+			t.[IsActive]	= @IsActive,
+			t.[ModifiedAt]	= @Now,
+			t.[ModifiedBy]	= @UserId;
+";
+
+                // Update the entities
+                await _db.Database.ExecuteSqlCommandAsync(sql, idsTvp, isActiveParam);
+
+                // Determine whether entities should be returned
+                if (!returnEntities)
+                {
+                    // IF no returned items are expected, simply return 202
+                    return Ok();
+                }
+                else
+                {
+                    // Load the entities using their Ids
+                    var affectedDbEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp).ToListAsync();
+                    var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
+
+                    // sort the entities the way their Ids came, as a good practice
+                    MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
+                    Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
+
+                    for (int i = 0; i < ids.Count; i++)
+                    {
+                        var id = ids[i];
+                        MeasurementUnit entity = null;
+                        if (affectedEntitiesDic.ContainsKey(id))
+                        {
+                            entity = affectedEntitiesDic[id];
+                        }
+
+                        sortedAffectedEntities[i] = entity;
+                    }
+
+                    return Ok(sortedAffectedEntities);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                return BadRequest(ex.Message);
+            }
         }
 
         protected override IQueryable<M.MeasurementUnit> GetBaseQuery()
@@ -308,11 +387,9 @@ SET NOCOUNT ON;
             foreach (var row in grid.Skip(1)) // Skip the header
             {
                 var entity = new MeasurementUnitForSave();
-                foreach (var col in saveColumnMap)
+                foreach (var (index, prop) in saveColumnMap)
                 {
-                    var value = row[col.Index].Content;
-                    var prop = col.Property;
-
+                    var value = row[index].Content;
                     prop.SetValue(entity, value); // TODO casting here to be done
                 }
 
@@ -336,38 +413,68 @@ SET NOCOUNT ON;
             else
             {
                 // For all other modes besides Insert, we need to match the entity codes to Ids by querying the DB
-                // First Get a list of indexed codes
-                var indexedCodes = new List<(int Index, string Code)>(result.Count);
-                for (int i = 0; i < result.Count; i++)
+                // Load the code Ids from the database
+                var nonNullCodes = result.Where(e => !string.IsNullOrWhiteSpace(e.Code));
+                var codesDataTable = DataTable(nonNullCodes.Select(e => new { e.Code }));
+                var entitiesTvp = new SqlParameter("@Codes", codesDataTable)
                 {
-                    var code = result[i].Code;
-                    indexedCodes.Add((i, code));
-                }
+                    TypeName = $"dbo.CodeList",
+                    SqlDbType = SqlDbType.Structured
+                };
 
-                // TODO Load the code Ids from the database
+                string sql = $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[MeasurementUnits] e on c.Code = e.Code;";
+                var idCodesDic = await _db.CodeIds.FromSql(sql, entitiesTvp).ToDictionaryAsync(e => e.Code, e => e.Id);
+
+                result.ForEach(e =>
+                {
+                    if (!string.IsNullOrWhiteSpace(e.Code) && idCodesDic.ContainsKey(e.Code))
+                    {
+                        e.Id = idCodesDic[e.Code];
+                    }
+                    else
+                    {
+                        e.Id = null;
+                    }
+                });
 
                 if (mode == "Merge")
                 {
-                    // TODO set Id
-                    // TODO set EntityState
+                    // Merge simply inserts codes that are not found, and updates codes that are found
+                    result.ForEach(e =>
+                    {
+                        if (e.Id != null)
+                        {
+                            e.EntityState = "Updated";
+                        }
+                        else
+                        {
+                            e.EntityState = "Inserted";
+                        }
+                    });
                 }
                 else
                 {
-                    // In the case of update and delete: codes are required
-                    foreach (var (index, code) in indexedCodes.Where(e => string.IsNullOrWhiteSpace(e.Code)))
+                    // In the case of update and delete: codes are required, and MUST match database Ids
+                    for (int index = 0; index < result.Count; index++)
                     {
-                        AddRowError(index + 2, _localizer["Error_CodeIsRequiredForImportModeUpdateAndDelete"]);
+                        var entity = result[index];
+                        if (string.IsNullOrWhiteSpace(entity.Code))
+                        {
+                            AddRowError(index + 2, _localizer["Error_CodeIsRequiredForImportModeUpdateAndDelete"]);
+                        }
+                        else if (entity.Id == null)
+                        {
+                            AddRowError(index + 2, _localizer["Error_TheUnitCode0DoesNotExist"]);
+                        }
                     }
                     result.ForEach(e => e.EntityState = "Updated");
 
                     if (mode == "Update")
                     {
-                        // TODO set Id
                         result.ForEach(e => e.EntityState = "Updated");
                     }
                     else if (mode == "Delete")
                     {
-                        // TODO set Id
                         result.ForEach(e => e.EntityState = "Deleted");
                     }
                     else
@@ -383,7 +490,7 @@ SET NOCOUNT ON;
                 throw new UnprocessableEntityException(ModelState);
             }
 
-            // Function maps any future validation errors back to specific row
+            // Function maps any future validation errors back to specific rows
             int? errorKeyMap(string key)
             {
                 int? rowNumber = null;
@@ -428,7 +535,38 @@ SET NOCOUNT ON;
 
         protected override AbstractDataGrid ToAbstractGrid(GetResponse<MeasurementUnit> response, ExportArguments args)
         {
-            throw new NotImplementedException();
+            // Get all the properties without Id and EntityState
+            var type = typeof(MeasurementUnit);
+            var readProps = typeof(MeasurementUnit).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var saveProps = typeof(MeasurementUnitForSave).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var props = readProps.Union(saveProps).ToArray();
+
+            // The result that will be returned
+            var result = new AbstractDataGrid(props.Length, response.Data.Count() + 1);
+
+            // Add the header
+            var header = result[result.AddRow()];
+            for (int i = 0; i < props.Length; i++)
+            {
+                var prop = props[i];
+                var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
+
+                header[i] = AbstractDataCell.Cell(display);
+            }
+
+
+            // Add the rows
+            foreach (var entity in response.Data)
+            {
+                for (int i = 0; i < props.Length; i++)
+                {
+                    var prop = props[i];
+                    var content = prop.GetValue(entity);
+                    header[i] = AbstractDataCell.Cell(content);
+                }
+            }
+
+            return result;
         }
     }
 }

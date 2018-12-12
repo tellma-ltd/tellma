@@ -7,6 +7,7 @@ namespace BSharp.Data.Migrations.Application
     {
         protected static string ValidationErrorList = nameof(ValidationErrorList);
         protected static string IndexedIdList = nameof(IndexedIdList);
+        protected static string CodeList = nameof(CodeList);
         protected static string IdList = nameof(IdList);
         protected static string MeasurementUnitForSaveList = nameof(MeasurementUnitForSaveList);
 
@@ -33,6 +34,14 @@ namespace BSharp.Data.Migrations.Application
                 {
                     Id = udt.Column<int>(nullable: false),
                     Index = udt.Column<int>(nullable: false),
+                }
+            );
+
+            builder.CreateUserDefinedTableType(
+                name: CodeList,
+                columns: udt => new
+                {
+                    Code = udt.Column<string>(nullable: false, maxLength:255)
                 }
             );
 
@@ -67,6 +76,7 @@ namespace BSharp.Data.Migrations.Application
         {
             builder.DropUserDefinedTableType(name: ValidationErrorList);
             builder.DropUserDefinedTableType(name: IndexedIdList);
+            builder.DropUserDefinedTableType(name: CodeList);
             builder.DropUserDefinedTableType(name: IdList);
             builder.DropUserDefinedTableType(name: MeasurementUnitForSaveList);
         }

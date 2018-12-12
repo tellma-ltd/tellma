@@ -59,6 +59,9 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_CodeIsRequiredForImportModeUpdateAndDelete", "The code is required for import modes Update and Delete"),
             Ar(Constants.Server, "Error_CodeIsRequiredForImportModeUpdateAndDelete", "الكود مطلوب لوضعي الاستيراد التعديل والحذف"),
 
+            En(Constants.Server, "Error_TheUnitCode0DoesNotExist", "The unit code '{0}' does not exist"),
+            Ar(Constants.Server, "Error_TheUnitCode0DoesNotExist", "الكود ‘{0}‘ غير موجود بين أكواد الوحدات"),
+
             En(Constants.Server, "Error_EmptyImportFile", "The imported file is empty"),
             Ar(Constants.Server, "Error_EmptyImportFile", "الملف المحمل ليس فيه بيانات"),
 
