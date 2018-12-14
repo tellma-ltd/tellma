@@ -652,27 +652,32 @@ namespace BSharp.Controllers
             if (!_dataTableCache.ContainsKey((entities, addIndex)))
             {
                 DataTable table = new DataTable();
-                var props = typeof(T).GetProperties();
-                var columns = props.Select(p => new DataColumn(p.Name, p.PropertyType)).ToList();
                 if (addIndex)
                 {
-                    columns.Add(new DataColumn("Index", typeof(int)));
+                    // The column order MUST match the column order in the user-defined table type
+                    table.Columns.Add(new DataColumn("Index", typeof(int)));
                 }
+
+                var props = GetPropertiesBaseFirst(typeof(T));
+                var columns = props.Select(p => new DataColumn(p.Name, Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType)).ToList();
                 table.Columns.AddRange(columns.ToArray());
 
                 int index = 0;
                 foreach (var entity in entities)
                 {
                     DataRow row = table.NewRow();
-                    foreach (var prop in props)
-                    {
-                        row[prop.Name] = prop.GetValue(entity);
-                    }
 
                     // We add an index property since SQL works with un-ordered sets
                     if (addIndex)
                     {
                         row["Index"] = index++;
+                    }
+
+                    // Add the remaining properties
+                    foreach (var prop in props)
+                    {
+                        var propValue = prop.GetValue(entity);
+                        row[prop.Name] = propValue ?? DBNull.Value;
                     }
 
                     table.Rows.Add(row);
@@ -682,6 +687,29 @@ namespace BSharp.Controllers
             }
 
             return _dataTableCache[(entities, addIndex)];
+        }
+
+
+        /// <summary>
+        /// This is alternative for <see cref="Type.GetProperties"/>
+        /// that returns base class properties before inherited class properties
+        /// Credit: https://bit.ly/2UGAkKj
+        /// </summary>
+        protected PropertyInfo[] GetPropertiesBaseFirst(Type type)
+        {
+            var orderList = new List<Type>();
+            var iteratingType = type;
+            do
+            {
+                orderList.Insert(0, iteratingType);
+                iteratingType = iteratingType.BaseType;
+            } while (iteratingType != null);
+
+            var props = type.GetProperties()
+                .OrderBy(x => orderList.IndexOf(x.DeclaringType))
+                .ToArray();
+
+            return props;
         }
 
         private ModelStateDictionary MapModelState(ModelStateDictionary modelState, Func<string, int?> rowNumberFromErrorKeyMap)

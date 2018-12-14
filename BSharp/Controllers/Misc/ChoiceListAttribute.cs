@@ -12,19 +12,21 @@ namespace BSharp.Controllers.Misc
     /// </summary>
     public class ChoiceListAttribute : ValidationAttribute
     {
-        private readonly object[] _choices;
+        public object[] Choices { get; }
+        public string[] DisplayNames { get; }
 
-        public ChoiceListAttribute(params object[] choices)
+        public ChoiceListAttribute(object[] choices, string[] displayNames)
         {
-            _choices = choices;
+            Choices = choices ?? throw new ArgumentNullException(nameof(choices));
+            DisplayNames = displayNames ?? throw new ArgumentNullException(nameof(displayNames));
         }
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             // If it doesn't match any of the choices => error
-            if (value != null && !_choices.Contains(value))
+            if (value != null && !Choices.Contains(value))
             {
-                string concatenatedChoices = string.Join(", ", _choices.Select(e => e.ToString()));
+                string concatenatedChoices = string.Join(", ", DisplayNames.Select(e => e.ToString()));
                 return new ValidationResult($"Only the following values are allowed: {concatenatedChoices}");
             }
 

@@ -49,18 +49,26 @@ namespace BSharp.Data.Model
         // Other languages can be added at runtime by localizing all the below codes
         internal static CoreTranslation[] TRANSLATIONS = {
 
+            // Built-in from Microsoft Libraries
+            En(Constants.Server, nameof(RequiredAttribute), "The {0} field is required."),
+            Ar(Constants.Server, nameof(RequiredAttribute), "حقل {0} مطلوب"),
+
+            En(Constants.Server, nameof(StringLengthAttribute), "The field {0} must be a string with a maximum length of {1}."),
+            Ar(Constants.Server, nameof(StringLengthAttribute), "حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا"),
+
+
             // Server Errors
             En(Constants.Server, "TheCode{0}IsDuplicated", "The code '{0}' is duplicated"),
             Ar(Constants.Server, "TheCode{0}IsDuplicated", "الكود ’{0}’ مكرر"),
 
-            En(Constants.Server, "TheCode{0}IsUsed", "The code '{0}' is already used"),
-            Ar(Constants.Server, "TheCode{0}IsUsed", "الكود ’{0}’ مستخدم حاليا"),
+            En(Constants.Server, "Error_TheCode0IsUsed", "The code '{0}' is already used"),
+            Ar(Constants.Server, "Error_TheCode0IsUsed", "الكود ({0}) مستخدم حاليا"),
 
             En(Constants.Server, "Error_CodeIsRequiredForImportModeUpdateAndDelete", "The code is required for import modes Update and Delete"),
             Ar(Constants.Server, "Error_CodeIsRequiredForImportModeUpdateAndDelete", "الكود مطلوب لوضعي الاستيراد التعديل والحذف"),
 
             En(Constants.Server, "Error_TheUnitCode0DoesNotExist", "The unit code '{0}' does not exist"),
-            Ar(Constants.Server, "Error_TheUnitCode0DoesNotExist", "الكود ‘{0}‘ غير موجود بين أكواد الوحدات"),
+            Ar(Constants.Server, "Error_TheUnitCode0DoesNotExist", "الكود ({0}) غير موجود بين أكواد الوحدات"),
 
             En(Constants.Server, "Error_EmptyImportFile", "The imported file is empty"),
             Ar(Constants.Server, "Error_EmptyImportFile", "الملف المحمل ليس فيه بيانات"),
@@ -69,27 +77,27 @@ namespace BSharp.Data.Model
             Ar(Constants.Server, "Error_UnknownFileFormat", "صيغة الملف غير معروفة"),
 
             En(Constants.Server, "Error_ExcelContainsMultipleSheetsNameOne0", "The imported Excel file contains multiple sheets, please mark one of them with the name '{0}'"),
-            Ar(Constants.Server, "Error_ExcelContainsMultipleSheetsNameOne0", "ملف الإكسل الذي رفعته يحتوي على أوراق متعدده، سم إحداهن بالاسم ’{0}’"),
+            Ar(Constants.Server, "Error_ExcelContainsMultipleSheetsNameOne0", "ملف الإكسل الذي رفعته يحتوي على أوراق متعدده، سم إحداهن بالاسم ({0})"),
 
             En(Constants.Server, "Error_Column0NotRecognizable", "The column '{0}' is not recognizable"),
-            Ar(Constants.Server, "Error_Column0NotRecognizable", "عنوان العمود ’{0}’ غير معروف"),
-
+            Ar(Constants.Server, "Error_Column0NotRecognizable", "عنوان العمود ({0}) غير معروف"),
+            
 
             // Field Labels
-            En(Constants.Shared, "MeasurementUnit_Code", "Code"),
-            Ar(Constants.Shared, "MeasurementUnit_Code", "الكود"),
+            En(Constants.Shared, "MU_Code", "Code"),
+            Ar(Constants.Shared, "MU_Code", "الكود"),
 
-            En(Constants.Shared, "MeasurementUnit_UnitType", "Unit Type"),
-            Ar(Constants.Shared, "MeasurementUnit_UnitType", "التصنيف"),
+            En(Constants.Shared, "MU_UnitType", "Unit Type"),
+            Ar(Constants.Shared, "MU_UnitType", "التصنيف"),
 
-            En(Constants.Shared, "MeasurementUnit_UnitAmount", "Amount in this Unit"),
-            Ar(Constants.Shared, "MeasurementUnit_UnitAmount", "الكمية بالوحدة الحالية"),
+            En(Constants.Shared, "MU_UnitAmount", "Amount in this Unit"),
+            Ar(Constants.Shared, "MU_UnitAmount", "الكمية بالوحدة الحالية"),
 
-            En(Constants.Shared, "MeasurementUnit_BaseAmount", "Amount in base Unit"),
-            Ar(Constants.Shared, "MeasurementUnit_BaseAmount", "الكمية بالوحدة الأساسية"),
+            En(Constants.Shared, "MU_BaseAmount", "Amount in base Unit"),
+            Ar(Constants.Shared, "MU_BaseAmount", "الكمية بالوحدة الأساسية"),
 
-            En(Constants.Shared, "MeasurementUnit_IsActive", "Is Active"),
-            Ar(Constants.Shared, "MeasurementUnit_IsActive", "منشط"),
+            En(Constants.Shared, "MU_IsActive", "Is Active"),
+            Ar(Constants.Shared, "MU_IsActive", "منشط"),
 
             En(Constants.Shared, "CreatedBy", "Created By"),
             Ar(Constants.Shared, "CreatedBy", "الإنشاء من قبل"),
@@ -111,11 +119,26 @@ namespace BSharp.Data.Model
 
 
             // Choice lists
-            En(Constants.Shared, "Yes", "Yes"),
-            Ar(Constants.Shared, "Yes", "نعم"),
+            En(Constants.Shared, "MU_Pure", "Pure"),
+            Ar(Constants.Shared, "MU_Pure", "محض"),
 
-            En(Constants.Shared, "No", "No"),
-            Ar(Constants.Shared, "No", "لا"),
+            En(Constants.Shared, "MU_Time", "Time"),
+            Ar(Constants.Shared, "MU_Time", "زمن"),
+
+            En(Constants.Shared, "MU_Distance", "Distance"),
+            Ar(Constants.Shared, "MU_Distance", "مسافة"),
+
+            En(Constants.Shared, "MU_Count", "Count"),
+            Ar(Constants.Shared, "MU_Count", "عدد"),
+
+            En(Constants.Shared, "MU_Mass", "Mass"),
+            Ar(Constants.Shared, "MU_Mass", "كتلة"),
+
+            En(Constants.Shared, "MU_Volume", "Volume"),
+            Ar(Constants.Shared, "MU_Volume", "حجم"),
+
+            En(Constants.Shared, "MU_Money", "Money"),
+            Ar(Constants.Shared, "MU_Money", "نقد"),
         };
 
         private static CoreTranslation En(string tier, string name, string value)

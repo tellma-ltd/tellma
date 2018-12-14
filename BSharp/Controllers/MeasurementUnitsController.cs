@@ -61,9 +61,9 @@ namespace BSharp.Controllers
                 var isActiveParam = new SqlParameter("@IsActive", isActive);
 
                 DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
-                var idsTvp = new SqlParameter("@IndexedIds", idsTable)
+                var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
-                    TypeName = $"dbo.IndexedIdList",
+                    TypeName = $"dbo.IdList",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -74,7 +74,7 @@ DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'
 MERGE INTO [dbo].MeasurementUnits AS t
 	USING (
 		SELECT [Id]
-		FROM @IndexedIds
+		FROM @Ids
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED AND (t.IsActive <> @IsActive)
 	THEN
@@ -96,7 +96,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 else
                 {
                     // Load the entities using their Ids
-                    var affectedDbEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp).ToListAsync();
+                    var affectedDbEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp).ToListAsync();
                     var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
 
                     // sort the entities the way their Ids came, as a good practice
@@ -184,7 +184,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
 
             // Perform SQL-side validation
             DataTable entitiesTable = DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable) { TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List", SqlDbType = SqlDbType.Structured };
+            var entitiesTvp = new SqlParameter("Entities", entitiesTable) { TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List", SqlDbType = SqlDbType.Structured };
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
 
             // (1) Code must be unique
@@ -194,15 +194,14 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 
 	-- Code must be unique
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Code' As [Key], N'TheCode{{0}}IsUsed' As [ErrorName],
+	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Code' As [Key], N'Error_TheCode0IsUsed' As [ErrorName],
 		FE.Code AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @MeasurementUnits FE 
+	FROM @Entities FE 
 	JOIN [dbo].MeasurementUnits BE ON FE.Code = BE.Code
 	WHERE (FE.Id IS NULL) OR (FE.Id <> BE.Id);
 	-- Add further logic
 
-SELECT TOP {remainingErrorCount} [Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]
-FROM @ValidationErrors;
+SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 ", entitiesTvp).ToListAsync();
 
             // Local function for intelligently parsing strings into objects
@@ -243,7 +242,7 @@ FROM @ValidationErrors;
         {
             // Add created entities
             DataTable entitiesTable = DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            var entitiesTvp = new SqlParameter("Entities", entitiesTable)
             {
                 TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List",
                 SqlDbType = SqlDbType.Structured
@@ -264,7 +263,7 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].MeasurementUnits AS t
 		USING (
 			SELECT [Index], [Id], [Code], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount]
-			FROM @MeasurementUnits 
+			FROM @Entities 
 			WHERE [EntityState] IN (N'Inserted', N'Updated')
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -301,17 +300,17 @@ SET NOCOUNT ON;
 
                 // Load the entities using their Ids
                 DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
+                var idsTvp = new SqlParameter("Ids", idsTable)
                 {
                     TypeName = $"dbo.IdList",
                     SqlDbType = SqlDbType.Structured
                 };
-                var savedEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp).ToListAsync();
+                var savedEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp).ToListAsync();
 
 
                 // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
                 Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                var sortedSavedEntities = new List<M.MeasurementUnit>(savedEntities.Count);
+                var sortedSavedEntities = new M.MeasurementUnit[savedEntities.Count];
                 foreach (var item in savedEntities)
                 {
                     int index = indices[item.Id];
@@ -319,7 +318,7 @@ SET NOCOUNT ON;
                 }
 
                 // Return the sorted collection
-                return sortedSavedEntities;
+                return sortedSavedEntities.ToList();
             }
         }
 
@@ -327,14 +326,14 @@ SET NOCOUNT ON;
         {
             // Prepare a list of Ids to delete
             DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
-            var idsTvp = new SqlParameter("@Ids", idsTable)
+            var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
                 SqlDbType = SqlDbType.Structured
             };
 
             // Delete efficiently with a SQL query
-            await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp);
+            await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
         }
 
         protected override async Task<(List<MeasurementUnitForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
@@ -539,7 +538,7 @@ SET NOCOUNT ON;
             var type = typeof(MeasurementUnit);
             var readProps = typeof(MeasurementUnit).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             var saveProps = typeof(MeasurementUnitForSave).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            var props = readProps.Union(saveProps).ToArray();
+            var props = saveProps.Union(readProps).ToArray();
 
             // The result that will be returned
             var result = new AbstractDataGrid(props.Length, response.Data.Count() + 1);
@@ -558,11 +557,12 @@ SET NOCOUNT ON;
             // Add the rows
             foreach (var entity in response.Data)
             {
+                var row = result[result.AddRow()];
                 for (int i = 0; i < props.Length; i++)
                 {
                     var prop = props[i];
                     var content = prop.GetValue(entity);
-                    header[i] = AbstractDataCell.Cell(content);
+                    row[i] = AbstractDataCell.Cell(content);
                 }
             }
 

@@ -5,7 +5,7 @@ namespace BSharp.Controllers.DTO
     public class TemplateArguments
     {
         // Same parameter exists in ExportArguments
-        [ChoiceList(FileFormats.Xlsx, FileFormats.Csv)]
+        [ChoiceList(new object[] { FileFormats.Xlsx, FileFormats.Csv }, new string[] { FileFormats.Xlsx, FileFormats.Csv })]
         public string Format { get; set; } = FileFormats.Xlsx;
     }
 }

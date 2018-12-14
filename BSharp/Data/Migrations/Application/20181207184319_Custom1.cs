@@ -58,8 +58,9 @@ namespace BSharp.Data.Migrations.Application
                 name: MeasurementUnitForSaveList,
                 columns: udt => new
                 {
-                    Id = udt.Column<int>(nullable: true),
                     Index = udt.Column<int>(nullable: false),
+
+                    Id = udt.Column<int>(nullable: true),
                     EntityState = udt.Column<string>(nullable: false, maxLength: 255),
 
                     Name1 = udt.Column<string>(nullable: true, maxLength: 255),

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BSharp.Controllers.Misc;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
@@ -8,30 +9,32 @@ namespace BSharp.Controllers.DTO
     /// </summary>
     public class MeasurementUnitForSave : DtoForSaveKeyBase<int?>
     {
-        [Required]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255)]
-        [Display(Name = "MeasurementUnit_Name1")]
+        [Display(Name = "MU_Name1")]
         public string Name1 { get; set; }
 
         [StringLength(255)]
-        [Display(Name = "MeasurementUnit_Name2")]
+        [Display(Name = "MU_Name2")]
         public string Name2 { get; set; }
 
         [StringLength(255)]
-        [Display(Name = "MeasurementUnit_Code")]
+        [Display(Name = "MU_Code")]
         public string Code { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        [Display(Name = "MeasurementUnit_UnitType")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [Display(Name = "MeasurementUnit.UnitType")]
+        [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume", "Money" }, 
+            new string[] { "MU_Pure", "MU_Time", "MU_Distance", "MU_Count", "MU_Mass", "MU_Volume", "MU_Money" })]
         public string UnitType { get; set; }
 
-        [Required]
-        [Display(Name = "MeasurementUnit_UnitAmount")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Display(Name = "MU_UnitAmount")]
         public double? UnitAmount { get; set; }
 
-        [Required]
-        [Display(Name = "MeasurementUnit_BaseAmount")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [Display(Name = "MU_BaseAmount")]
         public double? BaseAmount { get; set; }
     }
 
@@ -40,7 +43,7 @@ namespace BSharp.Controllers.DTO
     /// </summary>
     public class MeasurementUnit : MeasurementUnitForSave, IAuditedDto
     {
-        [Display(Name = "MeasurementUnit_IsActive")]
+        [Display(Name = "MU_IsActive")]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
