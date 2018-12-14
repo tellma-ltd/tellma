@@ -49,9 +49,17 @@ namespace BSharp
                         managerContext.Database.Migrate();
                         if (!managerContext.Tenants.Any())
                         {
-                            managerContext.Tenants.Add(new Data.Model.Tenant {
+                            managerContext.Tenants.Add(new Data.Model.Tenant
+                            {
                                 Id = 101,
                                 Name = "Contoso, Inc.",
+                                ShardId = 1
+                            });
+
+                            managerContext.Tenants.Add(new Data.Model.Tenant
+                            {
+                                Id = 102,
+                                Name = "Fabrikam & Co.",
                                 ShardId = 1
                             });
 
@@ -60,8 +68,8 @@ namespace BSharp
 
                         // Translations are seeded here for a better development experience since they change 
                         // frequently, in the future this seeding will be moved to migrations instead
-                        var dbTranslations = managerContext.CoreTranslations.ToList();
-                        managerContext.Database.ExecuteSqlCommand("TRUNCATE TABLE CoreTranslations");
+                        managerContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[CoreTranslations]");
+
                         managerContext.CoreTranslations.AddRange(CoreTranslation.TRANSLATIONS);
                         managerContext.SaveChanges();
 

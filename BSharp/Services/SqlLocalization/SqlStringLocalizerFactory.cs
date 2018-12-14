@@ -11,7 +11,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace BSharp.Services.SqlLocalization
@@ -66,6 +65,12 @@ namespace BSharp.Services.SqlLocalization
 
         private IStringLocalizer CreateSqlStringLocalizer()
         {
+            // Return the core translations
+            return new SqlStringLocalizer(this);
+        }
+
+        public CascadingTranslations GetTranslationsForCurrentCulture()
+        {
             string defaultUICulture = _config["DefaultUICulture"];
             string specificUICulture = CultureInfo.CurrentUICulture.Name;
             string neutralUICulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? specificUICulture : CultureInfo.CurrentUICulture.Parent.Name;
@@ -106,31 +111,32 @@ namespace BSharp.Services.SqlLocalization
             }
 
             var coreSpecificTranslations = _localCache[CacheKey(specificUICulture, CORE)]?.Translations;
-            var coreNeutralUICulture = _localCache[CacheKey(neutralUICulture, CORE)]?.Translations;
+            var coreNeutralTranslations = _localCache[CacheKey(neutralUICulture, CORE)]?.Translations;
             var coreDefaultTranslations = _localCache[CacheKey(defaultUICulture, CORE)]?.Translations;
+            var result = new CascadingTranslations
+            {
+                CultureName = specificUICulture,
+                CoreSpecificTranslations = coreSpecificTranslations,
+                CoreNeutralTranslations = coreNeutralTranslations,
+                CoreDefaultTranslations = coreDefaultTranslations,
+            };
+
             if (_tenantIdProvider.HasTenantId())
             {
                 // If the request scope contains a tenant Id, return also the translations of that tenant Id
                 string tenantId = _tenantIdProvider.GetTenantId().ToString();
 
                 var tenantSpecificTranslations = _localCache[CacheKey(specificUICulture, tenantId)]?.Translations;
-                var tenantNeutralUICulture = _localCache[CacheKey(neutralUICulture, tenantId)]?.Translations;
+                var tenantNeutralTranslations = _localCache[CacheKey(neutralUICulture, tenantId)]?.Translations;
                 var tenantDefaultTranslations = _localCache[CacheKey(defaultUICulture, tenantId)]?.Translations;
 
-                return new SqlStringLocalizer(
-                    coreSpecificTranslations,
-                    coreNeutralUICulture,
-                    coreDefaultTranslations,
-                    tenantSpecificTranslations,
-                    tenantNeutralUICulture,
-                    tenantDefaultTranslations);
+                result.TenantSpecificTranslations = tenantSpecificTranslations;
+                result.TenantNeutralTranslations = tenantNeutralTranslations;
+                result.TenantDefaultTranslations = tenantDefaultTranslations;
             }
 
             // Return the core translations
-            return new SqlStringLocalizer(
-                coreSpecificTranslations,
-                coreNeutralUICulture,
-                coreDefaultTranslations);
+            return result;
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ namespace BSharp.Services.ImportExport
 {
     public enum HorizontalAlignment
     {
+        Default = 0,
         Left = 1,
         Center = 2,
         Right = 4,

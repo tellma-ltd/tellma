@@ -36,6 +36,11 @@ namespace BSharp.Data
         /// </summary>
         public DbQuery<IndexedId> Saving { get; set; }
 
+        /// <summary>
+        /// A query for returning the Ids that correspond to a bunch of codes
+        /// </summary>
+        public DbQuery<CodeId> CodeIds { get; set; }
+
         // Private fields
         private readonly ITenantIdProvider _tenantIdProvider;
 

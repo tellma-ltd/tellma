@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
+using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Services.ImportExport;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -10,6 +13,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
@@ -19,13 +23,106 @@ namespace BSharp.Controllers
     public class MeasurementUnitsController : CrudControllerBase<M.MeasurementUnit, MeasurementUnit, MeasurementUnitForSave, int?>
     {
         private readonly ApplicationContext _db;
+        private readonly IModelMetadataProvider _metadataProvider;
+        private readonly ILogger<MeasurementUnitsController> _logger;
         private readonly IStringLocalizer<MeasurementUnitsController> _localizer;
+        private readonly IMapper _mapper;
 
-        public MeasurementUnitsController(ApplicationContext db, ILogger<MeasurementUnitsController> logger,
+        public MeasurementUnitsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<MeasurementUnitsController> logger,
             IStringLocalizer<MeasurementUnitsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
         {
             _db = db;
+            _metadataProvider = metadataProvider;
+            _logger = logger;
             _localizer = localizer;
+            _mapper = mapper;
+        }
+
+        [HttpPut("activate")]
+        public async Task<ActionResult<List<MeasurementUnit>>> Activate([FromBody] List<int> ids, bool returnEntities = true)
+        {
+            return await ActivateDeactivate(ids, returnEntities, isActive: true);
+        }
+
+        [HttpPut("deactivate")]
+        public async Task<ActionResult<List<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, bool returnEntities = true)
+        {
+            return await ActivateDeactivate(ids, returnEntities, isActive: false);
+        }
+
+        private async Task<ActionResult<List<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, bool isActive)
+        {
+            try
+            {
+                // TODO Authorize Activate
+
+                // TODO Validate (No used units, no duplicate Ids)
+
+                var isActiveParam = new SqlParameter("@IsActive", isActive);
+
+                DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
+                var idsTvp = new SqlParameter("@IndexedIds", idsTable)
+                {
+                    TypeName = $"dbo.IndexedIdList",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                string sql = @"
+DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
+
+MERGE INTO [dbo].MeasurementUnits AS t
+	USING (
+		SELECT [Id]
+		FROM @IndexedIds
+	) AS s ON (t.Id = s.Id)
+	WHEN MATCHED AND (t.IsActive <> @IsActive)
+	THEN
+		UPDATE SET 
+			t.[IsActive]	= @IsActive,
+			t.[ModifiedAt]	= @Now,
+			t.[ModifiedBy]	= @UserId;
+";
+
+                // Update the entities
+                await _db.Database.ExecuteSqlCommandAsync(sql, idsTvp, isActiveParam);
+
+                // Determine whether entities should be returned
+                if (!returnEntities)
+                {
+                    // IF no returned items are expected, simply return 202
+                    return Ok();
+                }
+                else
+                {
+                    // Load the entities using their Ids
+                    var affectedDbEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp).ToListAsync();
+                    var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
+
+                    // sort the entities the way their Ids came, as a good practice
+                    MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
+                    Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
+
+                    for (int i = 0; i < ids.Count; i++)
+                    {
+                        var id = ids[i];
+                        MeasurementUnit entity = null;
+                        if (affectedEntitiesDic.ContainsKey(id))
+                        {
+                            entity = affectedEntitiesDic[id];
+                        }
+
+                        sortedAffectedEntities[i] = entity;
+                    }
+
+                    return Ok(sortedAffectedEntities);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                return BadRequest(ex.Message);
+            }
         }
 
         protected override IQueryable<M.MeasurementUnit> GetBaseQuery()
@@ -194,7 +291,7 @@ SET NOCOUNT ON;
 	) As x
 ";
             // Optimization
-            if(!returnEntities)
+            if (!returnEntities)
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
                 await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp);
@@ -246,9 +343,236 @@ SET NOCOUNT ON;
             await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp);
         }
 
-        protected override Task<List<M.MeasurementUnit>> ActionAsync(List<int?> entities, string action)
+        protected override async Task<(List<MeasurementUnitForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
         {
-            throw new NotImplementedException();
+            // Get the properties of the DTO for Save, excluding Id or EntityState
+            string mode = args.Mode;
+            var readType = typeof(MeasurementUnit);
+            var saveType = typeof(MeasurementUnitForSave);
+
+            var readProps = readType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(readType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
+
+            var saveProps = saveType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(saveType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
+
+            // Maps the index of the grid column to a property on the DtoForSave
+            var saveColumnMap = new List<(int Index, PropertyInfo Property)>(grid.RowSize);
+
+            // Make sure all column header labels are recognizable
+            // and construct the save column map
+            var firstRow = grid[0];
+            for (int c = 0; c < firstRow.Length; c++)
+            {
+                var column = firstRow[c];
+                string headerLabel = column.Content?.ToString();
+
+                if (saveProps.ContainsKey(headerLabel))
+                {
+                    var prop = saveProps[headerLabel];
+                    saveColumnMap.Add((c, prop));
+                }
+                else if (readProps.ContainsKey(headerLabel))
+                {
+                    // All good, just ignore
+                }
+                else
+                {
+                    AddRowError(1, _localizer["Error_Column0NotRecognizable", headerLabel]);
+                }
+            }
+
+            // Milestone 1: columns in the abstract grid mapped
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Construct the result using the map generated earlier
+            List<MeasurementUnitForSave> result = new List<MeasurementUnitForSave>(grid.Count - 1);
+            foreach (var row in grid.Skip(1)) // Skip the header
+            {
+                var entity = new MeasurementUnitForSave();
+                foreach (var (index, prop) in saveColumnMap)
+                {
+                    var value = row[index].Content;
+                    prop.SetValue(entity, value); // TODO casting here to be done
+                }
+
+                result.Add(entity);
+            }
+
+            // Milestone 2: DTOs created
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // For each entity, set the Id and EntityState depending on import mode
+            if (mode == "Insert")
+            {
+                // For Insert mode, all are marked inserted and all Ids are null
+                // Any duplicate codes will be handled later in the validation
+                result.ForEach(e => e.Id = null);
+                result.ForEach(e => e.EntityState = "Inserted");
+            }
+            else
+            {
+                // For all other modes besides Insert, we need to match the entity codes to Ids by querying the DB
+                // Load the code Ids from the database
+                var nonNullCodes = result.Where(e => !string.IsNullOrWhiteSpace(e.Code));
+                var codesDataTable = DataTable(nonNullCodes.Select(e => new { e.Code }));
+                var entitiesTvp = new SqlParameter("@Codes", codesDataTable)
+                {
+                    TypeName = $"dbo.CodeList",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                string sql = $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[MeasurementUnits] e on c.Code = e.Code;";
+                var idCodesDic = await _db.CodeIds.FromSql(sql, entitiesTvp).ToDictionaryAsync(e => e.Code, e => e.Id);
+
+                result.ForEach(e =>
+                {
+                    if (!string.IsNullOrWhiteSpace(e.Code) && idCodesDic.ContainsKey(e.Code))
+                    {
+                        e.Id = idCodesDic[e.Code];
+                    }
+                    else
+                    {
+                        e.Id = null;
+                    }
+                });
+
+                if (mode == "Merge")
+                {
+                    // Merge simply inserts codes that are not found, and updates codes that are found
+                    result.ForEach(e =>
+                    {
+                        if (e.Id != null)
+                        {
+                            e.EntityState = "Updated";
+                        }
+                        else
+                        {
+                            e.EntityState = "Inserted";
+                        }
+                    });
+                }
+                else
+                {
+                    // In the case of update and delete: codes are required, and MUST match database Ids
+                    for (int index = 0; index < result.Count; index++)
+                    {
+                        var entity = result[index];
+                        if (string.IsNullOrWhiteSpace(entity.Code))
+                        {
+                            AddRowError(index + 2, _localizer["Error_CodeIsRequiredForImportModeUpdateAndDelete"]);
+                        }
+                        else if (entity.Id == null)
+                        {
+                            AddRowError(index + 2, _localizer["Error_TheUnitCode0DoesNotExist"]);
+                        }
+                    }
+                    result.ForEach(e => e.EntityState = "Updated");
+
+                    if (mode == "Update")
+                    {
+                        result.ForEach(e => e.EntityState = "Updated");
+                    }
+                    else if (mode == "Delete")
+                    {
+                        result.ForEach(e => e.EntityState = "Deleted");
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Unknown save mode"); // Developer bug
+                    }
+                }
+            }
+
+            // Milestone 3: 
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Function maps any future validation errors back to specific rows
+            int? errorKeyMap(string key)
+            {
+                int? rowNumber = null;
+                if (key != null && key.StartsWith("["))
+                {
+                    var indexStr = key.TrimStart('[').Split(']')[0];
+                    if (int.TryParse(indexStr, out int index))
+                    {
+                        // Add 2:
+                        // 1 for the header in the abstract grid
+                        // 1 for the difference between index and number
+                        rowNumber = index + 2;
+                    }
+                }
+                return rowNumber;
+            }
+
+            return (result, errorKeyMap);
+        }
+
+        protected override AbstractDataGrid GetImportTemplate()
+        {
+            // Get the properties of the DTO for Save, excluding Id or EntityState
+            var type = typeof(MeasurementUnitForSave);
+            var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+            // The result that will be returned
+            var result = new AbstractDataGrid(props.Length, 1);
+
+            // Add the header
+            var header = result[result.AddRow()];
+            for (int i = 0; i < props.Length; i++)
+            {
+                var prop = props[i];
+                var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
+                // var display = _localizer["MeasurementUnit_Code"].Value;
+                header[i] = AbstractDataCell.Cell(display);
+            }
+
+            return result;
+        }
+
+        protected override AbstractDataGrid ToAbstractGrid(GetResponse<MeasurementUnit> response, ExportArguments args)
+        {
+            // Get all the properties without Id and EntityState
+            var type = typeof(MeasurementUnit);
+            var readProps = typeof(MeasurementUnit).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var saveProps = typeof(MeasurementUnitForSave).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var props = readProps.Union(saveProps).ToArray();
+
+            // The result that will be returned
+            var result = new AbstractDataGrid(props.Length, response.Data.Count() + 1);
+
+            // Add the header
+            var header = result[result.AddRow()];
+            for (int i = 0; i < props.Length; i++)
+            {
+                var prop = props[i];
+                var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
+
+                header[i] = AbstractDataCell.Cell(display);
+            }
+
+
+            // Add the rows
+            foreach (var entity in response.Data)
+            {
+                for (int i = 0; i < props.Length; i++)
+                {
+                    var prop = props[i];
+                    var content = prop.GetValue(entity);
+                    header[i] = AbstractDataCell.Cell(content);
+                }
+            }
+
+            return result;
         }
     }
 }

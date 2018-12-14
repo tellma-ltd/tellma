@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Localization;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.IO;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace BSharp.Services.ImportExport
 
                 if (sheet == null)
                 {
-                    throw new FormatException(_localizer["Error.ExcelContainsMultipleSheetsNameOne{0}Short", _localizer["Data"]]);
+                    throw new FormatException(_localizer["Error_ExcelContainsMultipleSheetsNameOne0", _localizer["Data"]]);
                 }
 
                 // This code copies all the cells in the Excel field to an abstract 2-D string representation
@@ -44,7 +45,7 @@ namespace BSharp.Services.ImportExport
                     for (int column = 1; column <= maxCol; column++)
                     {
                         var cell = cells[row, column];
-                        abstractGrid[row - 1][column - 1] = cell.Value?.ToString();
+                        abstractGrid[row - 1][column - 1] = AbstractDataCell.Cell(cell.Value);
                     }
                 }
 
@@ -55,8 +56,8 @@ namespace BSharp.Services.ImportExport
         public override Stream ToFileStream(AbstractDataGrid abstractGrid)
         {
             // The memory stream will contain the Excel
-            var memStream = new MemoryStream();
-            using (var excelPackage = new ExcelPackage(memStream))
+            var fileStream = new MemoryStream();
+            using (var excelPackage = new ExcelPackage(fileStream))
             {
                 // Prepare the sheet and set RTL direction
                 var sheet = excelPackage.Workbook.Worksheets.Add(_localizer["Data"]);
@@ -69,6 +70,23 @@ namespace BSharp.Services.ImportExport
                     for (int c = 0; c < row.Length; c++)
                     {
                         sheet.Cells[r + 1, c + 1].Value = row[c]?.Content;
+
+                        // Apply the horizontal alignment and number format styling of the first row on the entire column
+                        if(r == 0)
+                        {
+                            var alignment = row[c]?.HorizontalAlignment ?? HorizontalAlignment.Left;
+                            if (alignment != HorizontalAlignment.Default)
+                            {
+                                // The enum values of HorizontalAlignment members were chosen to match those of ExcelHorizontalAlignment
+                                sheet.Column(c + 1).Style.HorizontalAlignment = (ExcelHorizontalAlignment)alignment;
+                            }
+
+                            var numberFormat = row[c]?.NumberFormat;
+                            if(numberFormat != null)
+                            {
+                                sheet.Column(c + 1).Style.Numberformat.Format = numberFormat;
+                            }
+                        }
                     }
                 }
 
@@ -76,7 +94,7 @@ namespace BSharp.Services.ImportExport
                 excelPackage.Save();
             }
 
-            return memStream;
+            return fileStream;
         }
     }
 }

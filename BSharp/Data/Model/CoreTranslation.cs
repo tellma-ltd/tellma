@@ -56,14 +56,23 @@ namespace BSharp.Data.Model
             En(Constants.Server, "TheCode{0}IsUsed", "The code '{0}' is already used"),
             Ar(Constants.Server, "TheCode{0}IsUsed", "الكود ’{0}’ مستخدم حاليا"),
 
-            En(Constants.Server, "Error.EmptyImportFile", "The imported file is empty"),
-            Ar(Constants.Server, "Error.EmptyImportFile", "الملف المحمل ليس فيه بيانات"),
+            En(Constants.Server, "Error_CodeIsRequiredForImportModeUpdateAndDelete", "The code is required for import modes Update and Delete"),
+            Ar(Constants.Server, "Error_CodeIsRequiredForImportModeUpdateAndDelete", "الكود مطلوب لوضعي الاستيراد التعديل والحذف"),
 
-            En(Constants.Server, "Error.UnknownFileFormat", "Unknown file format"),
-            Ar(Constants.Server, "Error.UnknownFileFormat", "صيغة الملف غير معروفة"),
+            En(Constants.Server, "Error_TheUnitCode0DoesNotExist", "The unit code '{0}' does not exist"),
+            Ar(Constants.Server, "Error_TheUnitCode0DoesNotExist", "الكود ‘{0}‘ غير موجود بين أكواد الوحدات"),
 
-            En(Constants.Server, "Error.ExcelContainsMultipleSheetsNameOne{0}", "The imported Excel file contains multiple sheets, please mark one of them with the name '{0}'"),
-            Ar(Constants.Server, "Error.ExcelContainsMultipleSheetsNameOne{0}", "ملف الإكسل الذي رفعته يحتوي على أوراق متعدده، سم إحداهن بالاسم ’{0}’"),
+            En(Constants.Server, "Error_EmptyImportFile", "The imported file is empty"),
+            Ar(Constants.Server, "Error_EmptyImportFile", "الملف المحمل ليس فيه بيانات"),
+
+            En(Constants.Server, "Error_UnknownFileFormat", "Unknown file format"),
+            Ar(Constants.Server, "Error_UnknownFileFormat", "صيغة الملف غير معروفة"),
+
+            En(Constants.Server, "Error_ExcelContainsMultipleSheetsNameOne0", "The imported Excel file contains multiple sheets, please mark one of them with the name '{0}'"),
+            Ar(Constants.Server, "Error_ExcelContainsMultipleSheetsNameOne0", "ملف الإكسل الذي رفعته يحتوي على أوراق متعدده، سم إحداهن بالاسم ’{0}’"),
+
+            En(Constants.Server, "Error_Column0NotRecognizable", "The column '{0}' is not recognizable"),
+            Ar(Constants.Server, "Error_Column0NotRecognizable", "عنوان العمود ’{0}’ غير معروف"),
 
 
             // Field Labels
@@ -96,6 +105,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "Data", "Data"),
             Ar(Constants.Shared, "Data", "البيانات"),
+
+            En(Constants.Shared, "Row{0}", "Row {0}"),
+            Ar(Constants.Shared, "Row{0}", "السطر {0}"),
 
 
             // Choice lists
