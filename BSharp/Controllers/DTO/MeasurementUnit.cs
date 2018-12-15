@@ -13,8 +13,8 @@ namespace BSharp.Controllers.DTO
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "MU_Name1")]
-        public string Name1 { get; set; }
+        [Display(Name = "MU_Name")]
+        public string Name { get; set; }
 
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "MU_Name2")]

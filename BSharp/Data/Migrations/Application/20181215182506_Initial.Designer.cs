@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BSharp.Data.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20181207184302_Initial")]
+    [Migration("20181215182506_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,7 +48,7 @@ namespace BSharp.Data.Migrations.Application
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
-                    b.Property<string>("Name1")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255);
 

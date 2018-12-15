@@ -43,7 +43,7 @@ namespace BSharp.Data.Model
         // Note: English language comes built into the application, we also add Arabic for development
         // purposes to test localization where one language is RTL, so Arabic also ends up being built-in
         // Other languages can be added at runtime by localizing all the below codes
-        internal static CoreTranslation[] TRANSLATIONS = {
+        public static CoreTranslation[] TRANSLATIONS = {
 
             // Built-in from Microsoft Libraries
 
@@ -62,8 +62,19 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_TheCode0IsUsed", "The code '{0}' is already used"),
             Ar(Constants.Server, "Error_TheCode0IsUsed", "الكود ({0}) مستخدم حاليا"),
 
+            En(Constants.Server, "Error_TheName0IsDuplicated", "The name '{0}' is duplicated"),
+            Ar(Constants.Server, "Error_TheName0IsDuplicated", "الاسم ({0}) مكرر"),
+
             En(Constants.Server, "Error_TheName0IsUsed", "The name '{0}' is already used"),
             Ar(Constants.Server, "Error_TheName0IsUsed", "الاسم ({0}) مستخدم حاليا"),
+
+
+            En(Constants.Server, "Error_TheName20IsDuplicated", "The name '{0}' is duplicated"),
+            Ar(Constants.Server, "Error_TheName20IsDuplicated", "الاسم ({0}) مكرر"),
+
+            En(Constants.Server, "Error_TheName20IsUsed", "The second name '{0}' is already used"),
+            Ar(Constants.Server, "Error_TheName20IsUsed", "الاسم الثاني ({0}) مستخدم حاليا"),
+
 
             En(Constants.Server, "Error_TheEntityWithId0IsSpecifiedMoreThanOnce", "The entity with Id '{0}' is specified more than once"),
             Ar(Constants.Server, "Error_TheEntityWithId0IsSpecifiedMoreThanOnce", "البيان ذو المفتاح ({0}) مذكور أكثر من مرة"),
@@ -116,15 +127,14 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "ModifiedAt", "Modified At"),
             Ar(Constants.Shared, "ModifiedAt", "زمن آخر تعديل"),
 
-
             En(Constants.Shared, "MeasurementUnit", "Measurement Unit"),
             Ar(Constants.Shared, "MeasurementUnit", "وحدة قياس"),
 
             En(Constants.Shared, "MeasurementUnits", "Measurement Units"),
             Ar(Constants.Shared, "MeasurementUnits", "وحدات قياس"),
 
-            En(Constants.Shared, "MU_Name1", "Name"),
-            Ar(Constants.Shared, "MU_Name1", "الاسم"),
+            En(Constants.Shared, "MU_Name", "Name"),
+            Ar(Constants.Shared, "MU_Name", "الاسم"),
 
             En(Constants.Shared, "MU_Name2", "Second Name"),
             Ar(Constants.Shared, "MU_Name2", "الاسم الثاني"),

@@ -46,7 +46,7 @@ namespace BSharp.Data.Migrations.Application
                     b.Property<string>("ModifiedBy")
                         .IsRequired();
 
-                    b.Property<string>("Name1")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255);
 

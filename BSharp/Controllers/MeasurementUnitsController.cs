@@ -134,7 +134,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
         {
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(e => e.Name1.Contains(search) || e.Name2.Contains(search) || e.Code.Contains(search)); // Custom
+                query = query.Where(e => e.Name.Contains(search) || e.Name2.Contains(search) || e.Code.Contains(search)); // Custom
             }
 
             return query;
@@ -204,18 +204,6 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 }
             }
 
-
-            // Detect if the incoming collection has any duplicate codes
-            var duplicateCodes = entities.GroupBy(e => e.Code).Where(g => g.Count() > 1);
-            foreach (var groupWithDuplicateCodes in duplicateCodes)
-            {
-                foreach (var entity in groupWithDuplicateCodes)
-                {
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Code)}", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
-                }
-            }
-
             // No need to invoke SQL if the model state is full of errors
             if (ModelState.HasReachedMaxErrors)
             {
@@ -241,7 +229,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Code' As [Key], N'Error_TheCode0IsUsedInTheList' As [ErrorName],
+	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Code' As [Key], N'Error_TheCode0IsDuplicated' As [ErrorName],
 		[Code] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities
 	WHERE [Code] IN (
@@ -251,7 +239,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 		HAVING COUNT(*) > 1
 	)
 
-	-- Name must not exist in the 
+	-- Name must not exist already
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
 	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Name' As [Key], N'Error_TheName0IsUsed' As [ErrorName],
 		FE.[Name] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
@@ -261,7 +249,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 
 	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Name' As [Key], N'Error_TheName0IsUsedInTheList' As [ErrorName],
+	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Name' As [Key], N'Error_TheName0IsDuplicated' As [ErrorName],
 		[Name] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities
 	WHERE [Name] IN (
@@ -270,7 +258,28 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 		GROUP BY [Name]
 		HAVING COUNT(*) > 1
 	)
-		-- Add further logic
+
+
+	-- Name2 must not exist already
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
+	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Name2' As [Key], N'Error_TheName20IsUsed' As [ErrorName],
+		FE.[Name2] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
+	FROM @Entities FE 
+	JOIN [dbo].MeasurementUnits BE ON FE.[Name] = BE.[Name]
+	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id);
+
+	-- Name2 must be unique in the uploaded list
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
+	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Name2' As [Key], N'Error_TheName20IsDuplicated' As [ErrorName],
+		[Name2] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
+	FROM @Entities
+	WHERE [Name2] IN (
+		SELECT [Name2]
+		FROM @Entities
+		GROUP BY [Name2]
+		HAVING COUNT(*) > 1
+	)
+    -- Add further logic
 
 SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 ", entitiesTvp).ToListAsync();
@@ -333,7 +342,7 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].MeasurementUnits AS t
 		USING (
-			SELECT [Index], [Id], [Code], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount]
+			SELECT [Index], [Id], [Code], [UnitType], [Name], [Name2], [UnitAmount], [BaseAmount]
 			FROM @Entities 
 			WHERE [EntityState] IN (N'Inserted', N'Updated')
 		) AS s ON (t.Id = s.Id)
@@ -341,7 +350,7 @@ SET NOCOUNT ON;
 		THEN
 			UPDATE SET 
 				t.[UnitType]	= s.[UnitType],
-				t.[Name1]		= s.[Name1],
+				t.[Name]		= s.[Name],
 				t.[Name2]		= s.[Name2],
 				t.[UnitAmount]	= s.[UnitAmount],
 				t.[BaseAmount]	= s.[BaseAmount],
@@ -349,8 +358,8 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]	= @Now,
 				t.[ModifiedBy]	= @UserId
 		WHEN NOT MATCHED THEN
-				INSERT ([TenantId], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount], [Code], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
-				VALUES (@TenantId, s.[UnitType], s.[Name1], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
+				INSERT ([TenantId], [UnitType], [Name], [Name2], [UnitAmount], [BaseAmount], [Code], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
+				VALUES (@TenantId, s.[UnitType], s.[Name], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x
 ";

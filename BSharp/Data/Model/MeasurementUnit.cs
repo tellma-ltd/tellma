@@ -13,7 +13,7 @@ namespace BSharp.Data.Model
 
         [Required]
         [MaxLength(255)]
-        public string Name1 { get; set; }
+        public string Name { get; set; }
 
         [MaxLength(255)]
         public string Name2 { get; set; }

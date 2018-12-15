@@ -41,7 +41,7 @@ namespace BSharp.Data.Migrations.Application
                 name: CodeList,
                 columns: udt => new
                 {
-                    Code = udt.Column<string>(nullable: false, maxLength:255)
+                    Code = udt.Column<string>(nullable: false, maxLength: 255)
                 }
             );
 
@@ -63,7 +63,7 @@ namespace BSharp.Data.Migrations.Application
                     Id = udt.Column<int>(nullable: true),
                     EntityState = udt.Column<string>(nullable: false, maxLength: 255),
 
-                    Name1 = udt.Column<string>(nullable: true, maxLength: 255),
+                    Name = udt.Column<string>(nullable: true, maxLength: 255),
                     Name2 = udt.Column<string>(nullable: true, maxLength: 255),
                     Code = udt.Column<string>(nullable: true, maxLength: 255),
                     UnitType = udt.Column<string>(nullable: true, maxLength: 255),

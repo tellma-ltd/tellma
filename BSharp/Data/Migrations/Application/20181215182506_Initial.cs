@@ -15,7 +15,7 @@ namespace BSharp.Data.Migrations.Application
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     TenantId = table.Column<int>(nullable: false),
-                    Name1 = table.Column<string>(maxLength: 255, nullable: false),
+                    Name = table.Column<string>(maxLength: 255, nullable: false),
                     Name2 = table.Column<string>(maxLength: 255, nullable: true),
                     Code = table.Column<string>(maxLength: 255, nullable: true),
                     UnitType = table.Column<string>(maxLength: 255, nullable: false),
