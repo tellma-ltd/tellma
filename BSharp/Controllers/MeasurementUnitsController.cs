@@ -267,7 +267,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 	WHERE [Name] IN (
 		SELECT [Name]
 		FROM @Entities
-		GROUP BY [Code]
+		GROUP BY [Name]
 		HAVING COUNT(*) > 1
 	)
 		-- Add further logic
