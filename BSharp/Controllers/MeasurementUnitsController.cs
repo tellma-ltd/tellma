@@ -56,7 +56,7 @@ namespace BSharp.Controllers
             {
                 // TODO Authorize Activate
 
-                // TODO Validate (No used units, no duplicate Ids)
+                // TODO Validate (No used units, no duplicate Ids, no missing Ids?)
 
                 var isActiveParam = new SqlParameter("@IsActive", isActive);
 
@@ -90,7 +90,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 // Determine whether entities should be returned
                 if (!returnEntities)
                 {
-                    // IF no returned items are expected, simply return 202
+                    // IF no returned items are expected, simply return 200 OK
                     return Ok();
                 }
                 else
@@ -165,6 +165,46 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 indices[entity] = i++;
             }
 
+
+            // Check that Ids make sense in relation to EntityState, and that no entity is DELETED
+            // All these errors indicate a bug
+            foreach (var entity in entities)
+            {
+                if (entity.EntityState == EntityStates.Deleted)
+                {
+                    // Won't be supported for this API
+                    var index = indices[entity];
+                    ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", _localizer["MeasurementUnits"]]);
+                }
+
+                if (entity.Id == null && entity.EntityState != EntityStates.Inserted)
+                {
+                    // This error indicates a bug
+                    var index = indices[entity];
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotInsert0WhileSpecifyId", _localizer["MeasurementUnit"]]);
+                }
+
+                if (entity.Id != null && entity.EntityState == EntityStates.Updated)
+                {
+                    // This error indicates a bug
+                    var index = indices[entity];
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotUpdate0WithoutId", _localizer["MeasurementUnit"]]);
+                }
+            }
+
+            // Check that Ids are unique
+            var duplicateIds = entities.Where(e => e.Id != null).GroupBy(e => e.Id.Value).Where(g => g.Count() > 1);
+            foreach (var groupWithDuplicateIds in duplicateIds)
+            {
+                foreach (var entity in groupWithDuplicateIds)
+                {
+                    // This error indicates a bug
+                    var index = indices[entity];
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", entity.Id]);
+                }
+            }
+
+
             // Detect if the incoming collection has any duplicate codes
             var duplicateCodes = entities.GroupBy(e => e.Code).Where(g => g.Count() > 1);
             foreach (var groupWithDuplicateCodes in duplicateCodes)
@@ -172,7 +212,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 foreach (var entity in groupWithDuplicateCodes)
                 {
                     var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Code)}", _localizer["TheCode{0}IsDuplicated", entity.Code]);
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Code)}", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
                 }
             }
 
@@ -332,8 +372,15 @@ SET NOCOUNT ON;
                 SqlDbType = SqlDbType.Structured
             };
 
-            // Delete efficiently with a SQL query
-            await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            try
+            {
+                // Delete efficiently with a SQL query
+                await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            }
+            catch (SqlException ex) when (IsForeignKeyViolation(ex))
+            {
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["MeasurementUnit"]]);
+            }
         }
 
         protected override async Task<(List<MeasurementUnitForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
@@ -383,13 +430,38 @@ SET NOCOUNT ON;
 
             // Construct the result using the map generated earlier
             List<MeasurementUnitForSave> result = new List<MeasurementUnitForSave>(grid.Count - 1);
-            foreach (var row in grid.Skip(1)) // Skip the header
+            for (int i = 1; i < grid.Count; i++) // Skip the header
             {
+                var row = grid[i];
                 var entity = new MeasurementUnitForSave();
                 foreach (var (index, prop) in saveColumnMap)
                 {
-                    var value = row[index].Content;
-                    prop.SetValue(entity, value); // TODO casting here to be done
+                    var content = row[index].Content;
+
+
+                    // Special handling for choice lists
+                    if (content != null)
+                    {
+                        var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
+                        if (choiceListAttr != null)
+                        {
+                            List<string> displayNames = choiceListAttr.DisplayNames.Select(e => _localizer[e].Value).ToList();
+                            string stringContent = content.ToString();
+                            var displayNameIndex = displayNames.IndexOf(stringContent);
+                            if (displayNameIndex == -1)
+                            {
+                                var propName = _metadataProvider.GetMetadataForProperty(readType, prop.Name).DisplayName;
+                                string seperator = _localizer[","];
+                                AddRowError(i + 2, _localizer["Error_Value0IsNotValidFor1AcceptableValuesAre2", stringContent, propName, string.Join(seperator, displayNames)]);
+                            }
+                            else
+                            {
+                                content = choiceListAttr.Choices[displayNameIndex];
+                            }
+                        }
+                    }
+
+                    prop.SetValue(entity, content); // TODO casting here to be done
                 }
 
                 result.Add(entity);
@@ -562,11 +634,29 @@ SET NOCOUNT ON;
                 {
                     var prop = props[i];
                     var content = prop.GetValue(entity);
+
+                    // Special handling for choice lists
+                    var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
+                    if (choiceListAttr != null)
+                    {
+                        var choiceIndex = Array.FindIndex(choiceListAttr.Choices, e => e.Equals(content));
+                        if (choiceIndex != -1)
+                        {
+                            string displayName = choiceListAttr.DisplayNames[choiceIndex];
+                            content = _localizer[displayName];
+                        }
+                    }
+
                     row[i] = AbstractDataCell.Cell(content);
                 }
             }
 
             return result;
+        }
+
+        private bool IsForeignKeyViolation(SqlException ex)
+        {
+            return ex.Number == 547;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using BSharp.Controllers.Misc;
+using Microsoft.Extensions.Localization;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
@@ -10,23 +12,23 @@ namespace BSharp.Controllers.DTO
     public class MeasurementUnitForSave : DtoForSaveKeyBase<int?>
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(255)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "MU_Name1")]
         public string Name1 { get; set; }
 
-        [StringLength(255)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "MU_Name2")]
         public string Name2 { get; set; }
 
-        [StringLength(255)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "MU_Code")]
         public string Code { get; set; }
 
+        [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume", "Money" },
+            new string[] { "MU_Pure", "MU_Time", "MU_Distance", "MU_Count", "MU_Mass", "MU_Volume", "MU_Money" })]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "MeasurementUnit.UnitType")]
-        [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume", "Money" }, 
-            new string[] { "MU_Pure", "MU_Time", "MU_Distance", "MU_Count", "MU_Mass", "MU_Volume", "MU_Money" })]
+        [Display(Name = "MU_UnitType")]
         public string UnitType { get; set; }
 
         [Required(ErrorMessage = nameof(RequiredAttribute))]

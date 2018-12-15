@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.Extensions.Localization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,10 +18,22 @@ namespace BSharp.Controllers.Misc
         public object[] Choices { get; }
         public string[] DisplayNames { get; }
 
-        public ChoiceListAttribute(object[] choices, string[] displayNames)
+        public ChoiceListAttribute(object[] choices, string[] displayNames = null)
         {
             Choices = choices ?? throw new ArgumentNullException(nameof(choices));
-            DisplayNames = displayNames ?? throw new ArgumentNullException(nameof(displayNames));
+            DisplayNames = displayNames ?? choices.Select(e => e.ToString()).ToArray();
+
+            if(Choices.Length != DisplayNames.Length)
+            {
+                // Programmer error
+                throw new ArgumentException($"There are {Choices.Length} choices and {DisplayNames.Length} display names");
+            }
+
+            if(Choices.Length == 0)
+            {
+                // Programmer error
+                throw new ArgumentException("At least one choice is required");
+            }
         }
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
@@ -26,7 +41,9 @@ namespace BSharp.Controllers.Misc
             // If it doesn't match any of the choices => error
             if (value != null && !Choices.Contains(value))
             {
-                string concatenatedChoices = string.Join(", ", DisplayNames.Select(e => e.ToString()));
+                string concatenatedChoices = string.Join(", ", Choices.Select(e => e.ToString()));
+
+                // This is a programmer error, no need to localize it
                 return new ValidationResult($"Only the following values are allowed: {concatenatedChoices}");
             }
 

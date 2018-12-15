@@ -1,4 +1,5 @@
 using AutoMapper;
+using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.Migrations;
 using BSharp.Services.Utilities;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -117,6 +119,7 @@ namespace BSharp
 
             // AutoMapper https://automapper.org/
             services.AddAutoMapper();
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

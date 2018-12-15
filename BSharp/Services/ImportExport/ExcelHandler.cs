@@ -34,9 +34,17 @@ namespace BSharp.Services.ImportExport
 
                 // This code copies all the cells in the Excel field to an abstract 2-D string representation
                 var cells = sheet.Cells;
-                int maxCol = cells.Columns;
-                int maxRow = cells.Rows;
-                var abstractGrid = new AbstractDataGrid(maxCol, maxRow); // TODO verify
+                var range = cells.Where(e => !string.IsNullOrWhiteSpace(e.Value?.ToString()));
+
+                // If the Excel file is empty then return an empty grid
+                if(range.Count() == 0)
+                {
+                    return new AbstractDataGrid(0, 0);
+                }
+
+                int maxCol = range.Max(e => e.End.Column);
+                int maxRow = range.Max(e => e.End.Row);
+                var abstractGrid = new AbstractDataGrid(maxCol, maxRow);
 
                 // Loop over the Excel and copy the data to the abstract grid
                 for (int row = 1; row <= maxRow; row++)

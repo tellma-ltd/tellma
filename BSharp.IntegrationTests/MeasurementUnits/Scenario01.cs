@@ -17,7 +17,7 @@ namespace BSharp.IntegrationTests
             _client.DefaultRequestHeaders.Add("Tenant-Id", "101");
         }
 
-        [Fact(DisplayName = "GETing a non-existent measurement Unit returns a 404 Not Found")]
+        [Fact(DisplayName = "Getting a non-existent measurement unit ID returns a 404 Not Found")]
         public async Task Run()
         {
             int nonExistentId = 9999999;
