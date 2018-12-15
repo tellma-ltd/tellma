@@ -62,6 +62,9 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_TheCode0IsUsed", "The code '{0}' is already used"),
             Ar(Constants.Server, "Error_TheCode0IsUsed", "الكود ({0}) مستخدم حاليا"),
 
+            En(Constants.Server, "Error_TheName0IsUsed", "The name '{0}' is already used"),
+            Ar(Constants.Server, "Error_TheName0IsUsed", "الاسم ({0}) مستخدم حاليا"),
+
             En(Constants.Server, "Error_TheEntityWithId0IsSpecifiedMoreThanOnce", "The entity with Id '{0}' is specified more than once"),
             Ar(Constants.Server, "Error_TheEntityWithId0IsSpecifiedMoreThanOnce", "البيان ذو المفتاح ({0}) مذكور أكثر من مرة"),
 
