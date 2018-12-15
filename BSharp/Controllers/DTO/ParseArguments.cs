@@ -8,7 +8,7 @@ namespace BSharp.Controllers.DTO
 {
     public class ParseArguments
     {
-        [ChoiceList("Insert", "Update", "Merge", "Delete")]
+        [ChoiceList(new object[] { "Insert", "Update", "Merge", "Delete" })]
         public string Mode { get; set; } = "Insert"; // Default
     }
 }

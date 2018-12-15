@@ -18,7 +18,7 @@ namespace BSharp.Controllers.DTO
         /// <summary>
         /// Either 'Inserted' or 'Updated' or Deleted
         /// </summary>
-        [ChoiceList("Inserted", "Updated", "Deleted")]
+        [ChoiceList(choices: new object[] { "Inserted", "Updated", "Deleted" })]
         public string EntityState { get; set; }
     }
 }

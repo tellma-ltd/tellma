@@ -56,14 +56,14 @@ namespace BSharp.Controllers
             {
                 // TODO Authorize Activate
 
-                // TODO Validate (No used units, no duplicate Ids)
+                // TODO Validate (No used units, no duplicate Ids, no missing Ids?)
 
                 var isActiveParam = new SqlParameter("@IsActive", isActive);
 
                 DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
-                var idsTvp = new SqlParameter("@IndexedIds", idsTable)
+                var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
-                    TypeName = $"dbo.IndexedIdList",
+                    TypeName = $"dbo.IdList",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -74,7 +74,7 @@ DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'
 MERGE INTO [dbo].MeasurementUnits AS t
 	USING (
 		SELECT [Id]
-		FROM @IndexedIds
+		FROM @Ids
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED AND (t.IsActive <> @IsActive)
 	THEN
@@ -90,13 +90,13 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 // Determine whether entities should be returned
                 if (!returnEntities)
                 {
-                    // IF no returned items are expected, simply return 202
+                    // IF no returned items are expected, simply return 200 OK
                     return Ok();
                 }
                 else
                 {
                     // Load the entities using their Ids
-                    var affectedDbEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp).ToListAsync();
+                    var affectedDbEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp).ToListAsync();
                     var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
 
                     // sort the entities the way their Ids came, as a good practice
@@ -165,6 +165,46 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 indices[entity] = i++;
             }
 
+
+            // Check that Ids make sense in relation to EntityState, and that no entity is DELETED
+            // All these errors indicate a bug
+            foreach (var entity in entities)
+            {
+                if (entity.EntityState == EntityStates.Deleted)
+                {
+                    // Won't be supported for this API
+                    var index = indices[entity];
+                    ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", _localizer["MeasurementUnits"]]);
+                }
+
+                if (entity.Id == null && entity.EntityState != EntityStates.Inserted)
+                {
+                    // This error indicates a bug
+                    var index = indices[entity];
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotInsert0WhileSpecifyId", _localizer["MeasurementUnit"]]);
+                }
+
+                if (entity.Id != null && entity.EntityState == EntityStates.Updated)
+                {
+                    // This error indicates a bug
+                    var index = indices[entity];
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotUpdate0WithoutId", _localizer["MeasurementUnit"]]);
+                }
+            }
+
+            // Check that Ids are unique
+            var duplicateIds = entities.Where(e => e.Id != null).GroupBy(e => e.Id.Value).Where(g => g.Count() > 1);
+            foreach (var groupWithDuplicateIds in duplicateIds)
+            {
+                foreach (var entity in groupWithDuplicateIds)
+                {
+                    // This error indicates a bug
+                    var index = indices[entity];
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", entity.Id]);
+                }
+            }
+
+
             // Detect if the incoming collection has any duplicate codes
             var duplicateCodes = entities.GroupBy(e => e.Code).Where(g => g.Count() > 1);
             foreach (var groupWithDuplicateCodes in duplicateCodes)
@@ -172,7 +212,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 foreach (var entity in groupWithDuplicateCodes)
                 {
                     var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Code)}", _localizer["TheCode{0}IsDuplicated", entity.Code]);
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Code)}", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
                 }
             }
 
@@ -184,7 +224,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
 
             // Perform SQL-side validation
             DataTable entitiesTable = DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable) { TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List", SqlDbType = SqlDbType.Structured };
+            var entitiesTvp = new SqlParameter("Entities", entitiesTable) { TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List", SqlDbType = SqlDbType.Structured };
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
 
             // (1) Code must be unique
@@ -193,9 +233,9 @@ SET NOCOUNT ON;
 DECLARE @ValidationErrors dbo.ValidationErrorList;
 	-- Code must be unique
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Code' As [Key], N'TheCode{{0}}IsUsed' As [ErrorName],
+	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Code' As [Key], N'Error_TheCode0IsUsed' As [ErrorName],
 		FE.Code AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @MeasurementUnits FE 
+	FROM @Entities FE 
 	JOIN [dbo].MeasurementUnits BE ON FE.Code = BE.Code
 	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id);
 	-- Name must be unique
@@ -207,8 +247,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id);
 		-- Add further logic
 
-SELECT TOP {remainingErrorCount} [Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]
-FROM @ValidationErrors;
+SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 ", entitiesTvp).ToListAsync();
 
             // Local function for intelligently parsing strings into objects
@@ -249,7 +288,7 @@ FROM @ValidationErrors;
         {
             // Add created entities
             DataTable entitiesTable = DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            var entitiesTvp = new SqlParameter("Entities", entitiesTable)
             {
                 TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List",
                 SqlDbType = SqlDbType.Structured
@@ -270,7 +309,7 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].MeasurementUnits AS t
 		USING (
 			SELECT [Index], [Id], [Code], [UnitType], [Name1], [Name2], [UnitAmount], [BaseAmount]
-			FROM @MeasurementUnits 
+			FROM @Entities 
 			WHERE [EntityState] IN (N'Inserted', N'Updated')
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -307,17 +346,17 @@ SET NOCOUNT ON;
 
                 // Load the entities using their Ids
                 DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
+                var idsTvp = new SqlParameter("Ids", idsTable)
                 {
                     TypeName = $"dbo.IdList",
                     SqlDbType = SqlDbType.Structured
                 };
-                var savedEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp).ToListAsync();
+                var savedEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp).ToListAsync();
 
 
                 // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
                 Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                var sortedSavedEntities = new List<M.MeasurementUnit>(savedEntities.Count);
+                var sortedSavedEntities = new M.MeasurementUnit[savedEntities.Count];
                 foreach (var item in savedEntities)
                 {
                     int index = indices[item.Id];
@@ -325,7 +364,7 @@ SET NOCOUNT ON;
                 }
 
                 // Return the sorted collection
-                return sortedSavedEntities;
+                return sortedSavedEntities.ToList();
             }
         }
 
@@ -333,14 +372,21 @@ SET NOCOUNT ON;
         {
             // Prepare a list of Ids to delete
             DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
-            var idsTvp = new SqlParameter("@Ids", idsTable)
+            var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
                 SqlDbType = SqlDbType.Structured
             };
 
-            // Delete efficiently with a SQL query
-            await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN @Ids", idsTvp);
+            try
+            {
+                // Delete efficiently with a SQL query
+                await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            }
+            catch (SqlException ex) when (IsForeignKeyViolation(ex))
+            {
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["MeasurementUnit"]]);
+            }
         }
 
         protected override async Task<(List<MeasurementUnitForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
@@ -390,13 +436,38 @@ SET NOCOUNT ON;
 
             // Construct the result using the map generated earlier
             List<MeasurementUnitForSave> result = new List<MeasurementUnitForSave>(grid.Count - 1);
-            foreach (var row in grid.Skip(1)) // Skip the header
+            for (int i = 1; i < grid.Count; i++) // Skip the header
             {
+                var row = grid[i];
                 var entity = new MeasurementUnitForSave();
                 foreach (var (index, prop) in saveColumnMap)
                 {
-                    var value = row[index].Content;
-                    prop.SetValue(entity, value); // TODO casting here to be done
+                    var content = row[index].Content;
+
+
+                    // Special handling for choice lists
+                    if (content != null)
+                    {
+                        var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
+                        if (choiceListAttr != null)
+                        {
+                            List<string> displayNames = choiceListAttr.DisplayNames.Select(e => _localizer[e].Value).ToList();
+                            string stringContent = content.ToString();
+                            var displayNameIndex = displayNames.IndexOf(stringContent);
+                            if (displayNameIndex == -1)
+                            {
+                                var propName = _metadataProvider.GetMetadataForProperty(readType, prop.Name).DisplayName;
+                                string seperator = _localizer[","];
+                                AddRowError(i + 2, _localizer["Error_Value0IsNotValidFor1AcceptableValuesAre2", stringContent, propName, string.Join(seperator, displayNames)]);
+                            }
+                            else
+                            {
+                                content = choiceListAttr.Choices[displayNameIndex];
+                            }
+                        }
+                    }
+
+                    prop.SetValue(entity, content); // TODO casting here to be done
                 }
 
                 result.Add(entity);
@@ -545,7 +616,7 @@ SET NOCOUNT ON;
             var type = typeof(MeasurementUnit);
             var readProps = typeof(MeasurementUnit).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             var saveProps = typeof(MeasurementUnitForSave).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            var props = readProps.Union(saveProps).ToArray();
+            var props = saveProps.Union(readProps).ToArray();
 
             // The result that will be returned
             var result = new AbstractDataGrid(props.Length, response.Data.Count() + 1);
@@ -564,15 +635,34 @@ SET NOCOUNT ON;
             // Add the rows
             foreach (var entity in response.Data)
             {
+                var row = result[result.AddRow()];
                 for (int i = 0; i < props.Length; i++)
                 {
                     var prop = props[i];
                     var content = prop.GetValue(entity);
-                    header[i] = AbstractDataCell.Cell(content);
+
+                    // Special handling for choice lists
+                    var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
+                    if (choiceListAttr != null)
+                    {
+                        var choiceIndex = Array.FindIndex(choiceListAttr.Choices, e => e.Equals(content));
+                        if (choiceIndex != -1)
+                        {
+                            string displayName = choiceListAttr.DisplayNames[choiceIndex];
+                            content = _localizer[displayName];
+                        }
+                    }
+
+                    row[i] = AbstractDataCell.Cell(content);
                 }
             }
 
             return result;
+        }
+
+        private bool IsForeignKeyViolation(SqlException ex)
+        {
+            return ex.Number == 547;
         }
     }
 }

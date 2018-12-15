@@ -175,13 +175,13 @@ namespace BSharp.Controllers
             }
         }
 
-        [HttpPost("import")]
-        public virtual async Task<ActionResult<ImportResult>> Import(IFormFile file, [FromQuery] ImportArguments args)
+        [HttpPost("import"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
+        public virtual async Task<ActionResult<ImportResult>> Import([FromQuery] ImportArguments args)
         {
             try
             {
                 // Parse the file into DTOs + map back to row numbers (The way source code is compiled into machine code + symbol file)
-                var (dtos, rowNumberFromErrorKeyMap) = await ParseImplAsync(file, args); // This should check for primary code consistency!
+                var (dtos, rowNumberFromErrorKeyMap) = await ParseImplAsync(args); // This should check for primary code consistency!
 
                 // Validation
                 ObjectValidator.Validate(ControllerContext, null, null, dtos);
@@ -222,8 +222,8 @@ namespace BSharp.Controllers
             }
         }
 
-        [HttpPost("parse")]
-        public virtual async Task<ActionResult<List<TDtoForSave>>> Parse(IFormFile file, ParseArguments args)
+        [HttpPost("parse"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
+        public virtual async Task<ActionResult<List<TDtoForSave>>> Parse([FromQuery] ParseArguments args)
         {
             // This method doesn't import the file in the DB, it simply parses it to 
             // DTOs that are ripe for saving, and returns those DTOs to the requester
@@ -231,7 +231,8 @@ namespace BSharp.Controllers
             // in the imported file, or to support previewing the import before committing it
             try
             {
-                var dtos = await ParseImplAsync(file, args);
+                var file = Request.Form.Files.FirstOrDefault();
+                var dtos = await ParseImplAsync(args);
                 return Ok(dtos);
             }
             catch (UnprocessableEntityException ex)
@@ -245,8 +246,10 @@ namespace BSharp.Controllers
             }
         }
 
-        protected virtual async Task<(List<TDtoForSave>, Func<string, int?>)> ParseImplAsync(IFormFile file, ParseArguments args)
+        protected virtual async Task<(List<TDtoForSave>, Func<string, int?>)> ParseImplAsync(ParseArguments args)
         {
+            var file = Request.Form.Files.FirstOrDefault();
+
             var abstractGrid = ToAbstractGrid(file, args);
             if (abstractGrid.Count < 2)
             {
@@ -289,13 +292,10 @@ namespace BSharp.Controllers
             }
         }
 
-        // Not Done
         protected abstract Task<(List<TDtoForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args);
 
-        // Not Done
         protected abstract AbstractDataGrid GetImportTemplate();
 
-        // Not Done
         protected abstract AbstractDataGrid ToAbstractGrid(GetResponse<TDto> response, ExportArguments args);
 
 
@@ -652,27 +652,32 @@ namespace BSharp.Controllers
             if (!_dataTableCache.ContainsKey((entities, addIndex)))
             {
                 DataTable table = new DataTable();
-                var props = typeof(T).GetProperties();
-                var columns = props.Select(p => new DataColumn(p.Name, p.PropertyType)).ToList();
                 if (addIndex)
                 {
-                    columns.Add(new DataColumn("Index", typeof(int)));
+                    // The column order MUST match the column order in the user-defined table type
+                    table.Columns.Add(new DataColumn("Index", typeof(int)));
                 }
+
+                var props = GetPropertiesBaseFirst(typeof(T));
+                var columns = props.Select(p => new DataColumn(p.Name, Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType)).ToList();
                 table.Columns.AddRange(columns.ToArray());
 
                 int index = 0;
                 foreach (var entity in entities)
                 {
                     DataRow row = table.NewRow();
-                    foreach (var prop in props)
-                    {
-                        row[prop.Name] = prop.GetValue(entity);
-                    }
 
                     // We add an index property since SQL works with un-ordered sets
                     if (addIndex)
                     {
                         row["Index"] = index++;
+                    }
+
+                    // Add the remaining properties
+                    foreach (var prop in props)
+                    {
+                        var propValue = prop.GetValue(entity);
+                        row[prop.Name] = propValue ?? DBNull.Value;
                     }
 
                     table.Rows.Add(row);
@@ -682,6 +687,29 @@ namespace BSharp.Controllers
             }
 
             return _dataTableCache[(entities, addIndex)];
+        }
+
+
+        /// <summary>
+        /// This is alternative for <see cref="Type.GetProperties"/>
+        /// that returns base class properties before inherited class properties
+        /// Credit: https://bit.ly/2UGAkKj
+        /// </summary>
+        protected PropertyInfo[] GetPropertiesBaseFirst(Type type)
+        {
+            var orderList = new List<Type>();
+            var iteratingType = type;
+            do
+            {
+                orderList.Insert(0, iteratingType);
+                iteratingType = iteratingType.BaseType;
+            } while (iteratingType != null);
+
+            var props = type.GetProperties()
+                .OrderBy(x => orderList.IndexOf(x.DeclaringType))
+                .ToArray();
+
+            return props;
         }
 
         private ModelStateDictionary MapModelState(ModelStateDictionary modelState, Func<string, int?> rowNumberFromErrorKeyMap)
