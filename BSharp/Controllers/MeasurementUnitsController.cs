@@ -253,7 +253,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 
 	-- Name must not exist in the 
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Name' As [Key], N'TheName{{0}}IsUsed' As [ErrorName],
+	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Name' As [Key], N'TheName0IsUsed' As [ErrorName],
 		FE.[Name] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities FE 
 	JOIN [dbo].MeasurementUnits BE ON FE.[Name] = BE.[Name]
