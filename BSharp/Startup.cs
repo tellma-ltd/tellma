@@ -1,5 +1,4 @@
 using AutoMapper;
-using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.Migrations;
 using BSharp.Services.Utilities;
@@ -7,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -77,7 +76,10 @@ namespace BSharp
 
 
             // Register MVC using the most up to date version
-            services.AddMvc()
+            services.AddMvc(opt => 
+            {
+                opt.ModelMetadataDetailsProviders.Add(new ExcludeBindingMetadataProvider(typeof(Controllers.DTO.MeasurementUnit)));
+            })
                 .AddViewLocalization()
                 .AddDataAnnotationsLocalization()
                 .AddJsonOptions(options =>
@@ -89,6 +91,8 @@ namespace BSharp
                     {
                         NamingStrategy = new DefaultNamingStrategy()
                     };
+
+                 //   options.SerializerSettings.Converters.Insert(0, new TrimmingStringConverter());
 
                     // To response size
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;

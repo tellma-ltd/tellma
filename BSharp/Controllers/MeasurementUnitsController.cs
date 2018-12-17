@@ -3,9 +3,11 @@ using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
+using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -52,22 +54,24 @@ namespace BSharp.Controllers
 
         private async Task<ActionResult<List<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, bool isActive)
         {
-            try
+            using (var trx = await _db.Database.BeginTransactionAsync())
             {
-                // TODO Authorize Activate
-
-                // TODO Validate (No used units, no duplicate Ids, no missing Ids?)
-
-                var isActiveParam = new SqlParameter("@IsActive", isActive);
-
-                DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
-                var idsTvp = new SqlParameter("@Ids", idsTable)
+                try
                 {
-                    TypeName = $"dbo.IdList",
-                    SqlDbType = SqlDbType.Structured
-                };
+                    // TODO Authorize Activate
 
-                string sql = @"
+                    // TODO Validate (No used units, no duplicate Ids, no missing Ids?)
+
+                    var isActiveParam = new SqlParameter("@IsActive", isActive);
+
+                    DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
+                    var idsTvp = new SqlParameter("@Ids", idsTable)
+                    {
+                        TypeName = $"dbo.IdList",
+                        SqlDbType = SqlDbType.Structured
+                    };
+
+                    string sql = @"
 DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
 
@@ -84,46 +88,51 @@ MERGE INTO [dbo].MeasurementUnits AS t
 			t.[ModifiedBy]	= @UserId;
 ";
 
-                // Update the entities
-                await _db.Database.ExecuteSqlCommandAsync(sql, idsTvp, isActiveParam);
+                    // Update the entities
+                    await _db.Database.ExecuteSqlCommandAsync(sql, idsTvp, isActiveParam);
 
-                // Determine whether entities should be returned
-                if (!returnEntities)
-                {
-                    // IF no returned items are expected, simply return 200 OK
-                    return Ok();
-                }
-                else
-                {
-                    // Load the entities using their Ids
-                    var affectedDbEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp).ToListAsync();
-                    var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
-
-                    // sort the entities the way their Ids came, as a good practice
-                    MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
-                    Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
-
-                    for (int i = 0; i < ids.Count; i++)
+                    // Determine whether entities should be returned
+                    if (!returnEntities)
                     {
-                        var id = ids[i];
-                        MeasurementUnit entity = null;
-                        if (affectedEntitiesDic.ContainsKey(id))
+                        // IF no returned items are expected, simply return 200 OK
+                        return Ok();
+                    }
+                    else
+                    {
+                        // Load the entities using their Ids
+                        var affectedDbEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp).ToListAsync();
+                        var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
+
+                        // sort the entities the way their Ids came, as a good practice
+                        MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
+                        Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
+
+                        for (int i = 0; i < ids.Count; i++)
                         {
-                            entity = affectedEntitiesDic[id];
+                            var id = ids[i];
+                            MeasurementUnit entity = null;
+                            if (affectedEntitiesDic.ContainsKey(id))
+                            {
+                                entity = affectedEntitiesDic[id];
+                            }
+
+                            sortedAffectedEntities[i] = entity;
                         }
 
-                        sortedAffectedEntities[i] = entity;
+                        // Commit and return
+                        trx.Commit();
+                        return Ok(sortedAffectedEntities);
                     }
-
-                    return Ok(sortedAffectedEntities);
+                }
+                catch (Exception ex)
+                {
+                    trx.Rollback();
+                    _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                    return BadRequest(ex.Message);
                 }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
         }
+
 
         protected override IQueryable<M.MeasurementUnit> GetBaseQuery()
         {
@@ -158,13 +167,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
         protected override async Task ValidateAsync(List<MeasurementUnitForSave> entities)
         {
             // Hash the indices for performance
-            var indices = new Dictionary<MeasurementUnitForSave, int>();
-            int i = 0;
-            foreach (var entity in entities)
-            {
-                indices[entity] = i++;
-            }
-
+            var indices = entities.ToIndexDictionary();
 
             // Check that Ids make sense in relation to EntityState, and that no entity is DELETED
             // All these errors indicate a bug
@@ -219,6 +222,13 @@ MERGE INTO [dbo].MeasurementUnits AS t
             var sqlErrors = await _db.Validation.FromSql($@"
 SET NOCOUNT ON;
 DECLARE @ValidationErrors dbo.ValidationErrorList;
+
+    -- Non Null Ids must exist
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])
+    SELECT '[' + CAST([Id] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_TheId0WasNotFound' As [ErrorName], CAST([Id] As NVARCHAR(255)) As [Argument1]
+    FROM @Entities
+    WHERE Id Is NOT NULL AND Id NOT IN (SELECT Id from [dbo].[MeasurementUnits])
+    
 	-- Code must be unique
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
 	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Code' As [Key], N'Error_TheCode0IsUsed' As [ErrorName],
@@ -412,14 +422,26 @@ SET NOCOUNT ON;
                 SqlDbType = SqlDbType.Structured
             };
 
-            try
+            using (var trx = await _db.Database.BeginTransactionAsync())
             {
-                // Delete efficiently with a SQL query
-                await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-            }
-            catch (SqlException ex) when (IsForeignKeyViolation(ex))
-            {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["MeasurementUnit"]]);
+                try
+                {
+                    // Delete efficiently with a SQL query
+                    await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+
+                    // Commit and return
+                    trx.Commit();
+                    return;
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["MeasurementUnit"]]);
+                }
+                catch (Exception ex)
+                {
+                    trx.Rollback();
+                    throw ex;
+                }
             }
         }
 
@@ -513,13 +535,17 @@ SET NOCOUNT ON;
                 throw new UnprocessableEntityException(ModelState);
             }
 
+            // Prepare a dictionary of indices in order to construct any validation errors performantly
+            // "IndexOf" is O(n), this brings it down to O(1)
+            Dictionary<MeasurementUnitForSave, int> indicesDic = result.ToIndexDictionary();
+
             // For each entity, set the Id and EntityState depending on import mode
             if (mode == "Insert")
             {
                 // For Insert mode, all are marked inserted and all Ids are null
                 // Any duplicate codes will be handled later in the validation
                 result.ForEach(e => e.Id = null);
-                result.ForEach(e => e.EntityState = "Inserted");
+                result.ForEach(e => e.EntityState = EntityStates.Inserted);
             }
             else
             {
@@ -533,7 +559,7 @@ SET NOCOUNT ON;
                     SqlDbType = SqlDbType.Structured
                 };
 
-                string sql = $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[MeasurementUnits] e on c.Code = e.Code;";
+                string sql = $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[MeasurementUnits] e ON c.Code = e.Code;";
                 var idCodesDic = await _db.CodeIds.FromSql(sql, entitiesTvp).ToDictionaryAsync(e => e.Code, e => e.Id);
 
                 result.ForEach(e =>
@@ -548,6 +574,18 @@ SET NOCOUNT ON;
                     }
                 });
 
+                // Make sure no codes are mentioned twice, if we don't do it here, the save validation later will complain
+                // about duplicated Id, but the error will not be clear since user deals with code while importing from Excel              
+                var duplicateIdGroups = result.Where(e => e.Id != null).GroupBy(e => e.Id.Value).Where(g => g.Count() > 1);
+                foreach (var duplicateIdGroup in duplicateIdGroups)
+                {
+                    foreach (var entity in duplicateIdGroup)
+                    {
+                        int index = indicesDic[entity];
+                        AddRowError(index + 2, _localizer["Error_TheCode0IsDuplicated", entity.Code]);
+                    }
+                }
+
                 if (mode == "Merge")
                 {
                     // Merge simply inserts codes that are not found, and updates codes that are found
@@ -555,38 +593,33 @@ SET NOCOUNT ON;
                     {
                         if (e.Id != null)
                         {
-                            e.EntityState = "Updated";
+                            e.EntityState = EntityStates.Updated;
                         }
                         else
                         {
-                            e.EntityState = "Inserted";
+                            e.EntityState = EntityStates.Inserted;
                         }
                     });
                 }
                 else
                 {
-                    // In the case of update and delete: codes are required, and MUST match database Ids
-                    for (int index = 0; index < result.Count; index++)
-                    {
-                        var entity = result[index];
-                        if (string.IsNullOrWhiteSpace(entity.Code))
-                        {
-                            AddRowError(index + 2, _localizer["Error_CodeIsRequiredForImportModeUpdateAndDelete"]);
-                        }
-                        else if (entity.Id == null)
-                        {
-                            AddRowError(index + 2, _localizer["Error_TheUnitCode0DoesNotExist"]);
-                        }
-                    }
-                    result.ForEach(e => e.EntityState = "Updated");
-
+                    // In the case of update: codes are required, and MUST match database Ids
                     if (mode == "Update")
                     {
-                        result.ForEach(e => e.EntityState = "Updated");
-                    }
-                    else if (mode == "Delete")
-                    {
-                        result.ForEach(e => e.EntityState = "Deleted");
+                        for (int index = 0; index < result.Count; index++)
+                        {
+                            var entity = result[index];
+                            if (string.IsNullOrWhiteSpace(entity.Code))
+                            {
+                                AddRowError(index + 2, _localizer["Error_CodeIsRequiredForImportModeUpdate"]);
+                            }
+                            else if (entity.Id == null)
+                            {
+                                AddRowError(index + 2, _localizer["Error_TheUnitCode0DoesNotExist"]);
+                            }
+                        }
+
+                        result.ForEach(e => e.EntityState = EntityStates.Updated);
                     }
                     else
                     {
@@ -697,6 +730,11 @@ SET NOCOUNT ON;
         private bool IsForeignKeyViolation(SqlException ex)
         {
             return ex.Number == 547;
+        }
+
+        protected override async Task<IDbContextTransaction> BeginSaveTransaction()
+        {
+            return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
     }
 }

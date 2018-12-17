@@ -55,6 +55,8 @@ namespace BSharp.Data.Model
 
 
             // Server Errors
+            En(Constants.Server, "Error_TheId0WasNotFound", "The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing"),
+            Ar(Constants.Server, "Error_TheId0WasNotFound", "البيان ذو المفتاح ({0}) غير موجود، لعل أحدهم حذفه، يرجى محاولة التحديث"),
 
             En(Constants.Server, "Error_TheCode0IsDuplicated", "The code '{0}' is duplicated"),
             Ar(Constants.Server, "Error_TheCode0IsDuplicated", "الكود ’{0}’ مكرر"),
@@ -68,13 +70,11 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_TheName0IsUsed", "The name '{0}' is already used"),
             Ar(Constants.Server, "Error_TheName0IsUsed", "الاسم ({0}) مستخدم حاليا"),
 
-
             En(Constants.Server, "Error_TheName20IsDuplicated", "The name '{0}' is duplicated"),
             Ar(Constants.Server, "Error_TheName20IsDuplicated", "الاسم ({0}) مكرر"),
 
             En(Constants.Server, "Error_TheName20IsUsed", "The second name '{0}' is already used"),
             Ar(Constants.Server, "Error_TheName20IsUsed", "الاسم الثاني ({0}) مستخدم حاليا"),
-
 
             En(Constants.Server, "Error_TheEntityWithId0IsSpecifiedMoreThanOnce", "The entity with Id '{0}' is specified more than once"),
             Ar(Constants.Server, "Error_TheEntityWithId0IsSpecifiedMoreThanOnce", "البيان ذو المفتاح ({0}) مذكور أكثر من مرة"),
@@ -88,11 +88,14 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_CannotUpdate0WithoutId", "Cannot update a {0} without specifying its Id"),
             Ar(Constants.Server, "Error_CannotUpdate0WithoutId", "لا يمكن نعديل {0} بدون تحديد المفتاح"),
 
-            En(Constants.Server, "Error_CodeIsRequiredForImportModeUpdateAndDelete", "The code is required for import modes Update and Delete"),
-            Ar(Constants.Server, "Error_CodeIsRequiredForImportModeUpdateAndDelete", "الكود مطلوب لوضعي الاستيراد التعديل والحذف"),
+            En(Constants.Server, "Error_CodeIsRequiredForImportModeUpdate", "The code is required for the update import mode"),
+            Ar(Constants.Server, "Error_CodeIsRequiredForImportModeUpdate", "الكود مطلوب لوضع التعديل"),
 
             En(Constants.Server, "Error_TheUnitCode0DoesNotExist", "The unit code '{0}' does not exist"),
             Ar(Constants.Server, "Error_TheUnitCode0DoesNotExist", "الكود ({0}) غير موجود بين أكواد الوحدات"),
+
+            En(Constants.Server, "Error_NoFileWasUploaded", "No file was uploaded"),
+            Ar(Constants.Server, "Error_NoFileWasUploaded", "لم يتم رفع أي ملف"),
 
             En(Constants.Server, "Error_EmptyImportFile", "The imported file is empty"),
             Ar(Constants.Server, "Error_EmptyImportFile", "الملف المحمل ليس فيه بيانات"),
@@ -112,6 +115,10 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_CannotDelete0AlreadyInUse", "Cannot delete a {0} record because it is already in use"),
             Ar(Constants.Server, "Error_CannotDelete0AlreadyInUse", "تعذر حذف بيان من نوع {0} لأنه سبق استخدامه"),
 
+            En(Constants.Server, "Error_ParsingForDeleteIsNotSupported", "Delete mode is not supported in the parsing API"),
+            Ar(Constants.Server, "Error_ParsingForDeleteIsNotSupported", "وضع الحذف ليس مدعوما من هذه الواجهة "),
+
+            
             
             // Field Labels
 

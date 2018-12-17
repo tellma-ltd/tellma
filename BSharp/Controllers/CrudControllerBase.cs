@@ -2,10 +2,12 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Services.ImportExport;
+using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -180,7 +182,7 @@ namespace BSharp.Controllers
         {
             try
             {
-                // Parse the file into DTOs + map back to row numbers (The way source code is compiled into machine code + symbol file)
+                // Parse the file into DTOs + map back to row numbers (The way source code is compiled into machine code + symbols file)
                 var (dtos, rowNumberFromErrorKeyMap) = await ParseImplAsync(args); // This should check for primary code consistency!
 
                 // Validation
@@ -205,8 +207,7 @@ namespace BSharp.Controllers
                 var result = new ImportResult
                 {
                     Inserted = dtos.Count(e => e.EntityState == "Inserted"),
-                    Updated = dtos.Count(e => e.EntityState == "Updated"),
-                    Deleted = dtos.Count(e => e.EntityState == "Deleted")
+                    Updated = dtos.Count(e => e.EntityState == "Updated")
                 };
 
                 return Ok(result);
@@ -249,6 +250,10 @@ namespace BSharp.Controllers
         protected virtual async Task<(List<TDtoForSave>, Func<string, int?>)> ParseImplAsync(ParseArguments args)
         {
             var file = Request.Form.Files.FirstOrDefault();
+            if (file == null)
+            {
+                throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
+            }
 
             var abstractGrid = ToAbstractGrid(file, args);
             if (abstractGrid.Count < 2)
@@ -297,7 +302,6 @@ namespace BSharp.Controllers
         protected abstract AbstractDataGrid GetImportTemplate();
 
         protected abstract AbstractDataGrid ToAbstractGrid(GetResponse<TDto> response, ExportArguments args);
-
 
         // Abstract and virtual members
 
@@ -399,20 +403,40 @@ namespace BSharp.Controllers
         {
             // TODO Authorize POST
 
-            // Validate
-            await ValidateAsync(entities);
-            if (!ModelState.IsValid)
+            // Trim all strings as a preprocessing step
+            entities.ForEach(e => TrimStringProperties(e));
+
+            using (var trx = await BeginSaveTransaction())
             {
-                throw new UnprocessableEntityException(ModelState);
+                try
+                {
+                    // Validate
+                    await ValidateAsync(entities);
+                    if (!ModelState.IsValid)
+                    {
+                        throw new UnprocessableEntityException(ModelState);
+                    }
+
+                    // Save
+                    var dbEntities = await PersistAsync(entities, args.ReturnEntities);
+
+                    // Map and return (After committing the transaction
+                    var result = Map(dbEntities);
+
+                    // Commit and return
+                    trx.Commit();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    // Roll back the transaction
+                    trx.Rollback();
+                    throw ex;
+                }
             }
-
-            // Save
-            var dbEntities = await PersistAsync(entities, args.ReturnEntities);
-
-            // Map and return
-            var result = Map(dbEntities);
-            return result;
         }
+
+        protected abstract Task<IDbContextTransaction> BeginSaveTransaction();
 
         /// <summary>
         /// Deletes the entities specified by the list of Ids
@@ -444,6 +468,14 @@ namespace BSharp.Controllers
         protected virtual IEnumerable<DtoForSaveBase> MapRelatedEntities(IEnumerable<M.ModelForSaveBase> relatedEntities)
         {
             return relatedEntities.Select(e => _mapper.Map<DtoForSaveBase>(e));
+        }
+
+        /// <summary>
+        /// Trims all string properties of the entity
+        /// </summary>
+        protected virtual void TrimStringProperties(TDtoForSave entity)
+        {
+            entity.TrimStringProperties();
         }
 
         /// <summary>
@@ -770,8 +802,12 @@ namespace BSharp.Controllers
         /// <summary>
         /// Syntactic sugar for localizing an error, prefixing it with "Row N: " and adding it to ModelState with an appropriate key
         /// </summary>
-        protected void AddRowError(int rowNumber, string errorMessage, ModelStateDictionary modelState = null) =>
-            (modelState ?? ModelState).AddModelError($"Row{rowNumber}", _localizer["Row{0}", rowNumber] + ": " + errorMessage);
-        
+        /// <returns>False if the maximum errors was reached</returns>
+        protected bool AddRowError(int rowNumber, string errorMessage, ModelStateDictionary modelState = null)
+        {
+            var ms = modelState ?? ModelState;
+            ms.AddModelError($"Row{rowNumber}", _localizer["Row{0}", rowNumber] + ": " + errorMessage);
+            return !ms.HasReachedMaxErrors;
+        }
     }
 }
