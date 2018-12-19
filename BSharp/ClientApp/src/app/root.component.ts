@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
+  selector: 'b-root',
+  templateUrl: './root.component.html',
   styles: []
 })
-export class AppComponent {
+export class RootComponent {
   title = 'ClientApp';
 }

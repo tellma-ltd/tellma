@@ -7,7 +7,7 @@
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "app",
+      "prefix": "b",
       "schematics": {
         "@schematics/angular:component": {
           "inlineStyle": true,
