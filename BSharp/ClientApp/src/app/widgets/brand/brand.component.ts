@@ -6,7 +6,7 @@ import { Component, OnInit, Input, HostBinding } from '@angular/core';
   styleUrls: ['./brand.component.css']
 })
 export class BrandComponent {
-
+  
   @Input()
   public scale = 1;
 

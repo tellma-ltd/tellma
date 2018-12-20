@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { WidgetsRoutingModule } from './widgets-routing.module';
 import { BrandComponent } from './brand/brand.component';
 import { NgbDropdownModule, NgbModalModule, NgbCollapseModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -11,14 +12,16 @@ import { NgbDropdownModule, NgbModalModule, NgbCollapseModule, NgbPopoverModule 
   ],
   imports: [
     CommonModule,
-    WidgetsRoutingModule
+    WidgetsRoutingModule,
+    TranslateModule
   ],
   exports: [
     BrandComponent,
     NgbDropdownModule,
     NgbModalModule,
     NgbCollapseModule,
-    NgbPopoverModule
+    NgbPopoverModule,
+    TranslateModule
   ]
 })
 export class WidgetsModule { }

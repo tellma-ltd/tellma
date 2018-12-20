@@ -6,8 +6,8 @@ import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
 import { PageNotFoundComponent } from './features/page-not-found/page-not-found.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { ApiTranslateLoader, ApiTranslateLoaderFactory } from './data/api-translate-loader';
-import { HttpClient } from '@angular/common/http';
+import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -18,6 +18,7 @@ import { HttpClient } from '@angular/common/http';
   imports: [
     BrowserModule,
     RootRoutingModule,
+    HttpClientModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -25,6 +26,7 @@ import { HttpClient } from '@angular/common/http';
         deps: [HttpClient]
       }
     })
+
   ],
   providers: [],
   bootstrap: [RootComponent]

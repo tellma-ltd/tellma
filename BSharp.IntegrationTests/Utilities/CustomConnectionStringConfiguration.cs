@@ -27,7 +27,7 @@ namespace BSharp.IntegrationTests.Utilities
         {
             get
             {
-                if (key == Constants.ManagerConnection)
+                if (key == Constants.AdminConnection)
                 {
                     return $"Server = (localdb)\\MSSQLLocalDB; Database = {_managerDbName}; Trusted_Connection = true; MultipleActiveResultSets = true";
                 }

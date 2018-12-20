@@ -41,7 +41,20 @@ a {
   padding : 0.375rem 0.75rem
 }
 
+.navbar-brand {
+  margin-right : 0;
+}
+
+.navbar-nav {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
 ///////////////////////////////// BSharp /////////////////////////////////
+
+.b-rtl {
+  direction: rtl;
+}
 
 .b-brand {
   color: $primary;

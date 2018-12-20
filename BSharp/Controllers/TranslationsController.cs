@@ -40,7 +40,7 @@ namespace BSharp.Controllers
             try
             {
                 var query = from e in _db.Translations
-                            where e.CultureId == culture
+                            where (e.Tier == Constants.Shared || e.Tier == Constants.Client) && e.CultureId == culture
                             select e;
 
                 var result = await query.AsNoTracking().ToDictionaryAsync(e => e.Name, e => e.Value);

@@ -1,6 +1,5 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { appconfig } from 'src/assets/config';
 
 
 export class RootHttpInterceptor implements HttpInterceptor {

@@ -1,7 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { TranslateLoader } from "@ngx-translate/core";
 import { Observable } from 'rxjs';
-import { appconfig } from "src/assets/config";
 
 export class ApiTranslateLoader implements TranslateLoader {
 

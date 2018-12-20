@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\src\assets\config.ts" />
+    <None Remove="ClientApp\src\assets\appconfig.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -83,7 +83,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\assets\config.ts" />
+    <TypeScriptCompile Include="ClientApp\src\assets\appconfig.ts" />
     <TypeScriptCompile Include="wwwroot\lib\popper.js\index.d.ts" />
   </ItemGroup>
 

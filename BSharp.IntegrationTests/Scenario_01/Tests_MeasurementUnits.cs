@@ -7,25 +7,15 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
-namespace BSharp.IntegrationTests
+namespace BSharp.IntegrationTests.Scenario_01
 {
-    [TestCaseOrderer(TestOrderer.TypeName, TestOrderer.AssemblyName)]
-    public class Scenario_01 : IClassFixture<Scenario_01_WebApplicationFactory>
+    public partial class Scenario_01
     {
-        private readonly HttpClient _client;
-        private readonly SharedCollection _shared;
-        private readonly ITestOutputHelper _output;
+        public const string MeasurementUnits = "01 - Measurement Units";
 
-        public Scenario_01(Scenario_01_WebApplicationFactory sharedContext, ITestOutputHelper output)
-        {
-            _client = sharedContext.GetClient();
-            _shared = sharedContext.GetSharedCollection();
-            _output = output;
-        }
-
-        [Fact(DisplayName = "A0000 - Getting all before creating any records returns a 200 OK empty collection")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "001 - Getting all before creating any records returns a 200 OK empty collection")]
         public async Task Test0000()
         {
             var response = await _client.GetAsync($"/api/measurement-units");
@@ -44,7 +34,8 @@ namespace BSharp.IntegrationTests
             Assert.Empty(responseData.Data);
         }
 
-        [Fact(DisplayName = "A0001 - Getting a non-existent measurement unit id returns a 404 Not Found")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "002 - Getting a non-existent measurement unit id returns a 404 Not Found")]
         public async Task Test0001()
         {
             int nonExistentId = 1;
@@ -54,7 +45,8 @@ namespace BSharp.IntegrationTests
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "A0002 - Saving a single well-formed MeasurementUnitForSave returns a 200 OK result")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "003 - Saving a single well-formed MeasurementUnitForSave returns a 200 OK result")]
         public async Task Test0002()
         {
             // Prepare a well formed entity
@@ -94,7 +86,8 @@ namespace BSharp.IntegrationTests
             _shared.SetItem("MeasurementUnit_kg", responseDto);
         }
 
-        [Fact(DisplayName = "A0003 - Getting the Id of the MeasurementUnitForSave just saved returns a 200 OK result")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "004 - Getting the Id of the MeasurementUnitForSave just saved returns a 200 OK result")]
         public async Task Test0003()
         {
             // Query the API for the Id that was just returned from the Save
@@ -118,7 +111,8 @@ namespace BSharp.IntegrationTests
             Assert.Equal(entity.UnitAmount, responseDto.UnitAmount);
         }
 
-        [Fact(DisplayName = "A0004 - Saving a MeasurementUnitForSave with an existing code returns a 422 Unprocessable Entity")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "005 - Saving a MeasurementUnitForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test0004()
         {
             // Prepare a unit with the same code 'kg' as one that has been saved already
@@ -154,7 +148,8 @@ namespace BSharp.IntegrationTests
             Assert.Contains("already used", message.ToLower());
         }
 
-        [Fact(DisplayName = "A0005 - Saving a MeasurementUnitForSave trims string fields with trailing or leading spaces")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "006 - Saving a MeasurementUnitForSave trims string fields with trailing or leading spaces")]
         public async Task Test0005()
         {
             // Prepare a DTO for save, that contains leading and 
@@ -188,7 +183,8 @@ namespace BSharp.IntegrationTests
             _shared.SetItem("MeasurementUnit_km", responseDto);
         }
 
-        [Fact(DisplayName = "A0006 - Deleting an existing measurement unit Id returns a 200 OK")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "007 - Deleting an existing measurement unit Id returns a 200 OK")]
         public async Task Test0006()
         {
             // Get the Id
@@ -204,7 +200,8 @@ namespace BSharp.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "A0007 - Getting an Id that was just deleted returns a 404 Not Found")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "008 - Getting an Id that was just deleted returns a 404 Not Found")]
         public async Task Test0007()
         {
             // Get the Id
@@ -219,7 +216,8 @@ namespace BSharp.IntegrationTests
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "A0008 - Deactivating an active measurement unit returns a 200 OK inactive entity")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "009 - Deactivating an active measurement unit returns a 200 OK inactive entity")]
         public async Task Test0008()
         {
             // Get the Id
@@ -242,7 +240,8 @@ namespace BSharp.IntegrationTests
             Assert.False(responseDto.IsActive, "The Measurement Unit was not deactivated");
         }
 
-        [Fact(DisplayName = "A0009 - Activating an inactive measurement unit returns a 200 OK active entity")]
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "010 - Activating an inactive measurement unit returns a 200 OK active entity")]
         public async Task Test0009()
         {
             // Get the Id

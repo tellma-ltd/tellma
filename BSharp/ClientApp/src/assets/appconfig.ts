@@ -1,0 +1,4 @@
+var appconfig = {
+  apiAddress: '',
+  identityAddress: ''
+};

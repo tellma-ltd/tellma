@@ -15,10 +15,10 @@ using System.Linq;
 using System.Net.Http;
 using static BSharp.Data.ApplicationContext;
 
-namespace BSharp.IntegrationTests
+namespace BSharp.IntegrationTests.Scenario_01
 {
     /// <summary>
-    /// An instance of this class is shared across all the test method of <see cref="Scenario_01"/>
+    /// An instance of this class is shared across all the test method of <see cref="T01_MeasurementUnits"/>
     /// </summary>
     public class Scenario_01_WebApplicationFactory : WebApplicationFactory<Startup>
     {
@@ -38,7 +38,6 @@ namespace BSharp.IntegrationTests
                     new Startup(config).ConfigureServices(services);
                 }
 
-
                 //////////// Setup
                 _provider = services.BuildServiceProvider();
                 using (var scope = _provider.CreateScope())
@@ -46,34 +45,34 @@ namespace BSharp.IntegrationTests
                     // Note: The goal is to eventually trim this down to just provisioning the databases
                     // and have the remainder of the setup and configuratio done in the tests through the API, when the API is ready
 
-                    // (1) Manager Context migrated the usual way, add one tenant for dev and all translations
-                    var managerContext = scope.ServiceProvider.GetRequiredService<ManagerContext>();
-                    managerContext.Database.EnsureDeleted();
-                    managerContext.Database.Migrate();
-                    if (!managerContext.Tenants.Any())
+                    // (1) Admin Context migrated the usual way, add one tenant for dev and all translations
+                    var adminContext = scope.ServiceProvider.GetRequiredService<AdminContext>();
+                    adminContext.Database.EnsureDeleted();
+                    adminContext.Database.Migrate();
+                    if (!adminContext.Tenants.Any())
                     {
-                        managerContext.Tenants.Add(new Tenant
+                        adminContext.Tenants.Add(new Tenant
                         {
                             Id = 101,
                             Name = "Contoso, Inc.",
                             ShardId = 1
                         });
 
-                        managerContext.Tenants.Add(new Tenant
+                        adminContext.Tenants.Add(new Tenant
                         {
                             Id = 102,
                             Name = "Fabrikam & Co.",
                             ShardId = 1
                         });
 
-                        managerContext.SaveChanges();
+                        adminContext.SaveChanges();
                     }
 
                     // Seed translations
-                    managerContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[CoreTranslations]");
+                    adminContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[Translations]");
 
-                    managerContext.CoreTranslations.AddRange(CoreTranslation.TRANSLATIONS);
-                    managerContext.SaveChanges();
+                    adminContext.Translations.AddRange(Translation.TRANSLATIONS);
+                    adminContext.SaveChanges();
 
 
                     // (2) Application Context requires special handling in development, don't resolve it with DI
@@ -93,8 +92,8 @@ namespace BSharp.IntegrationTests
             //////////// Cleanup
             using (var scope = _provider.CreateScope())
             {
-                var managerContext = scope.ServiceProvider.GetRequiredService<ManagerContext>();
-                managerContext.Database.EnsureDeleted();
+                var adminContext = scope.ServiceProvider.GetRequiredService<AdminContext>();
+                adminContext.Database.EnsureDeleted();
             }
         }
 
