@@ -46,7 +46,7 @@ namespace BSharp.Services.Sharding
             // connection string that doesn't depend on tenant Id
             if (!_tenantIdProvider.HasTenantId())
             {
-                return _config.GetConnectionString(Constants.ManagerConnection);
+                return _config.GetConnectionString(Constants.AdminConnection);
             }
 
             string shardConnString = null;
@@ -76,7 +76,7 @@ namespace BSharp.Services.Sharding
                     {
                         using (var scope = _serviceProvider.CreateScope())
                         {
-                            var ctx = scope.ServiceProvider.GetRequiredService<ManagerContext>();
+                            var ctx = scope.ServiceProvider.GetRequiredService<AdminContext>();
                             shardConnString = ctx.Tenants.Include(e => e.Shard)
                                 .FirstOrDefault(e => e.Id == tenantId)?.Shard?.ConnectionString;
                         }
@@ -90,7 +90,7 @@ namespace BSharp.Services.Sharding
                         // purpose behind it is to make it easier to do development and also to set-up small instances that do not require sharding 
                         else if (shardConnString == SHARD_MANAGER_PLACEHOLDER)
                         {
-                            shardConnString = _config.GetConnectionString(Constants.ManagerConnection);
+                            shardConnString = _config.GetConnectionString(Constants.AdminConnection);
                         }
 
                         // ELSE: this is a normal shard
@@ -115,7 +115,7 @@ namespace BSharp.Services.Sharding
                             else
                             {
                                 // If the password of the shard is not set but the password of the shard manager is, use the shard manager's
-                                string shardManagerConnection = _config.GetConnectionString(Constants.ManagerConnection);
+                                string shardManagerConnection = _config.GetConnectionString(Constants.AdminConnection);
                                 var shardManagerConnBuilder = new SqlConnectionStringBuilder(shardManagerConnection);
 
                                 if (!string.IsNullOrWhiteSpace(shardManagerConnBuilder.Password))

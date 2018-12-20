@@ -67,37 +67,6 @@ namespace BSharp.Data.Migrations.Application
 
                     b.ToTable("MeasurementUnits");
                 });
-
-            modelBuilder.Entity("BSharp.Data.Model.Translation", b =>
-                {
-                    b.Property<int>("TenantId");
-
-                    b.Property<string>("Culture")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(450);
-
-                    b.Property<DateTimeOffset>("CreatedAt");
-
-                    b.Property<string>("CreatedBy");
-
-                    b.Property<DateTimeOffset>("ModifiedAt");
-
-                    b.Property<string>("ModifiedBy");
-
-                    b.Property<string>("Tier")
-                        .IsRequired()
-                        .HasMaxLength(50);
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(2048);
-
-                    b.HasKey("TenantId", "Culture", "Name");
-
-                    b.ToTable("Translations");
-                });
 #pragma warning restore 612, 618
         }
     }

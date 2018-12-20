@@ -1,7 +1,7 @@
 ﻿using BSharp.Data;
-using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +22,6 @@ namespace BSharp.Services.SqlLocalization
     /// </summary>
     public class SqlStringLocalizerFactory : ICachingStringLocalizerFactory
     {
-        private const string CORE = "core";
         private const string HTTP_CONTEXT_FLAG_NAME = "IsCacheUpdated";
         private const int DISTRIBUTED_CACHE_EXPIRATION_DAYS = 30;
 
@@ -35,21 +34,18 @@ namespace BSharp.Services.SqlLocalization
         private readonly IConfiguration _config;
         private readonly IDistributedCache _distributedCache;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ITenantIdProvider _tenantIdProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public SqlStringLocalizerFactory(
             IConfiguration config,
             IDistributedCache distributedCache,
             IServiceProvider serviceProvider,
-            ITenantIdProvider tenantIdProvider,
             IHttpContextAccessor httpContextAccessor
             )
         {
             _config = config.GetSection("Localization");
             _distributedCache = distributedCache;
             _serviceProvider = serviceProvider;
-            _tenantIdProvider = tenantIdProvider;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -65,7 +61,6 @@ namespace BSharp.Services.SqlLocalization
 
         private IStringLocalizer CreateSqlStringLocalizer()
         {
-            // Return the core translations
             return new SqlStringLocalizer(this);
         }
 
@@ -76,8 +71,8 @@ namespace BSharp.Services.SqlLocalization
             string neutralUICulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? specificUICulture : CultureInfo.CurrentUICulture.Parent.Name;
 
             // We refresh the cache once per request, and we track this using a flag in the HTTP Context object
-            var isUpdated = _httpContextAccessor.HttpContext == null ? false : _httpContextAccessor.HttpContext.Items[HTTP_CONTEXT_FLAG_NAME];
-            if (isUpdated == null || !(bool)isUpdated)
+            var isUpdated =  (bool?) (_httpContextAccessor.HttpContext == null ? false : _httpContextAccessor.HttpContext.Items[HTTP_CONTEXT_FLAG_NAME]);
+            if (!(isUpdated ?? false))
             {
                 // The list of cultures to update;
                 List<string> culturesToFreshenUp = new List<string>
@@ -110,69 +105,39 @@ namespace BSharp.Services.SqlLocalization
                 }
             }
 
-            var coreSpecificTranslations = _localCache[CacheKey(specificUICulture, CORE)]?.Translations;
-            var coreNeutralTranslations = _localCache[CacheKey(neutralUICulture, CORE)]?.Translations;
-            var coreDefaultTranslations = _localCache[CacheKey(defaultUICulture, CORE)]?.Translations;
+            _localCache.TryGetValue(CacheKey(specificUICulture), out LocalCacheItem specificCache);
+            _localCache.TryGetValue(CacheKey(neutralUICulture), out LocalCacheItem neutralCache);
+            _localCache.TryGetValue(CacheKey(defaultUICulture), out LocalCacheItem defaultCache);
+
             var result = new CascadingTranslations
             {
                 CultureName = specificUICulture,
-                CoreSpecificTranslations = coreSpecificTranslations,
-                CoreNeutralTranslations = coreNeutralTranslations,
-                CoreDefaultTranslations = coreDefaultTranslations,
+
+                SpecificTranslations = specificCache?.Translations,
+                NeutralTranslations = neutralCache?.Translations,
+                DefaultTranslations = defaultCache?.Translations,
             };
 
-            if (_tenantIdProvider.HasTenantId())
-            {
-                // If the request scope contains a tenant Id, return also the translations of that tenant Id
-                string tenantId = _tenantIdProvider.GetTenantId().ToString();
-
-                var tenantSpecificTranslations = _localCache[CacheKey(specificUICulture, tenantId)]?.Translations;
-                var tenantNeutralTranslations = _localCache[CacheKey(neutralUICulture, tenantId)]?.Translations;
-                var tenantDefaultTranslations = _localCache[CacheKey(defaultUICulture, tenantId)]?.Translations;
-
-                result.TenantSpecificTranslations = tenantSpecificTranslations;
-                result.TenantNeutralTranslations = tenantNeutralTranslations;
-                result.TenantDefaultTranslations = tenantDefaultTranslations;
-            }
-
-            // Return the core translations
+            // Return the translations
             return result;
         }
 
         /// <summary>
         /// Checks the local cache timestamp against the distributed cache timestamp if the local timestamp
         /// is blank or old than the distributed cache's, it updates it with a fresh copy from the database, 
-        /// it also updates it if the timestamp in the distributed cache is blank or invalid, this is
-        /// performed for both core and tenant localizations if tenant id is available
+        /// it also updates it if the timestamp in the distributed cache is blank or invalid
         /// </summary>
-        /// <param name="cultureName"></param>
         private void EnsureFreshnessOfCaches(params string[] cultureNames)
         {
-            // Here we prepare a list of all the caches that will be checked 
-            // based on the supplied culture names
-            List<CacheInfo> cachesToCheck = new List<CacheInfo>();
-            foreach (var cultureName in cultureNames)
-            {
-                // The cache representing the core translations in that specific culture
-                cachesToCheck.Add(new CacheInfo { CultureName = cultureName, TenantId = CORE });
-
-                // The cache representing the tenant translations in that specific culture
-                if (_tenantIdProvider.HasTenantId())
-                {
-                    string tenantId = _tenantIdProvider.GetTenantId().ToString();
-                    cachesToCheck.Add(new CacheInfo { CultureName = cultureName, TenantId = tenantId });
-                }
-            }
-
             // Determine which caches represent a stale caches and need refreshing
             List<CacheInfo> staleCaches = new List<CacheInfo>();
-            foreach (var cacheToCheck in cachesToCheck)
+            foreach (var cultureName in cultureNames)
             {
                 // Retrieve the timestamps from the distributed cache
-                var cacheKey = CacheKey(cacheToCheck.CultureName, cacheToCheck.TenantId);
+                var cacheKey = CacheKey(cultureName);
                 var distVersion = _distributedCache.GetString(cacheKey);
 
-                // If the distributed cache is blank or invalid, set it to NOW
+                // If the distributed cache is blank or invalid, set it to a new version
                 if (distVersion == null)
                 {
                     // Either the cache was flushed, or has been illegally tampered with,
@@ -194,66 +159,46 @@ namespace BSharp.Services.SqlLocalization
                 if (localCacheItem == null || localCacheItem.Version != distVersion)
                 {
                     // Remember the version from the distributed cache
-                    cacheToCheck.LatestVersion = distVersion;
-                    staleCaches.Add(cacheToCheck);
+                    staleCaches.Add(new CacheInfo
+                    {
+                        LatestVersion = distVersion,
+                        CultureName = cultureName
+                    });
                 }
             }
 
             ////// Efficiently retrieve a fresh list of translations for all stale caches
-            List<TranslationDTO> allFreshTranslations = new List<TranslationDTO>();
+            Dictionary<string, Dictionary<string, string>> freshTranslations = new Dictionary<string, Dictionary<string, string>>();
 
-            // First pass for core translations, those are retrieved from ManagerContext
-            var coreStaleCaches = staleCaches.Where(e => e.TenantId == CORE);
-            if (coreStaleCaches.Any())
+            // Get translations from AdminContext
+            if (staleCaches.Any())
             {
-                var staleCacheKeys = coreStaleCaches.Select(e => e.CultureName);
+                var staleCacheKeys = staleCaches.Select(e => e.CultureName);
                 using (var scope = _serviceProvider.CreateScope())
                 {
-                    var ctx = scope.ServiceProvider.GetRequiredService<ManagerContext>();
-                    var freshTranslations = ctx.CoreTranslations
-                        .Where(e => (e.Tier == Constants.Server || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.Culture))
-                        .ToList()
-                        .Select(e => new TranslationDTO { CacheKey = CacheKey(e.Culture, CORE), Name = e.Name, Value = e.Value });
+                    var ctx = scope.ServiceProvider.GetRequiredService<AdminContext>();
+                    var freshTranslationsQuery = from e in ctx.Translations
+                                                 where (e.Tier == Constants.Server || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.CultureId)
+                                                 group e by e.CultureId into g
+                                                 select g;
 
-                    allFreshTranslations.AddRange(freshTranslations);
+                    freshTranslations = freshTranslationsQuery.AsNoTracking().ToDictionary(
+                        g => CacheKey(g.Key), 
+                        g => g.ToDictionary(e => e.Name, e => e.Value));
                 }
             }
-
-            // Second pass for tenant translations, those are retrieved from ApplicationContext
-            var tenantStaleCaches = staleCaches.Where(e => e.TenantId != CORE);
-            if (tenantStaleCaches.Any())
-            {
-                var staleCacheKeys = tenantStaleCaches.Select(e => e.CultureName);
-                using (var scope = _serviceProvider.CreateScope())
-                {
-
-                    string tenantId = _tenantIdProvider.GetTenantId().ToString();
-                    var ctx = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-                    var freshTranslations = ctx.Translations
-                        .Where(e => (e.Tier == Constants.Server || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.Culture))
-                        .ToList()
-                        .Select(e => new TranslationDTO { CacheKey = CacheKey(e.Culture, tenantId), Name = e.Name, Value = e.Value });
-
-                    allFreshTranslations.AddRange(freshTranslations);
-                }
-            }
-
-            // Arrange all freshly retrieved translations in a dictionary
-            Dictionary<string, Dictionary<string, string>> allFreshTranslationsDic = allFreshTranslations
-                .GroupBy(e => e.CacheKey)
-                .ToDictionary(g => g.Key, g => g.ToDictionary(e => e.Name, e => e.Value));
 
             // Update the stale caches with the fresh translations
             foreach (var staleCache in staleCaches)
             {
                 // Get the cache key
-                var cacheKey = CacheKey(staleCache.CultureName, staleCache.TenantId);
+                var cacheKey = CacheKey(staleCache.CultureName);
 
                 // Prepare the translations in a dictionary, even an empty one if no list came from SQL
                 Dictionary<string, string> translations = new Dictionary<string, string>();
-                if (allFreshTranslationsDic.ContainsKey(cacheKey))
+                if (freshTranslations.ContainsKey(cacheKey))
                 {
-                    translations = allFreshTranslationsDic[cacheKey];
+                    translations = freshTranslations[cacheKey];
                 }
 
                 // Set the local cache
@@ -268,14 +213,11 @@ namespace BSharp.Services.SqlLocalization
         /// <summary>
         /// Marks the entry in the distributed cache 
         /// </summary>
-        /// <param name="cultureName"></param>
-        /// <param name="tenantId"></param>
-        /// <returns></returns>
-        public async Task InvalidateCacheAsync(string cultureName, int? tenantId = null)
+        public async Task InvalidateCacheAsync(string cultureName)
         {
-            var cacheKey = CacheKey(cultureName, tenantId?.ToString() ?? CORE);
-            var value = Guid.NewGuid().ToString();
-            await _distributedCache.SetStringAsync(cacheKey, value, GetDistributedCacheOptions());
+            var cacheKey = CacheKey(cultureName);
+            var newVersion = Guid.NewGuid().ToString();
+            await _distributedCache.SetStringAsync(cacheKey, newVersion, GetDistributedCacheOptions());
         }
 
         /// <summary>
@@ -295,16 +237,14 @@ namespace BSharp.Services.SqlLocalization
 
         /// <summary>
         /// Generates the keys used in local and distributed caches
-        /// based on the culture and the tenant Id
+        /// based on the culture
         /// </summary>
-        /// <param name="cultureName"></param>
-        /// <param name="tenantId"></param>
         /// <returns>The key to be used in the local and distributed cache</returns>
-        private string CacheKey(string cultureName, string tenantId)
-            => $"localization:{tenantId}:{cultureName}";
+        private string CacheKey(string cultureName)
+            => $"localization:{cultureName}";
 
         /// <summary>
-        /// Simple DTO to encapsulte an entry in the local cache
+        /// Simple DTO to encapsulate an entry in the local cache
         /// </summary>
         private class LocalCacheItem
         {
@@ -313,23 +253,11 @@ namespace BSharp.Services.SqlLocalization
         }
 
         /// <summary>
-        /// Simple DTO to temporarily store translations that are freshly retrieved
-        /// from SQL
-        /// </summary>
-        private class TranslationDTO
-        {
-            public string CacheKey { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
-        }
-
-        /// <summary>
         /// Simple DTO to temporarily represent a stale cache in the cache refresh logic
         /// </summary>
         private class CacheInfo
         {
             public string LatestVersion { get; set; }
-            public string TenantId { get; set; }
             public string CultureName { get; set; }
         }
     }

@@ -1,1 +1,303 @@
-/* You can add global styles to this file, and also import other style files */
+
+///////////////////////////////// Bootstrap 4 /////////////////////////////////
+
+// Customize Bootstrap by overriding its default variables
+$primary: #17a2b8; // Classy cyan
+$dark-primary: #008784;
+$info: #007bff; // Bright blue
+$enable-rounded: false; // Square corners
+$font-size-base: 0.9rem; // The default font (1rem) is too big
+
+@import "node_modules/bootstrap/scss/bootstrap";
+
+// Remove any other round corners
+.modal-content, .dropdown-menu {
+  border-radius: 0;
+}
+
+// Change the striped
+/*.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.03);
+}*/
+
+// This solves a problem in responsive tables that contain dropdowns
+@media only screen and (max-width: 767px) {
+  .table-responsive .dropdown-menu {
+    position: static !important;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  .table-responsive {
+    overflow: visible;
+  }
+}
+
+a {
+  color: $dark-primary;
+}
+
+.navbar {
+  padding : 0.375rem 0.75rem
+}
+
+///////////////////////////////// BSharp /////////////////////////////////
+
+.b-brand {
+  color: $primary;
+}
+
+.b-banner {
+  display: none;
+}
+
+@media only screen and (min-width: 1200px) {
+  // This optimization ensures that the large banner image is only loaded when it is
+  // displayed on large screens, saving the bandwidth and data usage on mobile phones
+  .b-banner {
+    display: flex;
+    height: 100vh;
+    /*background-image: url('assets/images/banner.jpg');*/
+    background-position: 50%;
+    background-size: cover;
+    text-align: center !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .b-marketing-banner-text {
+    width: 100%;
+    color: white;
+    font-size: 3rem;
+    letter-spacing: -1px;
+    background: rgb(0, 0, 0);
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+  }
+}
+
+
+// If its parent is a column flex box, it occupies the rest of the screen
+.b-rest-of-screen {
+  flex: 1 0;
+  overflow-y: auto;
+}
+
+// These are buttons that only have an icon in them
+.b-white-button, .b-white-button.disabled, .b-white-button:disabled {
+  background: white;
+  border-color: white;
+}
+
+// Make the primary text a little darker since easier to read
+.text-primary {
+  color: $dark-primary !important;
+}
+
+.b-vertical-align-middle {
+  vertical-align: middle;
+}
+
+.b-pointer {
+  cursor: pointer;
+}
+
+// Makes sure that tiles don't collapse when certain
+// fields inside them are empty
+.b-tile span:empty:before {
+  content: "\200b";
+}
+
+.b-tile {
+  @extend .b-pointer;
+}
+
+.b-tile:hover {
+  box-shadow: 2px 2px 2px -2px dimgrey;
+}
+
+.b-paper {
+  max-width: 1150px;
+  box-shadow: 0 5px 20px -15px black;
+}
+
+.b-toolbar {
+  padding-right: 0.125rem !important;
+  padding-left: 0.125rem !important;
+}
+
+.b-toolbar button {
+  margin-right: 0.125rem;
+  margin-left: 0.125rem;
+}
+
+
+.b-h2 {
+  margin-bottom: 0.5rem;
+  font-family: inherit;
+  line-height: 1.2;
+  color: inherit;
+  font-size: 1.8rem;
+}
+
+.b-input {
+  border-width: 0 0 1px 0;
+  border-color: gray;
+  background-color: transparent;
+  padding: 0 !important;
+  height: auto;
+}
+
+.b-input:focus {
+  background-color: transparent;
+  box-shadow: 0 2px $primary;
+}
+
+.b-input.is-invalid:focus {
+  box-shadow: 0 2px $danger;
+}
+
+.is-invalid .b-input {
+  border-color: $danger;
+}
+
+.is-invalid .b-input:focus {
+  box-shadow: 0 2px $danger;
+}
+
+// The style for the "Saving" indicator at the bottom right
+.b-corner-indicator {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 1051;
+  animation-delay: 0.1s;
+}
+
+// Edge browser shows a little X button in input field that lets you
+// clear that field, but this button doesn't seem to signal angular's
+// ngModel to update the model, here we simply hide that X button
+input::-ms-clear {
+  display: none;
+}
+
+// The below code styles the state flow chart, credit goes to
+// this gentleman: https://css-tricks.com/triangle-breadcrumbs/
+$flow-state-active: #f8f9fa;
+$flow-border: #dee2e6;
+$flow-state: white;
+$flow-text: #6c757d;
+
+.b-flow-chart {
+  overflow: hidden;
+  margin-right: -0.125rem !important;
+  border-left: 1px solid $flow-border;
+}
+
+.b-flow-chart div {
+  float: left;
+}
+
+.b-flow-chart div span {
+  color: $flow-text;
+  padding: 10px 0 10px 50px;
+  background-color: $flow-state;
+  position: relative;
+  display: block;
+  float: left;
+}
+
+.b-flow-chart div:first-child span {
+  padding-left: 25px;
+}
+
+.b-flow-chart div:last-child span {
+  padding-right: 25px;
+}
+
+.b-flow-chart div span::after {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 50px solid transparent;
+  border-bottom: 50px solid transparent;
+  border-left: 30px solid $flow-state;
+  position: absolute;
+  top: 50%;
+  margin-top: -50px;
+  left: 100%;
+  z-index: 2;
+}
+
+.b-flow-chart div span::before {
+  content: " ";
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 50px solid transparent;
+  border-bottom: 50px solid transparent;
+  border-left: 30px solid $flow-border;
+  position: absolute;
+  top: 50%;
+  margin-top: -50px;
+  margin-left: 1px;
+  left: 100%;
+  z-index: 1;
+}
+
+
+.b-lone-state {
+  border-left: 1px solid $flow-border;
+  margin-right: -0.125rem !important;
+  padding: 10px 20px;
+}
+
+.b-lone-state span {
+  color: $flow-text;
+}
+
+.b-flow-chart div.active span, .b-lone-state.active {
+  background-color: $flow-state-active;
+  font-weight: bold;
+}
+
+.b-flow-chart div.active span::after {
+  border-left-color: $flow-state-active;
+}
+
+// Set the layout for the main document and the sidebar
+// on large screens, show them side by side, on smaller
+// screens show them stacked vertically
+.b-main-and-side {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.b-sidebar {
+  width: 100% !important;
+  border-top: 1px solid $flow-border;
+  flex: 1 0;
+  height: 100%;
+}
+
+@media only screen and (min-width: 1534px) {
+
+  .b-main-and-side {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .b-main-document {
+    width: 67% !important;
+    overflow-y: auto;
+  }
+
+  .b-sidebar {
+    width: 33% !important;
+    border-top: none;
+    border-left: 1px solid $flow-border;
+    margin-left: -1px;
+    overflow-y: auto;
+  }
+}

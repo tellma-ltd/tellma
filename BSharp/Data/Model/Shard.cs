@@ -18,7 +18,7 @@ namespace BSharp.Data.Model
 
         internal static void OnModelCreating(ModelBuilder builder)
         {
-            // There is always a minium of one shard that resides in the manager context itself
+            // There is always a minium of one shard that resides in the admin context itself
             builder.Entity<Shard>()
                 .HasData(new Shard
                 {

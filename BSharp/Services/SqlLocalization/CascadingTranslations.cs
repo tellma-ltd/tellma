@@ -13,12 +13,9 @@ namespace BSharp.Services.SqlLocalization
     {
         public string CultureName { get; set; }
 
-        public Dictionary<string, string> TenantSpecificTranslations { get; set; } // ar-SA, 101
-        public Dictionary<string, string> CoreSpecificTranslations { get; set; } // ar-SA
-        public Dictionary<string, string> TenantNeutralTranslations { get; set; } // ar, 101
-        public Dictionary<string, string> CoreNeutralTranslations { get; set; } // ar
-        public Dictionary<string, string> TenantDefaultTranslations { get; set; } // en, 101
-        public Dictionary<string, string> CoreDefaultTranslations { get; set; } // en
+        public Dictionary<string, string> SpecificTranslations { get; set; } // ar-SA
+        public Dictionary<string, string> NeutralTranslations { get; set; } // ar
+        public Dictionary<string, string> DefaultTranslations { get; set; } // en
 
         /// <summary>
         /// Returns the translation dictionaries in descending order of precendence
@@ -26,12 +23,9 @@ namespace BSharp.Services.SqlLocalization
         /// <returns></returns>
         public IEnumerable<Dictionary<string, string>> InDescendingOrderOfPrecedence()
         {
-            yield return TenantSpecificTranslations; // highest precedence
-            yield return CoreSpecificTranslations;
-            yield return TenantNeutralTranslations;
-            yield return CoreNeutralTranslations;
-            yield return TenantDefaultTranslations;
-            yield return CoreDefaultTranslations; // lowest precedence
+            yield return SpecificTranslations; // highest precedence
+            yield return NeutralTranslations;
+            yield return DefaultTranslations; // lowest precedence
         }
     }
 

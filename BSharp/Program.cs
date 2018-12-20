@@ -44,34 +44,34 @@ namespace BSharp
                 {
                     try
                     {
-                        // (1) Manager Context migrated the usual way, add one tenant for dev and all translations
-                        var managerContext = scope.ServiceProvider.GetRequiredService<ManagerContext>();
-                        managerContext.Database.Migrate();
-                        if (!managerContext.Tenants.Any())
+                        // (1) Admin Context migrated the usual way, add one tenant for dev and all translations
+                        var adminContext = scope.ServiceProvider.GetRequiredService<AdminContext>();
+                        adminContext.Database.Migrate();
+                        if (!adminContext.Tenants.Any())
                         {
-                            managerContext.Tenants.Add(new Tenant
+                            adminContext.Tenants.Add(new Tenant
                             {
                                 Id = 101,
                                 Name = "Contoso, Inc.",
                                 ShardId = 1
                             });
 
-                            managerContext.Tenants.Add(new Tenant
+                            adminContext.Tenants.Add(new Tenant
                             {
                                 Id = 102,
                                 Name = "Fabrikam & Co.",
                                 ShardId = 1
                             });
 
-                            managerContext.SaveChanges();
+                            adminContext.SaveChanges();
                         }
 
                         // Translations are seeded here for a better development experience since they change 
                         // frequently, in the future this seeding will be moved to migrations instead
-                        managerContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[CoreTranslations]");
+                        adminContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[Translations]");
 
-                        managerContext.CoreTranslations.AddRange(CoreTranslation.TRANSLATIONS);
-                        managerContext.SaveChanges();
+                        adminContext.Translations.AddRange(Translation.TRANSLATIONS);
+                        adminContext.SaveChanges();
 
 
                         // (2) Application Context requires special handling in development, don't resolve it with DI

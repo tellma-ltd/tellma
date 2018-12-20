@@ -41,11 +41,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\app\controls\" />
-    <Folder Include="ClientApp\src\app\data\" />
-    <Folder Include="ClientApp\src\app\layouts\" />
+    <None Remove="ClientApp\src\assets\config.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ClientApp\src\app\widgets\" />
     <Folder Include="ClientApp\src\app\misc\" />
-    <Folder Include="ClientApp\src\app\screens\" />
+    <Folder Include="ClientApp\src\app\features\" />
     <Folder Include="Pages\Account\" />
     <Folder Include="wwwroot\lib\qrcode\" />
   </ItemGroup>
@@ -81,6 +83,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\assets\config.ts" />
     <TypeScriptCompile Include="wwwroot\lib\popper.js\index.d.ts" />
   </ItemGroup>
 

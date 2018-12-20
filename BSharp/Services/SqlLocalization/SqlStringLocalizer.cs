@@ -82,11 +82,7 @@ namespace BSharp.Services.SqlLocalization
                 // even though the current UI culture is a scoped value and the localizer is transient
                 if (_translations == null || CultureInfo.CurrentUICulture.Name != _translations.CultureName)
                 {
-                    // Check again inside the writer lock
-                    if (_translations == null || CultureInfo.CurrentUICulture.Name != _translations.CultureName)
-                    {
-                        _translations = _factory.GetTranslationsForCurrentCulture();
-                    }
+                    _translations = _factory.GetTranslationsForCurrentCulture();
                 }
 
                 // Go over the dictionaries one by one and return the first hit

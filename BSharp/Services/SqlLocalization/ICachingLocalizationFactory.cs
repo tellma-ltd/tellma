@@ -8,6 +8,6 @@ namespace BSharp.Services.SqlLocalization
 {
     public interface ICachingStringLocalizerFactory : IStringLocalizerFactory
     {
-        Task InvalidateCacheAsync(string cultureName, int? tenantId);
+        Task InvalidateCacheAsync(string cultureName);
     }
 }

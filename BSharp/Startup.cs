@@ -30,13 +30,13 @@ namespace BSharp
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Register the manager context
-            services.AddDbContext<ManagerContext>(opt =>
-                opt.UseSqlServer(_config.GetConnectionString(Constants.ManagerConnection))
+            // Register the admin context
+            services.AddDbContext<AdminContext>(opt =>
+                opt.UseSqlServer(_config.GetConnectionString(Constants.AdminConnection))
                 .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
 
 
-            // The application context contains the shardlets, and unlike the manager context it acquires its connection
+            // The application context contains the shardlets, and unlike the other contexts it acquires its connection
             // string dynamically using IShardResolver when it is constructed, therefore this context cannot be
             // be registered in the DI the usual way with AddDbContext<T>()
             services.AddScoped<ApplicationContext>();
@@ -57,7 +57,7 @@ namespace BSharp
             {
                 services.AddDistributedSqlServerCache(opt =>
                 {
-                    opt.ConnectionString = _config.GetConnectionString(Constants.ManagerConnection);
+                    opt.ConnectionString = _config.GetConnectionString(Constants.AdminConnection);
                     opt.SchemaName = "dbo";
                     opt.TableName = "DistributedCache";
                     opt.ExpiredItemsDeletionInterval = TimeSpan.FromDays(15);

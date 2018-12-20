@@ -7,7 +7,7 @@ namespace BSharp.Services.Utilities
 {
     public static class Constants
     {
-        public const string ManagerConnection = nameof(ManagerConnection);
+        public const string AdminConnection = nameof(AdminConnection);
         public const string Server = "Server";
         public const string Client = "Client";
         public const string Shared = "Shared";

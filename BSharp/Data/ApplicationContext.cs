@@ -23,7 +23,6 @@ namespace BSharp.Data
     public class ApplicationContext : DbContext
     {
         // The database tables are listed below
-        public DbSet<Translation> Translations { get; set; }
         public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
 
         /// <summary>
@@ -104,9 +103,6 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            // Translations
-            AddTenantId<Translation>(builder, nameof(Translation.Culture), nameof(Translation.Name));
 
             // Measurement Units
             AddTenantId<MeasurementUnit>(builder);

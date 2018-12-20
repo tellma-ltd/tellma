@@ -3,14 +3,28 @@ import { NgModule } from '@angular/core';
 
 import { RootRoutingModule } from './root-routing.module';
 import { RootComponent } from './root.component';
+import { CompaniesComponent } from './features/companies/companies.component';
+import { PageNotFoundComponent } from './features/page-not-found/page-not-found.component';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { ApiTranslateLoader, ApiTranslateLoaderFactory } from './data/api-translate-loader';
+import { HttpClient } from '@angular/common/http';
 
 @NgModule({
   declarations: [
-    RootComponent
+    RootComponent,
+    CompaniesComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
-    RootRoutingModule
+    RootRoutingModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: ApiTranslateLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [],
   bootstrap: [RootComponent]
