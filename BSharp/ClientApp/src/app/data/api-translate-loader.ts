@@ -2,8 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { TranslateLoader } from "@ngx-translate/core";
 import { Observable } from 'rxjs';
 
+// A custom loader for ngx-translate that loads the translation from the API
 export class ApiTranslateLoader implements TranslateLoader {
-
 
   constructor(private http: HttpClient) { }
 

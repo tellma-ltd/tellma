@@ -44,11 +44,6 @@ namespace BSharp.Controllers.DTO
         public string Filter { get; set; }
 
         /// <summary>
-        /// Specifies which subset of the properties to include in the result, if left empty it means include all
-        /// </summary>
-        public string Select { get; set; }
-
-        /// <summary>
         /// Equivalent to linq's "Include", determines which related entities to include in 
         /// the result, if left empty then do not include any related entities
         /// </summary>
