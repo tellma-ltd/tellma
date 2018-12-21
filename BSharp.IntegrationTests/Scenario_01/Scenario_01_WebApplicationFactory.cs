@@ -32,7 +32,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 using (var scope = services.BuildServiceProvider().CreateScope())
                 {
                     var config = new CustomConnectionStringConfiguration(
-                        scope.ServiceProvider.GetRequiredService<IConfiguration>(), managerDbName: "BSharp-Scenario-01");
+                        scope.ServiceProvider.GetRequiredService<IConfiguration>(), adminDbName: "BSharp-Scenario-01");
 
                     services.AddSingleton<IConfiguration>(config);
                     new Startup(config).ConfigureServices(services);

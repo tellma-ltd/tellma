@@ -15,12 +15,12 @@ namespace BSharp.IntegrationTests.Utilities
     public class CustomConnectionStringConfiguration : IConfiguration
     {
         private readonly IConfiguration _config;
-        private readonly string _managerDbName;
+        private readonly string _adminDbName;
 
-        public CustomConnectionStringConfiguration(IConfiguration config, string managerDbName)
+        public CustomConnectionStringConfiguration(IConfiguration config, string adminDbName)
         {
             _config = config;
-            _managerDbName = managerDbName;
+            _adminDbName = adminDbName;
         }
 
         public string this[string key]
@@ -29,7 +29,7 @@ namespace BSharp.IntegrationTests.Utilities
             {
                 if (key == Constants.AdminConnection)
                 {
-                    return $"Server = (localdb)\\MSSQLLocalDB; Database = {_managerDbName}; Trusted_Connection = true; MultipleActiveResultSets = true";
+                    return $"Server = .; Database = {_adminDbName}; Trusted_Connection = true; MultipleActiveResultSets = true";
                 }
 
                 return _config[key];
@@ -56,7 +56,7 @@ namespace BSharp.IntegrationTests.Utilities
 
             if (key == "ConnectionStrings")
             {
-                return new CustomConnectionStringConfigurationSection(section, _managerDbName);
+                return new CustomConnectionStringConfigurationSection(section, _adminDbName);
             }
 
             return section;

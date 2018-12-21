@@ -11,7 +11,7 @@ namespace BSharp.Controllers.DTO
         public string Value { get; set; }
     }
 
-    public class Translation : TranslationForSave, IAuditedDto
+    public class Translation : TranslationForSave
     {
         [Display(Name = "T_Name")]
         public string Name { get; set; }
@@ -24,17 +24,5 @@ namespace BSharp.Controllers.DTO
 
         [Display(Name = "T_Notes")]
         public string Notes { get; set; }
-
-        [Display(Name = "CreatedAt")]
-        public DateTimeOffset? CreatedAt { get; set; }
-
-        [Display(Name = "CreatedBy")]
-        public string CreatedBy { get; set; }
-
-        [Display(Name = "ModifiedAt")]
-        public DateTimeOffset? ModifiedAt { get; set; }
-
-        [Display(Name = "ModifiedBy")]
-        public string ModifiedBy { get; set; }
     }
 }
