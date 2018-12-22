@@ -1,4 +1,4 @@
-var appconfig = {
+let appconfig = {
   apiAddress: '',
   identityAddress: ''
 };

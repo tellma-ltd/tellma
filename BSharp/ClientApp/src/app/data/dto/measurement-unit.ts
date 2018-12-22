@@ -1,4 +1,4 @@
-import { DtoForSaveKeyBase } from "./dto-for-save-key-base";
+import { DtoForSaveKeyBase } from './dto-for-save-key-base';
 
 export class MeasurementUnitForSave extends DtoForSaveKeyBase {
   Name: string;

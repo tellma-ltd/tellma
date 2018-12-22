@@ -31,20 +31,21 @@ export class RootComponent {
     'ug',   /* 'Uyghurche / ئۇيغۇرچە', Uyghur */
     'ur',   /* 'اردو', Urdu */
     'yi'    /* 'ייִדיש', Yiddish */
-  ]
+  ];
 
   constructor(private translate: TranslateService, private route: ActivatedRoute) {
 
-    let defaultLang = 'en'; // TODO load from app configuration
+    const defaultLang = 'en'; // TODO load from app configuration
     this.translate.setDefaultLang(defaultLang);
     this.translate.use('en'); // TODO load from query string or from company/user configuration, should set it here to avoid flickr
 
     // this.store.culture = defaultLang;
 
     this.route.queryParamMap.subscribe(e => {
-      let culture = e.get('ui-culture');
-      if (!!culture)
+      const culture = e.get('ui-culture');
+      if (!!culture) {
         this.setLanguage(culture);
+      }
     });
   }
 

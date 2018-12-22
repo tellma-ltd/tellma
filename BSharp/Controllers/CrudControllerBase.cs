@@ -388,7 +388,8 @@ namespace BSharp.Controllers
                 Desc = args.Desc,
                 TotalCount = totalCount,
                 Data = resultData,
-                RelatedEntities = relatedEntities
+                RelatedEntities = relatedEntities,
+                CollectionName = "MeasurementUnits"
             };
 
             // Finally return the result

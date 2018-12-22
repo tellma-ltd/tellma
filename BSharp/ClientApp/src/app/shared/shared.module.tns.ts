@@ -1,14 +1,14 @@
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 
-import { WidgetsRoutingModule } from './widgets-routing.module';
 import { NativeScriptCommonModule } from 'nativescript-angular/common';
+import { MasterComponent } from './master/master.component';
+import { DetailsComponent } from './details/details.component';
 
 @NgModule({
-  declarations: [],
+  declarations: [MasterComponent, DetailsComponent],
   imports: [
-    WidgetsRoutingModule,
     NativeScriptCommonModule
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })
-export class WidgetsModule { }
+export class SharedModule { }

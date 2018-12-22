@@ -41,13 +41,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\data\dto\activate-arguments.ts" />
+    <None Remove="ClientApp\src\app\data\dto\deactivate-arguments.ts" />
     <None Remove="ClientApp\src\app\data\dto\get-response.ts" />
+    <None Remove="ClientApp\src\app\data\util.ts" />
+    <None Remove="ClientApp\src\app\misc\util.ts" />
     <None Remove="ClientApp\src\assets\appconfig.ts" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\app\widgets\" />
-    <Folder Include="ClientApp\src\app\misc\" />
     <Folder Include="ClientApp\src\app\features\" />
     <Folder Include="Pages\Account\" />
     <Folder Include="wwwroot\lib\qrcode\" />
@@ -84,9 +86,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\data\dto\deactivate-arguments.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\data\dto\activate-arguments.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\data\dto\get-response.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\data\util.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\misc\util.ts" />
     <TypeScriptCompile Include="ClientApp\src\assets\appconfig.ts" />
     <TypeScriptCompile Include="wwwroot\lib\popper.js\index.d.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ClientApp\src\app\data\dto\deactivate-arguments.js">
+      <DependentUpon>deactivate-arguments.ts</DependentUpon>
+    </None>
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
@@ -115,5 +127,21 @@
       </ResolvedFileToPublish>
     </ItemGroup>
   </Target>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
 
 </Project>

@@ -9,6 +9,8 @@ namespace BSharp.Controllers.DTO
     {
         public TDto Entity { get; set; }
 
+        public string CollectionName { get; set; }
+        
         public Dictionary<string, IEnumerable<DtoForSaveBase>> RelatedEntities { get; set; }
     }
 }

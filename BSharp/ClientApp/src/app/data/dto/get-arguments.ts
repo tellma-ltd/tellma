@@ -1,10 +1,10 @@
 export class GetArguments {
-  Top: number;
-  Skip: number;
-  OrderBy: string;
-  Desc: boolean;
-  Search: string;
-  Filter: string;
-  Expand: string;
-  Inactive: boolean;
+  top?: number;
+  skip?: number;
+  orderBy?: string;
+  desc?: boolean;
+  search?: string;
+  filter?: string;
+  expand?: string;
+  inactive?: boolean;
 }

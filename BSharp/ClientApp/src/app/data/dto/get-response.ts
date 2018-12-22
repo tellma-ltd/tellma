@@ -1,12 +1,13 @@
-import { DtoForSaveKeyBase } from "./dto-for-save-key-base";
+import { DtoForSaveKeyBase } from './dto-for-save-key-base';
 
-export class GetResponse<TDto extends DtoForSaveKeyBase> {
+export class GetResponse<TDto extends DtoForSaveKeyBase = DtoForSaveKeyBase> {
   Skip: number;
   Top: number;
   OrderBy: string;
   Desc: boolean;
   TotalCount: number;
   Bag: { [key: string]: any; };
-  RelatedEntities: { [key: string]: DtoForSaveKeyBase[]; };
   Data: TDto[];
+  CollectionName: string;
+  RelatedEntities: { [key: string]: DtoForSaveKeyBase[]; };
 }

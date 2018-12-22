@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MeasurementUnitsDetailsComponent } from './measurement-units/measurement-units-details.component';
 import { MeasurementUnitsMasterComponent } from './measurement-units/measurement-units-master.component';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { ApplicationShellComponent } from './application-shell/application-shell.component';
 

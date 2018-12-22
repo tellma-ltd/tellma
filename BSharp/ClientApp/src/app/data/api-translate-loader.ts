@@ -1,5 +1,5 @@
-import { HttpClient } from "@angular/common/http";
-import { TranslateLoader } from "@ngx-translate/core";
+import { HttpClient } from '@angular/common/http';
+import { TranslateLoader } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 
 // A custom loader for ngx-translate that loads the translation from the API
@@ -10,11 +10,10 @@ export class ApiTranslateLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
     const address = appconfig.apiAddress;
     // TODO use local storage to to instantly load the app
-    return this.http.get(address + `api/translations/client-translations/${lang}`); 
+    return this.http.get(address + `api/translations/client-translations/${lang}`);
   }
 }
 
-export function ApiTranslateLoaderFactory(http: HttpClient)
-{
+export function ApiTranslateLoaderFactory(http: HttpClient) {
   return new ApiTranslateLoader(http);
 }

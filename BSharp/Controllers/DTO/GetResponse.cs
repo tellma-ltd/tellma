@@ -19,8 +19,10 @@ namespace BSharp.Controllers.DTO
 
         public Dictionary<string, object> Bag { get; set; }
 
-        public Dictionary<string, IEnumerable<DtoForSaveBase>> RelatedEntities { get; set; }
-
         public IEnumerable<TDto> Data { get; set; }
+
+        public string CollectionName { get; set; }
+
+        public Dictionary<string, IEnumerable<DtoForSaveBase>> RelatedEntities { get; set; }
     }
 }

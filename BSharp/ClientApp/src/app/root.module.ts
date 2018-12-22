@@ -7,7 +7,9 @@ import { CompaniesComponent } from './features/companies/companies.component';
 import { PageNotFoundComponent } from './features/page-not-found/page-not-found.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ApplicationHttpInterceptor } from './data/application-http-interceptor';
+import { WorkspaceService } from './data/workspace.service';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,14 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     })
 
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ApplicationHttpInterceptor,
+      deps: [WorkspaceService]
+      multi: true
+    }
+  ],
   bootstrap: [RootComponent]
 })
 export class RootModule { }
