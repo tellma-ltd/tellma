@@ -15,7 +15,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public const string MeasurementUnits = "01 - Measurement Units";
 
         [Trait(Testing, MeasurementUnits)]
-        [Fact(DisplayName = "001 - Getting all before creating any records returns a 200 OK empty collection")]
+        [Fact(DisplayName = "001 - Getting all measurement units before creating any returns a 200 OK empty collection")]
         public async Task Test0000()
         {
             var response = await _client.GetAsync($"/api/measurement-units");

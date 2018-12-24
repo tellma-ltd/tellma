@@ -63,6 +63,7 @@ export class Workspace {
   ////// Global state
   // Current UI culture selected by the user
   culture: string;
+  isRtl = false;
 
   // Current tenantID selected by the user
   tenantId: number;

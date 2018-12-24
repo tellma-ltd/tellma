@@ -1,3 +1,39 @@
-<b-master apiEndpoint="measurement-units">
-
+<b-master apiEndpoint="measurement-units"
+          mode="screen"
+          title="{{ 'MeasurementUnits' | translate }}"
+          [tileTemplate]="tile"
+          [tableColumnPaths]="['Name', 'Name2' , 'Code', 'UnitType', 'UnitAmount', 'BaseAmount']"
+          [tableColumnTemplates]="{
+            'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, width : '20%' },
+            'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, width : '20%' },
+            'Code' : { headerTemplate : header_Code, rowTemplate : row_Code, width : '15%' },
+            'UnitType' : { headerTemplate : header_UnitType, rowTemplate : row_UnitType, width : '15%' },
+            'UnitAmount' : { headerTemplate : header_UnitAmount, rowTemplate : row_UnitAmount, width : '15%' },
+            'BaseAmount' : { headerTemplate : header_BaseAmount, rowTemplate : row_BaseAmount, width : '15%' }
+          }">
 </b-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <span class="d-block text-truncate">{{ ws[id].Name }}</span>
+  <span class="small">{{ ws[id].Code }}</span>
+</ng-template>
+
+<!-- Table Templates -->
+<ng-template #header_Name>{{ 'MU_Name' | translate }}</ng-template>
+<ng-template #row_Name let-id="id"> {{ ws[id].Name }} </ng-template>
+
+<ng-template #header_Name2>{{ 'MU_Name2' | translate }}</ng-template>
+<ng-template #row_Name2 let-id="id"> {{ ws[id].Name2 }} </ng-template>
+
+<ng-template #header_Code>{{ 'MU_Code' | translate }}</ng-template>
+<ng-template #row_Code let-id="id"> {{ ws[id].Code }} </ng-template>
+
+<ng-template #header_UnitType>{{ 'MU_UnitType' | translate }}</ng-template>
+<ng-template #row_UnitType let-id="id"> {{ UnitTypeLookup(ws[id].UnitType) | translate }} </ng-template>
+
+<ng-template #header_UnitAmount>{{ 'MU_UnitAmount' | translate }}</ng-template>
+<ng-template #row_UnitAmount let-id="id"> {{ ws[id].UnitAmount | number }} </ng-template>
+
+<ng-template #header_BaseAmount>{{ 'MU_BaseAmount' | translate }}</ng-template>
+<ng-template #row_BaseAmount let-id="id"> {{ ws[id].BaseAmount | number }} </ng-template>

@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -90,6 +91,7 @@ namespace BSharp.Controllers
                 var result = new GetByIdResponse<TDto>
                 {
                     Entity = entity,
+                    CollectionName = GetCollectionName(typeof(TDto)),
                     RelatedEntities = relatedEntities
                 };
 
@@ -389,12 +391,14 @@ namespace BSharp.Controllers
                 TotalCount = totalCount,
                 Data = resultData,
                 RelatedEntities = relatedEntities,
-                CollectionName = "MeasurementUnits"
+                CollectionName = GetCollectionName(typeof(TDto))
             };
 
             // Finally return the result
             return result;
         }
+
+        
 
         /// <summary>
         /// Saves the entities (Insert or Update) into the database after authorization and validation
@@ -637,7 +641,7 @@ namespace BSharp.Controllers
                             accRelatedModels.Add(relatedModel);
                         }
 
-                        // Implemtnations would have to handle navigation collections
+                        // Implementations would have to handle navigation collections
                     }
                 }
             }
@@ -648,11 +652,35 @@ namespace BSharp.Controllers
                 Flatten(model, relatedModels);
             }
 
+            var relatedDtos = relatedModels.Select(e => _mapper.Map<DtoForSaveBase>(e));
+
             // This groups the related entities by type name, and maps them to DTO using the mapper
-            var relatedEntities = relatedModels.GroupBy(e => e.GetType().Name)
+            var relatedEntities = relatedModels.GroupBy(e => GetCollectionName(e.GetType()))
                 .ToDictionary(g => g.Key, g => g.Select(e => _mapper.Map<DtoForSaveBase>(e)));
 
             return relatedEntities;
+        }
+
+        private static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never changes
+        private static string GetCollectionName(Type dtoType)
+        {
+            if (!_getCollectionNameCache.ContainsKey(dtoType))
+            {
+                string collectionName;
+                var attribute = dtoType.GetCustomAttributes<CollectionNameAttribute>(inherit: true).FirstOrDefault();
+                if (attribute != null)
+                {
+                    collectionName = attribute.Name;
+                }
+                else
+                {
+                    collectionName = dtoType.Name;
+                }
+
+                _getCollectionNameCache[dtoType] = collectionName;
+            }
+
+            return _getCollectionNameCache[dtoType];
         }
 
         /// <summary>

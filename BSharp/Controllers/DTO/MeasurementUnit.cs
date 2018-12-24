@@ -9,6 +9,7 @@ namespace BSharp.Controllers.DTO
     /// <summary>
     /// All savable DTOs must inherit from <see cref="DtoForSaveKeyBase{TKey}"/>
     /// </summary>
+    [CollectionName("MeasurementUnits")]
     public class MeasurementUnitForSave : DtoForSaveKeyBase<int?>
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]

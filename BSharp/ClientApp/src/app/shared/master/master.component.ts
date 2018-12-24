@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged, tap, switchMap, catchError } from '
 import { GetResponse } from 'src/app/data/dto/get-response';
 import { DtoForSaveKeyBase } from 'src/app/data/dto/dto-for-save-key-base';
 import { addToWorkspace } from 'src/app/data/util';
+import { resetComponentState } from '@angular/core/src/render3/instructions';
 
 enum SearchView {
   tiles = 'tiles',
@@ -29,8 +30,16 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Input()
   tileTemplate: TemplateRef<any>;
 
-  @Input() // TODO Add table definition
-  tableDef: TemplateRef<any>;
+  @Input()
+  tableColumnTemplates: {
+    name: string,
+    headerTemplate: TemplateRef<any>,
+    rowTemplate: TemplateRef<any>,
+    width: string
+  }[] = [];
+
+  @Input()
+  tableColumnPaths: string[];
 
   @Input()
   showCreateButton = true;
@@ -119,6 +128,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     // Remove previous Ids from the store
     let s = this.state;
     s.masterIds = [];
+    this.checked = {}; // clear all selection
     s.masterStatus = MasterStatus.loading;
 
     // Retrieve the entities
@@ -132,7 +142,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       expand: this.expand,
       inactive: false
     }).pipe(
-      tap((response:  GetResponse<DtoForSaveKeyBase>) => {
+      tap((response: GetResponse<DtoForSaveKeyBase>) => {
         s = this.state; // get the source
         s.masterStatus = MasterStatus.loaded;
         s.top = response.Top;
@@ -146,7 +156,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       catchError((friendlyError) => {
         s = this.state; // get the source
         s.masterStatus = MasterStatus.error;
-        s.errorMessage = friendlyError;
+        s.errorMessage = friendlyError.error;
         return of(null);
       })
     );
@@ -230,7 +240,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     const s = this.state;
     if (s.masterStatus === MasterStatus.loaded) {
       // If the data is loaded, just count the data
-      return Math.max(s.skip + s.masterIds.length - 1, 0);
+      return Math.max(s.skip + s.masterIds.length, 0);
     } else {
       // Otherwise dispaly the selected count while the data is loading
       return Math.min(s.skip + s.top, this.total);
@@ -324,6 +334,16 @@ export class MasterComponent implements OnInit, OnDestroy {
     }
   }
 
+  onImport() {
+    // TODO
+    console.log(this.checked);
+  }
+
+  onExport() {
+    // TODO
+  }
+
+
   get search(): string {
     return this.state.search;
   }
@@ -334,6 +354,44 @@ export class MasterComponent implements OnInit, OnDestroy {
       s.search = val;
     }
     this.searchChanged$.next(val);
+  }
+
+  public get flip() {
+    // This is to flip the icons
+    return this.workspace.ws.isRtl ? 'horizontal' : null;
+  }
+
+  public get tableColumnPathsAndExtras() {
+    // This method conditionally adds the multi-select column
+    let result = this.tableColumnPaths;
+
+    if (!result) {
+      result = [];
+    }
+
+    if (this.allowMultiselect) {
+      result = result.slice();
+      result.unshift('multiselect');
+    }
+
+    return result;
+  }
+  
+  // The multi-select checkboxes bind to properties in this object
+  public checked = {};
+
+  public get areAllChecked(): boolean {
+    return this.masterIds.length > 0 && this.masterIds.every(id => !!this.checked[id]);
+  }
+
+  onCheckAll() {
+    if (this.areAllChecked) {
+      // Uncheck all
+      this.masterIds.forEach(id => this.checked[id] = false);
+    } else {
+      // Check all
+      this.masterIds.forEach(id => this.checked[id] = true);
+    }
   }
 
 }

@@ -8,7 +8,7 @@ import { PageNotFoundComponent } from './features/page-not-found/page-not-found.
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
 import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ApplicationHttpInterceptor } from './data/application-http-interceptor';
+import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { WorkspaceService } from './data/workspace.service';
 
 @NgModule({
@@ -19,6 +19,7 @@ import { WorkspaceService } from './data/workspace.service';
   ],
   imports: [
     BrowserModule,
+
     RootRoutingModule,
     HttpClientModule,
     TranslateModule.forRoot({
@@ -33,8 +34,8 @@ import { WorkspaceService } from './data/workspace.service';
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: ApplicationHttpInterceptor,
-      deps: [WorkspaceService]
+      useClass: RootHttpInterceptor,
+      deps: [WorkspaceService],
       multi: true
     }
   ],

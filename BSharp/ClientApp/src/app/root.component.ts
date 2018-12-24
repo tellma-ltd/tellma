@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute } from '@angular/router';
+import { WorkspaceService } from './data/workspace.service';
 
 @Component({
   selector: 'b-root',
@@ -33,30 +34,30 @@ export class RootComponent {
     'yi'    /* 'ייִדיש', Yiddish */
   ];
 
-  constructor(private translate: TranslateService, private route: ActivatedRoute) {
+  constructor(private translate: TranslateService, private route: ActivatedRoute, private workspace : WorkspaceService) {
 
     const defaultLang = 'en'; // TODO load from app configuration
     this.translate.setDefaultLang(defaultLang);
-    this.translate.use('en'); // TODO load from query string or from company/user configuration, should set it here to avoid flickr
+    this.setCulture('en'); // TODO load from query string or from company/user configuration, should set it here to avoid flickr
 
     // this.store.culture = defaultLang;
 
     this.route.queryParamMap.subscribe(e => {
       const culture = e.get('ui-culture');
       if (!!culture) {
-        this.setLanguage(culture);
+        this.setCulture(culture);
       }
     });
   }
 
-  setLanguage(lang: string) {
-    this.translate.use(lang).subscribe(e => {
-      // this.store.culture = lang; // TODO set a centralized value (not company specific)
+  setCulture(culture: string) {
+    this.translate.use(culture).subscribe(e => {
+      this.workspace.ws.culture = culture;
+      this.workspace.ws.isRtl = this.rtlLanguages.some(e => culture.startsWith(e));
     });
   }
 
   get isRTL(): boolean {
-    const lang = 'en-US'; // TODO: read from centralized location
-    return this.rtlLanguages.some(e => lang.startsWith(e));
+    return this.workspace.ws.isRtl;
   }
 }

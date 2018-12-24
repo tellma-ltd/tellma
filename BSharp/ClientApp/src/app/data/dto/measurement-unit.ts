@@ -16,3 +16,13 @@ export class MeasurementUnit extends MeasurementUnitForSave {
   ModifiedAt: string;
   ModifiedBy: string;
 }
+
+export const MeasurementUnitUnitType = {
+  'Pure': 'MU_Pure',
+  'Time': 'MU_Time',
+  'Distance': 'MU_Distance',
+  'Count': 'MU_Count',
+  'Mass': 'MU_Mass',
+  'Volume': 'MU_Volume',
+  'Money': 'MU_Money'
+}

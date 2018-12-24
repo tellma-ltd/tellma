@@ -1,3 +1,172 @@
-<div>
-  {{ masterIds | json }}
+<div class="h-100 d-flex flex-column">
+  <div class="row  border-bottom">
+
+    <!-- Breadcrumb -->
+    <div class="col-6 p-1">
+      <ul class="breadcrumb bg-white mb-0">
+        <li class="breadcrumb-item active">
+          {{ title }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Search Box -->
+    <div class="col-6 p-1">
+      <div class="d-flex b-search">
+        <b-text-editor placeholder="{{ 'Search' | translate }}..." [(ngModel)]="search"></b-text-editor>
+
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="col-12 p-1 d-flex justify-content-between b-toolbar">
+
+      <!-- Left Buttons -->
+      <div>
+        <!-- Create -->
+        <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()" [disabled]="!canCreate">
+          <fa-icon icon="plus"></fa-icon>
+          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
+        </button>
+
+        <!-- Import -->
+        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onImport()">
+          <fa-icon icon="upload"></fa-icon>
+          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Import' | translate }}</span>
+        </button>
+
+        <!-- Refresh -->
+        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onRefresh()">
+          <fa-icon icon="sync-alt"></fa-icon>
+          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
+        </button>
+      </div>
+
+      <!-- Right Buttons -->
+      <div>
+        <!-- Paging -->
+        <div class="d-inline small mr-2 ml-2">
+          <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span> </span>
+          <span class="b-vertical-align-middle"> / {{ total | number }}</span>
+        </div>
+        <div class="d-inline">
+          <button class="btn btn-light btn-sm b-white-button"
+                  type="button" title="{{ 'First' | translate }}" (click)="onFirstPage()" [disabled]="!canFirstPage">
+            <fa-icon icon="angle-double-left" [flip]="flip"></fa-icon>
+          </button>
+          <button class="btn btn-light btn-sm b-white-button"
+                  type="button" title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+            <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+          </button>
+          <button class="btn btn-light btn-sm b-white-button"
+                  type="button" title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+            <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+          </button>
+        </div>
+
+        <!-- Tiles/Table Toggle -->
+        <div class="btn-group btn-group-toggle b-toolbar-button">
+          <label class="btn btn-sm btn-light" [class.active]="showTilesView" title="{{ 'Tiles' | translate }}" (click)="onTilesView()">
+            <input type="radio" name="searchView"><fa-icon icon="th-large"></fa-icon>
+          </label>
+          <label class="btn btn-sm btn-light" [class.active]="showTableView" title="{{ 'Table' | translate }}" (click)="onTableView()">
+            <input type="radio" name="searchView"><fa-icon icon="list" [flip]="flip"></fa-icon>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The search results -->
+  <div class="row b-rest-of-screen bg-light">
+    <div class="w-100">
+
+      <!-- Tiles -->
+      <div class="col-12" *ngIf="showTilesView">
+        <div class="row mb-3">
+          <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 p-0 p-sm-1" *ngFor="let id of masterIds">
+            <div class="border p-2 bg-white b-tile" [routerLink]="['./', id]">
+              <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Table: using the Angular CDK -->
+      <div class="w-100 table-responsive" *ngIf="showTableView">
+        <table class="table table-hover table-sm table-striped bg-white border-bottom b-master-table" cdk-table [dataSource]="masterIds">
+
+          <!-- The only purpose of this invisible TR is to suppress VS warnings -->
+          <tr style="display:none!important">
+
+
+            <!-- Column definitions -->
+            <ng-container cdkColumnDef="multiselect">
+
+              <!-- Checkboxes column -->
+              <th class="b-multiselect-th" cdk-header-cell *cdkHeaderCellDef>
+                <div class="ml-2 mr-2">
+                  <div class="custom-control custom-checkbox b-labelless-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked" (ngModelChange)="onCheckAll()">
+                    <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
+                  </div>
+
+                </div>
+              </th>
+              <td style="vertical-align:central" cdk-cell *cdkCellDef="let id">
+                <div class="ml-2 mr-2">
+
+                  <div class="custom-control custom-checkbox b-labelless-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
+                    <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container *ngFor="let colPath of tableColumnPaths">
+              <ng-container cdkColumnDef="{{colPath}}">
+
+                <!-- Column header -->
+                <th class="b-pointer" [style.width]="tableColumnTemplates[colPath].width" [class.dropdown-toggle]="orderBy === colPath" cdk-header-cell *cdkHeaderCellDef (click)="onOrderBy(colPath)">
+                  <ng-content *ngTemplateOutlet="tableColumnTemplates[colPath].headerTemplate">
+                  </ng-content>
+                </th>
+
+                <!-- Column rows -->
+                <td class="b-pointer" cdk-cell *cdkCellDef="let id" [routerLink]="['./', id]">
+                  <ng-container *ngTemplateOutlet="tableColumnTemplates[colPath].rowTemplate;context: { id: id }">
+                  </ng-container>
+                </td>
+              </ng-container>
+            </ng-container>
+          </tr>
+
+          <!-- Row definitions -->
+          <tr cdk-header-row *cdkHeaderRowDef="tableColumnPathsAndExtras" [class.dropup]="desc"></tr>
+          <tr cdk-row *cdkRowDef="let id; columns: tableColumnPathsAndExtras"></tr>
+
+        </table>
+      </div>
+
+
+      <!-- Spinner -->
+      <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner">
+        <b-spinner [scale]="2"></b-spinner>
+      </div>
+
+      <!-- No items found -->
+      <div class="w-100 pl-3 pr-3" *ngIf="showNoItemsFound">
+        {{ 'NoItemsFound' | translate }}
+      </div>
+
+      <!-- Error message -->
+      <b-error-message *ngIf="showErrorMessage">
+        {{ errorMessage }}
+      </b-error-message>
+    </div>
+  </div>
 </div>
+

@@ -204,6 +204,36 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "T_Tier", "Tier"),
             Ar(Constants.Shared, "T_Tier", "الطبقة"),
 
+            En(Constants.Client, "Search", "Search"),
+            Ar(Constants.Client, "Search", "بحث"),
+
+            En(Constants.Client, "Create", "Create"),
+            Ar(Constants.Client, "Create", "إنشاء"),
+
+            En(Constants.Client, "Import", "Import"),
+            Ar(Constants.Client, "Import", "استيراد"),
+
+            En(Constants.Client, "Refresh", "Refresh"),
+            Ar(Constants.Client, "Refresh", "تحديث"),
+
+            En(Constants.Client, "Tiles", "Tiles"),
+            Ar(Constants.Client, "Tiles", "مستطيلات"),
+
+            En(Constants.Client, "Table", "Table"),
+            Ar(Constants.Client, "Table", "جدول"),
+
+            En(Constants.Client, "First", "First"),
+            Ar(Constants.Client, "First", "الأول"),
+
+            En(Constants.Client, "Previous", "Previous"),
+            Ar(Constants.Client, "Previous", "السابق"),
+
+            En(Constants.Client, "Next", "Next"),
+            Ar(Constants.Client, "Next", "التالي"),
+
+            En(Constants.Client, "NoItemsFound", "No Items Found."),
+            Ar(Constants.Client, "NoItemsFound", ".لا يوجد بيانات"),
+
             // Choice lists
 
             En(Constants.Shared, "MU_Pure", "Pure"),
