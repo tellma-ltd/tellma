@@ -35,7 +35,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     name: string,
     headerTemplate: TemplateRef<any>,
     rowTemplate: TemplateRef<any>,
-    width: string
+      weight: string
   }[] = [];
 
   @Input()
@@ -63,7 +63,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   additionalCommands: TemplateRef<void>[]; // TODO
 
   @Input() // popup: limits the tiles to only 2 per row, hides import, export and multiselect
-  mode: 'popup' | 'screen' = 'popup';
+  mode: 'popup' | 'screen' = 'screen';
 
   @Output()
   select = new EventEmitter<number | string>();
@@ -305,6 +305,10 @@ export class MasterComponent implements OnInit, OnDestroy {
       (!this.masterIds || this.masterIds.length === 0);
   }
 
+  get isPopupMode(): boolean {
+    return this.mode === 'popup';
+  }
+
   onTilesView() {
     this.searchView = SearchView.tiles;
     this.urlStateChange();
@@ -316,7 +320,19 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   onCreate() {
-    this.router.navigate(['.', 'new'], { relativeTo: this.route });
+    if (this.isPopupMode) {
+      this.create.emit();
+    } else {
+      this.router.navigate(['.', 'new'], { relativeTo: this.route });
+    }
+  }
+
+  onSelect(id: number | string) {
+    if (this.isPopupMode) {
+      this.select.emit(id);
+    } else {
+      this.router.navigate(['.', id], { relativeTo: this.route });
+    }
   }
 
   get showCreate() {
@@ -343,6 +359,25 @@ export class MasterComponent implements OnInit, OnDestroy {
     // TODO
   }
 
+  colWith(colPath: string) {
+    // This returns an html percentage width based on the weights assigned to this column and all the other columns
+
+    // Get the weight of this column
+    const weight = this.tableColumnTemplates[colPath].weight || 1;
+
+    // Get the total weight of the other columns
+    let totalWeight = 0;
+    for (let i = 0; i < this.tableColumnPaths.length; i++) {
+      const path = this.tableColumnPaths[i];
+      if (this.tableColumnTemplates[path]) {
+        totalWeight = totalWeight + (this.tableColumnTemplates[path].weight || 1);
+      }
+    }
+
+    // Calculate the percentage, (
+    // if totalweight = 0 this method will never be called in the first place)
+    return ((weight / totalWeight) * 100) + '%';
+  }
 
   get search(): string {
     return this.state.search;

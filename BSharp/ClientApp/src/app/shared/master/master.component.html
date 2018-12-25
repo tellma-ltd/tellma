@@ -30,7 +30,7 @@
         </button>
 
         <!-- Import -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onImport()">
+        <button *ngIf="!isPopupMode" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onImport()">
           <fa-icon icon="upload"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Import' | translate }}</span>
         </button>
@@ -84,8 +84,8 @@
       <!-- Tiles -->
       <div class="col-12" *ngIf="showTilesView">
         <div class="row mb-3">
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 p-0 p-sm-1" *ngFor="let id of masterIds">
-            <div class="border p-2 bg-white b-tile" [routerLink]="['./', id]">
+          <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode" *ngFor="let id of masterIds">
+            <div class="border p-2 bg-white b-tile" (click)="onSelect(id)">
               <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
               </ng-container>
             </div>
@@ -130,13 +130,13 @@
               <ng-container cdkColumnDef="{{colPath}}">
 
                 <!-- Column header -->
-                <th class="b-pointer" [style.width]="tableColumnTemplates[colPath].width" [class.dropdown-toggle]="orderBy === colPath" cdk-header-cell *cdkHeaderCellDef (click)="onOrderBy(colPath)">
+                <th class="b-pointer" [style.width]="colWith(colPath)" [class.dropdown-toggle]="orderBy === colPath" cdk-header-cell *cdkHeaderCellDef (click)="onOrderBy(colPath)">
                   <ng-content *ngTemplateOutlet="tableColumnTemplates[colPath].headerTemplate">
                   </ng-content>
                 </th>
 
                 <!-- Column rows -->
-                <td class="b-pointer" cdk-cell *cdkCellDef="let id" [routerLink]="['./', id]">
+                <td class="b-pointer" cdk-cell *cdkCellDef="let id"  (click)="onSelect(id)">
                   <ng-container *ngTemplateOutlet="tableColumnTemplates[colPath].rowTemplate;context: { id: id }">
                   </ng-container>
                 </td>

@@ -82,7 +82,7 @@ export class MasterDetailsStore {
   search: string;
   orderBy: string;
   desc: boolean;
-  total = -1; // negative total means it is not valid and so hide it
+  total = 0; // negative total means it is not valid and so hide it
   filter: string;
   expand: string;
 

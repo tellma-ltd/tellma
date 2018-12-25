@@ -1,22 +1,28 @@
 <b-master apiEndpoint="measurement-units"
-          mode="screen"
+          [mode]="mode"
+          (select)="onSelect($event)"
           title="{{ 'MeasurementUnits' | translate }}"
           [tileTemplate]="tile"
-          [tableColumnPaths]="['Name', 'Name2' , 'Code', 'UnitType', 'UnitAmount', 'BaseAmount']"
+          [tableColumnPaths]="['Name', 'Name2' , 'Code', 'UnitType', 'UnitAmount', 'BaseAmount', 'IsActive']"
           [tableColumnTemplates]="{
-            'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, width : '20%' },
-            'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, width : '20%' },
-            'Code' : { headerTemplate : header_Code, rowTemplate : row_Code, width : '15%' },
-            'UnitType' : { headerTemplate : header_UnitType, rowTemplate : row_UnitType, width : '15%' },
-            'UnitAmount' : { headerTemplate : header_UnitAmount, rowTemplate : row_UnitAmount, width : '15%' },
-            'BaseAmount' : { headerTemplate : header_BaseAmount, rowTemplate : row_BaseAmount, width : '15%' }
+            'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
+            'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
+            'Code' : { headerTemplate : header_Code, rowTemplate : row_Code, weight : 1 },
+            'UnitType' : { headerTemplate : header_UnitType, rowTemplate : row_UnitType, weight : 1 },
+            'UnitAmount' : { headerTemplate : header_UnitAmount, rowTemplate : row_UnitAmount, weight : 1 },
+            'BaseAmount' : { headerTemplate : header_BaseAmount, rowTemplate : row_BaseAmount, weight : 1 },
+            'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
           }">
 </b-master>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
-  <span class="d-block text-truncate">{{ ws[id].Name }}</span>
-  <span class="small">{{ ws[id].Code }}</span>
+  <div class="d-flex justify-content-between">
+    <span class="d-block text-truncate">{{ ws[id].Name }}</span>
+  </div>
+  <div class="d-flex justify-content-between mt-1 small">
+    <span>{{ ws[id].Code }}</span>
+  </div>
 </ng-template>
 
 <!-- Table Templates -->
@@ -29,6 +35,9 @@
 <ng-template #header_Code>{{ 'MU_Code' | translate }}</ng-template>
 <ng-template #row_Code let-id="id"> {{ ws[id].Code }} </ng-template>
 
+<ng-template #header_IsActive>{{ 'MU_IsActive' | translate }}</ng-template>
+<ng-template #row_IsActive let-id="id"><ng-container *ngTemplateOutlet="isActiveTemplate; context: { id: id }"></ng-container></ng-template>
+
 <ng-template #header_UnitType>{{ 'MU_UnitType' | translate }}</ng-template>
 <ng-template #row_UnitType let-id="id"> {{ UnitTypeLookup(ws[id].UnitType) | translate }} </ng-template>
 
@@ -37,3 +46,10 @@
 
 <ng-template #header_BaseAmount>{{ 'MU_BaseAmount' | translate }}</ng-template>
 <ng-template #row_BaseAmount let-id="id"> {{ ws[id].BaseAmount | number }} </ng-template>
+
+<!-- Active Label -->
+<ng-template #isActiveTemplate let-id="id">
+  <span class="text-white pl-1 pr-1"
+        [class.bg-secondary]="!ws[id].IsActive"
+        [class.bg-dark]="ws[id].IsActive">{{ (ws[id].IsActive ? 'Active' : 'Inactive') | translate }}</span>
+</ng-template>

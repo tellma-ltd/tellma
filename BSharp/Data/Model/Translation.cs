@@ -258,6 +258,13 @@ namespace BSharp.Data.Model
             Ar(Constants.Shared, "MU_Money", "نقد"),
 
 
+            En(Constants.Shared, "Active", "Active"),
+            Ar(Constants.Shared, "Active", "منشط"),
+
+            En(Constants.Shared, "Inactive", "Inactive"),
+            Ar(Constants.Shared, "Inactive", "غير منشط"),
+
+
             En(Constants.Shared, ",", ","),
             Ar(Constants.Shared, ",", "،"),
 
