@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WorkspaceService } from 'src/app/data/workspace.service';
-import { MeasurementUnitUnitType } from 'src/app/data/dto/measurement-unit';
+import { MeasurementUnit_UnitType } from 'src/app/data/dto/measurement-unit';
 
 @Component({
   selector: 'b-measurement-units-master',
@@ -26,6 +26,6 @@ export class MeasurementUnitsMasterComponent implements OnInit {
   }
 
   public UnitTypeLookup(value: string): string {
-    return MeasurementUnitUnitType[value];
+    return MeasurementUnit_UnitType[value];
   }
 }

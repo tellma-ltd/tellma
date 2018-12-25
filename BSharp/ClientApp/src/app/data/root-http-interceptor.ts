@@ -24,6 +24,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     // TODO add authorization header
     // TODO add cache versions and intercept responses
     // TODO intercept 401 responses and log the user out
+    // TODO add culture to the query url
 
     return next.handle(req);
   }

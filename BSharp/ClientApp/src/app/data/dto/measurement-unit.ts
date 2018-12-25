@@ -17,7 +17,8 @@ export class MeasurementUnit extends MeasurementUnitForSave {
   ModifiedBy: string;
 }
 
-export const MeasurementUnitUnitType = {
+// Choice list
+export const MeasurementUnit_UnitType = {
   'Pure': 'MU_Pure',
   'Time': 'MU_Time',
   'Distance': 'MU_Distance',

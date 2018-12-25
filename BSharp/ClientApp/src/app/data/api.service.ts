@@ -1,14 +1,17 @@
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Observable, throwError } from 'rxjs';
+import { catchError, finalize, takeUntil, tap } from 'rxjs/operators';
+import { ActivateArguments } from './dto/activate-arguments';
+import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
 import { GetArguments } from './dto/get-arguments';
 import { GetByIdArguments } from './dto/get-by-id-arguments';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { takeUntil, catchError, tap, finalize, map } from 'rxjs/operators';
 import { GetResponse } from './dto/get-response';
-import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
-import { MeasurementUnit, MeasurementUnitForSave } from './dto/measurement-unit';
-import { ActivateArguments } from './dto/activate-arguments';
-import { TranslateService } from '@ngx-translate/core';
+import { MeasurementUnit } from './dto/measurement-unit';
+import { TemplateArguments } from './dto/template-arguments';
+import { ImportArguments } from './dto/import-arguments';
+import { ImportResult } from './dto/import-result';
 
 @Injectable({
   providedIn: 'root'
@@ -78,6 +81,54 @@ export class ApiService {
 
       getById: (args: GetByIdArguments) => {
         // TODO
+      },
+
+      template: (args: TemplateArguments) => {
+        args = args || {};
+
+        const paramsArray: string[] = [];
+
+        if (!!args.format) {
+          paramsArray.push(`format=${args.format}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/${endpoint}/template?${params}`;
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
+      },
+
+      import: (args: ImportArguments, files: any) => {
+        args = args || {};
+
+        const paramsArray: string[] = [];
+
+        if (!!args.mode) {
+          paramsArray.push(`mode=${args.mode}`);
+        }
+
+        const formData = new FormData();
+
+        for (let file of files)
+          formData.append(file.name, file); 
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/${endpoint}/import?${params}`;
+        const obs$ = this.http.post<ImportResult>(url, formData).pipe(
+          catchError((error) => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+
+        return obs$;
       }
     };
   }

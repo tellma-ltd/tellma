@@ -6,9 +6,10 @@ import { DetailsComponent } from './details/details.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { ErrorMessageComponent } from './error-message/error-message.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
+import { ImportComponent } from './import/import.component';
 
 @NgModule({
-  declarations: [MasterComponent, DetailsComponent, SpinnerComponent, ErrorMessageComponent, TextEditorComponent],
+  declarations: [MasterComponent, DetailsComponent, SpinnerComponent, ErrorMessageComponent, TextEditorComponent, ImportComponent],
   imports: [
     NativeScriptCommonModule
   ],

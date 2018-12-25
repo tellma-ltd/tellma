@@ -4,6 +4,7 @@ import { MeasurementUnitsDetailsComponent } from './measurement-units/measuremen
 import { MeasurementUnitsMasterComponent } from './measurement-units/measurement-units-master.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { ApplicationShellComponent } from './application-shell/application-shell.component';
+import { MeasurementUnitsImportComponent } from './measurement-units/measurement-units-import.component';
 
 const routes: Routes = [
   {
@@ -11,7 +12,9 @@ const routes: Routes = [
     component: ApplicationShellComponent,
     children: [
       { path: 'measurement-units', component: MeasurementUnitsMasterComponent },
+      { path: 'measurement-units/import', component: MeasurementUnitsImportComponent },
       { path: 'measurement-units/:id', component: MeasurementUnitsDetailsComponent },
+
       { path: 'main-menu', component: MainMenuComponent },
       { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
     ]

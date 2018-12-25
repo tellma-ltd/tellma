@@ -55,6 +55,15 @@ a {
   margin: -0.4rem;
 }
 
+.breadcrumb-item + .breadcrumb-item {
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  padding-left: 0.5rem;
+}
+
 // Make the alternating color of tables a little lighter
 .table-striped tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.02);
@@ -64,8 +73,20 @@ a {
   background-color: rgba(0, 0, 0, 0.075);
 }
 
-///////////////////////////////// BSharp /////////////////////////////////
 
+.b-file-input-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: calc(2.1rem + 2px);
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+}
+
+
+///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
   direction: rtl;
   text-align: right;

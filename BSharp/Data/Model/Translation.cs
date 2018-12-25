@@ -213,6 +213,12 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Import", "Import"),
             Ar(Constants.Client, "Import", "استيراد"),
 
+            En(Constants.Client, "DownloadTemplate", "Download Template"),
+            Ar(Constants.Client, "DownloadTemplate", "تحميل القالب"),
+
+            En(Constants.Client, "Template", "Template"),
+            Ar(Constants.Client, "Template", "قالب"),
+
             En(Constants.Client, "Refresh", "Refresh"),
             Ar(Constants.Client, "Refresh", "تحديث"),
 
@@ -233,6 +239,42 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "NoItemsFound", "No Items Found."),
             Ar(Constants.Client, "NoItemsFound", ".لا يوجد بيانات"),
+
+            En(Constants.Client, "ImportAFile", "Import a File"),
+            Ar(Constants.Client, "ImportAFile", "استيراد ملف"),
+
+            En(Constants.Client, "Cancel", "Cancel"),
+            Ar(Constants.Client, "Cancel", "إلغاء"),
+
+            En(Constants.Client, "Mode", "Mode"),
+            Ar(Constants.Client, "Mode", "الوضع"),
+
+            En(Constants.Client, "Format", "Format"),
+            Ar(Constants.Client, "Format", "الصيغة"),
+
+            En(Constants.Client, "Excel", "Excel"),
+            Ar(Constants.Client, "Excel", "إكسل"),
+
+            En(Constants.Client, "CSV", "CSV"),
+            Ar(Constants.Client, "CSV", "قيم مفرقة بفواصل (CSV)"),
+
+            En(Constants.Client, "Step1", "Step 1"),
+            Ar(Constants.Client, "Step1", "الخطوة الأولى"),
+
+            En(Constants.Client, "Step2", "Step 2"),
+            Ar(Constants.Client, "Step2", "الخطوة الثانية"),
+
+            En(Constants.Client, "ImportStep1Instructions", "Download the template file and populate it with your data:"),
+            Ar(Constants.Client, "ImportStep1Instructions", "حمل ملف القالب على جهازك واملأه بالبيانات"),
+
+            En(Constants.Client, "ImportStep2Instructions", "Specify the import mode and then upload the file back:"),
+            Ar(Constants.Client, "ImportStep2Instructions", "حدد وضع الاستيراد المطلوب ومن ثم قم برفع الملف"),
+
+            En(Constants.Client, "ImportedFileDidNotPassValidation", "The imported file did not pass validation, see below"),
+            Ar(Constants.Client, "ImportedFileDidNotPassValidation", "الملف المستورد لم يستوف شروط الصحة، راجع التقرير أدناه"),
+
+            En(Constants.Client, "ImportMergeSuccessMessage", "Successfully inserted {{Inserted}} records and updated {{Updated}} records"),
+            Ar(Constants.Client, "ImportMergeSuccessMessage", "تمت أضافة عدد {{Inserted}} وتعديل عدد {{Updated}} من البيانات"),
 
             // Choice lists
 
@@ -257,28 +299,23 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "MU_Money", "Money"),
             Ar(Constants.Shared, "MU_Money", "نقد"),
 
-
             En(Constants.Shared, "Active", "Active"),
             Ar(Constants.Shared, "Active", "منشط"),
 
             En(Constants.Shared, "Inactive", "Inactive"),
             Ar(Constants.Shared, "Inactive", "غير منشط"),
 
-
             En(Constants.Shared, ",", ","),
             Ar(Constants.Shared, ",", "،"),
 
-            //En(Constants.Shared, "Mode_Insert", "Insert"),
-            //Ar(Constants.Shared, "Mode_Insert", "إضافة"),
+            En(Constants.Shared, "Mode_Insert", "Insert"),
+            Ar(Constants.Shared, "Mode_Insert", "إضافة"),
 
-            //En(Constants.Shared, "Mode_Update", "Update"),
-            //Ar(Constants.Shared, "Mode_Update", "تعديل"),
+            En(Constants.Shared, "Mode_Update", "Update"),
+            Ar(Constants.Shared, "Mode_Update", "تعديل"),
 
-            //En(Constants.Shared, "Mode_Merge", "Merge"),
-            //Ar(Constants.Shared, "Mode_Merge", "دمج"),
-
-            //En(Constants.Shared, "Mode_Delete", "Delete"),
-            //Ar(Constants.Shared, "Mode_Delete", "حذف"),
+            En(Constants.Shared, "Mode_Merge", "Merge"),
+            Ar(Constants.Shared, "Mode_Merge", "دمج"),
         };
 
         private static Translation En(string tier, string name, string value)

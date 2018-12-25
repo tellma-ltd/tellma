@@ -44,6 +44,9 @@
     <None Remove="ClientApp\src\app\data\dto\activate-arguments.ts" />
     <None Remove="ClientApp\src\app\data\dto\deactivate-arguments.ts" />
     <None Remove="ClientApp\src\app\data\dto\get-response.ts" />
+    <None Remove="ClientApp\src\app\data\dto\import-arguments.ts" />
+    <None Remove="ClientApp\src\app\data\dto\import-result.ts" />
+    <None Remove="ClientApp\src\app\data\dto\template-arguments.ts" />
     <None Remove="ClientApp\src\app\data\util.ts" />
     <None Remove="ClientApp\src\app\misc\util.ts" />
     <None Remove="ClientApp\src\assets\appconfig.ts" />
@@ -86,6 +89,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\data\dto\import-result.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\data\dto\import-arguments.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\data\dto\template-arguments.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\data\dto\deactivate-arguments.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\data\dto\activate-arguments.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\data\dto\get-response.ts" />

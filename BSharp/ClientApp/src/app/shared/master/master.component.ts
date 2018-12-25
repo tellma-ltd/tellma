@@ -327,6 +327,21 @@ export class MasterComponent implements OnInit, OnDestroy {
     }
   }
 
+  onRefresh() {
+    // The if statement to deal with incessant button clickers (Users who hit refresh repeatedly)
+    if (this.state.masterStatus !== MasterStatus.loading) {
+      this.fetch();
+    }
+  }
+
+  onImport() {
+    this.router.navigate(['.', 'import'], { relativeTo: this.route });
+  }
+
+  onExport() {
+    // TODO
+  }
+
   onSelect(id: number | string) {
     if (this.isPopupMode) {
       this.select.emit(id);
@@ -343,21 +358,6 @@ export class MasterComponent implements OnInit, OnDestroy {
     return true; // TODO !this.canCreatePred || this.canCreatePred();
   }
 
-  onRefresh() {
-    // The if statement to deal with incessant button clickers (Users who hit refresh repeatedly)
-    if (this.state.masterStatus !== MasterStatus.loading) {
-      this.fetch();
-    }
-  }
-
-  onImport() {
-    // TODO
-    console.log(this.checked);
-  }
-
-  onExport() {
-    // TODO
-  }
 
   colWith(colPath: string) {
     // This returns an html percentage width based on the weights assigned to this column and all the other columns

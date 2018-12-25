@@ -269,13 +269,12 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 		HAVING COUNT(*) > 1
 	)
 
-
 	-- Name2 must not exist already
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
 	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Name2' As [Key], N'Error_TheName20IsUsed' As [ErrorName],
 		FE.[Name2] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities FE 
-	JOIN [dbo].MeasurementUnits BE ON FE.[Name] = BE.[Name]
+	JOIN [dbo].MeasurementUnits BE ON FE.[Name2] = BE.[Name2]
 	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id);
 
 	-- Name2 must be unique in the uploaded list

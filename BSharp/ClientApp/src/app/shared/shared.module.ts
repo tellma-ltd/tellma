@@ -33,12 +33,15 @@ import {
   faThumbsDown,
   faUndo,
   faClipboardCheck,
-  faUpload
+  faUpload,
+  faFileDownload
 } from '@fortawesome/free-solid-svg-icons';
 import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { ErrorMessageComponent } from './error-message/error-message.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
+import { ImportComponent } from './import/import.component';
+import { SuccessMessageComponent } from './success-message/success-message.component';
 
 // Icons to be used in the app
 library.add(
@@ -46,7 +49,7 @@ library.add(
   faCheck, faPlus, faSyncAlt, faAngleDoubleLeft,
   faAngleLeft, faAngleRight, faThLarge, faList, faEdit, faTrashAlt,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
-  faUndo, faClipboardCheck, faUpload
+  faUndo, faClipboardCheck, faUpload, faFileDownload
 );
 
 @NgModule({
@@ -56,7 +59,9 @@ library.add(
     DetailsComponent,
     SpinnerComponent,
     ErrorMessageComponent,
-    TextEditorComponent
+    SuccessMessageComponent,
+    TextEditorComponent,
+    ImportComponent
   ],
   imports: [
     CommonModule,
@@ -81,8 +86,10 @@ library.add(
     BrandComponent,
     MasterComponent,
     ErrorMessageComponent,
+    SuccessMessageComponent,
     TextEditorComponent,
-    CdkTableModule
+    CdkTableModule,
+    ImportComponent
   ]
 })
 export class SharedModule { }
