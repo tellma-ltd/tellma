@@ -12,6 +12,7 @@ import { MeasurementUnit } from './dto/measurement-unit';
 import { TemplateArguments } from './dto/template-arguments';
 import { ImportArguments } from './dto/import-arguments';
 import { ImportResult } from './dto/import-result';
+import { ExportArguments } from './dto/export-arguments';
 
 @Injectable({
   providedIn: 'root'
@@ -35,36 +36,7 @@ export class ApiService {
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
       get: (args: GetArguments) => {
-        args = args || {};
-        const top = args.top || 50;
-        const skip = args.skip || 0;
-
-        const paramsArray: string[] = [
-          `top=${top}`,
-          `skip=${skip}`
-        ];
-
-        if (!!args.search) {
-          paramsArray.push(`search=${encodeURIComponent(args.search)}`);
-        }
-
-        if (!!args.orderBy) {
-          paramsArray.push(`orderBy=${args.orderBy}`);
-          paramsArray.push(`desc=${!!args.desc}`);
-        }
-
-        if (!!args.inactive) {
-          paramsArray.push(`inactive=${args.inactive}`);
-        }
-
-        if (!!args.filter) {
-          paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
-        }
-
-        if (!!args.expand) {
-          paramsArray.push(`expand=${encodeURIComponent(args.expand)})`);
-        }
-
+        const paramsArray = this.stringifyGetArguments(args);
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}?${params}`;
 
@@ -129,6 +101,25 @@ export class ApiService {
         );
 
         return obs$;
+      },
+
+      export: (args: ExportArguments) => {
+        const paramsArray = this.stringifyGetArguments(args);
+
+        if (!!args.format) {
+          paramsArray.push(`format=${args.format}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/${endpoint}/export?${params}`;
+        const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
+          catchError((error) => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+        return obs$;
       }
     };
   }
@@ -171,6 +162,40 @@ export class ApiService {
 
       return obs$;
     };
+  }
+
+  stringifyGetArguments(args: GetArguments): string[] {
+    args = args || {};
+    const top = args.top || 50;
+    const skip = args.skip || 0;
+
+    const paramsArray: string[] = [
+      `top=${top}`,
+      `skip=${skip}`
+    ];
+
+    if (!!args.search) {
+      paramsArray.push(`search=${encodeURIComponent(args.search)}`);
+    }
+
+    if (!!args.orderBy) {
+      paramsArray.push(`orderBy=${args.orderBy}`);
+      paramsArray.push(`desc=${!!args.desc}`);
+    }
+
+    if (!!args.inactive) {
+      paramsArray.push(`inactive=${args.inactive}`);
+    }
+
+    if (!!args.filter) {
+      paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
+    }
+
+    if (!!args.expand) {
+      paramsArray.push(`expand=${encodeURIComponent(args.expand)})`);
+    }
+
+    return paramsArray;
   }
 
   // Function to turn status codes into friendly localized human-readable errors

@@ -213,6 +213,12 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Import", "Import"),
             Ar(Constants.Client, "Import", "استيراد"),
 
+            En(Constants.Client, "Export", "Export"),
+            Ar(Constants.Client, "Export", "تصدير"),
+
+            En(Constants.Client, "Exporting", "Exporting"),
+            Ar(Constants.Client, "Exporting", "تصدير"),
+
             En(Constants.Client, "DownloadTemplate", "Download Template"),
             Ar(Constants.Client, "DownloadTemplate", "تحميل القالب"),
 
@@ -273,8 +279,11 @@ namespace BSharp.Data.Model
             En(Constants.Client, "ImportedFileDidNotPassValidation", "The imported file did not pass validation, see below"),
             Ar(Constants.Client, "ImportedFileDidNotPassValidation", "الملف المستورد لم يستوف شروط الصحة، راجع التقرير أدناه"),
 
-            En(Constants.Client, "ImportMergeSuccessMessage", "Successfully inserted {{Inserted}} records and updated {{Updated}} records"),
-            Ar(Constants.Client, "ImportMergeSuccessMessage", "تمت أضافة عدد {{Inserted}} وتعديل عدد {{Updated}} من البيانات"),
+            En(Constants.Client, "ImportMergeSuccessMessage", "Successfully inserted {{Inserted}} record(s) and updated {{Updated}} record(s) in {{Seconds}} seconds"),
+            Ar(Constants.Client, "ImportMergeSuccessMessage", "تمت أضافة عدد {{Inserted}} وتعديل عدد {{Updated}} من البيانات في {{Seconds}} من الثواني"),
+
+            En(Constants.Client, "MaxExportSizeWarning", "Only {{max}} records can be exported at a time"),
+            Ar(Constants.Client, "MaxExportSizeWarning", "التصدير محدود بعدد {{max}} من البيانات كحد أقصى"),
 
             // Choice lists
 
@@ -305,8 +314,8 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "Inactive", "Inactive"),
             Ar(Constants.Shared, "Inactive", "غير منشط"),
 
-            En(Constants.Shared, ",", ","),
-            Ar(Constants.Shared, ",", "،"),
+            En(Constants.Shared, ", ", ", "),
+            Ar(Constants.Shared, ", ", "، "),
 
             En(Constants.Shared, "Mode_Insert", "Insert"),
             Ar(Constants.Shared, "Mode_Insert", "إضافة"),

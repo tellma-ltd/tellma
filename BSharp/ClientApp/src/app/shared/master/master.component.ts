@@ -3,15 +3,21 @@ import { WorkspaceService, MasterDetailsStore, MasterStatus } from 'src/app/data
 import { ApiService } from 'src/app/data/api.service';
 import { Router, ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Observable, Subject, merge, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, tap, switchMap, catchError } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, tap, switchMap, catchError, retry } from 'rxjs/operators';
 import { GetResponse } from 'src/app/data/dto/get-response';
 import { DtoForSaveKeyBase } from 'src/app/data/dto/dto-for-save-key-base';
-import { addToWorkspace } from 'src/app/data/util';
+import { addToWorkspace, downloadBlob } from 'src/app/data/util';
 import { resetComponentState } from '@angular/core/src/render3/instructions';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TemplateArguments_Format } from 'src/app/data/dto/template-arguments';
+import { TranslateService } from '@ngx-translate/core';
+import { GetArguments } from 'src/app/data/dto/get-arguments';
+import { ExportArguments } from 'src/app/data/dto/export-arguments';
 
 enum SearchView {
   tiles = 'tiles',
-  table = 'table'
+  table = 'table',
+  export = 'export'
 }
 
 @Component({
@@ -35,7 +41,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     name: string,
     headerTemplate: TemplateRef<any>,
     rowTemplate: TemplateRef<any>,
-      weight: string
+    weight: string
   }[] = [];
 
   @Input()
@@ -65,6 +71,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Input() // popup: limits the tiles to only 2 per row, hides import, export and multiselect
   mode: 'popup' | 'screen' = 'screen';
 
+  @Input()
+  exportPageSize = 10000;
+
   @Output()
   select = new EventEmitter<number | string>();
 
@@ -77,10 +86,13 @@ export class MasterComponent implements OnInit, OnDestroy {
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
-  private crud: any;
+  private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
+  public checked = {};
+  public exportFormat: 'csv' | 'xlsx' = 'xlsx';
+  public exportSkip = 0;
 
-  constructor(private workspace: WorkspaceService, private api: ApiService,
-    private router: Router, private route: ActivatedRoute) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private router: Router,
+    private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) {
 
 
     // Use some RxJS magic to refresh the data as the user changes the parameters
@@ -88,6 +100,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       debounceTime(300),
       distinctUntilChanged(),
       tap(() => this.state.skip = 0),
+      tap(() => this.exportSkip = 0),
     );
 
     const otherSignals = this.notifyFetch$;
@@ -140,7 +153,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       search: s.search,
       filter: s.filter,
       expand: this.expand,
-      inactive: false
+      inactive: false // TODO
     }).pipe(
       tap((response: GetResponse<DtoForSaveKeyBase>) => {
         s = this.state; // get the source
@@ -222,6 +235,7 @@ export class MasterComponent implements OnInit, OnDestroy {
           s.orderBy = null;
         }
       }
+      this.exportSkip = 0;
       s.skip = 0;
       this.fetch();
     }
@@ -338,10 +352,6 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.router.navigate(['.', 'import'], { relativeTo: this.route });
   }
 
-  onExport() {
-    // TODO
-  }
-
   onSelect(id: number | string) {
     if (this.isPopupMode) {
       this.select.emit(id);
@@ -358,6 +368,9 @@ export class MasterComponent implements OnInit, OnDestroy {
     return true; // TODO !this.canCreatePred || this.canCreatePred();
   }
 
+  trackById(index, id: number | string) {
+    return id;
+  }
 
   colWith(colPath: string) {
     // This returns an html percentage width based on the weights assigned to this column and all the other columns
@@ -377,6 +390,10 @@ export class MasterComponent implements OnInit, OnDestroy {
     // Calculate the percentage, (
     // if totalweight = 0 this method will never be called in the first place)
     return ((weight / totalWeight) * 100) + '%';
+  }
+
+  formatLookup(value: string) {
+    return TemplateArguments_Format[value];
   }
 
   get search(): string {
@@ -411,10 +428,8 @@ export class MasterComponent implements OnInit, OnDestroy {
 
     return result;
   }
-  
-  // The multi-select checkboxes bind to properties in this object
-  public checked = {};
 
+  // The multi-select checkboxes bind to properties in this object
   public get areAllChecked(): boolean {
     return this.masterIds.length > 0 && this.masterIds.every(id => !!this.checked[id]);
   }
@@ -427,6 +442,80 @@ export class MasterComponent implements OnInit, OnDestroy {
       // Check all
       this.masterIds.forEach(id => this.checked[id] = true);
     }
+  }
+
+  // Export Stuff
+  get showExportPaging(): boolean {
+    return this.maxTotalExport < this.total;
+  }
+
+  get fromExport(): number {
+    return Math.min(this.exportSkip + 1, this.totalExport);
+  }
+
+  get toExport(): number {
+    return Math.min(this.exportSkip + this.maxTotalExport, this.totalExport);
+  }
+
+  get totalExport(): number {
+    return this.total;
+  }
+
+  get canPreviousPageExport() {
+    return this.exportSkip > 0;
+  }
+
+  get canNextPageExport() {
+    return this.toExport < this.totalExport;
+  }
+
+  public onPerviousPageExport() {
+    this.exportSkip = Math.max(this.exportSkip - this.exportPageSize, 0);
+  }
+
+  public onNextPageExport() {
+    this.exportSkip = this.exportSkip + this.exportPageSize;
+  }
+
+  get maxTotalExport(): number {
+    return this.exportPageSize;
+  }
+
+  public showExportSpinner = false;
+  public exportErrorMessage: string;
+
+  @Input()
+  exportFileName: string;
+
+  onExport() {
+    const from = this.fromExport;
+    const to = this.toExport;
+    const format = this.exportFormat;
+    this.showExportSpinner = true;
+
+    const s = this.state;
+
+    this.crud.export({
+      top: this.exportPageSize,
+      skip: this.exportSkip,
+      orderBy: s.orderBy,
+      desc: s.desc,
+      search: s.search,
+      filter: s.filter,
+      expand: null,
+      inactive: false, // TODO
+      format: format
+    }).subscribe(
+      (blob: Blob) => {
+        this.showExportSpinner = false;
+        const fileName = `${this.exportFileName || this.translate.instant('Export')} ${from}-${to} ${new Date().toDateString()}.${format}`;
+        downloadBlob(blob, fileName);
+      },
+      (friendlyError: any) => {
+        this.showExportSpinner = false;
+        this.exportErrorMessage = friendlyError.error;
+      }
+    );
   }
 
 }

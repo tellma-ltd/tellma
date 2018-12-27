@@ -16,7 +16,16 @@ export class RootHttpInterceptor implements HttpInterceptor {
     const tenantId = this.workspace.ws.tenantId;
     if (!!tenantId) {
       req = req.clone({
-        setHeaders: { 'Tenant-Id': tenantId.toString() }
+        setHeaders: { 'Tenant-Id': tenantId.toString() },
+        setParams: { 'ti': tenantId.toString() }
+        // Adding it to the q params is to prevent the browser using a cached GET response after switching tenants
+      });
+    }
+
+    const culture = this.workspace.ws.culture;
+    if (!!culture) {
+      req = req.clone({
+        setParams: { 'ui-culture' : culture }
       });
     }
 

@@ -36,7 +36,7 @@
 <ng-template #row_Code let-id="id"> {{ ws[id].Code }} </ng-template>
 
 <ng-template #header_IsActive>{{ 'MU_IsActive' | translate }}</ng-template>
-<ng-template #row_IsActive let-id="id"><ng-container *ngTemplateOutlet="isActiveTemplate; context: { id: id }"></ng-container></ng-template>
+<ng-template #row_IsActive let-id="id"> {{ 'Active' | translate }} </ng-template>
 
 <ng-template #header_UnitType>{{ 'MU_UnitType' | translate }}</ng-template>
 <ng-template #row_UnitType let-id="id"> {{ UnitTypeLookup(ws[id].UnitType) | translate }} </ng-template>
@@ -47,9 +47,9 @@
 <ng-template #header_BaseAmount>{{ 'MU_BaseAmount' | translate }}</ng-template>
 <ng-template #row_BaseAmount let-id="id"> {{ ws[id].BaseAmount | number }} </ng-template>
 
-<!-- Active Label -->
-<ng-template #isActiveTemplate let-id="id">
+
+<!--<ng-template #row_IsActive let-id="id">
   <span class="text-white pl-1 pr-1"
         [class.bg-secondary]="!ws[id].IsActive"
         [class.bg-dark]="ws[id].IsActive">{{ (ws[id].IsActive ? 'Active' : 'Inactive') | translate }}</span>
-</ng-template>
+</ng-template>-->

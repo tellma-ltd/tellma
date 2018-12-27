@@ -14,6 +14,11 @@
         <li class="nav-item"><a class="nav-link" routerLink="users" routerLinkActive="active" (click)="onCollapse()">قيود تسوية</a></li>
         <li class="nav-item"><a class="nav-link" routerLink="data" routerLinkActive="active" (click)="onCollapse()">إعدادات</a></li>
       </ol>
+
+      <ol class="nav navbar-nav b-pointer" style="padding:0">
+        <li class="nav-item"><a class="nav-link" (click)="onCollapse(); onEnglish();">En</a></li>
+        <li class="nav-item"><a class="nav-link" (click)="onCollapse(); onArabic()">ع</a></li>
+      </ol>
     </div>
   </div>
   <div class="b-rest-of-screen container-fluid">

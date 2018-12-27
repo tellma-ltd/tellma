@@ -35,11 +35,17 @@
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Import' | translate }}</span>
         </button>
 
+        <!-- Export -->
+        <button *ngIf="!isPopupMode" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="modalService.open(exportModal)">
+          <fa-icon icon="download"></fa-icon>
+          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
+        </button>
+
         <!-- Refresh -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onRefresh()">
+        <!--<button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onRefresh()">
           <fa-icon icon="sync-alt"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
-        </button>
+        </button>-->
       </div>
 
       <!-- Right Buttons -->
@@ -49,20 +55,19 @@
           <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span> </span>
           <span class="b-vertical-align-middle"> / {{ total | number }}</span>
         </div>
-        <div class="d-inline">
-          <button class="btn btn-light btn-sm b-white-button"
-                  type="button" title="{{ 'First' | translate }}" (click)="onFirstPage()" [disabled]="!canFirstPage">
-            <fa-icon icon="angle-double-left" [flip]="flip"></fa-icon>
-          </button>
-          <button class="btn btn-light btn-sm b-white-button"
-                  type="button" title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
-            <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
-          </button>
-          <button class="btn btn-light btn-sm b-white-button"
-                  type="button" title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
-            <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
-          </button>
-        </div>
+
+        <button class="btn btn-light btn-sm b-white-button"
+                type="button" title="{{ 'First' | translate }}" (click)="onFirstPage()" [disabled]="!canFirstPage">
+          <fa-icon icon="angle-double-left" [flip]="flip"></fa-icon>
+        </button>
+        <button class="btn btn-light btn-sm b-white-button"
+                type="button" title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+          <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+        </button>
+        <button class="btn btn-light btn-sm b-white-button"
+                type="button" title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+          <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+        </button>
 
         <!-- Tiles/Table Toggle -->
         <div class="btn-group btn-group-toggle b-toolbar-button">
@@ -72,7 +77,16 @@
           <label class="btn btn-sm btn-light" [class.active]="showTableView" title="{{ 'Table' | translate }}" (click)="onTableView()">
             <input type="radio" name="searchView"><fa-icon icon="list" [flip]="flip"></fa-icon>
           </label>
+          <!--<label class="btn btn-sm btn-light" [class.active]="showExportView" title="{{ 'Export' | translate }}" (click)="onExportView()">
+      <input type="radio" name="searchView"><fa-icon icon="download"></fa-icon>
+    </label>-->
         </div>
+
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button"
+                type="button" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+          <fa-icon icon="sync-alt"></fa-icon>
+        </button>
+
       </div>
     </div>
   </div>
@@ -84,7 +98,7 @@
       <!-- Tiles -->
       <div class="col-12" *ngIf="showTilesView">
         <div class="row mb-3">
-          <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode" *ngFor="let id of masterIds">
+          <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode" *ngFor="let id of masterIds; trackBy: trackById">
             <div class="border p-2 bg-white b-tile" (click)="onSelect(id)">
               <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
               </ng-container>
@@ -96,7 +110,7 @@
 
       <!-- Table: using the Angular CDK -->
       <div class="w-100 table-responsive" *ngIf="showTableView">
-        <table class="table table-hover table-sm table-striped bg-white border-bottom b-master-table" cdk-table [dataSource]="masterIds">
+        <table class="table table-hover table-sm table-striped bg-white border-bottom b-master-table" cdk-table [dataSource]="masterIds" [trackBy]="trackById">
 
           <!-- The only purpose of this invisible TR is to suppress VS warnings -->
           <tr style="display:none!important">
@@ -170,3 +184,64 @@
   </div>
 </div>
 
+
+<ng-template #exportModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'Export' | translate }}</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <!-- Format -->
+    <div class="mt-1">
+      <div class="font-weight-bold small">
+        <span class="b-vertical-align-middle">{{ 'Format' | translate }}</span>
+      </div>
+      <div>
+        <select id="format" class="form-control b-input" [(ngModel)]="exportFormat">
+          <option value="xlsx">{{ formatLookup('xlsx') | translate }}</option>
+          <option value="csv">{{ formatLookup('csv') | translate }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Page -->
+    <div class="mt-3 mb-2">
+      <div class="font-weight-bold small">
+        <span class="b-vertical-align-middle">{{ 'Exporting' | translate }}</span>
+      </div>
+      <div [class.mt-1]="showExportPaging">
+        <button class="btn btn-light btn-sm b-white-button" *ngIf="showExportPaging"
+                type="button" title="{{ 'Previous' | translate }}" (click)="onPerviousPageExport()" [disabled]="!canPreviousPageExport">
+          <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+        </button>
+        <button class="btn btn-light btn-sm b-white-button" *ngIf="showExportPaging"
+                type="button" title="{{ 'Next' | translate }}" (click)="onNextPageExport()" [disabled]="!canNextPageExport">
+          <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+        </button>
+
+        <div class="d-inline ml-2 mr-2">
+          <span class="b-vertical-align-middle"> <span>{{ fromExport | number }}</span> - <span>{{ toExport | number }}</span> </span>
+          <span class="b-vertical-align-middle"> / {{ totalExport | number }}</span>
+        </div>
+      </div>
+    </div>
+
+    <b-warning-message *ngIf="showExportPaging">
+      {{ 'MaxExportSizeWarning' | translate: { max: (maxTotalExport | number) } }}
+    </b-warning-message>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="onExport(modal);" ngbAutofocus >
+      <fa-icon icon="download"></fa-icon>
+      &nbsp;{{ 'Export' | translate }}
+    </button>
+    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()">
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>

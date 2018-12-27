@@ -180,14 +180,14 @@ MERGE INTO [dbo].MeasurementUnits AS t
                     ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", _localizer["MeasurementUnits"]]);
                 }
 
-                if (entity.Id == null && entity.EntityState != EntityStates.Inserted)
+                if (entity.Id != null && entity.EntityState != EntityStates.Updated)
                 {
                     // This error indicates a bug
                     var index = indices[entity];
                     ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotInsert0WhileSpecifyId", _localizer["MeasurementUnit"]]);
                 }
 
-                if (entity.Id != null && entity.EntityState == EntityStates.Updated)
+                if (entity.Id == null && entity.EntityState == EntityStates.Updated)
                 {
                     // This error indicates a bug
                     var index = indices[entity];
@@ -468,6 +468,10 @@ SET NOCOUNT ON;
                 var column = firstRow[c];
                 string headerLabel = column.Content?.ToString();
 
+                // So any thing after an empty column is ignored
+                if (string.IsNullOrWhiteSpace(headerLabel))
+                    break;
+
                 if (saveProps.ContainsKey(headerLabel))
                 {
                     var prop = saveProps[headerLabel];
@@ -494,11 +498,17 @@ SET NOCOUNT ON;
             for (int i = 1; i < grid.Count; i++) // Skip the header
             {
                 var row = grid[i];
+
+                // Anything after an empty row is ignored
+                if(saveColumnMap.All((p) => string.IsNullOrWhiteSpace(row[p.Index].Content?.ToString())))
+                {
+                    break;
+                }
+
                 var entity = new MeasurementUnitForSave();
                 foreach (var (index, prop) in saveColumnMap)
                 {
                     var content = row[index].Content;
-
 
                     // Special handling for choice lists
                     if (content != null)
@@ -512,7 +522,7 @@ SET NOCOUNT ON;
                             if (displayNameIndex == -1)
                             {
                                 var propName = _metadataProvider.GetMetadataForProperty(readType, prop.Name).DisplayName;
-                                string seperator = _localizer[","];
+                                string seperator = _localizer[", "];
                                 AddRowError(i + 2, _localizer["Error_Value0IsNotValidFor1AcceptableValuesAre2", stringContent, propName, string.Join(seperator, displayNames)]);
                             }
                             else
@@ -614,7 +624,7 @@ SET NOCOUNT ON;
                             }
                             else if (entity.Id == null)
                             {
-                                AddRowError(index + 2, _localizer["Error_TheUnitCode0DoesNotExist"]);
+                                AddRowError(index + 2, _localizer["Error_TheUnitCode0DoesNotExist", entity.Code]);
                             }
                         }
 

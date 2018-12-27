@@ -42,6 +42,7 @@ import { ErrorMessageComponent } from './error-message/error-message.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
 import { ImportComponent } from './import/import.component';
 import { SuccessMessageComponent } from './success-message/success-message.component';
+import { WarningMessageComponent } from './warning-message/warning-message.component';
 
 // Icons to be used in the app
 library.add(
@@ -60,6 +61,7 @@ library.add(
     SpinnerComponent,
     ErrorMessageComponent,
     SuccessMessageComponent,
+    WarningMessageComponent,
     TextEditorComponent,
     ImportComponent
   ],
@@ -70,7 +72,8 @@ library.add(
     FontAwesomeModule,
     RouterModule.forChild([]),
     HttpClientModule,
-    CdkTableModule
+    CdkTableModule,
+    NgbModalModule
   ],
   exports: [
     CommonModule,
@@ -87,6 +90,7 @@ library.add(
     MasterComponent,
     ErrorMessageComponent,
     SuccessMessageComponent,
+    WarningMessageComponent,
     TextEditorComponent,
     CdkTableModule,
     ImportComponent

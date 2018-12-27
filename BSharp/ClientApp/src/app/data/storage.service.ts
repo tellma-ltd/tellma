@@ -6,17 +6,15 @@ import { Observable, of } from 'rxjs';
 })
 export class StorageService {
 
-  public getItem(key: string): Observable<any> {
-    return of(localStorage.getItem(key));
+  public getItem(key: string): any {
+    return localStorage.getItem(key);
   }
 
-  public setItem(key: string, value: any): Observable<void> {
+  public setItem(key: string, value: any): void {
     localStorage.setItem(key, value);
-    return of();
   }
 
-  public removeItem(key: string): Observable<void> {
+  public removeItem(key: string): void {
     localStorage.removeItem(key);
-    return of();
   }
 }

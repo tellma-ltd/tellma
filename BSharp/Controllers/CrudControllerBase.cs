@@ -14,6 +14,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -30,7 +31,7 @@ namespace BSharp.Controllers
         where TDto : TDtoForSave
     {
         // Constants
-        private const int DEFAULT_MAX_PAGE_SIZE = 5000;
+        private const int DEFAULT_MAX_PAGE_SIZE = 10000;
 
         // Private Fields
         private readonly ILogger _logger;
@@ -182,6 +183,8 @@ namespace BSharp.Controllers
         [HttpPost("import"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
         public virtual async Task<ActionResult<ImportResult>> Import([FromQuery] ImportArguments args)
         {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             try
             {
                 // Parse the file into DTOs + map back to row numbers (The way source code is compiled into machine code + symbols file)
@@ -209,8 +212,13 @@ namespace BSharp.Controllers
                 var result = new ImportResult
                 {
                     Inserted = dtos.Count(e => e.EntityState == "Inserted"),
-                    Updated = dtos.Count(e => e.EntityState == "Updated")
+                    Updated = dtos.Count(e => e.EntityState == "Updated"),
                 };
+
+                // Record the time
+                watch.Stop();
+                var elapsed = Math.Round(((decimal)watch.ElapsedMilliseconds) / 1000, 1);
+                result.Seconds = elapsed;
 
                 return Ok(result);
             }
@@ -397,8 +405,6 @@ namespace BSharp.Controllers
             // Finally return the result
             return result;
         }
-
-        
 
         /// <summary>
         /// Saves the entities (Insert or Update) into the database after authorization and validation

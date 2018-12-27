@@ -9,5 +9,6 @@ namespace BSharp.Controllers.DTO
     {
         public int Inserted { get; set; }
         public int Updated { get; set; }
+        public decimal Seconds { get; set; }
     }
 }
