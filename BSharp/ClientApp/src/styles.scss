@@ -73,16 +73,9 @@ a {
   background-color: rgba(0, 0, 0, 0.075);
 }
 
-
-.b-file-input-label {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 1;
-  height: calc(2.1rem + 2px);
-  padding: 0.375rem 0.75rem;
-  line-height: 1.5;
+.btn {
+  // Makes button labels a little thicker
+  font-weight: 500;
 }
 
 // support RTL for NGB modal
@@ -502,4 +495,16 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
 
 .b-multiselect-th {
   width: 1px;
+}
+
+// Replaces bootstrap's custom-file-label
+.b-file-input-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: calc(2.1rem + 2px);
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
 }

@@ -5,6 +5,7 @@ import { MeasurementUnitsMasterComponent } from './measurement-units/measurement
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { ApplicationShellComponent } from './application-shell/application-shell.component';
 import { MeasurementUnitsImportComponent } from './measurement-units/measurement-units-import.component';
+import { ApplicationPageNotFoundComponent } from './application-page-not-found/application-page-not-found.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,7 @@ const routes: Routes = [
 
       { path: 'main-menu', component: MainMenuComponent },
       { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
+      { path: '**', component: ApplicationPageNotFoundComponent },
     ]
   }
 ];

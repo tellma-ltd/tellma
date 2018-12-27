@@ -73,7 +73,9 @@ library.add(
     RouterModule.forChild([]),
     HttpClientModule,
     CdkTableModule,
-    NgbModalModule
+    NgbDropdownModule,
+    NgbModalModule,
+    NgbPopoverModule
   ],
   exports: [
     CommonModule,

@@ -137,8 +137,24 @@ namespace BSharp.Controllers
             {
                 // TODO: Authorize DELETE
 
+                foreach(var id in ids.Where(e => int.Parse(e.ToString()) < 10))
+                {
+                    string key = $"[{ids.IndexOf(id)}]";
+                    ModelState.AddModelError(key, "You did it wrong");
+                    ModelState.AddModelError(key, "You didn't do it right");
+                }
+
+                if(!ModelState.IsValid)
+                {
+                    throw new UnprocessableEntityException(ModelState);
+                }
+                
                 await DeleteImplAsync(ids);
                 return Ok();
+            }
+            catch (UnprocessableEntityException ex)
+            {
+                return UnprocessableEntity(ex.ModelState);
             }
             catch (Exception ex)
             {

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WorkspaceService } from 'src/app/data/workspace.service';
 import { MeasurementUnit_UnitType } from 'src/app/data/dto/measurement-unit';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'b-measurement-units-master',
@@ -27,5 +28,15 @@ export class MeasurementUnitsMasterComponent implements OnInit {
 
   public UnitTypeLookup(value: string): string {
     return MeasurementUnit_UnitType[value];
+  }
+
+  public onActivate(ids: (number | string)[]): Observable<void> {
+    console.log('onActivate');
+    return of();
+  }
+
+  public onDeactivate(ids: (number | string)[]): Observable<void> {
+    console.log('onDeactivate');
+    return of();
   }
 }

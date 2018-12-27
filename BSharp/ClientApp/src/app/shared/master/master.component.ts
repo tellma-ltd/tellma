@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, TemplateRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, TemplateRef, Output, EventEmitter, ViewChild } from '@angular/core';
 import { WorkspaceService, MasterDetailsStore, MasterStatus } from 'src/app/data/workspace.service';
 import { ApiService } from 'src/app/data/api.service';
 import { Router, ActivatedRoute, ParamMap, Params } from '@angular/router';
@@ -13,6 +13,7 @@ import { TemplateArguments_Format } from 'src/app/data/dto/template-arguments';
 import { TranslateService } from '@ngx-translate/core';
 import { GetArguments } from 'src/app/data/dto/get-arguments';
 import { ExportArguments } from 'src/app/data/dto/export-arguments';
+import { forEach } from '@angular/router/src/utils/collection';
 
 enum SearchView {
   tiles = 'tiles',
@@ -60,7 +61,10 @@ export class MasterComponent implements OnInit, OnDestroy {
   allowMultiselect = true;
 
   @Input()
-  multiselectActions: TemplateRef<void>[]; // TODO
+  multiselectActions: {
+    template: TemplateRef<void>,
+    action: (p: (string | number)[]) => Observable<void>
+  }[] = [];
 
   @Input()
   expand: string;
@@ -73,6 +77,9 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   @Input()
   exportPageSize = 10000;
+
+  @Input()
+  exportFileName: string;
 
   @Output()
   select = new EventEmitter<number | string>();
@@ -87,9 +94,12 @@ export class MasterComponent implements OnInit, OnDestroy {
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
+
   public checked = {};
   public exportFormat: 'csv' | 'xlsx' = 'xlsx';
   public exportSkip = 0;
+  public showExportSpinner = false;
+  public exportErrorMessage: string;
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private router: Router,
     private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) {
@@ -319,6 +329,14 @@ export class MasterComponent implements OnInit, OnDestroy {
       (!this.masterIds || this.masterIds.length === 0);
   }
 
+  get showImport(): boolean {
+    return !this.isPopupMode && this.showImportButton;
+  }
+
+  get showExport(): boolean {
+    return !this.isPopupMode && this.showExportButton;
+  }
+
   get isPopupMode(): boolean {
     return this.mode === 'popup';
   }
@@ -422,29 +440,14 @@ export class MasterComponent implements OnInit, OnDestroy {
     }
 
     if (this.allowMultiselect) {
-      result = result.slice();
+      result = result.slice();      
       result.unshift('multiselect');
     }
 
     return result;
   }
 
-  // The multi-select checkboxes bind to properties in this object
-  public get areAllChecked(): boolean {
-    return this.masterIds.length > 0 && this.masterIds.every(id => !!this.checked[id]);
-  }
-
-  onCheckAll() {
-    if (this.areAllChecked) {
-      // Uncheck all
-      this.masterIds.forEach(id => this.checked[id] = false);
-    } else {
-      // Check all
-      this.masterIds.forEach(id => this.checked[id] = true);
-    }
-  }
-
-  // Export Stuff
+  // Export-related stuff
   get showExportPaging(): boolean {
     return this.maxTotalExport < this.total;
   }
@@ -481,12 +484,6 @@ export class MasterComponent implements OnInit, OnDestroy {
     return this.exportPageSize;
   }
 
-  public showExportSpinner = false;
-  public exportErrorMessage: string;
-
-  @Input()
-  exportFileName: string;
-
   onExport() {
     const from = this.fromExport;
     const to = this.toExport;
@@ -518,4 +515,106 @@ export class MasterComponent implements OnInit, OnDestroy {
     );
   }
 
+  // Multi-select related stuff
+  public get canCheckAll(): boolean {
+    return this.masterIds.length > 0;
+  }
+
+  public get areAllChecked(): boolean {
+    return this.masterIds.length > 0 && this.masterIds.every(id => !!this.checked[id]);
+  }
+
+  public get areAnyChecked(): boolean {
+    return this.masterIds.some(id => !!this.checked[id]);
+  }
+
+  public get checkedCount(): number {
+    return this.checkedIds.length;
+
+  }
+
+  public get checkedIds(): (number | string)[] {
+    return this.masterIds.filter(id => !!this.checked[id]);
+  }
+
+  onCheckAll() {
+    if (this.areAllChecked) {
+      // Uncheck all
+      this.onCancelMultiselect();
+    } else {
+      // Check all
+      this.masterIds.forEach(id => this.checked[id] = true);
+    }
+  }
+
+  onCancelMultiselect() {
+    this.checked = {};
+  }
+
+  onAction(action: (p: (string | number)[]) => Observable<void>) {
+    action(this.checkedIds).subscribe();
+  }
+
+  public actionValidationErrors: { [id: string]: string[] } = {};
+
+  onDelete() {
+    // clear any previous errors
+    this.actionErrorMessage = null;
+    this.actionValidationErrors = {};
+
+    const ids = this.checkedIds;
+    this.crud.delete(ids).subscribe(
+      () => {
+        // Update the UI to reflect deletion of items        
+        this.state.delete(ids);
+      },
+      (friendlyError: any) => {
+        if (friendlyError.status === 422) {
+          const keys = Object.keys(friendlyError.error);
+          keys.forEach(key => {
+            // Validation error keys are expected to look like this '[33].XYZ'
+            // The code below extracts the index and maps it back to the correct id
+            const pieces = key.split(']'); // ['[33', '.XYZ']
+            if (pieces.length > 1) {
+              let firstPiece = pieces[0]; // '[33'
+              if (firstPiece.startsWith('[')) {
+                firstPiece = firstPiece.substring(1, firstPiece.length); // '33'
+                const index = +firstPiece; // 33
+                if (index < ids.length) {
+                  // Get the Id that corresponds to this index
+                  const id = ids[index]; 
+                  if (!this.actionValidationErrors[id]) {
+                    this.actionValidationErrors[id] = [];
+                  }
+
+                  friendlyError.error[key].forEach(errorMessage => {
+                    // action errors map ids to list of errors messages
+                    this.actionValidationErrors[id].push(errorMessage);
+                  });
+                }
+              }
+            }
+          });
+
+          this.showErrorModal(this.translate.instant('The action did not pass validation, see the highlighted rows for details'));
+        } else {
+          this.showErrorModal(friendlyError.error);
+        }
+      }
+    );
+  }
+
+  @ViewChild('errorModal')
+  private errorModal: TemplateRef<any>;
+
+  public actionErrorMessage: string;
+
+  private showErrorModal(errorMessage: string) {
+    this.actionErrorMessage = errorMessage;
+    this.modalService.open(this.errorModal);
+  }
+
+  public showErrorHighlight(id: string | number) {
+    this.actionValidationErrors[id] && this.actionValidationErrors[id].length > 0
+  }
 }

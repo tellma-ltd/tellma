@@ -210,14 +210,17 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Create", "Create"),
             Ar(Constants.Client, "Create", "إنشاء"),
 
+            En(Constants.Client, "Delete", "Delete"),
+            Ar(Constants.Client, "Delete", "حذف"),
+
             En(Constants.Client, "Import", "Import"),
             Ar(Constants.Client, "Import", "استيراد"),
 
             En(Constants.Client, "Export", "Export"),
             Ar(Constants.Client, "Export", "تصدير"),
 
-            En(Constants.Client, "Exporting", "Exporting"),
-            Ar(Constants.Client, "Exporting", "تصدير"),
+            En(Constants.Client, "ExportRange", "Exporting Range"),
+            Ar(Constants.Client, "ExportRange", "نطاق التصدير"),
 
             En(Constants.Client, "DownloadTemplate", "Download Template"),
             Ar(Constants.Client, "DownloadTemplate", "تحميل القالب"),

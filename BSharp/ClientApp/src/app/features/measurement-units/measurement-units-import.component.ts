@@ -5,11 +5,6 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './measurement-units-import.component.html',
   styleUrls: ['./measurement-units-import.component.css']
 })
-export class MeasurementUnitsImportComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit() {
-  }
+export class MeasurementUnitsImportComponent {
 
 }

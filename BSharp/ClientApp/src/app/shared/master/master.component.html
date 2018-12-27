@@ -18,38 +18,40 @@
       </div>
     </div>
 
-    <!-- Toolbar -->
-    <div class="col-12 p-1 d-flex justify-content-between b-toolbar">
+    <!-- Regular Toolbar -->
+    <div class="col-12 p-1 d-flex justify-content-between b-toolbar" *ngIf="!areAnyChecked">
 
       <!-- Left Buttons -->
       <div>
         <!-- Create -->
-        <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()" [disabled]="!canCreate">
+        <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()" *ngIf="showCreate" [disabled]="!canCreate">
           <fa-icon icon="plus"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
         </button>
 
         <!-- Import -->
-        <button *ngIf="!isPopupMode" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onImport()">
+        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" *ngIf="showImport" (click)="onImport()">
           <fa-icon icon="upload"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Import' | translate }}</span>
         </button>
 
         <!-- Export -->
-        <button *ngIf="!isPopupMode" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="modalService.open(exportModal)">
+        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" *ngIf="showExport" (click)="modalService.open(exportModal)">
           <fa-icon icon="download"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
         </button>
 
-        <!-- Refresh -->
-        <!--<button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onRefresh()">
-          <fa-icon icon="sync-alt"></fa-icon>
-          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
-        </button>-->
       </div>
 
       <!-- Right Buttons -->
       <div>
+
+        <!-- Refresh -->
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button"
+                type="button" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+          <fa-icon icon="sync-alt"></fa-icon>
+        </button>
+
         <!-- Paging -->
         <div class="d-inline small mr-2 ml-2">
           <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span> </span>
@@ -69,6 +71,7 @@
           <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
         </button>
 
+
         <!-- Tiles/Table Toggle -->
         <div class="btn-group btn-group-toggle b-toolbar-button">
           <label class="btn btn-sm btn-light" [class.active]="showTilesView" title="{{ 'Tiles' | translate }}" (click)="onTilesView()">
@@ -77,18 +80,50 @@
           <label class="btn btn-sm btn-light" [class.active]="showTableView" title="{{ 'Table' | translate }}" (click)="onTableView()">
             <input type="radio" name="searchView"><fa-icon icon="list" [flip]="flip"></fa-icon>
           </label>
-          <!--<label class="btn btn-sm btn-light" [class.active]="showExportView" title="{{ 'Export' | translate }}" (click)="onExportView()">
-      <input type="radio" name="searchView"><fa-icon icon="download"></fa-icon>
-    </label>-->
         </div>
-
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button"
-                type="button" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
-          <fa-icon icon="sync-alt"></fa-icon>
-        </button>
-
       </div>
     </div>
+
+    <!-- Multi-Select Toolbar -->
+    <div class="col-12 p-1 d-flex justify-content-between b-toolbar" *ngIf="areAnyChecked">
+      <div>
+        <span class="ml-2 mr-2 b-vertical-align-middle">
+          {{ checkedCount }} selected record(s)
+        </span>
+
+        <!-- Custom actions -->
+        <div class="btn-group b-toolbar-button" ngbDropdown>
+          <button type="button" class="btn btn-primary btn-sm b-toolbar-button dropdown-toggle" ngbDropdownToggle>
+            {{ 'Actions' | translate }}
+          </button>
+          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
+            <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)">
+              {{ 'Delete' | translate }}
+            </button>
+
+            <ng-container *ngFor="let action of multiselectActions">
+              <button type="button" class="dropdown-item btn-light" (click)="onAction(action.action)">
+                <ng-container *ngTemplateOutlet="action.template"></ng-container>
+              </button>
+
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Delete -->
+        <!--<button class="btn btn-danger btn-sm b-toolbar-button" type="button" (click)="onCreate()" [disabled]="!canCreate">
+          <fa-icon icon="trash-alt"></fa-icon>
+          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Delete' | translate }}</span>
+        </button>-->
+        <!-- Cancel -->
+        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" type="button" *ngIf="!isPopupMode" (click)="onCancelMultiselect()">
+          <fa-icon icon="times"></fa-icon>
+          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
+        </button>
+      </div>
+
+    </div>
+
   </div>
 
   <!-- The search results -->
@@ -107,12 +142,11 @@
         </div>
       </div>
 
-
       <!-- Table: using the Angular CDK -->
       <div class="w-100 table-responsive" *ngIf="showTableView">
         <table class="table table-hover table-sm table-striped bg-white border-bottom b-master-table" cdk-table [dataSource]="masterIds" [trackBy]="trackById">
 
-          <!-- The only purpose of this invisible TR is to suppress VS warnings -->
+          <!-- The only purpose of this invisible TR element is to suppress VS warnings -->
           <tr style="display:none!important">
 
 
@@ -123,23 +157,29 @@
               <th class="b-multiselect-th" cdk-header-cell *cdkHeaderCellDef>
                 <div class="ml-2 mr-2">
                   <div class="custom-control custom-checkbox b-labelless-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked" (ngModelChange)="onCheckAll()">
+                    <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked" (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
                     <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
                   </div>
-
                 </div>
               </th>
-              <td style="vertical-align:central" cdk-cell *cdkCellDef="let id">
+              <td cdk-cell *cdkCellDef="let id">
                 <div class="ml-2 mr-2">
 
-                  <div class="custom-control custom-checkbox b-labelless-checkbox">
+                  <!-- checkbox -->
+                  <div class="custom-control custom-checkbox b-labelless-checkbox d-inline">
                     <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
                     <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
                   </div>
+
+                  <!-- Validation error -->
+                  <ng-container *ngIf="showErrorHighlight(id)">
+                    <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}" triggers="mouseenter:mouseleave" popoverTitle="Pop title" placement="right"></fa-icon>
+                  </ng-container>
                 </div>
               </td>
             </ng-container>
 
+            <!-- Custom feature columns -->
             <ng-container *ngFor="let colPath of tableColumnPaths">
               <ng-container cdkColumnDef="{{colPath}}">
 
@@ -150,7 +190,7 @@
                 </th>
 
                 <!-- Column rows -->
-                <td class="b-pointer" cdk-cell *cdkCellDef="let id"  (click)="onSelect(id)">
+                <td class="b-pointer" cdk-cell *cdkCellDef="let id" (click)="onSelect(id)">
                   <ng-container *ngTemplateOutlet="tableColumnTemplates[colPath].rowTemplate;context: { id: id }">
                   </ng-container>
                 </td>
@@ -164,7 +204,6 @@
 
         </table>
       </div>
-
 
       <!-- Spinner -->
       <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner">
@@ -184,7 +223,7 @@
   </div>
 </div>
 
-
+<!-- Export Modal -->
 <ng-template #exportModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title">{{ 'Export' | translate }}</h5>
@@ -210,7 +249,7 @@
     <!-- Page -->
     <div class="mt-3 mb-2">
       <div class="font-weight-bold small">
-        <span class="b-vertical-align-middle">{{ 'Exporting' | translate }}</span>
+        <span class="b-vertical-align-middle">{{ 'ExportRange' | translate }}</span>
       </div>
       <div [class.mt-1]="showExportPaging">
         <button class="btn btn-light btn-sm b-white-button" *ngIf="showExportPaging"
@@ -235,13 +274,68 @@
 
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" (click)="onExport(modal);" ngbAutofocus >
+    <button class="btn btn-primary" (click)="onExport(modal);" ngbAutofocus>
       <fa-icon icon="download"></fa-icon>
       &nbsp;{{ 'Export' | translate }}
     </button>
     <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()">
       <fa-icon icon="times"></fa-icon>
       &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+<!-- Delete Modal -->
+<ng-template #deleteModal let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'Confirmation' | translate }}</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    Are you sure you want to delete {{ checkedCount }} records?
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-danger" (click)="modal.dismiss(); onDelete();">
+      <fa-icon icon="trash-alt"></fa-icon>
+      &nbsp;{{ 'Delete' | translate }}
+    </button>
+    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title"><fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}</h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    {{ actionErrorMessage }}
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Dismiss' | translate }}
     </button>
   </div>
 </ng-template>

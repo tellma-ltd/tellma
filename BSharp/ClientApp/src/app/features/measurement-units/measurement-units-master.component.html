@@ -12,7 +12,11 @@
             'UnitAmount' : { headerTemplate : header_UnitAmount, rowTemplate : row_UnitAmount, weight : 1 },
             'BaseAmount' : { headerTemplate : header_BaseAmount, rowTemplate : row_BaseAmount, weight : 1 },
             'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
-          }">
+          }"
+          [multiselectActions]="[
+            { template : activate, action: onActivate },
+            { template : deactivate, action: onDeactivate }
+          ]">
 </b-master>
 
 <!-- Tile Template -->
@@ -48,8 +52,6 @@
 <ng-template #row_BaseAmount let-id="id"> {{ ws[id].BaseAmount | number }} </ng-template>
 
 
-<!--<ng-template #row_IsActive let-id="id">
-  <span class="text-white pl-1 pr-1"
-        [class.bg-secondary]="!ws[id].IsActive"
-        [class.bg-dark]="ws[id].IsActive">{{ (ws[id].IsActive ? 'Active' : 'Inactive') | translate }}</span>
-</ng-template>-->
+<!-- Multi-Select Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

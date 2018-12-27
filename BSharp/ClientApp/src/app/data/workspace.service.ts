@@ -95,6 +95,18 @@ export class MasterDetailsStore {
 
   detailsId: string | number;
   detailsStatus: DetailsStatus;
+
+  public delete(ids: (string | number)[]) {
+    // removes a deleted item in memory and updates the stats
+
+    this.total = this.total - ids.length;
+    this.masterIds = this.masterIds.filter(e => ids.indexOf(e) == -1);
+  }
+
+  public insert(id: (string | number)[]) {
+    // adds a newly created item in memory and updates the stats
+    // TODO
+  }
 }
 
 // The Workspace of the application stores ALL application wide in-memory state that survives

@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, throwError } from 'rxjs';
@@ -55,6 +55,19 @@ export class ApiService {
         // TODO
       },
 
+      delete: (ids: (number | string)[]) => {
+        const url = appconfig.apiAddress + `api/${endpoint}`;
+        const obs$ = this.http.request('DELETE', url, { body: ids }).pipe(
+          catchError((error) => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+        );
+
+        return obs$;
+      },
+
       template: (args: TemplateArguments) => {
         args = args || {};
 
@@ -88,7 +101,7 @@ export class ApiService {
         const formData = new FormData();
 
         for (let file of files)
-          formData.append(file.name, file); 
+          formData.append(file.name, file);
 
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}/import?${params}`;
@@ -238,7 +251,7 @@ export class ApiService {
           return friendlyStructure(res.status, this.translate.instant(`Error_UnhandledServerError`));
 
         default:  // Any other HTTP error
-          return friendlyStructure(res.status, this.translate.instant(`Error_UnkownClientError`));
+          return friendlyStructure(res.status, this.translate.instant(`Error_UnkownServerError`));
       }
 
     } else {
@@ -246,4 +259,5 @@ export class ApiService {
       return friendlyStructure(null, this.translate.instant(`Error_UnkownClientError`));
     }
   }
+
 }
