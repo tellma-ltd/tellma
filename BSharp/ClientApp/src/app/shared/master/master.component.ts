@@ -63,7 +63,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Input()
   multiselectActions: {
     template: TemplateRef<void>,
-    action: (p: (string | number)[]) => Observable<void>
+    action: (p: (string | number)[]) => Observable<any>
   }[] = [];
 
   @Input()
@@ -87,6 +87,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Output()
   create = new EventEmitter<void>();
 
+  @ViewChild('errorModal')
+  public errorModal: TemplateRef<any>;
+
   private PAGE_SIZE = 50;
   private localState = new MasterDetailsStore();  // Used in popup mode
   private searchView: SearchView;
@@ -100,6 +103,8 @@ export class MasterComponent implements OnInit, OnDestroy {
   public exportSkip = 0;
   public showExportSpinner = false;
   public exportErrorMessage: string;
+  public actionErrorMessage: string;
+  public actionValidationErrors: { [id: string]: string[] } = {};
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private router: Router,
     private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) {
@@ -152,6 +157,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     let s = this.state;
     s.masterIds = [];
     this.checked = {}; // clear all selection
+    this.actionValidationErrors = {}; // clear validation errors
     s.masterStatus = MasterStatus.loading;
 
     // Retrieve the entities
@@ -386,7 +392,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     return true; // TODO !this.canCreatePred || this.canCreatePred();
   }
 
-  trackById(index, id: number | string) {
+  trackById(_, id: number | string) {
     return id;
   }
 
@@ -431,6 +437,14 @@ export class MasterComponent implements OnInit, OnDestroy {
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 
+  public get placement() {
+    return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
+  }
+
+  public get errorPopoverPlacement() {
+    return this.workspace.ws.isRtl ? 'left' : 'right';
+  }
+
   public get tableColumnPathsAndExtras() {
     // This method conditionally adds the multi-select column
     let result = this.tableColumnPaths;
@@ -440,7 +454,8 @@ export class MasterComponent implements OnInit, OnDestroy {
     }
 
     if (this.allowMultiselect) {
-      result = result.slice();      
+      result = result.slice();
+      result.unshift('errors');
       result.unshift('multiselect');
     }
 
@@ -540,7 +555,8 @@ export class MasterComponent implements OnInit, OnDestroy {
   onCheckAll() {
     if (this.areAllChecked) {
       // Uncheck all
-      this.onCancelMultiselect();
+      this.checked = {};
+
     } else {
       // Check all
       this.masterIds.forEach(id => this.checked[id] = true);
@@ -549,13 +565,22 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   onCancelMultiselect() {
     this.checked = {};
+    this.actionValidationErrors = {};
   }
 
   onAction(action: (p: (string | number)[]) => Observable<void>) {
-    action(this.checkedIds).subscribe();
-  }
+    // clear any previous errors
+    this.actionErrorMessage = null;
+    this.actionValidationErrors = {};
 
-  public actionValidationErrors: { [id: string]: string[] } = {};
+    const ids = this.checkedIds;
+    action(ids).subscribe(
+      () => this.checked = {},
+      (friendlyError: any) => {
+        this.handleActionError(ids, friendlyError);
+      }
+    );
+  }
 
   onDelete() {
     // clear any previous errors
@@ -567,54 +592,69 @@ export class MasterComponent implements OnInit, OnDestroy {
       () => {
         // Update the UI to reflect deletion of items        
         this.state.delete(ids);
+        this.checked = {};
+        if (this.masterIds.length == 0 && this.total > 0) {
+          // auto refresh if the user deleted the entire page
+          this.fetch();
+        }
       },
       (friendlyError: any) => {
-        if (friendlyError.status === 422) {
-          const keys = Object.keys(friendlyError.error);
-          keys.forEach(key => {
-            // Validation error keys are expected to look like this '[33].XYZ'
-            // The code below extracts the index and maps it back to the correct id
-            const pieces = key.split(']'); // ['[33', '.XYZ']
-            if (pieces.length > 1) {
-              let firstPiece = pieces[0]; // '[33'
-              if (firstPiece.startsWith('[')) {
-                firstPiece = firstPiece.substring(1, firstPiece.length); // '33'
-                const index = +firstPiece; // 33
-                if (index < ids.length) {
-                  // Get the Id that corresponds to this index
-                  const id = ids[index]; 
-                  if (!this.actionValidationErrors[id]) {
-                    this.actionValidationErrors[id] = [];
-                  }
-
-                  friendlyError.error[key].forEach(errorMessage => {
-                    // action errors map ids to list of errors messages
-                    this.actionValidationErrors[id].push(errorMessage);
-                  });
-                }
-              }
-            }
-          });
-
-          this.showErrorModal(this.translate.instant('The action did not pass validation, see the highlighted rows for details'));
-        } else {
-          this.showErrorModal(friendlyError.error);
-        }
+        this.handleActionError(ids, friendlyError);
       }
     );
   }
 
-  @ViewChild('errorModal')
-  private errorModal: TemplateRef<any>;
+  private handleActionError(ids: (string | number)[], friendlyError) {
+    // This handles any errors caused by actions
 
-  public actionErrorMessage: string;
+    if (friendlyError.status === 422) {
+      const keys = Object.keys(friendlyError.error);
+      keys.forEach(key => {
+        // Validation error keys are expected to look like this '[33].XYZ'
+        // The code below extracts the index and maps it back to the correct id
+        const pieces = key.split(']'); // ['[33', '.XYZ']
+        if (pieces.length > 1) {
+          let firstPiece = pieces[0]; // '[33'
+          if (firstPiece.startsWith('[')) {
+            firstPiece = firstPiece.substring(1, firstPiece.length); // '33'
+            const index = +firstPiece; // 33
+            if (index < ids.length) {
+              // Get the Id that corresponds to this index
+              const id = ids[index];
+              if (!this.actionValidationErrors[id]) {
+                this.actionValidationErrors[id] = [];
+              }
 
-  private showErrorModal(errorMessage: string) {
+              friendlyError.error[key].forEach(errorMessage => {
+                // action errors map ids to list of errors messages
+                this.actionValidationErrors[id].push(errorMessage);
+              });
+            } else {
+              // Developer mistake
+              console.error('The key index returned was outside the range of the collection sent: ' + key);
+            }
+          } else {
+            // Developer mistake
+            console.error('One of the keys in the 422 response did not contain an opening square bracket [: ' + key);
+          }
+        } else {
+          // Developer mistake
+          console.error('One of the keys in the 422 response did not contain a closing square bracket ]: ' + key);
+        }
+      });
+
+      this.displayErrorModal(this.translate.instant('ActionDidNotPassValidation'));
+    } else {
+      this.displayErrorModal(friendlyError.error);
+    }
+  }
+
+  private displayErrorModal(errorMessage: string): void {
     this.actionErrorMessage = errorMessage;
     this.modalService.open(this.errorModal);
   }
 
-  public showErrorHighlight(id: string | number) {
-    this.actionValidationErrors[id] && this.actionValidationErrors[id].length > 0
+  public showErrorHighlight(id: string | number): boolean {
+    return this.actionValidationErrors[id] && this.actionValidationErrors[id].length > 0
   }
 }

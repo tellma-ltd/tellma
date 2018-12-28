@@ -63,7 +63,7 @@ library.add(
     SuccessMessageComponent,
     WarningMessageComponent,
     TextEditorComponent,
-    ImportComponent
+    ImportComponent,
   ],
   imports: [
     CommonModule,
@@ -95,7 +95,7 @@ library.add(
     WarningMessageComponent,
     TextEditorComponent,
     CdkTableModule,
-    ImportComponent
+    ImportComponent,
   ]
 })
 export class SharedModule { }

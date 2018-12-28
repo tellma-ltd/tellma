@@ -1,25 +1,38 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { WorkspaceService } from 'src/app/data/workspace.service';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { ApiService } from 'src/app/data/api.service';
 import { MeasurementUnit_UnitType } from 'src/app/data/dto/measurement-unit';
-import { Observable, of } from 'rxjs';
+import { addToWorkspace } from 'src/app/data/util';
+import { WorkspaceService } from 'src/app/data/workspace.service';
 
 @Component({
   selector: 'b-measurement-units-master',
   templateUrl: './measurement-units-master.component.html',
   styleUrls: ['./measurement-units-master.component.css']
 })
-export class MeasurementUnitsMasterComponent implements OnInit {
+export class MeasurementUnitsMasterComponent implements OnInit, OnDestroy {
 
   @Input()
-  mode: 'screen' | 'popup' = 'screen';
+  public mode: 'screen' | 'popup' = 'screen';
+
+  private notifyDestruct$ = new Subject<void>();
+  private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
+
+  constructor(private workspace: WorkspaceService, private api: ApiService) {
+
+    this.measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$);
+  }
 
   onSelect(v: any) {
     console.log('select! ' + JSON.stringify(v));
   }
 
-  constructor(private workspace: WorkspaceService) { }
-
   ngOnInit() {
+  }
+
+  ngOnDestroy(): void {
+    this.notifyDestruct$.next();
   }
 
   public get ws() {
@@ -30,13 +43,21 @@ export class MeasurementUnitsMasterComponent implements OnInit {
     return MeasurementUnit_UnitType[value];
   }
 
-  public onActivate(ids: (number | string)[]): Observable<void> {
-    console.log('onActivate');
-    return of();
+  public onActivate = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.measurementUnitsApi.activate(ids, { ReturnEntities: true }).pipe(
+      tap(res => addToWorkspace(res, this.workspace))
+    );
+
+    // The master template handles any errors
+    return obs$;
   }
 
-  public onDeactivate(ids: (number | string)[]): Observable<void> {
-    console.log('onDeactivate');
-    return of();
+  public onDeactivate = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.measurementUnitsApi.deactivate(ids, { ReturnEntities: true }).pipe(
+      tap(res => addToWorkspace(res, this.workspace))
+    );
+
+    // The master template handles any errors
+    return obs$;
   }
 }

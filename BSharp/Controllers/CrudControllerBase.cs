@@ -136,18 +136,6 @@ namespace BSharp.Controllers
             try
             {
                 // TODO: Authorize DELETE
-
-                foreach(var id in ids.Where(e => int.Parse(e.ToString()) < 10))
-                {
-                    string key = $"[{ids.IndexOf(id)}]";
-                    ModelState.AddModelError(key, "You did it wrong");
-                    ModelState.AddModelError(key, "You didn't do it right");
-                }
-
-                if(!ModelState.IsValid)
-                {
-                    throw new UnprocessableEntityException(ModelState);
-                }
                 
                 await DeleteImplAsync(ids);
                 return Ok();
@@ -683,8 +671,8 @@ namespace BSharp.Controllers
             return relatedEntities;
         }
 
-        private static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never changes
-        private static string GetCollectionName(Type dtoType)
+        protected static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never changes
+        protected static string GetCollectionName(Type dtoType)
         {
             if (!_getCollectionNameCache.ContainsKey(dtoType))
             {

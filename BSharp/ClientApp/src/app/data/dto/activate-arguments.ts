@@ -1,3 +1,4 @@
 export class ActivateArguments {
-  Ids: (number | string)[];
+  ReturnEntities?: boolean;
+  Expand?: string;
 }

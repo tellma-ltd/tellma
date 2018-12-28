@@ -40,7 +40,7 @@
 <ng-template #row_Code let-id="id"> {{ ws[id].Code }} </ng-template>
 
 <ng-template #header_IsActive>{{ 'MU_IsActive' | translate }}</ng-template>
-<ng-template #row_IsActive let-id="id"> {{ 'Active' | translate }} </ng-template>
+<ng-template #row_IsActive let-id="id"> {{ ws[id].IsActive ? 'Active' : 'Inactive' | translate }} </ng-template>
 
 <ng-template #header_UnitType>{{ 'MU_UnitType' | translate }}</ng-template>
 <ng-template #row_UnitType let-id="id"> {{ UnitTypeLookup(ws[id].UnitType) | translate }} </ng-template>

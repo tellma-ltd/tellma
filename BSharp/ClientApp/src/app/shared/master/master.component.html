@@ -88,11 +88,11 @@
     <div class="col-12 p-1 d-flex justify-content-between b-toolbar" *ngIf="areAnyChecked">
       <div>
         <span class="ml-2 mr-2 b-vertical-align-middle">
-          {{ checkedCount }} selected record(s)
+          {{ 'NSelectedItems' | translate: { count: checkedCount } }}
         </span>
 
         <!-- Custom actions -->
-        <div class="btn-group b-toolbar-button" ngbDropdown>
+        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="placement">
           <button type="button" class="btn btn-primary btn-sm b-toolbar-button dropdown-toggle" ngbDropdownToggle>
             {{ 'Actions' | translate }}
           </button>
@@ -170,11 +170,19 @@
                     <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
                     <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
                   </div>
+                </div>
+              </td>
+            </ng-container>
 
-                  <!-- Validation error -->
-                  <ng-container *ngIf="showErrorHighlight(id)">
-                    <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}" triggers="mouseenter:mouseleave" popoverTitle="Pop title" placement="right"></fa-icon>
-                  </ng-container>
+            <ng-container cdkColumnDef="errors">
+              <!-- Errors -->
+              <th class="b-multiselect-th pl-0 pr-0" cdk-header-cell *cdkHeaderCellDef>
+              </th>
+              <td class="pl-0 pr-0" cdk-cell *cdkCellDef="let id">
+
+                <!-- Validation errors -->
+                <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">
+                  <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}" triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement"></fa-icon>
                 </div>
               </td>
             </ng-container>
@@ -298,7 +306,7 @@
 
   <!-- body -->
   <div class="modal-body">
-    Are you sure you want to delete {{ checkedCount }} records?
+    {{ 'DeleteConfirmationMessage' | translate: { count: checkedCount } }}
   </div>
 
   <!-- footer -->

@@ -41,18 +41,18 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<List<MeasurementUnit>>> Activate([FromBody] List<int> ids, bool returnEntities = true)
+        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
-            return await ActivateDeactivate(ids, returnEntities, isActive: true);
+            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true);
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<List<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, bool returnEntities = true)
+        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
-            return await ActivateDeactivate(ids, returnEntities, isActive: false);
+            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
         }
 
-        private async Task<ActionResult<List<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             using (var trx = await _db.Database.BeginTransactionAsync())
             {
@@ -100,13 +100,14 @@ MERGE INTO [dbo].MeasurementUnits AS t
                     else
                     {
                         // Load the entities using their Ids
-                        var affectedDbEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp).ToListAsync();
-                        var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
+                        var affectedDbEntitiesQ = _db.MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                        var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
+                        var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
+                        var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);                        
 
                         // sort the entities the way their Ids came, as a good practice
                         MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
                         Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
-
                         for (int i = 0; i < ids.Count; i++)
                         {
                             var id = ids[i];
@@ -119,9 +120,15 @@ MERGE INTO [dbo].MeasurementUnits AS t
                             sortedAffectedEntities[i] = entity;
                         }
 
+                        // Prepare a proper response
+                        var response = new EntitiesResponse<MeasurementUnit> {
+                            Data = sortedAffectedEntities,
+                            CollectionName = GetCollectionName(typeof(MeasurementUnit))
+                        };
+
                         // Commit and return
                         trx.Commit();
-                        return Ok(sortedAffectedEntities);
+                        return Ok(response);
                     }
                 }
                 catch (Exception ex)
@@ -500,7 +507,7 @@ SET NOCOUNT ON;
                 var row = grid[i];
 
                 // Anything after an empty row is ignored
-                if(saveColumnMap.All((p) => string.IsNullOrWhiteSpace(row[p.Index].Content?.ToString())))
+                if (saveColumnMap.All((p) => string.IsNullOrWhiteSpace(row[p.Index].Content?.ToString())))
                 {
                     break;
                 }
@@ -509,6 +516,7 @@ SET NOCOUNT ON;
                 foreach (var (index, prop) in saveColumnMap)
                 {
                     var content = row[index].Content;
+                    var propName = _metadataProvider.GetMetadataForProperty(readType, prop.Name).DisplayName;
 
                     // Special handling for choice lists
                     if (content != null)
@@ -521,9 +529,8 @@ SET NOCOUNT ON;
                             var displayNameIndex = displayNames.IndexOf(stringContent);
                             if (displayNameIndex == -1)
                             {
-                                var propName = _metadataProvider.GetMetadataForProperty(readType, prop.Name).DisplayName;
                                 string seperator = _localizer[", "];
-                                AddRowError(i + 2, _localizer["Error_Value0IsNotValidFor1AcceptableValuesAre2", stringContent, propName, string.Join(seperator, displayNames)]);
+                                AddRowError(i + 1, _localizer["Error_Value0IsNotValidFor1AcceptableValuesAre2", stringContent, propName, string.Join(seperator, displayNames)]);
                             }
                             else
                             {
@@ -532,7 +539,14 @@ SET NOCOUNT ON;
                         }
                     }
 
-                    prop.SetValue(entity, content); // TODO casting here to be done
+                    try
+                    {
+                        prop.SetValue(entity, content); // TODO casting here to be done
+                    }
+                    catch (ArgumentException)
+                    {
+                        AddRowError(i + 1, _localizer["Error_TheValue0IsNotValidFor1Field", content?.ToString(), propName]);
+                    }
                 }
 
                 result.Add(entity);

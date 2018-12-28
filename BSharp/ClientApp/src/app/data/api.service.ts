@@ -7,7 +7,7 @@ import { ActivateArguments } from './dto/activate-arguments';
 import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
 import { GetArguments } from './dto/get-arguments';
 import { GetByIdArguments } from './dto/get-by-id-arguments';
-import { GetResponse } from './dto/get-response';
+import { GetResponse, EntitiesResponse } from './dto/get-response';
 import { MeasurementUnit } from './dto/measurement-unit';
 import { TemplateArguments } from './dto/template-arguments';
 import { ImportArguments } from './dto/import-arguments';
@@ -56,13 +56,17 @@ export class ApiService {
       },
 
       delete: (ids: (number | string)[]) => {
+        this.saveInProgress = true;
         const url = appconfig.apiAddress + `api/${endpoint}`;
         const obs$ = this.http.request('DELETE', url, { body: ids }).pipe(
+          tap(() => this.saveInProgress = false),
           catchError((error) => {
+            this.saveInProgress = false;
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
+          finalize(() => this.saveInProgress = false)
         );
 
         return obs$;
@@ -103,14 +107,18 @@ export class ApiService {
         for (let file of files)
           formData.append(file.name, file);
 
+        this.saveInProgress = true;
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}/import?${params}`;
         const obs$ = this.http.post<ImportResult>(url, formData).pipe(
+          tap(() => this.saveInProgress = false),
           catchError((error) => {
+            this.saveInProgress = false;
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
+          finalize(() => this.saveInProgress = false)
         );
 
         return obs$;
@@ -138,9 +146,24 @@ export class ApiService {
   }
 
   private activateFactory<TDto extends DtoForSaveKeyBase>(endpoint: string, cancellationToken$: Observable<void>) {
-    return (args: ActivateArguments) => {
-      const url = appconfig.apiAddress + `api/${endpoint}/activate`;
-      const obs$ = this.http.post<TDto[]>(url, args, {
+    return (ids: (string | number)[], args: ActivateArguments) => {
+      args = args || {};
+
+      const paramsArray: string[] = [];
+
+      if (!!args.ReturnEntities) {
+        paramsArray.push(`returnEntities=${args.ReturnEntities}`);
+      }
+
+      if (!!args.Expand) {
+        paramsArray.push(`expand=${args.Expand}`);
+      }
+
+      const params: string = paramsArray.join('&');
+      const url = appconfig.apiAddress + `api/${endpoint}/activate?${params}`;
+
+      this.saveInProgress = true;
+      const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }).pipe(
         tap(() => this.saveInProgress = false),
@@ -158,9 +181,24 @@ export class ApiService {
   }
 
   private deactivateFactory<TDto extends DtoForSaveKeyBase>(endpoint: string, cancellationToken$: Observable<void>) {
-    return (args: ActivateArguments) => {
-      const url = appconfig.apiAddress + `api/${endpoint}/deactivate`;
-      const obs$ = this.http.post<TDto[]>(url, args, {
+    return (ids: (string | number)[], args: ActivateArguments) => {
+      args = args || {};
+
+      const paramsArray: string[] = [];
+
+      if (!!args.ReturnEntities) {
+        paramsArray.push(`returnEntities=${args.ReturnEntities}`);
+      }
+
+      if (!!args.Expand) {
+        paramsArray.push(`expand=${args.Expand}`);
+      }
+
+      const params: string = paramsArray.join('&');
+      const url = appconfig.apiAddress + `api/${endpoint}/deactivate?${params}`;
+
+      this.saveInProgress = true;
+      const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }).pipe(
         tap(() => this.saveInProgress = false),

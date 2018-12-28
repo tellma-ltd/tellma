@@ -1,3 +1,4 @@
 export class DeactivateArguments {
-  Ids: (number | string)[];
+  ReturnEntities?: boolean;
+  Expand?: string;
 }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
+import { ApiService } from './data/api.service';
 
 @Component({
   selector: 'b-root',
@@ -35,7 +36,7 @@ export class RootComponent {
     'yi'    /* 'ייִדיש', Yiddish */
   ];
 
-  constructor(private translate: TranslateService, private workspace: WorkspaceService) {
+  constructor(private translate: TranslateService, private workspace: WorkspaceService, private api: ApiService) {
 
     // Callback after the new app culture is loaded
     this.translate.onLangChange.subscribe(_ => {
@@ -59,16 +60,6 @@ export class RootComponent {
     if (!!userCulture) {
       this.translate.use(userCulture);
     }
-
-    //// TEMPORARY FOR DEBUGGING
-    //// This monitors changes on the query params and updates the app's culture accordingly
-    //this.route.queryParamMap.pipe(
-    //  map(e => e.get(this.QUERY_PARAM_NAME)),
-    //  filter(culture => !!culture),
-    //  switchMap(culture => {
-    //    return this.translate.use(culture);
-    //  })
-    //).subscribe();
   }
   
   setDocumentRTL(culture: string) {
@@ -82,4 +73,10 @@ export class RootComponent {
       document.body.classList.remove('b-rtl');
     }
   }
+
+  get showOverlay(): boolean {
+    // when there is a save in progress, block the user screen and prevent any navigation.
+    return this.api.saveInProgress;
+  }
+
 }

@@ -119,6 +119,9 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_ParsingForDeleteIsNotSupported", "Delete mode is not supported in the parsing API"),
             Ar(Constants.Server, "Error_ParsingForDeleteIsNotSupported", "وضع الحذف ليس مدعوما من هذه الواجهة"),
 
+            En(Constants.Server, "Error_TheValue0IsNotValidFor1Field", "The value '{0}' is not valid for the {1} field"),
+            Ar(Constants.Server, "Error_TheValue0IsNotValidFor1Field", "القيمة ({0}) ليست صالحة لحقل {1}"),
+
 
             // Client Errors
             En(Constants.Client, "Error_UnableToReachServer", "Unable to reach the server, please check the connection of your device"),
@@ -247,7 +250,7 @@ namespace BSharp.Data.Model
             Ar(Constants.Client, "Next", "التالي"),
 
             En(Constants.Client, "NoItemsFound", "No Items Found."),
-            Ar(Constants.Client, "NoItemsFound", ".لا يوجد بيانات"),
+            Ar(Constants.Client, "NoItemsFound", "لا يوجد بيانات"),
 
             En(Constants.Client, "ImportAFile", "Import a File"),
             Ar(Constants.Client, "ImportAFile", "استيراد ملف"),
@@ -285,8 +288,35 @@ namespace BSharp.Data.Model
             En(Constants.Client, "ImportMergeSuccessMessage", "Successfully inserted {{Inserted}} record(s) and updated {{Updated}} record(s) in {{Seconds}} seconds"),
             Ar(Constants.Client, "ImportMergeSuccessMessage", "تمت أضافة عدد {{Inserted}} وتعديل عدد {{Updated}} من البيانات في {{Seconds}} من الثواني"),
 
-            En(Constants.Client, "MaxExportSizeWarning", "Only {{max}} records can be exported at a time"),
+            En(Constants.Client, "MaxExportSizeWarning", "Only {{max}} items can be exported at a time"),
             Ar(Constants.Client, "MaxExportSizeWarning", "التصدير محدود بعدد {{max}} من البيانات كحد أقصى"),
+
+            En(Constants.Client, "NSelectedItems", "{{count}} selected Items"),
+            Ar(Constants.Client, "NSelectedItems", "عدد البيانات المحددة {{count}}"),
+
+            En(Constants.Client, "Actions", "Actions"),
+            Ar(Constants.Client, "Actions", "أوامر"),
+
+            En(Constants.Client, "Confirmation", "Confirmation"),
+            Ar(Constants.Client, "Confirmation", "توكيد"),
+
+            En(Constants.Client, "DeleteConfirmationMessage", "Are you sure you want to delete {{count}} items? This action is irreversible."),
+            Ar(Constants.Client, "DeleteConfirmationMessage", "هل تود حذف عدد {{count}} من البيانات؟ هذا الفعل لا يمكن التراجع عنه."),
+
+            En(Constants.Client, "Activate", "Activate"),
+            Ar(Constants.Client, "Activate", "تنشيط"),
+
+            En(Constants.Client, "Deactivate", "Deactivate"),
+            Ar(Constants.Client, "Deactivate", "إيقاف"),
+
+            En(Constants.Client, "Error", "Error"),
+            Ar(Constants.Client, "Error", "حدث خطأ"),
+
+            En(Constants.Client, "Dismiss", "Dismiss"),
+            Ar(Constants.Client, "Dismiss", "صرف"),
+
+            En(Constants.Client, "ActionDidNotPassValidation", "The action did not pass validation, see the highlighted rows for details"),
+            Ar(Constants.Client, "ActionDidNotPassValidation", "الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل"),
 
             // Choice lists
 
