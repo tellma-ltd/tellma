@@ -19,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
@@ -136,7 +137,7 @@ namespace BSharp.Controllers
             try
             {
                 // TODO: Authorize DELETE
-                
+
                 await DeleteImplAsync(ids);
                 return Ok();
             }
@@ -507,16 +508,325 @@ namespace BSharp.Controllers
         /// </summary>
         protected virtual IQueryable<TModel> Filter(IQueryable<TModel> query, string filter)
         {
-            // TODO Implement filter
-
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                // (1) Lex
-                // (2) Parse
-                // (3) Apply
+                // Below are the standard steps of any compiler
+
+                //////// (1) Preprocessing
+                // Ensure no spaces are repeated
+                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                filter = regex.Replace(filter, " ");
+
+                // Trim
+                filter = filter.Trim();
+
+                //////// (2) Lexical Analysis of string into token stream
+                List<string> symbols = new List<string>(new string[] {
+
+                    // Logical Operators
+                    " and ", " or ",
+
+                    // Brackets
+                    "(", ")",
+                });
+
+                List<string> tokens = new List<string>();
+                bool insideQuotes = false;
+                string acc = "";
+                int index = 0;
+                while (index < filter.Length)
+                {
+                    // Lexical anaysis ignores what's inside single quotes
+                    if (filter[index] == '\'' && (index == 0 || filter[index - 1] != '\'') && (index == filter.Length - 1 || filter[index + 1] != '\''))
+                    {
+                        insideQuotes = !insideQuotes;
+                        acc += filter[index];
+                        index++;
+                    }
+                    else if (insideQuotes)
+                    {
+                        acc += filter[index];
+                        index++;
+                    }
+                    else
+                    {
+                        // Everything that is not inside single quotes is ripe for lexical analysis      
+                        var matchingSymbol = symbols.FirstOrDefault(filter.Substring(index).StartsWith);
+                        if (matchingSymbol != null)
+                        {
+                            // Add all that has been accumulating before the symbol
+                            if (!string.IsNullOrWhiteSpace(acc))
+                            {
+                                tokens.Add(acc.Trim());
+                                acc = "";
+                            }
+
+                            // And add the symbol
+                            tokens.Add(matchingSymbol.Trim());
+                            index = index + matchingSymbol.Length;
+                        }
+                        else
+                        {
+                            acc += filter[index];
+                            index++;
+                        }
+                    }
+                }
+
+                if (insideQuotes)
+                {
+                    // Programmer mistake
+                    throw new BadRequestException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
+                }
+
+                if (!string.IsNullOrWhiteSpace(acc))
+                {
+                    tokens.Add(acc.Trim());
+                }
+
+                //////// (3) Parse token stream to Abstract Syntax Tree (AST)
+
+                Ast ParseToAst(IEnumerable<string> tokenStream)
+                {
+                    if (tokenStream.IsEnclosedInPairBrackets())
+                    {
+                        return ParseBrackets(tokenStream);
+                    }
+                    else if (tokenStream.OutsideBrackets().Any(e => e == "or"))
+                    {
+                        // OR has lower precedence than AND
+                        return ParseDisjunction(tokenStream);
+                    }
+                    else if (tokenStream.OutsideBrackets().Any(e => e == "and"))
+                    {
+                        return ParseConjunction(tokenStream);
+                    }
+                    else if (tokenStream.Count() <= 1)
+                    {
+                        return ParseAtom(tokenStream);
+                    }
+                    else
+                    {
+                        // Programmer mistake
+                        throw new BadRequestException("Badly formatted filter parameter");
+                    }
+                }
+
+                AstBrackets ParseBrackets(IEnumerable<string> tokenStream)
+                {
+                    return new AstBrackets
+                    {
+                        Inner = ParseToAst(tokenStream.Skip(1).Take(tokenStream.Count() - 2))
+                    };
+                }
+
+                AstConjunction ParseConjunction(IEnumerable<string> tokenStream)
+                {
+                    // find first occurrence of AND outside the brackets, and then parse both sides
+                    int i = tokenStream.OutsideBrackets().ToList().IndexOf("and");
+                    var left = tokenStream.Take(i);
+                    var right = tokenStream.Skip(i + 1);
+
+                    return new AstConjunction
+                    {
+                        Left = ParseToAst(left),
+                        Right = ParseToAst(right),
+                    };
+                }
+
+                AstDisjunction ParseDisjunction(IEnumerable<string> tokenStream)
+                {
+                    // find first occurrence of AND outside the brackets, and then parse both sides
+                    int i = tokenStream.OutsideBrackets().ToList().IndexOf("or");
+                    var left = tokenStream.Take(i);
+                    var right = tokenStream.Skip(i + 1);
+
+                    return new AstDisjunction
+                    {
+                        Left = ParseToAst(left),
+                        Right = ParseToAst(right),
+                    };
+                }
+
+                AstAtom ParseAtom(IEnumerable<string> tokenStream)
+                {
+                    return new AstAtom { Value = tokenStream.SingleOrDefault() ?? "" };
+                }
+
+                Ast ast = ParseToAst(tokens);
+
+
+                //////// (4) Compile the AST to Linq lambda
+
+                // The parameter on which the expression is based
+                var eParam = Expression.Parameter(typeof(TModel));
+
+                // Recursive function to turn the AST to linq
+                Expression ToExpression(Ast tree)
+                {
+                    if (tree is AstBrackets bracketsAst)
+                    {
+                        return ToExpression(bracketsAst.Inner);
+                    }
+
+                    if (tree is AstConjunction conAst)
+                    {
+                        return Expression.AndAlso(ToExpression(conAst.Left), ToExpression(conAst.Right));
+                    }
+
+                    if (tree is AstDisjunction disAst)
+                    {
+                        return Expression.OrElse(ToExpression(disAst.Left), ToExpression(disAst.Right));
+                    }
+
+                    if (tree is AstAtom atom)
+                    {
+                        var modelType = typeof(TModel);
+                        var v = atom.Value;
+
+                        // Indicates a programmer mistake
+                        if (string.IsNullOrWhiteSpace(v))
+                        {
+                            throw new InvalidOperationException("An atomic expression cannot be empty");
+                        }
+                        // Some controllers may defiend their own set of keywords which 
+                        // take precedence over the default parsing of atoms
+                        Expression result = ParseSpecialFilterKeyword(v, eParam);
+
+                        // If the controller does not handle this atom, we use the default parser
+                        if (result == null)
+                        {
+                            // The default parser assumes the following syntax: Path Op Value, for example: Address/Street eq 'Huntington Rd.'
+                            var pieces = v.Split(" ");
+                            if (pieces.Count() < 3)
+                            {
+                                // Programmer mistake
+                                throw new InvalidOperationException("An atomic expression must either be a reserved word or come in the form of 'Property Op Value'");
+                            }
+                            else
+                            {
+                                // (A) Parse the member access path
+                                var path = pieces[0];
+
+                                var steps = path.Split('/');
+                                PropertyInfo prop = null;
+                                Type propType = modelType;
+                                Expression memberAccess = eParam;
+                                foreach (var step in steps)
+                                {
+                                    prop = propType.GetProperty(step);
+                                    if (prop == null)
+                                    {
+                                        throw new InvalidOperationException(
+                                            $"The property '{step}' from the filter argument is not a navigation property of entity type '{propType.Name}'.");
+                                    }
+
+                                    var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
+                                    if (isCollection)
+                                    {
+                                        // Programmer mistake
+                                        throw new InvalidOperationException("Filter parameters cannot access collection properties");
+                                    }
+
+                                    propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                                    memberAccess = Expression.Property(memberAccess, prop);
+                                }
+
+                                // (B) Parse the 
+                                var valueString = string.Join(" ", pieces.Skip(2));
+                                object value;
+                                if (propType == typeof(string) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
+                                {
+                                    if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
+                                    {
+                                        // Programmer mistake
+                                        throw new InvalidOperationException($"Property {prop.Name} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
+                                    }
+
+                                    valueString = valueString.Substring(1, valueString.Length - 2);
+                                }
+
+                                try
+                                {
+                                    value = Convert.ChangeType(valueString, propType);
+                                }
+                                catch (ArgumentException)
+                                {
+                                    // Programmer mistake
+                                    throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
+                                }
+
+                                var constant = Expression.Constant(value, propType);
+
+
+                                // (C) parse the operator
+                                var op = pieces[1];
+                                op = op?.ToLower() ?? "";
+                                switch (op)
+                                {
+                                    case "gt":
+                                        return Expression.GreaterThan(memberAccess, constant);
+
+                                    case "ge":
+                                        return Expression.GreaterThanOrEqual(memberAccess, constant);
+
+                                    case "lt":
+                                        return Expression.LessThan(memberAccess, constant);
+
+                                    case "le":
+                                        return Expression.LessThanOrEqual(memberAccess, constant);
+
+                                    case "eq":
+                                        return Expression.Equal(memberAccess, constant);
+
+                                    case "ne":
+                                        return Expression.NotEqual(memberAccess, constant);
+
+                                    default:
+                                        throw new InvalidOperationException($"The filter operator '{op}' is not recognized");
+                                }
+                            }
+                        }
+
+                        return result;
+                    }
+
+                    // Programmer mistake
+                    throw new Exception("Unknown AST type");
+                }
+
+                var ex = ToExpression(ast);
+                var lambda = Expression.Lambda<Func<TModel, bool>>(ex, eParam);
+
+
+                //////// (5) Apply lambda to the query
+                query = query.Where(lambda);
             }
 
             return query;
+        }
+
+        /// <summary>
+        /// Some controllers may wish to define their own way of handling atomic filter 
+        /// query parameter expressions, overriding this virtual method is the way to do it
+        /// </summary>
+        protected virtual Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
+        {
+            // This method is overridden by controllers to provide special keywords that represent certain
+            // complicated linq expressions that cannot be expressed with normal ODATA filter
+
+            // Any type that contains a CreatedBy property defines a keyword "CreatedByMe"
+            if (keyword == "CreatedByMe")
+            {
+                var createdByProperty = typeof(TModel).GetProperty("CreatedBy");
+                if (createdByProperty != null)
+                {
+                    var me = Expression.Constant(this.User.UserId(), typeof(string));
+                    return Expression.Equal(Expression.Property(param, createdByProperty), me);
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

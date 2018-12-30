@@ -222,6 +222,12 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Export", "Export"),
             Ar(Constants.Client, "Export", "تصدير"),
 
+            En(Constants.Client, "Filter", "Filter"),
+            Ar(Constants.Client, "Filter", "تصفية"),
+
+            En(Constants.Client, "IncludeInactive", "Include Inactive"),
+            Ar(Constants.Client, "IncludeInactive", "إشمل غير المنشط"),
+
             En(Constants.Client, "ExportRange", "Exporting Range"),
             Ar(Constants.Client, "ExportRange", "نطاق التصدير"),
 
@@ -251,6 +257,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "NoItemsFound", "No Items Found."),
             Ar(Constants.Client, "NoItemsFound", "لا يوجد بيانات"),
+
+            En(Constants.Client, "CreatedByMe", "Created By Me"),
+            Ar(Constants.Client, "CreatedByMe", "منشأ من قبلي"),
 
             En(Constants.Client, "ImportAFile", "Import a File"),
             Ar(Constants.Client, "ImportAFile", "استيراد ملف"),
@@ -307,13 +316,16 @@ namespace BSharp.Data.Model
             Ar(Constants.Client, "Activate", "تنشيط"),
 
             En(Constants.Client, "Deactivate", "Deactivate"),
-            Ar(Constants.Client, "Deactivate", "إيقاف"),
+            Ar(Constants.Client, "Deactivate", "إيقاف النشاط"),
 
             En(Constants.Client, "Error", "Error"),
             Ar(Constants.Client, "Error", "حدث خطأ"),
 
             En(Constants.Client, "Dismiss", "Dismiss"),
-            Ar(Constants.Client, "Dismiss", "صرف"),
+            Ar(Constants.Client, "Dismiss", "إزالة"),
+
+            En(Constants.Client, "ClearFilter", "Clear Filter"),
+            Ar(Constants.Client, "ClearFilter", "إزالة التصفية"),
 
             En(Constants.Client, "ActionDidNotPassValidation", "The action did not pass validation, see the highlighted rows for details"),
             Ar(Constants.Client, "ActionDidNotPassValidation", "الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل"),

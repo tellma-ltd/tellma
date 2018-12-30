@@ -64,12 +64,12 @@ namespace BSharp.Services.Utilities
         public static void TrimStringProperties(this DtoForSaveBase entity)
         {
             var dtoType = entity.GetType();
-            foreach(var prop in dtoType.GetProperties())
+            foreach (var prop in dtoType.GetProperties())
             {
-                if(prop.PropertyType == typeof(string))
+                if (prop.PropertyType == typeof(string))
                 {
                     var originalValue = prop.GetValue(entity)?.ToString();
-                    if(originalValue != null)
+                    if (originalValue != null)
                     {
                         var trimmed = originalValue.Trim();
                         prop.SetValue(entity, trimmed);
@@ -78,7 +78,7 @@ namespace BSharp.Services.Utilities
                 else if (prop.PropertyType.IsSubclassOf(typeof(DtoForSaveBase)))
                 {
                     var dtoForSave = prop.GetValue(entity);
-                    if(dtoForSave != null)
+                    if (dtoForSave != null)
                     {
                         (dtoForSave as DtoForSaveBase).TrimStringProperties();
                     }
@@ -93,6 +93,82 @@ namespace BSharp.Services.Utilities
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns only the part of the stream that is not enclosed inside brackets,
+        /// And for everything else returns null
+        /// </summary>
+        public static IEnumerable<string> OutsideBrackets(this IEnumerable<string> @this)
+        {
+            int level = 0;
+            foreach (var item in @this)
+            {
+                if (item == "(")
+                {
+                    level++;
+                }
+
+                if (item == ")")
+                {
+                    level--;
+                }
+
+                if (level <= 0)
+                {
+                    yield return item;
+                }
+                else
+                {
+                    yield return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks that the first token is an opening bracket, the last token is a closing bracket
+        /// and that they are matched pair, for example: this will return false '(A and B) or (C and D)'
+        /// </summary>
+        /// <param name="this"></param>
+        /// <returns></returns>
+        public static bool IsEnclosedInPairBrackets(this IEnumerable<string> @this)
+        {
+            // Check that the first token is opening bracket
+            if (@this.FirstOrDefault() != "(")
+            {
+                return false;
+            }
+
+            // Check that the last token is closing bracket
+            if (@this.LastOrDefault() != ")")
+            {
+                return false;
+            }
+
+            // Check that the first and last brackets are a pair
+            var inner = @this.Skip(1).Take(@this.Count() - 2);
+            int level = 1;
+            foreach (var item in inner)
+            {
+                if (item == "(")
+                {
+                    level++;
+                }
+
+                if (item == ")")
+                {
+                    level--;
+                }
+
+                if (level == 0)
+                {
+                    // This means that the first brackte and last bracket are not a pair
+                    // For example '(A and B) or (C and D)'
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

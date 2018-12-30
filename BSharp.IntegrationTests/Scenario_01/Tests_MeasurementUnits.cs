@@ -225,16 +225,16 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id.Value;
 
             // Call the API
-            var response = await _client.PutAsync($"/api/measurement-units/deactivate", new List<int>() { id }, new JsonMediaTypeFormatter());
-
+            var response = await _client.PutAsJsonAsync($"/api/measurement-units/deactivate", new List<int>() { id });
+            
             // Assert that the response status code is correct
             _output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<List<MeasurementUnit>>();
-            Assert.Single(responseData);
-            var responseDto = responseData[0];
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<MeasurementUnit>>();
+            Assert.Single(responseData.Data);
+            var responseDto = responseData.Data.Single();
 
             // Confirm that the entity was deactivated
             Assert.False(responseDto.IsActive, "The Measurement Unit was not deactivated");
@@ -249,16 +249,16 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id.Value;
 
             // Call the API
-            var response = await _client.PutAsync($"/api/measurement-units/activate", new List<int>() { id }, new JsonMediaTypeFormatter());
+            var response = await _client.PutAsJsonAsync($"/api/measurement-units/activate", new List<int>() { id });
 
             // Assert that the response status code is correct
             _output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<List<MeasurementUnit>>();
-            Assert.Single(responseData);
-            var responseDto = responseData[0];
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<MeasurementUnit>>();
+            Assert.Single(responseData.Data);
+            var responseDto = responseData.Data.Single();
 
             // Confirm that the entity was activated
             Assert.True(responseDto.IsActive, "The Measurement Unit was not activated");
