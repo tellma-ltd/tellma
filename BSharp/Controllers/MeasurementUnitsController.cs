@@ -242,7 +242,8 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 		FE.Code AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities FE 
 	JOIN [dbo].MeasurementUnits BE ON FE.Code = BE.Code
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id);
+	WHERE FE.[Code] IS NOT NULL
+	AND (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id);
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
@@ -252,9 +253,10 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 	WHERE [Code] IN (
 		SELECT [Code]
 		FROM @Entities
+		WHERE [Code] IS NOT NULL
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
-	)
+	) OPTION(HASH JOIN);
 
 	-- Name must not exist already
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
@@ -274,7 +276,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 		FROM @Entities
 		GROUP BY [Name]
 		HAVING COUNT(*) > 1
-	)
+	) OPTION(HASH JOIN);
 
 	-- Name2 must not exist already
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
@@ -294,7 +296,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 		FROM @Entities
 		GROUP BY [Name2]
 		HAVING COUNT(*) > 1
-	)
+	) OPTION(HASH JOIN);
     -- Add further logic
 
 SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
