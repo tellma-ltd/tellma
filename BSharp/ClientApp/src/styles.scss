@@ -99,6 +99,26 @@ a {
   text-align: right;
 }
 
+// remove the little arrow from dropdown buttons on demand
+.b-no-arrow.dropdown-toggle::after {
+  display: none;
+}
+
+// Without this one, the highlight of light buttons is barely visible
+.btn-light:focus, .btn-light.focus {
+  box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+}
+
+// Smaller HR separators look better
+.small.dropdown-menu hr {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+// For some reason this isn't by default in bootstrap
+.small.dropdown-menu {
+  font-size: 80%;
+}
 
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
@@ -525,6 +545,48 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
   z-index: 1000;
   display: flex;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
   font-size: 2.5rem
+}
+
+// tiny red circle on the filter when it is not cleared
+.b-indicator {
+  width: 7px;
+  height: 7px;
+  margin-right: -7px;
+  border-radius: 5px;
+  position: relative;
+  right: 4px;
+  bottom: 1px;
+  border: 1px solid darkred !important;
+}
+
+.b-filter-button {
+  margin-top: -5px;
+}
+
+// filter drop down menu shows a check sign next to selected item
+.b-filter-dropdown-menu .selected > *::before {
+  content: '\2713'; // check sign
+  position: absolute;
+  left: 8px;
+  font-weight: bold;
+}
+
+// filter drop down menu shows a check sign next to selected item in RTL mode
+.b-rtl {
+  .b-filter-dropdown-menu .selected > *::before {
+    content: none; // check sign
+  }
+
+  .b-filter-dropdown-menu .selected > *::after {
+    content: '\2713'; // check sign
+    position: absolute;
+    right: 8px;
+    font-weight: bold;
+  }
+}
+
+.b-filter-dropdown-menu .dropdown-item {
+  cursor: pointer;
 }

@@ -34,7 +34,8 @@ import {
   faUndo,
   faClipboardCheck,
   faUpload,
-  faFileDownload
+  faFileDownload,
+  faFilter
 } from '@fortawesome/free-solid-svg-icons';
 import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from './spinner/spinner.component';
@@ -50,7 +51,7 @@ library.add(
   faCheck, faPlus, faSyncAlt, faAngleDoubleLeft,
   faAngleLeft, faAngleRight, faThLarge, faList, faEdit, faTrashAlt,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
-  faUndo, faClipboardCheck, faUpload, faFileDownload
+  faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter
 );
 
 @NgModule({

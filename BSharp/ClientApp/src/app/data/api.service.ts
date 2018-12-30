@@ -104,8 +104,9 @@ export class ApiService {
 
         const formData = new FormData();
 
-        for (let file of files)
+        for (const file of files) {
           formData.append(file.name, file);
+        }
 
         this.saveInProgress = true;
         const params: string = paramsArray.join('&');

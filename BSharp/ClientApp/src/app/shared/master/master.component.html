@@ -10,10 +10,43 @@
       </ul>
     </div>
 
-    <!-- Search Box -->
     <div class="col-6 p-1">
       <div class="d-flex b-search">
+        <!-- Search Box -->
         <b-text-editor placeholder="{{ 'Search' | translate }}..." [(ngModel)]="search" focus></b-text-editor>
+
+        <!-- Filter -->
+        <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">
+          <button class="btn btn-light btn-sm b-white-button d-flex b-no-arrow b-filter-button" ngbDropdownToggle type="button" title="{{ 'Filter' | translate }}">
+            <fa-icon icon="filter"></fa-icon>
+            <div class="bg-danger b-indicator" *ngIf="isAnyFilterChecked"></div>
+          </button>
+
+          <ul class="b-filter-dropdown-menu small shadow" ngbDropdownMenu>
+
+            <!-- Include Inactive -->
+            <li class="dropdown-item" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span>{{ includeInactiveLabel }}</span></li>
+
+            <!-- Custom filter options -->
+            <ng-container *ngFor="let groupName of groupNames">
+              <li><hr /></li>
+              <ng-container *ngFor="let e of filterTemplates(groupName)">
+                <li class="dropdown-item" [class.selected]="isFilterChecked(groupName, e.expression)"
+                    (click)="onFilterCheck(groupName, e.expression)">
+                  <div>
+                    <ng-container *ngTemplateOutlet="e.template"></ng-container>
+
+                  </div>
+
+                </li>
+              </ng-container>
+            </ng-container>
+
+            <!-- Clear Filter -->
+            <li><hr /></li>
+            <li class="dropdown-item d-flex justify-content-between" [class.disabled]="!isAnyFilterChecked" (click)="onClearFilter()"><span class="d-block">{{ 'ClearFilter' | translate }}</span><span class="text-danger">&#x2718;</span></li>
+          </ul>
+        </div>
 
       </div>
     </div>
@@ -40,7 +73,6 @@
           <fa-icon icon="download"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
         </button>
-
       </div>
 
       <!-- Right Buttons -->
@@ -91,8 +123,8 @@
           {{ 'NSelectedItems' | translate: { count: checkedCount } }}
         </span>
 
-        <!-- Custom actions -->
-        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="placement">
+        <!-- Actions -->
+        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionDropdownPlacement">
           <button type="button" class="btn btn-primary btn-sm b-toolbar-button dropdown-toggle" ngbDropdownToggle>
             {{ 'Actions' | translate }}
           </button>
@@ -110,11 +142,6 @@
           </div>
         </div>
 
-        <!-- Delete -->
-        <!--<button class="btn btn-danger btn-sm b-toolbar-button" type="button" (click)="onCreate()" [disabled]="!canCreate">
-          <fa-icon icon="trash-alt"></fa-icon>
-          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Delete' | translate }}</span>
-        </button>-->
         <!-- Cancel -->
         <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" type="button" *ngIf="!isPopupMode" (click)="onCancelMultiselect()">
           <fa-icon icon="times"></fa-icon>

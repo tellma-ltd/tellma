@@ -61,15 +61,14 @@ export class RootComponent {
       this.translate.use(userCulture);
     }
   }
-  
+
   setDocumentRTL(culture: string) {
     this.workspace.ws.culture = culture;
     const isRtl = this.rtlLanguages.some(e => culture.startsWith(e));
     this.workspace.ws.isRtl = isRtl;
     if (isRtl && !!document) {
       document.body.classList.add('b-rtl');
-    }
-    else {
+    } else {
       document.body.classList.remove('b-rtl');
     }
   }

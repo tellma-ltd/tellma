@@ -37,7 +37,8 @@ export class ImportComponent implements OnInit, OnDestroy {
   private notifyDestruct$ = new Subject<void>();
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Only for intellisense
 
-  constructor(private api: ApiService, private workspace: WorkspaceService, private router: Router, private route: ActivatedRoute, private translate: TranslateService) { }
+  constructor(private api: ApiService, private workspace: WorkspaceService, private router:
+    Router, private route: ActivatedRoute, private translate: TranslateService) { }
 
   ngOnInit() {
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
@@ -67,8 +68,9 @@ export class ImportComponent implements OnInit, OnDestroy {
   onImport(input) {
     const files = input.files;
 
-    if (files.length === 0)
+    if (files.length === 0) {
       return;
+    }
 
     // Clear any displayed errors
     this.importErrorMessage = null;

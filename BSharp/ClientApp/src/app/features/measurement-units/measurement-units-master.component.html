@@ -1,6 +1,5 @@
 <b-master apiEndpoint="measurement-units"
           [mode]="mode"
-          (select)="onSelect($event)"
           title="{{ 'MeasurementUnits' | translate }}"
           [tileTemplate]="tile"
           [tableColumnPaths]="['Name', 'Name2' , 'Code', 'UnitType', 'UnitAmount', 'BaseAmount', 'IsActive']"
@@ -16,7 +15,22 @@
           [multiselectActions]="[
             { template : activate, action: onActivate },
             { template : deactivate, action: onDeactivate }
-          ]">
+          ]"
+          includeInactiveLabel="{{ 'IncludeInactive' | translate }}"
+          [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedByMe'}
+            ],
+            'UnitType' : [
+              { template: pure, expression: 'UnitType eq \'Pure\''},
+              { template: time, expression: 'UnitType eq \'Time\''},
+              { template: distance, expression: 'UnitType eq \'Distance\''},
+              { template: count, expression: 'UnitType eq \'Count\''},
+              { template: mass, expression: 'UnitType eq \'Mass\''},
+              { template: volume, expression: 'UnitType eq \'Volume\''},
+              { template: money, expression: 'UnitType eq \'Money\''}
+            ]
+          }">
 </b-master>
 
 <!-- Tile Template -->
@@ -40,10 +54,10 @@
 <ng-template #row_Code let-id="id"> {{ ws[id].Code }} </ng-template>
 
 <ng-template #header_IsActive>{{ 'MU_IsActive' | translate }}</ng-template>
-<ng-template #row_IsActive let-id="id"> {{ ws[id].IsActive ? 'Active' : 'Inactive' | translate }} </ng-template>
+<ng-template #row_IsActive let-id="id"> {{ (ws[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
 
 <ng-template #header_UnitType>{{ 'MU_UnitType' | translate }}</ng-template>
-<ng-template #row_UnitType let-id="id"> {{ UnitTypeLookup(ws[id].UnitType) | translate }} </ng-template>
+<ng-template #row_UnitType let-id="id"> {{ unitTypeLookup(ws[id].UnitType) | translate }} </ng-template>
 
 <ng-template #header_UnitAmount>{{ 'MU_UnitAmount' | translate }}</ng-template>
 <ng-template #row_UnitAmount let-id="id"> {{ ws[id].UnitAmount | number }} </ng-template>
@@ -52,6 +66,22 @@
 <ng-template #row_BaseAmount let-id="id"> {{ ws[id].BaseAmount | number }} </ng-template>
 
 
-<!-- Multi-Select Actions -->
+<!-- Multiselect Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+
+<ng-template #pure> {{ unitTypeLookup('Pure') | translate }}</ng-template>
+<ng-template #time> {{ unitTypeLookup('Time') | translate }}</ng-template>
+<ng-template #distance> {{ unitTypeLookup('Distance') | translate }}</ng-template>
+<ng-template #count> {{ unitTypeLookup('Count') | translate }}</ng-template>
+<ng-template #mass> {{ unitTypeLookup('Mass') | translate }}</ng-template>
+<ng-template #volume> {{ unitTypeLookup('Volume') | translate }}</ng-template>
+<ng-template #money> {{ unitTypeLookup('Money') | translate }}</ng-template>
+
+
+
+

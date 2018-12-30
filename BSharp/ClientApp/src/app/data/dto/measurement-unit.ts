@@ -26,4 +26,4 @@ export const MeasurementUnit_UnitType = {
   'Mass': 'MU_Mass',
   'Volume': 'MU_Volume',
   'Money': 'MU_Money'
-}
+};

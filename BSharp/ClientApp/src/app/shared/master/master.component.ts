@@ -14,6 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { GetArguments } from 'src/app/data/dto/get-arguments';
 import { ExportArguments } from 'src/app/data/dto/export-arguments';
 import { forEach } from '@angular/router/src/utils/collection';
+import { Template } from 'tns-core-modules/ui/page/page';
 
 enum SearchView {
   tiles = 'tiles',
@@ -62,15 +63,26 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   @Input()
   multiselectActions: {
-    template: TemplateRef<void>,
+    template: TemplateRef<any>,
     action: (p: (string | number)[]) => Observable<any>
   }[] = [];
+
+  @Input()
+  includeInactiveLabel: string;
+
+  @Input()
+  filterDefinition: {
+    [groupName: string]: {
+      template: TemplateRef<any>,
+      expression: string
+    }[]
+  } = {};
 
   @Input()
   expand: string;
 
   @Input()
-  additionalCommands: TemplateRef<void>[]; // TODO
+  additionalCommands: TemplateRef<any>[]; // TODO
 
   @Input() // popup: limits the tiles to only 2 per row, hides import, export and multiselect
   mode: 'popup' | 'screen' = 'screen';
@@ -108,7 +120,6 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private router: Router,
     private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) {
-
 
     // Use some RxJS magic to refresh the data as the user changes the parameters
     const searchBoxSignals = this.searchChanged$.pipe(
@@ -167,9 +178,9 @@ export class MasterComponent implements OnInit, OnDestroy {
       orderBy: s.orderBy,
       desc: s.desc,
       search: s.search,
-      filter: s.filter,
+      filter: this.filter(),
       expand: this.expand,
-      inactive: false // TODO
+      inactive: s.inactive
     }).pipe(
       tap((response: GetResponse<DtoForSaveKeyBase>) => {
         s = this.state; // get the source
@@ -437,12 +448,16 @@ export class MasterComponent implements OnInit, OnDestroy {
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 
-  public get placement() {
+  public get actionDropdownPlacement() {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
   public get errorPopoverPlacement() {
     return this.workspace.ws.isRtl ? 'left' : 'right';
+  }
+
+  public get filterDropdownPlacement(): string {
+    return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
   }
 
   public get tableColumnPathsAndExtras() {
@@ -513,9 +528,9 @@ export class MasterComponent implements OnInit, OnDestroy {
       orderBy: s.orderBy,
       desc: s.desc,
       search: s.search,
-      filter: s.filter,
+      filter: this.filter(),
       expand: null,
-      inactive: false, // TODO
+      inactive: s.inactive,
       format: format
     }).subscribe(
       (blob: Blob) => {
@@ -530,7 +545,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     );
   }
 
-  // Multi-select related stuff
+  // Multiselect-related stuff
   public get canCheckAll(): boolean {
     return this.masterIds.length > 0;
   }
@@ -590,10 +605,10 @@ export class MasterComponent implements OnInit, OnDestroy {
     const ids = this.checkedIds;
     this.crud.delete(ids).subscribe(
       () => {
-        // Update the UI to reflect deletion of items        
+        // Update the UI to reflect deletion of items
         this.state.delete(ids);
         this.checked = {};
-        if (this.masterIds.length == 0 && this.total > 0) {
+        if (this.masterIds.length === 0 && this.total > 0) {
           // auto refresh if the user deleted the entire page
           this.fetch();
         }
@@ -655,6 +670,91 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   public showErrorHighlight(id: string | number): boolean {
-    return this.actionValidationErrors[id] && this.actionValidationErrors[id].length > 0
+    return this.actionValidationErrors[id] && this.actionValidationErrors[id].length > 0;
+  }
+
+  // Filter-related stuff
+
+  private filter(): string {
+    const filterState = this.state.filterState;
+    const disjunctions: string[] = [];
+    const groupNames = Object.keys(this.filterDefinition);
+    for (let i = 0; i < groupNames.length; i++) {
+      const groupName = groupNames[i];
+      const expressions: string[] = [];
+      const groupState = filterState[groupName];
+      if (!!groupState) {
+        for (const expression in groupState) {
+          if (groupState[expression]) {
+            expressions.push(expression);
+          }
+        }
+      }
+      const disjunction = expressions.join(' or ');
+      if (!!disjunction) {
+        disjunctions.push(disjunction);
+      }
+    }
+
+    let conjunction = disjunctions.join(') and (');
+    if (!!conjunction) {
+      conjunction = '(' + conjunction + ')';
+    }
+    return conjunction;
+  }
+
+  onIncludeInactive(): void {
+    const s = this.state;
+    s.inactive = !s.inactive;
+    this.fetch();
+  }
+
+  get isIncludeInactive(): boolean {
+    return this.state.inactive;
+  }
+
+  onFilterCheck(groupName: string, expression: string) {
+    const filterGroups = this.state.filterState;
+    if (!filterGroups[groupName]) {
+      filterGroups[groupName] = {};
+    }
+
+    const group = filterGroups[groupName];
+    group[expression] = !group[expression];
+
+    this.fetch();
+  }
+
+  isFilterChecked(groupName: string, expression: string): boolean {
+    const s = this.state.filterState;
+    return !!s[groupName] && !!s[groupName][expression];
+  }
+
+  get isAnyFilterChecked(): boolean {
+    // This code checks whether any expression in any group is checked, also if include inactive is checked
+    return this.state.inactive || Object.keys(this.filterDefinition).some(groupName => {
+      const group = this.filterDefinition[groupName];
+      return group.some(e => this.isFilterChecked(groupName, e.expression));
+    });
+  }
+
+  onClearFilter() {
+    if (this.isAnyFilterChecked) {
+      const s = this.state;
+      s.inactive = false;
+      s.filterState = {};
+      this.fetch();
+    }
+  }
+
+  get groupNames(): string[] {
+    return Object.keys(this.filterDefinition);
+  }
+
+  filterTemplates(groupName: string): {
+    template: TemplateRef<any>,
+    expression: string
+  }[] {
+    return this.filterDefinition[groupName];
   }
 }

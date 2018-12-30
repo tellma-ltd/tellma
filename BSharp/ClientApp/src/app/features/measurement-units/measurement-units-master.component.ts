@@ -39,8 +39,12 @@ export class MeasurementUnitsMasterComponent implements OnInit, OnDestroy {
     return this.workspace.current.MeasurementUnits;
   }
 
-  public UnitTypeLookup(value: string): string {
+  public unitTypeLookup(value: string): string {
     return MeasurementUnit_UnitType[value];
+  }
+
+  public get unitTypes(): string[] {
+    return Object.keys(MeasurementUnit_UnitType);
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {

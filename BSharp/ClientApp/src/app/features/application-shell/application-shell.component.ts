@@ -16,9 +16,9 @@ export class ApplicationShellComponent implements OnInit {
   constructor(public workspace: WorkspaceService, private route: ActivatedRoute, private translate: TranslateService) {
 
     this.route.paramMap.subscribe(e => {
-      let tenantIdSring = e.get('tenantId');
+      const tenantIdSring = e.get('tenantId');
       if (!!tenantIdSring) {
-        let tenantId = +tenantIdSring;
+        const tenantId = +tenantIdSring;
         if (!!tenantId) {
           workspace.ws.tenantId = tenantId;
         }

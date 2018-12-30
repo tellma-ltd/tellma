@@ -1,4 +1,4 @@
-import { GetArguments } from "./get-arguments";
+import { GetArguments } from './get-arguments';
 
 export class ExportArguments extends GetArguments {
   format?: 'csv' | 'xlsx';
@@ -7,4 +7,4 @@ export class ExportArguments extends GetArguments {
 export const ExportArguments_Format = {
   'csv': 'CSV',
   'xlsx': 'Excel'
-}
+};

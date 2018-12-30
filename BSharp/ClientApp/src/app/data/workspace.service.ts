@@ -82,11 +82,14 @@ export class MasterDetailsStore {
   search: string;
   orderBy: string;
   desc: boolean;
-  total = 0; // negative total means it is not valid and so hide it
-  filter: string;
+  total = 0;
   expand: string;
-
-  totalAdjustment = 0; // when adding and deleting items in memory (can't we just add or subtract from numbers immediately)?
+  inactive = false;
+  filterState: {
+    [groupName: string]: {
+      [expression: string]: boolean
+    }
+  } = {};
 
   bag: { [key: string]: any; };
   masterIds: (string | number)[] = [];
@@ -100,7 +103,7 @@ export class MasterDetailsStore {
     // removes a deleted item in memory and updates the stats
 
     this.total = this.total - ids.length;
-    this.masterIds = this.masterIds.filter(e => ids.indexOf(e) == -1);
+    this.masterIds = this.masterIds.filter(e => ids.indexOf(e) === -1);
   }
 
   public insert(id: (string | number)[]) {
