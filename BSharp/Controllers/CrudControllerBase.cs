@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -1040,8 +1041,23 @@ namespace BSharp.Controllers
                 }
 
                 var props = GetPropertiesBaseFirst(typeof(T));
-                var columns = props.Select(p => new DataColumn(p.Name, Nullable.GetUnderlyingType(p.PropertyType) ?? p.PropertyType)).ToList();
-                table.Columns.AddRange(columns.ToArray());
+                foreach(var prop in props)
+                {
+                    var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                    var column = new DataColumn(prop.Name, propType);
+                    if(propType == typeof(string))
+                    {
+                        // For string columns, it is better to explicitly specify the maximum column size
+                        // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
+                        var stringLegnthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
+                        if (stringLegnthAttribute != null)
+                        {
+                            column.MaxLength = stringLegnthAttribute.MaximumLength;
+                        }
+                    }
+
+                    table.Columns.Add(column);
+                }
 
                 int index = 0;
                 foreach (var entity in entities)
