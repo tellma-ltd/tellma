@@ -33,14 +33,17 @@ namespace BSharp.Controllers
         where TDto : TDtoForSave
     {
         // Constants
+
         private const int DEFAULT_MAX_PAGE_SIZE = 10000;
 
         // Private Fields
+
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly IMapper _mapper;
 
         // Constructor
+
         public CrudControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper)
         {
             _logger = logger;
@@ -49,6 +52,7 @@ namespace BSharp.Controllers
         }
 
         // HTTP Methods
+
         [HttpGet]
         public virtual async Task<ActionResult<GetResponse<TDto>>> Get([FromQuery] GetArguments args)
         {
@@ -87,8 +91,6 @@ namespace BSharp.Controllers
 
                 // Map the primary result to DTO too
                 var entity = Map(dbEntity);
-
-                // TODO apply the SELECT
 
                 // Return
                 var result = new GetByIdResponse<TDto>
@@ -263,6 +265,9 @@ namespace BSharp.Controllers
             }
         }
 
+
+        // Abstract and virtual members
+
         protected virtual async Task<(List<TDtoForSave>, Func<string, int?>)> ParseImplAsync(ParseArguments args)
         {
             var file = Request.Form.Files.FirstOrDefault();
@@ -319,8 +324,6 @@ namespace BSharp.Controllers
 
         protected abstract AbstractDataGrid ToAbstractGrid(GetResponse<TDto> response, ExportArguments args);
 
-        // Abstract and virtual members
-
         /// <summary>
         /// Returns the query from which the GET endpoint retrieves the results
         /// </summary>
@@ -344,15 +347,11 @@ namespace BSharp.Controllers
         /// <summary>
         /// Persists the entities in the database, either creating them or updating them depending on the EntityState
         /// </summary>
-        /// <param name="entities"></param>
-        /// <returns></returns>
         protected abstract Task<List<TModel>> PersistAsync(List<TDtoForSave> entities, bool returnEntities);
 
         /// <summary>
         /// Returns the entities as per the specifications in the get request
         /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
         protected virtual async Task<GetResponse<TDto>> GetImplAsync(GetArguments args)
         {
             // TODO Authorize for GET
@@ -453,13 +452,15 @@ namespace BSharp.Controllers
             }
         }
 
+        /// <summary>
+        /// Begins the transaction that wraps validation and persistence of data inside the save API 
+        /// implementation, each controller determines its suitable transaction isolation level
+        /// </summary>
         protected abstract Task<IDbContextTransaction> BeginSaveTransaction();
 
         /// <summary>
         /// Deletes the entities specified by the list of Ids
         /// </summary>
-        /// <param name="ids"></param>
-        /// <returns></returns>
         protected abstract Task DeleteImplAsync(List<TKey> ids);
 
         /// <summary>
@@ -514,6 +515,7 @@ namespace BSharp.Controllers
                 // Below are the standard steps of any compiler
 
                 //////// (1) Preprocessing
+                
                 // Ensure no spaces are repeated
                 Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
                 filter = regex.Replace(filter, " ");
@@ -521,7 +523,9 @@ namespace BSharp.Controllers
                 // Trim
                 filter = filter.Trim();
 
+
                 //////// (2) Lexical Analysis of string into token stream
+                
                 List<string> symbols = new List<string>(new string[] {
 
                     // Logical Operators
@@ -584,6 +588,7 @@ namespace BSharp.Controllers
                 {
                     tokens.Add(acc.Trim());
                 }
+
 
                 //////// (3) Parse token stream to Abstract Syntax Tree (AST)
 
@@ -690,8 +695,8 @@ namespace BSharp.Controllers
                         {
                             throw new InvalidOperationException("An atomic expression cannot be empty");
                         }
-                        // Some controllers may defiend their own set of keywords which 
-                        // take precedence over the default parsing of atoms
+                        // Some controllers may define their own set of keywords which 
+                        // take precedence over the default parsing of expression atoms
                         Expression result = ParseSpecialFilterKeyword(v, eParam);
 
                         // If the controller does not handle this atom, we use the default parser
@@ -706,7 +711,7 @@ namespace BSharp.Controllers
                             }
                             else
                             {
-                                // (A) Parse the member access path
+                                // (A) Parse the member access path (e.g. "Address/Street")
                                 var path = pieces[0];
 
                                 var steps = path.Split('/');
@@ -732,8 +737,8 @@ namespace BSharp.Controllers
                                     propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
                                     memberAccess = Expression.Property(memberAccess, prop);
                                 }
-
-                                // (B) Parse the 
+                                
+                                // (B) Parse the value (e.g. "'Huntington Rd.'")
                                 var valueString = string.Join(" ", pieces.Skip(2));
                                 object value;
                                 if (propType == typeof(string) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
@@ -758,9 +763,8 @@ namespace BSharp.Controllers
                                 }
 
                                 var constant = Expression.Constant(value, propType);
-
-
-                                // (C) parse the operator
+                                
+                                // (C) parse the operator (e.g. "eq")
                                 var op = pieces[1];
                                 op = op?.ToLower() ?? "";
                                 switch (op)
@@ -796,11 +800,12 @@ namespace BSharp.Controllers
                     throw new Exception("Unknown AST type");
                 }
 
-                var ex = ToExpression(ast);
-                var lambda = Expression.Lambda<Func<TModel, bool>>(ex, eParam);
+                var expression = ToExpression(ast);
+                var lambda = Expression.Lambda<Func<TModel, bool>>(expression, eParam);
 
 
                 //////// (5) Apply lambda to the query
+  
                 query = query.Where(lambda);
             }
 
@@ -982,7 +987,7 @@ namespace BSharp.Controllers
             return relatedEntities;
         }
 
-        protected static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never changes
+        protected static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never expires
         protected static string GetCollectionName(Type dtoType)
         {
             if (!_getCollectionNameCache.ContainsKey(dtoType))
@@ -1007,8 +1012,6 @@ namespace BSharp.Controllers
         /// <summary>
         /// Syntactic sugar that maps a collection based on the implementation of its 'list' overload
         /// </summary>
-        /// <param name="models"></param>
-        /// <returns></returns>
         protected TDto Map(TModel model)
         {
             return Map(new List<TModel>() { model }).Single();
@@ -1017,8 +1020,6 @@ namespace BSharp.Controllers
         /// <summary>
         /// Syntactic sugar that flattens a single model, based on the implementation of its 'list' overload
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
         protected Dictionary<string, IEnumerable<DtoForSaveBase>> FlattenRelatedEntities(TModel model)
         {
             return FlattenRelatedEntities(new List<TModel> { model });
@@ -1086,7 +1087,6 @@ namespace BSharp.Controllers
             return _dataTableCache[(entities, addIndex)];
         }
 
-
         /// <summary>
         /// This is alternative for <see cref="Type.GetProperties"/>
         /// that returns base class properties before inherited class properties
@@ -1108,6 +1108,19 @@ namespace BSharp.Controllers
 
             return props;
         }
+
+        /// <summary>
+        /// Syntactic sugar for localizing an error, prefixing it with "Row N: " and adding it to ModelState with an appropriate key
+        /// </summary>
+        /// <returns>False if the maximum errors was reached</returns>
+        protected bool AddRowError(int rowNumber, string errorMessage, ModelStateDictionary modelState = null)
+        {
+            var ms = modelState ?? ModelState;
+            ms.AddModelError($"Row{rowNumber}", _localizer["Row{0}", rowNumber] + ": " + errorMessage);
+            return !ms.HasReachedMaxErrors;
+        }
+
+        // Private methods
 
         private ModelStateDictionary MapModelState(ModelStateDictionary modelState, Func<string, int?> rowNumberFromErrorKeyMap)
         {
@@ -1159,20 +1172,7 @@ namespace BSharp.Controllers
             }
 
             var fileStream = handler.ToFileStream(abstractFile);
-            //return File(fileStream: fileStream, contentType: mimeType);
-
             return File(((MemoryStream)fileStream).ToArray(), contentType);
-        }
-
-        /// <summary>
-        /// Syntactic sugar for localizing an error, prefixing it with "Row N: " and adding it to ModelState with an appropriate key
-        /// </summary>
-        /// <returns>False if the maximum errors was reached</returns>
-        protected bool AddRowError(int rowNumber, string errorMessage, ModelStateDictionary modelState = null)
-        {
-            var ms = modelState ?? ModelState;
-            ms.AddModelError($"Row{rowNumber}", _localizer["Row{0}", rowNumber] + ": " + errorMessage);
-            return !ms.HasReachedMaxErrors;
         }
     }
 }

@@ -85,7 +85,7 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
                 cmd.Parameters.AddWithValue("@Culture", CultureInfo.CurrentCulture.Name);
                 cmd.Parameters.AddWithValue("@NeutralCulture", CultureInfo.CurrentCulture.IsNeutralCulture ? CultureInfo.CurrentCulture.Name : CultureInfo.CurrentCulture.Parent.Name);
 
-                sqlConnection.Open(); // It gets disposed automatically when the DbContext is disposed
+                sqlConnection.Open();
                 cmd.ExecuteNonQuery();
 
                 // Prepare the options based on the connection created with the shard manager
@@ -107,6 +107,17 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
             // Measurement Units
             AddTenantId<MeasurementUnit>(builder);
             MeasurementUnit.OnModelCreating(builder);
+        }
+
+        public override void Dispose()
+        {
+            // Since we passed an open connection to UseSqlServer, the underlying framework does 
+            // not own the connection and therefore does not automatically close it, so we do it 
+            // ourselves here
+            var sqlConnection = Database.GetDbConnection();
+            sqlConnection.Dispose();
+
+            base.Dispose();
         }
 
         /// <summary>

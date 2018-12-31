@@ -176,15 +176,17 @@ namespace BSharp.Services.SqlLocalization
                 var staleCacheKeys = staleCaches.Select(e => e.CultureName);
                 using (var scope = _serviceProvider.CreateScope())
                 {
-                    var ctx = scope.ServiceProvider.GetRequiredService<AdminContext>();
-                    var freshTranslationsQuery = from e in ctx.Translations
-                                                 where (e.Tier == Constants.Server || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.CultureId)
-                                                 group e by e.CultureId into g
-                                                 select g;
+                    using (var ctx = scope.ServiceProvider.GetRequiredService<AdminContext>())
+                    {
+                        var freshTranslationsQuery = from e in ctx.Translations
+                                                     where (e.Tier == Constants.Server || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.CultureId)
+                                                     group e by e.CultureId into g
+                                                     select g;
 
-                    freshTranslations = freshTranslationsQuery.AsNoTracking().ToDictionary(
-                        g => CacheKey(g.Key), 
-                        g => g.ToDictionary(e => e.Name, e => e.Value));
+                        freshTranslations = freshTranslationsQuery.AsNoTracking().ToDictionary(
+                            g => CacheKey(g.Key),
+                            g => g.ToDictionary(e => e.Name, e => e.Value));
+                    }
                 }
             }
 

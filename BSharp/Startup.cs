@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -76,7 +77,7 @@ namespace BSharp
 
 
             // Register MVC using the most up to date version
-            services.AddMvc(opt => 
+            services.AddMvc(opt =>
             {
                 opt.ModelMetadataDetailsProviders.Add(new ExcludeBindingMetadataProvider(typeof(Controllers.DTO.MeasurementUnit)));
             })
@@ -92,7 +93,7 @@ namespace BSharp
                         NamingStrategy = new DefaultNamingStrategy()
                     };
 
-                 //   options.SerializerSettings.Converters.Insert(0, new TrimmingStringConverter());
+                    //   options.SerializerSettings.Converters.Insert(0, new TrimmingStringConverter());
 
                     // To response size
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
@@ -123,10 +124,9 @@ namespace BSharp
 
             // AutoMapper https://automapper.org/
             services.AddAutoMapper();
-
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
