@@ -78,7 +78,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override Task<List<M.Translation>> PersistAsync(List<TranslationForSave> entities, bool returnEntities)
+        protected override Task<List<M.Translation>> PersistAsync(List<TranslationForSave> entities, SaveArguments args)
         {
             throw new NotImplementedException();
         }

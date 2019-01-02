@@ -17,7 +17,7 @@ export class MeasurementUnit extends MeasurementUnitForSave {
   ModifiedBy: string;
 }
 
-// Choice list
+// Choice list (Also repeated in measurement units master template)
 export const MeasurementUnit_UnitType = {
   'Pure': 'MU_Pure',
   'Time': 'MU_Time',

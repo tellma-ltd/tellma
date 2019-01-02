@@ -143,7 +143,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
 
         protected override IQueryable<M.MeasurementUnit> GetBaseQuery()
         {
-            return _db.MeasurementUnits.Where(e => e.UnitType != "Currency");
+            return _db.MeasurementUnits.Where(e => e.UnitType != "Money");
         }
 
         protected override IQueryable<M.MeasurementUnit> Search(IQueryable<M.MeasurementUnit> query, string search)
@@ -243,7 +243,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 	FROM @Entities FE 
 	JOIN [dbo].MeasurementUnits BE ON FE.Code = BE.Code
 	WHERE FE.[Code] IS NOT NULL
-	AND (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id);
+	AND (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id) OPTION(HASH JOIN);
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
@@ -264,7 +264,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 		FE.[Name] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities FE 
 	JOIN [dbo].MeasurementUnits BE ON FE.[Name] = BE.[Name]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id);
+	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id) OPTION(HASH JOIN);
 
 	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
@@ -284,7 +284,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 		FE.[Name2] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities FE 
 	JOIN [dbo].MeasurementUnits BE ON FE.[Name2] = BE.[Name2]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id);
+	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id) OPTION(HASH JOIN);
 
 	-- Name2 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
@@ -336,7 +336,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             }
         }
 
-        protected override async Task<List<M.MeasurementUnit>> PersistAsync(List<MeasurementUnitForSave> entities, bool returnEntities)
+        protected override async Task<List<M.MeasurementUnit>> PersistAsync(List<MeasurementUnitForSave> entities, SaveArguments args)
         {
             // Add created entities
             DataTable entitiesTable = DataTable(entities, addIndex: true);
@@ -380,9 +380,10 @@ SET NOCOUNT ON;
 				VALUES (@TenantId, s.[UnitType], s.[Name], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x
+    OPTION(RECOMPILE)
 ";
             // Optimization
-            if (!returnEntities)
+            if (!(args.ReturnEntities ?? false))
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
                 await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp);
@@ -403,7 +404,10 @@ SET NOCOUNT ON;
                     TypeName = $"dbo.IdList",
                     SqlDbType = SqlDbType.Structured
                 };
-                var savedEntities = await _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp).ToListAsync();
+
+                var q = _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                q = Expand(q, args.Expand);
+                var savedEntities = await q.ToListAsync();
 
 
                 // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
@@ -584,7 +588,7 @@ SET NOCOUNT ON;
                     SqlDbType = SqlDbType.Structured
                 };
 
-                string sql = $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[MeasurementUnits] e ON c.Code = e.Code;";
+                string sql = $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[MeasurementUnits] e ON c.Code = e.Code WHERE e.UnitType <> 'Money';";
                 var idCodesDic = await _db.CodeIds.FromSql(sql, entitiesTvp).ToDictionaryAsync(e => e.Code, e => e.Id);
 
                 result.ForEach(e =>

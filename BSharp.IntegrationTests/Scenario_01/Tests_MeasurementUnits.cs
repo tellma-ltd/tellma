@@ -30,6 +30,8 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseData = await response.Content.ReadAsAsync<GetResponse<MeasurementUnit>>();
 
             // Assert the result makes sense
+            Assert.Equal("MeasurementUnits", responseData.CollectionName);
+
             Assert.Equal(0, responseData.TotalCount);
             Assert.Empty(responseData.Data);
         }
@@ -70,18 +72,21 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Assert that the response is well-formed singleton of MeasurementUnit
-            var responseData = await response.Content.ReadAsAsync<List<MeasurementUnit>>();
-            Assert.Single(responseData);
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<MeasurementUnit>>();
+            Assert.Single(responseData.Data);
 
             // Assert that the result matches the saved entity
-            var responseDto = responseData[0];
-            Assert.NotNull(responseDto.Id);
+            Assert.Equal("MeasurementUnits", responseData.CollectionName);
+
+            var responseDto = responseData.Data.FirstOrDefault();
+            Assert.NotNull(responseDto?.Id);
             Assert.Equal(dtoForSave.Name, responseDto.Name);
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
             Assert.Equal(dtoForSave.UnitType, responseDto.UnitType);
             Assert.Equal(dtoForSave.BaseAmount, responseDto.BaseAmount);
             Assert.Equal(dtoForSave.UnitAmount, responseDto.UnitAmount);
+            
 
             _shared.SetItem("MeasurementUnit_kg", responseDto);
         }
@@ -100,8 +105,9 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Confirm that the response is a well formed GetByIdResponse of measurement unit
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<MeasurementUnit>>();
-            var responseDto = getByIdResponse.Entity;
+            Assert.Equal("MeasurementUnits", getByIdResponse.CollectionName);
 
+            var responseDto = getByIdResponse.Entity;
             Assert.Equal(id, responseDto.Id);
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Equal(entity.Name2, responseDto.Name2);
@@ -169,8 +175,8 @@ namespace BSharp.IntegrationTests.Scenario_01
             var response = await _client.PostAsJsonAsync($"/api/measurement-units", new List<MeasurementUnitForSave> { dtoForSave });
 
             // Confirm that the response is well-formed
-            var responseData = await response.Content.ReadAsAsync<List<MeasurementUnit>>();
-            var responseDto = responseData[0];
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<MeasurementUnit>>();
+            var responseDto = responseData.Data.FirstOrDefault();
 
             // Confirm the entity was saved
             Assert.NotNull(responseDto.Id);

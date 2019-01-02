@@ -7,9 +7,11 @@ import { SpinnerComponent } from './spinner/spinner.component';
 import { ErrorMessageComponent } from './error-message/error-message.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
 import { ImportComponent } from './import/import.component';
+import { FormGroupComponent } from './form-group/form-group.component';
+import { SelectorComponent } from './selector/selector.component';
 
 @NgModule({
-  declarations: [MasterComponent, DetailsComponent, SpinnerComponent, ErrorMessageComponent, TextEditorComponent, ImportComponent],
+  declarations: [MasterComponent, DetailsComponent, SpinnerComponent, ErrorMessageComponent, TextEditorComponent, ImportComponent, FormGroupComponent, SelectorComponent],
   imports: [
     NativeScriptCommonModule
   ],

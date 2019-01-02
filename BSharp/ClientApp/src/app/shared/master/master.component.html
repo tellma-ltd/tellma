@@ -5,11 +5,12 @@
     <div class="col-6 p-1">
       <ul class="breadcrumb bg-white mb-0">
         <li class="breadcrumb-item active">
-          {{ title }}
+          {{ masterCrumb }}
         </li>
       </ul>
     </div>
 
+    <!-- Search and Filter -->
     <div class="col-6 p-1">
       <div class="d-flex b-search">
         <!-- Search Box -->
@@ -25,7 +26,7 @@
           <ul class="b-filter-dropdown-menu small shadow" ngbDropdownMenu>
 
             <!-- Include Inactive -->
-            <li class="dropdown-item" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span>{{ includeInactiveLabel }}</span></li>
+            <li class="dropdown-item" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{ includeInactiveLabel }} </span></li>
 
             <!-- Custom filter options -->
             <ng-container *ngFor="let groupName of groupNames">
@@ -90,15 +91,15 @@
           <span class="b-vertical-align-middle"> / {{ total | number }}</span>
         </div>
 
-        <button class="btn btn-light btn-sm b-white-button"
+        <!--<button class="btn btn-light btn-sm b-white-button"
                 type="button" title="{{ 'First' | translate }}" (click)="onFirstPage()" [disabled]="!canFirstPage">
           <fa-icon icon="angle-double-left" [flip]="flip"></fa-icon>
-        </button>
-        <button class="btn btn-light btn-sm b-white-button"
+        </button>-->
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button"
                 type="button" title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
           <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
         </button>
-        <button class="btn btn-light btn-sm b-white-button"
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button"
                 type="button" title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
           <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
         </button>
@@ -161,7 +162,7 @@
       <div class="col-12" *ngIf="showTilesView">
         <div class="row mb-3">
           <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode" *ngFor="let id of masterIds; trackBy: trackById">
-            <div class="border p-2 bg-white b-tile" (click)="onSelect(id)">
+            <div class="p-2 bg-white b-tile" (click)="onSelect(id)">
               <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
               </ng-container>
             </div>
@@ -287,11 +288,11 @@
         <span class="b-vertical-align-middle">{{ 'ExportRange' | translate }}</span>
       </div>
       <div [class.mt-1]="showExportPaging">
-        <button class="btn btn-light btn-sm b-white-button" *ngIf="showExportPaging"
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showExportPaging"
                 type="button" title="{{ 'Previous' | translate }}" (click)="onPerviousPageExport()" [disabled]="!canPreviousPageExport">
           <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
         </button>
-        <button class="btn btn-light btn-sm b-white-button" *ngIf="showExportPaging"
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showExportPaging"
                 type="button" title="{{ 'Next' | translate }}" (click)="onNextPageExport()" [disabled]="!canNextPageExport">
           <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
         </button>
@@ -325,7 +326,7 @@
 
   <!-- header -->
   <div class="modal-header">
-    <h5 class="modal-title">{{ 'Confirmation' | translate }}</h5>
+    <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
       <span aria-hidden="true">&times;</span>
     </button>

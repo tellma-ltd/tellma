@@ -1,5 +1,7 @@
 import { EntitiesResponse } from './dto/get-response';
 import { WorkspaceService } from './workspace.service';
+import { GetByIdResponse } from './dto/get-by-id-response';
+import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -10,23 +12,14 @@ export function addToWorkspace(response: EntitiesResponse, workspace: WorkspaceS
 
   // Add related entities
   const relatedEntities = response.RelatedEntities;
-  if (!!relatedEntities) {
-    const collectionNames = Object.keys(relatedEntities);
-    for (let c = 0; c < collectionNames.length; c++) {
-      const collectionName = collectionNames[c];
-      const collection = relatedEntities[collectionName];
-      for (let i = 0; i < collection.length; i++) {
-        const entity = collection[i];
-        workspace.current[collectionName][entity.Id] = entity;
-      }
-    }
-  }
+  addRelatedEntitiesToWorkspace(relatedEntities, workspace);
 
   // Add main entities
   {
     const mainEntities = response.Data;
     const collectionName = response.CollectionName;
     if (!collectionName) {
+      // Programmer mistake
       console.error('collectionName is not specified by the server');
     } else {
       for (let i = 0; i < mainEntities.length; i++) {
@@ -38,7 +31,40 @@ export function addToWorkspace(response: EntitiesResponse, workspace: WorkspaceS
     // Return the IDs of the main entities
     return mainEntities.map(e => e.Id);
   }
+}
 
+export function addSingleToWorkspace(response: GetByIdResponse, workspace: WorkspaceService): (number | string) {
+
+  // Add related entities
+  const relatedEntities = response.RelatedEntities;
+  addRelatedEntitiesToWorkspace(relatedEntities, workspace);
+
+  // Add main entities
+  const entity = response.Entity;
+  const collectionName = response.CollectionName;
+  if (!collectionName) {
+    // Programmer mistake
+    console.error('collectionName is not specified by the server');
+  } else {
+    workspace.current[collectionName][entity.Id] = entity;
+  }
+
+  // Return the IDs of the main entities
+  return entity.Id;
+}
+
+function addRelatedEntitiesToWorkspace(relatedEntities: { [key: string]: DtoForSaveKeyBase[] }, workspace: WorkspaceService) {
+  if (!!relatedEntities) {
+    const collectionNames = Object.keys(relatedEntities);
+    for (let c = 0; c < collectionNames.length; c++) {
+      const collectionName = collectionNames[c];
+      const collection = relatedEntities[collectionName];
+      for (let i = 0; i < collection.length; i++) {
+        const entity = collection[i];
+        workspace.current[collectionName][entity.Id] = entity;
+      }
+    }
+  }
 }
 
 export function downloadBlob(blob: Blob, fileName: string) {
@@ -67,4 +93,5 @@ export function downloadBlob(blob: Blob, fileName: string) {
     window.URL.revokeObjectURL(url);
   }
 }
+
 

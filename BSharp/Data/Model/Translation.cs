@@ -57,7 +57,7 @@ namespace BSharp.Data.Model
 
             // Server Errors
             En(Constants.Server, "Error_TheId0WasNotFound", "The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing"),
-            Ar(Constants.Server, "Error_TheId0WasNotFound", "البيان ذو المفتاح ({0}) غير موجود، لعل أحدهم حذفه، يرجى محاولة التحديث"),
+            Ar(Constants.Server, "Error_TheId0WasNotFound", "البيان ذو المفتاح ({0}) غير موجود، لعل بعضهم حذفه، يرجى محاولة التحديث"),
 
             En(Constants.Server, "Error_TheCode0IsDuplicated", "The code '{0}' is duplicated"),
             Ar(Constants.Server, "Error_TheCode0IsDuplicated", "الكود ({0}) مكرر"),
@@ -213,6 +213,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Create", "Create"),
             Ar(Constants.Client, "Create", "إنشاء"),
 
+            En(Constants.Client, "Edit", "Edit"),
+            Ar(Constants.Client, "Edit", "تعديل"),
+
             En(Constants.Client, "Delete", "Delete"),
             Ar(Constants.Client, "Delete", "حذف"),
 
@@ -240,6 +243,15 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Refresh", "Refresh"),
             Ar(Constants.Client, "Refresh", "تحديث"),
 
+            En(Constants.Client, "Loading", "Loading"),
+            Ar(Constants.Client, "Loading", "جار التحميل"),
+
+            En(Constants.Client, "New", "New"),
+            Ar(Constants.Client, "New", "جديد"),
+
+            En(Constants.Client, "RequiredField", "Required Field"),
+            Ar(Constants.Client, "RequiredField", "حقل مطلوب"),
+
             En(Constants.Client, "Tiles", "Tiles"),
             Ar(Constants.Client, "Tiles", "مستطيلات"),
 
@@ -266,6 +278,12 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Cancel", "Cancel"),
             Ar(Constants.Client, "Cancel", "إلغاء"),
+
+            En(Constants.Client, "Save", "Save"),
+            Ar(Constants.Client, "Save", "حفظ"),
+
+            En(Constants.Client, "Proceed", "Proceed"),
+            Ar(Constants.Client, "Proceed", "متابعة"),
 
             En(Constants.Client, "Mode", "Mode"),
             Ar(Constants.Client, "Mode", "الوضع"),
@@ -311,6 +329,15 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "DeleteConfirmationMessage", "Are you sure you want to delete {{count}} items? This action is irreversible."),
             Ar(Constants.Client, "DeleteConfirmationMessage", "هل تود حذف عدد {{count}} من البيانات؟ هذا الفعل لا يمكن التراجع عنه."),
+
+            En(Constants.Client, "DetailsDeleteConfirmationMessage", "Are you sure you want to delete this item? This action is irreversible."),
+            Ar(Constants.Client, "DetailsDeleteConfirmationMessage", "هل تود حذف هذا البيان؟ هذا الفعل لا يمكن التراجع عنه."),
+
+            En(Constants.Client, "UnsavedChangesConfirmationMessage", "Your unsaved changes will be discarded, are you sure you would like to proceed?"),
+            Ar(Constants.Client, "UnsavedChangesConfirmationMessage", "ستضيع التعديلات التي لم تُحفظ بعد، هل تود المتابعة؟"),
+
+
+
 
             En(Constants.Client, "Activate", "Activate"),
             Ar(Constants.Client, "Activate", "تنشيط"),

@@ -1,3 +1,4 @@
 export class SaveArguments {
-  ReturnEntities = true;
+  expand?: string;
+  returnEntities? = true;
 }

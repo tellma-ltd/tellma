@@ -1,6 +1,6 @@
 <b-master apiEndpoint="measurement-units"
           [mode]="mode"
-          title="{{ 'MeasurementUnits' | translate }}"
+          [masterCrumb]="'MeasurementUnits' | translate"
           [tileTemplate]="tile"
           [tableColumnPaths]="['Name', 'Name2' , 'Code', 'UnitType', 'UnitAmount', 'BaseAmount', 'IsActive']"
           [tableColumnTemplates]="{
@@ -16,7 +16,7 @@
             { template : activate, action: onActivate },
             { template : deactivate, action: onDeactivate }
           ]"
-          includeInactiveLabel="{{ 'IncludeInactive' | translate }}"
+          [includeInactiveLabel]="'IncludeInactive' | translate"
           [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedByMe'}
@@ -27,8 +27,7 @@
               { template: distance, expression: 'UnitType eq \'Distance\''},
               { template: count, expression: 'UnitType eq \'Count\''},
               { template: mass, expression: 'UnitType eq \'Mass\''},
-              { template: volume, expression: 'UnitType eq \'Volume\''},
-              { template: money, expression: 'UnitType eq \'Money\''}
+              { template: volume, expression: 'UnitType eq \'Volume\''}
             ]
           }">
 </b-master>
@@ -42,6 +41,7 @@
     <span>{{ ws[id].Code }}</span>
   </div>
 </ng-template>
+
 
 <!-- Table Templates -->
 <ng-template #header_Name>{{ 'MU_Name' | translate }}</ng-template>
@@ -80,7 +80,6 @@
 <ng-template #count> {{ unitTypeLookup('Count') | translate }}</ng-template>
 <ng-template #mass> {{ unitTypeLookup('Mass') | translate }}</ng-template>
 <ng-template #volume> {{ unitTypeLookup('Volume') | translate }}</ng-template>
-<ng-template #money> {{ unitTypeLookup('Money') | translate }}</ng-template>
 
 
 

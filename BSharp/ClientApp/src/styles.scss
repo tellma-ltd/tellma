@@ -7,6 +7,7 @@ $dark-primary: #008784;
 $info: #007bff; // Bright blue
 $enable-rounded: false; // Square corners
 $font-size-base: 0.9rem; // The default font (1rem) is too big
+$gray-300: #dee2e6 !default; // only for intellisense
 
 @import "node_modules/bootstrap/scss/bootstrap";
 
@@ -194,6 +195,15 @@ a {
 
 .b-tile {
   @extend .b-pointer;
+  border: 1px solid $gray-300;
+}
+
+@media (max-width: 576px) {
+  // on small screens, the tiles are stacked with no margins between them
+  // so remove the top border otherwise we get double borders
+  .b-tile {
+    border-top-width: 0px;
+  }
 }
 
 .b-tile:hover {
@@ -296,11 +306,10 @@ a {
 }
 
 
-.b-h2 {
+input.b-h2, .b-h2 input {
   margin-bottom: 0.5rem;
   font-family: inherit;
   line-height: 1.2;
-  color: inherit;
   font-size: 1.8rem;
 }
 
@@ -323,6 +332,11 @@ a {
 
 .is-invalid .b-input {
   border-color: $danger;
+}
+
+.is-invalid.b-input::placeholder, .is-invalid .b-input::placeholder {
+  color: $danger;
+  opacity: 0.6;
 }
 
 .is-invalid .b-input:focus {
@@ -348,7 +362,7 @@ input::-ms-clear {
 // The below code styles the state flow chart, credit goes to
 // this gentleman: https://css-tricks.com/triangle-breadcrumbs/
 $flow-state-active: #f8f9fa;
-$flow-border: #dee2e6;
+$flow-border: $gray-300;
 $flow-state: white;
 $flow-text: #6c757d;
 
@@ -461,7 +475,6 @@ $flow-text: #6c757d;
     width: 33% !important;
     border-top: none;
     border-left: 1px solid $flow-border;
-    margin-left: -1px;
     overflow-y: auto;
   }
 }
@@ -487,7 +500,7 @@ table.b-master-table th {
   font-size: 80%;
 }
 
-// Disable those horrible select-unselect animations
+// disable those horrible select-unselect animations
 .custom-control-label::before, .custom-file-label, .custom-select {
   transition: none;
 }
@@ -497,6 +510,7 @@ table.b-master-table th {
   background-color: #f8f9fa; // light background
   border: 1px solid #6c757d; // border color
 }
+
 /*
 .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
   background-color: #f8f9fa; // light background
@@ -512,7 +526,7 @@ table.b-master-table th {
 }
   */
 
-// Center the checkbox
+// center the checkbox
 div.custom-control.custom-checkbox.b-labelless-checkbox {
   padding-left: 2rem;
 }
@@ -521,7 +535,7 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
   width: 1px;
 }
 
-// Replaces bootstrap's custom-file-label
+// replaces bootstrap's custom-file-label
 .b-file-input-label {
   position: absolute;
   top: 0;
@@ -533,6 +547,8 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
   line-height: 1.5;
 }
 
+// cover the whole screen with transparent glass
+// when there is a POST/PUT/DELETE call in progress
 .b-overlay {
   position: fixed;
   width: 100%;
@@ -589,4 +605,39 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
 
 .b-filter-dropdown-menu .dropdown-item {
   cursor: pointer;
+}
+
+.b-dirty-asterisk {
+  line-height: 0.5;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+
+// a form group is a form control + optional label + optional errors
+// taking half the screen on wide screen, and full screen on smaller screen
+.b-form-group {
+  margin-top: 0.75rem !important;
+
+  // instead of col-12
+  flex: 0 0 100%;
+  max-width: 100%;
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+@media (min-width: 992px) {
+  .b-form-group {
+    margin-top: 0.5rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .b-form-group {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }  
 }

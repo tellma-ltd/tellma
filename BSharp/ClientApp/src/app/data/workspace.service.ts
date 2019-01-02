@@ -102,13 +102,14 @@ export class MasterDetailsStore {
   public delete(ids: (string | number)[]) {
     // removes a deleted item in memory and updates the stats
 
-    this.total = this.total - ids.length;
+    this.total = Math.max(this.total - ids.length, 0);
     this.masterIds = this.masterIds.filter(e => ids.indexOf(e) === -1);
   }
 
-  public insert(id: (string | number)[]) {
+  public insert(ids: (string | number)[]) {
     // adds a newly created item in memory and updates the stats
-    // TODO
+    this.total = this.total + ids.length;
+    this.masterIds = ids.concat(this.masterIds);
   }
 }
 

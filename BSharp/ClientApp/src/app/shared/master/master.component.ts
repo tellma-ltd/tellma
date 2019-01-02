@@ -1,20 +1,15 @@
-import { Component, OnInit, OnDestroy, Input, TemplateRef, Output, EventEmitter, ViewChild } from '@angular/core';
-import { WorkspaceService, MasterDetailsStore, MasterStatus } from 'src/app/data/workspace.service';
-import { ApiService } from 'src/app/data/api.service';
-import { Router, ActivatedRoute, ParamMap, Params } from '@angular/router';
-import { Observable, Subject, merge, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, tap, switchMap, catchError, retry } from 'rxjs/operators';
-import { GetResponse } from 'src/app/data/dto/get-response';
-import { DtoForSaveKeyBase } from 'src/app/data/dto/dto-for-save-key-base';
-import { addToWorkspace, downloadBlob } from 'src/app/data/util';
-import { resetComponentState } from '@angular/core/src/render3/instructions';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TemplateArguments_Format } from 'src/app/data/dto/template-arguments';
 import { TranslateService } from '@ngx-translate/core';
-import { GetArguments } from 'src/app/data/dto/get-arguments';
-import { ExportArguments } from 'src/app/data/dto/export-arguments';
-import { forEach } from '@angular/router/src/utils/collection';
-import { Template } from 'tns-core-modules/ui/page/page';
+import { merge, Observable, of, Subject } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+import { ApiService } from 'src/app/data/api.service';
+import { DtoForSaveKeyBase } from 'src/app/data/dto/dto-for-save-key-base';
+import { GetResponse } from 'src/app/data/dto/get-response';
+import { TemplateArguments_Format } from 'src/app/data/dto/template-arguments';
+import { addToWorkspace, downloadBlob } from 'src/app/data/util';
+import { MasterDetailsStore, MasterStatus, WorkspaceService } from 'src/app/data/workspace.service';
 
 enum SearchView {
   tiles = 'tiles',
@@ -30,7 +25,7 @@ enum SearchView {
 export class MasterComponent implements OnInit, OnDestroy {
 
   @Input()
-  title: string;
+  masterCrumb: string;
 
   @Input()
   apiEndpoint: string;
@@ -93,6 +88,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Input()
   exportFileName: string;
 
+  @Input()
+  searchView: SearchView;
+
   @Output()
   select = new EventEmitter<number | string>();
 
@@ -104,7 +102,6 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   private PAGE_SIZE = 50;
   private localState = new MasterDetailsStore();  // Used in popup mode
-  private searchView: SearchView;
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
@@ -142,10 +139,13 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
 
     // Set the view from the URL or to 'tiles' by default
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      this.searchView = params.has('view') ?
-        SearchView[params.get('view')] : SearchView.tiles; // tiles by default
-    });
+    if (this.mode === 'screen') {
+      // in popup mode don't read from query parameters
+      this.route.paramMap.subscribe((params: ParamMap) => {
+        this.searchView = params.has('view') ?
+          SearchView[params.get('view')] : SearchView.tiles; // tiles by default
+      });
+    }
 
     // Unless the data is already loaded, start loading
     if (this.state.masterStatus !== MasterStatus.loaded) {
@@ -167,6 +167,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     // Remove previous Ids from the store
     let s = this.state;
     s.masterIds = [];
+    s.detailsId = null; // clear the cached details item
     this.checked = {}; // clear all selection
     this.actionValidationErrors = {}; // clear validation errors
     s.masterStatus = MasterStatus.loading;
@@ -204,7 +205,7 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   public get state(): MasterDetailsStore {
     // Important to always reference the source, and not take a local reference
-    // on some occasions the source can be reset and a local reference can cause bugs
+    // on some occasions the source can be reset and using a local reference can cause bugs
     if (this.mode === 'popup') {
 
       // popups use a local store that vanishes when the popup is destroyed
@@ -444,7 +445,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   public get flip() {
-    // This is to flip the icons
+    // this is to flip the UI icons in RTL
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 

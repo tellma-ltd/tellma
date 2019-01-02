@@ -174,7 +174,7 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
         {
             public string GetShardConnectionString()
             {
-                return "<FakeConnectionString>";
+                return "Server=(localdb)\\MSSQLLocalDB;Database=BSharp;Trusted_Connection=true;MultipleActiveResultSets=true";
             }
         }
 

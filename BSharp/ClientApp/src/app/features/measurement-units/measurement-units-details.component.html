@@ -1,3 +1,69 @@
-<p>
-  measurement-units-details works!
-</p>
+<b-details apiEndpoint="measurement-units"
+           collection="MeasurementUnits"
+           idString="37"
+           [createNew]="createNew"
+           [mode]="mode"
+           [masterCrumb]="'MeasurementUnits' | translate"
+           [detailsCrumb]="detailsCrumb"
+           [documentTemplate]="document">
+
+</b-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+  <span>{{ model?.Name }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="validationErrors.Name">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
+                   [placeholder]="('MU_Name' | translate) + '...'" required></b-text-editor>
+  </b-form-group>
+
+  <!-- Name2 -->
+  <b-form-group class="b-form-group" [label]="'MU_Name2' | translate" [serverErrors]="validationErrors.Name2">
+    <div *ngIf="!isEdit">{{model?.Name2}}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  </b-form-group>
+
+  <!-- Code -->
+  <b-form-group class="b-form-group" [label]="'MU_Code' | translate" [serverErrors]="validationErrors.Code">
+    <div *ngIf="!isEdit">{{model?.Code}}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  </b-form-group>
+
+  <!-- Unit Type -->
+  <b-form-group class="b-form-group" [label]="'MU_UnitType' | translate" [serverErrors]="validationErrors.UnitType">
+    <div *ngIf="!isEdit">{{ unitTypeLookup(model?.UnitType) | translate }}</div>
+    <b-selector *ngIf="isEdit" [(ngModel)]="model.UnitType" [choices]="unitTypeChoices" required></b-selector>
+  </b-form-group>
+
+  <!-- Unit Amount -->
+  <b-form-group class="b-form-group" [label]="'MU_UnitAmount' | translate" [serverErrors]="validationErrors.UnitAmount">
+    <div *ngIf="!isEdit">{{model?.UnitAmount}}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.UnitAmount" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
+  </b-form-group>
+
+  <!-- Base Amount -->
+  <b-form-group class="b-form-group" [label]="'MU_BaseAmount' | translate" [serverErrors]="validationErrors.BaseAmount">
+    <div *ngIf="!isEdit">{{model?.BaseAmount}}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BaseAmount" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
+  </b-form-group>
+
+
+  <!-- Is Active -->
+  <b-form-group class="b-form-group" [label]="'MU_IsActive' | translate" *ngIf="!isEdit">
+    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+  </b-form-group>
+
+
+</ng-template>
+
+<!-- Sidebar -->
+<!--<ng-template #sidebar let-model="model" let-isEdit="isEdit">
+  <div class="m-5">
+    it works!
+  </div>
+</ng-template>-->

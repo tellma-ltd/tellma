@@ -23,6 +23,12 @@ namespace BSharp.Controllers.Misc
             Choices = choices ?? throw new ArgumentNullException(nameof(choices));
             DisplayNames = displayNames ?? choices.Select(e => e.ToString()).ToArray();
 
+            if(Choices.Any(e => string.IsNullOrEmpty(e?.ToString())))
+            {
+                // Programmer error
+                throw new ArgumentException($"One of the choices cannot be blank");
+            }
+
             if(Choices.Length != DisplayNames.Length)
             {
                 // Programmer error
@@ -39,7 +45,7 @@ namespace BSharp.Controllers.Misc
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             // If it doesn't match any of the choices => error
-            if (value != null && !Choices.Contains(value))
+            if (!string.IsNullOrEmpty(value?.ToString()) && !Choices.Contains(value))
             {
                 string concatenatedChoices = string.Join(", ", Choices.Select(e => e.ToString()));
 

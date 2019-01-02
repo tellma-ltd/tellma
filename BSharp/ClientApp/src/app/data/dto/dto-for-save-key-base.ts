@@ -1,4 +1,4 @@
 export abstract class DtoForSaveKeyBase {
-  Id: string | number;
-  EntityState: 'Inserting' | 'Updating' | 'Deleting';
+  Id: string | number = null;
+  EntityState: 'Inserted' | 'Updated' | 'Deleted' = 'Inserted';
 }

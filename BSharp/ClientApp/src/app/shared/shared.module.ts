@@ -8,8 +8,17 @@ import { TranslateModule } from '@ngx-translate/core';
 import { CdkTableModule } from '@angular/cdk/table';
 
 import { BrandComponent } from './brand/brand.component';
-import { DetailsComponent } from './details/details.component';
 import { MasterComponent } from './master/master.component';
+import { DetailsComponent } from './details/details.component';
+import { RouterModule } from '@angular/router';
+import { SpinnerComponent } from './spinner/spinner.component';
+import { ErrorMessageComponent } from './error-message/error-message.component';
+import { TextEditorComponent } from './text-editor/text-editor.component';
+import { ImportComponent } from './import/import.component';
+import { SuccessMessageComponent } from './success-message/success-message.component';
+import { WarningMessageComponent } from './warning-message/warning-message.component';
+import { FormGroupComponent } from './form-group/form-group.component';
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faExclamationTriangle,
@@ -37,13 +46,7 @@ import {
   faFileDownload,
   faFilter
 } from '@fortawesome/free-solid-svg-icons';
-import { RouterModule } from '@angular/router';
-import { SpinnerComponent } from './spinner/spinner.component';
-import { ErrorMessageComponent } from './error-message/error-message.component';
-import { TextEditorComponent } from './text-editor/text-editor.component';
-import { ImportComponent } from './import/import.component';
-import { SuccessMessageComponent } from './success-message/success-message.component';
-import { WarningMessageComponent } from './warning-message/warning-message.component';
+import { SelectorComponent } from './selector/selector.component';
 
 // Icons to be used in the app
 library.add(
@@ -65,6 +68,8 @@ library.add(
     WarningMessageComponent,
     TextEditorComponent,
     ImportComponent,
+    FormGroupComponent,
+    SelectorComponent
   ],
   imports: [
     CommonModule,
@@ -91,12 +96,15 @@ library.add(
     SpinnerComponent,
     BrandComponent,
     MasterComponent,
+    DetailsComponent,
     ErrorMessageComponent,
     SuccessMessageComponent,
     WarningMessageComponent,
     TextEditorComponent,
     CdkTableModule,
     ImportComponent,
+    FormGroupComponent,
+    SelectorComponent
   ]
 })
 export class SharedModule { }

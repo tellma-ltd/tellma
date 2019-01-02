@@ -17,7 +17,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     if (!!tenantId) {
       req = req.clone({
         setHeaders: { 'Tenant-Id': tenantId.toString() },
-        setParams: { 'ti': tenantId.toString() }
+        setParams: { 'timestamp': encodeURIComponent(new Date().toString()) }
         // Adding it to the q params is to prevent the browser using a cached GET response after switching tenants
       });
     }
@@ -34,6 +34,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     // TODO add cache versions and intercept responses
     // TODO intercept 401 responses and log the user out
     // TODO add culture to the query url
+    // TODO add time stamp to prevent 
 
     return next.handle(req);
   }

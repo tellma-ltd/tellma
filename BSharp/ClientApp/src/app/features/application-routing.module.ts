@@ -7,15 +7,17 @@ import { ApplicationShellComponent } from './application-shell/application-shell
 import { MeasurementUnitsImportComponent } from './measurement-units/measurement-units-import.component';
 import { ApplicationPageNotFoundComponent } from './application-page-not-found/application-page-not-found.component';
 import { SaveInProgressGuard } from '../data/save-in-progress.guard';
+import { DirtyDataGuard } from '../data/dirty-data.guard';
 
 const routes: Routes = [
   {
     path: ':tenantId',
     component: ApplicationShellComponent,
     children: [
+      // Measurement Units
       { path: 'measurement-units', component: MeasurementUnitsMasterComponent, canDeactivate: [SaveInProgressGuard] },
       { path: 'measurement-units/import', component: MeasurementUnitsImportComponent, canDeactivate: [SaveInProgressGuard] },
-      { path: 'measurement-units/:id', component: MeasurementUnitsDetailsComponent, canDeactivate: [SaveInProgressGuard] },
+      { path: 'measurement-units/:id', component: MeasurementUnitsDetailsComponent, canDeactivate: [SaveInProgressGuard, DirtyDataGuard] },
 
       { path: 'main-menu', component: MainMenuComponent },
       { path: '', redirectTo: 'main-menu', pathMatch: 'full' },

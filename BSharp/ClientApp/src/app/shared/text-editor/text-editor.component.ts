@@ -12,7 +12,7 @@ export class TextEditorComponent implements ControlValueAccessor {
   // us to change the bahvior of all inputs in the application since they all use this control
 
   @Input()
-  placeholder: string;
+  placeholder = '';
 
   @HostBinding('class.w-100')
   w100 = true;

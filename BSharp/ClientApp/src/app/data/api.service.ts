@@ -13,6 +13,8 @@ import { TemplateArguments } from './dto/template-arguments';
 import { ImportArguments } from './dto/import-arguments';
 import { ImportResult } from './dto/import-result';
 import { ExportArguments } from './dto/export-arguments';
+import { GetByIdResponse } from './dto/get-by-id-response';
+import { SaveArguments } from './dto/save-arguments';
 
 @Injectable({
   providedIn: 'root'
@@ -51,8 +53,56 @@ export class ApiService {
         return obs$;
       },
 
-      getById: (args: GetByIdArguments) => {
-        // TODO
+      getById: (id: number | string, args: GetByIdArguments) => {
+        args = args || {};
+        const paramsArray: string[] = [];
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/${endpoint}/${id}?${params}`;
+
+        const obs$ = this.http.get<GetByIdResponse<TDto>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      save: (entities: DtoForSaveKeyBase[], args: SaveArguments) => {
+        this.saveInProgress = true;
+        args = args || {};
+        const paramsArray: string[] = [];
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+        }
+
+        paramsArray.push(`returnEntities=${!!args.returnEntities}`);
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/${endpoint}?${params}`;
+
+        const obs$ = this.http.post<EntitiesResponse<TDto>>(url, entities, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.saveInProgress = false),
+          catchError((error) => {
+            this.saveInProgress = false;
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.saveInProgress = false)
+        );
+
+        return obs$;
       },
 
       delete: (ids: (number | string)[]) => {

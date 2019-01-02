@@ -45,6 +45,10 @@ export class RootComponent {
       // reflect the change too
       const culture = this.translate.currentLang;
       this.setDocumentRTL(culture);
+      if (!!document) {
+        // TODO Load from configuration instead
+        document.title = this.translate.instant('AppName');
+      }
 
       // TODO Set in local storage properly
       sessionStorage.setItem('userCulture', culture);

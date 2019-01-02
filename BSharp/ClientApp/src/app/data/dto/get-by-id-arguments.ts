@@ -1,3 +1,3 @@
 export class GetByIdArguments {
-  Expand: string;
+  expand?: string;
 }

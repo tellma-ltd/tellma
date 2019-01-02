@@ -114,7 +114,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<ActionResult<List<TDto>>> Save([FromBody] List<TDtoForSave> entities, [FromQuery] SaveArguments args)
+        public virtual async Task<ActionResult<EntitiesResponse<TDto>>> Save([FromBody] List<TDtoForSave> entities, [FromQuery] SaveArguments args)
         {
             // Note here we use lists https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=netcore-2.1
             // since the order is symantically relevant for reporting validation errors on the entities
@@ -193,13 +193,25 @@ namespace BSharp.Controllers
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
+
+            Stopwatch watch2 = new Stopwatch();
+            watch2.Start();
+            decimal parsingToDtosForSave = 0;
+            decimal attributeValidationInCSharp = 0;
+            decimal validatingAndSaving = 0;
+
             try
             {
                 // Parse the file into DTOs + map back to row numbers (The way source code is compiled into machine code + symbols file)
                 var (dtos, rowNumberFromErrorKeyMap) = await ParseImplAsync(args); // This should check for primary code consistency!
+                parsingToDtosForSave = Math.Round(((decimal)watch2.ElapsedMilliseconds) / 1000, 1);
+                watch2.Restart();
 
                 // Validation
                 ObjectValidator.Validate(ControllerContext, null, null, dtos);
+                attributeValidationInCSharp = Math.Round(((decimal)watch2.ElapsedMilliseconds) / 1000, 1);
+                watch2.Restart();
+
                 if (!ModelState.IsValid)
                 {
                     var mappedModelState = MapModelState(ModelState, rowNumberFromErrorKeyMap);
@@ -210,6 +222,8 @@ namespace BSharp.Controllers
                 try
                 {
                     await SaveImplAsync(dtos, new SaveArguments { ReturnEntities = false });
+                    validatingAndSaving = Math.Round(((decimal)watch2.ElapsedMilliseconds) / 1000, 1);
+                    watch2.Stop();
                 }
                 catch (UnprocessableEntityException ex)
                 {
@@ -227,6 +241,9 @@ namespace BSharp.Controllers
                 watch.Stop();
                 var elapsed = Math.Round(((decimal)watch.ElapsedMilliseconds) / 1000, 1);
                 result.Seconds = elapsed;
+                result.ParsingToDtosForSave = parsingToDtosForSave;
+                result.AttributeValidationInCSharp = attributeValidationInCSharp;
+                result.ValidatingAndSaving = validatingAndSaving;
 
                 return Ok(result);
             }
@@ -347,7 +364,7 @@ namespace BSharp.Controllers
         /// <summary>
         /// Persists the entities in the database, either creating them or updating them depending on the EntityState
         /// </summary>
-        protected abstract Task<List<TModel>> PersistAsync(List<TDtoForSave> entities, bool returnEntities);
+        protected abstract Task<List<TModel>> PersistAsync(List<TDtoForSave> entities, SaveArguments args);
 
         /// <summary>
         /// Returns the entities as per the specifications in the get request
@@ -392,8 +409,6 @@ namespace BSharp.Controllers
             // Map the primary result to DTOs as well
             var resultData = Map(memoryList);
 
-            // TODO apply the SELECT
-
             // Prepare the result in a response object
             var result = new GetResponse<TDto>
             {
@@ -415,7 +430,7 @@ namespace BSharp.Controllers
         /// Saves the entities (Insert or Update) into the database after authorization and validation
         /// </summary>
         /// <returns>Optionally returns the same entities in their persisted READ form</returns>
-        protected virtual async Task<List<TDto>> SaveImplAsync(List<TDtoForSave> entities, SaveArguments args)
+        protected virtual async Task<EntitiesResponse<TDto>> SaveImplAsync(List<TDtoForSave> entities, SaveArguments args)
         {
             // TODO Authorize POST
 
@@ -434,10 +449,21 @@ namespace BSharp.Controllers
                     }
 
                     // Save
-                    var dbEntities = await PersistAsync(entities, args.ReturnEntities);
+                    var memoryList = await PersistAsync(entities, args);
 
-                    // Map and return (After committing the transaction
-                    var result = Map(dbEntities);
+                    // Flatten related entities and map each to its respective DTO 
+                    var relatedEntities = FlattenRelatedEntities(memoryList);
+
+                    // Map the primary result to DTOs as well
+                    var resultData = Map(memoryList);
+
+                    // Prepare the result in a response object
+                    var result = new EntitiesResponse<TDto>
+                    {
+                        Data = resultData,
+                        RelatedEntities = relatedEntities,
+                        CollectionName = GetCollectionName(typeof(TDto))
+                    };
 
                     // Commit and return
                     trx.Commit();
