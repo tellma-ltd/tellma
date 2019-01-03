@@ -5,6 +5,6 @@ export class ExportArguments extends GetArguments {
 }
 
 export const ExportArguments_Format = {
-  'csv': 'CSV',
-  'xlsx': 'Excel'
+  'xlsx': 'Excel',
+  'csv': 'CSV'
 };

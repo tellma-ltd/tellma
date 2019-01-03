@@ -1,27 +1,73 @@
-import { Component, OnInit, Input, ContentChild } from '@angular/core';
+import { Component, Input, ContentChild, AfterContentInit, OnDestroy } from '@angular/core';
 import { WorkspaceService } from 'src/app/data/workspace.service';
 import { NgControl } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'b-form-group',
   templateUrl: './form-group.component.html',
-  styleUrls: ['./form-group.component.css']
 })
-export class FormGroupComponent implements OnInit {
+export class FormGroupComponent implements OnDestroy {
+
+  // this component wraps a component (typically a form field) and optionally adds a label to it
+  // and also optionally displays an error icon shown the errors on that form field, it can also display
+  // server errors and correctly hides the server errors as soon as the user makes a change on the field
+
+  private _serverErrors: string[];
+  private _control: NgControl;
+  private controlValueChanges: Subscription;
+  private touchedSinceServerErrors = false;
 
   @Input()
   label: string;
 
   @Input()
-  serverErrors: string[];
+  set serverErrors(v: string[]) {
+    if (this._serverErrors !== v) {
+      // reset the value of 'touchedSinceServerErrors' whenever they change
+      // this shows the server errors to the user until the field is modified
+      this.touchedSinceServerErrors = false;
+      this._serverErrors = v;
+    }
+  }
+
+  get serverErrors(): string[] {
+    return this._serverErrors;
+  }
 
   @ContentChild(NgControl)
-  control: NgControl
+  set control(v: NgControl) {
+    if (this._control !== v) {
+      // unsubscribe from old NgControl
+      if (!!this.controlValueChanges) {
+        this.controlValueChanges.unsubscribe();
+      }
+
+      // set the new NgControl
+      this._control = v;
+
+      // subscribe to value changes on the new NgControl
+      if (!!this._control) {
+        this.controlValueChanges = this._control.valueChanges.subscribe(_ => {
+          // hides away server errors when the user modifies the field
+          this.touchedSinceServerErrors = true;
+        });
+      }
+    }
+  }
+
+  get control(): NgControl {
+    return this._control;
+  }
+
+  ngOnDestroy() {
+    // clean up duty
+    if (!!this.controlValueChanges) {
+      this.controlValueChanges.unsubscribe();
+    }
+  }
 
   constructor(private workspace: WorkspaceService) { }
-
-  ngOnInit() {
-  }
 
   get showLabel(): boolean {
     return !!this.label;
@@ -29,7 +75,7 @@ export class FormGroupComponent implements OnInit {
 
   get invalid(): boolean {
     return (!!this.control && !!this.control.invalid && this.control.touched)
-      || (!!this.serverErrors && !!this.serverErrors.length);
+      || (!this.touchedSinceServerErrors && !!this.serverErrors && !!this.serverErrors.length);
   }
 
   get errors(): string[] {
@@ -59,4 +105,5 @@ export class FormGroupComponent implements OnInit {
   get popoverPlacement(): string {
     return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
   }
+
 }

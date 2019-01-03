@@ -618,7 +618,6 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
 // taking half the screen on wide screen, and full screen on smaller screen
 .b-form-group {
   margin-top: 0.75rem !important;
-
   // instead of col-12
   flex: 0 0 100%;
   max-width: 100%;
@@ -639,5 +638,20 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
   .b-form-group {
     flex: 0 0 50%;
     max-width: 50%;
-  }  
+  }
+}
+
+// highlights master items that were recently viewed
+div.b-highlight {
+  background-color: rgba(17, 17, 17, 0.05) !important;
+}
+
+@media (min-width: 576px) {
+  div.b-highlight {
+    border-color: rgba(17, 17, 17, 0.1) !important;
+  }
+}
+
+tr.b-highlight {
+  background-color: rgba(17, 17, 17, 0.075) !important;
 }

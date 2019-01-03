@@ -1,11 +1,15 @@
 <b-details apiEndpoint="measurement-units"
            collection="MeasurementUnits"
            idString="37"
-           [createNew]="createNew"
+           [createFunc]="create"
            [mode]="mode"
            [masterCrumb]="'MeasurementUnits' | translate"
            [detailsCrumb]="detailsCrumb"
-           [documentTemplate]="document">
+           [documentTemplate]="document"
+           [actions]="[
+              { template: activate, action: onActivate, showAction: showActivate },
+              { template: deactivate, action: onDeactivate, showAction: showDeactivate }
+           ]">
 
 </b-details>
 
@@ -13,6 +17,7 @@
 <ng-template #detailsCrumb let-model="model">
   <span>{{ model?.Name }}</span>
 </ng-template>
+
 
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
@@ -42,28 +47,23 @@
 
   <!-- Unit Amount -->
   <b-form-group class="b-form-group" [label]="'MU_UnitAmount' | translate" [serverErrors]="validationErrors.UnitAmount">
-    <div *ngIf="!isEdit">{{model?.UnitAmount}}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.UnitAmount" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
+    <div *ngIf="!isEdit">{{model?.UnitAmount | number}}</div>
+    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.UnitAmount" [ngModelOptions]="{ updateOn: 'blur' }" required></b-decimal-editor>
   </b-form-group>
 
   <!-- Base Amount -->
   <b-form-group class="b-form-group" [label]="'MU_BaseAmount' | translate" [serverErrors]="validationErrors.BaseAmount">
-    <div *ngIf="!isEdit">{{model?.BaseAmount}}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BaseAmount" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
+    <div *ngIf="!isEdit">{{model?.BaseAmount | number}}</div>
+    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BaseAmount" [ngModelOptions]="{ updateOn: 'blur' }" required></b-decimal-editor>
   </b-form-group>
-
 
   <!-- Is Active -->
   <b-form-group class="b-form-group" [label]="'MU_IsActive' | translate" *ngIf="!isEdit">
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
   </b-form-group>
-
-
 </ng-template>
 
-<!-- Sidebar -->
-<!--<ng-template #sidebar let-model="model" let-isEdit="isEdit">
-  <div class="m-5">
-    it works!
-  </div>
-</ng-template>-->
+
+<!-- Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

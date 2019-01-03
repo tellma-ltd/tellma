@@ -9,9 +9,11 @@ import { TextEditorComponent } from './text-editor/text-editor.component';
 import { ImportComponent } from './import/import.component';
 import { FormGroupComponent } from './form-group/form-group.component';
 import { SelectorComponent } from './selector/selector.component';
+import { DecimalEditorComponent } from './decimal-editor/decimal-editor.component';
+import { DetailsBaseComponent } from './details-base/details-base.component';
 
 @NgModule({
-  declarations: [MasterComponent, DetailsComponent, SpinnerComponent, ErrorMessageComponent, TextEditorComponent, ImportComponent, FormGroupComponent, SelectorComponent],
+  declarations: [MasterComponent, DetailsComponent, SpinnerComponent, ErrorMessageComponent, TextEditorComponent, ImportComponent, FormGroupComponent, SelectorComponent, DecimalEditorComponent, DetailsBaseComponent],
   imports: [
     NativeScriptCommonModule
   ],

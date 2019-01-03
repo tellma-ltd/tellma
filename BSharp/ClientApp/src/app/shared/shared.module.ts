@@ -12,12 +12,14 @@ import { MasterComponent } from './master/master.component';
 import { DetailsComponent } from './details/details.component';
 import { RouterModule } from '@angular/router';
 import { SpinnerComponent } from './spinner/spinner.component';
-import { ErrorMessageComponent } from './error-message/error-message.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
 import { ImportComponent } from './import/import.component';
+import { ErrorMessageComponent } from './error-message/error-message.component';
 import { SuccessMessageComponent } from './success-message/success-message.component';
 import { WarningMessageComponent } from './warning-message/warning-message.component';
 import { FormGroupComponent } from './form-group/form-group.component';
+import { SelectorComponent } from './selector/selector.component';
+import { DecimalEditorComponent } from './decimal-editor/decimal-editor.component';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -46,7 +48,7 @@ import {
   faFileDownload,
   faFilter
 } from '@fortawesome/free-solid-svg-icons';
-import { SelectorComponent } from './selector/selector.component';
+import { DetailsBaseComponent } from './details-base/details-base.component';
 
 // Icons to be used in the app
 library.add(
@@ -69,7 +71,9 @@ library.add(
     TextEditorComponent,
     ImportComponent,
     FormGroupComponent,
-    SelectorComponent
+    SelectorComponent,
+    DecimalEditorComponent,
+    DetailsBaseComponent
   ],
   imports: [
     CommonModule,
@@ -104,7 +108,9 @@ library.add(
     CdkTableModule,
     ImportComponent,
     FormGroupComponent,
-    SelectorComponent
+    SelectorComponent,
+    DecimalEditorComponent,
+    DetailsBaseComponent
   ]
 })
 export class SharedModule { }

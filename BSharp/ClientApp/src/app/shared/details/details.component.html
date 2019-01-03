@@ -43,11 +43,26 @@
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
         </button>
 
-        <!-- Delete -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="modalService.open(deleteModal)" [disabled]="!canDelete" *ngIf="showDelete">
-          <fa-icon icon="trash-alt"></fa-icon>
-          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Delete' | translate }}</span>
-        </button>
+        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+          <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle" ngbDropdownToggle>
+            <!--<fa-icon icon="check"></fa-icon>-->
+            {{ 'Actions' | translate }}
+          </button>
+          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
+            <ng-container *ngFor="let action of actions">
+              <button type="button" class="dropdown-item btn-light" (click)="action.action(activeModel)" [disabled]="!canAction(action)" *ngIf="showAction(action)">
+                <ng-container *ngTemplateOutlet="action.template"></ng-container>
+              </button>
+            </ng-container>
+            <button type="button" class="dropdown-item btn-light" (click)="onClone()" [disabled]="!canClone" *ngIf="showClone">
+              {{ 'Clone' | translate }}
+            </button>
+            <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)" [disabled]="!canDelete" *ngIf="showDelete">
+              {{ 'Delete' | translate }}
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Edit Toolbar -->

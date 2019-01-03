@@ -10,7 +10,7 @@
 </div>
 
 <ng-template #errorsPopover>
-  <div class="text-danger" style="width: 250px">
+  <div class="text-danger font-weight-bold" style="width: 250px">
     <p class="m-0 p-0" *ngFor="let error of errors">
       <fa-icon icon="exclamation-triangle"></fa-icon>
       &nbsp;{{ areServerErrors ? error : (error | translate) }}

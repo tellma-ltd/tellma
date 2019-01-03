@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, TemplateRef, ViewChild, Output } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
@@ -41,11 +41,34 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @Input()
   sidebarTemplate: TemplateRef<any>;
 
+  @Input()
+  actions: {
+      template: TemplateRef<any>,
+      action: (model: DtoForSaveKeyBase) => void,
+      canAction?: (model: DtoForSaveKeyBase) => boolean,
+      showAction?: (model: DtoForSaveKeyBase) => boolean
+  }[] = [];
+
   @Input() // popup: only the title and the document are visible
   mode: 'popup' | 'screen' = 'screen';
 
   @Input()
-  createNew: () => DtoForSaveKeyBase = () => ({ Id: null, EntityState: 'Inserted' });
+  createFunc: () => DtoForSaveKeyBase = () => ({ Id: null, EntityState: 'Inserted' });
+
+  @Input()
+  cloneFunc: (id: string) => DtoForSaveKeyBase = (id: string) => {
+    const item = this.workspace.current[this.collection][id];
+    if (!!item) {
+      const clone = <DtoForSaveKeyBase>JSON.parse(JSON.stringify(item));
+      clone.Id = null;
+      clone.EntityState = 'Inserted';
+
+      return clone;
+    } else {
+      console.error('Cloning a non existing item');
+      return null;
+    }
+  };
 
   @Input()
   public set idString(v: string) {
@@ -60,7 +83,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   @Output()
-  save = new EventEmitter<void>();
+  save = new EventEmitter<number | string>();
 
   @Output()
   cancel = new EventEmitter<void>();
@@ -113,6 +136,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.notifyFetch$.next(null);
   }
 
+  private get cloneId(): string {
+    return this.route.snapshot.paramMap.get('cloneId');
+  }
+
   private doFetch(): Observable<void> {
     // clear the errors before refreshing
     this.clearErrors();
@@ -120,9 +147,22 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     // grab the configured state
     const s = this.state;
     if (this.isNew) {
-      // IF it's create new, don't fetch anything
-      this._editModel = this.createNew();
+
+      // IF it's create new, don't fetch anything, create an item in memory
+      const cloneId = this.cloneId;
+      if (!!cloneId) {
+        this._editModel = this.cloneFunc(cloneId);
+      } else {
+        this._editModel = this.createFunc();
+      }
+
+      // marks it as non-dirty until the user makes the first change
+      this._viewModelJson = JSON.stringify(this._editModel);
+
+      // Show edit form
       s.detailsStatus = DetailsStatus.edit;
+
+      // return
       return of();
 
     } else {
@@ -221,7 +261,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.modalService.open(this.errorModal);
   }
 
-  get viewModel() {
+  get viewModel(): DtoForSaveKeyBase {
     // view data is always directly referencing the global workspace
     // this way, un update to a record in the global workspace automatically
     // updates all places where this record is displayed... nifty
@@ -229,9 +269,9 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return !!s.detailsId ? this.workspace.current[this.collection][s.detailsId] : null;
   }
 
-  private handleActionError(friendlyError) {
-    // This handles any errors caused by actions
+  public handleActionError(friendlyError) {
 
+    // This handles any errors caused by actions
     if (friendlyError.status === 422) {
       const keys = Object.keys(friendlyError.error);
       keys.forEach(key => {
@@ -267,7 +307,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return this._validationErrors;
   }
 
-  get activeModel() {
+  get activeModel(): DtoForSaveKeyBase {
     return this.isEdit ? this._editModel : this.viewModel;
   }
 
@@ -327,6 +367,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return true; // TODO !!this.data[this.controller].delete;
   }
 
+  get showClone(): boolean {
+    return true; // TODO !!this.data[this.controller].delete;
+  }
+
   onRefresh(): void {
     const s = this.state;
     if (s.detailsStatus !== DetailsStatus.loading) {
@@ -343,6 +387,18 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   get canCreate(): boolean {
     return true; // TODO !this.canUpdatePred || this.canUpdatePred();
+  }
+
+  onClone(): void {
+    const params: Params = {
+      cloneId: this.activeModel.Id.toString()
+    };
+
+    this.router.navigate(['..', 'new', params], { relativeTo: this.route });
+  }
+
+  get canClone(): boolean {
+    return !!this.activeModel && !!this.activeModel;
   }
 
   onEdit(): void {
@@ -362,7 +418,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   onSave(): void {
-    if (!this.isDirty) {
+    if (!this.isDirty && !this.isNew) {
       if (this.mode === 'popup') {
         // In popup mode, just notify the outside world that a save has happened
         this.save.emit();
@@ -547,6 +603,34 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   public get flip() {
     // this is to flip the UI icons in RTL
     return this.workspace.ws.isRtl ? 'horizontal' : null;
+  }
+
+  public get actionsDropdownPlacement() {
+    return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
+  }
+
+  public canAction(action: {
+    canAction?: (model: DtoForSaveKeyBase) => boolean,
+  }): boolean {
+
+    if (!!action.canAction) {
+      return action.canAction(this.activeModel);
+    } else {
+      // true by default
+      return true;
+    }
+  }
+
+  public showAction(action: {
+    showAction?: (model: DtoForSaveKeyBase) => boolean
+  }): boolean {
+
+    if (!!action.showAction) {
+      return action.showAction(this.activeModel);
+    } else {
+      // true by default
+      return true;
+    }
   }
 
 }

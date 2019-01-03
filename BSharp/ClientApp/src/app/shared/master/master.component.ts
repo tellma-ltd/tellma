@@ -105,6 +105,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
+  private _formatChoices: { name: string, value: any }[];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
   public checked = {};
@@ -428,8 +429,14 @@ export class MasterComponent implements OnInit, OnDestroy {
     return ((weight / totalWeight) * 100) + '%';
   }
 
-  formatLookup(value: string) {
-    return TemplateArguments_Format[value];
+  get formatChoices(): { name: string, value: any }[] {
+
+    if (!this._formatChoices) {
+      this._formatChoices = Object.keys(TemplateArguments_Format)
+        .map(key => ({ name: TemplateArguments_Format[key], value: key }));
+    }
+
+    return this._formatChoices;
   }
 
   get search(): string {
@@ -449,7 +456,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 
-  public get actionDropdownPlacement() {
+  public get actionsDropdownPlacement() {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
@@ -758,4 +765,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   }[] {
     return this.filterDefinition[groupName];
   }
+
+  isRecentlyViewed(id: number | string) {
+    return this.state.detailsId === id;
+  }
+
 }

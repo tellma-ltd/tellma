@@ -1,44 +1,36 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { ICanDeactivate } from 'src/app/data/dirty-data.guard';
-import { DetailsComponent } from 'src/app/shared/details/details.component';
-import { Observable } from 'rxjs';
-import { MeasurementUnit_UnitType, MeasurementUnitForSave } from 'src/app/data/dto/measurement-unit';
+import { MeasurementUnit_UnitType, MeasurementUnitForSave, MeasurementUnit } from 'src/app/data/dto/measurement-unit';
+import { DetailsBaseComponent } from 'src/app/shared/details-base/details-base.component';
+import { tap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { WorkspaceService } from 'src/app/data/workspace.service';
+import { ApiService } from 'src/app/data/api.service';
+import { addToWorkspace } from 'src/app/data/util';
 
 @Component({
   selector: 'b-measurement-units-details',
   templateUrl: './measurement-units-details.component.html',
   styleUrls: ['./measurement-units-details.component.css']
 })
-export class MeasurementUnitsDetailsComponent implements OnInit, ICanDeactivate {
+export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
 
-  // TODO move to a base class
-  @Input()
-  public mode: 'screen' | 'popup' = 'screen';
-
-
-  @ViewChild(DetailsComponent)
-  details: DetailsComponent;
-
-  createNew = () => {
+  create = () => {
     const result = new MeasurementUnitForSave();
     result.UnitAmount = 1;
     result.BaseAmount = 1;
     return result;
   }
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
-
-  // It might make sense to move these to a base class for
-  // all details components, instead of repeating ourselves
-  canDeactivate(): boolean | Observable<boolean> {
-    return this.details.canDeactivate();
-  }
-
   private _unitTypeChoices: { name: string, value: any }[];
+  private notifyDestruct$ = new Subject<void>();
+  private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
+
+  constructor(private workspace: WorkspaceService, private api: ApiService) {
+    super();
+
+    this.measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$);
+  }
+
   get unitTypeChoices(): { name: string, value: any }[] {
 
     if (!this._unitTypeChoices) {
@@ -57,4 +49,24 @@ export class MeasurementUnitsDetailsComponent implements OnInit, ICanDeactivate 
 
     return MeasurementUnit_UnitType[value];
   }
+
+
+  public onActivate = (model: MeasurementUnit): void => {
+    if (!!model && !!model.Id) {
+      this.measurementUnitsApi.activate([model.Id], { ReturnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe(null, this.details.handleActionError);
+    }
+  }
+
+  public onDeactivate = (model: MeasurementUnit): void => {
+    if (!!model && !!model.Id) {
+      this.measurementUnitsApi.deactivate([model.Id], { ReturnEntities: true }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe(null, this.details.handleActionError);
+    }
+  }
+
+  public showActivate = (model: MeasurementUnit) => !!model && !model.IsActive;
+  public showDeactivate = (model: MeasurementUnit) => !!model && model.IsActive;
 }

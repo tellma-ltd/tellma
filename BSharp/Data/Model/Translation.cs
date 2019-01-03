@@ -216,6 +216,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Edit", "Edit"),
             Ar(Constants.Client, "Edit", "تعديل"),
 
+            En(Constants.Client, "Clone", "Clone"),
+            Ar(Constants.Client, "Clone", "استنساخ"),
+
             En(Constants.Client, "Delete", "Delete"),
             Ar(Constants.Client, "Delete", "حذف"),
 

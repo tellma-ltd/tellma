@@ -125,21 +125,19 @@
         </span>
 
         <!-- Actions -->
-        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionDropdownPlacement">
+        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
           <button type="button" class="btn btn-primary btn-sm b-toolbar-button dropdown-toggle" ngbDropdownToggle>
             {{ 'Actions' | translate }}
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-            <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)">
-              {{ 'Delete' | translate }}
-            </button>
-
             <ng-container *ngFor="let action of multiselectActions">
               <button type="button" class="dropdown-item btn-light" (click)="onAction(action.action)">
                 <ng-container *ngTemplateOutlet="action.template"></ng-container>
               </button>
-
             </ng-container>
+            <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)">
+              {{ 'Delete' | translate }}
+            </button>
           </div>
         </div>
 
@@ -162,7 +160,7 @@
       <div class="col-12" *ngIf="showTilesView">
         <div class="row mb-3">
           <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode" *ngFor="let id of masterIds; trackBy: trackById">
-            <div class="p-2 bg-white b-tile" (click)="onSelect(id)">
+            <div class="p-2 bg-white b-tile" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
               <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
               </ng-container>
             </div>
@@ -236,7 +234,7 @@
 
           <!-- Row definitions -->
           <tr cdk-header-row *cdkHeaderRowDef="tableColumnPathsAndExtras" [class.dropup]="desc"></tr>
-          <tr cdk-row *cdkRowDef="let id; columns: tableColumnPathsAndExtras"></tr>
+          <tr cdk-row *cdkRowDef="let id; columns: tableColumnPathsAndExtras" [class.b-highlight]="isRecentlyViewed(id)"></tr>
 
         </table>
       </div>
@@ -274,12 +272,7 @@
       <div class="font-weight-bold small">
         <span class="b-vertical-align-middle">{{ 'Format' | translate }}</span>
       </div>
-      <div>
-        <select id="format" class="form-control b-input" [(ngModel)]="exportFormat">
-          <option value="xlsx">{{ formatLookup('xlsx') | translate }}</option>
-          <option value="csv">{{ formatLookup('csv') | translate }}</option>
-        </select>
-      </div>
+      <b-selector [choices]="formatChoices" [(ngModel)]="exportFormat"></b-selector>
     </div>
 
     <!-- Page -->

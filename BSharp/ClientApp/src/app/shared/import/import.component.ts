@@ -34,6 +34,8 @@ export class ImportComponent implements OnInit, OnDestroy {
   public importValidationErrors: string[] = [];
   public importResult: ImportResult;
 
+  private _modeChoices: { name: string, value: any }[]; 
+  private _formatChoices: { name: string, value: any }[];
   private notifyDestruct$ = new Subject<void>();
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Only for intellisense
 
@@ -128,11 +130,24 @@ export class ImportComponent implements OnInit, OnDestroy {
     return !!this.importResult;
   }
 
-  formatLookup(value: string) {
-    return TemplateArguments_Format[value];
+  get formatChoices(): { name: string, value: any }[] {
+
+    if (!this._formatChoices) {
+      this._formatChoices = Object.keys(TemplateArguments_Format)
+        .map(key => ({ name: TemplateArguments_Format[key], value: key }));
+    }
+
+    return this._formatChoices;
   }
 
-  modeLookup(value: string) {
-    return ImportArguments_Mode[value];
+  get modeChoices(): { name: string, value: any }[] {
+
+    if (!this._modeChoices) {
+      this._modeChoices = Object.keys(ImportArguments_Mode)
+        .map(key => ({ name: ImportArguments_Mode[key], value: key }));
+    }
+
+    return this._modeChoices;
   }
+
 }

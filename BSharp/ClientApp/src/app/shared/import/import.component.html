@@ -48,11 +48,8 @@
           {{ 'ImportStep1Instructions' | translate }}
         </div>
         <div class="form-group">
-          <label for="mode" class="font-weight-bold small">{{ 'Format' | translate }}</label>
-          <select id="model" class="form-control b-input" [(ngModel)]="format">
-            <option value="xlsx">{{ formatLookup('xlsx') | translate }}</option>
-            <option value="csv">{{ formatLookup('csv') | translate }}</option>
-          </select>
+          <label class="font-weight-bold small">{{ 'Format' | translate }}</label>
+          <b-selector [choices]="formatChoices" [(ngModel)]="format"></b-selector>
         </div>
 
         <button type="button" class="btn btn-primary w-100 mb-1" (click)="onDownloadTemplate()">
@@ -72,12 +69,8 @@
           {{ 'ImportStep2Instructions' | translate }}
         </div>
         <div class="form-group">
-          <label for="mode" class="font-weight-bold small">{{ 'Mode' | translate }}</label>
-          <select id="model" class="form-control b-input" [(ngModel)]="mode">
-            <option value="Insert">{{ modeLookup('Insert') | translate }}</option>
-            <option value="Update">{{ modeLookup('Update') | translate }}</option>
-            <option value="Merge">{{ modeLookup('Merge') | translate }}</option>
-          </select>
+          <label class="font-weight-bold small">{{ 'Mode' | translate }}</label>
+          <b-selector [choices]="modeChoices" [(ngModel)]="mode"></b-selector>
         </div>
 
         <div class="custom-file mb-1">

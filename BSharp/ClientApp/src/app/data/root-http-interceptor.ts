@@ -17,8 +17,9 @@ export class RootHttpInterceptor implements HttpInterceptor {
     if (!!tenantId) {
       req = req.clone({
         setHeaders: { 'Tenant-Id': tenantId.toString() },
-        setParams: { 'timestamp': encodeURIComponent(new Date().toString()) }
-        // Adding it to the q params is to prevent the browser using a cached GET response after switching tenants
+        setParams: { 't': encodeURIComponent(new Date().getTime().toString()) }
+        // ^ adding current time to the query params to prevent
+        // the browser from using cached GET responses
       });
     }
 

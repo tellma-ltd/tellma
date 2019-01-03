@@ -3,6 +3,6 @@ export class TemplateArguments {
 }
 
 export const TemplateArguments_Format = {
-  'csv': 'CSV',
-  'xlsx' : 'Excel'
+  'xlsx': 'Excel',
+  'csv': 'CSV'
 };
