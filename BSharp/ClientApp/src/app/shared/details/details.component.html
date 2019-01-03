@@ -54,12 +54,13 @@
                 <ng-container *ngTemplateOutlet="action.template"></ng-container>
               </button>
             </ng-container>
-            <button type="button" class="dropdown-item btn-light" (click)="onClone()" [disabled]="!canClone" *ngIf="showClone">
-              {{ 'Clone' | translate }}
-            </button>
             <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)" [disabled]="!canDelete" *ngIf="showDelete">
               {{ 'Delete' | translate }}
             </button>
+            <button type="button" class="dropdown-item btn-light" (click)="onClone()" [disabled]="!canClone" *ngIf="showClone">
+              {{ 'Clone' | translate }}
+            </button>
+
           </div>
         </div>
 
@@ -158,7 +159,7 @@
 
     <!-- Document -->
     <div class="p-0 p-sm-3 d-flex flex-column align-items-center" *ngIf="showDocument">
-      <div class="border bg-white w-100 b-paper" c (dblclick)="onDocumentDblClick()">
+      <div class="border bg-white w-100 b-paper">
         <div class="row m-0 pl-1 pl-sm-3 pr-1 pr-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5">
           <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, isEdit: isEdit, validationErrors: validationErrors }">
           </ng-container>

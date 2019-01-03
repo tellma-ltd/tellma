@@ -54,7 +54,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\app\features\" />
     <Folder Include="Pages\Account\" />
     <Folder Include="wwwroot\lib\qrcode\" />
   </ItemGroup>
