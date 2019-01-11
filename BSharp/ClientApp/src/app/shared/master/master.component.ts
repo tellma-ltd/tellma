@@ -4,12 +4,12 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from 'src/app/data/api.service';
-import { DtoForSaveKeyBase } from 'src/app/data/dto/dto-for-save-key-base';
-import { GetResponse } from 'src/app/data/dto/get-response';
-import { TemplateArguments_Format } from 'src/app/data/dto/template-arguments';
-import { addToWorkspace, downloadBlob } from 'src/app/data/util';
-import { MasterDetailsStore, MasterStatus, WorkspaceService } from 'src/app/data/workspace.service';
+import { ApiService } from '~/app/data/api.service';
+import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
+import { GetResponse } from '~/app/data/dto/get-response';
+import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
+import { addToWorkspace, downloadBlob } from '~/app/data/util';
+import { MasterDetailsStore, MasterStatus, WorkspaceService } from '~/app/data/workspace.service';
 
 enum SearchView {
   tiles = 'tiles',
@@ -20,7 +20,7 @@ enum SearchView {
 @Component({
   selector: 'b-master',
   templateUrl: './master.component.html',
-  styleUrls: ['./master.component.css']
+  styleUrls: ['./master.component.scss']
 })
 export class MasterComponent implements OnInit, OnDestroy {
 

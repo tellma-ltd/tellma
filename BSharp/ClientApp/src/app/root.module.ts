@@ -1,20 +1,17 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 
 import { RootRoutingModule } from './root-routing.module';
 import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
 import { PageNotFoundComponent } from './features/page-not-found/page-not-found.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
-import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { WorkspaceService } from './data/workspace.service';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { RootHttpInterceptor } from './data/root-http-interceptor';
 
-library.add(faSpinner);
 
 @NgModule({
   declarations: [
@@ -34,7 +31,6 @@ library.add(faSpinner);
         deps: [HttpClient]
       }
     })
-
   ],
   providers: [
     {

@@ -15,6 +15,7 @@ import { ImportResult } from './dto/import-result';
 import { ExportArguments } from './dto/export-arguments';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { SaveArguments } from './dto/save-arguments';
+import { appconfig } from './appconfig';
 
 @Injectable({
   providedIn: 'root'

@@ -20,7 +20,7 @@
 
       <!-- Left Buttons -->
       <div>
-        
+
         <!-- Cancel -->
         <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCancel()">
           <fa-icon icon="times"></fa-icon>
@@ -74,7 +74,8 @@
         </div>
 
         <div class="custom-file mb-1">
-          <input type="file" class="custom-file-input" accept=".xlsx" id="import" #input onclick="this.value = null" (change)="onImport(input)">
+          <input type="file" class="custom-file-input" accept=".xlsx" id="import" #input onclick="this.value = null"
+            (change)="onImport(input)">
           <label class="btn btn-primary b-file-input-label" for="customFile">
             <fa-icon icon="upload"></fa-icon>
             &nbsp;{{ 'Import' | translate }}
@@ -101,4 +102,3 @@
     </div>
   </div>
 </div>
-

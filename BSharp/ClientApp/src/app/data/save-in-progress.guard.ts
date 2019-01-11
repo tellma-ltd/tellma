@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanDeactivate } from '@angular/router';
-import { ApiService } from 'src/app/data/api.service';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'

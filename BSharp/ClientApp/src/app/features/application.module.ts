@@ -1,28 +1,52 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-import { ApplicationRoutingModule } from './application-routing.module';
-import { MeasurementUnitsDetailsComponent } from './measurement-units/measurement-units-details.component';
-import { MeasurementUnitsMasterComponent } from './measurement-units/measurement-units-master.component';
-import { MainMenuComponent } from './main-menu/main-menu.component';
-import { ApplicationShellComponent } from './application-shell/application-shell.component';
-import { ApplicationPageNotFoundComponent } from './application-page-not-found/application-page-not-found.component';
+import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
+import { ApplicationShellComponent } from './application-shell/application-shell.component';
+import { MeasurementUnitsMasterComponent } from './measurement-units/measurement-units-master.component';
+import { ApplicationPageNotFoundComponent } from './application-page-not-found/application-page-not-found.component';
+import { MainMenuComponent } from './main-menu/main-menu.component';
 import { MeasurementUnitsImportComponent } from './measurement-units/measurement-units-import.component';
+import { MeasurementUnitsDetailsComponent } from './measurement-units/measurement-units-details.component';
+import { SaveInProgressGuard } from '../data/save-in-progress.guard';
+import { UnsavedChangesGuard } from '../data/unsaved-changes.guard';
+
+const routes: Routes = [
+  {
+    path: ':tenantId',
+    component: ApplicationShellComponent,
+    children: [
+      // Measurement Units
+      { path: 'measurement-units', component: MeasurementUnitsMasterComponent /*, canDeactivate: [SaveInProgressGuard] */ },
+      {
+        path: 'measurement-units/import',
+        component: MeasurementUnitsImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'measurement-units/:id',
+        component: MeasurementUnitsDetailsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
+      { path: 'main-menu', component: MainMenuComponent },
+      { path: '', redirectTo: 'measurement-units', pathMatch: 'full' },
+      { path: '**', component: ApplicationPageNotFoundComponent },
+    ]
+  }
+];
 
 
 @NgModule({
   declarations: [
-    MeasurementUnitsDetailsComponent,
-    MeasurementUnitsMasterComponent,
-    MainMenuComponent,
     ApplicationShellComponent,
-    ApplicationPageNotFoundComponent,
+    MeasurementUnitsMasterComponent,
+    MeasurementUnitsDetailsComponent,
     MeasurementUnitsImportComponent,
-  ],
+    ApplicationPageNotFoundComponent,
+    MainMenuComponent],
   imports: [
-    ApplicationRoutingModule,
-    SharedModule
+    SharedModule,
+    RouterModule.forChild(routes)
   ]
 })
 export class ApplicationModule { }

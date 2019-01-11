@@ -26,7 +26,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     const culture = this.workspace.ws.culture;
     if (!!culture) {
       req = req.clone({
-        setParams: { 'ui-culture' : culture }
+        setParams: { 'ui-culture': culture }
       });
     }
 
@@ -35,7 +35,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     // TODO add cache versions and intercept responses
     // TODO intercept 401 responses and log the user out
     // TODO add culture to the query url
-    // TODO add time stamp to prevent 
+    // TODO add time stamp to prevent
 
     return next.handle(req);
   }

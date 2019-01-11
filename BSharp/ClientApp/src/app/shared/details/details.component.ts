@@ -5,18 +5,18 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from 'src/app/data/api.service';
-import { ICanDeactivate } from 'src/app/data/dirty-data.guard';
-import { DtoForSaveKeyBase } from 'src/app/data/dto/dto-for-save-key-base';
-import { GetByIdResponse } from 'src/app/data/dto/get-by-id-response';
-import { EntitiesResponse } from 'src/app/data/dto/get-response';
-import { addSingleToWorkspace, addToWorkspace } from 'src/app/data/util';
-import { DetailsStatus, MasterDetailsStore, WorkspaceService } from 'src/app/data/workspace.service';
+import { ApiService } from '~/app/data/api.service';
+import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
+import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
+import { EntitiesResponse } from '~/app/data/dto/get-response';
+import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
+import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
+import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 
 @Component({
   selector: 'b-details',
   templateUrl: './details.component.html',
-  styleUrls: ['./details.component.css']
+  styleUrls: ['./details.component.scss']
 })
 export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
@@ -53,24 +53,6 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   mode: 'popup' | 'screen' = 'screen';
 
   @Input()
-  createFunc: () => DtoForSaveKeyBase = () => ({ Id: null, EntityState: 'Inserted' });
-
-  @Input()
-  cloneFunc: (id: string) => DtoForSaveKeyBase = (id: string) => {
-    const item = this.workspace.current[this.collection][id];
-    if (!!item) {
-      const clone = <DtoForSaveKeyBase>JSON.parse(JSON.stringify(item));
-      clone.Id = null;
-      clone.EntityState = 'Inserted';
-
-      return clone;
-    } else {
-      console.error('Cloning a non existing item');
-      return null;
-    }
-  };
-
-  @Input()
   public set idString(v: string) {
     if (this._idString !== v) {
       this._idString = v;
@@ -104,6 +86,25 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   private _validationErrors: { [id: string]: string[] } = {}; // on the fields
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
   private _viewModelJson;
+
+  // Moved below the fields to keep tslint happy
+  @Input()
+  createFunc: () => DtoForSaveKeyBase = () => ({ Id: null, EntityState: 'Inserted' })
+
+  @Input()
+  cloneFunc: (id: string) => DtoForSaveKeyBase = (id: string) => {
+    const item = this.workspace.current[this.collection][id];
+    if (!!item) {
+      const clone = <DtoForSaveKeyBase>JSON.parse(JSON.stringify(item));
+      clone.Id = null;
+      clone.EntityState = 'Inserted';
+
+      return clone;
+    } else {
+      console.error('Cloning a non existing item');
+      return null;
+    }
+  }
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private location: Location, private router: Router,
     private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) { }
@@ -178,19 +179,17 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
         s.detailsStatus = DetailsStatus.loading;
         return this.crud.getById(this.idString, { expand: this.expand }).pipe(
           tap((response: GetByIdResponse) => {
-            const s = this.state;
-            s.detailsId = addSingleToWorkspace(response, this.workspace);
+            this.state.detailsId = addSingleToWorkspace(response, this.workspace);
 
             if (this.mode === 'screen') {
-              s.detailsStatus = DetailsStatus.loaded;
+              this.state.detailsStatus = DetailsStatus.loaded;
 
             } else {
               this.onEdit();
             }
           }),
           catchError((friendlyError) => {
-            const s = this.state;
-            s.detailsStatus = DetailsStatus.error;
+            this.state.detailsStatus = DetailsStatus.error;
             this._errorMessage = friendlyError.error;
             return of(null);
           })
@@ -545,10 +544,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     const id = this.idString;
 
     if (!!id) {
-      let index = s.masterIds.findIndex(e => e.toString() === id);
+      const index = s.masterIds.findIndex(e => e.toString() === id);
       if (index !== -1 && index !== s.masterIds.length - 1) {
-        let nextIndex = index + 1;
-        let nextId = s.masterIds[nextIndex];
+        const nextIndex = index + 1;
+        const nextId = s.masterIds[nextIndex];
         return nextId;
       }
     }
@@ -561,10 +560,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     const id = this.idString;
 
     if (!!id) {
-      let index = s.masterIds.findIndex(e => e.toString() === id);
+      const index = s.masterIds.findIndex(e => e.toString() === id);
       if (index > 0) {
-        let prevIndex = index - 1;
-        let prevId = s.masterIds[prevIndex];
+        const prevIndex = index - 1;
+        const prevId = s.masterIds[prevIndex];
         return prevId;
       }
     }
@@ -581,7 +580,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     const id = this.idString;
 
     if (!!id) {
-      let index = s.masterIds.findIndex(e => e.toString() === id);
+      const index = s.masterIds.findIndex(e => e.toString() === id);
       if (index !== -1) {
         return s.skip + index + 1;
       }

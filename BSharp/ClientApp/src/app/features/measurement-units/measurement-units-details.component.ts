@@ -1,18 +1,22 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { MeasurementUnit_UnitType, MeasurementUnitForSave, MeasurementUnit } from 'src/app/data/dto/measurement-unit';
-import { DetailsBaseComponent } from 'src/app/shared/details-base/details-base.component';
-import { tap } from 'rxjs/operators';
+import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
-import { WorkspaceService } from 'src/app/data/workspace.service';
-import { ApiService } from 'src/app/data/api.service';
-import { addToWorkspace } from 'src/app/data/util';
+import { tap } from 'rxjs/operators';
+import { ApiService } from '~/app/data/api.service';
+import { MeasurementUnit, MeasurementUnitForSave, MeasurementUnit_UnitType } from '~/app/data/dto/measurement-unit';
+import { addToWorkspace } from '~/app/data/util';
+import { WorkspaceService } from '~/app/data/workspace.service';
+import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 
 @Component({
   selector: 'b-measurement-units-details',
   templateUrl: './measurement-units-details.component.html',
-  styleUrls: ['./measurement-units-details.component.css']
+  styleUrls: ['./measurement-units-details.component.scss']
 })
 export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
+
+  private _unitTypeChoices: { name: string, value: any }[];
+  private notifyDestruct$ = new Subject<void>();
+  private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
 
   create = () => {
     const result = new MeasurementUnitForSave();
@@ -20,10 +24,6 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
     result.BaseAmount = 1;
     return result;
   }
-
-  private _unitTypeChoices: { name: string, value: any }[];
-  private notifyDestruct$ = new Subject<void>();
-  private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
 
   constructor(private workspace: WorkspaceService, private api: ApiService) {
     super();

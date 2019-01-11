@@ -1,4 +1,0 @@
-let appconfig = {
-  apiAddress: '',
-  identityAddress: ''
-};

@@ -26,10 +26,10 @@ export class SelectorComponent implements ControlValueAccessor {
   @ViewChild('selector')
   selector: ElementRef;
 
+  public isDisabled = false;
   public onChange: (val: any) => void = _ => { };
   public onTouched: () => void = () => { };
   public onValidatorChange: () => void = () => { };
-  public isDisabled: boolean = false;
 
   writeValue(v: any): void {
 

@@ -1,657 +1,656 @@
+/* You can add global styles to this file, and also import other style files */
 
-///////////////////////////////// Bootstrap 4 /////////////////////////////////
 
-// Customize Bootstrap by overriding its default variables
-$primary: #17a2b8; // Classy cyan
-$dark-primary: #008784;
-$info: #007bff; // Bright blue
 $enable-rounded: false; // Square corners
 $font-size-base: 0.9rem; // The default font (1rem) is too big
-$gray-300: #dee2e6 !default; // only for intellisense
 
+// Customize bootstrap colors and then import bootstrap
+@import 'app-variables';
 @import "node_modules/bootstrap/scss/bootstrap";
+
 
 // Remove any other round corners
 .modal-content, .dropdown-menu {
-  border-radius: 0;
-}
-
-// Change the striped
-/*.table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.03);
-}*/
-
-// This solves a problem in responsive tables that contain dropdowns
-@media only screen and (max-width: 767px) {
-  .table-responsive .dropdown-menu {
-    position: static !important;
+    border-radius: 0;
   }
-}
-
-@media only screen and (min-width: 768px) {
-  .table-responsive {
-    overflow: visible;
+  
+  // Change the striped
+  /*.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.03);
+  }*/
+  
+  // This solves a problem in responsive tables that contain dropdowns
+  @media only screen and (max-width: 767px) {
+    .table-responsive .dropdown-menu {
+      position: static !important;
+    }
   }
-}
-
-a {
-  color: $dark-primary;
-}
-
-.navbar {
-  padding: 0.375rem 0.75rem
-}
-
-.navbar-brand {
-  margin-right: 0;
-}
-
-.navbar-nav {
-  padding-left: 30px;
-  padding-right: 30px;
-}
-
-.breadcrumb-item {
-  font-size: 1.2rem;
-  margin: -0.4rem;
-}
-
-.breadcrumb-item + .breadcrumb-item {
-  padding-left: 0.8rem;
-  padding-right: 0.8rem;
-}
-
-.breadcrumb-item + .breadcrumb-item::before {
-  padding-left: 0.5rem;
-}
-
-// Make the alternating color of tables a little lighter
-.table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-.table-hover tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.075);
-}
-
-.btn {
-  // Makes button labels a little thicker
-  font-weight: 500;
-}
-
-// support RTL for NGB modal
-.b-rtl {
-  .modal-header .close {
-    margin: -1rem auto -1rem -1rem;
+  
+  @media only screen and (min-width: 768px) {
+    .table-responsive {
+      overflow: visible;
+    }
   }
-
-  .modal-footer > :not(:last-child) {
-    margin-right: 0rem;
-    margin-left: .25rem;
+  
+  a {
+    color: $dark-primary;
   }
-
-  .modal-footer > :not(:first-child) {
-    margin-left: 0rem;
-    margin-right: .25rem;
+  
+  .navbar {
+    padding: 0.375rem 0.75rem
   }
-}
-
-.b-rtl .dropdown-item {
-  text-align: right;
-}
-
-// remove the little arrow from dropdown buttons on demand
-.b-no-arrow.dropdown-toggle::after {
-  display: none;
-}
-
-// Without this one, the highlight of light buttons is barely visible
-.btn-light:focus, .btn-light.focus {
-  box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
-}
-
-// Smaller HR separators look better
-.small.dropdown-menu hr {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-// For some reason this isn't by default in bootstrap
-.small.dropdown-menu {
-  font-size: 80%;
-}
-
-///////////////////////////////// BSharp /////////////////////////////////
-.b-rtl {
-  direction: rtl;
-  text-align: right;
-}
-
-.b-brand {
-  color: $primary;
-}
-
-.b-banner {
-  display: none;
-}
-
-@media only screen and (min-width: 1200px) {
-  // This optimization ensures that the large banner image is only loaded when it is
-  // displayed on large screens, saving the bandwidth and data usage on mobile phones
+  
+  .navbar-brand {
+    margin-right: 0;
+  }
+  
+  .navbar-nav {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  
+  .breadcrumb-item {
+    font-size: 1.2rem;
+    margin: -0.4rem;
+  }
+  
+  .breadcrumb-item + .breadcrumb-item {
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+  }
+  
+  .breadcrumb-item + .breadcrumb-item::before {
+    padding-left: 0.5rem;
+  }
+  
+  // Make the alternating color of tables a little lighter
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+  
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.075);
+  }
+  
+  .btn {
+    // Makes button labels a little thicker
+    font-weight: 500;
+  }
+  
+  // support RTL for NGB modal
+  .b-rtl {
+    .modal-header .close {
+      margin: -1rem auto -1rem -1rem;
+    }
+  
+    .modal-footer > :not(:last-child) {
+      margin-right: 0rem;
+      margin-left: .25rem;
+    }
+  
+    .modal-footer > :not(:first-child) {
+      margin-left: 0rem;
+      margin-right: .25rem;
+    }
+  }
+  
+  .b-rtl .dropdown-item {
+    text-align: right;
+  }
+  
+  // remove the little arrow from dropdown buttons on demand
+  .b-no-arrow.dropdown-toggle::after {
+    display: none;
+  }
+  
+  // Without this one, the highlight of light buttons is barely visible
+  .btn-light:focus, .btn-light.focus {
+    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+  }
+  
+  // Smaller HR separators look better
+  .small.dropdown-menu hr {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  // For some reason this isn't by default in bootstrap
+  .small.dropdown-menu {
+    font-size: 80%;
+  }
+  
+  ///////////////////////////////// BSharp /////////////////////////////////
+  .b-rtl {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  .b-brand {
+    color: $primary;
+  }
+  
   .b-banner {
-    display: flex;
-    height: 100vh;
-    /*background-image: url('assets/images/banner.jpg');*/
-    background-position: 50%;
-    background-size: cover;
-    text-align: center !important;
-    align-items: center !important;
-    justify-content: center !important;
+    display: none;
   }
-
-  .b-marketing-banner-text {
-    width: 100%;
-    color: white;
-    font-size: 3rem;
-    letter-spacing: -1px;
-    background: rgb(0, 0, 0);
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px;
+  
+  @media only screen and (min-width: 1200px) {
+    // This optimization ensures that the large banner image is only loaded when it is
+    // displayed on large screens, saving the bandwidth and data usage on mobile phones
+    .b-banner {
+      display: flex;
+      height: 100vh;
+      /*background-image: url('assets/images/banner.jpg');*/
+      background-position: 50%;
+      background-size: cover;
+      text-align: center !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+  
+    .b-marketing-banner-text {
+      width: 100%;
+      color: white;
+      font-size: 3rem;
+      letter-spacing: -1px;
+      background: rgb(0, 0, 0);
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+    }
   }
-}
-
-
-// If its parent is a column flex box, it occupies the rest of the screen
-.b-rest-of-screen {
-  flex: 1 0;
-  overflow-y: auto;
-  overflow-y: overlay; // This stops the scrollbar from occupying width on webkit browsers
-}
-
-// These are buttons that only have an icon in them
-.b-white-button, .b-white-button.disabled, .b-white-button:disabled {
-  background: white;
-  border-color: white;
-}
-
-// Make the primary text a little darker since easier to read
-.text-primary {
-  color: $dark-primary !important;
-}
-
-.b-vertical-align-middle {
-  vertical-align: middle;
-}
-
-.b-pointer {
-  cursor: pointer;
-}
-
-// Makes sure that tiles don't collapse when certain
-// fields inside them are empty
-.b-tile span:empty:before {
-  content: "\200b";
-}
-
-.b-tile {
-  @extend .b-pointer;
-  border: 1px solid $gray-300;
-}
-
-@media (max-width: 576px) {
-  // on small screens, the tiles are stacked with no margins between them
-  // so remove the top border otherwise we get double borders
+  
+  
+  // If its parent is a column flex box, it occupies the rest of the screen
+  .b-rest-of-screen {
+    flex: 1 0;
+    overflow-y: auto;
+    overflow-y: overlay; // This stops the scrollbar from occupying width on webkit browsers
+  }
+  
+  // These are buttons that only have an icon in them
+  .b-white-button, .b-white-button.disabled, .b-white-button:disabled {
+    background: white;
+    border-color: white;
+  }
+  
+  // Make the primary text a little darker since easier to read
+  .text-primary {
+    color: $dark-primary !important;
+  }
+  
+  .b-vertical-align-middle {
+    vertical-align: middle;
+  }
+  
+  .b-pointer {
+    cursor: pointer;
+  }
+  
+  // Makes sure that tiles don't collapse when certain
+  // fields inside them are empty
+  .b-tile span:empty:before {
+    content: "\200b";
+  }
+  
   .b-tile {
-    border-top-width: 0px;
+    @extend .b-pointer;
+    border: 1px solid $gray-300;
   }
-}
-
-.b-tile:hover {
-  box-shadow: 2px 2px 2px -2px dimgrey;
-}
-
-.b-tile-container {
-  flex: 0 0 100%;
-  max-width: 100%;
-}
-
-@media (min-width: 576px) {
+  
+  @media (max-width: 576px) {
+    // on small screens, the tiles are stacked with no margins between them
+    // so remove the top border otherwise we get double borders
+    .b-tile {
+      border-top-width: 0px;
+    }
+  }
+  
+  .b-tile:hover {
+    box-shadow: 2px 2px 2px -2px dimgrey;
+  }
+  
   .b-tile-container {
-    flex: 0 0 50%;
-    max-width: 50%;
+    flex: 0 0 100%;
+    max-width: 100%;
   }
-}
-
-@media (min-width: 768px) {
-  .b-tile-container {
-    flex: 0 0 33.33333333%;
-    max-width: 33.33333333%;
+  
+  @media (min-width: 576px) {
+    .b-tile-container {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
   }
-}
-
-@media (min-width: 992px) {
-  .b-tile-container {
-    flex: 0 0 25%;
-    max-width: 25%;
+  
+  @media (min-width: 768px) {
+    .b-tile-container {
+      flex: 0 0 33.33333333%;
+      max-width: 33.33333333%;
+    }
   }
-}
-
-@media (min-width: 1200px) {
-  .b-tile-container {
-    flex: 0 0 20%;
-    max-width: 20%;
+  
+  @media (min-width: 992px) {
+    .b-tile-container {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
   }
-}
-
-@media (min-width: 1534px) {
-  .b-tile-container {
-    flex: 0 0 16.66666667%;
-    max-width: 16.66666667%;
+  
+  @media (min-width: 1200px) {
+    .b-tile-container {
+      flex: 0 0 20%;
+      max-width: 20%;
+    }
   }
-}
-
-@media (min-width: 1870px) {
-  .b-tile-container {
-    flex: 0 0 14.28571428%;
-    max-width: 14.28571428%;
+  
+  @media (min-width: 1534px) {
+    .b-tile-container {
+      flex: 0 0 16.66666667%;
+      max-width: 16.66666667%;
+    }
   }
-}
-
-@media (min-width: 2200px) {
-  .b-tile-container {
-    flex: 0 0 12.5%;
-    max-width: 12.5%;
+  
+  @media (min-width: 1870px) {
+    .b-tile-container {
+      flex: 0 0 14.28571428%;
+      max-width: 14.28571428%;
+    }
   }
-}
-
-@media (min-width: 2500px) {
-  .b-tile-container {
-    flex: 0 0 11.11111111%;
-    max-width: 11.11111111%;
+  
+  @media (min-width: 2200px) {
+    .b-tile-container {
+      flex: 0 0 12.5%;
+      max-width: 12.5%;
+    }
   }
-}
-
-@media (min-width: 2800px) {
-  .b-tile-container {
-    flex: 0 0 10;
-    max-width: 10%;
+  
+  @media (min-width: 2500px) {
+    .b-tile-container {
+      flex: 0 0 11.11111111%;
+      max-width: 11.11111111%;
+    }
   }
-}
-
-.b-tile-container.b-popup-tile-container {
-  flex: 0 0 100%;
-  max-width: 100%;
-}
-
-@media (min-width: 576px) {
+  
+  @media (min-width: 2800px) {
+    .b-tile-container {
+      flex: 0 0 10;
+      max-width: 10%;
+    }
+  }
+  
   .b-tile-container.b-popup-tile-container {
-    flex: 0 0 50%;
-    max-width: 50%;
+    flex: 0 0 100%;
+    max-width: 100%;
   }
-}
-
-.b-paper {
-  max-width: 1150px;
-  box-shadow: 0 5px 20px -15px black;
-}
-
-.b-toolbar {
-  padding-right: 0.25rem !important;
-  padding-left: 0.25rem !important;
-}
-
-.b-toolbar-button {
-  margin-right: 0.125rem;
-  margin-left: 0.125rem;
-}
-
-
-input.b-h2, .b-h2 input {
-  margin-bottom: 0.5rem;
-  font-family: inherit;
-  line-height: 1.2;
-  font-size: 1.8rem;
-}
-
-.b-input {
-  border-width: 0 0 1px 0;
-  border-color: gray;
-  background-color: transparent;
-  padding: 0 !important;
-  height: auto;
-}
-
-.b-input:focus {
-  background-color: transparent;
-  box-shadow: 0 2px $primary;
-}
-
-.b-input.is-invalid:focus {
-  box-shadow: 0 2px $danger;
-}
-
-.is-invalid .b-input {
-  border-color: $danger;
-}
-
-.is-invalid.b-input::placeholder, .is-invalid .b-input::placeholder {
-  color: $danger;
-  opacity: 0.6;
-}
-
-.is-invalid .b-input:focus {
-  box-shadow: 0 2px $danger;
-}
-
-// The style for the "Saving" indicator at the bottom right
-.b-corner-indicator {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  z-index: 1051;
-  animation-delay: 0.1s;
-}
-
-// Edge browser shows a little X button in input field that lets you
-// clear that field, but this button doesn't seem to signal angular's
-// ngModel to update the model, here we simply hide that X button
-input::-ms-clear {
-  display: none;
-}
-
-// The below code styles the state flow chart, credit goes to
-// this gentleman: https://css-tricks.com/triangle-breadcrumbs/
-$flow-state-active: #f8f9fa;
-$flow-border: $gray-300;
-$flow-state: white;
-$flow-text: #6c757d;
-
-.b-flow-chart {
-  overflow: hidden;
-  margin-right: -0.125rem !important;
-  border-left: 1px solid $flow-border;
-}
-
-.b-flow-chart div {
-  float: left;
-}
-
-.b-flow-chart div span {
-  color: $flow-text;
-  padding: 10px 0 10px 50px;
-  background-color: $flow-state;
-  position: relative;
-  display: block;
-  float: left;
-}
-
-.b-flow-chart div:first-child span {
-  padding-left: 25px;
-}
-
-.b-flow-chart div:last-child span {
-  padding-right: 25px;
-}
-
-.b-flow-chart div span::after {
-  content: " ";
-  display: block;
-  width: 0;
-  height: 0;
-  border-top: 50px solid transparent;
-  border-bottom: 50px solid transparent;
-  border-left: 30px solid $flow-state;
-  position: absolute;
-  top: 50%;
-  margin-top: -50px;
-  left: 100%;
-  z-index: 2;
-}
-
-.b-flow-chart div span::before {
-  content: " ";
-  display: block;
-  width: 0;
-  height: 0;
-  border-top: 50px solid transparent;
-  border-bottom: 50px solid transparent;
-  border-left: 30px solid $flow-border;
-  position: absolute;
-  top: 50%;
-  margin-top: -50px;
-  margin-left: 1px;
-  left: 100%;
-  z-index: 1;
-}
-
-
-.b-lone-state {
-  border-left: 1px solid $flow-border;
-  margin-right: -0.125rem !important;
-  padding: 10px 20px;
-}
-
-.b-lone-state span {
-  color: $flow-text;
-}
-
-.b-flow-chart div.active span, .b-lone-state.active {
-  background-color: $flow-state-active;
-  font-weight: bold;
-}
-
-.b-flow-chart div.active span::after {
-  border-left-color: $flow-state-active;
-}
-
-// Set the layout for the main document and the sidebar
-// on large screens, show them side by side, on smaller
-// screens show them stacked vertically
-.b-main-and-side {
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
-
-.b-sidebar {
-  width: 100% !important;
-  border-top: 1px solid $flow-border;
-  flex: 1 0;
-  height: 100%;
-}
-
-@media only screen and (min-width: 1534px) {
-
-  .b-main-and-side {
-    flex-direction: row;
-    flex-wrap: wrap;
+  
+  @media (min-width: 576px) {
+    .b-tile-container.b-popup-tile-container {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
   }
-
-  .b-main-document {
-    width: 67% !important;
-    overflow-y: auto;
+  
+  .b-paper {
+    max-width: 1150px;
+    box-shadow: 0 5px 20px -15px black;
   }
-
-  .b-sidebar {
-    width: 33% !important;
-    border-top: none;
+  
+  .b-toolbar {
+    padding-right: 0.25rem !important;
+    padding-left: 0.25rem !important;
+  }
+  
+  .b-toolbar-button {
+    margin-right: 0.125rem;
+    margin-left: 0.125rem;
+  }
+  
+  
+  input.b-h2, .b-h2 input {
+    margin-bottom: 0.5rem;
+    font-family: inherit;
+    line-height: 1.2;
+    font-size: 1.8rem;
+  }
+  
+  .b-input {
+    border-width: 0 0 1px 0;
+    border-color: gray;
+    background-color: transparent;
+    padding: 0 !important;
+    height: auto;
+  }
+  
+  .b-input:focus {
+    background-color: transparent;
+    box-shadow: 0 2px $primary;
+  }
+  
+  .b-input.is-invalid:focus {
+    box-shadow: 0 2px $danger;
+  }
+  
+  .is-invalid .b-input {
+    border-color: $danger;
+  }
+  
+  .is-invalid.b-input::placeholder, .is-invalid .b-input::placeholder {
+    color: $danger;
+    opacity: 0.6;
+  }
+  
+  .is-invalid .b-input:focus {
+    box-shadow: 0 2px $danger;
+  }
+  
+  // The style for the "Saving" indicator at the bottom right
+  .b-corner-indicator {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 1051;
+    animation-delay: 0.1s;
+  }
+  
+  // Edge browser shows a little X button in input field that lets you
+  // clear that field, but this button doesn't seem to signal angular's
+  // ngModel to update the model, here we simply hide that X button
+  input::-ms-clear {
+    display: none;
+  }
+  
+  // The below code styles the state flow chart, credit goes to
+  // this gentleman: https://css-tricks.com/triangle-breadcrumbs/
+  $flow-state-active: #f8f9fa;
+  $flow-border: $gray-300;
+  $flow-state: white;
+  $flow-text: #6c757d;
+  
+  .b-flow-chart {
+    overflow: hidden;
+    margin-right: -0.125rem !important;
     border-left: 1px solid $flow-border;
-    overflow-y: auto;
   }
-}
-
-.b-search {
-  padding: 0.35rem 0.2rem;
-  margin-top: 0.2rem;
-  margin-bottom: -0.2rem;
-}
-
-// Styling for the table
-thead > tr {
-  height: 40px;
-}
-
-.table thead th {
-  vertical-align: middle;
-}
-
-// The table in the master screen table view
-table.b-master-table th {
-  border-top-width: 0;
-  font-size: 80%;
-}
-
-// disable those horrible select-unselect animations
-.custom-control-label::before, .custom-file-label, .custom-select {
-  transition: none;
-}
-
-
-.custom-control-label::before {
-  background-color: #f8f9fa; // light background
-  border: 1px solid #6c757d; // border color
-}
-
-/*
-.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
-  background-color: #f8f9fa; // light background
-}
-
-.custom-control-input:checked ~ .custom-control-label::before {
-  background-color: #f8f9fa; // light background
-}
-
-// Override the color of the checkbox indicator
-.custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E")
-}
-  */
-
-// center the checkbox
-div.custom-control.custom-checkbox.b-labelless-checkbox {
-  padding-left: 2rem;
-}
-
-.b-multiselect-th {
-  width: 1px;
-}
-
-// replaces bootstrap's custom-file-label
-.b-file-input-label {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 1;
-  height: calc(2.1rem + 2px);
-  padding: 0.375rem 0.75rem;
-  line-height: 1.5;
-}
-
-// cover the whole screen with transparent glass
-// when there is a POST/PUT/DELETE call in progress
-.b-overlay {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 2.5rem
-}
-
-// tiny red circle on the filter when it is not cleared
-.b-indicator {
-  width: 7px;
-  height: 7px;
-  margin-right: -7px;
-  border-radius: 5px;
-  position: relative;
-  right: 4px;
-  bottom: 1px;
-  border: 1px solid darkred !important;
-}
-
-.b-filter-button {
-  margin-top: -5px;
-}
-
-// filter drop down menu shows a check sign next to selected item
-.b-filter-dropdown-menu .selected > *::before {
-  content: '\2713'; // check sign
-  position: absolute;
-  left: 8px;
-  font-weight: bold;
-}
-
-// filter drop down menu shows a check sign next to selected item in RTL mode
-.b-rtl {
-  .b-filter-dropdown-menu .selected > *::before {
-    content: none; // check sign
+  
+  .b-flow-chart div {
+    float: left;
   }
-
-  .b-filter-dropdown-menu .selected > *::after {
-    content: '\2713'; // check sign
+  
+  .b-flow-chart div span {
+    color: $flow-text;
+    padding: 10px 0 10px 50px;
+    background-color: $flow-state;
+    position: relative;
+    display: block;
+    float: left;
+  }
+  
+  .b-flow-chart div:first-child span {
+    padding-left: 25px;
+  }
+  
+  .b-flow-chart div:last-child span {
+    padding-right: 25px;
+  }
+  
+  .b-flow-chart div span::after {
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 50px solid transparent;
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid $flow-state;
     position: absolute;
-    right: 8px;
+    top: 50%;
+    margin-top: -50px;
+    left: 100%;
+    z-index: 2;
+  }
+  
+  .b-flow-chart div span::before {
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 50px solid transparent;
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid $flow-border;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+    margin-left: 1px;
+    left: 100%;
+    z-index: 1;
+  }
+  
+  
+  .b-lone-state {
+    border-left: 1px solid $flow-border;
+    margin-right: -0.125rem !important;
+    padding: 10px 20px;
+  }
+  
+  .b-lone-state span {
+    color: $flow-text;
+  }
+  
+  .b-flow-chart div.active span, .b-lone-state.active {
+    background-color: $flow-state-active;
     font-weight: bold;
   }
-}
-
-.b-filter-dropdown-menu .dropdown-item {
-  cursor: pointer;
-}
-
-.b-dirty-asterisk {
-  line-height: 0.5;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-
-// a form group is a form control + optional label + optional errors
-// taking half the screen on wide screen, and full screen on smaller screen
-.b-form-group {
-  margin-top: 0.75rem !important;
-  // instead of col-12
-  flex: 0 0 100%;
-  max-width: 100%;
-  position: relative;
-  width: 100%;
-  min-height: 1px;
-  padding-right: 15px;
-  padding-left: 15px;
-}
-
-@media (min-width: 992px) {
-  .b-form-group {
-    margin-top: 0.5rem !important;
+  
+  .b-flow-chart div.active span::after {
+    border-left-color: $flow-state-active;
   }
-}
-
-@media (min-width: 768px) {
-  .b-form-group {
-    flex: 0 0 50%;
-    max-width: 50%;
+  
+  // Set the layout for the main document and the sidebar
+  // on large screens, show them side by side, on smaller
+  // screens show them stacked vertically
+  .b-main-and-side {
+    flex-direction: column;
+    flex-wrap: nowrap;
   }
-}
-
-// highlights master items that were recently viewed
-div.b-highlight {
-  background-color: rgba(17, 17, 17, 0.05) !important;
-}
-
-@media (min-width: 576px) {
+  
+  .b-sidebar {
+    width: 100% !important;
+    border-top: 1px solid $flow-border;
+    flex: 1 0;
+    height: 100%;
+  }
+  
+  @media only screen and (min-width: 1534px) {
+  
+    .b-main-and-side {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  
+    .b-main-document {
+      width: 67% !important;
+      overflow-y: auto;
+    }
+  
+    .b-sidebar {
+      width: 33% !important;
+      border-top: none;
+      border-left: 1px solid $flow-border;
+      overflow-y: auto;
+    }
+  }
+  
+  .b-search {
+    padding: 0.35rem 0.2rem;
+    margin-top: 0.2rem;
+    margin-bottom: -0.2rem;
+  }
+  
+  // Styling for the table
+  thead > tr {
+    height: 40px;
+  }
+  
+  .table thead th {
+    vertical-align: middle;
+  }
+  
+  // The table in the master screen table view
+  table.b-master-table th {
+    border-top-width: 0;
+    font-size: 80%;
+  }
+  
+  // disable those horrible select-unselect animations
+  .custom-control-label::before, .custom-file-label, .custom-select {
+    transition: none;
+  }
+  
+  
+  .custom-control-label::before {
+    background-color: #f8f9fa; // light background
+    border: 1px solid #6c757d; // border color
+  }
+  
+  /*
+  .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #f8f9fa; // light background
+  }
+  
+  .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #f8f9fa; // light background
+  }
+  
+  // Override the color of the checkbox indicator
+  .custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E")
+  }
+    */
+  
+  // center the checkbox
+  div.custom-control.custom-checkbox.b-labelless-checkbox {
+    padding-left: 2rem;
+  }
+  
+  .b-multiselect-th {
+    width: 1px;
+  }
+  
+  // replaces bootstrap's custom-file-label
+  .b-file-input-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1;
+    height: calc(2.1rem + 2px);
+    padding: 0.375rem 0.75rem;
+    line-height: 1.5;
+  }
+  
+  // cover the whole screen with transparent glass
+  // when there is a POST/PUT/DELETE call in progress
+  .b-overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem
+  }
+  
+  // tiny red circle on the filter when it is not cleared
+  .b-indicator {
+    width: 7px;
+    height: 7px;
+    margin-right: -7px;
+    border-radius: 5px;
+    position: relative;
+    right: 4px;
+    bottom: 1px;
+    border: 1px solid darkred !important;
+  }
+  
+  .b-filter-button {
+    margin-top: -5px;
+  }
+  
+  // filter drop down menu shows a check sign next to selected item
+  .b-filter-dropdown-menu .selected > *::before {
+    content: '\2713'; // check sign
+    position: absolute;
+    left: 8px;
+    font-weight: bold;
+  }
+  
+  // filter drop down menu shows a check sign next to selected item in RTL mode
+  .b-rtl {
+    .b-filter-dropdown-menu .selected > *::before {
+      content: none; // check sign
+    }
+  
+    .b-filter-dropdown-menu .selected > *::after {
+      content: '\2713'; // check sign
+      position: absolute;
+      right: 8px;
+      font-weight: bold;
+    }
+  }
+  
+  .b-filter-dropdown-menu .dropdown-item {
+    cursor: pointer;
+  }
+  
+  .b-dirty-asterisk {
+    line-height: 0.5;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  
+  // a form group is a form control + optional label + optional errors
+  // taking half the screen on wide screen, and full screen on smaller screen
+  .b-form-group {
+    margin-top: 0.75rem !important;
+    // instead of col-12
+    flex: 0 0 100%;
+    max-width: 100%;
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+  
+  @media (min-width: 992px) {
+    .b-form-group {
+      margin-top: 0.5rem !important;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .b-form-group {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+  }
+  
+  // highlights master items that were recently viewed
   div.b-highlight {
-    border-color: rgba(17, 17, 17, 0.1) !important;
+    background-color: rgba(17, 17, 17, 0.05) !important;
   }
-}
-
-tr.b-highlight {
-  background-color: rgba(17, 17, 17, 0.075) !important;
-}
+  
+  @media (min-width: 576px) {
+    div.b-highlight {
+      border-color: rgba(17, 17, 17, 0.1) !important;
+    }
+  }
+  
+  tr.b-highlight {
+    background-color: rgba(17, 17, 17, 0.075) !important;
+  }
+  

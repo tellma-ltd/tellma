@@ -18,7 +18,8 @@
 
         <!-- Filter -->
         <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">
-          <button class="btn btn-light btn-sm b-white-button d-flex b-no-arrow b-filter-button" ngbDropdownToggle type="button" title="{{ 'Filter' | translate }}">
+          <button class="btn btn-light btn-sm b-white-button d-flex b-no-arrow b-filter-button" ngbDropdownToggle type="button"
+            title="{{ 'Filter' | translate }}">
             <fa-icon icon="filter"></fa-icon>
             <div class="bg-danger b-indicator" *ngIf="isAnyFilterChecked"></div>
           </button>
@@ -26,14 +27,16 @@
           <ul class="b-filter-dropdown-menu small shadow" ngbDropdownMenu>
 
             <!-- Include Inactive -->
-            <li class="dropdown-item" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{ includeInactiveLabel }} </span></li>
+            <li class="dropdown-item" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{
+                includeInactiveLabel }} </span></li>
 
             <!-- Custom filter options -->
             <ng-container *ngFor="let groupName of groupNames">
-              <li><hr /></li>
+              <li>
+                <hr />
+              </li>
               <ng-container *ngFor="let e of filterTemplates(groupName)">
-                <li class="dropdown-item" [class.selected]="isFilterChecked(groupName, e.expression)"
-                    (click)="onFilterCheck(groupName, e.expression)">
+                <li class="dropdown-item" [class.selected]="isFilterChecked(groupName, e.expression)" (click)="onFilterCheck(groupName, e.expression)">
                   <div>
                     <ng-container *ngTemplateOutlet="e.template"></ng-container>
 
@@ -44,8 +47,11 @@
             </ng-container>
 
             <!-- Clear Filter -->
-            <li><hr /></li>
-            <li class="dropdown-item d-flex justify-content-between" [class.disabled]="!isAnyFilterChecked" (click)="onClearFilter()"><span class="d-block">{{ 'ClearFilter' | translate }}</span><span class="text-danger">&#x2718;</span></li>
+            <li>
+              <hr />
+            </li>
+            <li class="dropdown-item d-flex justify-content-between" [class.disabled]="!isAnyFilterChecked" (click)="onClearFilter()"><span
+                class="d-block">{{ 'ClearFilter' | translate }}</span><span class="text-danger">&#x2718;</span></li>
           </ul>
         </div>
 
@@ -80,27 +86,28 @@
       <div>
 
         <!-- Refresh -->
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button"
-                type="button" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button" title="{{ 'Refresh' | translate }}"
+          (click)="onRefresh()">
           <fa-icon icon="sync-alt"></fa-icon>
         </button>
 
         <!-- Paging -->
         <div class="d-inline small mr-2 ml-2">
-          <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span> </span>
+          <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span>
+          </span>
           <span class="b-vertical-align-middle"> / {{ total | number }}</span>
         </div>
 
         <!--<button class="btn btn-light btn-sm b-white-button"
-                type="button" title="{{ 'First' | translate }}" (click)="onFirstPage()" [disabled]="!canFirstPage">
-          <fa-icon icon="angle-double-left" [flip]="flip"></fa-icon>
-        </button>-->
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button"
-                type="button" title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                  type="button" title="{{ 'First' | translate }}" (click)="onFirstPage()" [disabled]="!canFirstPage">
+            <fa-icon icon="angle-double-left" [flip]="flip"></fa-icon>
+          </button>-->
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button" title="{{ 'Previous' | translate }}"
+          (click)="onPreviousPage()" [disabled]="!canPreviousPage">
           <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
         </button>
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button"
-                type="button" title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button" title="{{ 'Next' | translate }}"
+          (click)="onNextPage()" [disabled]="!canNextPage">
           <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
         </button>
 
@@ -108,10 +115,12 @@
         <!-- Tiles/Table Toggle -->
         <div class="btn-group btn-group-toggle b-toolbar-button">
           <label class="btn btn-sm btn-light" [class.active]="showTilesView" title="{{ 'Tiles' | translate }}" (click)="onTilesView()">
-            <input type="radio" name="searchView"><fa-icon icon="th-large"></fa-icon>
+            <input type="radio" name="searchView">
+            <fa-icon icon="th-large"></fa-icon>
           </label>
           <label class="btn btn-sm btn-light" [class.active]="showTableView" title="{{ 'Table' | translate }}" (click)="onTableView()">
-            <input type="radio" name="searchView"><fa-icon icon="list" [flip]="flip"></fa-icon>
+            <input type="radio" name="searchView">
+            <fa-icon icon="list" [flip]="flip"></fa-icon>
           </label>
         </div>
       </div>
@@ -142,7 +151,8 @@
         </div>
 
         <!-- Cancel -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" type="button" *ngIf="!isPopupMode" (click)="onCancelMultiselect()">
+        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" type="button" *ngIf="!isPopupMode"
+          (click)="onCancelMultiselect()">
           <fa-icon icon="times"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
         </button>
@@ -170,7 +180,8 @@
 
       <!-- Table: using the Angular CDK -->
       <div class="w-100 table-responsive" *ngIf="showTableView">
-        <table class="table table-hover table-sm table-striped bg-white border-bottom b-master-table" cdk-table [dataSource]="masterIds" [trackBy]="trackById">
+        <table class="table table-hover table-sm table-striped bg-white border-bottom b-master-table" cdk-table
+          [dataSource]="masterIds" [trackBy]="trackById">
 
           <!-- The only purpose of this invisible TR element is to suppress VS warnings -->
           <tr style="display:none!important">
@@ -183,7 +194,8 @@
               <th class="b-multiselect-th" cdk-header-cell *cdkHeaderCellDef>
                 <div class="ml-2 mr-2">
                   <div class="custom-control custom-checkbox b-labelless-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked" (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
+                    <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
+                      (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
                     <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
                   </div>
                 </div>
@@ -208,7 +220,8 @@
 
                 <!-- Validation errors -->
                 <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">
-                  <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}" triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement"></fa-icon>
+                  <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}"
+                    triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement"></fa-icon>
                 </div>
               </td>
             </ng-container>
@@ -218,7 +231,8 @@
               <ng-container cdkColumnDef="{{colPath}}">
 
                 <!-- Column header -->
-                <th class="b-pointer" [style.width]="colWith(colPath)" [class.dropdown-toggle]="orderBy === colPath" cdk-header-cell *cdkHeaderCellDef (click)="onOrderBy(colPath)">
+                <th class="b-pointer" [style.width]="colWith(colPath)" [class.dropdown-toggle]="orderBy === colPath"
+                  cdk-header-cell *cdkHeaderCellDef (click)="onOrderBy(colPath)">
                   <ng-content *ngTemplateOutlet="tableColumnTemplates[colPath].headerTemplate">
                   </ng-content>
                 </th>
@@ -281,17 +295,18 @@
         <span class="b-vertical-align-middle">{{ 'ExportRange' | translate }}</span>
       </div>
       <div [class.mt-1]="showExportPaging">
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showExportPaging"
-                type="button" title="{{ 'Previous' | translate }}" (click)="onPerviousPageExport()" [disabled]="!canPreviousPageExport">
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showExportPaging" type="button"
+          title="{{ 'Previous' | translate }}" (click)="onPerviousPageExport()" [disabled]="!canPreviousPageExport">
           <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
         </button>
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showExportPaging"
-                type="button" title="{{ 'Next' | translate }}" (click)="onNextPageExport()" [disabled]="!canNextPageExport">
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showExportPaging" type="button"
+          title="{{ 'Next' | translate }}" (click)="onNextPageExport()" [disabled]="!canNextPageExport">
           <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
         </button>
 
         <div class="d-inline ml-2 mr-2">
-          <span class="b-vertical-align-middle"> <span>{{ fromExport | number }}</span> - <span>{{ toExport | number }}</span> </span>
+          <span class="b-vertical-align-middle"> <span>{{ fromExport | number }}</span> - <span>{{ toExport | number }}</span>
+          </span>
           <span class="b-vertical-align-middle"> / {{ totalExport | number }}</span>
         </div>
       </div>
@@ -349,7 +364,9 @@
 
   <!-- header -->
   <div class="modal-header">
-    <h5 class="modal-title"><fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}</h5>
+    <h5 class="modal-title">
+      <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+    </h5>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
       <span aria-hidden="true">&times;</span>
     </button>

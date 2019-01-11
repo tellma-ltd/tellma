@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkspaceService } from 'src/app/data/workspace.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
   selector: 'b-application-shell',
-  templateUrl: './application-shell.component.html',
-  styleUrls: ['./application-shell.component.css']
+  templateUrl: './application-shell.component.html'
 })
 export class ApplicationShellComponent implements OnInit {
 

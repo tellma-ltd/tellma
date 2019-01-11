@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
+import { StorageService } from './data/storage.service';
 
 @Component({
   selector: 'b-root',
@@ -36,10 +37,11 @@ export class RootComponent {
     'yi'    /* 'ייִדיש', Yiddish */
   ];
 
-  constructor(private translate: TranslateService, private workspace: WorkspaceService, private api: ApiService) {
+  constructor(private translate: TranslateService, private workspace: WorkspaceService,
+     private api: ApiService, private storage: StorageService) {
 
     // Callback after the new app culture is loaded
-    this.translate.onLangChange.subscribe(_ => {
+    this.translate.onLangChange.subscribe((_: any) => {
       // After ngx-translate successfully loads the language
       // we set it in the workspace so that all our components
       // reflect the change too
@@ -51,7 +53,7 @@ export class RootComponent {
       }
 
       // TODO Set in local storage properly
-      sessionStorage.setItem('userCulture', culture);
+      this.storage.setItem('userCulture', culture);
     });
 
      // TODO load from app configuration
@@ -60,7 +62,7 @@ export class RootComponent {
     this.translate.setDefaultLang(defaultCulture);
 
     // TODO load from local storage properly
-    const userCulture = sessionStorage.getItem('userCulture');
+    const userCulture = this.storage.getItem('userCulture');
     if (!!userCulture) {
       this.translate.use(userCulture);
     }

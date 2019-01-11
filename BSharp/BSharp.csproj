@@ -26,17 +26,29 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientAppOld\dist\**" />
+    <Compile Remove="ClientAppOld\platforms\**" />
+    <Compile Remove="ClientApp\dist\**" />
     <Compile Remove="ClientApp\hooks\**" />
     <Compile Remove="ClientApp\platforms\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientAppOld\dist\**" />
+    <Content Remove="ClientAppOld\platforms\**" />
+    <Content Remove="ClientApp\dist\**" />
     <Content Remove="ClientApp\hooks\**" />
     <Content Remove="ClientApp\platforms\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="ClientAppOld\dist\**" />
+    <EmbeddedResource Remove="ClientAppOld\platforms\**" />
+    <EmbeddedResource Remove="ClientApp\dist\**" />
     <EmbeddedResource Remove="ClientApp\hooks\**" />
     <EmbeddedResource Remove="ClientApp\platforms\**" />
+    <None Remove="ClientAppOld\dist\**" />
+    <None Remove="ClientAppOld\platforms\**" />
+    <None Remove="ClientApp\dist\**" />
     <None Remove="ClientApp\hooks\**" />
     <None Remove="ClientApp\platforms\**" />
   </ItemGroup>
@@ -49,8 +61,9 @@
     <None Remove="ClientApp\src\app\data\dto\import-result.ts" />
     <None Remove="ClientApp\src\app\data\dto\template-arguments.ts" />
     <None Remove="ClientApp\src\app\data\util.ts" />
+    <None Remove="ClientApp\src\app\features\measurement-units\measurement-units.module.tns.ts" />
+    <None Remove="ClientApp\src\app\features\measurement-units\measurement-units.module.ts" />
     <None Remove="ClientApp\src\app\misc\util.ts" />
-    <None Remove="ClientApp\src\assets\appconfig.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -96,8 +109,9 @@
     <TypeScriptCompile Include="ClientApp\src\app\data\dto\activate-arguments.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\data\dto\get-response.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\data\util.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\features\measurement-units\measurement-units.module.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\features\measurement-units\measurement-units.module.tns.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\misc\util.ts" />
-    <TypeScriptCompile Include="ClientApp\src\assets\appconfig.ts" />
     <TypeScriptCompile Include="wwwroot\lib\popper.js\index.d.ts" />
   </ItemGroup>
 

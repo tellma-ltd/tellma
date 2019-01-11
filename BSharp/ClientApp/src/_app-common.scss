@@ -1,0 +1,230 @@
+// this contains all the SASS that is specific to the mobile project
+// but shared between Android and iOS
+
+ActionBar {
+  color: #ffffff;
+}
+
+ActionBar {
+  background-color: $gray-800;
+}
+
+.page {
+  background-color: $whitish;
+}
+
+.tab-view {
+  tab-background-color: $whitish;
+}
+
+.list-group,
+.list-group-item {
+  background-color: $whitish;
+}
+
+.page label,
+.tab-view label {
+  color: $gray-900;
+}
+
+.segmented-bar {
+  selected-background-color: $dark-primary;
+}
+
+.segmented-bar {
+  color: $gray-900;
+}
+
+.segmented-bar {
+  background-color: $whitish;
+}
+
+.switch[checked="true"] {
+  color: $white;
+}
+
+.switch[checked="true"] {
+  background-color: $primary;
+}
+
+.activity-indicator {
+  color: $dark-primary;
+}
+
+.slider {
+  color: $white;
+}
+
+.slider {
+  background-color: $dark-primary;
+}
+
+.progress {
+  color: $dark-primary;
+}
+
+.img-circle {
+  border-radius: 20;
+}
+
+.list-group-item-heading {
+  font-size: 16;
+}
+
+.list-group-item-text {
+  font-size: 14;
+}
+
+.img-rounded {
+  border-radius: 5;
+}
+
+.body {
+  font-size: 14;
+}
+
+.h1 {
+  font-size: 36;
+}
+
+.h2 {
+  font-size: 30;
+}
+
+.h3 {
+  font-size: 24;
+}
+
+.h4 {
+  font-size: 18;
+}
+
+.h5 {
+  font-size: 14;
+}
+
+.h6 {
+  font-size: 12;
+}
+
+.page label.text-primary,
+.tab-view label.text-primary {
+  color: $dark-primary;
+}
+
+.page label.bg-primary,
+.tab-view label.bg-primary {
+  background-color: $dark-primary;
+}
+
+// .page label.text-danger, .tab-view label.text-danger {
+// color: #d9534f;
+// }
+
+// .page label.bg-danger, .tab-view label.bg-danger {
+// background-color: #d9534f;
+// }
+
+// .page label.text-muted, .tab-view label.text-muted {
+// color: #a2a2a2;
+// }
+
+.btn-primary {
+  background-color: $primary;
+}
+
+.btn-primary {
+  border-color: $primary;
+}
+
+.btn-primary {
+  color: $white;
+}
+
+.btn-outline {
+  border-color: $dark-primary;
+}
+
+.btn-outline {
+  background-color: transparent;
+}
+
+.btn-outline {
+  border-width: 1;
+}
+
+.btn-outline {
+  color: $dark-primary;
+}
+
+.btn[isEnabled="false"] {
+  background-color: $primary-disabled;
+}
+
+.btn[isEnabled="false"] {
+  border-color: $primary-disabled;
+}
+
+.btn[isEnabled="false"] {
+  color: $white;
+}
+
+.btn-rounded-sm {
+  border-radius: 4;
+}
+
+.btn-rounded-lg {
+  border-radius: 20;
+}
+
+.label {
+  font-size: 16;
+}
+
+.input {
+  font-size: 14;
+}
+
+.input-rounded {
+  border-radius: 30;
+}
+
+.tab-view {
+  selected-tab-text-color: $white;
+}
+
+.tab-view {
+  tab-text-color: $white;
+}
+
+.tab-view {
+  tab-background-color: $primary;
+}
+
+.tab-view {
+  android-selected-tab-highlight-color: $dark-primary;
+}
+
+.sidedrawer-header {
+  background-color: $gray-800;
+}
+
+.sidedrawer-header-brand {
+  color: $white;
+}
+
+.sidedrawer-content {
+  background-color: $whitish;
+}
+
+.sidedrawer-list-item {
+  color: $gray-900;
+}
+
+.sidedrawer-list-item.active {
+  background-color: $whitish;
+}
+
+.sidedrawer-list-item.active {
+  color: $gray-900;
+}

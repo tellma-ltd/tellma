@@ -1,18 +1,18 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TemplateArguments_Format } from 'src/app/data/dto/template-arguments';
-import { ApiService } from 'src/app/data/api.service';
+import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
+import { ApiService } from '~/app/data/api.service';
 import { Subject } from 'rxjs';
-import { downloadBlob } from 'src/app/data/util';
+import { downloadBlob } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
-import { ImportArguments_Mode } from 'src/app/data/dto/import-arguments';
-import { WorkspaceService, MasterDetailsStore } from 'src/app/data/workspace.service';
-import { ImportResult } from 'src/app/data/dto/import-result';
+import { ImportArguments_Mode } from '~/app/data/dto/import-arguments';
+import { WorkspaceService } from '~/app/data/workspace.service';
+import { ImportResult } from '~/app/data/dto/import-result';
 
 @Component({
   selector: 'b-import',
   templateUrl: './import.component.html',
-  styleUrls: ['./import.component.css']
+  styleUrls: ['./import.component.scss']
 })
 export class ImportComponent implements OnInit, OnDestroy {
 
@@ -34,7 +34,7 @@ export class ImportComponent implements OnInit, OnDestroy {
   public importValidationErrors: string[] = [];
   public importResult: ImportResult;
 
-  private _modeChoices: { name: string, value: any }[]; 
+  private _modeChoices: { name: string, value: any }[];
   private _formatChoices: { name: string, value: any }[];
   private notifyDestruct$ = new Subject<void>();
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Only for intellisense

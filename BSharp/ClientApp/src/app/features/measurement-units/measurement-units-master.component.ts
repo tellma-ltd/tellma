@@ -1,15 +1,15 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { ApiService } from 'src/app/data/api.service';
-import { MeasurementUnit_UnitType } from 'src/app/data/dto/measurement-unit';
-import { addToWorkspace } from 'src/app/data/util';
-import { WorkspaceService } from 'src/app/data/workspace.service';
+import { ApiService } from '~/app/data/api.service';
+import { MeasurementUnit_UnitType } from '~/app/data/dto/measurement-unit';
+import { addToWorkspace } from '~/app/data/util';
+import { WorkspaceService } from '~/app/data/workspace.service';
 
 @Component({
   selector: 'b-measurement-units-master',
   templateUrl: './measurement-units-master.component.html',
-  styleUrls: ['./measurement-units-master.component.css']
+  styleUrls: ['./measurement-units-master.component.scss']
 })
 export class MeasurementUnitsMasterComponent implements OnInit, OnDestroy {
 

@@ -2,8 +2,7 @@ import { Component, OnInit, Input, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'b-brand',
-  templateUrl: './brand.component.html',
-  styleUrls: ['./brand.component.css']
+  templateUrl: './brand.component.html'
 })
 export class BrandComponent {
 

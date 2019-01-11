@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
 
-  public getItem(key: string): any {
-    return localStorage.getItem(key);
+  public getItem(key: string): string {
+    return sessionStorage.getItem(key); // TODO Change to local storage
   }
 
-  public setItem(key: string, value: any): void {
-    localStorage.setItem(key, value);
+  public setItem(key: string, value: string): void {
+    sessionStorage.setItem(key, value);
   }
 
   public removeItem(key: string): void {
-    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
   }
 }

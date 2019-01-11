@@ -1,5 +1,5 @@
 import { Component, Input, ContentChild, AfterContentInit, OnDestroy } from '@angular/core';
-import { WorkspaceService } from 'src/app/data/workspace.service';
+import { WorkspaceService } from '~/app/data/workspace.service';
 import { NgControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -86,7 +86,7 @@ export class FormGroupComponent implements OnDestroy {
 
     } else if (!!this.control) {
 
-      let result: string[] = [];
+      const result: string[] = [];
       const errors = this.control.errors;
       if (!!errors) {
         if (errors.required) {

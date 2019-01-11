@@ -100,6 +100,8 @@ namespace BSharp
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            // To allow a client that is hosted on another server
+            services.AddCors();
 
             // Configure some custom behavior for API controllers
             services.Configure<ApiBehaviorOptions>(options =>
@@ -156,6 +158,18 @@ namespace BSharp
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
+            if (env.IsDevelopment())
+            {
+                app.UseCors(builder =>
+                {
+                    // TODO: Read from settings for production
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            }
 
             // Serves the API
             app.UseMvc(routes =>

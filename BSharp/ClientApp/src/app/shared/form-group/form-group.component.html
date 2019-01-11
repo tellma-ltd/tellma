@@ -4,8 +4,8 @@
   </div>
   <div class="col-12 d-flex" [class.is-invalid]="invalid" [class.col-lg-8]="showLabel">
     <ng-content></ng-content>
-    <fa-icon class="text-danger ml-1 mr-1" icon="exclamation-triangle" *ngIf="invalid"
-             [ngbPopover]="errorsPopover" [placement]="popoverPlacement" triggers="mouseenter:mouseleave"></fa-icon>
+    <fa-icon class="text-danger ml-1 mr-1" icon="exclamation-triangle" *ngIf="invalid" [ngbPopover]="errorsPopover"
+      [placement]="popoverPlacement" triggers="mouseenter:mouseleave"></fa-icon>
   </div>
 </div>
 

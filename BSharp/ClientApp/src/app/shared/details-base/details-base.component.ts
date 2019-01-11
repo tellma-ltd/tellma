@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, Input, EventEmitter, OnDestroy, Output } from '@angular/core';
-import { ICanDeactivate } from 'src/app/data/dirty-data.guard';
-import { DetailsComponent } from 'src/app/shared/details/details.component';
+import { DetailsComponent } from '~/app/shared/details/details.component';
 import { Observable, Subscription } from 'rxjs';
+import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 
 @Component({
   template: ''

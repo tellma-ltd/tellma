@@ -20,22 +20,11 @@ export class DecimalEditorComponent implements ControlValueAccessor {
   @HostBinding('class.w-100')
   w100 = true;
 
-  ////////////////// Behavior
-  onBlur(value) {
-
-    // signal Angular forms, that the element was touched
-    this.onTouched();
-
-    // always format the input on blur
-    this.input.nativeElement.value = this.format(this.parse(value));
-  }
-
-
   ///////////////// Implementation of ControlValueAccessor
+  public isDisabled = false;
   public onChange: (val: any) => void = _ => { };
   public onTouched: () => void = () => { };
   public onValidatorChange: () => void = () => { };
-  public isDisabled: boolean = false;
 
   writeValue(v: any): void {
 
@@ -63,17 +52,17 @@ export class DecimalEditorComponent implements ControlValueAccessor {
 
   private get padding() {
     return '00000000';
-  };
+  }
 
   private get decimalSeparator() {
     // TODO Determine based on current culture
     return '.';
-  };
+  }
 
   private get thousandsSeparator() {
     // TODO Determine based on current culture
     return ',';
-  };
+  }
 
   private format(value: number | string): string {
 
@@ -115,4 +104,13 @@ export class DecimalEditorComponent implements ControlValueAccessor {
     return !!stringResult ? +stringResult : 0;
   }
 
+  ////////////////// Behavior
+  onBlur(value) {
+
+    // signal Angular forms, that the element was touched
+    this.onTouched();
+
+    // always format the input on blur
+    this.input.nativeElement.value = this.format(this.parse(value));
+  }
 }

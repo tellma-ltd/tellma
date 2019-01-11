@@ -2,35 +2,18 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
+  "cli": {
+    "defaultCollection": "@nativescript/schematics"
+  },
   "projects": {
-    "ClientApp": {
+    "BSharp": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
       "prefix": "b",
       "schematics": {
-        "@schematics/angular:component": {
-          "inlineStyle": true,
-          "styleext": "scss",
-          "spec": false
-        },
-        "@schematics/angular:class": {
-          "spec": false
-        },
-        "@schematics/angular:directive": {
-          "spec": false
-        },
-        "@schematics/angular:guard": {
-          "spec": false
-        },
-        "@schematics/angular:module": {
-          "spec": false
-        },
-        "@schematics/angular:pipe": {
-          "spec": false
-        },
-        "@schematics/angular:service": {
-          "spec": false
+        "@nativescript/schematics:component": {
+          "styleext": "scss"
         }
       },
       "architect": {
@@ -67,32 +50,25 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                }
-              ]
+              "buildOptimizer": true
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ClientApp:build"
+            "browserTarget": "BSharp:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ClientApp:build:production"
+              "browserTarget": "BSharp:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ClientApp:build"
+            "browserTarget": "BSharp:build"
           }
         },
         "test": {
@@ -126,20 +102,19 @@
         }
       }
     },
-    "ClientApp-e2e": {
+    "BSharp-e2e": {
       "root": "e2e/",
       "projectType": "application",
-      "prefix": "",
       "architect": {
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "ClientApp:serve"
+            "devServerTarget": "BSharp:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "ClientApp:serve:production"
+              "devServerTarget": "BSharp:serve:production"
             }
           }
         },
@@ -155,8 +130,5 @@
       }
     }
   },
-  "defaultProject": "ClientApp",
-  "cli": {
-    "defaultCollection": "@nativescript/schematics"
-  }
+  "defaultProject": "BSharp"
 }
