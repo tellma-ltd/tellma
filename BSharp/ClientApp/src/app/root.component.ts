@@ -11,8 +11,6 @@ import { StorageService } from './data/storage.service';
 })
 export class RootComponent {
 
-  private QUERY_PARAM_NAME = 'ui-culture';
-
   // If the selected langauge is any of the below
   // the entire application is swapped to RTL layout
   private rtlLanguages = [

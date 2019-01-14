@@ -7,12 +7,11 @@ import { RootComponent } from './root.component';
 import { PageNotFoundComponent } from './features/page-not-found/page-not-found.component';
 import { CompaniesComponent } from './features/companies/companies.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
-
-// Uncomment and add to NgModule imports if you need to use two-way binding
-// import { NativeScriptFormsModule } from 'nativescript-angular/forms';
-
+import { WorkspaceService } from './data/workspace.service';
+import { RootHttpInterceptor } from './data/root-http-interceptor';
+import { NativeScriptLocalizeModule } from 'nativescript-localize/angular';
 
 @NgModule({
   declarations: [
@@ -24,6 +23,7 @@ import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
     NativeScriptModule,
     RootRoutingModule,
     NativeScriptHttpClientModule,
+    NativeScriptLocalizeModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -32,7 +32,14 @@ import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
       }
     })
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RootHttpInterceptor,
+      deps: [WorkspaceService],
+      multi: true
+    }
+  ],
   bootstrap: [RootComponent],
   schemas: [NO_ERRORS_SCHEMA]
 })

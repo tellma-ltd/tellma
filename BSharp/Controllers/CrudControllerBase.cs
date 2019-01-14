@@ -21,6 +21,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
@@ -918,6 +919,24 @@ namespace BSharp.Controllers
                     // Order the query taking into account the "isDescending" parameter
                     query = desc ? query.OrderByDescending(keySelector) : query.OrderBy(keySelector);
                 }
+            }
+            else
+            {
+                query = DefaultOrder(query);
+            }
+
+            return query;
+        }
+
+        protected virtual IQueryable<TModel> DefaultOrder(IQueryable<TModel> query)
+        {
+            var id = typeof(TModel).GetProperty("Id");
+            if (id != null)
+            {
+                var p = Expression.Parameter(typeof(TModel), "e");
+                var access = Expression.Property(p, id);
+                var lambda = Expression.Lambda<Func<TModel, int>>(access, p);
+                return query.OrderByDescending(lambda);
             }
 
             return query;

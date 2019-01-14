@@ -1,1 +1,65 @@
-<Button text="measurement-units-details works!" class="btn btn-primary"></Button>
+<ActionBar title="{{ 'MeasurementUnits' | translate }}">
+    <NavigationButton icon="res://baseline_menu_white_24" (tap)="drawer.sideDrawer.showDrawer()"></NavigationButton>
+    <ActionItem icon="res://baseline_menu_white_24pt" *ngIf="false" ios.position="left"></ActionItem>
+</ActionBar>
+
+<RadSideDrawer tkExampleTitle tkToggleNavButton #drawer>
+    <StackLayout tkDrawerContent class="sideStackLayout">
+        <StackLayout class="sideTitleStackLayout">
+            <Label text="Ahmad Akra"></Label>
+        </StackLayout>
+        <ScrollView>
+            <StackLayout class="sideStackLayout">
+                <Label text="Social" class="sideLabel"></Label>
+                <Label text="Promotions" class="sideLabel"></Label>
+                <StackLayout class="hr-light m-10"></StackLayout>
+                <Label text="Important" class="sideLabel"></Label>
+                <Label text="Starred" class="sideLabel"></Label>
+                <Label text="Sent Mail" class="sideLabel"></Label>
+                <Label text="Drafts" class="sideLabel"></Label>
+            </StackLayout>
+        </ScrollView>
+    </StackLayout>
+    <GridLayout tkMainContent rows="*, auto" columns="*, auto">
+        <StackLayout class="p-15" row="0" rowSpan="100" col="0" colSpan="100">
+            <!-- Name -->
+            <Label class="footnote font-weight-bold" text="{{ 'MU_Name' | translate }}"></Label>
+            <Label style="font-size:18; padding: 10 4" *ngIf="!isEdit" [text]="activeModel?.Name"></Label>
+            <TextField *ngIf="isEdit" [(ngModel)]="activeModel.Name"></TextField>
+
+            <!-- Code -->
+            <Label class="footnote font-weight-bold" text="{{ 'MU_Code' | translate }}"></Label>
+            <Label style="font-size:18; padding: 10 4" *ngIf="!isEdit" [text]="activeModel?.Code"></Label>
+            <TextField *ngIf="isEdit" [(ngModel)]="activeModel.Code"></TextField>
+
+            <!-- Unit Type -->
+            <Label class="footnote font-weight-bold" text="{{ 'MU_UnitType' | translate }}"></Label>
+            <Label style="font-size:18; padding: 10 4" *ngIf="!isEdit" [text]="unitTypeLookup(activeModel?.UnitType) | translate"></Label>
+            <ListPicker *ngIf="isEdit" [items]="unitTypeChoices" [selectedIndex]="unitTypeIndex" (selectedIndexChange)="selectedIndexChanged($event)"></ListPicker>
+
+            <!-- Unit Amount -->
+            <Label class="footnote font-weight-bold" text="{{ 'MU_UnitAmount' | translate }}"></Label>
+            <Label style="font-size:18; padding: 10 4" *ngIf="!isEdit" [text]="activeModel?.UnitAmount"></Label>
+            <TextField *ngIf="isEdit" [(ngModel)]="activeModel.UnitAmount" keyboardType="number"></TextField>
+
+            <!-- Base Amount -->
+            <Label class="footnote font-weight-bold" text="{{ 'MU_BaseAmount' | translate }}"></Label>
+            <Label style="font-size:18; padding: 10 4" *ngIf="!isEdit" [text]="activeModel?.BaseAmount"></Label>
+            <TextField *ngIf="isEdit" [(ngModel)]="activeModel.BaseAmount" keyboardType="number"></TextField>
+            
+            <!-- Is Active -->
+            <Label class="footnote font-weight-bold" *ngIf="!isEdit" text="{{ 'MU_IsActive' | translate }}"></Label>
+            <Label style="font-size:18; padding: 10 4" *ngIf="!isEdit" [text]="(!activeModel ? '' : activeModel.IsActive ? 'Active' : 'Inactive')"></Label>
+
+        </StackLayout>
+        <StackLayout row="1" col="1" orientation="horizontal">
+            <Button *ngIf="!isEdit" class="btn btn-primary fas" style="border-radius: 118; border-width:8; width: 56; height: 56; margin: 16"
+                text="&#xf044;" (tap)="onEdit()"></Button>
+            <Button *ngIf="isEdit" class="btn btn-primary fas" style="border-radius: 118; border-width:8; width: 56; height: 56; margin: 16"
+                text="&#xf0c7;" (tap)="onSave()"></Button>
+            <Button *ngIf="isEdit" class="btn btn-primary fas" style="border-radius: 118; border-width:8; width: 56; height: 56; margin: 16"
+                text="&#xf00d;" (tap)="onCancel()"></Button>
+        </StackLayout>
+
+    </GridLayout>>
+</RadSideDrawer>

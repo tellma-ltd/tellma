@@ -7,7 +7,7 @@ import { CompaniesComponent } from './features/companies/companies.component';
 const routes: Routes = [
   {
       path: '',
-      redirectTo: '/companies',
+      redirectTo: '/app/101/measurement-units',
       pathMatch: 'full',
   },
   {

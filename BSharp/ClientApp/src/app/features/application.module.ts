@@ -7,8 +7,8 @@ import { ApplicationPageNotFoundComponent } from './application-page-not-found/a
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { MeasurementUnitsImportComponent } from './measurement-units/measurement-units-import.component';
 import { MeasurementUnitsDetailsComponent } from './measurement-units/measurement-units-details.component';
-import { SaveInProgressGuard } from '../data/save-in-progress.guard';
-import { UnsavedChangesGuard } from '../data/unsaved-changes.guard';
+import { SaveInProgressGuard } from '~/app/data/save-in-progress.guard';
+import { UnsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
 
 const routes: Routes = [
   {
@@ -16,7 +16,10 @@ const routes: Routes = [
     component: ApplicationShellComponent,
     children: [
       // Measurement Units
-      { path: 'measurement-units', component: MeasurementUnitsMasterComponent /*, canDeactivate: [SaveInProgressGuard] */ },
+      {
+        path: 'measurement-units',
+        component: MeasurementUnitsMasterComponent, canDeactivate: [SaveInProgressGuard]
+      },
       {
         path: 'measurement-units/import',
         component: MeasurementUnitsImportComponent,

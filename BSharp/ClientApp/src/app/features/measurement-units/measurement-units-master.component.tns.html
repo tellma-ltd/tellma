@@ -1,1 +1,47 @@
-<Button text="measurement-units-master works!" class="btn btn-primary"></Button>
+<ActionBar title="{{ 'MeasurementUnits' | translate }}">
+    <NavigationButton icon="res://baseline_menu_white_24" (tap)="drawer.sideDrawer.showDrawer()"></NavigationButton>
+    <ActionItem icon="res://baseline_menu_white_24pt" *ngIf="false" ios.position="left"></ActionItem>
+    <ActionItem ios.systemIcon="12" android.systemIcon="ic_menu_search" (tap)="showSearch = !showSearch; search = '';"></ActionItem>
+</ActionBar>
+
+<!-- <ActionBar style="background-color: white">
+    <ActionItem>
+        <TextField class="m-5" row="0" colSpan="100" hint="Search..." *ngIf="showSearch" [(ngModel)]=search></TextField>
+    </ActionItem>
+</ActionBar> -->
+
+<RadSideDrawer tkExampleTitle tkToggleNavButton #drawer>
+    <StackLayout tkDrawerContent class="sideStackLayout">
+        <StackLayout class="sideTitleStackLayout">
+            <Label text="Ahmad Akra"></Label>
+        </StackLayout>
+        <ScrollView>
+            <StackLayout class="sideStackLayout">
+                <Label text="Social" class="sideLabel"></Label>
+                <Label text="Promotions" class="sideLabel"></Label>
+                <StackLayout class="hr-light m-10"></StackLayout>
+                <Label text="Important" class="sideLabel"></Label>
+                <Label text="Starred" class="sideLabel"></Label>
+                <Label text="Sent Mail" class="sideLabel"></Label>
+                <Label text="Drafts" class="sideLabel"></Label>
+            </StackLayout>
+        </ScrollView>
+    </StackLayout>
+    <GridLayout tkMainContent rows="auto, auto, *, auto" columns="*, auto">
+        <TextField class="m-5" row="0" colSpan="100" hint="Search..." autocorrect="false" returnKeyType="search" *ngIf="showSearch" [(ngModel)]="search"></TextField>
+        <Label class="p-15 font-italic" row="1" colSpan="100" text="{{ 'NoItemsFound' | translate }}" *ngIf="showNoItemsFound"></Label>
+        <RadListView row="2" rowSpan="100" colSpan="100" [items]="masterIds" pullToRefresh="true"
+            (pullToRefreshInitiated)="onRefresh($event)" loadOnDemandMode="Auto" (loadMoreDataRequested)="onLoadMore($event)">
+            <!-- [multipleSelection]="true" selectionBehavior="LongPress" (itemSelected)="onCheck($event)" (itemDeselected)="onUncheck($event)" -->
+            <ng-template tkListItemTemplate let-id="item">
+                <!-- <StackLayout class="p-12" style="border-width: 0 0 1 0; border-color: #dee2e6" orientation="vertical">
+                    <Label text="{{ ws[id].Name }}"></Label>
+                    <Label class="footnote" text="{{ ws[id]?.Code }}"></Label>
+                </StackLayout> -->
+                <Label class="p-15" style="border-width: 0 0 1 0; border-color: #dee2e6" text="{{ ws[id].Name }}" (tap)="onSelect(id)"></Label>
+            </ng-template>
+        </RadListView>
+        <Button class="btn btn-primary fas" style="border-radius: 118; border-width:8; width: 56; height: 56; margin: 16"
+            row="3" col="1" text="&#xf067;" (tap)="onCreate()"></Button>
+    </GridLayout>>
+</RadSideDrawer>

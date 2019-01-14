@@ -1,27 +1,24 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from '~/app/data/api.service';
-import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
-import { GetResponse } from '~/app/data/dto/get-response';
-import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
-import { addToWorkspace, downloadBlob } from '~/app/data/util';
-import { MasterDetailsStore, MasterStatus, WorkspaceService } from '~/app/data/workspace.service';
+import { ApiService } from '../../data/api.service';
+import { DtoForSaveKeyBase } from '../../data/dto/dto-for-save-key-base';
+import { GetResponse } from '../../data/dto/get-response';
+import { addToWorkspace } from '../../data/util';
+import { MasterDetailsStore, MasterStatus, WorkspaceService } from '../../data/workspace.service';
+import {registerElement} from 'nativescript-angular/element-registry';
+import { ContentView } from 'tns-core-modules/ui/page/page';
 
-enum SearchView {
-  tiles = 'tiles',
-  table = 'table'
-}
+// registerElement('b-master', () => require('./master.component').SimpleTag);
 
 @Component({
   selector: 'b-master',
   templateUrl: './master.component.html',
   styleUrls: ['./master.component.scss']
 })
-export class MasterComponent implements OnInit, OnDestroy {
+export class MasterComponent extends ContentView implements OnInit, OnDestroy {
 
   @Input()
   masterCrumb: string;
@@ -33,27 +30,10 @@ export class MasterComponent implements OnInit, OnDestroy {
   tileTemplate: TemplateRef<any>;
 
   @Input()
-  tableColumnTemplates: {
-    name: string,
-    headerTemplate: TemplateRef<any>,
-    rowTemplate: TemplateRef<any>,
-    weight: string
-  }[] = [];
-
-  @Input()
-  tableColumnPaths: string[];
-
-  @Input()
   showCreateButton = true;
 
   @Input()
-  showImportButton = true;
-
-  @Input()
-  showExportButton = true;
-
-  @Input()
-  allowMultiselect = true;
+  allowMultiselect = false;
 
   @Input()
   multiselectActions: {
@@ -75,30 +55,6 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Input()
   expand: string;
 
-  @Input()
-  additionalCommands: TemplateRef<any>[]; // TODO
-
-  @Input() // popup: limits the tiles to only 2 per row, hides import, export and multiselect
-  mode: 'popup' | 'screen' = 'screen';
-
-  @Input()
-  exportPageSize = 10000;
-
-  @Input()
-  exportFileName: string;
-
-  @Input()
-  searchView: SearchView;
-
-  @Output()
-  select = new EventEmitter<number | string>();
-
-  @Output()
-  create = new EventEmitter<void>();
-
-  @ViewChild('errorModal')
-  public errorModal: TemplateRef<any>;
-
   private PAGE_SIZE = 50;
   private localState = new MasterDetailsStore();  // Used in popup mode
   private searchChanged$ = new Subject<string>();
@@ -116,7 +72,8 @@ export class MasterComponent implements OnInit, OnDestroy {
   public actionValidationErrors: { [id: string]: string[] } = {};
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private router: Router,
-    private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) {
+    private route: ActivatedRoute, private translate: TranslateService) {
+      super();
 
     // Use some RxJS magic to refresh the data as the user changes the parameters
     const searchBoxSignals = this.searchChanged$.pipe(
@@ -137,15 +94,6 @@ export class MasterComponent implements OnInit, OnDestroy {
 
     // Set the crud API
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
-
-    // Set the view from the URL or to 'tiles' by default
-    if (this.mode === 'screen') {
-      // in popup mode don't read from query parameters
-      this.route.paramMap.subscribe((params: ParamMap) => {
-        this.searchView = params.has('view') ?
-          SearchView[params.get('view')] : SearchView.tiles; // tiles by default
-      });
-    }
 
     // Unless the data is already loaded, start loading
     if (this.state.masterStatus !== MasterStatus.loaded) {
@@ -206,34 +154,14 @@ export class MasterComponent implements OnInit, OnDestroy {
   public get state(): MasterDetailsStore {
     // Important to always reference the source, and not take a local reference
     // on some occasions the source can be reset and using a local reference can cause bugs
-    if (this.mode === 'popup') {
 
-      // popups use a local store that vanishes when the popup is destroyed
-      if (!this.localState) {
-        this.localState = new MasterDetailsStore();
-      }
-
-      return this.localState;
-    } else { // this.mode === 'screen'
-
-      // screens on the other hand use a global store
-      if (!this.workspace.current.mdState[this.apiEndpoint]) {
-        this.workspace.current.mdState[this.apiEndpoint] = new MasterDetailsStore();
-      }
-
-      return this.workspace.current.mdState[this.apiEndpoint];
+    // screens on the other hand use a global store
+    if (!this.workspace.current.mdState[this.apiEndpoint]) {
+      this.workspace.current.mdState[this.apiEndpoint] = new MasterDetailsStore();
     }
-  }
 
-  private urlStateChange(): void {
-    // We wish to store part of the page state in the URL
-    // This method is called whenever that part of the state has changed
-    // Below we capture the new URL state, and then navigate to the new URL
-    const params: Params = {
-      view: this.searchView
-    };
+    return this.workspace.current.mdState[this.apiEndpoint];
 
-    this.router.navigate(['.', params], { relativeTo: this.route });
   }
 
   ////////////// UI Bindings below
@@ -326,14 +254,6 @@ export class MasterComponent implements OnInit, OnDestroy {
     return this.to < this.total;
   }
 
-  get showTilesView(): boolean {
-    return this.searchView === SearchView.tiles;
-  }
-
-  get showTableView(): boolean {
-    return this.searchView === SearchView.table;
-  }
-
   get showErrorMessage(): boolean {
     return this.state.masterStatus === MasterStatus.error;
   }
@@ -347,34 +267,8 @@ export class MasterComponent implements OnInit, OnDestroy {
       (!this.masterIds || this.masterIds.length === 0);
   }
 
-  get showImport(): boolean {
-    return !this.isPopupMode && this.showImportButton;
-  }
-
-  get showExport(): boolean {
-    return !this.isPopupMode && this.showExportButton;
-  }
-
-  get isPopupMode(): boolean {
-    return this.mode === 'popup';
-  }
-
-  onTilesView() {
-    this.searchView = SearchView.tiles;
-    this.urlStateChange();
-  }
-
-  onTableView() {
-    this.searchView = SearchView.table;
-    this.urlStateChange();
-  }
-
   onCreate() {
-    if (this.isPopupMode) {
-      this.create.emit();
-    } else {
-      this.router.navigate(['.', 'new'], { relativeTo: this.route });
-    }
+    this.router.navigate(['.', 'new'], { relativeTo: this.route });
   }
 
   onRefresh() {
@@ -389,11 +283,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   onSelect(id: number | string) {
-    if (this.isPopupMode) {
-      this.select.emit(id);
-    } else {
-      this.router.navigate(['.', id], { relativeTo: this.route });
-    }
+    this.router.navigate(['.', id], { relativeTo: this.route });
   }
 
   get showCreate() {
@@ -408,36 +298,6 @@ export class MasterComponent implements OnInit, OnDestroy {
     return id;
   }
 
-  colWith(colPath: string) {
-    // This returns an html percentage width based on the weights assigned to this column and all the other columns
-
-    // Get the weight of this column
-    const weight = this.tableColumnTemplates[colPath].weight || 1;
-
-    // Get the total weight of the other columns
-    let totalWeight = 0;
-    for (let i = 0; i < this.tableColumnPaths.length; i++) {
-      const path = this.tableColumnPaths[i];
-      if (this.tableColumnTemplates[path]) {
-        totalWeight = totalWeight + (this.tableColumnTemplates[path].weight || 1);
-      }
-    }
-
-    // Calculate the percentage, (
-    // if totalweight = 0 this method will never be called in the first place)
-    return ((weight / totalWeight) * 100) + '%';
-  }
-
-  get formatChoices(): { name: string, value: any }[] {
-
-    if (!this._formatChoices) {
-      this._formatChoices = Object.keys(TemplateArguments_Format)
-        .map(key => ({ name: TemplateArguments_Format[key], value: key }));
-    }
-
-    return this._formatChoices;
-  }
-
   get search(): string {
     return this.state.search;
   }
@@ -450,11 +310,6 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.searchChanged$.next(val);
   }
 
-  public get flip() {
-    // this is to flip the UI icons in RTL
-    return this.workspace.ws.isRtl ? 'horizontal' : null;
-  }
-
   public get actionsDropdownPlacement() {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
@@ -465,91 +320,6 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   public get filterDropdownPlacement(): string {
     return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
-  }
-
-  public get tableColumnPathsAndExtras() {
-    // This method conditionally adds the multi-select column
-    let result = this.tableColumnPaths;
-
-    if (!result) {
-      result = [];
-    }
-
-    if (this.allowMultiselect) {
-      result = result.slice();
-      result.unshift('errors');
-      result.unshift('multiselect');
-    }
-
-    return result;
-  }
-
-  // Export-related stuff
-  get showExportPaging(): boolean {
-    return this.maxTotalExport < this.total;
-  }
-
-  get fromExport(): number {
-    return Math.min(this.exportSkip + 1, this.totalExport);
-  }
-
-  get toExport(): number {
-    return Math.min(this.exportSkip + this.maxTotalExport, this.totalExport);
-  }
-
-  get totalExport(): number {
-    return this.total;
-  }
-
-  get canPreviousPageExport() {
-    return this.exportSkip > 0;
-  }
-
-  get canNextPageExport() {
-    return this.toExport < this.totalExport;
-  }
-
-  public onPerviousPageExport() {
-    this.exportSkip = Math.max(this.exportSkip - this.exportPageSize, 0);
-  }
-
-  public onNextPageExport() {
-    this.exportSkip = this.exportSkip + this.exportPageSize;
-  }
-
-  get maxTotalExport(): number {
-    return this.exportPageSize;
-  }
-
-  onExport() {
-    const from = this.fromExport;
-    const to = this.toExport;
-    const format = this.exportFormat;
-    this.showExportSpinner = true;
-
-    const s = this.state;
-
-    this.crud.export({
-      top: this.exportPageSize,
-      skip: this.exportSkip,
-      orderBy: s.orderBy,
-      desc: s.desc,
-      search: s.search,
-      filter: this.filter(),
-      expand: null,
-      inactive: s.inactive,
-      format: format
-    }).subscribe(
-      (blob: Blob) => {
-        this.showExportSpinner = false;
-        const fileName = `${this.exportFileName || this.translate.instant('Export')} ${from}-${to} ${new Date().toDateString()}.${format}`;
-        downloadBlob(blob, fileName);
-      },
-      (friendlyError: any) => {
-        this.showExportSpinner = false;
-        this.exportErrorMessage = friendlyError.error;
-      }
-    );
   }
 
   // Multiselect-related stuff
@@ -673,7 +443,7 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   private displayErrorModal(errorMessage: string): void {
     this.actionErrorMessage = errorMessage;
-    this.modalService.open(this.errorModal);
+    alert(this.actionErrorMessage);
   }
 
   public showErrorHighlight(id: string | number): boolean {

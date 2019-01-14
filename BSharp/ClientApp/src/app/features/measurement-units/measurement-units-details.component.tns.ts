@@ -1,56 +1,32 @@
-import { Location } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, TemplateRef, ViewChild, Output } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
+import { Subject, Observable, of, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { tap, catchError, switchMap } from 'rxjs/operators';
+import { ApiService } from '../../data/api.service';
+import { MeasurementUnit, MeasurementUnitForSave, MeasurementUnit_UnitType } from '../../data/dto/measurement-unit';
+import { addToWorkspace, addSingleToWorkspace } from '../../data/util';
+import { WorkspaceService, DetailsStatus, MasterDetailsStore } from '../../data/workspace.service';
+import { DtoForSaveKeyBase } from '../../data/dto/dto-for-save-key-base';
+import { EntitiesResponse } from '../../data/dto/get-response';
+import { GetByIdResponse } from '../../data/dto/get-by-id-response';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from '~/app/data/api.service';
-import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
-import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
-import { EntitiesResponse } from '~/app/data/dto/get-response';
-import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
-import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
-import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
+import { ListPicker } from 'tns-core-modules/ui/list-picker';
 
 @Component({
-  selector: 'b-details',
-  templateUrl: './details.component.html',
-  styleUrls: ['./details.component.scss']
+  selector: 'b-measurement-units-details',
+  templateUrl: './measurement-units-details.component.html',
+  styleUrls: ['./measurement-units-details.component.scss']
 })
-export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
+export class MeasurementUnitsDetailsComponent implements OnDestroy, OnInit {
 
   @Input()
-  apiEndpoint: string;
+  apiEndpoint = 'measurement-units';
 
   @Input()
-  collection: string;
+  collection = 'MeasurementUnits';
 
   @Input()
   expand: string;
-
-  @Input()
-  masterCrumb: string;
-
-  @Input()
-  detailsCrumb: string;
-
-  @Input()
-  documentTemplate: TemplateRef<any>;
-
-  @Input()
-  sidebarTemplate: TemplateRef<any>;
-
-  @Input()
-  actions: {
-    template: TemplateRef<any>,
-    action: (model: DtoForSaveKeyBase) => void,
-    canAction?: (model: DtoForSaveKeyBase) => boolean,
-    showAction?: (model: DtoForSaveKeyBase) => boolean
-  }[] = [];
-
-  @Input() // popup: only the title and the document are visible
-  mode: 'popup' | 'screen' = 'screen';
 
   @Input()
   public set idString(v: string) {
@@ -64,35 +40,37 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return this._idString;
   }
 
-  @Output()
-  save = new EventEmitter<number | string>();
-
-  @Output()
-  cancel = new EventEmitter<void>();
-
-  @ViewChild('errorModal')
-  public errorModal: TemplateRef<any>;
-
-  @ViewChild('unsavedChangesModal')
-  public unsavedChangesModal: TemplateRef<any>;
+  public get unitTypeIndex(): number {
+    return this.unitTypeChoices.indexOf(this.activeModel['UnitType']);
+  }
 
   private _idString: string;
   private _editModel: DtoForSaveKeyBase;
   private notifyFetch$ = new BehaviorSubject<any>(null);
   private notifyDestruct$ = new Subject<void>();
-  private localState = new MasterDetailsStore();  // Used in popup mode
+  // private localState = new MasterDetailsStore();  // Used in popup mode
   private _errorMessage: string; // in the document area itself
   private _modalErrorMessage: string; // in the modal
   private _validationErrors: { [id: string]: string[] } = {}; // on the fields
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
   private _viewModelJson;
 
+  private _unitTypeChoices: string[];
+  // private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
+
+  selectedIndexChanged(args: any) {
+    const picker = <ListPicker>args.object;
+    const index = picker.selectedIndex;
+    this.activeModel['UnitType'] = this.unitTypeChoices[index];
+  }
+
   // Moved below the fields to keep tslint happy
   @Input()
   createFunc: () => DtoForSaveKeyBase = () => ({ Id: null, EntityState: 'Inserted' })
 
   @Input()
-  cloneFunc: (item: DtoForSaveKeyBase) => DtoForSaveKeyBase = (item: DtoForSaveKeyBase) => {
+  cloneFunc: (id: string) => DtoForSaveKeyBase = (id: string) => {
+    const item = this.workspace.current[this.collection][id];
     if (!!item) {
       const clone = <DtoForSaveKeyBase>JSON.parse(JSON.stringify(item));
       clone.Id = null;
@@ -105,31 +83,83 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private location: Location, private router: Router,
-    private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) { }
+  create = () => {
+    const result = new MeasurementUnitForSave();
+    result.UnitAmount = 1;
+    result.BaseAmount = 1;
+    return result;
+  }
+
+  get unitTypeChoices(): string[] {
+
+    if (!this._unitTypeChoices) {
+      this._unitTypeChoices = Object.keys(MeasurementUnit_UnitType)
+        .filter(e => e !== 'Money');
+    }
+
+    return this._unitTypeChoices;
+  }
+
+  public unitTypeLookup(value: string): string {
+    if (!value) {
+      return '';
+    }
+
+    return MeasurementUnit_UnitType[value];
+  }
+
+  // public onActivate = (model: MeasurementUnit): void => {
+  //   if (!!model && !!model.Id) {
+  //     this.measurementUnitsApi.activate([model.Id], { ReturnEntities: true }).pipe(
+  //       tap(res => addToWorkspace(res, this.workspace))
+  //     ).subscribe(null, this.details.handleActionError);
+  //   }
+  // }
+
+  // public onDeactivate = (model: MeasurementUnit): void => {
+  //   if (!!model && !!model.Id) {
+  //     this.measurementUnitsApi.deactivate([model.Id], { ReturnEntities: true }).pipe(
+  //       tap(res => addToWorkspace(res, this.workspace))
+  //     ).subscribe(null, this.details.handleActionError);
+  //   }
+  // }
+
+  public showActivate = (model: MeasurementUnit) => !!model && !model.IsActive;
+  public showDeactivate = (model: MeasurementUnit) => !!model && model.IsActive;
+
+
+  ngOnDestroy() {
+    this.notifyDestruct$.next();
+  }
+
+
+
+  /// Base Class
+
+
+
+  constructor(private workspace: WorkspaceService, private api: ApiService,
+    private router: Router, private route: ActivatedRoute, private translate: TranslateService) {
+      console.log('constructor!!!');
+    }
 
   ngOnInit() {
+    console.log('ngOnInit!!!');
 
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
 
-    // When the URI 'id' parameter changes in screen mode,
+    // When the URI 'id' parameter changes
     // set idString which in turn fetches a new record
-    if (this.mode === 'screen') {
-      this.route.paramMap.subscribe((params: ParamMap) => {
-        // This triggers a refresh
-        this.idString = params.get('id');
-      });
-    }
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      // This triggers a refresh
+      this.idString = params.get('id');
+    });
 
     // When the notifyFetch$ subject fires, cancel existing backend
     // call and dispatch a new backend call
     this.notifyFetch$.pipe(
       switchMap(() => this.doFetch())
     ).subscribe();
-  }
-
-  ngOnDestroy() {
-    this.notifyDestruct$.next();
   }
 
   private fetch() {
@@ -141,30 +171,20 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   private doFetch(): Observable<void> {
+    console.log('DoFetch!!!');
+
     // clear the errors before refreshing
     this.clearErrors();
 
     // grab the configured state
     const s = this.state;
+    if (this.isNew) {
 
-    // calculate some logical values
-    const cloneId = this.cloneId;
-    const isCloning = !!cloneId;
-    const isNewNotClone = this.isNew && !isCloning;
-    const isCloneOfAvailableItem = isCloning && !!this.workspace.current[this.collection][cloneId];
-
-    // the block in the first IF statement returns immediately, it's either
-    // a create new or a clone of an item that exists in the workspace, if
-    // neither is true, then we have to fetch the record from the server,
-    // then either display it or clone it
-    if (isNewNotClone || isCloneOfAvailableItem) {
-
-      if (isCloneOfAvailableItem) {
-        // IF it's a cloning operation, clone the item from workspace
-        const item = this.workspace.current[this.collection][cloneId];
-        this._editModel = this.cloneFunc(item);
+      // IF it's create new, don't fetch anything, create an item in memory
+      const cloneId = this.cloneId;
+      if (!!cloneId) {
+        this._editModel = this.cloneFunc(cloneId);
       } else {
-        // IF it's create new, don't fetch anything, create an item in memory
         this._editModel = this.createFunc();
       }
 
@@ -175,10 +195,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
       s.detailsStatus = DetailsStatus.edit;
 
       // return
-      // IF it's a cloning operation, clone the item from workspace
       return of();
 
     } else {
+      console.log('DoFetch 2!!!');
       // IF it's the last viewed item also don't do anything
       if (!!s.detailsId && s.detailsId.toString() === this.idString && s.detailsStatus === DetailsStatus.loaded) {
         // the application caches the last record that was viewed by the user
@@ -186,38 +206,19 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
         // that last record. This is helpful when navigating to Id after a create new
         return of();
       } else {
+        console.log('DoFetch 3!!!');
+
         // ELSE fetch the record from server
         // first show the rotator
         s.detailsStatus = DetailsStatus.loading;
-
-        // if we're cloning we need to fetch the clone id
-        // otherwise we need to fetch the usual id input of the screen
-        const id = isCloning ? cloneId : this.idString;
-
-        // server call
-        return this.crud.getById(id, { expand: this.expand }).pipe(
+        return this.crud.getById(this.idString, { expand: this.expand }).pipe(
           tap((response: GetByIdResponse) => {
-
-            // add the server item to the workspace
+            console.log('DoFetch 4 SUCCESS!!!');
             this.state.detailsId = addSingleToWorkspace(response, this.workspace);
-
-            if (isCloning) {
-              // call the same method again but this time the cloned
-              // item is immediately available in the workspace
-              this.doFetch();
-
-            } else {
-              // display the item in readonly if it's a screen
-              // or in edit if it's a popup
-              if (this.mode === 'screen') {
-                this.state.detailsStatus = DetailsStatus.loaded;
-
-              } else {
-                this.onEdit();
-              }
-            }
+            this.state.detailsStatus = DetailsStatus.loaded;
           }),
           catchError((friendlyError) => {
+            console.log('DoFetch 4 ERROR!!!');
             this.state.detailsStatus = DetailsStatus.error;
             this._errorMessage = friendlyError.error;
             return of(null);
@@ -236,18 +237,8 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   public get state(): MasterDetailsStore {
     // important to always reference the source, and not keep a local reference
     // on some occasions the source can be reset and using a local reference can cause bugs
-    if (this.mode === 'popup') {
-
-      // popups use a local store that vanishes when the popup is destroyed
-      if (!this.localState) {
-        this.localState = new MasterDetailsStore();
-      }
-
-      return this.localState;
-    } else {
-      // screen mode on the other hand use the global state
-      return this.globalState;
-    }
+    // screen mode on the other hand use the global state
+    return this.globalState;
   }
 
   private get globalState(): MasterDetailsStore {
@@ -258,36 +249,36 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return this.workspace.current.mdState[this.apiEndpoint];
   }
 
-  public canDeactivate(): boolean | Observable<boolean> {
-    if (this.isDirty) {
+  // public canDeactivate(): boolean | Observable<boolean> {
+  //   if (this.isDirty) {
 
-      // IF there are unsaved changes, prompt the user asking if they would like them discarded
-      const modal = this.modalService.open(this.unsavedChangesModal);
+  //     // IF there are unsaved changes, prompt the user asking if they would like them discarded
+  //     const modal = this.modalService.open(this.unsavedChangesModal);
 
-      // capture the user's decision in a subject:
-      // first action when the user presses one of the two buttons
-      // second func is when the user dismisses the modal with x or ESC or clicking the background
-      const decision$ = new Subject<boolean>();
-      modal.result.then(
-        v => { decision$.next(v); decision$.complete(); },
-        _ => { decision$.next(false); decision$.complete(); }
-      );
+  //     // capture the user's decision in a subject:
+  //     // first action when the user presses one of the two buttons
+  //     // second func is when the user dismisses the modal with x or ESC or clicking the background
+  //     const decision$ = new Subject<boolean>();
+  //     modal.result.then(
+  //       v => { decision$.next(v); decision$.complete(); },
+  //       _ => { decision$.next(false); decision$.complete(); }
+  //     );
 
-      // return the subject that will eventually emit the user's decision
-      return decision$;
+  //     // return the subject that will eventually emit the user's decision
+  //     return decision$;
 
-    } else {
+  //   } else {
 
-      // IF there are no unsaved changes, the navigation can happily proceed
-      return true;
-    }
-  }
+  //     // IF there are no unsaved changes, the navigation can happily proceed
+  //     return true;
+  //   }
+  // }
 
-  public displayModalError(errorMessage: string) {
-    // shows the error message in a dismissable modal
-    this._modalErrorMessage = errorMessage;
-    this.modalService.open(this.errorModal);
-  }
+  // public displayModalError(errorMessage: string) {
+  //   // shows the error message in a dismissable modal
+  //   this._modalErrorMessage = errorMessage;
+  //   this.modalService.open(this.errorModal);
+  // }
 
   get viewModel(): DtoForSaveKeyBase {
     // view data is always directly referencing the global workspace
@@ -297,7 +288,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return !!s.detailsId ? this.workspace.current[this.collection][s.detailsId] : null;
   }
 
-  public handleActionError(friendlyError) {
+  public handleActionError(friendlyError: any) {
 
     // This handles any errors caused by actions
     if (friendlyError.status === 422) {
@@ -317,7 +308,8 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
       });
 
     } else {
-      this.displayModalError(friendlyError.error);
+      // TODO
+      // this.displayModalError(friendlyError.error);
     }
   }
 
@@ -348,10 +340,6 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
       this.state.detailsStatus === DetailsStatus.edit;
   }
 
-  get showSidebar(): boolean {
-    return !!this.sidebarTemplate && this.showDocument;
-  }
-
   get showRefresh(): boolean {
     return !this.isEdit;
   }
@@ -367,16 +355,6 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   get isEdit(): boolean {
     return this.state.detailsStatus === DetailsStatus.edit;
-  }
-
-  get isScreenMode() {
-    // the part above the main content area
-    return this.mode === 'screen';
-  }
-
-  get isPopupMode() {
-    // the part above the main content area
-    return this.mode === 'popup';
   }
 
   get showViewToolbar(): boolean {
@@ -447,17 +425,11 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   onSave(): void {
     if (!this.isDirty && !this.isNew) {
-      if (this.mode === 'popup') {
-        // In popup mode, just notify the outside world that a save has happened
-        this.save.emit();
-
-      } else {
-        // since no changes, don't save to the database
-        // just go back to view mode
-        this.clearErrors();
-        this._editModel = null;
-        this.state.detailsStatus = DetailsStatus.loaded;
-      }
+      // since no changes, don't save to the database
+      // just go back to view mode
+      this.clearErrors();
+      this._editModel = null;
+      this.state.detailsStatus = DetailsStatus.loaded;
     } else {
 
       // clear any errors displayed
@@ -480,25 +452,14 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
           // IF it's a new entity add it to the global state, (not the local one one even if inside a popup)
           if (isNew) {
             this.globalState.insert([s.detailsId]);
+            this.router.navigate(['..', s.detailsId], { relativeTo: this.route });
           }
 
-          if (this.mode === 'popup') {
-            // in popup mode, just notify the outside world that a save has happened
-            this.save.emit();
-            this.onEdit(); // to replace the edit mode with the one from the server
+          // in screen mode always close the edit view
+          s.detailsStatus = DetailsStatus.loaded;
 
-          } else {
-            // in screen mode always close the edit view
-            s.detailsStatus = DetailsStatus.loaded;
-
-            // remove the local copy the user was editing
-            this._editModel = null;
-
-            // IF new and in screen mode, navigate to the Id just returned
-            if (this.isNew) {
-              this.router.navigate(['..', s.detailsId], { relativeTo: this.route });
-            }
-          }
+          // remove the local copy the user was editing
+          this._editModel = null;
         },
         (friendlyError) => this.handleActionError(friendlyError)
       );
@@ -506,28 +467,24 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   onCancel(): void {
-    if (this.mode === 'popup') {
-      // in popup mode, just notify the outside world that a cancel has happened
-      this.cancel.emit();
+    // in screen mode...
+    // remove the edit model
+    if (this.isNew) {
+
+      // this step in order to avoid the unsaved changes modal
+      this.state.detailsStatus = DetailsStatus.loaded;
+
+      // navigate back to the last screen
+      // TODO
+      // this.location.back();
+
     } else {
-      // in screen mode...
-      // remove the edit model
-      if (this.isNew) {
+      // clear the edit model and error messages
+      this._editModel = null;
+      this.clearErrors();
 
-        // this step in order to avoid the unsaved changes modal
-        this.state.detailsStatus = DetailsStatus.loaded;
-
-        // navigate back to the last screen
-        this.location.back();
-
-      } else {
-        // clear the edit model and error messages
-        this._editModel = null;
-        this.clearErrors();
-
-        // ... and then close the edit form
-        this.state.detailsStatus = DetailsStatus.loaded;
-      }
+      // ... and then close the edit form
+      this.state.detailsStatus = DetailsStatus.loaded;
     }
   }
 
