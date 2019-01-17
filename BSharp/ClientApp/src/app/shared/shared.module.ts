@@ -49,6 +49,7 @@ import { SpinnerComponent } from './spinner/spinner.component';
 import { SuccessMessageComponent } from './success-message/success-message.component';
 import { TextEditorComponent } from './text-editor/text-editor.component';
 import { WarningMessageComponent } from './warning-message/warning-message.component';
+import { MasterBaseComponent } from './master-base/master-base.component';
 
 // Icons to be used in the web app
 library.add(
@@ -65,6 +66,7 @@ library.add(
     DecimalEditorComponent,
     DetailsComponent,
     DetailsBaseComponent,
+    MasterBaseComponent,
     ErrorMessageComponent,
     FormGroupComponent,
     ImportComponent,
@@ -111,7 +113,8 @@ library.add(
     FormGroupComponent,
     SelectorComponent,
     DecimalEditorComponent,
-    DetailsBaseComponent
+    DetailsBaseComponent,
+    MasterBaseComponent
   ]
 })
 export class SharedModule { }

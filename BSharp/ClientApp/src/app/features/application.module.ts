@@ -9,6 +9,9 @@ import { MeasurementUnitsImportComponent } from './measurement-units/measurement
 import { MeasurementUnitsDetailsComponent } from './measurement-units/measurement-units-details.component';
 import { SaveInProgressGuard } from '~/app/data/save-in-progress.guard';
 import { UnsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
+import { AgentsMasterComponent } from './agents/agents-master.component';
+import { AgentsImportComponent } from './agents/agents-import.component';
+import { AgentsDetailsComponent } from './agents/agents-details.component';
 
 const routes: Routes = [
   {
@@ -18,7 +21,8 @@ const routes: Routes = [
       // Measurement Units
       {
         path: 'measurement-units',
-        component: MeasurementUnitsMasterComponent, canDeactivate: [SaveInProgressGuard]
+        component: MeasurementUnitsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
       },
       {
         path: 'measurement-units/import',
@@ -31,6 +35,24 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
+      // Agents
+      {
+        path: 'agents/:agentType',
+        component: AgentsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'agents/:agentType/import',
+        component: AgentsImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'agents/:agentType/:id',
+        component: AgentsDetailsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
+      // Misc
       { path: 'main-menu', component: MainMenuComponent },
       { path: '', redirectTo: 'measurement-units', pathMatch: 'full' },
       { path: '**', component: ApplicationPageNotFoundComponent },
@@ -46,7 +68,10 @@ const routes: Routes = [
     MeasurementUnitsDetailsComponent,
     MeasurementUnitsImportComponent,
     ApplicationPageNotFoundComponent,
-    MainMenuComponent],
+    MainMenuComponent,
+    AgentsMasterComponent,
+    AgentsImportComponent,
+    AgentsDetailsComponent],
   imports: [
     SharedModule,
     RouterModule.forChild(routes)

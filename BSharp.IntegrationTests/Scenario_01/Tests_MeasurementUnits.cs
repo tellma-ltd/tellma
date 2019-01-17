@@ -67,7 +67,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var dtosForSave = new List<MeasurementUnitForSave> { dtoForSave };
             var response = await _client.PostAsJsonAsync($"/api/measurement-units", dtosForSave);
 
-            // Asset that the response status code is a happy 200 OK
+            // Assert that the response status code is a happy 200 OK
             _output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

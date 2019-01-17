@@ -24,6 +24,8 @@ namespace BSharp.Data
     {
         // The database tables are listed below
         public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
+        public DbSet<Custody> Custodies { get; set; }
+        public DbSet<Agent> Agents { get; set; }
 
         /// <summary>
         /// A query for returning strongly typed validation errors from SQL
@@ -107,6 +109,13 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
             // Measurement Units
             AddTenantId<MeasurementUnit>(builder);
             MeasurementUnit.OnModelCreating(builder);
+
+            // Custodies
+            AddTenantId<Custody>(builder);
+            Custody.OnModelCreating(builder);
+
+            // Agent : Custody
+            Agent.OnModelCreating_Agent(builder);
         }
 
         public override void Dispose()

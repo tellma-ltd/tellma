@@ -1,6 +1,7 @@
 using AutoMapper;
 using BSharp.Data;
 using BSharp.Services.Migrations;
+using BSharp.Services.ModelMetadata;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -70,7 +71,7 @@ namespace BSharp
             services.AddMultiTenancy();
             services.AddSharding();
             services.AddSqlLocalization();
-
+            services.AddDynamicModelMetadata();
 
             // TODO: Register and configure identity related services properly
             services.AddApplicationIdentity();

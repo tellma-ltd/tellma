@@ -26,6 +26,9 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            // Common mistake from the developer, catch it early
+            ThrowIfDuplicates(Translation.TRANSLATIONS);
+
             builder.ConfigureServices(services =>
             {
                 // Keep all the configuration the same except for the manager DB connection string
@@ -118,6 +121,17 @@ namespace BSharp.IntegrationTests.Scenario_01
             }
 
             return _shared;
+        }
+
+        private static void ThrowIfDuplicates(Translation[] translations)
+        {
+
+            var duplicates = translations.GroupBy(e => (e.CultureId, e.Name)).Where(g => g.Count() > 1);
+            if (duplicates.Any())
+            {
+                string str = string.Join(", ", duplicates.Select(g => g.Key));
+                throw new InvalidOperationException($"Duplicate Translation Keys: {str}");
+            }
         }
     }
 }

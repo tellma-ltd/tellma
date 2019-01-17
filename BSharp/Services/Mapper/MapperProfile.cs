@@ -23,6 +23,10 @@ namespace BSharp.Services.Mapper
             CreateMap<MeasurementUnitForSave, M.MeasurementUnit>();
             CreateDtoMap<M.MeasurementUnit, MeasurementUnit>();
 
+            // Agents
+            CreateMap<AgentForSave, M.Agent>();
+            CreateDtoMap<M.Agent, Agent>();
+
             // Translations
             CreateMap<TranslationForSave, M.Translation>()
                 .ForMember(e => e.Culture, opt => opt.MapFrom(e => e.Id == null ? null : e.Id.Split(SEPARATOR)[0]))

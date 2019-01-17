@@ -53,7 +53,7 @@ namespace BSharp.Data.Model
 
             En(Constants.Server, nameof(StringLengthAttribute), "The field {0} must be a string with a maximum length of {1}."),
             Ar(Constants.Server, nameof(StringLengthAttribute), "حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا"),
-
+            
 
             // Server Errors
             En(Constants.Server, "Error_TheId0WasNotFound", "The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing"),
@@ -92,8 +92,8 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_CodeIsRequiredForImportModeUpdate", "The code is required for the update import mode"),
             Ar(Constants.Server, "Error_CodeIsRequiredForImportModeUpdate", "الكود مطلوب لوضع التعديل"),
 
-            En(Constants.Server, "Error_TheUnitCode0DoesNotExist", "The unit code '{0}' does not exist"),
-            Ar(Constants.Server, "Error_TheUnitCode0DoesNotExist", "الكود ({0}) غير موجود بين أكواد الوحدات"),
+            En(Constants.Server, "Error_TheCode0DoesNotExist", "The code '{0}' does not exist"),
+            Ar(Constants.Server, "Error_TheCode0DoesNotExist", "الكود ({0}) غير موجود"),
 
             En(Constants.Server, "Error_NoFileWasUploaded", "No file was uploaded"),
             Ar(Constants.Server, "Error_NoFileWasUploaded", "لم يتم رفع أي ملف"),
@@ -168,10 +168,11 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "MeasurementUnits", "Measurement Units"),
             Ar(Constants.Shared, "MeasurementUnits", "وحدات قياس"),
 
+            // TODO Change MU_X to X for all standard properties
             En(Constants.Shared, "MU_Name", "Name"),
             Ar(Constants.Shared, "MU_Name", "الاسم"),
 
-            En(Constants.Shared, "MU_Name2", "Second Name"),
+            En(Constants.Shared, "MU_Name2", "Second Name"), // TODO
             Ar(Constants.Shared, "MU_Name2", "الاسم الثاني"),
 
             En(Constants.Shared, "MU_Code", "Code"),
@@ -188,6 +189,75 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "MU_IsActive", "Is Active"),
             Ar(Constants.Shared, "MU_IsActive", "منشط"),
+
+            En(Constants.Shared, "Custody", "Custody"),
+            Ar(Constants.Shared, "Custody", "عهدة"),
+
+            En(Constants.Shared, "Custodies", "Custodies"),
+            Ar(Constants.Shared, "Custodies", "عُهد"),
+
+            En(Constants.Shared, "Custody_Address", "Address"),
+            Ar(Constants.Shared, "Custody_Address", "العنوان"),
+
+            En(Constants.Shared, "Custody_CustodyType", "Custody Type"),
+            Ar(Constants.Shared, "Custody_CustodyType", "نوع العهدة"),
+
+            En(Constants.Shared, "Individual", "Individual"),
+            Ar(Constants.Shared, "Individual", "فرد"),
+
+            En(Constants.Shared, "Organization", "Organization"),
+            Ar(Constants.Shared, "Organization", "مؤسسة"),
+
+            En(Constants.Shared, "Individuals", "Individuals"),
+            Ar(Constants.Shared, "Individuals", "أفراد"),
+
+            En(Constants.Shared, "Organizations", "Organizations"),
+            Ar(Constants.Shared, "Organizations", "مؤسسات"),
+
+            En(Constants.Shared, "Agent_AgentType", "Agent Type"),
+            Ar(Constants.Shared, "Agent_AgentType", "نوع الذمة"),
+
+            En(Constants.Shared, "Agent_IsRelated", "Is Related"),
+            Ar(Constants.Shared, "Agent_IsRelated", "ذو علاقة"),
+
+            En(Constants.Shared, "Agent_UserId", "User"),
+            Ar(Constants.Shared, "Agent_UserId", "المستخدم"),
+
+            En(Constants.Shared, "Agent_TaxIdentificationNumber", "Tax ID Number"),
+            Ar(Constants.Shared, "Agent_TaxIdentificationNumber", "رقم السجل الضريبي"),
+
+            En(Constants.Shared, "Agent_Title", "Title"),
+            Ar(Constants.Shared, "Agent_Title", "اللقب"),
+
+            En(Constants.Shared, "Agent_Title2", "Second Title"), // TODO
+            Ar(Constants.Shared, "Agent_Title2", "اللقب الثاني"),
+
+            En(Constants.Shared, "Agent_Individual_BirthDateTime", "Date of Birth"),
+            Ar(Constants.Shared, "Agent_Individual_BirthDateTime", "تاريخ الميلاد"),
+
+            En(Constants.Shared, "Agent_Organization_BirthDateTime", "Date of Establishment"),
+            Ar(Constants.Shared, "Agent_Organization_BirthDateTime", "تاريخ التأسيس"),
+
+            En(Constants.Shared, "Agent_Gender", "Gender"),
+            Ar(Constants.Shared, "Agent_Gender", "الجنس"),
+
+            En(Constants.Shared, "Agent_Male", "Male"),
+            Ar(Constants.Shared, "Agent_Male", "ذكر"),
+
+            En(Constants.Shared, "Agent_Female", "Female"),
+            Ar(Constants.Shared, "Agent_Female", "أنثى"),
+
+            En(Constants.Shared, "Name", "Name"),
+            Ar(Constants.Shared, "Name", "الاسم"),
+
+            En(Constants.Shared, "Name2", "Second Name"), // TODO
+            Ar(Constants.Shared, "Name2", "الاسم الثاني"),
+
+            En(Constants.Shared, "Code", "Code"),
+            Ar(Constants.Shared, "Code", "الكود"),
+
+            En(Constants.Shared, "IsActive", "Is Active"),
+            Ar(Constants.Shared, "IsActive", "منشط"),
 
             En(Constants.Shared, "Data", "Data"),
             Ar(Constants.Shared, "Data", "البيانات"),
@@ -339,9 +409,6 @@ namespace BSharp.Data.Model
             En(Constants.Client, "UnsavedChangesConfirmationMessage", "Your unsaved changes will be discarded, are you sure you would like to proceed?"),
             Ar(Constants.Client, "UnsavedChangesConfirmationMessage", "ستضيع التعديلات التي لم تُحفظ بعد، هل تود المتابعة؟"),
 
-
-
-
             En(Constants.Client, "Activate", "Activate"),
             Ar(Constants.Client, "Activate", "تنشيط"),
 
@@ -388,6 +455,12 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "Inactive", "Inactive"),
             Ar(Constants.Shared, "Inactive", "غير منشط"),
+
+            En(Constants.Shared, "Yes", "Yes"),
+            Ar(Constants.Shared, "Yes", "نعم"),
+
+            En(Constants.Shared, "No", "No"),
+            Ar(Constants.Shared, "No", "لا"),
 
             En(Constants.Shared, ", ", ", "),
             Ar(Constants.Shared, ", ", "، "),

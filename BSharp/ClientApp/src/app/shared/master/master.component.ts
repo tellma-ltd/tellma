@@ -23,11 +23,28 @@ enum SearchView {
 })
 export class MasterComponent implements OnInit, OnDestroy {
 
+  private _apiEndpoint: string;
+
   @Input()
   masterCrumb: string;
 
   @Input()
-  apiEndpoint: string;
+  set apiEndpoint(v: string) {
+    if (this._apiEndpoint !== v) {
+      this._apiEndpoint = v;
+      this.crud = this.api.crudFactory(v, this.notifyDestruct$);
+
+      // Unless the data is already loaded, start loading as soon the api endpoint is set
+      if (this.state.masterStatus !== MasterStatus.loaded) {
+        this.fetch();
+      }
+    }
+  }
+
+  get apiEndpoint(): string {
+    return this._apiEndpoint;
+  }
+
 
   @Input()
   tileTemplate: TemplateRef<any>;
@@ -147,10 +164,10 @@ export class MasterComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Unless the data is already loaded, start loading
-    if (this.state.masterStatus !== MasterStatus.loaded) {
-      this.fetch();
-    }
+    // // Unless the data is already loaded, start loading
+    // if (this.state.masterStatus !== MasterStatus.loaded) {
+    //   this.fetch();
+    // }
   }
 
   ngOnDestroy() {
@@ -158,7 +175,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.notifyDestruct$.next();
   }
 
-  private fetch() {
+  public fetch() {
     this.notifyFetch$.next();
   }
 

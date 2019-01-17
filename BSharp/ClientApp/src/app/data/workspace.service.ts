@@ -1,6 +1,7 @@
 import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
 import { MeasurementUnit } from './dto/measurement-unit';
 import { Injectable } from '@angular/core';
+import { Custody } from './dto/custody';
 
 export enum MasterStatus {
 
@@ -46,6 +47,7 @@ export class TenantWorkspace {
   mdState: { [key: string]: MasterDetailsStore };
 
   MeasurementUnits: EntityWorkspace<MeasurementUnit>;
+  Custodies: EntityWorkspace<Custody>;
 
   constructor() {
     this.reset();
@@ -55,6 +57,7 @@ export class TenantWorkspace {
 
     this.mdState = {};
     this.MeasurementUnits = new EntityWorkspace<MeasurementUnit>();
+    this.Custodies = new EntityWorkspace<Custody>();
   }
 }
 

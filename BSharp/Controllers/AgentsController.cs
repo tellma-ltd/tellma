@@ -21,17 +21,17 @@ using M = BSharp.Data.Model;
 
 namespace BSharp.Controllers
 {
-    [Route("api/measurement-units")]
-    public class MeasurementUnitsController : CrudControllerBase<M.MeasurementUnit, MeasurementUnit, MeasurementUnitForSave, int?>
+    [Route("api/agents/{agentType}")]
+    public class AgentsController : CrudControllerBase<M.Agent, Agent, AgentForSave, int?>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
-        private readonly ILogger<MeasurementUnitsController> _logger;
-        private readonly IStringLocalizer<MeasurementUnitsController> _localizer;
+        private readonly ILogger<AgentsController> _logger;
+        private readonly IStringLocalizer<AgentsController> _localizer;
         private readonly IMapper _mapper;
 
-        public MeasurementUnitsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<MeasurementUnitsController> logger,
-            IStringLocalizer<MeasurementUnitsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
+        public AgentsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<AgentsController> logger,
+            IStringLocalizer<AgentsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
         {
             _db = db;
             _metadataProvider = metadataProvider;
@@ -40,19 +40,20 @@ namespace BSharp.Controllers
             _mapper = mapper;
         }
 
+
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
+        public async Task<ActionResult<EntitiesResponse<Agent>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
             return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true);
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
+        public async Task<ActionResult<EntitiesResponse<Agent>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
             return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
         }
 
-        private async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Agent>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             using (var trx = await _db.Database.BeginTransactionAsync())
             {
@@ -75,7 +76,7 @@ namespace BSharp.Controllers
 DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
 
-MERGE INTO [dbo].MeasurementUnits AS t
+MERGE INTO [dbo].[Custodies] AS t
 	USING (
 		SELECT [Id]
 		FROM @Ids
@@ -100,18 +101,18 @@ MERGE INTO [dbo].MeasurementUnits AS t
                     else
                     {
                         // Load the entities using their Ids
-                        var affectedDbEntitiesQ = _db.MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                        var affectedDbEntitiesQ = _db.Agents.FromSql("SELECT * FROM [dbo].[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
                         var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
                         var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-                        var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);                        
+                        var affectedEntities = _mapper.Map<List<Agent>>(affectedDbEntities);
 
                         // sort the entities the way their Ids came, as a good practice
-                        MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
-                        Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
+                        Agent[] sortedAffectedEntities = new Agent[ids.Count];
+                        Dictionary<int, Agent> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
                         for (int i = 0; i < ids.Count; i++)
                         {
                             var id = ids[i];
-                            MeasurementUnit entity = null;
+                            Agent entity = null;
                             if (affectedEntitiesDic.ContainsKey(id))
                             {
                                 entity = affectedEntitiesDic[id];
@@ -121,9 +122,10 @@ MERGE INTO [dbo].MeasurementUnits AS t
                         }
 
                         // Prepare a proper response
-                        var response = new EntitiesResponse<MeasurementUnit> {
+                        var response = new EntitiesResponse<Agent>
+                        {
                             Data = sortedAffectedEntities,
-                            CollectionName = GetCollectionName(typeof(MeasurementUnit))
+                            CollectionName = GetCollectionName(typeof(Agent))
                         };
 
                         // Commit and return
@@ -140,17 +142,41 @@ MERGE INTO [dbo].MeasurementUnits AS t
             }
         }
 
+        private string AgentType()
+        {
+            string agentType = RouteData.Values["agentType"]?.ToString();
+            var allowedAgentTypes = new string[] { "Individual", "Organization" };
+            if (!allowedAgentTypes.Contains(agentType))
+            {
+                // Programmer mistake
+                throw new BadRequestException("Only the following agent types are supported: " + string.Join(", ", allowedAgentTypes));
+            }
+
+            return agentType;
+        }
+
+        private string SingularName()
+        {
+            return _localizer[AgentType()];
+        }
+
+        private string PluralName()
+        {
+            return _localizer[AgentType() + "s"]; // Works for both Individual and Organization
+        }
+
         protected override async Task<IDbContextTransaction> BeginSaveTransaction()
         {
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
-        protected override IQueryable<M.MeasurementUnit> GetBaseQuery()
+        protected override IQueryable<M.Agent> GetBaseQuery()
         {
-            return _db.MeasurementUnits.Where(e => e.UnitType != "Money");
+            string agentType = AgentType();
+            return _db.Agents.Where(e => e.AgentType == agentType);
         }
 
-        protected override IQueryable<M.MeasurementUnit> Search(IQueryable<M.MeasurementUnit> query, string search)
+        protected override IQueryable<M.Agent> Search(IQueryable<M.Agent> query, string search)
         {
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -160,12 +186,12 @@ MERGE INTO [dbo].MeasurementUnits AS t
             return query;
         }
 
-        protected override IQueryable<M.MeasurementUnit> SingletonQuery(IQueryable<M.MeasurementUnit> query, int? id)
+        protected override IQueryable<M.Agent> SingletonQuery(IQueryable<M.Agent> query, int? id)
         {
             return query.Where(e => e.Id == id);
         }
 
-        protected override IQueryable<M.MeasurementUnit> IncludeInactive(IQueryable<M.MeasurementUnit> query, bool inactive)
+        protected override IQueryable<M.Agent> IncludeInactive(IQueryable<M.Agent> query, bool inactive)
         {
             if (!inactive)
             {
@@ -175,8 +201,11 @@ MERGE INTO [dbo].MeasurementUnits AS t
             return query;
         }
 
-        protected override async Task ValidateAsync(List<MeasurementUnitForSave> entities)
+        protected override async Task ValidateAsync(List<AgentForSave> entities)
         {
+            // Get the agent type from the context
+            string agentType = AgentType();
+
             // Hash the indices for performance
             var indices = entities.ToIndexDictionary();
 
@@ -188,21 +217,21 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 {
                     // Won't be supported for this API
                     var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", _localizer["MeasurementUnits"]]);
+                    ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", PluralName()]);
                 }
 
                 if (entity.Id != null && entity.EntityState != EntityStates.Updated)
                 {
                     // This error indicates a bug
                     var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotInsert0WhileSpecifyId", _localizer["MeasurementUnit"]]);
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotInsert0WhileSpecifyId", SingularName()]);
                 }
 
                 if (entity.Id == null && entity.EntityState == EntityStates.Updated)
                 {
                     // This error indicates a bug
                     var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotUpdate0WithoutId", _localizer["MeasurementUnit"]]);
+                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotUpdate0WithoutId", SingularName()]);
                 }
             }
 
@@ -226,82 +255,27 @@ MERGE INTO [dbo].MeasurementUnits AS t
 
             // Perform SQL-side validation
             DataTable entitiesTable = DataTable(entities, addIndex: true);
-            var entitiesTvp = new SqlParameter("Entities", entitiesTable) { TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List", SqlDbType = SqlDbType.Structured };
+            var entitiesTvp = new SqlParameter("Entities", entitiesTable) { TypeName = $"dbo.{nameof(AgentForSave)}List", SqlDbType = SqlDbType.Structured };
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
 
-            // Code, Name and Name2 must be unique
+            // (1) Code must be unique
             var sqlErrors = await _db.Validation.FromSql($@"
 SET NOCOUNT ON;
-DECLARE @ValidationErrors dbo.ValidationErrorList;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])
     SELECT '[' + CAST([Id] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_TheId0WasNotFound' As [ErrorName], CAST([Id] As NVARCHAR(255)) As [Argument1]
     FROM @Entities
-    WHERE Id Is NOT NULL AND Id NOT IN (SELECT Id from [dbo].[MeasurementUnits])
-    
+    WHERE Id Is NOT NULL AND Id NOT IN (SELECT Id from [dbo].[Custodies] WHERE CustodyType = 'Agent' AND AgentType = '{agentType}')
+
 	-- Code must be unique
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
 	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Code' As [Key], N'Error_TheCode0IsUsed' As [ErrorName],
 		FE.Code AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities FE 
-	JOIN [dbo].MeasurementUnits BE ON FE.Code = BE.Code
-	WHERE FE.[Code] IS NOT NULL
-	AND (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id) OPTION(HASH JOIN);
-
-	-- Code must not be duplicated in the uploaded list
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Code' As [Key], N'Error_TheCode0IsDuplicated' As [ErrorName],
-		[Code] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @Entities
-	WHERE [Code] IN (
-		SELECT [Code]
-		FROM @Entities
-		WHERE [Code] IS NOT NULL
-		GROUP BY [Code]
-		HAVING COUNT(*) > 1
-	) OPTION(HASH JOIN);
-
-	-- Name must not exist already
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Name' As [Key], N'Error_TheName0IsUsed' As [ErrorName],
-		FE.[Name] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @Entities FE 
-	JOIN [dbo].MeasurementUnits BE ON FE.[Name] = BE.[Name]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id) OPTION(HASH JOIN);
-
-	-- Name must be unique in the uploaded list
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Name' As [Key], N'Error_TheName0IsDuplicated' As [ErrorName],
-		[Name] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @Entities
-	WHERE [Name] IN (
-		SELECT [Name]
-		FROM @Entities
-		GROUP BY [Name]
-		HAVING COUNT(*) > 1
-	) OPTION(HASH JOIN);
-
-	-- Name2 must not exist already
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Name2' As [Key], N'Error_TheName20IsUsed' As [ErrorName],
-		FE.[Name2] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @Entities FE 
-	JOIN [dbo].MeasurementUnits BE ON FE.[Name2] = BE.[Name2]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id) OPTION(HASH JOIN);
-
-	-- Name2 must be unique in the uploaded list
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Name2' As [Key], N'Error_TheName20IsDuplicated' As [ErrorName],
-		[Name2] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @Entities
-	WHERE [Name2] IN (
-		SELECT [Name2]
-		FROM @Entities
-		GROUP BY [Name2]
-		HAVING COUNT(*) > 1
-	) OPTION(HASH JOIN);
-    -- Add further logic
+	JOIN [dbo].[Custodies] BE ON FE.Code = BE.Code
+	WHERE (FE.Id IS NULL) OR (FE.Id <> BE.Id);
 
 SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 ", entitiesTvp).ToListAsync();
@@ -318,58 +292,68 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             }
         }
 
-        protected override async Task<List<M.MeasurementUnit>> PersistAsync(List<MeasurementUnitForSave> entities, SaveArguments args)
+        protected override async Task<List<M.Agent>> PersistAsync(List<AgentForSave> entities, SaveArguments args)
         {
             // Add created entities
             DataTable entitiesTable = DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("Entities", entitiesTable)
             {
-                TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List",
+                TypeName = $"dbo.{nameof(AgentForSave)}List",
                 SqlDbType = SqlDbType.Structured
             };
 
+            // The agent type
+            var agentType = new SqlParameter("AgentType", AgentType());
+
             string saveSql = $@"
--- Procedure: MeasurementUnitsSave
+-- Procedure: AgentsForSave
 SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
 
+-- Deletions
+	DELETE FROM [dbo].[Custodies]
+	WHERE [Id] IN (SELECT [Id] FROM @Entities WHERE [EntityState] = N'Deleted');
+
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
-		MERGE INTO [dbo].MeasurementUnits AS t
+		MERGE INTO [dbo].[Custodies] AS t
 		USING (
-			SELECT [Index], [Id], [Code], [UnitType], [Name], [Name2], [UnitAmount], [BaseAmount]
+			SELECT [Index], [Id], [Name], [Name2], [Code], [Address], [BirthDateTime], [IsRelated], [TaxIdentificationNumber], [Title], [Title2], [Gender]
 			FROM @Entities 
 			WHERE [EntityState] IN (N'Inserted', N'Updated')
 		) AS s ON (t.Id = s.Id)
-		WHEN MATCHED 
+		WHEN MATCHED
 		THEN
 			UPDATE SET 
-				t.[UnitType]	= s.[UnitType],
-				t.[Name]		= s.[Name],
-				t.[Name2]		= s.[Name2],
-				t.[UnitAmount]	= s.[UnitAmount],
-				t.[BaseAmount]	= s.[BaseAmount],
-				t.[Code]		= s.[Code],
-				t.[ModifiedAt]	= @Now,
-				t.[ModifiedBy]	= @UserId
+				t.[Name]			        = s.[Name],
+				t.[Name2]			        = s.[Name2],
+				t.[Code]			        = s.[Code],
+				t.[Address]			        = s.[Address],
+				t.[BirthDateTime]	        = s.[BirthDateTime],
+			    t.[IsRelated]				= s.[IsRelated],
+			    t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
+			    t.[Title]					= s.[Title],
+			    t.[Title2]					= s.[Title2],
+			    t.[Gender]					= s.[Gender],
+				t.[ModifiedAt]		        = @Now,
+				t.[ModifiedBy]		        = @UserId
 		WHEN NOT MATCHED THEN
-				INSERT ([TenantId], [UnitType], [Name], [Name2], [UnitAmount], [BaseAmount], [Code], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
-				VALUES (@TenantId, s.[UnitType], s.[Name], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
-			OUTPUT s.[Index], inserted.[Id] 
-	) As x
-    OPTION(RECOMPILE)
+			INSERT ([TenantId], [CustodyType], [Name], [Name2], [Code], [Address], [BirthDateTime], [AgentType], [IsRelated], [TaxIdentificationNumber], [Title], [Title2], [Gender], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
+			VALUES (@TenantId, 'Agent', s.[Name], s.[Name2], s.[Code], s.[Address], s.[BirthDateTime], @AgentType, s.[IsRelated], s.[TaxIdentificationNumber], s.[Title], [Title2], s.[Gender], @Now, @UserId, @Now, @UserId)
+		OUTPUT s.[Index], inserted.[Id] 
+	) AS x;
 ";
             // Optimization
             if (!(args.ReturnEntities ?? false))
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
-                await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp);
-                return new List<M.MeasurementUnit>();
+                await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp, agentType);
+                return new List<M.Agent>();
             }
             else
             {
@@ -377,7 +361,7 @@ SET NOCOUNT ON;
                 saveSql = saveSql += "SELECT * FROM @IndexedIds;";
 
                 // Retrieve the map from Indexes to Ids
-                var indexedIds = await _db.Saving.FromSql(saveSql, entitiesTvp).ToListAsync();
+                var indexedIds = await _db.Saving.FromSql(saveSql, entitiesTvp, agentType).ToListAsync();
 
                 // Load the entities using their Ids
                 DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
@@ -387,14 +371,14 @@ SET NOCOUNT ON;
                     SqlDbType = SqlDbType.Structured
                 };
 
-                var q = _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var q = _db.Agents.FromSql("SELECT * FROM dbo.[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
                 q = Expand(q, args.Expand);
                 var savedEntities = await q.ToListAsync();
 
 
                 // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
                 Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                var sortedSavedEntities = new M.MeasurementUnit[savedEntities.Count];
+                var sortedSavedEntities = new M.Agent[savedEntities.Count];
                 foreach (var item in savedEntities)
                 {
                     int index = indices[item.Id];
@@ -421,7 +405,10 @@ SET NOCOUNT ON;
                 try
                 {
                     // Delete efficiently with a SQL query
-                    await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                    string agentType = AgentType();
+                    await _db.Database.ExecuteSqlCommandAsync(
+                        $"DELETE FROM dbo.[Custodies] WHERE CustodyType = 'Agent' AND AgentType = '{agentType}' AND Id IN (SELECT Id FROM @Ids)"
+                        , idsTvp);
 
                     // Commit and return
                     trx.Commit();
@@ -429,7 +416,7 @@ SET NOCOUNT ON;
                 }
                 catch (SqlException ex) when (IsForeignKeyViolation(ex))
                 {
-                    throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["MeasurementUnit"]]);
+                    throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", SingularName()]);
                 }
                 catch (Exception ex)
                 {
@@ -442,8 +429,11 @@ SET NOCOUNT ON;
         protected override AbstractDataGrid GetImportTemplate()
         {
             // Get the properties of the DTO for Save, excluding Id or EntityState
-            var type = typeof(MeasurementUnitForSave);
-            var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var custodyType = typeof(CustodyForSave);
+            var agentType = typeof(AgentForSave);
+            var custodyProps = custodyType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var agentProps = agentType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var props = custodyProps.Union(agentProps).ToArray();
 
             // The result that will be returned
             var result = new AbstractDataGrid(props.Length, 1);
@@ -453,20 +443,22 @@ SET NOCOUNT ON;
             for (int i = 0; i < props.Length; i++)
             {
                 var prop = props[i];
-                var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
-                // var display = _localizer["MeasurementUnit_Code"].Value;
+                var display = _metadataProvider.GetMetadataForProperty(agentType, prop.Name)?.DisplayName ?? prop.Name;
                 header[i] = AbstractDataCell.Cell(display);
             }
 
             return result;
         }
 
-        protected override AbstractDataGrid ToAbstractGrid(GetResponse<MeasurementUnit> response, ExportArguments args)
+        protected override AbstractDataGrid ToAbstractGrid(GetResponse<Agent> response, ExportArguments args)
         {
             // Get all the properties without Id and EntityState
-            var type = typeof(MeasurementUnit);
-            var readProps = typeof(MeasurementUnit).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            var saveProps = typeof(MeasurementUnitForSave).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var type = typeof(Agent);
+            var custodySaveProps = typeof(CustodyForSave).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var agentSaveProps = typeof(AgentForSave).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+            var readProps = typeof(Agent).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var saveProps = custodySaveProps.Union(agentSaveProps).ToArray();
             var props = saveProps.Union(readProps).ToArray();
 
             // The result that will be returned
@@ -511,18 +503,20 @@ SET NOCOUNT ON;
             return result;
         }
 
-        protected override async Task<(List<MeasurementUnitForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
+        protected override async Task<(List<AgentForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
         {
             // Get the properties of the DTO for Save, excluding Id or EntityState
             string mode = args.Mode;
-            var readType = typeof(MeasurementUnit);
-            var saveType = typeof(MeasurementUnitForSave);
+            var readType = typeof(Agent);
+            var custodySaveType = typeof(CustodyForSave);
+            var agentSaveType = typeof(AgentForSave);
 
             var readProps = readType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                 .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(readType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
 
-            var saveProps = saveType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(saveType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
+            var saveProps = custodySaveType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .Union(agentSaveType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(agentSaveType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
 
             // Maps the index of the grid column to a property on the DtoForSave
             var saveColumnMap = new List<(int Index, PropertyInfo Property)>(grid.RowSize);
@@ -561,7 +555,7 @@ SET NOCOUNT ON;
             }
 
             // Construct the result using the map generated earlier
-            List<MeasurementUnitForSave> result = new List<MeasurementUnitForSave>(grid.Count - 1);
+            List<AgentForSave> result = new List<AgentForSave>(grid.Count - 1);
             for (int i = 1; i < grid.Count; i++) // Skip the header
             {
                 var row = grid[i];
@@ -572,7 +566,7 @@ SET NOCOUNT ON;
                     break;
                 }
 
-                var entity = new MeasurementUnitForSave();
+                var entity = new AgentForSave();
                 foreach (var (index, prop) in saveColumnMap)
                 {
                     var content = row[index].Content;
@@ -601,7 +595,7 @@ SET NOCOUNT ON;
 
                     try
                     {
-                        prop.SetValue(entity, content); // TODO casting here to be done
+                        prop.SetValue(entity, content);
                     }
                     catch (ArgumentException)
                     {
@@ -620,7 +614,7 @@ SET NOCOUNT ON;
 
             // Prepare a dictionary of indices in order to construct any validation errors performantly
             // "IndexOf" is O(n), this brings it down to O(1)
-            Dictionary<MeasurementUnitForSave, int> indicesDic = result.ToIndexDictionary();
+            Dictionary<AgentForSave, int> indicesDic = result.ToIndexDictionary();
 
             // For each entity, set the Id and EntityState depending on import mode
             if (mode == "Insert")
@@ -642,8 +636,11 @@ SET NOCOUNT ON;
                     SqlDbType = SqlDbType.Structured
                 };
 
-                string sql = $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[MeasurementUnits] e ON c.Code = e.Code WHERE e.UnitType <> 'Money';";
-                var idCodesDic = await _db.CodeIds.FromSql(sql, entitiesTvp).ToDictionaryAsync(e => e.Code, e => e.Id);
+                string agentType = AgentType();
+
+                var idCodesDic = await _db.CodeIds.FromSql(
+                    $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[Custodies] e ON c.Code = e.Code WHERE e.CustodyType = 'Agent' && e.AgentType == {agentType};"
+                    , entitiesTvp).ToDictionaryAsync(e => e.Code, e => e.Id);
 
                 result.ForEach(e =>
                 {
@@ -717,7 +714,7 @@ SET NOCOUNT ON;
                 throw new UnprocessableEntityException(ModelState);
             }
 
-            // Function maps any future validation errors back to specific rows
+            // Function that maps any future validation errors back to specific rows
             int? errorKeyMap(string key)
             {
                 int? rowNumber = null;

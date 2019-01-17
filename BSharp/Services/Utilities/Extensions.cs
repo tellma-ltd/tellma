@@ -1,4 +1,5 @@
 ﻿using BSharp.Controllers.DTO;
+using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -169,6 +170,40 @@ namespace BSharp.Services.Utilities
             }
 
             return true;
+        }
+
+        public static object[] ToFormatArguments(this SqlValidationResult @this)
+        {
+            /// <summary>
+            /// SQL validation may return error message names (for localization) as well as some arguments 
+            /// this method parses those arguments into objects based on their prefix for example date:2019-01-13
+            /// will be parsed to datetime object suitable for formatting in C# into the error message
+            /// </summary>
+            object Parse(string str)
+            {
+                // TODO Implement properly
+                if (string.IsNullOrWhiteSpace(str))
+                {
+                    return str;
+                }
+
+                if (DateTime.TryParse(str, out DateTime dResult))
+                {
+                    return dResult;
+                }
+
+                return str;
+            }
+
+            object[] formatArguments = {
+                    Parse(@this.Argument1),
+                    Parse(@this.Argument2),
+                    Parse(@this.Argument3),
+                    Parse(@this.Argument4),
+                    Parse(@this.Argument5)
+                };
+
+            return formatArguments;
         }
     }
 }

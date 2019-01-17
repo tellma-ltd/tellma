@@ -16,6 +16,7 @@ import { ExportArguments } from './dto/export-arguments';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { SaveArguments } from './dto/save-arguments';
 import { appconfig } from './appconfig';
+import { Agent } from './dto/agent';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,13 @@ export class ApiService {
     return {
       activate: this.activateFactory<MeasurementUnit>('measurement-units', cancellationToken$),
       deactivate: this.deactivateFactory<MeasurementUnit>('measurement-units', cancellationToken$)
+    };
+  }
+
+  public agentsApi(agentType: string, cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<Agent>(`agents/${agentType}`, cancellationToken$),
+      deactivate: this.deactivateFactory<Agent>(`agents/${agentType}`, cancellationToken$)
     };
   }
 
@@ -76,7 +84,7 @@ export class ApiService {
         return obs$;
       },
 
-      save: (entities: DtoForSaveKeyBase[], args: SaveArguments) => {
+      save: (entities: TDtoForSave[], args: SaveArguments) => {
         this.saveInProgress = true;
         args = args || {};
         const paramsArray: string[] = [];

@@ -15,13 +15,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
@@ -542,7 +542,7 @@ namespace BSharp.Controllers
                 // Below are the standard steps of any compiler
 
                 //////// (1) Preprocessing
-                
+
                 // Ensure no spaces are repeated
                 Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
                 filter = regex.Replace(filter, " ");
@@ -552,7 +552,7 @@ namespace BSharp.Controllers
 
 
                 //////// (2) Lexical Analysis of string into token stream
-                
+
                 List<string> symbols = new List<string>(new string[] {
 
                     // Logical Operators
@@ -764,11 +764,11 @@ namespace BSharp.Controllers
                                     propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
                                     memberAccess = Expression.Property(memberAccess, prop);
                                 }
-                                
+
                                 // (B) Parse the value (e.g. "'Huntington Rd.'")
                                 var valueString = string.Join(" ", pieces.Skip(2));
                                 object value;
-                                if (propType == typeof(string) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
+                                if (propType == typeof(string) || propType == typeof(char) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
                                 {
                                     if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
                                     {
@@ -781,7 +781,25 @@ namespace BSharp.Controllers
 
                                 try
                                 {
-                                    value = Convert.ChangeType(valueString, propType);
+                                    // The default Convert.ChangeType cannot handle converting types to nullable types
+                                    // Therefore this method overcomes this limitation, credit: https://bit.ly/2DgqJmL
+                                    object ChangeType(object val, Type conversion)
+                                    {
+                                        var t = conversion;
+                                        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+                                        {
+                                            if (val == null)
+                                            {
+                                                return null;
+                                            }
+
+                                            t = Nullable.GetUnderlyingType(t);
+                                        }
+
+                                        return Convert.ChangeType(val, t);
+                                    }
+
+                                    value = ChangeType(valueString, prop.PropertyType);
                                 }
                                 catch (ArgumentException)
                                 {
@@ -789,8 +807,8 @@ namespace BSharp.Controllers
                                     throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
                                 }
 
-                                var constant = Expression.Constant(value, propType);
-                                
+                                var constant = Expression.Constant(value, prop.PropertyType);
+
                                 // (C) parse the operator (e.g. "eq")
                                 var op = pieces[1];
                                 op = op?.ToLower() ?? "";
@@ -832,7 +850,7 @@ namespace BSharp.Controllers
 
 
                 //////// (5) Apply lambda to the query
-  
+
                 query = query.Where(lambda);
             }
 
@@ -1087,11 +1105,11 @@ namespace BSharp.Controllers
                 }
 
                 var props = GetPropertiesBaseFirst(typeof(T));
-                foreach(var prop in props)
+                foreach (var prop in props)
                 {
                     var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
                     var column = new DataColumn(prop.Name, propType);
-                    if(propType == typeof(string))
+                    if (propType == typeof(string))
                     {
                         // For string columns, it is better to explicitly specify the maximum column size
                         // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
@@ -1163,6 +1181,14 @@ namespace BSharp.Controllers
             var ms = modelState ?? ModelState;
             ms.AddModelError($"Row{rowNumber}", _localizer["Row{0}", rowNumber] + ": " + errorMessage);
             return !ms.HasReachedMaxErrors;
+        }
+
+        /// <summary>
+        /// Determines whether the given exception is a foreign key violation on delete
+        /// </summary>
+        protected bool IsForeignKeyViolation(SqlException ex)
+        {
+            return ex.Number == 547;
         }
 
         // Private methods

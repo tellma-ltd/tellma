@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace BSharp.Data.Model
 {
-    public class MeasurementUnit : ModelForSaveBase, IAuditedModel
+    public class Custody : ModelForSaveBase, IAuditedModel
     {
         public int Id { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string CustodyType { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -21,13 +22,10 @@ namespace BSharp.Data.Model
         [MaxLength(255)]
         public string Code { get; set; }
 
-        [Required]
-        [MaxLength(255)]
-        public string UnitType { get; set; }
+        [MaxLength(1024)]
+        public string Address { get; set; }
 
-        public double UnitAmount { get; set; }
-
-        public double BaseAmount { get; set; }
+        public DateTimeOffset? BirthDateTime { get; set; }
 
         public bool IsActive { get; set; }
 
@@ -43,14 +41,16 @@ namespace BSharp.Data.Model
         [MaxLength(450)]
         public string ModifiedBy { get; set; }
 
-
         internal static void OnModelCreating(ModelBuilder builder)
         {
+            // Map the discriminator column to the concrete column
+            builder.Entity<Custody>().HasDiscriminator<string>(nameof(CustodyType));
+
             // IsActive defaults to TRUE
-            builder.Entity<MeasurementUnit>().Property(e => e.IsActive).HasDefaultValue(true);
+            builder.Entity<Custody>().Property(e => e.IsActive).HasDefaultValue(true);
 
             // Code is unique
-            builder.Entity<MeasurementUnit>().HasIndex("TenantId", nameof(Code)).IsUnique();
+            builder.Entity<Custody>().HasIndex("TenantId", nameof(Code)).IsUnique();
         }
     }
 }

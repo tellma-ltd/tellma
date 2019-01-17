@@ -9,8 +9,8 @@
     <div class="collapse navbar-collapse justify-content-between" [ngbCollapse]="isCollapsed">
       <ol class="nav navbar-nav">
         <li class="nav-item"><a class="nav-link" routerLink="./measurement-units" routerLinkActive="active" (click)="onCollapse()">{{ 'MeasurementUnits' | translate }}</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="./stores" routerLinkActive="active" (click)="onCollapse()">Fixed Assets</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="products" routerLinkActive="active" (click)="onCollapse()">SKDs</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="./agents/individuals" routerLinkActive="active" (click)="onCollapse()">{{ 'Individuals' | translate }}</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="./agents/organizations" routerLinkActive="active" (click)="onCollapse()">{{ 'Organizations' | translate }}</a></li>
         <li class="nav-item"><a class="nav-link" routerLink="users" routerLinkActive="active" (click)="onCollapse()">Journal Vouchers</a></li>
         <li class="nav-item"><a class="nav-link" routerLink="data" routerLinkActive="active" (click)="onCollapse()">Settings</a></li>
       </ol>
