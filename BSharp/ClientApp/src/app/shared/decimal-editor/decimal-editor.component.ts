@@ -105,7 +105,7 @@ export class DecimalEditorComponent implements ControlValueAccessor {
   }
 
   ////////////////// Behavior
-  onBlur(value) {
+  onBlur(value: any) {
 
     // signal Angular forms, that the element was touched
     this.onTouched();

@@ -6,7 +6,15 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { CdkTableModule } from '@angular/cdk/table';
-import { NgbCollapseModule, NgbDropdownModule, NgbModalModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbCollapseModule,
+  NgbDropdownModule,
+  NgbModalModule,
+  NgbPopoverModule,
+  NgbDatepickerModule,
+  NgbDateAdapter,
+  NgbDatepickerI18n
+} from '@ng-bootstrap/ng-bootstrap';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -34,7 +42,8 @@ import {
   faClipboardCheck,
   faUpload,
   faFileDownload,
-  faFilter
+  faFilter,
+  faCalendarAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
 import { DecimalEditorComponent } from './decimal-editor/decimal-editor.component';
@@ -50,6 +59,9 @@ import { SuccessMessageComponent } from './success-message/success-message.compo
 import { TextEditorComponent } from './text-editor/text-editor.component';
 import { WarningMessageComponent } from './warning-message/warning-message.component';
 import { MasterBaseComponent } from './master-base/master-base.component';
+import { DatePickerComponent } from './date-picker/date-picker.component';
+import { NgbDateStringAdapter } from './date-picker/date-string-adapter';
+import { DatePickerLocalization } from './date-picker/date-picker-localization';
 
 // Icons to be used in the web app
 library.add(
@@ -57,7 +69,7 @@ library.add(
   faCheck, faPlus, faSyncAlt, faAngleDoubleLeft,
   faAngleLeft, faAngleRight, faThLarge, faList, faEdit, faTrashAlt,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
-  faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter
+  faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt
 );
 
 @NgModule({
@@ -75,7 +87,8 @@ library.add(
     SpinnerComponent,
     SuccessMessageComponent,
     TextEditorComponent,
-    WarningMessageComponent
+    WarningMessageComponent,
+    DatePickerComponent
   ],
   imports: [
     CommonModule,
@@ -87,9 +100,11 @@ library.add(
     CdkTableModule,
     NgbDropdownModule,
     NgbModalModule,
-    NgbPopoverModule
+    NgbPopoverModule,
+    NgbDatepickerModule
   ],
   exports: [
+    // Modules
     CommonModule,
     HttpClientModule,
     NgbDropdownModule,
@@ -101,6 +116,7 @@ library.add(
     FontAwesomeModule,
     CdkTableModule,
 
+    // Components
     SpinnerComponent,
     BrandComponent,
     MasterComponent,
@@ -114,7 +130,10 @@ library.add(
     SelectorComponent,
     DecimalEditorComponent,
     DetailsBaseComponent,
-    MasterBaseComponent
-  ]
+    MasterBaseComponent,
+    DatePickerComponent
+  ],
+  providers: [{ provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
+    {provide: NgbDatepickerI18n, useClass: DatePickerLocalization}]
 })
 export class SharedModule { }

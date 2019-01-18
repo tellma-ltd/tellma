@@ -58,16 +58,7 @@
   <!-- BirthDateTime -->
   <b-form-group class="b-form-group" [label]="birthDateTimeName | translate" [serverErrors]="validationErrors.BirthDateTime">
     <div *ngIf="!isEdit">{{ model?.BirthDateTime | date:'dd/MM/yyyy' }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BirthDateTime" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-  </b-form-group>
-
-  <!-- IsRelated -->
-  <b-form-group class="b-form-group" [label]="'Agent_IsRelated' | translate" [serverErrors]="validationErrors.IsRelated">
-    <div *ngIf="!isEdit">{{ (model?.IsRelated ? 'Yes' : 'No') | translate }}</div>
-    <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
-      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsRelated" id="isRelated">
-      <label class="custom-control-label b-pointer" for="isRelated">&zwnj;</label>
-    </div>
+    <b-date-picker *ngIf="isEdit" [(ngModel)]="model.BirthDateTime" [ngModelOptions]="{ updateOn: 'change' }"></b-date-picker> 
   </b-form-group>
 
   <!-- TaxIdentificationNumber -->
@@ -83,6 +74,15 @@
       <b-selector *ngIf="isEdit" [(ngModel)]="model.Gender" [choices]="genderChoices" required></b-selector>
     </b-form-group>
   </ng-container>
+
+  <!-- IsRelated -->
+  <b-form-group class="b-form-group" [label]="'Agent_IsRelated' | translate" [serverErrors]="validationErrors.IsRelated">
+    <div *ngIf="!isEdit">{{ (model?.IsRelated ? 'Yes' : 'No') | translate }}</div>
+    <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsRelated" id="isRelated">
+      <label class="custom-control-label b-pointer" for="isRelated">&zwnj;</label>
+    </div>
+  </b-form-group>
 
   <!-- Is Active -->
   <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">

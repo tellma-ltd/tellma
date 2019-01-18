@@ -17,6 +17,7 @@ import { WarningMessageComponent } from './warning-message/warning-message.compo
 import { NativeScriptUISideDrawerModule } from 'nativescript-ui-sidedrawer/angular';
 import { NativeScriptUIListViewModule } from 'nativescript-ui-listview/angular';
 import { NativeScriptFormsModule } from 'nativescript-angular/forms';
+import { DatePickerComponent } from './date-picker/date-picker.component';
 // import { NativeScriptLocalizeModule } from 'nativescript-localize/angular';
 
 @NgModule({
@@ -33,7 +34,8 @@ import { NativeScriptFormsModule } from 'nativescript-angular/forms';
     SpinnerComponent,
     SuccessMessageComponent,
     TextEditorComponent,
-    WarningMessageComponent],
+    WarningMessageComponent,
+    DatePickerComponent],
   imports: [
     NativeScriptCommonModule
   ],

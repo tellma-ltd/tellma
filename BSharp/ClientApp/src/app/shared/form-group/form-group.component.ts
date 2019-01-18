@@ -92,6 +92,10 @@ export class FormGroupComponent implements OnDestroy {
         if (errors.required) {
           result.push('RequiredField');
         }
+
+        if (errors.ngbDate) {
+          result.push('InvalidDate');
+        }
       }
 
       return result;

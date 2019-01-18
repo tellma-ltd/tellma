@@ -54,7 +54,7 @@ const routes: Routes = [
 
       // Misc
       { path: 'main-menu', component: MainMenuComponent },
-      { path: '', redirectTo: 'measurement-units', pathMatch: 'full' },
+      { path: '', redirectTo: 'agents/individuals', pathMatch: 'full' },
       { path: '**', component: ApplicationPageNotFoundComponent },
     ]
   }

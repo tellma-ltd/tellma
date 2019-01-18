@@ -325,6 +325,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "RequiredField", "Required Field"),
             Ar(Constants.Client, "RequiredField", "حقل مطلوب"),
 
+            En(Constants.Client, "InvalidDate", "Invalid Date"),
+            Ar(Constants.Client, "InvalidDate", "تاريخ غير سليم"),
+
             En(Constants.Client, "Tiles", "Tiles"),
             Ar(Constants.Client, "Tiles", "مستطيلات"),
 
@@ -375,6 +378,64 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Step2", "Step 2"),
             Ar(Constants.Client, "Step2", "الخطوة الثانية"),
+
+            En(Constants.Client, "ShortMonth1", "Jan"),
+            Ar(Constants.Client, "ShortMonth1", "يناير"),
+
+            En(Constants.Client, "ShortMonth2", "Feb"),
+            Ar(Constants.Client, "ShortMonth2", "فبراير"),
+
+            En(Constants.Client, "ShortMonth3", "Mar"),
+            Ar(Constants.Client, "ShortMonth3", "مارس"),
+
+            En(Constants.Client, "ShortMonth4", "Apr"),
+            Ar(Constants.Client, "ShortMonth4", "أبريل"),
+
+            En(Constants.Client, "ShortMonth5", "May"),
+            Ar(Constants.Client, "ShortMonth5", "مايو"),
+
+            En(Constants.Client, "ShortMonth6", "Jun"),
+            Ar(Constants.Client, "ShortMonth6", "يونيو"),
+
+            En(Constants.Client, "ShortMonth7", "Jul"),
+            Ar(Constants.Client, "ShortMonth7", "يوليو"),
+
+            En(Constants.Client, "ShortMonth8", "Aug"),
+            Ar(Constants.Client, "ShortMonth8", "أغسطس"),
+
+            En(Constants.Client, "ShortMonth9", "Sep"),
+            Ar(Constants.Client, "ShortMonth9", "سبتمبر"),
+
+            En(Constants.Client, "ShortMonth10", "Oct"),
+            Ar(Constants.Client, "ShortMonth10", "أكتوبر"),
+
+            En(Constants.Client, "ShortMonth11", "Nov"),
+            Ar(Constants.Client, "ShortMonth11", "نوفمبر"),
+
+            En(Constants.Client, "ShortMonth12", "Dec"),
+            Ar(Constants.Client, "ShortMonth12", "ديسمبر"),
+
+            En(Constants.Client, "ShortDay1", "Mo"),
+            Ar(Constants.Client, "ShortDay1", "إث"),
+
+            En(Constants.Client, "ShortDay2", "Tu"),
+            Ar(Constants.Client, "ShortDay2", "ثلا"),
+
+            En(Constants.Client, "ShortDay3", "We"),
+            Ar(Constants.Client, "ShortDay3", "أر"),
+
+            En(Constants.Client, "ShortDay4", "Th"),
+            Ar(Constants.Client, "ShortDay4", "خم"),
+
+            En(Constants.Client, "ShortDay5", "Fr"),
+            Ar(Constants.Client, "ShortDay5", "جم"),
+
+            En(Constants.Client, "ShortDay6", "Sa"),
+            Ar(Constants.Client, "ShortDay6", "ست"),
+
+            En(Constants.Client, "ShortDay7", "Su"),
+            Ar(Constants.Client, "ShortDay7", "أح"),
+
 
             En(Constants.Client, "ImportStep1Instructions", "Download the template file and populate it with your data:"),
             Ar(Constants.Client, "ImportStep1Instructions", "حمل ملف القالب على جهازك واملأه بالبيانات"),
