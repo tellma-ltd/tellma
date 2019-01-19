@@ -65,7 +65,7 @@
 <ng-template #row_Address let-id="id"> {{ ws[id].Address }} </ng-template>
 
 <ng-template #header_BirthDateTime>{{ birthDateTimeName | translate }}</ng-template>
-<ng-template #row_BirthDateTime let-id="id"> {{ ws[id].BirthDateTime | date:'dd/MM/yyyy' }} </ng-template>
+<ng-template #row_BirthDateTime let-id="id"> {{ ws[id].BirthDateTime | date:'yyyy-MM-dd' }} </ng-template>
 
 <ng-template #header_IsRelated>{{ 'Agent_IsRelated' | translate }}</ng-template>
 <ng-template #row_IsRelated let-id="id"> {{ (ws[id].IsRelated ? 'Yes' : 'No') | translate }} </ng-template>

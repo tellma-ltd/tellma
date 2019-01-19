@@ -57,7 +57,7 @@
 
   <!-- BirthDateTime -->
   <b-form-group class="b-form-group" [label]="birthDateTimeName | translate" [serverErrors]="validationErrors.BirthDateTime">
-    <div *ngIf="!isEdit">{{ model?.BirthDateTime | date:'dd/MM/yyyy' }}</div>
+    <div *ngIf="!isEdit">{{ model?.BirthDateTime | date:'yyyy-MM-dd' }}</div>
     <b-date-picker *ngIf="isEdit" [(ngModel)]="model.BirthDateTime" [ngModelOptions]="{ updateOn: 'change' }"></b-date-picker> 
   </b-form-group>
 

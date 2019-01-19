@@ -80,7 +80,7 @@ namespace BSharp.Services.ImportExport
                         sheet.Cells[r + 1, c + 1].Value = row[c]?.Content;
 
                         // Apply the horizontal alignment and number format styling of the first row on the entire column
-                        if(r == 0)
+                        if (r == 0)
                         {
                             var alignment = row[c]?.HorizontalAlignment ?? HorizontalAlignment.Left;
                             if (alignment != HorizontalAlignment.Default)

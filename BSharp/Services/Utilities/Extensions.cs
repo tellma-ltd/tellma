@@ -205,5 +205,25 @@ namespace BSharp.Services.Utilities
 
             return formatArguments;
         }
+
+        /// <summary>
+        /// Determines whether this type is <see cref="DateTime"/> or a 
+        /// <see cref="DateTimeOffset"/> or a nullable version thereof
+        /// </summary>
+        public static bool IsDateOrTime(this Type @this)
+        {
+            var t = Nullable.GetUnderlyingType(@this) ?? @this;
+            return t == typeof(DateTime) || t == typeof(DateTimeOffset);
+        }
+
+        /// <summary>
+        /// Determines whether this type is a
+        /// <see cref="DateTimeOffset"/> or a nullable version thereof
+        /// </summary>
+        public static bool IsDateTimeOffset(this Type @this)
+        {
+            var t = Nullable.GetUnderlyingType(@this) ?? @this;
+            return t == typeof(DateTimeOffset);
+        }
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -24,6 +25,10 @@ namespace BSharp.Controllers
     [Route("api/agents/{agentType}")]
     public class AgentsController : CrudControllerBase<M.Agent, Agent, AgentForSave, int?>
     {
+        // Hard-coded agent types
+        private const string ORGANIZATION = "Organization";
+        private const string INDIVIDUAL = "Individual";
+
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger<AgentsController> _logger;
@@ -145,7 +150,7 @@ MERGE INTO [dbo].[Custodies] AS t
         private string AgentType()
         {
             string agentType = RouteData.Values["agentType"]?.ToString();
-            var allowedAgentTypes = new string[] { "Individual", "Organization" };
+            var allowedAgentTypes = new string[] { ORGANIZATION, INDIVIDUAL };
             if (!allowedAgentTypes.Contains(agentType))
             {
                 // Programmer mistake
@@ -294,6 +299,17 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 
         protected override async Task<List<M.Agent>> PersistAsync(List<AgentForSave> entities, SaveArguments args)
         {
+            // Some properties are always set to null for organizations
+            if(AgentType() == ORGANIZATION)
+            {
+                entities.ForEach(e =>
+                {
+                    e.Title = null;
+                    e.Title2 = null;
+                    e.Gender = null;
+                });
+            }
+
             // Add created entities
             DataTable entitiesTable = DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("Entities", entitiesTable)
@@ -433,16 +449,27 @@ SET NOCOUNT ON;
             var agentType = typeof(AgentForSave);
             var custodyProps = custodyType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             var agentProps = agentType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            var props = custodyProps.Union(agentProps).ToArray();
+            var props = custodyProps.Union(agentProps);
+
+            if(AgentType() == ORGANIZATION)
+            {
+                // For organizations, some properties are left blank
+                var exemptProperties = new string[] { nameof(Agent.Title), nameof(Agent.Title2), nameof(Agent.Gender) };
+                props.Where(p => !exemptProperties.Contains(p.Name));
+            }
+
+            var propsArray = props.ToArray();
+
+
 
             // The result that will be returned
-            var result = new AbstractDataGrid(props.Length, 1);
+            var result = new AbstractDataGrid(propsArray.Length, 1);
 
             // Add the header
             var header = result[result.AddRow()];
-            for (int i = 0; i < props.Length; i++)
+            for (int i = 0; i < propsArray.Length; i++)
             {
-                var prop = props[i];
+                var prop = propsArray[i];
                 var display = _metadataProvider.GetMetadataForProperty(agentType, prop.Name)?.DisplayName ?? prop.Name;
                 header[i] = AbstractDataCell.Cell(display);
             }
@@ -458,20 +485,38 @@ SET NOCOUNT ON;
             var agentSaveProps = typeof(AgentForSave).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
             var readProps = typeof(Agent).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            var saveProps = custodySaveProps.Union(agentSaveProps).ToArray();
-            var props = saveProps.Union(readProps).ToArray();
+            var saveProps = custodySaveProps.Union(agentSaveProps);
+
+            var props = saveProps.Union(readProps);
+
+            if (AgentType() == ORGANIZATION)
+            {
+                // For organizations, some properties are left blank
+                var exemptProperties = new string[] { nameof(Agent.Title), nameof(Agent.Title2), nameof(Agent.Gender) };
+                props.Where(p => !exemptProperties.Contains(p.Name));
+            }
+
+            var propsArray = props.ToArray();
 
             // The result that will be returned
-            var result = new AbstractDataGrid(props.Length, response.Data.Count() + 1);
+            var result = new AbstractDataGrid(propsArray.Length, response.Data.Count() + 1);
 
             // Add the header
             var header = result[result.AddRow()];
-            for (int i = 0; i < props.Length; i++)
+            for (int i = 0; i < propsArray.Length; i++)
             {
-                var prop = props[i];
+                var prop = propsArray[i];
                 var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
 
                 header[i] = AbstractDataCell.Cell(display);
+
+                // Add the proper styling
+                if(prop.PropertyType.IsDateOrTime())
+                {
+                    var att = prop.GetCustomAttribute<DataTypeAttribute>();
+                    var isDateOnly = att != null && att.DataType == DataType.Date;
+                    header[i].NumberFormat = ExportDateTimeFormat(dateOnly: isDateOnly);
+                }
             }
 
 
@@ -479,9 +524,9 @@ SET NOCOUNT ON;
             foreach (var entity in response.Data)
             {
                 var row = result[result.AddRow()];
-                for (int i = 0; i < props.Length; i++)
+                for (int i = 0; i < propsArray.Length; i++)
                 {
-                    var prop = props[i];
+                    var prop = propsArray[i];
                     var content = prop.GetValue(entity);
 
                     // Special handling for choice lists
@@ -494,6 +539,12 @@ SET NOCOUNT ON;
                             string displayName = choiceListAttr.DisplayNames[choiceIndex];
                             content = _localizer[displayName];
                         }
+                    }
+
+                    // Special handling for DateTimeOffset
+                    if(prop.PropertyType.IsDateTimeOffset() && content != null)
+                    {
+                        content = ToExportDateTime((DateTimeOffset)content);
                     }
 
                     row[i] = AbstractDataCell.Cell(content);
@@ -514,8 +565,11 @@ SET NOCOUNT ON;
             var readProps = readType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                 .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(readType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
 
+            var orgExemptProperties = new string[] { nameof(Agent.Title), nameof(Agent.Title2), nameof(Agent.Gender) };
+
             var saveProps = custodySaveType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                 .Union(agentSaveType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                .Where(e => AgentType() == INDIVIDUAL || orgExemptProperties.Contains(e.Name)) // Take away
                 .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(agentSaveType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
 
             // Maps the index of the grid column to a property on the DtoForSave
@@ -593,6 +647,26 @@ SET NOCOUNT ON;
                         }
                     }
 
+                    // Special handling for DateTime and DateTimeOffset
+                    if(prop.PropertyType.IsDateOrTime())
+                    {
+                        try
+                        {
+                            var date = ParseImportedDateTime(content);
+                            content = date;
+
+                            if (prop.PropertyType.IsDateTimeOffset())
+                            {
+                                content = AddUserTimeZone(date);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            AddRowError(i + 1, _localizer["Error_TheValue0IsNotValidFor1Field", content?.ToString(), propName]);
+                        }
+                    }
+
+                    // Try setting the value and return an error if it doesn't work
                     try
                     {
                         prop.SetValue(entity, content);

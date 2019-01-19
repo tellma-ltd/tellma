@@ -12,6 +12,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -480,6 +481,14 @@ SET NOCOUNT ON;
                 var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
 
                 header[i] = AbstractDataCell.Cell(display);
+
+                // Add the proper styling for DateTime and DateTimeOffset
+                if (prop.PropertyType.IsDateOrTime())
+                {
+                    var att = prop.GetCustomAttribute<DataTypeAttribute>();
+                    var isDateOnly = att != null && att.DataType == DataType.Date;
+                    header[i].NumberFormat = ExportDateTimeFormat(dateOnly: isDateOnly);
+                }
             }
 
 
@@ -502,6 +511,12 @@ SET NOCOUNT ON;
                             string displayName = choiceListAttr.DisplayNames[choiceIndex];
                             content = _localizer[displayName];
                         }
+                    }
+
+                    // Special handling for DateTimeOffset
+                    if (prop.PropertyType.IsDateTimeOffset() && content != null)
+                    {
+                        content = ToExportDateTime((DateTimeOffset)content);
                     }
 
                     row[i] = AbstractDataCell.Cell(content);
@@ -596,6 +611,25 @@ SET NOCOUNT ON;
                             {
                                 content = choiceListAttr.Choices[displayNameIndex];
                             }
+                        }
+                    }
+
+                    // Special handling for DateTime and DateTimeOffset
+                    if (prop.PropertyType.IsDateOrTime())
+                    {
+                        try
+                        {
+                            var date = ParseImportedDateTime(content);
+                            content = date;
+
+                            if (prop.PropertyType.IsDateTimeOffset())
+                            {
+                                content = AddUserTimeZone(date);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            AddRowError(i + 1, _localizer["Error_TheValue0IsNotValidFor1Field", content?.ToString(), propName]);
                         }
                     }
 

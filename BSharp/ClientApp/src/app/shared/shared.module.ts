@@ -30,7 +30,6 @@ import {
   faAngleRight,
   faThLarge,
   faList,
-  faEdit,
   faTrashAlt,
   faSave,
   faTimes,
@@ -43,7 +42,8 @@ import {
   faUpload,
   faFileDownload,
   faFilter,
-  faCalendarAlt
+  faCalendarAlt,
+  faPen
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
 import { DecimalEditorComponent } from './decimal-editor/decimal-editor.component';
@@ -67,7 +67,7 @@ import { DatePickerLocalization } from './date-picker/date-picker-localization';
 library.add(
   faExclamationTriangle, faSpinner, faSignInAlt, faSignOutAlt,
   faCheck, faPlus, faSyncAlt, faAngleDoubleLeft,
-  faAngleLeft, faAngleRight, faThLarge, faList, faEdit, faTrashAlt,
+  faAngleLeft, faAngleRight, faThLarge, faList, faPen, faTrashAlt,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
   faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt
 );

@@ -31,6 +31,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Input()
   set apiEndpoint(v: string) {
     if (this._apiEndpoint !== v) {
+      // Cancel any exiting operations
+      this.ngOnDestroy();
+
       this._apiEndpoint = v;
       this.crud = this.api.crudFactory(v, this.notifyDestruct$);
 
@@ -44,7 +47,6 @@ export class MasterComponent implements OnInit, OnDestroy {
   get apiEndpoint(): string {
     return this._apiEndpoint;
   }
-
 
   @Input()
   tileTemplate: TemplateRef<any>;

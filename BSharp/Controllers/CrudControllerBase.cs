@@ -1191,6 +1191,76 @@ namespace BSharp.Controllers
             return ex.Number == 547;
         }
 
+        /// <summary>
+        /// Changes the DateTimeOffset into a DateTime in the local time of the user suitable for exporting
+        /// </summary>
+        protected DateTime? ToExportDateTime(DateTimeOffset? offset)
+        {
+            if (offset == null)
+            {
+                return null;
+            }
+
+            var timeZone = TimeZoneInfo.Local;  // TODO: Use the user time zone 
+            return TimeZoneInfo.ConvertTime(offset.Value, timeZone).DateTime;           
+        }
+
+        /// <summary>
+        /// Returns the default format for dates and date times
+        /// </summary>
+        protected string ExportDateTimeFormat(bool dateOnly)
+        {
+            return dateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd hh:mm";
+        }
+
+        /// <summary>
+        /// Attempts to intelligently parse an object (that comes from an imported file) to a DateTime
+        /// </summary>
+        protected DateTime? ParseImportedDateTime(object value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            DateTime dateTime;
+
+            if (value.GetType() == typeof(double))
+            {
+                // Double indicates the OLE Automation date typically represented in excel
+                dateTime = DateTime.FromOADate((double)value);
+            }
+            else
+            {
+                // Parse the import value into a DateTime
+                var valueString = value.ToString();
+                dateTime = DateTime.Parse(valueString);
+            }
+
+
+            return dateTime;
+        }
+
+        /// <summary>
+        /// Changes the DateTime into a DateTimeOffset by adding the user's local timezone, this effectively
+        /// acts as the reverse of <see cref="ToExportDateTime(DateTimeOffset?)"/>
+        /// </summary>
+        protected DateTimeOffset? AddUserTimeZone(DateTime? value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            // The date time supplied in the import does not the contain time zone offset
+            // The code below adds the current user time zone to the date time supplied
+            var timeZone = TimeZoneInfo.Local;  // TODO: Use the user time zone   
+            var offset = timeZone.GetUtcOffset(DateTimeOffset.Now);
+            var dtOffset = new DateTimeOffset(value.Value, offset);
+
+            return dtOffset;
+        }
+
         // Private methods
 
         private ModelStateDictionary MapModelState(ModelStateDictionary modelState, Func<string, int?> rowNumberFromErrorKeyMap)

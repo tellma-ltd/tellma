@@ -32,6 +32,7 @@ namespace BSharp.Controllers.DTO
 
         // The display name is dynamically calculated in DynamicModelMetadataProvider
         [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [DataType(DataType.Date)]
         public DateTimeOffset? BirthDateTime { get; set; }
     }
 

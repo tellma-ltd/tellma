@@ -140,13 +140,9 @@ ngb-datepicker {
   }
 }
 
-// To support RTL
-// .custom-select {
-//   background: white;
-//   -webkit-appearance: auto;
-//   -moz-appearance: auto;
-//   appearance: auto;
-// }
+.ngb-dp-weekday {
+  color: $gray-900!important;
+}
 
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
