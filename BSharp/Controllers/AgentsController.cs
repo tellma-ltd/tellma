@@ -45,7 +45,6 @@ namespace BSharp.Controllers
             _mapper = mapper;
         }
 
-
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Agent>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
@@ -300,7 +299,8 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
         protected override async Task<List<M.Agent>> PersistAsync(List<AgentForSave> entities, SaveArguments args)
         {
             // Some properties are always set to null for organizations
-            if(AgentType() == ORGANIZATION)
+            string agentType = AgentType();
+            if(agentType == ORGANIZATION)
             {
                 entities.ForEach(e =>
                 {
@@ -319,7 +319,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             };
 
             // The agent type
-            var agentType = new SqlParameter("AgentType", AgentType());
+            var agentTypeParameter = new SqlParameter("AgentType", agentType);
 
             string saveSql = $@"
 -- Procedure: AgentsForSave
@@ -368,7 +368,7 @@ SET NOCOUNT ON;
             if (!(args.ReturnEntities ?? false))
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
-                await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp, agentType);
+                await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp, agentTypeParameter);
                 return new List<M.Agent>();
             }
             else
@@ -377,17 +377,19 @@ SET NOCOUNT ON;
                 saveSql = saveSql += "SELECT * FROM @IndexedIds;";
 
                 // Retrieve the map from Indexes to Ids
-                var indexedIds = await _db.Saving.FromSql(saveSql, entitiesTvp, agentType).ToListAsync();
+                var indexedIds = await _db.Saving.FromSql(saveSql, entitiesTvp, agentTypeParameter).ToListAsync();
 
-                // Load the entities using their Ids
-                DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
-                var idsTvp = new SqlParameter("Ids", idsTable)
-                {
-                    TypeName = $"dbo.IdList",
-                    SqlDbType = SqlDbType.Structured
-                };
+                //// Load the entities using their Ids
+                //DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
+                //var idsTvp = new SqlParameter("Ids", idsTable)
+                //{
+                //    TypeName = $"dbo.IdList",
+                //    SqlDbType = SqlDbType.Structured
+                //};
 
-                var q = _db.Agents.FromSql("SELECT * FROM dbo.[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                // var q = _db.Agents.FromSql("SELECT * FROM dbo.[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var ids = indexedIds.Select(e => e.Id);
+                var q = _db.Agents.Where(e => ids.Contains(e.Id));
                 q = Expand(q, args.Expand);
                 var savedEntities = await q.ToListAsync();
 
@@ -477,7 +479,7 @@ SET NOCOUNT ON;
             return result;
         }
 
-        protected override AbstractDataGrid ToAbstractGrid(GetResponse<Agent> response, ExportArguments args)
+        protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<Agent> response, ExportArguments args)
         {
             // Get all the properties without Id and EntityState
             var type = typeof(Agent);

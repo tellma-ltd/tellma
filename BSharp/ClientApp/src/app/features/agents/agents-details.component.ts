@@ -37,9 +37,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
   create = () => {
     const result = new AgentForSave();
-    result.Gender = 'M';
     result.IsRelated = false;
-    result.BirthDateTime = new Date(1990, 1, 1).toISOString();
     return result;
   }
 

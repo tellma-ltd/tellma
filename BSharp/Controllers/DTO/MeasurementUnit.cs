@@ -14,15 +14,15 @@ namespace BSharp.Controllers.DTO
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "MU_Name")]
+        [Display(Name = "Name")]
         public string Name { get; set; }
 
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "MU_Name2")]
+        [Display(Name = "Name2")]
         public string Name2 { get; set; }
 
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "MU_Code")]
+        [Display(Name = "Code")]
         public string Code { get; set; }
 
         [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume", "Money" },
@@ -46,7 +46,7 @@ namespace BSharp.Controllers.DTO
     /// </summary>
     public class MeasurementUnit : MeasurementUnitForSave, IAuditedDto
     {
-        [Display(Name = "MU_IsActive")]
+        [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]

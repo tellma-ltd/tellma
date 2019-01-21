@@ -7,7 +7,7 @@ namespace BSharp.Data.Model
     /// <summary>
     /// Represents a core translation, shared across all tenants
     /// </summary>
-    public class Translation : ModelForSaveBase
+    public class Translation : ModelBase
     {
         [Required]
         [MaxLength(255)]
@@ -64,18 +64,15 @@ namespace BSharp.Data.Model
 
             En(Constants.Server, "Error_TheCode0IsUsed", "The code '{0}' is already used"),
             Ar(Constants.Server, "Error_TheCode0IsUsed", "الكود ({0}) مستخدم حاليا"),
+            
+            En(Constants.Server, "Error_CannotModifyInactiveItem", "Cannot modify an inactive item"),
+            Ar(Constants.Server, "Error_CannotModifyInactiveItem", "لا يمكن تعديل بيان غير منشط"),
 
             En(Constants.Server, "Error_TheName0IsDuplicated", "The name '{0}' is duplicated"),
             Ar(Constants.Server, "Error_TheName0IsDuplicated", "الاسم ({0}) مكرر"),
 
             En(Constants.Server, "Error_TheName0IsUsed", "The name '{0}' is already used"),
             Ar(Constants.Server, "Error_TheName0IsUsed", "الاسم ({0}) مستخدم حاليا"),
-
-            En(Constants.Server, "Error_TheName20IsDuplicated", "The name '{0}' is duplicated"),
-            Ar(Constants.Server, "Error_TheName20IsDuplicated", "الاسم ({0}) مكرر"),
-
-            En(Constants.Server, "Error_TheName20IsUsed", "The second name '{0}' is already used"),
-            Ar(Constants.Server, "Error_TheName20IsUsed", "الاسم الثاني ({0}) مستخدم حاليا"),
 
             En(Constants.Server, "Error_TheEntityWithId0IsSpecifiedMoreThanOnce", "The entity with Id '{0}' is specified more than once"),
             Ar(Constants.Server, "Error_TheEntityWithId0IsSpecifiedMoreThanOnce", "البيان ذو المفتاح ({0}) مذكور أكثر من مرة"),
@@ -89,12 +86,18 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_CannotUpdate0WithoutId", "Cannot update a {0} without specifying its Id"),
             Ar(Constants.Server, "Error_CannotUpdate0WithoutId", "لا يمكن نعديل {0} بدون تحديد المفتاح"),
 
+            En(Constants.Server, "Error_CannotDelete0WithoutId", "Cannot delete a {0} without specifying its Id"),
+            Ar(Constants.Server, "Error_CannotDelete0WithoutId", "لا يمكن حذف {0} بدون تحديد المفتاح"),
+
             En(Constants.Server, "Error_CodeIsRequiredForImportModeUpdate", "The code is required for the update import mode"),
             Ar(Constants.Server, "Error_CodeIsRequiredForImportModeUpdate", "الكود مطلوب لوضع التعديل"),
 
             En(Constants.Server, "Error_TheCode0DoesNotExist", "The code '{0}' does not exist"),
             Ar(Constants.Server, "Error_TheCode0DoesNotExist", "الكود ({0}) غير موجود"),
 
+            En(Constants.Server, "Error_TheView0IsInactive", "The view with code '{0}' is not activated"),
+            Ar(Constants.Server, "Error_TheView0IsInactive", "الواجهة ذات الكود ({0}) غير منشطة"),
+            
             En(Constants.Server, "Error_NoFileWasUploaded", "No file was uploaded"),
             Ar(Constants.Server, "Error_NoFileWasUploaded", "لم يتم رفع أي ملف"),
 
@@ -168,16 +171,6 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "MeasurementUnits", "Measurement Units"),
             Ar(Constants.Shared, "MeasurementUnits", "وحدات قياس"),
 
-            // TODO Change MU_X to X for all standard properties
-            En(Constants.Shared, "MU_Name", "Name"),
-            Ar(Constants.Shared, "MU_Name", "الاسم"),
-
-            En(Constants.Shared, "MU_Name2", "Second Name"), // TODO
-            Ar(Constants.Shared, "MU_Name2", "الاسم الثاني"),
-
-            En(Constants.Shared, "MU_Code", "Code"),
-            Ar(Constants.Shared, "MU_Code", "الكود"),
-
             En(Constants.Shared, "MU_UnitType", "Unit Type"),
             Ar(Constants.Shared, "MU_UnitType", "التصنيف"),
 
@@ -186,9 +179,6 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "MU_BaseAmount", "Amount in base Unit"),
             Ar(Constants.Shared, "MU_BaseAmount", "الكمية بالوحدة الأساسية"),
-
-            En(Constants.Shared, "MU_IsActive", "Is Active"),
-            Ar(Constants.Shared, "MU_IsActive", "منشط"),
 
             En(Constants.Shared, "Custody", "Custody"),
             Ar(Constants.Shared, "Custody", "عهدة"),
@@ -246,6 +236,57 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "Agent_Female", "Female"),
             Ar(Constants.Shared, "Agent_Female", "أنثى"),
+
+            En(Constants.Shared, "View", "View"),
+            Ar(Constants.Shared, "View", "واجهة"),
+
+            En(Constants.Shared, "Views", "Views"),
+            Ar(Constants.Shared, "Views", "واجهات"),
+            
+            En(Constants.Shared, "Role", "Role"),
+            Ar(Constants.Shared, "Role", "دور"),
+
+            En(Constants.Shared, "Roles", "Roles"),
+            Ar(Constants.Shared, "Roles", "أدوار"),
+
+            En(Constants.Shared, "Permission", "Permission"),
+            Ar(Constants.Shared, "Permission", "إذن"),
+
+            En(Constants.Shared, "Permissions", "Permissions"),
+            Ar(Constants.Shared, "Permissions", "أذونات"),
+
+            En(Constants.Shared, "Role_IsPublic", "Is Public"),
+            Ar(Constants.Shared, "Role_IsPublic", "عام للجميع"),
+
+            En(Constants.Shared, "Permission_View", "View"),
+            Ar(Constants.Shared, "Permission_View", "الواجهة"),
+
+            En(Constants.Shared, "Permission_Role", "Role"),
+            Ar(Constants.Shared, "Permission_Role", "الدور"),
+
+            En(Constants.Shared, "Permission_Level", "Level"),
+            Ar(Constants.Shared, "Permission_Level", "الدرجة"),
+
+            En(Constants.Shared, "Permission_Read", "Read"),
+            Ar(Constants.Shared, "Permission_Read", "اطلاع"),
+
+            En(Constants.Shared, "Permission_Update", "Update"),
+            Ar(Constants.Shared, "Permission_Update", "تعديل"),
+
+            En(Constants.Shared, "Permission_Create", "Create"),
+            Ar(Constants.Shared, "Permission_Create", "إنشاء"),
+
+            En(Constants.Shared, "Permission_ReadAndCreate", "Read and Create"),
+            Ar(Constants.Shared, "Permission_ReadAndCreate", "اطلاع وإنشاء"),
+
+            En(Constants.Shared, "Permission_Sign", "Sign"),
+            Ar(Constants.Shared, "Permission_Sign", "توقيع"),
+
+            En(Constants.Shared, "Permission_Criteria", "Criteria"),
+            Ar(Constants.Shared, "Permission_Criteria", "تقييد"),
+
+            En(Constants.Shared, "Memo", "Memo"),
+            Ar(Constants.Shared, "Memo", "ملاحظات"),
 
             En(Constants.Shared, "Name", "Name"),
             Ar(Constants.Shared, "Name", "الاسم"),

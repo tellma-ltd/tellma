@@ -10,7 +10,7 @@ namespace BSharp.Controllers.DTO
     /// Only for type-safety during development, i.e to prevent the silly 
     /// mistake of passing model entities as DTO entities
     /// </summary>
-    public abstract class DtoForSaveBase
+    public abstract class DtoBase
     {
     }
 }

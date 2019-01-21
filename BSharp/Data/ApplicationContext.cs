@@ -26,6 +26,9 @@ namespace BSharp.Data
         public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
         public DbSet<Custody> Custodies { get; set; }
         public DbSet<Agent> Agents { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<View> Views { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
 
         /// <summary>
         /// A query for returning strongly typed validation errors from SQL
@@ -116,6 +119,19 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
 
             // Agent : Custody
             Agent.OnModelCreating_Agent(builder);
+
+            // Roles
+            AddTenantId<Role>(builder);
+            Role.OnModelCreating(builder);
+
+            // Views
+            AddTenantId<View>(builder);
+            View.OnModelCreating(builder);
+
+            // Permissions
+            AddTenantId<Permission>(builder);
+            Permission.OnModelCreating(builder);
+
         }
 
         public override void Dispose()

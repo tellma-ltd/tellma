@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BSharp.Data.Model
 {
-    public class MeasurementUnit : ModelForSaveBase, IAuditedModel
+    public class MeasurementUnit : ModelBase, IAuditedModel
     {
         public int Id { get; set; }
 

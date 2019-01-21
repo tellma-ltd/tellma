@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.DTO
 {
-    public class GetByIdResponse<TDto> where TDto : DtoForSaveBase
+    public class GetByIdResponse<TDto> where TDto : DtoBase
     {
         public TDto Entity { get; set; }
 
         public string CollectionName { get; set; }
         
-        public Dictionary<string, IEnumerable<DtoForSaveBase>> RelatedEntities { get; set; }
+        public Dictionary<string, IEnumerable<DtoBase>> RelatedEntities { get; set; }
     }
 }

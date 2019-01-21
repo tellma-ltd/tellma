@@ -6,12 +6,10 @@ using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -19,24 +17,18 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
 namespace BSharp.Controllers
 {
     [ApiController]
-    public abstract class CrudControllerBase<TModel, TDto, TDtoForSave, TKey> : ControllerBase
-        where TModel : M.ModelForSaveBase
+    public abstract class CrudControllerBase<TModel, TDto, TDtoForSave, TKey> : ReadControllerBase<TModel, TDto, TKey>
+        where TModel : M.ModelBase
         where TDtoForSave : DtoForSaveKeyBase<TKey>
-        where TDto : TDtoForSave
+        where TDto : DtoForSaveKeyBase<TKey>
     {
-        // Constants
-
-        private const int DEFAULT_MAX_PAGE_SIZE = 10000;
-
         // Private Fields
 
         private readonly ILogger _logger;
@@ -45,7 +37,7 @@ namespace BSharp.Controllers
 
         // Constructor
 
-        public CrudControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper)
+        public CrudControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper) : base(logger, localizer, mapper)
         {
             _logger = logger;
             _localizer = localizer;
@@ -53,66 +45,6 @@ namespace BSharp.Controllers
         }
 
         // HTTP Methods
-
-        [HttpGet]
-        public virtual async Task<ActionResult<GetResponse<TDto>>> Get([FromQuery] GetArguments args)
-        {
-            try
-            {
-                var result = await GetImplAsync(args);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("{id}")]
-        public virtual async Task<ActionResult<GetByIdResponse<TDto>>> GetById(TKey id, [FromQuery] GetByIdArguments args)
-        {
-            try
-            {
-                // TODO Authorize GET by Id
-
-                // Expand
-                var query = SingletonQuery(GetBaseQuery(), id);
-                query = Expand(query, args.Expand);
-
-                // Load
-                var dbEntity = await query.FirstOrDefaultAsync();
-                if (dbEntity == null)
-                {
-                    throw new NotFoundException<TKey>(id);
-                }
-
-                // Flatten Related Entities
-                var relatedEntities = FlattenRelatedEntities(dbEntity);
-
-                // Map the primary result to DTO too
-                var entity = Map(dbEntity);
-
-                // Return
-                var result = new GetByIdResponse<TDto>
-                {
-                    Entity = entity,
-                    CollectionName = GetCollectionName(typeof(TDto)),
-                    RelatedEntities = relatedEntities
-                };
-
-                return Ok(result);
-            }
-            catch (NotFoundException<TKey> ex)
-            {
-                return NotFound(ex.Ids);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
-        }
 
         [HttpPost]
         public virtual async Task<ActionResult<EntitiesResponse<TDto>>> Save([FromBody] List<TDtoForSave> entities, [FromQuery] SaveArguments args)
@@ -148,23 +80,6 @@ namespace BSharp.Controllers
             catch (UnprocessableEntityException ex)
             {
                 return UnprocessableEntity(ex.ModelState);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("export")]
-        public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args)
-        {
-            try
-            {
-                // Get abstract grid
-                var response = await GetImplAsync(args);
-                var abstractFile = ToAbstractGrid(response, args);
-                return ToFileResult(abstractFile, args.Format);
             }
             catch (Exception ex)
             {
@@ -283,7 +198,6 @@ namespace BSharp.Controllers
             }
         }
 
-
         // Abstract and virtual members
 
         protected virtual async Task<(List<TDtoForSave>, Func<string, int?>)> ParseImplAsync(ParseArguments args)
@@ -294,7 +208,7 @@ namespace BSharp.Controllers
                 throw new BadRequestException(_localizer["Error_NoFileWasUploaded"]);
             }
 
-            var abstractGrid = ToAbstractGrid(file, args);
+            var abstractGrid = FileToAbstractGrid(file, args);
             if (abstractGrid.Count < 2)
             {
                 ModelState.AddModelError("", _localizer["Error_EmptyImportFile"]);
@@ -311,7 +225,7 @@ namespace BSharp.Controllers
             return (dtosForSave, keyMap);
         }
 
-        protected virtual AbstractDataGrid ToAbstractGrid(IFormFile file, ParseArguments args)
+        protected virtual AbstractDataGrid FileToAbstractGrid(IFormFile file, ParseArguments args)
         {
             // Determine an appropriate file handler based on the file metadata
             FileHandlerBase handler;
@@ -339,93 +253,6 @@ namespace BSharp.Controllers
         protected abstract Task<(List<TDtoForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args);
 
         protected abstract AbstractDataGrid GetImportTemplate();
-
-        protected abstract AbstractDataGrid ToAbstractGrid(GetResponse<TDto> response, ExportArguments args);
-
-        /// <summary>
-        /// Returns the query from which the GET endpoint retrieves the results
-        /// </summary>
-        protected abstract IQueryable<TModel> GetBaseQuery();
-
-        /// <summary>
-        /// Returns the query from which the GET by Id endpoint retrieves the result
-        /// </summary>
-        protected abstract IQueryable<TModel> SingletonQuery(IQueryable<TModel> query, TKey id);
-
-        /// <summary>
-        /// Applies the search argument, which is handled differently in every controller
-        /// </summary>
-        protected abstract IQueryable<TModel> Search(IQueryable<TModel> query, string search);
-
-        /// <summary>
-        /// Includes or excludes inactive items from the query depending on the boolean switch supplied
-        /// </summary>
-        protected abstract IQueryable<TModel> IncludeInactive(IQueryable<TModel> query, bool inactive);
-
-        /// <summary>
-        /// Persists the entities in the database, either creating them or updating them depending on the EntityState
-        /// </summary>
-        protected abstract Task<List<TModel>> PersistAsync(List<TDtoForSave> entities, SaveArguments args);
-
-        /// <summary>
-        /// Returns the entities as per the specifications in the get request
-        /// </summary>
-        protected virtual async Task<GetResponse<TDto>> GetImplAsync(GetArguments args)
-        {
-            // TODO Authorize for GET
-
-            // Get a readonly query
-            IQueryable<TModel> query = GetBaseQuery().AsNoTracking();
-
-            // Include inactive
-            query = IncludeInactive(query, inactive: args.Inactive);
-
-            // Search
-            query = Search(query, args.Search);
-
-            // Filter
-            query = Filter(query, args.Filter);
-
-            // Before ordering or paging, retrieve the total count
-            int totalCount = query.Count();
-
-            // OrderBy
-            query = OrderBy(query, args.OrderBy, args.Desc);
-
-            // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
-            var top = args.Top;
-            var skip = args.Skip;
-            top = Math.Min(top, MaximumPageSize());
-            query = query.Skip(skip).Take(top);
-
-            // Apply the expand, which has the general format 'Expand=A,B/C,D'
-            query = Expand(query, args.Expand);
-
-            // Load the data, transform it and wrap it in some metadata
-            var memoryList = await query.ToListAsync();
-
-            // Flatten related entities and map each to its respective DTO 
-            var relatedEntities = FlattenRelatedEntities(memoryList);
-
-            // Map the primary result to DTOs as well
-            var resultData = Map(memoryList);
-
-            // Prepare the result in a response object
-            var result = new GetResponse<TDto>
-            {
-                Skip = skip,
-                Top = resultData.Count(),
-                OrderBy = args.OrderBy,
-                Desc = args.Desc,
-                TotalCount = totalCount,
-                Data = resultData,
-                RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TDto))
-            };
-
-            // Finally return the result
-            return result;
-        }
 
         /// <summary>
         /// Saves the entities (Insert or Update) into the database after authorization and validation
@@ -480,6 +307,18 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
+        /// Performs server side validation on the entities, this method is expected to 
+        /// call AddModelError on the controller's ModelState if there is a validation problem,
+        /// the method should NOT do validation that is already handled by validation attributes
+        /// </summary>
+        protected abstract Task ValidateAsync(List<TDtoForSave> entities);
+
+        /// <summary>
+        /// Persists the entities in the database, either creating them or updating them depending on the EntityState
+        /// </summary>
+        protected abstract Task<List<TModel>> PersistAsync(List<TDtoForSave> entities, SaveArguments args);
+
+        /// <summary>
         /// Begins the transaction that wraps validation and persistence of data inside the save API 
         /// implementation, each controller determines its suitable transaction isolation level
         /// </summary>
@@ -491,31 +330,6 @@ namespace BSharp.Controllers
         protected abstract Task DeleteImplAsync(List<TKey> ids);
 
         /// <summary>
-        /// Performs server side validation on the entities, this method is expected to 
-        /// call AddModelError on the controller's ModelState if there is a validation problem,
-        /// the method should NOT do validation that is already handled by validation attributes
-        /// </summary>
-        protected abstract Task ValidateAsync(List<TDtoForSave> entities);
-
-        /// <summary>
-        /// Maps a list of the controller models to a list of concrete controller DTOs
-        /// </summary>
-        protected virtual List<TDto> Map(List<TModel> models)
-        {
-            return _mapper.Map<List<TDto>>(models);
-        }
-
-        /// <summary>
-        /// Maps a list of any models to their corresponding DTO types, the default implementation
-        /// assumes that the default DTO has been mapped to every model type in AutoMapper by mapping 
-        /// it to type <see cref="DtoForSaveBase"/>
-        /// </summary>
-        protected virtual IEnumerable<DtoForSaveBase> MapRelatedEntities(IEnumerable<M.ModelForSaveBase> relatedEntities)
-        {
-            return relatedEntities.Select(e => _mapper.Map<DtoForSaveBase>(e));
-        }
-
-        /// <summary>
         /// Trims all string properties of the entity
         /// </summary>
         protected virtual void TrimStringProperties(TDtoForSave entity)
@@ -524,630 +338,117 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// Specifies the maximum page size to be returned by GET, defaults to <see cref="DEFAULT_MAX_PAGE_SIZE"/>
-        /// </summary>
-        protected virtual int MaximumPageSize()
-        {
-            return DEFAULT_MAX_PAGE_SIZE;
-        }
-
-        /// <summary>
-        /// Filters the query based on the filter argument, the default implementation 
-        /// assumes OData-like syntax
-        /// </summary>
-        protected virtual IQueryable<TModel> Filter(IQueryable<TModel> query, string filter)
-        {
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                // Below are the standard steps of any compiler
-
-                //////// (1) Preprocessing
-
-                // Ensure no spaces are repeated
-                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                filter = regex.Replace(filter, " ");
-
-                // Trim
-                filter = filter.Trim();
-
-
-                //////// (2) Lexical Analysis of string into token stream
-
-                List<string> symbols = new List<string>(new string[] {
-
-                    // Logical Operators
-                    " and ", " or ",
-
-                    // Brackets
-                    "(", ")",
-                });
-
-                List<string> tokens = new List<string>();
-                bool insideQuotes = false;
-                string acc = "";
-                int index = 0;
-                while (index < filter.Length)
-                {
-                    // Lexical anaysis ignores what's inside single quotes
-                    if (filter[index] == '\'' && (index == 0 || filter[index - 1] != '\'') && (index == filter.Length - 1 || filter[index + 1] != '\''))
-                    {
-                        insideQuotes = !insideQuotes;
-                        acc += filter[index];
-                        index++;
-                    }
-                    else if (insideQuotes)
-                    {
-                        acc += filter[index];
-                        index++;
-                    }
-                    else
-                    {
-                        // Everything that is not inside single quotes is ripe for lexical analysis      
-                        var matchingSymbol = symbols.FirstOrDefault(filter.Substring(index).StartsWith);
-                        if (matchingSymbol != null)
-                        {
-                            // Add all that has been accumulating before the symbol
-                            if (!string.IsNullOrWhiteSpace(acc))
-                            {
-                                tokens.Add(acc.Trim());
-                                acc = "";
-                            }
-
-                            // And add the symbol
-                            tokens.Add(matchingSymbol.Trim());
-                            index = index + matchingSymbol.Length;
-                        }
-                        else
-                        {
-                            acc += filter[index];
-                            index++;
-                        }
-                    }
-                }
-
-                if (insideQuotes)
-                {
-                    // Programmer mistake
-                    throw new BadRequestException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
-                }
-
-                if (!string.IsNullOrWhiteSpace(acc))
-                {
-                    tokens.Add(acc.Trim());
-                }
-
-
-                //////// (3) Parse token stream to Abstract Syntax Tree (AST)
-
-                Ast ParseToAst(IEnumerable<string> tokenStream)
-                {
-                    if (tokenStream.IsEnclosedInPairBrackets())
-                    {
-                        return ParseBrackets(tokenStream);
-                    }
-                    else if (tokenStream.OutsideBrackets().Any(e => e == "or"))
-                    {
-                        // OR has lower precedence than AND
-                        return ParseDisjunction(tokenStream);
-                    }
-                    else if (tokenStream.OutsideBrackets().Any(e => e == "and"))
-                    {
-                        return ParseConjunction(tokenStream);
-                    }
-                    else if (tokenStream.Count() <= 1)
-                    {
-                        return ParseAtom(tokenStream);
-                    }
-                    else
-                    {
-                        // Programmer mistake
-                        throw new BadRequestException("Badly formatted filter parameter");
-                    }
-                }
-
-                AstBrackets ParseBrackets(IEnumerable<string> tokenStream)
-                {
-                    return new AstBrackets
-                    {
-                        Inner = ParseToAst(tokenStream.Skip(1).Take(tokenStream.Count() - 2))
-                    };
-                }
-
-                AstConjunction ParseConjunction(IEnumerable<string> tokenStream)
-                {
-                    // find first occurrence of AND outside the brackets, and then parse both sides
-                    int i = tokenStream.OutsideBrackets().ToList().IndexOf("and");
-                    var left = tokenStream.Take(i);
-                    var right = tokenStream.Skip(i + 1);
-
-                    return new AstConjunction
-                    {
-                        Left = ParseToAst(left),
-                        Right = ParseToAst(right),
-                    };
-                }
-
-                AstDisjunction ParseDisjunction(IEnumerable<string> tokenStream)
-                {
-                    // find first occurrence of AND outside the brackets, and then parse both sides
-                    int i = tokenStream.OutsideBrackets().ToList().IndexOf("or");
-                    var left = tokenStream.Take(i);
-                    var right = tokenStream.Skip(i + 1);
-
-                    return new AstDisjunction
-                    {
-                        Left = ParseToAst(left),
-                        Right = ParseToAst(right),
-                    };
-                }
-
-                AstAtom ParseAtom(IEnumerable<string> tokenStream)
-                {
-                    return new AstAtom { Value = tokenStream.SingleOrDefault() ?? "" };
-                }
-
-                Ast ast = ParseToAst(tokens);
-
-
-                //////// (4) Compile the AST to Linq lambda
-
-                // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(TModel));
-
-                // Recursive function to turn the AST to linq
-                Expression ToExpression(Ast tree)
-                {
-                    if (tree is AstBrackets bracketsAst)
-                    {
-                        return ToExpression(bracketsAst.Inner);
-                    }
-
-                    if (tree is AstConjunction conAst)
-                    {
-                        return Expression.AndAlso(ToExpression(conAst.Left), ToExpression(conAst.Right));
-                    }
-
-                    if (tree is AstDisjunction disAst)
-                    {
-                        return Expression.OrElse(ToExpression(disAst.Left), ToExpression(disAst.Right));
-                    }
-
-                    if (tree is AstAtom atom)
-                    {
-                        var modelType = typeof(TModel);
-                        var v = atom.Value;
-
-                        // Indicates a programmer mistake
-                        if (string.IsNullOrWhiteSpace(v))
-                        {
-                            throw new InvalidOperationException("An atomic expression cannot be empty");
-                        }
-                        // Some controllers may define their own set of keywords which 
-                        // take precedence over the default parsing of expression atoms
-                        Expression result = ParseSpecialFilterKeyword(v, eParam);
-
-                        // If the controller does not handle this atom, we use the default parser
-                        if (result == null)
-                        {
-                            // The default parser assumes the following syntax: Path Op Value, for example: Address/Street eq 'Huntington Rd.'
-                            var pieces = v.Split(" ");
-                            if (pieces.Count() < 3)
-                            {
-                                // Programmer mistake
-                                throw new InvalidOperationException("An atomic expression must either be a reserved word or come in the form of 'Property Op Value'");
-                            }
-                            else
-                            {
-                                // (A) Parse the member access path (e.g. "Address/Street")
-                                var path = pieces[0];
-
-                                var steps = path.Split('/');
-                                PropertyInfo prop = null;
-                                Type propType = modelType;
-                                Expression memberAccess = eParam;
-                                foreach (var step in steps)
-                                {
-                                    prop = propType.GetProperty(step);
-                                    if (prop == null)
-                                    {
-                                        throw new InvalidOperationException(
-                                            $"The property '{step}' from the filter argument is not a navigation property of entity type '{propType.Name}'.");
-                                    }
-
-                                    var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
-                                    if (isCollection)
-                                    {
-                                        // Programmer mistake
-                                        throw new InvalidOperationException("Filter parameters cannot access collection properties");
-                                    }
-
-                                    propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                                    memberAccess = Expression.Property(memberAccess, prop);
-                                }
-
-                                // (B) Parse the value (e.g. "'Huntington Rd.'")
-                                var valueString = string.Join(" ", pieces.Skip(2));
-                                object value;
-                                if (propType == typeof(string) || propType == typeof(char) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
-                                {
-                                    if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
-                                    {
-                                        // Programmer mistake
-                                        throw new InvalidOperationException($"Property {prop.Name} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
-                                    }
-
-                                    valueString = valueString.Substring(1, valueString.Length - 2);
-                                }
-
-                                try
-                                {
-                                    // The default Convert.ChangeType cannot handle converting types to nullable types
-                                    // Therefore this method overcomes this limitation, credit: https://bit.ly/2DgqJmL
-                                    object ChangeType(object val, Type conversion)
-                                    {
-                                        var t = conversion;
-                                        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-                                        {
-                                            if (val == null)
-                                            {
-                                                return null;
-                                            }
-
-                                            t = Nullable.GetUnderlyingType(t);
-                                        }
-
-                                        return Convert.ChangeType(val, t);
-                                    }
-
-                                    value = ChangeType(valueString, prop.PropertyType);
-                                }
-                                catch (ArgumentException)
-                                {
-                                    // Programmer mistake
-                                    throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
-                                }
-
-                                var constant = Expression.Constant(value, prop.PropertyType);
-
-                                // (C) parse the operator (e.g. "eq")
-                                var op = pieces[1];
-                                op = op?.ToLower() ?? "";
-                                switch (op)
-                                {
-                                    case "gt":
-                                        return Expression.GreaterThan(memberAccess, constant);
-
-                                    case "ge":
-                                        return Expression.GreaterThanOrEqual(memberAccess, constant);
-
-                                    case "lt":
-                                        return Expression.LessThan(memberAccess, constant);
-
-                                    case "le":
-                                        return Expression.LessThanOrEqual(memberAccess, constant);
-
-                                    case "eq":
-                                        return Expression.Equal(memberAccess, constant);
-
-                                    case "ne":
-                                        return Expression.NotEqual(memberAccess, constant);
-
-                                    default:
-                                        throw new InvalidOperationException($"The filter operator '{op}' is not recognized");
-                                }
-                            }
-                        }
-
-                        return result;
-                    }
-
-                    // Programmer mistake
-                    throw new Exception("Unknown AST type");
-                }
-
-                var expression = ToExpression(ast);
-                var lambda = Expression.Lambda<Func<TModel, bool>>(expression, eParam);
-
-
-                //////// (5) Apply lambda to the query
-
-                query = query.Where(lambda);
-            }
-
-            return query;
-        }
-
-        /// <summary>
-        /// Some controllers may wish to define their own way of handling atomic filter 
-        /// query parameter expressions, overriding this virtual method is the way to do it
-        /// </summary>
-        protected virtual Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
-        {
-            // This method is overridden by controllers to provide special keywords that represent certain
-            // complicated linq expressions that cannot be expressed with normal ODATA filter
-
-            // Any type that contains a CreatedBy property defines a keyword "CreatedByMe"
-            if (keyword == "CreatedByMe")
-            {
-                var createdByProperty = typeof(TModel).GetProperty("CreatedBy");
-                if (createdByProperty != null)
-                {
-                    var me = Expression.Constant(this.User.UserId(), typeof(string));
-                    return Expression.Equal(Expression.Property(param, createdByProperty), me);
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Orders the query as per the orderby and desc arguments
-        /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="query">The base query to order</param>
-        /// <param name="orderby">The orderby parameter which has the format 'A/B/C'</param>
-        /// <param name="desc">True for a descending order</param>
-        /// <returns>Ordered query</returns>
-        protected virtual IQueryable<TModel> OrderBy(IQueryable<TModel> query, string orderby, bool desc)
-        {
-            Type modelType = typeof(TModel);
-            if (!string.IsNullOrWhiteSpace(orderby))
-            {
-                var steps = orderby.Split('/');
-
-                // Validate that the steps represent a valid train of navigation properties
-                {
-                    PropertyInfo prop = null;
-                    Type propType = modelType;
-                    foreach (var step in steps)
-                    {
-                        prop = propType.GetProperty(step);
-                        if (prop == null)
-                        {
-                            throw new InvalidOperationException(
-                                $"The property '{step}' is not a navigation property of entity type '{propType.Name}'. " +
-                                $"The orderby parameter should have the general format: 'orderby=A/B'");
-                        }
-
-                        var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
-                        if (isCollection)
-                        {
-                            throw new InvalidOperationException(
-                                $"The property '{step}' is a collection navigation property of type '{propType.Name}'. " +
-                                $"Collection properties cannot be used in the orderby argument");
-                        }
-
-                        propType = prop.PropertyType;
-                    }
-                }
-
-                // Create the key selector dynamically using LINQ expressions and apply it on the query
-                {
-                    var param = Expression.Parameter(modelType);
-                    Expression exp = param;
-                    Type propType = modelType;
-                    foreach (var step in steps)
-                    {
-                        exp = Expression.Property(exp, propType.GetProperty(step));
-                        exp = Expression.Convert(exp, typeof(object)); // To handle unboxing of e.g. int members
-                    }
-
-                    var keySelector = Expression.Lambda<Func<TModel, object>>(exp, param);
-
-                    // Order the query taking into account the "isDescending" parameter
-                    query = desc ? query.OrderByDescending(keySelector) : query.OrderBy(keySelector);
-                }
-            }
-            else
-            {
-                query = DefaultOrder(query);
-            }
-
-            return query;
-        }
-
-        protected virtual IQueryable<TModel> DefaultOrder(IQueryable<TModel> query)
-        {
-            var id = typeof(TModel).GetProperty("Id");
-            if (id != null)
-            {
-                var p = Expression.Parameter(typeof(TModel), "e");
-                var access = Expression.Property(p, id);
-                var lambda = Expression.Lambda<Func<TModel, int>>(access, p);
-                return query.OrderByDescending(lambda);
-            }
-
-            return query;
-        }
-
-        /// <summary>
-        /// Includes in the query all navigation properties specified in the expand parameter
-        /// </summary>
-        /// <param name="query">The base query on which to include related properties</param>
-        /// <param name="expand">The expand parameter which has the format 'A,B/C,D''</param>
-        /// <returns>Expanded query</returns>
-        protected virtual IQueryable<TModel> Expand(IQueryable<TModel> query, string expand)
-        {
-            // Apply the expand, which has the general format 'Expand=A,B/C,D'
-            if (!string.IsNullOrWhiteSpace(expand))
-            {
-                var paths = expand.Split(',').Select(e => e.Trim()).Where(e => !string.IsNullOrWhiteSpace(e));
-                Type modelType = typeof(TModel);
-                foreach (var path in paths)
-                {
-                    // Validate each step in the path
-                    {
-                        var steps = path.Split('/');
-                        PropertyInfo prop = null;
-                        Type propType = modelType;
-                        foreach (var step in steps)
-                        {
-                            prop = propType.GetProperty(step);
-                            if (prop == null)
-                            {
-                                throw new InvalidOperationException(
-                                    $"The property '{step}' is not a navigation property of entity type '{propType.Name}'. " +
-                                    $"The expand argument should have the general format: 'Expand=A,B/C,D'");
-                            }
-
-                            var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
-                            propType = isCollection ? prop.PropertyType.GenericTypeArguments[0] : prop.PropertyType;
-                        }
-                    }
-
-                    // Include
-                    {
-                        var includePath = path.Replace("/", ".");
-                        query = query.Include(includePath);
-                    }
-                }
-            }
-
-            return query;
-        }
-
-        /// <summary>
-        /// For every model in the list, the method will traverse the object graph and group all related
-        /// models it can find (navigation properties) into a dictionary, after mapping them to their DTOs
-        /// </summary>
-        /// <param name="models"></param>
-        /// <returns></returns>
-        protected virtual Dictionary<string, IEnumerable<DtoForSaveBase>> FlattenRelatedEntities(List<TModel> models)
-        {
-            // An inline function that recursively traverses the model tree and adds all entities
-            // that have a base type of Model.ModelForSaveBase to the provided HashSet
-            void Flatten(M.ModelForSaveBase model, HashSet<M.ModelForSaveBase> accRelatedModels)
-            {
-
-                foreach (var prop in model.GetType().GetProperties())
-                {
-                    if (prop.PropertyType.IsSubclassOf(typeof(M.ModelForSaveBase)))
-                    {
-                        // Navigation property
-                        if (prop.GetValue(model) is M.ModelForSaveBase relatedModel && !accRelatedModels.Contains(relatedModel))
-                        {
-                            Flatten(model, accRelatedModels);
-                            accRelatedModels.Add(relatedModel);
-                        }
-
-                        // Implementations would have to handle navigation collections
-                    }
-                }
-            }
-
-            var relatedModels = new HashSet<M.ModelForSaveBase>();
-            foreach (var model in models)
-            {
-                Flatten(model, relatedModels);
-            }
-
-            var relatedDtos = relatedModels.Select(e => _mapper.Map<DtoForSaveBase>(e));
-
-            // This groups the related entities by type name, and maps them to DTO using the mapper
-            var relatedEntities = relatedModels.GroupBy(e => GetCollectionName(e.GetType()))
-                .ToDictionary(g => g.Key, g => g.Select(e => _mapper.Map<DtoForSaveBase>(e)));
-
-            return relatedEntities;
-        }
-
-        protected static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never expires
-        protected static string GetCollectionName(Type dtoType)
-        {
-            if (!_getCollectionNameCache.ContainsKey(dtoType))
-            {
-                string collectionName;
-                var attribute = dtoType.GetCustomAttributes<CollectionNameAttribute>(inherit: true).FirstOrDefault();
-                if (attribute != null)
-                {
-                    collectionName = attribute.Name;
-                }
-                else
-                {
-                    collectionName = dtoType.Name;
-                }
-
-                _getCollectionNameCache[dtoType] = collectionName;
-            }
-
-            return _getCollectionNameCache[dtoType];
-        }
-
-        /// <summary>
-        /// Syntactic sugar that maps a collection based on the implementation of its 'list' overload
-        /// </summary>
-        protected TDto Map(TModel model)
-        {
-            return Map(new List<TModel>() { model }).Single();
-        }
-
-        /// <summary>
-        /// Syntactic sugar that flattens a single model, based on the implementation of its 'list' overload
-        /// </summary>
-        protected Dictionary<string, IEnumerable<DtoForSaveBase>> FlattenRelatedEntities(TModel model)
-        {
-            return FlattenRelatedEntities(new List<TModel> { model });
-        }
-
-        private Dictionary<(object, bool), DataTable> _dataTableCache = new Dictionary<(object, bool), DataTable>();
-        /// <summary>
         /// Constructs a SQL data table containing all the public properties of the 
         /// entities' type and populates the data table with the provided entities
         /// </summary>
         protected DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
         {
-            if (!_dataTableCache.ContainsKey((entities, addIndex)))
+
+            DataTable table = new DataTable();
+            if (addIndex)
             {
-                DataTable table = new DataTable();
+                // The column order MUST match the column order in the user-defined table type
+                table.Columns.Add(new DataColumn("Index", typeof(int)));
+            }
+
+            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList());
+            foreach (var prop in props)
+            {
+                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                var column = new DataColumn(prop.Name, propType);
+                if (propType == typeof(string))
+                {
+                    // For string columns, it is more performant to explicitly specify the maximum column size
+                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
+                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
+                    if (stringLengthAttribute != null)
+                    {
+                        column.MaxLength = stringLengthAttribute.MaximumLength;
+                    }
+                }
+
+                table.Columns.Add(column);
+            }
+
+            int index = 0;
+            foreach (var entity in entities)
+            {
+                DataRow row = table.NewRow();
+
+                // We add an index property since SQL works with un-ordered sets
                 if (addIndex)
                 {
-                    // The column order MUST match the column order in the user-defined table type
-                    table.Columns.Add(new DataColumn("Index", typeof(int)));
+                    row["Index"] = index++;
                 }
 
-                var props = GetPropertiesBaseFirst(typeof(T));
+                // Add the remaining properties
                 foreach (var prop in props)
                 {
-                    var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                    var column = new DataColumn(prop.Name, propType);
-                    if (propType == typeof(string))
-                    {
-                        // For string columns, it is better to explicitly specify the maximum column size
-                        // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
-                        var stringLegnthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
-                        if (stringLegnthAttribute != null)
-                        {
-                            column.MaxLength = stringLegnthAttribute.MaximumLength;
-                        }
-                    }
-
-                    table.Columns.Add(column);
+                    var propValue = prop.GetValue(entity);
+                    row[prop.Name] = propValue ?? DBNull.Value;
                 }
 
+                table.Rows.Add(row);
+            }
+
+            return table;
+        }
+
+        /// <summary>
+        /// Constructs a SQL data table containing all the entities in all the collections
+        /// and adds an index and a header index, this is useful for child collections that
+        /// are passed to SQL alongside their headers
+        /// </summary>
+        protected DataTable DataTableWithHeaderIndex<T>(IEnumerable<(List<T> Items, int HeaderIndex)> collections)
+        {
+            DataTable table = new DataTable();
+
+            // The column order MUST match the column order in the user-defined table type
+            table.Columns.Add(new DataColumn("Index", typeof(int)));
+            table.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+
+            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList());
+            foreach (var prop in props)
+            {
+                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                var column = new DataColumn(prop.Name, propType);
+                if (propType == typeof(string))
+                {
+                    // For string columns, it is more performant to explicitly specify the maximum column size
+                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
+                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
+                    if (stringLengthAttribute != null)
+                    {
+                        column.MaxLength = stringLengthAttribute.MaximumLength;
+                    }
+                }
+
+                table.Columns.Add(column);
+            }
+
+            foreach (var (items, headerIndex) in collections)
+            {
                 int index = 0;
-                foreach (var entity in entities)
+                foreach (var item in items)
                 {
                     DataRow row = table.NewRow();
 
-                    // We add an index property since SQL works with un-ordered sets
-                    if (addIndex)
-                    {
-                        row["Index"] = index++;
-                    }
+                    // We add index and header index properties since SQL works with un-ordered sets
+                    row["Index"] = index++;
+                    row["HeaderIndex"] = headerIndex;
 
                     // Add the remaining properties
                     foreach (var prop in props)
                     {
-                        var propValue = prop.GetValue(entity);
+                        var propValue = prop.GetValue(item);
                         row[prop.Name] = propValue ?? DBNull.Value;
                     }
 
                     table.Rows.Add(row);
                 }
-
-                _dataTableCache[(entities, addIndex)] = table;
             }
 
-            return _dataTableCache[(entities, addIndex)];
+            return table;
         }
 
         /// <summary>
@@ -1189,28 +490,6 @@ namespace BSharp.Controllers
         protected bool IsForeignKeyViolation(SqlException ex)
         {
             return ex.Number == 547;
-        }
-
-        /// <summary>
-        /// Changes the DateTimeOffset into a DateTime in the local time of the user suitable for exporting
-        /// </summary>
-        protected DateTime? ToExportDateTime(DateTimeOffset? offset)
-        {
-            if (offset == null)
-            {
-                return null;
-            }
-
-            var timeZone = TimeZoneInfo.Local;  // TODO: Use the user time zone 
-            return TimeZoneInfo.ConvertTime(offset.Value, timeZone).DateTime;           
-        }
-
-        /// <summary>
-        /// Returns the default format for dates and date times
-        /// </summary>
-        protected string ExportDateTimeFormat(bool dateOnly)
-        {
-            return dateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd hh:mm";
         }
 
         /// <summary>

@@ -65,7 +65,7 @@ namespace BSharp.Controllers
 
                     var isActiveParam = new SqlParameter("@IsActive", isActive);
 
-                    DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
+                    DataTable idsTable = DataTable(ids.Select(id => new { Id = id }));
                     var idsTvp = new SqlParameter("@Ids", idsTable)
                     {
                         TypeName = $"dbo.IdList",
@@ -285,7 +285,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 
 	-- Name2 must not exist already
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Name2' As [Key], N'Error_TheName20IsUsed' As [ErrorName],
+	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Name2' As [Key], N'Error_TheName0IsUsed' As [ErrorName],
 		FE.[Name2] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities FE 
 	JOIN [dbo].MeasurementUnits BE ON FE.[Name2] = BE.[Name2]
@@ -293,7 +293,7 @@ DECLARE @ValidationErrors dbo.ValidationErrorList;
 
 	-- Name2 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Name2' As [Key], N'Error_TheName20IsDuplicated' As [ErrorName],
+	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Name2' As [Key], N'Error_TheName0IsDuplicated' As [ErrorName],
 		[Name2] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @Entities
 	WHERE [Name2] IN (
@@ -462,7 +462,7 @@ SET NOCOUNT ON;
             return result;
         }
 
-        protected override AbstractDataGrid ToAbstractGrid(GetResponse<MeasurementUnit> response, ExportArguments args)
+        protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<MeasurementUnit> response, ExportArguments args)
         {
             // Get all the properties without Id and EntityState
             var type = typeof(MeasurementUnit);

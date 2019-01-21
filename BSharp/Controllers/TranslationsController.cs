@@ -93,7 +93,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override AbstractDataGrid ToAbstractGrid(GetResponse<Translation> response, ExportArguments args)
+        protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<Translation> response, ExportArguments args)
         {
             throw new NotImplementedException();
         }

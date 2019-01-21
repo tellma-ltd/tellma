@@ -5,7 +5,7 @@ namespace BSharp.Controllers.DTO
     /// <summary>
     /// Represents a response of raw entities for save
     /// </summary>
-    public class EntitiesResponse<TDto> where TDto : DtoForSaveBase
+    public class EntitiesResponse<TDto> where TDto : DtoBase
     {
         public Dictionary<string, object> Bag { get; set; }
 
@@ -13,13 +13,13 @@ namespace BSharp.Controllers.DTO
 
         public string CollectionName { get; set; }
 
-        public Dictionary<string, IEnumerable<DtoForSaveBase>> RelatedEntities { get; set; }
+        public Dictionary<string, IEnumerable<DtoBase>> RelatedEntities { get; set; }
     }
 
     /// <summary>
     /// Represents a response of raw entities for save + some search metadata
     /// </summary>
-    public class GetResponse<TDto> : EntitiesResponse<TDto> where TDto : DtoForSaveBase
+    public class GetResponse<TDto> : EntitiesResponse<TDto> where TDto : DtoBase
     {
         public int Skip { get; set; }
 

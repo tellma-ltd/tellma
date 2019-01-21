@@ -27,6 +27,18 @@ namespace BSharp.Services.Mapper
             CreateMap<AgentForSave, M.Agent>();
             CreateDtoMap<M.Agent, Agent>();
 
+            // Roles
+            CreateMap<RoleForSave, M.Role>();
+            CreateDtoMap<M.Role, Role>();
+
+            // Permissions
+            CreateMap<PermissionForSave, M.Permission>();
+            CreateDtoMap<M.Permission, Permission>();
+
+            // Views
+            CreateMap<ViewForSave, M.View>();
+            CreateDtoMap<M.View, View>();
+
             // Translations
             CreateMap<TranslationForSave, M.Translation>()
                 .ForMember(e => e.Culture, opt => opt.MapFrom(e => e.Id == null ? null : e.Id.Split(SEPARATOR)[0]))
@@ -37,12 +49,12 @@ namespace BSharp.Services.Mapper
         }
 
         /// <summary>
-        /// Syntactic sugar, maps the model type to both the DTO and <see cref="DtoForSaveBase"/>
+        /// Syntactic sugar, maps the model type to both the DTO and <see cref="DtoBase"/>
         /// </summary>
         private IMappingExpression<TModel, TDto> CreateDtoMap<TModel, TDto>()
-            where TDto : DtoForSaveBase where TModel : M.ModelForSaveBase
+            where TDto : DtoBase where TModel : M.ModelBase
         {
-            CreateMap<TModel, DtoForSaveBase>()
+            CreateMap<TModel, DtoBase>()
                 .ConstructUsing((model, ctx) => ctx.Mapper.Map<TDto>(model));
 
             return CreateMap<TModel, TDto>();

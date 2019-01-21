@@ -62,7 +62,7 @@ namespace BSharp.Services.Utilities
             return result;
         }
 
-        public static void TrimStringProperties(this DtoForSaveBase entity)
+        public static void TrimStringProperties(this DtoBase entity)
         {
             var dtoType = entity.GetType();
             foreach (var prop in dtoType.GetProperties())
@@ -76,24 +76,35 @@ namespace BSharp.Services.Utilities
                         prop.SetValue(entity, trimmed);
                     }
                 }
-                else if (prop.PropertyType.IsSubclassOf(typeof(DtoForSaveBase)))
+                else if (prop.PropertyType.IsSubclassOf(typeof(DtoBase)))
                 {
                     var dtoForSave = prop.GetValue(entity);
                     if (dtoForSave != null)
                     {
-                        (dtoForSave as DtoForSaveBase).TrimStringProperties();
+                        (dtoForSave as DtoBase).TrimStringProperties();
                     }
                 }
                 else
                 {
-                    var isDtoList = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>);
+                    var propType = prop.PropertyType;
+                    var isDtoList = propType.IsList() && 
+                        propType.GenericTypeArguments[0].IsSubclassOf(typeof(DtoBase));
+
                     if (isDtoList)
                     {
-                        // TODO trim all children in a navigation collection
-                        throw new NotImplementedException("Trimming navigation collection is not implemented yet");
+                        var dtoList = (IEnumerable<DtoBase>)prop.GetValue(entity);
+                        foreach(var dto in dtoList)
+                        {
+                            dto.TrimStringProperties();
+                        }
                     }
                 }
             }
+        }
+
+        public static bool IsList(this Type @this)
+        {
+            return @this.IsGenericType && @this.GetGenericTypeDefinition() == typeof(List<>);
         }
 
         /// <summary>

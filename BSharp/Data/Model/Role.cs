@@ -1,16 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Data.Model
 {
-    public class Custody : ModelBase, IAuditedModel
+    public class Role : ModelBase, IAuditedModel
     {
         public int Id { get; set; }
-
-        [Required]
-        [MaxLength(255)]
-        public string CustodyType { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -22,10 +19,7 @@ namespace BSharp.Data.Model
         [MaxLength(255)]
         public string Code { get; set; }
 
-        [MaxLength(1024)]
-        public string Address { get; set; }
-
-        public DateTimeOffset? BirthDateTime { get; set; }
+        public bool IsPublic { get; set; }
 
         public bool IsActive { get; set; }
 
@@ -41,16 +35,21 @@ namespace BSharp.Data.Model
         [MaxLength(450)]
         public string ModifiedBy { get; set; }
 
+        public ICollection<Permission> Permissions { get; set; }
+
         internal static void OnModelCreating(ModelBuilder builder)
         {
-            // Map the discriminator column to the concrete column
-            builder.Entity<Custody>().HasDiscriminator<string>(nameof(CustodyType));
-
             // IsActive defaults to TRUE
-            builder.Entity<Custody>().Property(e => e.IsActive).HasDefaultValue(true);
+            builder.Entity<Role>().Property(e => e.IsActive).HasDefaultValue(true);
 
             // Code is unique
-            builder.Entity<Custody>().HasIndex("TenantId", nameof(Code)).IsUnique();
+            builder.Entity<Role>().HasIndex("TenantId", nameof(Code)).IsUnique();
+
+            // Name is unique
+            builder.Entity<Role>().HasIndex("TenantId", nameof(Name)).IsUnique();
+
+            // Name2 is unique
+            builder.Entity<Role>().HasIndex("TenantId", nameof(Name2)).IsUnique();
         }
     }
 }

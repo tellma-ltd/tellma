@@ -84,6 +84,12 @@ namespace BSharp.IntegrationTests.Scenario_01
                         new DesignTimeTenantIdProvider(), new DesignTimeUserIdProvider());
 
                     appContext.Database.Migrate();
+
+                    appContext.Views.Add(new View { Id = "MeasurementUnits", IsActive = true });
+                    appContext.Views.Add(new View { Id = "Individual", IsActive = true });
+                    appContext.Views.Add(new View { Id = "Organization", IsActive = true });
+
+                    appContext.SaveChanges();
                 }
             });
         }
