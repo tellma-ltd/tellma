@@ -280,7 +280,7 @@ namespace BSharp.Controllers
                     var memoryList = await PersistAsync(entities, args);
 
                     // Flatten related entities and map each to its respective DTO 
-                    var relatedEntities = FlattenRelatedEntities(memoryList);
+                    var relatedEntities = FlattenRelatedEntities(memoryList, args.Expand);
 
                     // Map the primary result to DTOs as well
                     var resultData = Map(memoryList);
@@ -397,10 +397,12 @@ namespace BSharp.Controllers
         /// <summary>
         /// Constructs a SQL data table containing all the entities in all the collections
         /// and adds an index and a header index, this is useful for child collections that
-        /// are passed to SQL alongside their headers
+        /// are passed to SQL alongside their headers, the include predicate optionally filters
+        /// the items but keeps the original indexing
         /// </summary>
-        protected DataTable DataTableWithHeaderIndex<T>(IEnumerable<(List<T> Items, int HeaderIndex)> collections)
+        protected DataTable DataTableWithHeaderIndex<T>(IEnumerable<(List<T> Items, int HeaderIndex)> collections, Predicate<T> include = null)
         {
+            include = include ?? (e => true);
             DataTable table = new DataTable();
 
             // The column order MUST match the column order in the user-defined table type
@@ -431,20 +433,25 @@ namespace BSharp.Controllers
                 int index = 0;
                 foreach (var item in items)
                 {
-                    DataRow row = table.NewRow();
-
-                    // We add index and header index properties since SQL works with un-ordered sets
-                    row["Index"] = index++;
-                    row["HeaderIndex"] = headerIndex;
-
-                    // Add the remaining properties
-                    foreach (var prop in props)
+                    if (include(item))
                     {
-                        var propValue = prop.GetValue(item);
-                        row[prop.Name] = propValue ?? DBNull.Value;
+                        DataRow row = table.NewRow();
+
+                        // We add index and header index properties since SQL works with un-ordered sets
+                        row["Index"] = index;
+                        row["HeaderIndex"] = headerIndex;
+
+                        // Add the remaining properties
+                        foreach (var prop in props)
+                        {
+                            var propValue = prop.GetValue(item);
+                            row[prop.Name] = propValue ?? DBNull.Value;
+                        }
+
+                        table.Rows.Add(row);
                     }
 
-                    table.Rows.Add(row);
+                    index++;
                 }
             }
 

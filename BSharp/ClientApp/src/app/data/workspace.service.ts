@@ -2,6 +2,8 @@ import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
 import { MeasurementUnit } from './dto/measurement-unit';
 import { Injectable } from '@angular/core';
 import { Custody } from './dto/custody';
+import { Role } from './dto/role';
+import { View } from './dto/view';
 
 export enum MasterStatus {
 
@@ -32,7 +34,7 @@ export enum DetailsStatus {
 
 // Represents a collection of savable entities, indexed by their IDs
 export class EntityWorkspace<T extends DtoForSaveKeyBase> {
-  [id: string]: T
+  [id: string]: T;
 }
 
 // This contains all the state that is specific to a particular tenant
@@ -48,6 +50,16 @@ export class TenantWorkspace {
 
   MeasurementUnits: EntityWorkspace<MeasurementUnit>;
   Custodies: EntityWorkspace<Custody>;
+  Roles: EntityWorkspace<Role>;
+  Views: EntityWorkspace<View>;
+
+  get(collection: string, id: number | string) {
+    if (!id) {
+      return null;
+    }
+
+    return this[collection][id];
+  }
 
   constructor() {
     this.reset();
@@ -58,6 +70,8 @@ export class TenantWorkspace {
     this.mdState = {};
     this.MeasurementUnits = new EntityWorkspace<MeasurementUnit>();
     this.Custodies = new EntityWorkspace<Custody>();
+    this.Roles = new EntityWorkspace<Role>();
+    this.Views = new EntityWorkspace<View>();
   }
 }
 

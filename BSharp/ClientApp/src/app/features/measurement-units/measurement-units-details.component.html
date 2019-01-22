@@ -23,17 +23,17 @@
   <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="validationErrors.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
-                   [placeholder]="('MU_Name' | translate) + '...'" required></b-text-editor>
+                   [placeholder]="('Name' | translate) + '...'" required></b-text-editor>
   </b-form-group>
 
   <!-- Name2 -->
-  <b-form-group class="b-form-group" [label]="'MU_Name2' | translate" [serverErrors]="validationErrors.Name2">
+  <b-form-group class="b-form-group" [label]="'Name2' | translate" [serverErrors]="validationErrors.Name2">
     <div *ngIf="!isEdit">{{model?.Name2}}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
   <!-- Code -->
-  <b-form-group class="b-form-group" [label]="'MU_Code' | translate" [serverErrors]="validationErrors.Code">
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="validationErrors.Code">
     <div *ngIf="!isEdit">{{model?.Code}}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
@@ -57,7 +57,7 @@
   </b-form-group>
 
   <!-- Is Active -->
-  <b-form-group class="b-form-group" [label]="'MU_IsActive' | translate" *ngIf="!isEdit">
+  <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
   </b-form-group>
 </ng-template>

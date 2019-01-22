@@ -3,7 +3,7 @@
 $enable-rounded: false; // Square corners
 $font-size-base: 0.9rem; // The default font (1rem) is too big
 
-// Customize bootstrap colors and then import bootstrap
+// customize bootstrap colors and then import bootstrap
 @import "app-variables";
 @import "node_modules/bootstrap/scss/bootstrap";
 
@@ -13,7 +13,7 @@ $font-size-base: 0.9rem; // The default font (1rem) is too big
   border-radius: 0;
 }
 
-// Change the striped
+// change the striped
 /*.table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(0, 0, 0, 0.03);
   }*/
@@ -109,7 +109,7 @@ a {
 }
 
 // Smaller HR separators look better
-.small.dropdown-menu hr {
+.dropdown-menu hr {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -138,11 +138,27 @@ ngb-datepicker {
   .custom-select {
     background-position-x: 0.75rem;
   }
+  .dropdown-menu {
+    text-align: right;
+  }
 }
 
 .ngb-dp-weekday {
   color: $gray-900!important;
 }
+
+// add a cool colored top border for selected tab
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+  border-top-width: 2px;
+  border-top-color: $dark-primary;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+  color: $gray-900;
+  background-color: $gray-300;
+}
+
+
 
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
@@ -194,8 +210,8 @@ ngb-datepicker {
 .b-white-button,
 .b-white-button.disabled,
 .b-white-button:disabled {
-  background: white;
-  border-color: white;
+  background: transparent;
+  border-color: transparent;
 }
 
 // Make the primary text a little darker since easier to read
@@ -339,11 +355,19 @@ input.b-h2,
 
 .b-input {
   border-width: 0 0 1px 0;
-  border-color: gray;
+  border-color: grey;
   background-color: transparent;
   padding: 0 !important;
   height: auto;
   margin-bottom: -1px;
+}
+
+tr .b-input {
+  border-bottom-width: 0px;
+}
+
+tr .b-form-group {
+  padding: 0!important;
 }
 
 .b-input:focus {
@@ -557,7 +581,7 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
   padding-left: 2rem;
 }
 
-.b-multiselect-th {
+.b-multiselect-th, .b-line-number-th {
   width: 1px;
 }
 
@@ -679,4 +703,8 @@ div.b-highlight {
 
 tr.b-highlight {
   background-color: rgba(17, 17, 17, 0.075) !important;
+}
+
+.b-slightly-bold {
+  font-weight: 500;
 }

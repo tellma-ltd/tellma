@@ -17,6 +17,8 @@ import { GetByIdResponse } from './dto/get-by-id-response';
 import { SaveArguments } from './dto/save-arguments';
 import { appconfig } from './appconfig';
 import { Agent } from './dto/agent';
+import { Role } from './dto/role';
+import { View } from './dto/view';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +42,20 @@ export class ApiService {
     return {
       activate: this.activateFactory<Agent>(`agents/${agentType}`, cancellationToken$),
       deactivate: this.deactivateFactory<Agent>(`agents/${agentType}`, cancellationToken$)
+    };
+  }
+
+  public rolesApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<Role>('roles', cancellationToken$),
+      deactivate: this.deactivateFactory<Role>('roles', cancellationToken$)
+    };
+  }
+
+  public viewsApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<View>('views', cancellationToken$),
+      deactivate: this.deactivateFactory<View>('views', cancellationToken$)
     };
   }
 

@@ -22,7 +22,7 @@ namespace BSharp.Services.SqlLocalization
     /// </summary>
     public class SqlStringLocalizerFactory : ICachingStringLocalizerFactory
     {
-        private const string HTTP_CONTEXT_FLAG_NAME = "IsCacheUpdated";
+        // private const string HTTP_CONTEXT_FLAG_NAME = "IsCacheUpdated";
         private const int DISTRIBUTED_CACHE_EXPIRATION_DAYS = 30;
 
         /// <summary>
@@ -64,14 +64,17 @@ namespace BSharp.Services.SqlLocalization
             return new SqlStringLocalizer(this);
         }
 
-        public CascadingTranslations GetTranslationsForCurrentCulture()
+        public CascadingTranslations GetTranslations(CultureInfo culture = null)
         {
+            culture = culture ?? CultureInfo.CurrentUICulture; // Current UI culture by default
+
             string defaultUICulture = _config["DefaultUICulture"];
-            string specificUICulture = CultureInfo.CurrentUICulture.Name;
-            string neutralUICulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? specificUICulture : CultureInfo.CurrentUICulture.Parent.Name;
+            string specificUICulture = culture.Name;
+            string neutralUICulture = culture.IsNeutralCulture ? specificUICulture : culture.Parent.Name;
 
             // We refresh the cache once per request, and we track this using a flag in the HTTP Context object
-            var isUpdated =  (bool?) (_httpContextAccessor.HttpContext == null ? false : _httpContextAccessor.HttpContext.Items[HTTP_CONTEXT_FLAG_NAME]);
+            string flag = specificUICulture;
+            var isUpdated =  (bool?) (_httpContextAccessor.HttpContext == null ? false : _httpContextAccessor.HttpContext.Items[flag]);
             if (!(isUpdated ?? false))
             {
                 // The list of cultures to update;
@@ -101,7 +104,7 @@ namespace BSharp.Services.SqlLocalization
                 // a copy of the HTTP context, since it is scoped per request
                 if (_httpContextAccessor.HttpContext != null)
                 {
-                    _httpContextAccessor.HttpContext.Items[HTTP_CONTEXT_FLAG_NAME] = true;
+                    _httpContextAccessor.HttpContext.Items[flag] = true;
                 }
             }
 

@@ -85,7 +85,7 @@ namespace BSharp.Controllers
                 }
 
                 // Flatten Related Entities
-                var relatedEntities = FlattenRelatedEntities(dbEntity);
+                var relatedEntities = FlattenRelatedEntities(dbEntity, args.Expand);
 
                 // Map the primary result to DTO too
                 var entity = Map(dbEntity);
@@ -194,7 +194,7 @@ namespace BSharp.Controllers
             var memoryList = await query.ToListAsync();
 
             // Flatten related entities and map each to its respective DTO 
-            var relatedEntities = FlattenRelatedEntities(memoryList);
+            var relatedEntities = FlattenRelatedEntities(memoryList, args.Expand);
 
             // Map the primary result to DTOs as well
             var resultData = Map(memoryList);
@@ -543,6 +543,12 @@ namespace BSharp.Controllers
                                     case "ne":
                                         return Expression.NotEqual(memberAccess, constant);
 
+                                    case "contains":
+                                        return memberAccess.Contains(constant);
+
+                                    case "ncontains":
+                                        return Expression.Not(memberAccess.Contains(constant));
+
                                     default:
                                         throw new InvalidOperationException($"The filter operator '{op}' is not recognized");
                                 }
@@ -660,7 +666,7 @@ namespace BSharp.Controllers
         protected virtual IQueryable<TModel> DefaultOrder(IQueryable<TModel> query)
         {
             var id = typeof(TModel).GetProperty("Id");
-            if (id != null)
+            if (id != null && id.PropertyType == typeof(int))
             {
                 var p = Expression.Parameter(typeof(TModel), "e");
                 var access = Expression.Property(p, id);
@@ -723,7 +729,7 @@ namespace BSharp.Controllers
         /// </summary>
         /// <param name="models"></param>
         /// <returns></returns>
-        protected virtual Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(List<TModel> models)
+        protected virtual Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(List<TModel> models, string expand)
         {
             // An inline function that recursively traverses the model tree and adds all entities
             // that have a base type of Model.ModelForSaveBase to the provided HashSet
@@ -794,9 +800,9 @@ namespace BSharp.Controllers
         /// <summary>
         /// Syntactic sugar that flattens a single model, based on the implementation of its 'list' overload
         /// </summary>
-        protected Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(TModel model)
+        protected Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(TModel model, string expand)
         {
-            return FlattenRelatedEntities(new List<TModel> { model });
+            return FlattenRelatedEntities(new List<TModel> { model }, expand);
         }
 
         /// <summary>

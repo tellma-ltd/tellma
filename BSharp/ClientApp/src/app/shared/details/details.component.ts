@@ -42,6 +42,9 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   sidebarTemplate: TemplateRef<any>;
 
   @Input()
+  savePreprocessing: (mode: DtoForSaveKeyBase) => void;
+
+  @Input()
   actions: {
     template: TemplateRef<any>,
     action: (model: DtoForSaveKeyBase) => void,
@@ -468,6 +471,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
       // TODO: some screens may wish to customize this behavior for e.g. line item DTOs
       this._editModel.EntityState = isNew ? 'Inserted' : 'Updated';
+
+      if (this.savePreprocessing) {
+        this.savePreprocessing(this._editModel);
+      }
 
       // prepare the save observable
       this.crud.save([this._editModel], { expand: this.expand, returnEntities: true }).subscribe(

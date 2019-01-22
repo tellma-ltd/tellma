@@ -172,6 +172,60 @@ MERGE INTO [dbo].[Roles] AS t
             return query;
         }
 
+        protected override IQueryable<M.Role> Expand(IQueryable<M.Role> query, string expand)
+        {
+            // Here we make sure that a valid 'Permissions/View' expand term does not make it to the default implementation
+            // since it would throw an error, 'View' is not a navigation property in the DB and has to be manually included
+            // in FlattenRelatedEntities
+            string nonDbExpand = "Permissions/View";
+            if (expand != null && expand.Contains(nonDbExpand))
+            {
+                // Take out the non DB Expand term and call the default implementation on the rest
+                var dbExpands = expand.Split(',').Select(e => e.Trim()).Where(e => e != nonDbExpand).ToList();
+                dbExpands.Add("Permissions");
+                expand = string.Join(",", dbExpands);
+            }
+
+            return base.Expand(query, expand);
+        }
+
+        protected override Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(List<M.Role> models, string expand)
+        {
+            // Here we artificially include Permissions/Views since it is not a navigation
+            // property in the DB and therefore will throw an error in the default implementation
+            string nonDbExpand = "Permissions/View";
+            if (expand != null && expand.Contains(nonDbExpand))
+            {
+                // Take out the non DB Expand term and call the default implementation on the rest
+                var dbExpands = expand.Split(',').Select(e => e.Trim()).Where(e => e != nonDbExpand).ToList();
+                dbExpands.Add("Permissions");
+                Dictionary<string, IEnumerable<DtoBase>> result = base.FlattenRelatedEntities(models, string.Join(",", dbExpands));
+
+                // Manually include the views by invoking the Views repository
+                var viewIds = models.SelectMany(e => e.Permissions).Select(e => e.ViewId).Where(e => e != null).Distinct();
+                var repo = new ViewsRepository(_db, _localizer);
+                var allViews = repo.GetAllViews().ToDictionary(e => e.Id);
+
+                var viewList = new List<View>(viewIds.Count());
+
+                foreach (var viewId in viewIds)
+                {
+                    if (allViews.ContainsKey(viewId))
+                    {
+                        var viewDef = allViews[viewId];
+                        viewList.Add(_mapper.Map<View>(viewDef));
+                    }
+                }
+
+                result["Views"] = viewList;
+                return result;
+            }
+            else
+            {
+                return base.FlattenRelatedEntities(models, expand);
+            }
+        }
+
         protected override async Task ValidateAsync(List<RoleForSave> entities)
         {
             // Hash the indices for performance
@@ -283,7 +337,7 @@ MERGE INTO [dbo].[Roles] AS t
             var rolesTvp = new SqlParameter("Roles", rolesTable) { TypeName = $"dbo.{nameof(RoleForSave)}List", SqlDbType = SqlDbType.Structured };
 
             var permissionHeaderIndices = indices.Keys.Select(role => (role.Permissions, indices[role]));
-            DataTable permissionsTable = DataTableWithHeaderIndex(permissionHeaderIndices);
+            DataTable permissionsTable = DataTableWithHeaderIndex(permissionHeaderIndices, e => e.EntityState != null);
             var permissionsTvp = new SqlParameter("Permissions", permissionsTable) { TypeName = $"dbo.{nameof(PermissionForSave)}List", SqlDbType = SqlDbType.Structured };
 
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
@@ -411,7 +465,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 
             // Filter out permissions that haven't changed for performance
             var permissionHeaderIndices = roleIndecies.Keys.Select(role => (role.Permissions.Where(e => e.EntityState != null).ToList(), roleIndecies[role]));
-            DataTable permissionsTable = DataTableWithHeaderIndex(permissionHeaderIndices);
+            DataTable permissionsTable = DataTableWithHeaderIndex(permissionHeaderIndices, e => e.EntityState != null);
             var permissionsTvp = new SqlParameter("Permissions", permissionsTable)
             {
                 TypeName = $"dbo.{nameof(PermissionForSave)}List",

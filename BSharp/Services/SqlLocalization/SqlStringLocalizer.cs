@@ -15,10 +15,16 @@ namespace BSharp.Services.SqlLocalization
         private readonly SqlStringLocalizerFactory _factory;
         private CascadingTranslations _translations;
         private ReaderWriterLockSlim _translationsLock = new ReaderWriterLockSlim();
+        private CultureInfo _culture;
 
         public SqlStringLocalizer(SqlStringLocalizerFactory factory)
         {
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+        }
+
+        public SqlStringLocalizer(SqlStringLocalizerFactory factory, CultureInfo culture): this(factory)
+        {
+            _culture = culture;
         }
 
         /// <summary>
@@ -63,7 +69,7 @@ namespace BSharp.Services.SqlLocalization
         /// </summary>
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return new SqlStringLocalizer(_factory, culture);
         }
 
         /// <summary>
@@ -80,9 +86,9 @@ namespace BSharp.Services.SqlLocalization
                 // This is to workaround the behavior of certain MVC libraries
                 // which seem to re-use the same IStringLocalizer across multiple requests,
                 // even though the current UI culture is a scoped value and the localizer is transient
-                if (_translations == null || CultureInfo.CurrentUICulture.Name != _translations.CultureName)
+                if (_translations == null || (_culture ?? CultureInfo.CurrentUICulture).Name != _translations.CultureName)
                 {
-                    _translations = _factory.GetTranslationsForCurrentCulture();
+                    _translations = _factory.GetTranslations(_culture);
                 }
 
                 // Go over the dictionaries one by one and return the first hit

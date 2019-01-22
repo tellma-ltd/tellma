@@ -36,8 +36,8 @@ namespace BSharp.Services.Mapper
             CreateDtoMap<M.Permission, Permission>();
 
             // Views
-            CreateMap<ViewForSave, M.View>();
-            CreateDtoMap<M.View, View>();
+            CreateMap<ViewForSave, Controllers.ViewDefinition>();
+            CreateDtoMap<Controllers.ViewDefinition, View>();
 
             // Translations
             CreateMap<TranslationForSave, M.Translation>()

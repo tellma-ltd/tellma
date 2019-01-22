@@ -300,7 +300,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
         {
             // Some properties are always set to null for organizations
             string agentType = AgentType();
-            if(agentType == ORGANIZATION)
+            if (agentType == ORGANIZATION)
             {
                 entities.ForEach(e =>
                 {
@@ -453,7 +453,7 @@ SET NOCOUNT ON;
             var agentProps = agentType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             var props = custodyProps.Union(agentProps);
 
-            if(AgentType() == ORGANIZATION)
+            if (AgentType() == ORGANIZATION)
             {
                 // For organizations, some properties are left blank
                 var exemptProperties = new string[] { nameof(Agent.Title), nameof(Agent.Title2), nameof(Agent.Gender) };
@@ -513,7 +513,7 @@ SET NOCOUNT ON;
                 header[i] = AbstractDataCell.Cell(display);
 
                 // Add the proper styling
-                if(prop.PropertyType.IsDateOrTime())
+                if (prop.PropertyType.IsDateOrTime())
                 {
                     var att = prop.GetCustomAttribute<DataTypeAttribute>();
                     var isDateOnly = att != null && att.DataType == DataType.Date;
@@ -544,7 +544,7 @@ SET NOCOUNT ON;
                     }
 
                     // Special handling for DateTimeOffset
-                    if(prop.PropertyType.IsDateTimeOffset() && content != null)
+                    if (prop.PropertyType.IsDateTimeOffset() && content != null)
                     {
                         content = ToExportDateTime((DateTimeOffset)content);
                     }
@@ -650,7 +650,7 @@ SET NOCOUNT ON;
                     }
 
                     // Special handling for DateTime and DateTimeOffset
-                    if(prop.PropertyType.IsDateOrTime())
+                    if (prop.PropertyType.IsDateOrTime())
                     {
                         try
                         {

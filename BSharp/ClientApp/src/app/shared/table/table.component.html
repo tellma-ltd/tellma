@@ -1,0 +1,61 @@
+<div style="max-height: 350px; overflow-y: auto;">
+  <table class="table table-sm table-striped mb-2 mb-sm-0 text-nowrap">
+
+    <!-- Header -->
+    <thead class="small">
+      <tr>
+        <th class="border-top-0 text-align-right text-muted b-line-number-th" *ngIf="showLineNumbers">
+          <span *ngIf="showLineNumbers"> # </span>
+          <span *ngIf="!showLineNumbers"> &nbsp; </span>
+        </th>
+        <th class="border-top-0" *ngFor="let path of columnPaths" [style.width]="colWith(path)">
+          <ng-container *ngTemplateOutlet="columnTemplates[path]?.headerTemplate"></ng-container>
+        </th>
+        <th class="border-top-0" style="width:1px">
+          <button class="btn btn-light btn-sm p-0 pl-1 pr-1" style="background:transparent;color:transparent;border-color: transparent"
+            disabled>
+            <fa-icon icon="trash-alt"></fa-icon>
+          </button>
+        </th>
+      </tr>
+    </thead>
+
+    <!-- Body -->
+    <tbody>
+      <ng-container *ngFor="let item of dataSource; let i = index; trackBy: trackBy">
+        <tr *ngIf="showLine(item)">
+          <td class="text-muted" *ngIf="showLineNumbers"><span *ngIf="showLineNumbers"> {{ i + 1 | number }} </span></td>
+          <td *ngFor="let path of columnPaths" [class.table-bordered]="isEdit">
+            <ng-container>
+              <ng-container *ngTemplateOutlet="columnTemplates[path]?.rowTemplate;context: { item: item, index: i, update: onUpdateLine }"></ng-container>
+            </ng-container>
+          </td>
+
+          <td>
+            <button class="btn btn-light text-primary b-white-button btn-sm p-0 pl-1 pr-1" (click)="onDeleteLine(i)"
+              *ngIf="isEdit">
+              <fa-icon icon="trash-alt"></fa-icon>
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+      <tr *ngIf="dataSource?.length < 1">
+        <td colspan="1000">&nbsp;&nbsp;
+          <span class="font-italic font-weight-light text-muted" *ngIf="!isEdit">
+            {{ 'NoItemsFound' | translate }}
+          </span>
+        </td>
+      </tr>
+      <tr *ngIf="dataSource?.length < 2">
+        <td colspan="1000">&nbsp;</td>
+      </tr>
+      <tr *ngIf="dataSource?.length < 3">
+        <td colspan="1000">&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<button class="btn btn-light text-primary btn-sm b-white-button m-1" (focus)="onNewLine()" *ngIf="isEdit">
+  <fa-icon icon="plus"></fa-icon>&nbsp;&nbsp;{{ 'New Line' | translate }}
+</button>

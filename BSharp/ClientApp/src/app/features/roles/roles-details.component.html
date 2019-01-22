@@ -1,0 +1,156 @@
+<b-details apiEndpoint="roles" expand="Permissions/View" collection="Roles" [createFunc]="create" [mode]="mode"
+  [masterCrumb]="'Roles' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+              { template: activate, action: onActivate, showAction: showActivate },
+              { template: deactivate, action: onDeactivate, showAction: showDeactivate }
+           ]">
+
+</b-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+  <span>{{ model?.Name }}</span>
+</ng-template>
+
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="validationErrors.Name">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + '...'"
+      required></b-text-editor>
+  </b-form-group>
+
+  <!-- Name2 -->
+  <b-form-group class="b-form-group" [label]="'Name2' | translate" [serverErrors]="validationErrors.Name2">
+    <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  </b-form-group>
+
+  <!-- Code -->
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="validationErrors.Code">
+    <div *ngIf="!isEdit">{{ model?.Code }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  </b-form-group>
+
+  <!-- Is Public -->
+  <b-form-group class="b-form-group" [label]="'Role_IsPublic' | translate">
+    <div *ngIf="!isEdit">{{ (model?.IsPublic ? 'Yes' : 'No') | translate }}</div>
+    <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsPublic" id="isPublic">
+      <label class="custom-control-label b-pointer" for="isPublic">&zwnj;</label>
+    </div>
+  </b-form-group>
+
+  <!-- Is Active -->
+  <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
+    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+  </b-form-group>
+
+  <b-warning-message class="pt-3 pt-sm-4 w-100" *ngIf="showPublicRoleWarning(model)"> {{ 'PublicRoleWarning' | translate }} </b-warning-message>
+
+  <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="false">
+    <ngb-tab>
+      <!-- Permissions -->
+      <ng-template ngbTabTitle><span class="small">{{ 'Permissions' | translate }} ({{ permissionsCount(model) }})</span></ng-template>
+      <ng-template ngbTabContent>
+        <b-table [dataSource]="model?.Permissions" [filter]="isPermission" [isEdit]="isEdit" [columnPaths]="['ViewId', 'Level', 'Criteria', 'Memo']"
+          [columnTemplates]="{
+          'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
+          'Level' : { headerTemplate : header_Level, rowTemplate : row_Level, weight : 1 },
+          'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },
+          'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
+        }">
+        </b-table>
+
+        <!-- View -->
+        <ng-template #header_ViewId>{{ 'Permission_View' | translate }}</ng-template>
+        <ng-template #row_ViewId let-item="item" let-index="index" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].ViewId']">
+            <div *ngIf="!isEdit">{{ ws.get('Views', item.ViewId)?.Name }}</div>
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId" (ngModelChange)="update(item); item.Level = null;" apiEndpoint="views" collection="Views"
+            [focusIf]="(index === model?.Permissions?.length - 1) && item.EntityState === 'Inserted'"></b-details-picker>
+          </b-form-group>
+        </ng-template>
+
+        <!-- Level -->
+        <ng-template #header_Level>{{ 'Permission_Level' | translate }}</ng-template>
+        <ng-template #row_Level let-item="item" let-index="index" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Level']">
+            <div *ngIf="!isEdit">{{ permissionLevelLookup(item?.Level) | translate }}</div>
+            <b-selector *ngIf="isEdit" [(ngModel)]="item.Level" (ngModelChange)="update(item);" [ngModelOptions]="{ updateOn: 'blur' }" [choices]="permissionLevelChoices(item)"></b-selector>
+          </b-form-group>
+        </ng-template>
+
+        <!-- Criteria -->
+        <ng-template #header_Criteria>{{ 'Permission_Criteria' | translate }}</ng-template>
+        <ng-template #row_Criteria let-item="item" let-index="index" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Criteria']">
+            <div *ngIf="!isEdit">{{ item.Criteria }}</div>
+            <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Criteria" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+          </b-form-group>
+        </ng-template>
+
+        <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
+        <ng-template #row_Memo let-item="item" let-index="index" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Memo']">
+            <div *ngIf="!isEdit">{{ item.Memo }}</div>
+            <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+          </b-form-group>
+        </ng-template>
+
+      </ng-template>
+    </ngb-tab>
+
+    <!-- Signatures -->
+    <ngb-tab>
+        <ng-template ngbTabTitle><span class="small">{{ 'Signatures' | translate }} ({{ signaturesCount(model) }})</span></ng-template>
+        <ng-template ngbTabContent>
+          <b-table [dataSource]="model?.Permissions" [filter]="isSignature" [onNewItem]="onNewSignature" [isEdit]="isEdit" [columnPaths]="['ViewId', 'Criteria', 'Memo']"
+            [columnTemplates]="{
+            'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
+            'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },
+            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
+          }">
+          </b-table>
+  
+          <!-- View -->
+          <ng-template #header_ViewId>{{ 'Permission_View' | translate }}</ng-template>
+          <ng-template #row_ViewId let-item="item" let-index="index" let-update="update">
+            <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].ViewId']">
+              <div *ngIf="!isEdit">{{ ws.get('Views', item.ViewId)?.Name }}</div>
+              <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId" (ngModelChange)="update(item)" apiEndpoint="views" collection="Views" filter="AllowedPermissionLevels contains 'Sign'"
+              [focusIf]="(index === model?.Permissions?.length - 1) && item.EntityState === 'Inserted'"></b-details-picker>
+            </b-form-group>
+          </ng-template>
+  
+          <!-- Criteria -->
+          <ng-template #header_Criteria>{{ 'Permission_Criteria' | translate }}</ng-template>
+          <ng-template #row_Criteria let-item="item" let-index="index" let-update="update">
+            <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Criteria']">
+              <div *ngIf="!isEdit">{{ item.Criteria }}</div>
+              <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Criteria" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+            </b-form-group>
+          </ng-template>
+  
+          <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
+          <ng-template #row_Memo let-item="item" let-index="index" let-update="update">
+            <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Memo']">
+              <div *ngIf="!isEdit">{{ item.Memo }}</div>
+              <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+            </b-form-group>
+          </ng-template>  
+        </ng-template>  
+    </ngb-tab>
+    <ngb-tab *ngIf="showMembersTab(model)">
+      <ng-template ngbTabTitle><span class="small">{{ 'Members' | translate }} ({{ membersCount(model) }})</span></ng-template>
+      <ng-template ngbTabContent>
+        To be implemented
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</ng-template>
+
+
+<!-- Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

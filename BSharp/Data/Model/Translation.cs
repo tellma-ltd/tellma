@@ -318,6 +318,15 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "T_Tier", "Tier"),
             Ar(Constants.Shared, "T_Tier", "الطبقة"),
 
+            En(Constants.Shared, "Signatures", "Signatures"),
+            Ar(Constants.Shared, "Signatures", "توقيعات"),
+
+            En(Constants.Shared, "Members", "Members"),
+            Ar(Constants.Shared, "Members", "أعضاء"),
+
+            En(Constants.Shared, "View_All", "All"),
+            Ar(Constants.Shared, "View_All", "الجميع"),
+
             En(Constants.Client, "Search", "Search"),
             Ar(Constants.Client, "Search", "بحث"),
 
@@ -344,6 +353,12 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "IncludeInactive", "Include Inactive"),
             Ar(Constants.Client, "IncludeInactive", "إشمل غير المنشط"),
+
+            En(Constants.Client, "Public", "Public"),
+            Ar(Constants.Client, "Public", "عام للجميع"),
+
+            En(Constants.Client, "NotPublic", "Not Public"),
+            Ar(Constants.Client, "NotPublic", "غير عام للجميع"),
 
             En(Constants.Client, "ExportRange", "Exporting Range"),
             Ar(Constants.Client, "ExportRange", "نطاق التصدير"),
@@ -400,7 +415,7 @@ namespace BSharp.Data.Model
             Ar(Constants.Client, "Save", "حفظ"),
 
             En(Constants.Client, "Proceed", "Proceed"),
-            Ar(Constants.Client, "Proceed", "متابعة"),
+            Ar(Constants.Client, "Proceed", "متأكد"),
 
             En(Constants.Client, "Mode", "Mode"),
             Ar(Constants.Client, "Mode", "الوضع"),
@@ -477,7 +492,6 @@ namespace BSharp.Data.Model
             En(Constants.Client, "ShortDay7", "Su"),
             Ar(Constants.Client, "ShortDay7", "أح"),
 
-
             En(Constants.Client, "ImportStep1Instructions", "Download the template file and populate it with your data:"),
             Ar(Constants.Client, "ImportStep1Instructions", "حمل ملف القالب على جهازك واملأه بالبيانات"),
 
@@ -509,7 +523,10 @@ namespace BSharp.Data.Model
             Ar(Constants.Client, "DetailsDeleteConfirmationMessage", "هل تود حذف هذا البيان؟ هذا الفعل لا يمكن التراجع عنه."),
 
             En(Constants.Client, "UnsavedChangesConfirmationMessage", "Your unsaved changes will be discarded, are you sure you would like to proceed?"),
-            Ar(Constants.Client, "UnsavedChangesConfirmationMessage", "ستضيع التعديلات التي لم تُحفظ بعد، هل تود المتابعة؟"),
+            Ar(Constants.Client, "UnsavedChangesConfirmationMessage", "ستضيع التعديلات التي لم تُحفظ بعد، هل أنت متأكد؟"),
+
+            En(Constants.Client, "PublicRoleWarning", "Warning! This role is public, therefore the permissions and signatures here are granted to ALL users"),
+            Ar(Constants.Client, "PublicRoleWarning", "تنبيه! هذا الدور عام وبالتالي الأذونات والتوقيعات المعرفة هنا متاحة لجميع المستخدمين"),
 
             En(Constants.Client, "Activate", "Activate"),
             Ar(Constants.Client, "Activate", "تنشيط"),

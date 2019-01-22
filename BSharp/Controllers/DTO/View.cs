@@ -5,13 +5,18 @@ using System.ComponentModel.DataAnnotations;
 namespace BSharp.Controllers.DTO
 {
     [CollectionName("Views")]
-    public class ViewForSave : DtoForSaveKeyBase<string>
+    public class ViewForSave<TPermission> : DtoForSaveKeyBase<string>
     {
         [Display(Name = "Permissions")]
         public List<Permission> Permissions { get; set; }
     }
 
-    public class View : ViewForSave
+    public class ViewForSave : ViewForSave<PermissionForSave>
+    {
+
+    }
+
+    public class View : ViewForSave<Permission>
     {
         [Display(Name = "Name")]
         public string Name { get; set; }
@@ -26,6 +31,6 @@ namespace BSharp.Controllers.DTO
         public bool? IsActive { get; set; }
 
         // Never displayed
-        public List<string> AllowedPermissionLevels { get; set; }
+        public string AllowedPermissionLevels { get; set; }
     }
 }

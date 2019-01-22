@@ -124,6 +124,8 @@ export class MasterComponent implements OnInit, OnDestroy {
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
   private _formatChoices: { name: string, value: any }[];
+  private originalTableColumnPaths: string[];
+  private _tableColumnPathsAndExtras: string[];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
   public checked = {};
@@ -487,20 +489,25 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   public get tableColumnPathsAndExtras() {
-    // This method conditionally adds the multi-select column
-    let result = this.tableColumnPaths;
+    if (this.originalTableColumnPaths !== this.tableColumnPaths) {
 
-    if (!result) {
-      result = [];
+      // This method conditionally adds the multi-select column
+      let result = this.tableColumnPaths;
+
+      if (!result) {
+        result = [];
+      }
+
+      if (this.allowMultiselect) {
+        result = result.slice();
+        result.unshift('errors');
+        result.unshift('multiselect');
+      }
+
+      this._tableColumnPathsAndExtras = result;
     }
 
-    if (this.allowMultiselect) {
-      result = result.slice();
-      result.unshift('errors');
-      result.unshift('multiselect');
-    }
-
-    return result;
+    return this._tableColumnPathsAndExtras;
   }
 
   // Export-related stuff

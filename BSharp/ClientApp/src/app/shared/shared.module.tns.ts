@@ -18,6 +18,8 @@ import { NativeScriptUISideDrawerModule } from 'nativescript-ui-sidedrawer/angul
 import { NativeScriptUIListViewModule } from 'nativescript-ui-listview/angular';
 import { NativeScriptFormsModule } from 'nativescript-angular/forms';
 import { DatePickerComponent } from './date-picker/date-picker.component';
+import { TableComponent } from './table/table.component';
+import { DetailsPickerComponent } from './details-picker/details-picker.component';
 // import { NativeScriptLocalizeModule } from 'nativescript-localize/angular';
 
 @NgModule({
@@ -35,7 +37,9 @@ import { DatePickerComponent } from './date-picker/date-picker.component';
     SuccessMessageComponent,
     TextEditorComponent,
     WarningMessageComponent,
-    DatePickerComponent],
+    DatePickerComponent,
+    TableComponent,
+    DetailsPickerComponent],
   imports: [
     NativeScriptCommonModule
   ],

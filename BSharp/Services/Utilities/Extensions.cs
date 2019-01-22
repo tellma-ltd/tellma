@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace BSharp.Services.Utilities
@@ -87,13 +88,13 @@ namespace BSharp.Services.Utilities
                 else
                 {
                     var propType = prop.PropertyType;
-                    var isDtoList = propType.IsList() && 
+                    var isDtoList = propType.IsList() &&
                         propType.GenericTypeArguments[0].IsSubclassOf(typeof(DtoBase));
 
                     if (isDtoList)
                     {
                         var dtoList = (IEnumerable<DtoBase>)prop.GetValue(entity);
-                        foreach(var dto in dtoList)
+                        foreach (var dto in dtoList)
                         {
                             dto.TrimStringProperties();
                         }
@@ -235,6 +236,16 @@ namespace BSharp.Services.Utilities
         {
             var t = Nullable.GetUnderlyingType(@this) ?? @this;
             return t == typeof(DateTimeOffset);
+        }
+
+        public static MethodCallExpression Contains(this Expression @this, ConstantExpression constant)
+        {
+            return Expression.Call(
+                instance: @this,
+                methodName: nameof(string.Contains),
+                typeArguments: null,
+                arguments: new[] { constant }
+                );
         }
     }
 }

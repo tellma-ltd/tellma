@@ -20,7 +20,7 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "Permission_Role")]
         public int? RoleId { get; set; }
 
-        [ChoiceList(new object[] { "Read", "Update", "Create", "ReadAndCreate", "Sign" },  new string[] {
+        [ChoiceList(new object[] { "Read", "Update", "Create", "ReadCreate", "Sign" },  new string[] {
             "Permission_Read", "Permission_Update", "Permission_Create", "Permission_ReadAndCreate", "Permission_Sign" })]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]

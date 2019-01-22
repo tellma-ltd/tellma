@@ -12,6 +12,9 @@ import { UnsavedChangesGuard } from '~/app//data/unsaved-changes.guard';
 import { AgentsMasterComponent } from './agents/agents-master.component';
 import { AgentsImportComponent } from './agents/agents-import.component';
 import { AgentsDetailsComponent } from './agents/agents-details.component';
+import { RolesMasterComponent } from './roles/roles-master.component';
+import { RolesImportComponent } from './roles/roles-import.component';
+import { RolesDetailsComponent } from './roles/roles-details.component';
 
 const routes: Routes = [
   {
@@ -52,9 +55,26 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
+      // Roles
+      {
+        path: 'roles',
+        component: RolesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'roles/import',
+        component: RolesImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'roles/:id',
+        component: RolesDetailsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
       // Misc
       { path: 'main-menu', component: MainMenuComponent },
-      { path: '', redirectTo: 'agents/individuals', pathMatch: 'full' },
+      { path: '', redirectTo: 'roles', pathMatch: 'full' },
       { path: '**', component: ApplicationPageNotFoundComponent },
     ]
   }
@@ -71,7 +91,10 @@ const routes: Routes = [
     MainMenuComponent,
     AgentsMasterComponent,
     AgentsImportComponent,
-    AgentsDetailsComponent],
+    AgentsDetailsComponent,
+    RolesMasterComponent,
+    RolesImportComponent,
+    RolesDetailsComponent],
   imports: [
     SharedModule,
     RouterModule.forChild(routes)

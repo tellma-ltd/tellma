@@ -97,11 +97,6 @@
           </span>
           <span class="b-vertical-align-middle"> / {{ total | number }}</span>
         </div>
-
-        <!--<button class="btn btn-light btn-sm b-white-button"
-                  type="button" title="{{ 'First' | translate }}" (click)="onFirstPage()" [disabled]="!canFirstPage">
-            <fa-icon icon="angle-double-left" [flip]="flip"></fa-icon>
-          </button>-->
         <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button" title="{{ 'Previous' | translate }}"
           (click)="onPreviousPage()" [disabled]="!canPreviousPage">
           <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
@@ -110,7 +105,6 @@
           (click)="onNextPage()" [disabled]="!canNextPage">
           <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
         </button>
-
 
         <!-- Tiles/Table Toggle -->
         <div class="btn-group btn-group-toggle b-toolbar-button">

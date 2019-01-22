@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, HostBinding } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, HostBinding, AfterViewInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -6,13 +6,16 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   templateUrl: './text-editor.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: TextEditorComponent }]
 })
-export class TextEditorComponent implements ControlValueAccessor {
+export class TextEditorComponent implements ControlValueAccessor, AfterViewInit {
 
   // A simple text editor, instead of using input directly in all the screens, this allows
   // us to change the bahvior of all inputs in the application since they all use this control
 
   @Input()
   placeholder = '';
+
+  @Input()
+  focusIf: boolean;
 
   @HostBinding('class.w-100')
   w100 = true;
@@ -42,6 +45,14 @@ export class TextEditorComponent implements ControlValueAccessor {
 
   setDisabledState?(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
+  }
+
+
+  ///////////////// Implementation of AfterViewInit
+  ngAfterViewInit() {
+    if (this.focusIf && this.input) {
+      this.input.nativeElement.focus();
+    }
   }
 
 }

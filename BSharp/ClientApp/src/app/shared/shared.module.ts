@@ -13,7 +13,8 @@ import {
   NgbPopoverModule,
   NgbDatepickerModule,
   NgbDateAdapter,
-  NgbDatepickerI18n
+  NgbDatepickerI18n,
+  NgbTabsetModule
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -43,7 +44,8 @@ import {
   faFileDownload,
   faFilter,
   faCalendarAlt,
-  faPen
+  faPen,
+  faSearch
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
 import { DecimalEditorComponent } from './decimal-editor/decimal-editor.component';
@@ -62,6 +64,9 @@ import { MasterBaseComponent } from './master-base/master-base.component';
 import { DatePickerComponent } from './date-picker/date-picker.component';
 import { NgbDateStringAdapter } from './date-picker/date-string-adapter';
 import { DatePickerLocalization } from './date-picker/date-picker-localization';
+import { TableComponent } from './table/table.component';
+import { DetailsPickerComponent } from './details-picker/details-picker.component';
+import { DropdownAppendToBodyDirective } from './details-picker/dropdown-append-to-body.directive';
 
 // Icons to be used in the web app
 library.add(
@@ -69,7 +74,7 @@ library.add(
   faCheck, faPlus, faSyncAlt, faAngleDoubleLeft,
   faAngleLeft, faAngleRight, faThLarge, faList, faPen, faTrashAlt,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
-  faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt
+  faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt, faSearch
 );
 
 @NgModule({
@@ -88,7 +93,10 @@ library.add(
     SuccessMessageComponent,
     TextEditorComponent,
     WarningMessageComponent,
-    DatePickerComponent
+    DatePickerComponent,
+    TableComponent,
+    DetailsPickerComponent,
+    DropdownAppendToBodyDirective
   ],
   imports: [
     CommonModule,
@@ -101,7 +109,8 @@ library.add(
     NgbDropdownModule,
     NgbModalModule,
     NgbPopoverModule,
-    NgbDatepickerModule
+    NgbDatepickerModule,
+    NgbTabsetModule
   ],
   exports: [
     // Modules
@@ -111,12 +120,13 @@ library.add(
     NgbModalModule,
     NgbCollapseModule,
     NgbPopoverModule,
+    NgbTabsetModule,
     TranslateModule,
     FormsModule,
     FontAwesomeModule,
     CdkTableModule,
 
-    // Components
+    // Components & others
     SpinnerComponent,
     BrandComponent,
     MasterComponent,
@@ -131,9 +141,13 @@ library.add(
     DecimalEditorComponent,
     DetailsBaseComponent,
     MasterBaseComponent,
-    DatePickerComponent
+    DatePickerComponent,
+    TableComponent,
+    DetailsPickerComponent
   ],
-  providers: [{ provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
-    {provide: NgbDatepickerI18n, useClass: DatePickerLocalization}]
+  providers: [
+    { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },
+    { provide: NgbDatepickerI18n, useClass: DatePickerLocalization }
+  ]
 })
 export class SharedModule { }
