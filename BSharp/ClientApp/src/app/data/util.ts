@@ -1,7 +1,7 @@
 import { EntitiesResponse } from './dto/get-response';
 import { WorkspaceService } from './workspace.service';
 import { GetByIdResponse } from './dto/get-by-id-response';
-import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
+import { DtoKeyBase } from './dto/dto-key-base';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -53,7 +53,7 @@ export function addSingleToWorkspace(response: GetByIdResponse, workspace: Works
   return entity.Id;
 }
 
-function addRelatedEntitiesToWorkspace(relatedEntities: { [key: string]: DtoForSaveKeyBase[] }, workspace: WorkspaceService) {
+function addRelatedEntitiesToWorkspace(relatedEntities: { [key: string]: DtoKeyBase[] }, workspace: WorkspaceService) {
   if (!!relatedEntities) {
     const collectionNames = Object.keys(relatedEntities);
     for (let c = 0; c < collectionNames.length; c++) {

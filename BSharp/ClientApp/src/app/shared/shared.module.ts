@@ -6,6 +6,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { CdkTableModule } from '@angular/cdk/table';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   NgbCollapseModule,
   NgbDropdownModule,
@@ -45,7 +46,8 @@ import {
   faFilter,
   faCalendarAlt,
   faPen,
-  faSearch
+  faSearch,
+  faAsterisk
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
 import { DecimalEditorComponent } from './decimal-editor/decimal-editor.component';
@@ -74,7 +76,8 @@ library.add(
   faCheck, faPlus, faSyncAlt, faAngleDoubleLeft,
   faAngleLeft, faAngleRight, faThLarge, faList, faPen, faTrashAlt,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
-  faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt, faSearch
+  faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
+  faSearch, faAsterisk
 );
 
 @NgModule({
@@ -106,6 +109,7 @@ library.add(
     RouterModule.forChild([]),
     HttpClientModule,
     CdkTableModule,
+    ScrollingModule,
     NgbDropdownModule,
     NgbModalModule,
     NgbPopoverModule,

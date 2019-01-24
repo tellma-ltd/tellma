@@ -435,6 +435,12 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Step2", "Step 2"),
             Ar(Constants.Client, "Step2", "الخطوة الثانية"),
 
+            En(Constants.Client, "Deleted", "Deleted"),
+            Ar(Constants.Client, "Deleted", "محذوف"),
+
+            En(Constants.Client, "UndoDelete", "Undo Delete"),
+            Ar(Constants.Client, "UndoDelete", "تراجع عن الحذف"),
+
             En(Constants.Client, "ShortMonth1", "Jan"),
             Ar(Constants.Client, "ShortMonth1", "يناير"),
 
@@ -515,6 +521,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Confirmation", "Confirmation"),
             Ar(Constants.Client, "Confirmation", "توكيد"),
+
+            En(Constants.Client, "NewLine", "New Line"),
+            Ar(Constants.Client, "NewLine", "سطر جديد"),
 
             En(Constants.Client, "DeleteConfirmationMessage", "Are you sure you want to delete {{count}} items? This action is irreversible."),
             Ar(Constants.Client, "DeleteConfirmationMessage", "هل تود حذف عدد {{count}} من البيانات؟ هذا الفعل لا يمكن التراجع عنه."),

@@ -23,7 +23,7 @@
       </span>
     </div>
     <div class="pl-2 pr-2">
-      <b-error-message *ngIf="showError">Failed to load items</b-error-message>
+      <b-error-message *ngIf="showError"> {{ errorMessage }}</b-error-message>
       <span class="font-italic text-muted" *ngIf="showNoItemsFound">{{ 'NoItemsFound' | translate }}</span>
     </div>
     <ng-container *ngIf="showResults || showNoItemsFound">

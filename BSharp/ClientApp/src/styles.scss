@@ -144,21 +144,25 @@ ngb-datepicker {
 }
 
 .ngb-dp-weekday {
-  color: $gray-900!important;
+  color: $gray-900 !important;
 }
 
 // add a cool colored top border for selected tab
-.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
   border-top-width: 2px;
   border-top-color: $dark-primary;
 }
 
-.dropdown-item.active, .dropdown-item:active {
+.dropdown-item.active,
+.dropdown-item:active {
   color: $gray-900;
   background-color: $gray-300;
 }
 
-
+ngb-tabset li.nav-item .small {
+  font-weight: 500;
+}
 
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
@@ -367,7 +371,7 @@ tr .b-input {
 }
 
 tr .b-form-group {
-  padding: 0!important;
+  padding: 0 !important;
 }
 
 .b-input:focus {
@@ -581,7 +585,8 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
   padding-left: 2rem;
 }
 
-.b-multiselect-th, .b-line-number-th {
+.b-multiselect-th,
+.b-line-number-th {
   width: 1px;
 }
 
@@ -707,4 +712,8 @@ tr.b-highlight {
 
 .b-slightly-bold {
   font-weight: 500;
+}
+
+.b-transparent {
+  color: transparent;
 }

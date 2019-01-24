@@ -16,8 +16,8 @@
 <ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
   <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="validationErrors.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + '...'"
-      required></b-text-editor>
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
+      [placeholder]="('Name' | translate) + '...'" required></b-text-editor>
   </b-form-group>
 
   <!-- Name2 -->
@@ -46,44 +46,51 @@
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
   </b-form-group>
 
-  <b-warning-message class="pt-3 pt-sm-4 w-100" *ngIf="showPublicRoleWarning(model)"> {{ 'PublicRoleWarning' | translate }} </b-warning-message>
+  <b-warning-message class="pt-3 pt-sm-4 w-100" *ngIf="showPublicRoleWarning(model)"> {{ 'PublicRoleWarning' |
+    translate }} </b-warning-message>
 
-  <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="false">
+  <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
+
+    <!-- Permissions -->
     <ngb-tab>
-      <!-- Permissions -->
-      <ng-template ngbTabTitle><span class="small">{{ 'Permissions' | translate }} ({{ permissionsCount(model) }})</span></ng-template>
+      <ng-template ngbTabTitle><span class="small">{{ 'Permissions' | translate }} ({{ permissionsCount(model) | number
+          }})</span>
+        <span *ngIf="showPermissionsError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span>
+      </ng-template>
       <ng-template ngbTabContent>
-        <b-table [dataSource]="model?.Permissions" [filter]="isPermission" [isEdit]="isEdit" [columnPaths]="['ViewId', 'Level', 'Criteria', 'Memo']"
+        <b-table [dataSource]="model?.Permissions" [filter]="isPermission" [isEdit]="isEdit" [columnPaths]="['ViewId', 'Level', 'Criteria', 'Memo']" [errors]="validationErrors" errorsPrefix="Permissions"
           [columnTemplates]="{
-          'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
-          'Level' : { headerTemplate : header_Level, rowTemplate : row_Level, weight : 1 },
-          'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },
-          'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
-        }">
+              'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
+              'Level' : { headerTemplate : header_Level, rowTemplate : row_Level, weight : 1 },
+              'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },
+              'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
+            }">
         </b-table>
 
         <!-- View -->
         <ng-template #header_ViewId>{{ 'Permission_View' | translate }}</ng-template>
-        <ng-template #row_ViewId let-item="item" let-index="index" let-update="update">
+        <ng-template #row_ViewId let-item="item" let-index="originalIndex" let-update="update">
           <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].ViewId']">
             <div *ngIf="!isEdit">{{ ws.get('Views', item.ViewId)?.Name }}</div>
-            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId" (ngModelChange)="update(item); item.Level = null;" apiEndpoint="views" collection="Views"
-            [focusIf]="(index === model?.Permissions?.length - 1) && item.EntityState === 'Inserted'"></b-details-picker>
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId" (ngModelChange)="update(item); item.Level = null;"
+              apiEndpoint="views" collection="Views">
+            </b-details-picker>
           </b-form-group>
         </ng-template>
 
         <!-- Level -->
         <ng-template #header_Level>{{ 'Permission_Level' | translate }}</ng-template>
-        <ng-template #row_Level let-item="item" let-index="index" let-update="update">
+        <ng-template #row_Level let-item="item" let-index="originalIndex" let-update="update">
           <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Level']">
             <div *ngIf="!isEdit">{{ permissionLevelLookup(item?.Level) | translate }}</div>
-            <b-selector *ngIf="isEdit" [(ngModel)]="item.Level" (ngModelChange)="update(item);" [ngModelOptions]="{ updateOn: 'blur' }" [choices]="permissionLevelChoices(item)"></b-selector>
+            <b-selector *ngIf="isEdit" [(ngModel)]="item.Level" (ngModelChange)="update(item);" [ngModelOptions]="{ updateOn: 'blur' }"
+              [choices]="permissionLevelChoices(item)" [disabled]="!item.ViewId"></b-selector>
           </b-form-group>
         </ng-template>
 
         <!-- Criteria -->
         <ng-template #header_Criteria>{{ 'Permission_Criteria' | translate }}</ng-template>
-        <ng-template #row_Criteria let-item="item" let-index="index" let-update="update">
+        <ng-template #row_Criteria let-item="item" let-index="originalIndex" let-update="update">
           <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Criteria']">
             <div *ngIf="!isEdit">{{ item.Criteria }}</div>
             <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Criteria" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
@@ -91,56 +98,62 @@
         </ng-template>
 
         <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
-        <ng-template #row_Memo let-item="item" let-index="index" let-update="update">
+        <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
           <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Memo']">
             <div *ngIf="!isEdit">{{ item.Memo }}</div>
             <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
           </b-form-group>
         </ng-template>
-
       </ng-template>
     </ngb-tab>
 
+
     <!-- Signatures -->
     <ngb-tab>
-        <ng-template ngbTabTitle><span class="small">{{ 'Signatures' | translate }} ({{ signaturesCount(model) }})</span></ng-template>
-        <ng-template ngbTabContent>
-          <b-table [dataSource]="model?.Permissions" [filter]="isSignature" [onNewItem]="onNewSignature" [isEdit]="isEdit" [columnPaths]="['ViewId', 'Criteria', 'Memo']"
-            [columnTemplates]="{
-            'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
-            'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },
-            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
-          }">
-          </b-table>
-  
-          <!-- View -->
-          <ng-template #header_ViewId>{{ 'Permission_View' | translate }}</ng-template>
-          <ng-template #row_ViewId let-item="item" let-index="index" let-update="update">
-            <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].ViewId']">
-              <div *ngIf="!isEdit">{{ ws.get('Views', item.ViewId)?.Name }}</div>
-              <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId" (ngModelChange)="update(item)" apiEndpoint="views" collection="Views" filter="AllowedPermissionLevels contains 'Sign'"
-              [focusIf]="(index === model?.Permissions?.length - 1) && item.EntityState === 'Inserted'"></b-details-picker>
-            </b-form-group>
-          </ng-template>
-  
-          <!-- Criteria -->
-          <ng-template #header_Criteria>{{ 'Permission_Criteria' | translate }}</ng-template>
-          <ng-template #row_Criteria let-item="item" let-index="index" let-update="update">
-            <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Criteria']">
-              <div *ngIf="!isEdit">{{ item.Criteria }}</div>
-              <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Criteria" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
-          </ng-template>
-  
-          <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
-          <ng-template #row_Memo let-item="item" let-index="index" let-update="update">
-            <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Memo']">
-              <div *ngIf="!isEdit">{{ item.Memo }}</div>
-              <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
-          </ng-template>  
-        </ng-template>  
+      <ng-template ngbTabTitle><span class="small">{{ 'Signatures' | translate }} ({{ signaturesCount(model) | number
+          }})</span>
+        <span *ngIf="showSignaturesError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span>
+      </ng-template>
+      <ng-template ngbTabContent>
+        <b-table [dataSource]="model?.Permissions" [filter]="isSignature" [onNewItem]="onNewSignature" [isEdit]="isEdit" [errors]="validationErrors" errorsPrefix="Permissions"
+          [columnPaths]="['ViewId', 'Criteria', 'Memo']" [columnTemplates]="{
+              'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
+              'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },
+              'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
+            }">
+        </b-table>
+
+        <!-- View -->
+        <ng-template #header_ViewId>{{ 'Permission_View' | translate }}</ng-template>
+        <ng-template #row_ViewId let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].ViewId']">
+            <div *ngIf="!isEdit">{{ ws.get('Views', item.ViewId)?.Name }}</div>
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId" (ngModelChange)="update(item)" apiEndpoint="views"
+              collection="Views" filter="AllowedPermissionLevels contains 'Sign'"></b-details-picker>
+          </b-form-group>
+        </ng-template>
+
+        <!-- Criteria -->
+        <ng-template #header_Criteria>{{ 'Permission_Criteria' | translate }}</ng-template>
+        <ng-template #row_Criteria let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Criteria']">
+            <div *ngIf="!isEdit">{{ item.Criteria }}</div>
+            <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Criteria" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+          </b-form-group>
+        </ng-template>
+
+        <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
+        <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Memo']">
+            <div *ngIf="!isEdit">{{ item.Memo }}</div>
+            <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+          </b-form-group>
+        </ng-template>
+      </ng-template>
     </ngb-tab>
+
+
+    <!-- Members -->
     <ngb-tab *ngIf="showMembersTab(model)">
       <ng-template ngbTabTitle><span class="small">{{ 'Members' | translate }} ({{ membersCount(model) }})</span></ng-template>
       <ng-template ngbTabContent>
@@ -148,6 +161,7 @@
       </ng-template>
     </ngb-tab>
   </ngb-tabset>
+
 </ng-template>
 
 

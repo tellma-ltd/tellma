@@ -435,7 +435,7 @@ SET NOCOUNT ON;
 	FROM @Permissions P
 	WHERE P.ViewId NOT IN (
 		SELECT [Id] FROM dbo.[Views] WHERE IsActive = 1
-		)
+		) AND P.ViewId <> 'All'
 	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
 SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 ", rolesTvp, permissionsTvp).ToListAsync();

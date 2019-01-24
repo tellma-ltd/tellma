@@ -59,9 +59,6 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   w100 = true;
 
   @Input()
-  focusIf: boolean;
-
-  @Input()
   apiEndpoint: string;
 
   @Input()
@@ -79,9 +76,18 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   @Input()
   detailsTemplate: TemplateRef<any>;
 
+  @Input()
+  focusIf = false;
+  // set focusIf(v: boolean) {
+  //   if (this._focusIf !== v) {
+  //     this._focusIf = v;
+  //   }
+  // }
+
   private MIN_CHARS_TO_SEARCH = 2;
   private SEARCH_PAGE_SIZE = 15;
 
+  private _focusIf = false;
   private cancelRunningCall$ = new Subject<void>();
   private userInputSubscription: Subscription;
   private _status: SearchStatus = null;
@@ -89,6 +95,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   private _searchResults: (string | number)[] = [];
   private _highlightedIndex = 0;
   private chosenItem: string | number;
+  private _errorMessage: string;
   private api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$); // for intellisense
 
   @Input()
@@ -100,13 +107,17 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   ///////////////// Lifecycle Hooks
   constructor(private apiService: ApiService, private workspace: WorkspaceService) { }
 
-  ngAfterViewInit() {
+  public focus = () => {
+    this.input.nativeElement.focus();
+  }
 
-    this.api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$);
+  ngAfterViewInit() {
 
     if (this.focusIf) {
       this.input.nativeElement.focus();
     }
+
+    this.api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$);
 
     // use some RxJS magic to listen to user input and call the backend
     // in order to show the results in a dropdown
@@ -137,7 +148,8 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
             filter: this.filter
           }).pipe(
             tap(() => this.status = SearchStatus.showResults),
-            catchError(() => {
+            catchError(friendlyError => {
+              this._errorMessage = friendlyError.error;
               this.status = SearchStatus.showError;
               return of(null);
             })
@@ -239,16 +251,20 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   ////////////////// UI Bindings
-  get searchResults() {
+  get searchResults(): (string | number)[] {
     return this._searchResults;
   }
 
-  get highlightedIndex() {
+  get highlightedIndex(): number {
     return this._highlightedIndex;
   }
 
-  get isDisabled() {
+  get isDisabled(): boolean {
     return this._isDisabled;
+  }
+
+  get errorMessage(): string {
+    return this._errorMessage;
   }
 
   get showSpinner(): boolean {
@@ -270,7 +286,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   get placement(): PlacementArray {
-    return ['bottom-left', 'bottom-right', 'bottom'];
+    return this.workspace.ws.isRtl ?
+      ['bottom-right', 'bottom-left', 'bottom'] :
+      ['bottom-left', 'bottom-right', 'bottom'];
   }
 
   onMouseEnter(i: number) {

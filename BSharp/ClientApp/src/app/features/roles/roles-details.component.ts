@@ -86,7 +86,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   permissionsCount(model: Role): number {
-    return !!model && !!model.Permissions ? model.Permissions.filter(this.isPermission).length : 0;
+    return !!model && !!model.Permissions ? model.Permissions.filter(this.isPermission).filter(e => e.EntityState !== 'Deleted').length : 0;
   }
 
   isSignature(item: Permission) {
@@ -94,11 +94,11 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   signaturesCount(model: Role): number {
-    return !!model && !!model.Permissions ? model.Permissions.filter(this.isSignature).length : 0;
+    return !!model && !!model.Permissions ? model.Permissions.filter(this.isSignature).filter(e => e.EntityState !== 'Deleted').length : 0;
   }
 
   showMembersTab(model: Role) {
-    return !model.IsPublic;
+    return !model || !model.IsPublic;
   }
 
   membersCount(model: Role): number {
@@ -106,6 +106,33 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   showPublicRoleWarning(model: Role) {
-    return model.IsPublic;
+    return !model || model.IsPublic;
+  }
+
+  showPermissionsError(model: Role) {
+    return this.showTabError(model, this.isPermission);
+  }
+
+  showSignaturesError(model: Role) {
+    return this.showTabError(model, this.isSignature);
+  }
+
+  private showTabError(model: Role, pred: (item: Permission) => boolean): boolean {
+    if (!!model && !!model.Permissions) {
+      const hash = {};
+      Object.keys(this.details.validationErrors)
+        .filter(e => this.details.validationErrors[e].length > 0 && e.startsWith('Permissions['))
+        .map(e => e.split(']')[0] + ']')
+        .forEach(e => hash[e] = true);
+
+      for (let i = 0; i < model.Permissions.length; i++) {
+        const item = model.Permissions[i];
+        if (pred(item) && hash['Permissions[' + i + ']']) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }

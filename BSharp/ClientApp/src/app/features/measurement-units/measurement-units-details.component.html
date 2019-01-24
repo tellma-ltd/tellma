@@ -22,7 +22,7 @@
 <ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
   <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="validationErrors.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" [focusIf]="!model.Id"
                    [placeholder]="('Name' | translate) + '...'" required></b-text-editor>
   </b-form-group>
 
