@@ -27,6 +27,14 @@ namespace BSharp.Services.Mapper
             CreateMap<AgentForSave, M.Agent>();
             CreateDtoMap<M.Agent, Agent>();
 
+            // Local Users
+            CreateMap<LocalUserForSave, M.LocalUser>();
+            CreateDtoMap<M.LocalUser, LocalUser>();
+
+            // Role Membership
+            CreateMap<RoleMembershipForSave, M.RoleMembership>();
+            CreateDtoMap<M.RoleMembership, RoleMembership>();
+
             // Roles
             CreateMap<RoleForSave, M.Role>();
             CreateDtoMap<M.Role, Role>();

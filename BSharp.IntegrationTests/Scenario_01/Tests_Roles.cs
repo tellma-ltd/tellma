@@ -28,7 +28,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetResponse<Agent>>();
+            var responseData = await response.Content.ReadAsAsync<GetResponse<Role>>();
 
             // Assert the result makes sense
             Assert.Equal("Roles", responseData.CollectionName);
@@ -50,7 +50,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, roles)]
         [Fact(DisplayName = "003 - Saving a single well-formed role for save returns a 200 OK result")]
-        public async Task Test3002()
+        public async Task CreateNewRole()
         {
             // Prepare a well formed entity
             var dtoForSave = new RoleForSave
@@ -85,7 +85,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             _output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Assert that the response is well-formed singleton of Agent
+            // Assert that the response is well-formed singleton
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Role>>();
             Assert.Single(responseData.Data);
 
@@ -126,7 +126,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             _output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of agent
+            // Confirm that the response is a well formed GetByIdResponse
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Role>>();
             Assert.Equal("Roles", getByIdResponse.CollectionName);
 
@@ -151,7 +151,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
 
         [Trait(Testing, roles)]
-        [Fact(DisplayName = "005 - Saving a role with the wrong code returns a 422 Unprocessable Entity")]
+        [Fact(DisplayName = "005 - Saving a role with an inactive view Id returns a 422 Unprocessable Entity")]
         public async Task Test3004()
         {
             // Prepare a unit with the same code as one that has been saved already
@@ -184,7 +184,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Confirm that the result is a well-formed validation errors structure
             var errors = await response.Content.ReadAsAsync<ValidationErrors>();
 
-            // Assert that it contains a validation key pointing to the Code property
+            // Assert that it contains a validation key pointing to the ViewId property of the permission line
             string expectedKey = "[0].Permissions[0].ViewId";
             Assert.True(errors.ContainsKey(expectedKey), $"Expected error key '{expectedKey}' was not found");
 
@@ -229,7 +229,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
 
         [Trait(Testing, roles)]
-        [Fact(DisplayName = "007 - Deactivating an active organization returns a 200 OK inactive entity")]
+        [Fact(DisplayName = "007 - Deactivating an active role returns a 200 OK inactive entity")]
         public async Task Test3006()
         {
             // Get the Id
@@ -243,16 +243,16 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Agent>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Role>>();
             Assert.Single(responseData.Data);
             var responseDto = responseData.Data.Single();
 
             // Confirm that the entity was deactivated
-            Assert.False(responseDto.IsActive, "The organization was not deactivated");
+            Assert.False(responseDto.IsActive, "The role was not deactivated");
         }
 
         [Trait(Testing, roles)]
-        [Fact(DisplayName = "008 - Activating an inactive organization returns a 200 OK active entity")]
+        [Fact(DisplayName = "008 - Activating an inactive role returns a 200 OK active entity")]
         public async Task Test3007()
         {
             // Get the Id
@@ -266,17 +266,17 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Agent>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Role>>();
             Assert.Single(responseData.Data);
             var responseDto = responseData.Data.Single();
 
             // Confirm that the entity was activated
-            Assert.True(responseDto.IsActive, "The Organization was not activated");
+            Assert.True(responseDto.IsActive, "The role was not activated");
         }
 
 
         [Trait(Testing, roles)]
-        [Fact(DisplayName = "009 - Deleting an existing organization Id returns a 200 OK")]
+        [Fact(DisplayName = "009 - Deleting an existing role Id returns a 200 OK")]
         public async Task Test3008()
         {
             // Get the Id

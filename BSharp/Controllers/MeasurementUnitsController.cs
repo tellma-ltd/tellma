@@ -92,46 +92,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
 
                     // Update the entities
                     await _db.Database.ExecuteSqlCommandAsync(sql, idsTvp, isActiveParam);
-
-                    // Determine whether entities should be returned
-                    if (!returnEntities)
-                    {
-                        // IF no returned items are expected, simply return 200 OK
-                        return Ok();
-                    }
-                    else
-                    {
-                        // Load the entities using their Ids
-                        var affectedDbEntitiesQ = _db.MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-                        var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
-                        var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-                        var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);                        
-
-                        // sort the entities the way their Ids came, as a good practice
-                        MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
-                        Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
-                        for (int i = 0; i < ids.Count; i++)
-                        {
-                            var id = ids[i];
-                            MeasurementUnit entity = null;
-                            if (affectedEntitiesDic.ContainsKey(id))
-                            {
-                                entity = affectedEntitiesDic[id];
-                            }
-
-                            sortedAffectedEntities[i] = entity;
-                        }
-
-                        // Prepare a proper response
-                        var response = new EntitiesResponse<MeasurementUnit> {
-                            Data = sortedAffectedEntities,
-                            CollectionName = GetCollectionName(typeof(MeasurementUnit))
-                        };
-
-                        // Commit and return
-                        trx.Commit();
-                        return Ok(response);
-                    }
+                    trx.Commit();
                 }
                 catch (Exception ex)
                 {
@@ -139,6 +100,46 @@ MERGE INTO [dbo].MeasurementUnits AS t
                     _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
                     return BadRequest(ex.Message);
                 }
+            }
+
+            // Determine whether entities should be returned
+            if (!returnEntities)
+            {
+                // IF no returned items are expected, simply return 200 OK
+                return Ok();
+            }
+            else
+            {
+                // Load the entities using their Ids
+                var affectedDbEntitiesQ = _db.MeasurementUnits.Where(e => ids.Contains(e.Id)); //.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
+                var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
+                var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
+
+                // sort the entities the way their Ids came, as a good practice
+                MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
+                Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    var id = ids[i];
+                    MeasurementUnit entity = null;
+                    if (affectedEntitiesDic.ContainsKey(id))
+                    {
+                        entity = affectedEntitiesDic[id];
+                    }
+
+                    sortedAffectedEntities[i] = entity;
+                }
+
+                // Prepare a proper response
+                var response = new EntitiesResponse<MeasurementUnit>
+                {
+                    Data = sortedAffectedEntities,
+                    CollectionName = GetCollectionName(typeof(MeasurementUnit))
+                };
+
+                // Commit and return
+                return Ok(response);
             }
         }
 
@@ -191,20 +192,6 @@ MERGE INTO [dbo].MeasurementUnits AS t
                     // Won't be supported for this API
                     var index = indices[entity];
                     ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", _localizer["MeasurementUnits"]]);
-                }
-
-                if (entity.Id != null && entity.EntityState != EntityStates.Updated)
-                {
-                    // This error indicates a bug
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotInsert0WhileSpecifyId", _localizer["MeasurementUnit"]]);
-                }
-
-                if (entity.Id == null && entity.EntityState == EntityStates.Updated)
-                {
-                    // This error indicates a bug
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotUpdate0WithoutId", _localizer["MeasurementUnit"]]);
                 }
             }
 

@@ -148,7 +148,7 @@ namespace BSharp.Data.Migrations.Admin
                         .HasMaxLength(255);
 
                     b.Property<string>("Name")
-                        .HasMaxLength(450);
+                        .HasMaxLength(255);
 
                     b.Property<string>("Tier")
                         .IsRequired()

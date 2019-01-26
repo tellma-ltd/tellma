@@ -11,7 +11,10 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 
+// [CLI Commands]
 // dotnet ef migrations add Initial -c=ApplicationContext -o=Data/Migrations/Application
+// dotnet ef database update LastGoodMigration --context=ApplicationContext
+// dotnet ef migrations remove --context=ApplicationContext
 namespace BSharp.Data
 {
     /// <summary>
@@ -48,6 +51,11 @@ namespace BSharp.Data
         /// A query for returning the Ids that correspond to a bunch of codes
         /// </summary>
         public DbQuery<CodeId> CodeIds { get; set; }
+
+        /// <summary>
+        /// A query for returning the Ids that correspond to a bunch of codes
+        /// </summary>
+        public DbQuery<DbString> Strings { get; set; }
 
         // Private fields
         private readonly ITenantIdProvider _tenantIdProvider;

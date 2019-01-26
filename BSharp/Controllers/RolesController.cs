@@ -90,47 +90,7 @@ MERGE INTO [dbo].[Roles] AS t
 
                     // Update the entities
                     await _db.Database.ExecuteSqlCommandAsync(sql, idsTvp, isActiveParam);
-
-                    // Determine whether entities should be returned
-                    if (!returnEntities)
-                    {
-                        // IF no returned items are expected, simply return 200 OK
-                        return Ok();
-                    }
-                    else
-                    {
-                        // Load the entities using their Ids
-                        var affectedDbEntitiesQ = _db.Roles.Where(e => ids.Contains(e.Id)); // _db.Roles.FromSql("SELECT * FROM [dbo].[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-                        var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
-                        var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-                        var affectedEntities = _mapper.Map<List<Role>>(affectedDbEntities);
-
-                        // sort the entities the way their Ids came, as a good practice
-                        Role[] sortedAffectedEntities = new Role[ids.Count];
-                        Dictionary<int, Role> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
-                        for (int i = 0; i < ids.Count; i++)
-                        {
-                            var id = ids[i];
-                            Role entity = null;
-                            if (affectedEntitiesDic.ContainsKey(id))
-                            {
-                                entity = affectedEntitiesDic[id];
-                            }
-
-                            sortedAffectedEntities[i] = entity;
-                        }
-
-                        // Prepare a proper response
-                        var response = new EntitiesResponse<Role>
-                        {
-                            Data = sortedAffectedEntities,
-                            CollectionName = GetCollectionName(typeof(Role))
-                        };
-
-                        // Commit and return
-                        trx.Commit();
-                        return Ok(response);
-                    }
+                    trx.Commit();
                 }
                 catch (Exception ex)
                 {
@@ -138,6 +98,46 @@ MERGE INTO [dbo].[Roles] AS t
                     _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
                     return BadRequest(ex.Message);
                 }
+            }
+
+            // Determine whether entities should be returned
+            if (!returnEntities)
+            {
+                // IF no returned items are expected, simply return 200 OK
+                return Ok();
+            }
+            else
+            {
+                // Load the entities using their Ids
+                var affectedDbEntitiesQ = _db.Roles.Where(e => ids.Contains(e.Id)); // _db.Roles.FromSql("SELECT * FROM [dbo].[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
+                var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
+                var affectedEntities = _mapper.Map<List<Role>>(affectedDbEntities);
+
+                // sort the entities the way their Ids came, as a good practice
+                Role[] sortedAffectedEntities = new Role[ids.Count];
+                Dictionary<int, Role> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    var id = ids[i];
+                    Role entity = null;
+                    if (affectedEntitiesDic.ContainsKey(id))
+                    {
+                        entity = affectedEntitiesDic[id];
+                    }
+
+                    sortedAffectedEntities[i] = entity;
+                }
+
+                // Prepare a proper response
+                var response = new EntitiesResponse<Role>
+                {
+                    Data = sortedAffectedEntities,
+                    CollectionName = GetCollectionName(typeof(Role))
+                };
+
+                // Commit and return
+                return Ok(response);
             }
         }
 
@@ -175,6 +175,8 @@ MERGE INTO [dbo].[Roles] AS t
 
         protected override IQueryable<M.Role> Expand(IQueryable<M.Role> query, string expand)
         {
+            // TODO: Move it to a place where it can be universally applied
+
             // Here we make sure that a valid 'Permissions/View' expand term does not make it to the default implementation
             // since it would throw an error, 'View' is not a navigation property in the DB and has to be manually included
             // in FlattenRelatedEntities
@@ -192,6 +194,8 @@ MERGE INTO [dbo].[Roles] AS t
 
         protected override Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(List<M.Role> models, string expand)
         {
+            // TODO: Move it to a place where it can be universally applied
+
             // Here we artificially include Permissions/Views since it is not a navigation
             // property in the DB and therefore will throw an error in the default implementation
             string nonDbExpand = "Permissions/View";
@@ -241,52 +245,6 @@ MERGE INTO [dbo].[Roles] AS t
                     // Won't be supported for this API
                     var index = indices[entity];
                     ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", _localizer["Roles"]]);
-                }
-
-                if (entity.Id != null && entity.EntityState != EntityStates.Updated)
-                {
-                    // This error indicates a bug
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotInsert0WhileSpecifyId", _localizer["Role"]]);
-                }
-
-                if (entity.Id == null && entity.EntityState == EntityStates.Updated)
-                {
-                    // This error indicates a bug
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotUpdate0WithoutId", _localizer["Role"]]);
-                }
-
-                // Check that entity state for line items makes sense
-                var lineIndices = entity.Permissions.ToIndexDictionary();
-                foreach (var line in entity.Permissions)
-                {
-                    if (entity.Id != null && entity.EntityState != EntityStates.Updated)
-                    {
-                        // This error indicates a bug
-                        var index = indices[entity];
-                        var lineIndex = lineIndices[line];
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Permissions)}[{lineIndex}].{nameof(entity.Id)}",
-                            _localizer["Error_CannotInsert0WhileSpecifyId", _localizer["Role"]]);
-                    }
-
-                    if (entity.Id == null && entity.EntityState == EntityStates.Updated)
-                    {
-                        // This error indicates a bug
-                        var index = indices[entity];
-                        var lineIndex = lineIndices[line];
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Permissions)}[{lineIndex}].{nameof(entity.Id)}",
-                            _localizer["Error_CannotUpdate0WithoutId", _localizer["Role"]]);
-                    }
-
-                    if (entity.Id == null && entity.EntityState == EntityStates.Deleted)
-                    {
-                        // This error indicates a bug
-                        var index = indices[entity];
-                        var lineIndex = lineIndices[line];
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Permissions)}[{lineIndex}].{nameof(entity.Id)}",
-                            _localizer["Error_CannotDelete0WithoutId", _localizer["Role"]]);
-                    }
                 }
             }
 
@@ -349,14 +307,14 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 
-    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])
-    SELECT '[' + CAST([Id] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_0IsInactive' As [ErrorName], CAST([Id] As NVARCHAR(255)) As [Argument1]
+    INSERT INTO @ValidationErrors([Key], [ErrorName])
+    SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_CannotModifyInactiveItem' As [ErrorName]
     FROM @Roles
     WHERE Id IN (SELECT Id from [dbo].[Roles] WHERE IsActive = 0)
 	OPTION(HASH JOIN);
 
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])
-    SELECT '[' + CAST([Id] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_TheId0WasNotFound' As [ErrorName], CAST([Id] As NVARCHAR(255)) As [Argument1]
+    SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_TheId0WasNotFound' As [ErrorName], CAST([Id] As NVARCHAR(255)) As [Argument1]
     FROM @Roles
     WHERE Id Is NOT NULL
 	AND Id NOT IN (SELECT Id from [dbo].[Roles])
@@ -456,7 +414,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
         protected override async Task<List<M.Role>> PersistAsync(List<RoleForSave> entities, SaveArguments args)
         {
             // Add created entities
-            var roleIndecies = entities.ToIndexDictionary();
+            var roleIndices = entities.ToIndexDictionary();
             DataTable rolesTable = DataTable(entities, addIndex: true);
             var rolesTvp = new SqlParameter("Roles", rolesTable)
             {
@@ -465,7 +423,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             };
 
             // Filter out permissions that haven't changed for performance
-            var permissionHeaderIndices = roleIndecies.Keys.Select(role => (role.Permissions.Where(e => e.EntityState != null).ToList(), roleIndecies[role]));
+            var permissionHeaderIndices = roleIndices.Keys.Select(role => (role.Permissions.Where(e => e.EntityState != null).ToList(), roleIndices[role]));
             DataTable permissionsTable = DataTableWithHeaderIndex(permissionHeaderIndices, e => e.EntityState != null);
             var permissionsTvp = new SqlParameter("Permissions", permissionsTable)
             {

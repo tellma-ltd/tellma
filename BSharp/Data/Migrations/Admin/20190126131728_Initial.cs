@@ -54,9 +54,9 @@ namespace BSharp.Data.Migrations.Admin
                 columns: table => new
                 {
                     CultureId = table.Column<string>(maxLength: 255, nullable: false),
-                    Name = table.Column<string>(maxLength: 450, nullable: false),
-                    Tier = table.Column<string>(maxLength: 255, nullable: false),
-                    Value = table.Column<string>(maxLength: 2048, nullable: false)
+                    Name = table.Column<string>(maxLength: 255, nullable: false),
+                    Value = table.Column<string>(maxLength: 2048, nullable: false),
+                    Tier = table.Column<string>(maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {

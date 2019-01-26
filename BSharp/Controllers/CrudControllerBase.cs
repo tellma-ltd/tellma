@@ -344,7 +344,6 @@ namespace BSharp.Controllers
         /// </summary>
         protected DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
         {
-
             DataTable table = new DataTable();
             if (addIndex)
             {

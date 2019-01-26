@@ -1,4 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+/* you can add global styles to this file, and also import other style files */
 
 $enable-rounded: false; // Square corners
 $font-size-base: 0.9rem; // The default font (1rem) is too big
@@ -18,7 +18,7 @@ $font-size-base: 0.9rem; // The default font (1rem) is too big
     background-color: rgba(0, 0, 0, 0.03);
   }*/
 
-// This solves a problem in responsive tables that contain dropdowns
+// this solves a problem in responsive tables that contain dropdowns
 @media only screen and (max-width: 767px) {
   .table-responsive .dropdown-menu {
     position: static !important;
@@ -62,7 +62,7 @@ a {
   padding-left: 0.5rem;
 }
 
-// Make the alternating color of tables a little lighter
+// make the alternating color of tables a little lighter
 .table-striped tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.02);
 }
@@ -72,7 +72,7 @@ a {
 }
 
 .btn {
-  // Makes button labels a little thicker
+  // makes button labels a little thicker
   font-weight: 500;
 }
 
@@ -102,24 +102,24 @@ a {
   display: none;
 }
 
-// Without this one, the highlight of light buttons is barely visible
+// without this one, the highlight of light buttons is barely visible
 .btn-light:focus,
 .btn-light.focus {
   box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
 }
 
-// Smaller HR separators look better
+// smaller HR separators look better
 .dropdown-menu hr {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
-// For some reason this isn't by default in bootstrap
+// for some reason this isn't by default in bootstrap
 .small.dropdown-menu {
   font-size: 80%;
 }
 
-// Add a shadow to ngb-datepicker
+// add a shadow to ngb-datepicker
 ngb-datepicker {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
@@ -140,6 +140,11 @@ ngb-datepicker {
   }
   .dropdown-menu {
     text-align: right;
+  }
+  
+  // otherwise the browser adds a default right padding of 40px
+  .nav {
+    padding-right: 0;
   }
 }
 
@@ -164,6 +169,7 @@ ngb-tabset li.nav-item .small {
   font-weight: 500;
 }
 
+
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
   direction: rtl;
@@ -179,7 +185,7 @@ ngb-tabset li.nav-item .small {
 }
 
 @media only screen and (min-width: 1200px) {
-  // This optimization ensures that the large banner image is only loaded when it is
+  // this optimization ensures that the large banner image is only loaded when it is
   // displayed on large screens, saving the bandwidth and data usage on mobile phones
   .b-banner {
     display: flex;
@@ -203,14 +209,14 @@ ngb-tabset li.nav-item .small {
   }
 }
 
-// If its parent is a column flex box, it occupies the rest of the screen
+// if its parent is a column flex box, it occupies the rest of the screen
 .b-rest-of-screen {
   flex: 1 0;
   overflow-y: auto;
   overflow-y: overlay; // This stops the scrollbar from occupying width on webkit browsers
 }
 
-// These are buttons that only have an icon in them
+// these are buttons that only have an icon in them
 .b-white-button,
 .b-white-button.disabled,
 .b-white-button:disabled {
@@ -218,7 +224,7 @@ ngb-tabset li.nav-item .small {
   border-color: transparent;
 }
 
-// Make the primary text a little darker since easier to read
+// make the primary text a little darker since easier to read
 .text-primary {
   color: $dark-primary !important;
 }
@@ -231,7 +237,7 @@ ngb-tabset li.nav-item .small {
   cursor: pointer;
 }
 
-// Makes sure that tiles don't collapse when certain
+// makes sure that tiles don't collapse when certain
 // fields inside them are empty
 .b-tile span:empty:before {
   content: "\200b";
@@ -397,7 +403,7 @@ tr .b-form-group {
   box-shadow: 0 2px $danger;
 }
 
-// The style for the "Saving" indicator at the bottom right
+// the style for the "Saving" indicator at the bottom right
 .b-corner-indicator {
   position: fixed;
   bottom: 0;
@@ -406,14 +412,14 @@ tr .b-form-group {
   animation-delay: 0.1s;
 }
 
-// Edge browser shows a little X button in input field that lets you
+// edge browser shows a little X button in input field that lets you
 // clear that field, but this button doesn't seem to signal angular's
 // ngModel to update the model, here we simply hide that X button
 input::-ms-clear {
   display: none;
 }
 
-// The below code styles the state flow chart, credit goes to
+// the below code styles the state flow chart, credit goes to
 // this gentleman: https://css-tricks.com/triangle-breadcrumbs/
 $flow-state-active: #f8f9fa;
 $flow-border: $gray-300;
@@ -498,7 +504,7 @@ $flow-text: #6c757d;
   border-left-color: $flow-state-active;
 }
 
-// Set the layout for the main document and the sidebar
+// set the layout for the main document and the sidebar
 // on large screens, show them side by side, on smaller
 // screens show them stacked vertically
 .b-main-and-side {
@@ -538,7 +544,7 @@ $flow-text: #6c757d;
   margin-bottom: -0.2rem;
 }
 
-// Styling for the table
+// styling for the table
 thead > tr {
   height: 40px;
 }
@@ -547,7 +553,7 @@ thead > tr {
   vertical-align: middle;
 }
 
-// The table in the master screen table view
+// the table in the master screen table view
 table.b-master-table th {
   border-top-width: 0;
   font-size: 80%;
@@ -565,7 +571,7 @@ table.b-master-table th {
   border: 1px solid #6c757d; // border color
 }
 
-/*
+
   .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
     background-color: #f8f9fa; // light background
   }
@@ -578,7 +584,7 @@ table.b-master-table th {
   .custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E")
   }
-    */
+    
 
 // center the checkbox
 div.custom-control.custom-checkbox.b-labelless-checkbox {

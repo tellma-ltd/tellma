@@ -14,6 +14,8 @@ namespace BSharp.Data.Migrations.Application
         protected static string AgentForSaveList = nameof(AgentForSaveList);
         protected static string RoleForSaveList = nameof(RoleForSaveList);
         protected static string PermissionForSaveList = nameof(PermissionForSaveList);
+        protected static string LocalUserForSaveList = nameof(LocalUserForSaveList);
+        protected static string RoleMembershipForSaveList = nameof(RoleMembershipForSaveList);
 
         protected override void Up(MigrationBuilder builder)
         {
@@ -131,6 +133,39 @@ namespace BSharp.Data.Migrations.Application
                     Memo = udt.Column<string>(nullable: true, maxLength: 255)
                 }
             );
+
+            builder.CreateUserDefinedTableType(
+                name: LocalUserForSaveList,
+                columns: udt => new
+                {
+                    Index = udt.Column<int>(nullable: false),
+
+                    Id = udt.Column<int>(nullable: true),
+                    EntityState = udt.Column<string>(nullable: false, maxLength: 255),
+
+                    Name = udt.Column<string>(nullable: true, maxLength: 255),
+                    Name2 = udt.Column<string>(nullable: true, maxLength: 255),
+                    Email = udt.Column<string>(nullable: true, maxLength: 255),
+                    ExternalId = udt.Column<string>(nullable: true, maxLength: 450),
+                    AgentId = udt.Column<int>(nullable: true)
+                }
+            );
+
+            builder.CreateUserDefinedTableType(
+                name: RoleMembershipForSaveList,
+                columns: udt => new
+                {
+                    Index = udt.Column<int>(nullable: false),
+                    HeaderIndex = udt.Column<int>(nullable: false),
+
+                    Id = udt.Column<int>(nullable: true),
+                    EntityState = udt.Column<string>(nullable: false, maxLength: 255),
+
+                    UserId = udt.Column<int>(nullable: true),
+                    RoleId = udt.Column<int>(nullable: true),
+                    Memo = udt.Column<string>(nullable: true, maxLength: 255)
+                }
+            );
         }
 
         protected override void Down(MigrationBuilder builder)
@@ -143,7 +178,7 @@ namespace BSharp.Data.Migrations.Application
             builder.DropUserDefinedTableType(name: AgentForSaveList);
             builder.DropUserDefinedTableType(name: RoleForSaveList);
             builder.DropUserDefinedTableType(name: PermissionForSaveList);
+            builder.DropUserDefinedTableType(name: LocalUserForSaveList);
         }
-
     }
 }

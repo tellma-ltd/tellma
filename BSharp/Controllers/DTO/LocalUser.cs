@@ -19,12 +19,13 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "Name2")]
         public string Name2 { get; set; }
 
+        [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "User_Email")]
         public string Email { get; set; }
 
         [Display(Name = "Permissions")]
-        public List<TRoleMembership> Permissions { get; set; }
+        public List<TRoleMembership> Roles { get; set; }
 
         [Display(Name = "User_Agent")]
         public int? AgentId { get; set; }

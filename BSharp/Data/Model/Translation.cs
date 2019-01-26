@@ -11,20 +11,20 @@ namespace BSharp.Data.Model
     {
         [Required]
         [MaxLength(255)]
-        public string Tier { get; set; } // Client, Server, Shared
-
-        [Required]
-        [MaxLength(255)]
         public string CultureId { get; set; } // ar-SA, en-GB, en, uz-Cyrl-UZ
         public Culture Culture { get; set; }
 
         [Required]
-        [MaxLength(450)]
+        [MaxLength(255)]
         public string Name { get; set; } // The resource key
 
         [Required]
         [MaxLength(2048)]
         public string Value { get; set; } // The resource value
+
+        [Required]
+        [MaxLength(255)]
+        public string Tier { get; set; } // Client, Server, Shared
 
         internal static void OnModelCreating(ModelBuilder builder)
         {
@@ -51,9 +51,11 @@ namespace BSharp.Data.Model
             En(Constants.Server, nameof(RequiredAttribute), "The {0} field is required."),
             Ar(Constants.Server, nameof(RequiredAttribute), "حقل {0} مطلوب"),
 
-            En(Constants.Server, nameof(StringLengthAttribute), "The field {0} must be a string with a maximum length of {1}."),
+            En(Constants.Server, nameof(StringLengthAttribute), "The field {0} must be a string with a maximum length of {1}"),
             Ar(Constants.Server, nameof(StringLengthAttribute), "حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا"),
-            
+
+            En(Constants.Server, nameof(EmailAddressAttribute), "The {0} field is not a valid e-mail address"),
+            Ar(Constants.Server, nameof(EmailAddressAttribute), "حقل {0} لا يحتوي على عنوان بريد سليم"),            
 
             // Server Errors
             En(Constants.Server, "Error_TheId0WasNotFound", "The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing"),
@@ -64,7 +66,10 @@ namespace BSharp.Data.Model
 
             En(Constants.Server, "Error_TheCode0IsUsed", "The code '{0}' is already used"),
             Ar(Constants.Server, "Error_TheCode0IsUsed", "الكود ({0}) مستخدم حاليا"),
-            
+
+            En(Constants.Server, "Error_TheEmail0IsUsed", "The email '{0}' is already used"),
+            Ar(Constants.Server, "Error_TheEmail0IsUsed", "عنوان البريد ({0}) مستخدم حاليا"),
+
             En(Constants.Server, "Error_CannotModifyInactiveItem", "Cannot modify an inactive item"),
             Ar(Constants.Server, "Error_CannotModifyInactiveItem", "لا يمكن تعديل بيان غير منشط"),
 
@@ -80,14 +85,14 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_Deleting0IsNotSupportedFromThisAPI", "Deleting {0} is not supported from this API"),
             Ar(Constants.Server, "Error_Deleting0IsNotSupportedFromThisAPI", "حذف {0} ليس مدعوما من هذه الواجهة"),
 
-            En(Constants.Server, "Error_CannotInsert0WhileSpecifyId", "Cannot insert a {0} while specifying its Id"),
-            Ar(Constants.Server, "Error_CannotInsert0WhileSpecifyId", "لا يمكن إنشاء {0} مع تحديد المفتاح"),
+            En(Constants.Server, "Error_CannotInsertWhileSpecifyId", "Cannot insert an item while specifying its Id"),
+            Ar(Constants.Server, "Error_CannotInsertWhileSpecifyId", "لا يمكن إنشاء بيان مع تحديد المفتاح"),
 
-            En(Constants.Server, "Error_CannotUpdate0WithoutId", "Cannot update a {0} without specifying its Id"),
-            Ar(Constants.Server, "Error_CannotUpdate0WithoutId", "لا يمكن نعديل {0} بدون تحديد المفتاح"),
+            En(Constants.Server, "Error_CannotUpdateWithoutId", "Cannot update an item without specifying its Id"),
+            Ar(Constants.Server, "Error_CannotUpdateWithoutId", "لا يمكن نعديل بيان بدون تحديد المفتاح"),
 
-            En(Constants.Server, "Error_CannotDelete0WithoutId", "Cannot delete a {0} without specifying its Id"),
-            Ar(Constants.Server, "Error_CannotDelete0WithoutId", "لا يمكن حذف {0} بدون تحديد المفتاح"),
+            En(Constants.Server, "Error_CannotDeleteWithoutId", "Cannot delete an item without specifying its Id"),
+            Ar(Constants.Server, "Error_CannotDeleteWithoutId", "لا يمكن حذف بيان بدون تحديد المفتاح"),
 
             En(Constants.Server, "Error_CodeIsRequiredForImportModeUpdate", "The code is required for the update import mode"),
             Ar(Constants.Server, "Error_CodeIsRequiredForImportModeUpdate", "الكود مطلوب لوضع التعديل"),
@@ -134,7 +139,7 @@ namespace BSharp.Data.Model
             Ar(Constants.Client, "Error_LoginSessionExpired", "إنتهت صلاحية تسجيل دخولك، يرجى تسحيل الدخول من جديد"),
 
             En(Constants.Client, "Error_AccountDoesNotHaveSufficientPermissions", "Your account does not have sufficient permissions"),
-            Ar(Constants.Client, "Error_AccountDoesNotHaveSufficientPermissions", "حسابك على النظام لا يتمتع بالصلاحيات الكافية"),
+            Ar(Constants.Client, "Error_AccountDoesNotHaveSufficientPermissions", "حسابك على النظام لا يتمتع بالأذونات الكافية"),
 
             En(Constants.Client, "Error_RecordNotFound", "The specified record was not found"),
             Ar(Constants.Client, "Error_RecordNotFound", "لم يتم العثور على البيان المطلوب"),
@@ -231,12 +236,6 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "Agent_Gender", "Gender"),
             Ar(Constants.Shared, "Agent_Gender", "الجنس"),
 
-            En(Constants.Shared, "Agent_Male", "Male"),
-            Ar(Constants.Shared, "Agent_Male", "ذكر"),
-
-            En(Constants.Shared, "Agent_Female", "Female"),
-            Ar(Constants.Shared, "Agent_Female", "أنثى"),
-
             En(Constants.Shared, "View", "View"),
             Ar(Constants.Shared, "View", "واجهة"),
 
@@ -290,6 +289,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "User_Agent", "Agent"),
             Ar(Constants.Shared, "User_Agent", "الذمّة"),
+            
+            En(Constants.Shared, "User_Companies", "Companies"),
+            Ar(Constants.Shared, "User_Companies", "الشركات"),
 
             En(Constants.Shared, "RoleMembership_User", "User"),
             Ar(Constants.Shared, "RoleMembership_User", "المستخدم"),
@@ -589,6 +591,12 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "MU_Money", "Money"),
             Ar(Constants.Shared, "MU_Money", "نقد"),
+
+            En(Constants.Shared, "Agent_Male", "Male"),
+            Ar(Constants.Shared, "Agent_Male", "ذكر"),
+
+            En(Constants.Shared, "Agent_Female", "Female"),
+            Ar(Constants.Shared, "Agent_Female", "أنثى"),
 
             En(Constants.Shared, "Active", "Active"),
             Ar(Constants.Shared, "Active", "منشط"),

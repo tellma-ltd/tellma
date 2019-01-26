@@ -7,8 +7,8 @@ namespace BSharp.Controllers.Misc
 {
     public static class EntityStates
     {
-        public static readonly string Inserted = nameof(Inserted);
-        public static readonly string Updated = nameof(Updated);
-        public static readonly string Deleted = nameof(Deleted);
+        public const string Inserted = nameof(Inserted);
+        public const string Updated = nameof(Updated);
+        public const string Deleted = nameof(Deleted);
     }
 }

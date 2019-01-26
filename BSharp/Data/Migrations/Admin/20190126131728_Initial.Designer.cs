@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BSharp.Data.Migrations.Admin
 {
     [DbContext(typeof(AdminContext))]
-    [Migration("20190125151622_Initial")]
+    [Migration("20190126131728_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -150,7 +150,7 @@ namespace BSharp.Data.Migrations.Admin
                         .HasMaxLength(255);
 
                     b.Property<string>("Name")
-                        .HasMaxLength(450);
+                        .HasMaxLength(255);
 
                     b.Property<string>("Tier")
                         .IsRequired()

@@ -60,24 +60,20 @@ namespace BSharp.Controllers
 
         private async Task<ActionResult<EntitiesResponse<Agent>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
-            using (var trx = await _db.Database.BeginTransactionAsync())
+            // TODO Authorize Activate
+
+            // TODO Validate (No used units, no duplicate Ids, no missing Ids?)
+
+            var isActiveParam = new SqlParameter("@IsActive", isActive);
+
+            DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
+            var idsTvp = new SqlParameter("@Ids", idsTable)
             {
-                try
-                {
-                    // TODO Authorize Activate
+                TypeName = $"dbo.IdList",
+                SqlDbType = SqlDbType.Structured
+            };
 
-                    // TODO Validate (No used units, no duplicate Ids, no missing Ids?)
-
-                    var isActiveParam = new SqlParameter("@IsActive", isActive);
-
-                    DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
-                    var idsTvp = new SqlParameter("@Ids", idsTable)
-                    {
-                        TypeName = $"dbo.IdList",
-                        SqlDbType = SqlDbType.Structured
-                    };
-
-                    string sql = @"
+            string sql = @"
 DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
@@ -94,49 +90,13 @@ MERGE INTO [dbo].[Custodies] AS t
 			t.[ModifiedById]	= @UserId;
 ";
 
+            using (var trx = await _db.Database.BeginTransactionAsync())
+            {
+                try
+                {
                     // Update the entities
                     await _db.Database.ExecuteSqlCommandAsync(sql, idsTvp, isActiveParam);
-
-                    // Determine whether entities should be returned
-                    if (!returnEntities)
-                    {
-                        // IF no returned items are expected, simply return 200 OK
-                        return Ok();
-                    }
-                    else
-                    {
-                        // Load the entities using their Ids
-                        var affectedDbEntitiesQ = _db.Agents.FromSql("SELECT * FROM [dbo].[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-                        var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
-                        var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-                        var affectedEntities = _mapper.Map<List<Agent>>(affectedDbEntities);
-
-                        // sort the entities the way their Ids came, as a good practice
-                        Agent[] sortedAffectedEntities = new Agent[ids.Count];
-                        Dictionary<int, Agent> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
-                        for (int i = 0; i < ids.Count; i++)
-                        {
-                            var id = ids[i];
-                            Agent entity = null;
-                            if (affectedEntitiesDic.ContainsKey(id))
-                            {
-                                entity = affectedEntitiesDic[id];
-                            }
-
-                            sortedAffectedEntities[i] = entity;
-                        }
-
-                        // Prepare a proper response
-                        var response = new EntitiesResponse<Agent>
-                        {
-                            Data = sortedAffectedEntities,
-                            CollectionName = GetCollectionName(typeof(Agent))
-                        };
-
-                        // Commit and return
-                        trx.Commit();
-                        return Ok(response);
-                    }
+                    trx.Commit();
                 }
                 catch (Exception ex)
                 {
@@ -144,6 +104,46 @@ MERGE INTO [dbo].[Custodies] AS t
                     _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
                     return BadRequest(ex.Message);
                 }
+            }
+
+            // Determine whether entities should be returned
+            if (!returnEntities)
+            {
+                // IF no returned items are expected, simply return 200 OK
+                return Ok();
+            }
+            else
+            {
+                // Load the entities using their Ids
+                var affectedDbEntitiesQ = _db.Agents.Where(e => ids.Contains(e.Id)); //.FromSql("SELECT * FROM [dbo].[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
+                var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
+                var affectedEntities = _mapper.Map<List<Agent>>(affectedDbEntities);
+
+                // sort the entities the way their Ids came, as a good practice
+                Agent[] sortedAffectedEntities = new Agent[ids.Count];
+                Dictionary<int, Agent> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    var id = ids[i];
+                    Agent entity = null;
+                    if (affectedEntitiesDic.ContainsKey(id))
+                    {
+                        entity = affectedEntitiesDic[id];
+                    }
+
+                    sortedAffectedEntities[i] = entity;
+                }
+
+                // Prepare a proper response
+                var response = new EntitiesResponse<Agent>
+                {
+                    Data = sortedAffectedEntities,
+                    CollectionName = GetCollectionName(typeof(Agent))
+                };
+
+                // Commit and return
+                return Ok(response);
             }
         }
 
@@ -224,20 +224,6 @@ MERGE INTO [dbo].[Custodies] AS t
                     var index = indices[entity];
                     ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", PluralName()]);
                 }
-
-                if (entity.Id != null && entity.EntityState != EntityStates.Updated)
-                {
-                    // This error indicates a bug
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotInsert0WhileSpecifyId", SingularName()]);
-                }
-
-                if (entity.Id == null && entity.EntityState == EntityStates.Updated)
-                {
-                    // This error indicates a bug
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}", _localizer["Error_CannotUpdate0WithoutId", SingularName()]);
-                }
             }
 
             // Check that Ids are unique
@@ -267,6 +253,12 @@ MERGE INTO [dbo].[Custodies] AS t
             var sqlErrors = await _db.Validation.FromSql($@"
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+
+    INSERT INTO @ValidationErrors([Key], [ErrorName])
+    SELECT '[' + CAST([Id] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_CannotModifyInactiveItem' As [ErrorName]
+    FROM @Entities
+    WHERE Id IN (SELECT Id from [dbo].[Custodies] WHERE IsActive = 0)
+	OPTION(HASH JOIN);
 
     -- Non Null Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])

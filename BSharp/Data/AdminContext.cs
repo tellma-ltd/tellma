@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 
 // dotnet ef migrations add Initial -c=AdminContext -o=Data/Migrations/Admin
+// dotnet ef database update LastGoodMigration --context=AdminContext
+// dotnet ef migrations remove --context=AdminContext
 namespace BSharp.Data
 {
     /// <summary>
@@ -28,6 +30,9 @@ namespace BSharp.Data
         // Localization
         public DbSet<Culture> Cultures { get; set; }
         public DbSet<Translation> Translations { get; set; }
+
+        // Queries
+        public DbQuery<GlobalUsersMatch> GlobalUsersMatches { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
