@@ -5,17 +5,12 @@ using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -483,43 +478,50 @@ namespace BSharp.Controllers
                                 // (B) Parse the value (e.g. "'Huntington Rd.'")
                                 var valueString = string.Join(" ", pieces.Skip(2));
                                 object value;
-                                if (propType == typeof(string) || propType == typeof(char) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
+                                if (valueString == "null")
                                 {
-                                    if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
-                                    {
-                                        // Programmer mistake
-                                        throw new InvalidOperationException($"Property {prop.Name} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
-                                    }
-
-                                    valueString = valueString.Substring(1, valueString.Length - 2);
+                                    value = null;
                                 }
-
-                                try
+                                else
                                 {
-                                    // The default Convert.ChangeType cannot handle converting types to nullable types
-                                    // Therefore this method overcomes this limitation, credit: https://bit.ly/2DgqJmL
-                                    object ChangeType(object val, Type conversion)
+                                    if (propType == typeof(string) || propType == typeof(char) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
                                     {
-                                        var t = conversion;
-                                        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+                                        if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
                                         {
-                                            if (val == null)
-                                            {
-                                                return null;
-                                            }
-
-                                            t = Nullable.GetUnderlyingType(t);
+                                            // Programmer mistake
+                                            throw new InvalidOperationException($"Property {prop.Name} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
                                         }
 
-                                        return Convert.ChangeType(val, t);
+                                        valueString = valueString.Substring(1, valueString.Length - 2);
                                     }
 
-                                    value = ChangeType(valueString, prop.PropertyType);
-                                }
-                                catch (ArgumentException)
-                                {
-                                    // Programmer mistake
-                                    throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
+                                    try
+                                    {
+                                        // The default Convert.ChangeType cannot handle converting types to nullable types
+                                        // Therefore this method overcomes this limitation, credit: https://bit.ly/2DgqJmL
+                                        object ChangeType(object val, Type conversion)
+                                        {
+                                            var t = conversion;
+                                            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+                                            {
+                                                if (val == null)
+                                                {
+                                                    return null;
+                                                }
+
+                                                t = Nullable.GetUnderlyingType(t);
+                                            }
+
+                                            return Convert.ChangeType(val, t);
+                                        }
+
+                                        value = ChangeType(valueString, prop.PropertyType);
+                                    }
+                                    catch (ArgumentException)
+                                    {
+                                        // Programmer mistake
+                                        throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
+                                    }
                                 }
 
                                 var constant = Expression.Constant(value, prop.PropertyType);
@@ -649,8 +651,14 @@ namespace BSharp.Controllers
                     Type propType = modelType;
                     foreach (var step in steps)
                     {
-                        exp = Expression.Property(exp, propType.GetProperty(step));
-                        exp = Expression.Convert(exp, typeof(object)); // To handle unboxing of e.g. int members
+                        var prop = propType.GetProperty(step);
+                        propType = prop.PropertyType;
+                        exp = Expression.Property(exp, prop);
+
+                        if (step == steps[steps.Length - 1])
+                        {
+                            exp = Expression.Convert(exp, typeof(object)); // To handle unboxing of e.g. int members
+                        }
                     }
 
                     var keySelector = Expression.Lambda<Func<TModel, object>>(exp, param);
@@ -735,23 +743,40 @@ namespace BSharp.Controllers
         /// <returns></returns>
         protected virtual Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(List<TModel> models, string expand)
         {
+            var mainCollection = models.ToHashSet();
+
             // An inline function that recursively traverses the model tree and adds all entities
             // that have a base type of Model.ModelForSaveBase to the provided HashSet
             void Flatten(M.ModelBase model, HashSet<M.ModelBase> accRelatedModels)
             {
-
                 foreach (var prop in model.GetType().GetProperties())
                 {
-                    if (prop.PropertyType.IsSubclassOf(typeof(M.ModelBase)))
-                    {
-                        // Navigation property
-                        if (prop.GetValue(model) is M.ModelBase relatedModel && !accRelatedModels.Contains(relatedModel))
-                        {
-                            Flatten(model, accRelatedModels);
-                            accRelatedModels.Add(relatedModel);
-                        }
+                    // Navigation property
 
-                        // Implementations would have to handle navigation collections
+                    if (prop.GetValue(model) is M.ModelBase relatedModel && !accRelatedModels.Contains(relatedModel) && !mainCollection.Contains(relatedModel))
+                    {
+                        accRelatedModels.Add(relatedModel);
+                        Flatten(relatedModel, accRelatedModels);
+                    }
+
+
+                    // Navigation collection
+                    var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
+                    if (isCollection && prop.PropertyType.GetGenericArguments()[0].IsSubclassOf(typeof(M.ModelBase)))
+                    {
+                        var collection = prop.GetValue(model);
+                        if (collection != null)
+                        {
+                            var enumerator = collection.GetType().GetMethod("GetEnumerator").Invoke(collection, new object[0]);
+                            // while(e.MoveNext())
+                            var moveNextMethod = enumerator.GetType().GetMethod("MoveNext");
+                            var currentProp = enumerator.GetType().GetProperty("Current");
+                            while ((bool)moveNextMethod.Invoke(enumerator, new object[0]))
+                            {
+                                var line = (M.ModelBase)currentProp.GetValue(enumerator);
+                                Flatten(line, accRelatedModels);
+                            }
+                        }
                     }
                 }
             }

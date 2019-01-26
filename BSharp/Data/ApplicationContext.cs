@@ -98,7 +98,7 @@ SELECT
     @UserId = Id,
     @ExternalId = ExternalId,
     @Email = Email FROM [dbo].[LocalUsers] 
-WHERE TenantId = @TenantId AND IsActive = 1 AND (ExternalId = @ExternalUserId OR (@ExternalUserId IS NULL AND Email = @UserEmail));
+WHERE TenantId = @TenantId AND IsActive = 1 AND (ExternalId = @ExternalUserId OR Email = @UserEmail);
 
 -- Set LastAccess (Works only if @UserId IS NOT NULL)
 UPDATE [dbo].[LocalUsers] SET LastAccess = SYSDATETIMEOFFSET() WHERE Id = @UserId;
@@ -126,8 +126,8 @@ SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
                         var user = new DbUser
                         {
                             Id = reader.IsDBNull(0) ? (int?)null : reader.GetInt32(0),
-                            ExternalId = reader.IsDBNull(0) ? null : reader.GetString(1),
-                            Email = reader.IsDBNull(0) ? null : reader.GetString(2),
+                            ExternalId = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            Email = reader.IsDBNull(2) ? null : reader.GetString(2),
                         };
 
                         // Provide the user throughout the current session

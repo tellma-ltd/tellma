@@ -294,7 +294,7 @@ namespace BSharp.Controllers
                         var lineIndex = lineIndices[line];
                         var propName = nameof(RoleMembershipForSave.RoleId);
                         var propDisplayName = _metadataProvider.GetMetadataForProperty(typeof(RoleMembershipForSave), propName)?.DisplayName ?? propName;
-                        ModelState.AddModelError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(entity.Id)}",
+                        ModelState.AddModelError($"[{index}].{nameof(entity.Roles)}[{lineIndex}].{nameof(RoleMembershipForSave.RoleId)}",
                             _localizer[nameof(RequiredAttribute), propDisplayName]);
                     }
                 }

@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Custody } from './dto/custody';
 import { Role } from './dto/role';
 import { View } from './dto/view';
+import { LocalUser } from './dto/local-user';
 
 export enum MasterStatus {
 
@@ -52,6 +53,7 @@ export class TenantWorkspace {
   Custodies: EntityWorkspace<Custody>;
   Roles: EntityWorkspace<Role>;
   Views: EntityWorkspace<View>;
+  LocalUsers: EntityWorkspace<LocalUser>;
 
   get(collection: string, id: number | string) {
     if (!id) {
@@ -72,6 +74,7 @@ export class TenantWorkspace {
     this.Custodies = new EntityWorkspace<Custody>();
     this.Roles = new EntityWorkspace<Role>();
     this.Views = new EntityWorkspace<View>();
+    this.LocalUsers = new EntityWorkspace<LocalUser>();
   }
 }
 

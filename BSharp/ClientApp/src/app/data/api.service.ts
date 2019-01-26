@@ -59,6 +59,13 @@ export class ApiService {
     };
   }
 
+  public localUsersApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<View>('local-users', cancellationToken$),
+      deactivate: this.deactivateFactory<View>('local-users', cancellationToken$)
+    };
+  }
+
   public crudFactory<TDto extends DtoForSaveKeyBase = DtoForSaveKeyBase, TDtoForSave extends DtoForSaveKeyBase = DtoForSaveKeyBase>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
@@ -319,7 +326,7 @@ export class ApiService {
     }
 
     if (!!args.expand) {
-      paramsArray.push(`expand=${encodeURIComponent(args.expand)})`);
+      paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
     }
 
     return paramsArray;

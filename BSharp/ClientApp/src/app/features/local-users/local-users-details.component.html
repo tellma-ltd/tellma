@@ -1,0 +1,90 @@
+<b-details apiEndpoint="local-users" expand="Agent,Roles/Role" collection="LocalUsers" [createFunc]="create" [mode]="mode"
+  [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+              { template: activate, action: onActivate, showAction: showActivate },
+              { template: deactivate, action: onDeactivate, showAction: showDeactivate }
+           ]">
+
+</b-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+  <span>{{ model?.Name }}</span>
+</ng-template>
+
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="validationErrors.Name">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
+      [placeholder]="('Name' | translate) + '...'" required></b-text-editor>
+  </b-form-group>
+
+  <!-- Name2 -->
+  <b-form-group class="b-form-group" [label]="'Name2' | translate" [serverErrors]="validationErrors.Name2">
+    <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  </b-form-group>
+
+  <!-- Code -->
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="validationErrors.Code">
+    <div *ngIf="!isEdit">{{ model?.Code }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  </b-form-group>
+
+  <!-- Agent -->
+  <b-form-group class="b-form-group" [label]="'User_Agent' | translate">
+    <div *ngIf="!isEdit">{{ ws.get('Custodies', model?.AgentId)?.Name }}</div>
+    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.AgentId"
+        apiEndpoint="agents/individuals" collection="Custodies">
+  </b-details-picker>
+  </b-form-group>
+
+  <!-- Is Active -->
+  <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
+    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+  </b-form-group>
+
+  <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
+
+    <!-- Roles -->
+    <ngb-tab [disabled]="true">
+      <ng-template ngbTabTitle><span class="small">{{ 'User_Roles' | translate }} ({{ model?.Roles.length | number }})</span>
+        <span *ngIf="showRolesError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span>
+      </ng-template>
+      <ng-template ngbTabContent>
+        <b-table [dataSource]="model?.Roles" [isEdit]="isEdit" [columnPaths]="['RoleId', 'Memo']" [errors]="validationErrors" errorsPrefix="Roles"
+          [columnTemplates]="{
+              'RoleId' : { headerTemplate : header_RoleId, rowTemplate : row_RoleId, weight : 1 },
+              'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
+            }">
+        </b-table>
+
+        <!-- RoleId -->
+        <ng-template #header_RoleId>{{ 'RoleMembership_Role' | translate }}</ng-template>
+        <ng-template #row_RoleId let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Roles[' + index + '].RoleId']">
+            <div *ngIf="!isEdit">{{ ws.get('Roles', item.RoleId)?.Name }}</div>
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)"
+              apiEndpoint="roles" collection="Roles">
+            </b-details-picker>
+          </b-form-group>
+        </ng-template>
+
+        <!-- Memo -->
+        <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
+        <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Roles[' + index + '].Memo']">
+            <div *ngIf="!isEdit">{{ item.Memo }}</div>
+            <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+          </b-form-group>
+        </ng-template>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</ng-template>
+
+
+<!-- Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

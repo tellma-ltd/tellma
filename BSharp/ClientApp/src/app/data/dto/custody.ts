@@ -12,8 +12,8 @@ export class Custody extends CustodyForSave {
   CustodyType: string;
   IsActive: boolean;
   CreatedAt: string;
-  CreatedBy: string;
+  CreatedById: number | string;
   ModifiedAt: string;
-  ModifiedBy: string;
+  ModifiedById: number | string;
 }
 

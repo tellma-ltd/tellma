@@ -284,12 +284,21 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "Permission_Criteria", "Criteria"),
             Ar(Constants.Shared, "Permission_Criteria", "تقييد"),
 
+            En(Constants.Shared, "User", "User"),
+            Ar(Constants.Shared, "User", "مستخدم"),
+
+            En(Constants.Shared, "Users", "Users"),
+            Ar(Constants.Shared, "Users", "مستخدمون"),
+
             En(Constants.Shared, "User_Email", "Email"),
             Ar(Constants.Shared, "User_Email", "البريد الإلكتروني"),
 
             En(Constants.Shared, "User_Agent", "Agent"),
             Ar(Constants.Shared, "User_Agent", "الذمّة"),
-            
+
+            En(Constants.Shared, "User_Roles", "Roles"),
+            Ar(Constants.Shared, "User_Roles", "الأدوار"),
+
             En(Constants.Shared, "User_Companies", "Companies"),
             Ar(Constants.Shared, "User_Companies", "الشركات"),
 
@@ -373,6 +382,12 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "NotPublic", "Not Public"),
             Ar(Constants.Client, "NotPublic", "غير عام للجميع"),
+
+            En(Constants.Client, "WithAgent", "With Agent"),
+            Ar(Constants.Client, "WithAgent", "ذمة معرفة"),
+
+            En(Constants.Client, "WithoutAgent", "Without Agent"),
+            Ar(Constants.Client, "WithoutAgent", "ذمة غير معرفة"),
 
             En(Constants.Client, "ExportRange", "Exporting Range"),
             Ar(Constants.Client, "ExportRange", "نطاق التصدير"),

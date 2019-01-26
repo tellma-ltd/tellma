@@ -24,6 +24,7 @@ enum SearchView {
 export class MasterComponent implements OnInit, OnDestroy {
 
   private _apiEndpoint: string;
+  private alreadyInit = false;
 
   @Input()
   masterCrumb: string;
@@ -31,15 +32,21 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Input()
   set apiEndpoint(v: string) {
     if (this._apiEndpoint !== v) {
-      // Cancel any exiting operations
-      this.ngOnDestroy();
+
+      // this property defines a whole new screen from the POV of the user
+      // when this property changes it is equivalent to a screen closing and
+      // and another screen opening even though Angular may reuse the same
+      // component and never call ngOnDestroy and ngOnInit. So we call them
+      // manually here if this is not the first time this property is set
+      // to simulate a screen closing and opening again
+      if (this.alreadyInit) {
+        this.ngOnDestroy();
+      }
 
       this._apiEndpoint = v;
-      this.crud = this.api.crudFactory(v, this.notifyDestruct$);
 
-      // Unless the data is already loaded, start loading as soon the api endpoint is set
-      if (this.state.masterStatus !== MasterStatus.loaded) {
-        this.fetch();
+      if (this.alreadyInit) {
+        this.ngOnInit();
       }
     }
   }
@@ -84,15 +91,15 @@ export class MasterComponent implements OnInit, OnDestroy {
   includeInactiveLabel: string;
 
   @Input()
+  expand: string;
+
+  @Input()
   filterDefinition: {
     [groupName: string]: {
       template: TemplateRef<any>,
       expression: string
     }[]
   } = {};
-
-  @Input()
-  expand: string;
 
   @Input()
   additionalCommands: TemplateRef<any>[]; // TODO
@@ -168,10 +175,12 @@ export class MasterComponent implements OnInit, OnDestroy {
       });
     }
 
-    // // Unless the data is already loaded, start loading
-    // if (this.state.masterStatus !== MasterStatus.loaded) {
-    //   this.fetch();
-    // }
+    // Unless the data is already loaded, start loading
+    if (this.state.masterStatus !== MasterStatus.loaded) {
+      this.fetch();
+    }
+
+    this.alreadyInit = true;
   }
 
   ngOnDestroy() {

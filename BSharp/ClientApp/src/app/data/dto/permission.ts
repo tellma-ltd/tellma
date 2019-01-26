@@ -10,9 +10,9 @@ export class PermissionForSave extends DtoForSaveKeyBase {
 
 export class Permission extends PermissionForSave {
   CreatedAt: string;
-  CreatedBy: string;
+  CreatedById: number | string;
   ModifiedAt: string;
-  ModifiedBy: string;
+  ModifiedById: number | string;
 }
 
 // Choice list (Also repeated in measurement units master template)

@@ -12,7 +12,7 @@ export class RoleForSave<TPermission = PermissionForSave> extends DtoForSaveKeyB
 export class Role extends RoleForSave<Permission> {
     IsActive: boolean;
     CreatedAt: string;
-    CreatedBy: string;
+    CreatedById: number | string;
     ModifiedAt: string;
-    ModifiedBy: string;
+    ModifiedById: number | string;
 }

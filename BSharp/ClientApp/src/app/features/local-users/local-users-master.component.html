@@ -1,0 +1,67 @@
+<b-master apiEndpoint="local-users"
+          expand="Agent"
+          [mode]="mode"
+          [masterCrumb]="'Users' | translate"
+          [tileTemplate]="tile"
+          [tableColumnPaths]="['Name', 'Name2' , 'Email', 'Agent/Name', 'IsActive']"
+          [tableColumnTemplates]="{
+            'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
+            'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
+            'Email' : { headerTemplate : header_Code, rowTemplate : row_Code, weight : 1.5 },
+            'Agent/Name' : { headerTemplate : header_AgentId, rowTemplate : row_AgentId, weight : 1.5 },
+            'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
+          }"
+          [multiselectActions]="[
+            { template : activate, action: onActivate },
+            { template : deactivate, action: onDeactivate }
+          ]"
+          [includeInactiveLabel]="'IncludeInactive' | translate"
+          [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedByMe'}
+            ],
+            'IsPublic' : [
+              { template: withAgent, expression: 'AgentId ne null'},
+              { template: withoutAgent, expression: 'AgentId eq null'}
+            ]
+          }">
+</b-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <div class="d-flex justify-content-between">
+    <span class="d-block text-truncate">{{ c[id].Name }}</span>
+  </div>
+  <div class="d-flex justify-content-between mt-1 small">
+    <span>{{ c[id].Code }}</span>
+  </div>
+</ng-template>
+
+
+<!-- Table Templates -->
+<ng-template #header_Name>{{ 'Name' | translate }}</ng-template>
+<ng-template #row_Name let-id="id"> {{ c[id].Name }} </ng-template>
+
+<ng-template #header_Name2>{{ 'Name2' | translate }}</ng-template>
+<ng-template #row_Name2 let-id="id"> {{ c[id].Name2 }} </ng-template>
+
+<ng-template #header_Code>{{ 'User_Email' | translate }}</ng-template>
+<ng-template #row_Code let-id="id"> {{ c[id].Email }} </ng-template>
+
+<ng-template #header_AgentId>{{ 'User_Agent' | translate }}</ng-template>
+<ng-template #row_AgentId let-id="id"> {{ ws.get('Custodies', c[id].AgentId)?.Name }} </ng-template>
+
+<ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
+<ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
+
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+
+<ng-template #withAgent> {{ 'WithAgent' | translate }} </ng-template>
+<ng-template #withoutAgent> {{ 'WithoutAgent' | translate }} </ng-template>
