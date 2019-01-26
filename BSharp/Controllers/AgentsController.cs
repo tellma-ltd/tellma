@@ -2,6 +2,7 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -26,8 +27,8 @@ namespace BSharp.Controllers
     public class AgentsController : CrudControllerBase<M.Agent, Agent, AgentForSave, int?>
     {
         // Hard-coded agent types
-        private const string ORGANIZATION = "Organization";
-        private const string INDIVIDUAL = "Individual";
+        private const string ORGANIZATION = "organizations";
+        private const string INDIVIDUAL = "individuals";
 
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
@@ -36,7 +37,7 @@ namespace BSharp.Controllers
         private readonly IMapper _mapper;
 
         public AgentsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<AgentsController> logger,
-            IStringLocalizer<AgentsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
+            IStringLocalizer<AgentsController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
         {
             _db = db;
             _metadataProvider = metadataProvider;
@@ -78,7 +79,7 @@ namespace BSharp.Controllers
 
                     string sql = @"
 DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
+DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 MERGE INTO [dbo].[Custodies] AS t
 	USING (
@@ -90,7 +91,7 @@ MERGE INTO [dbo].[Custodies] AS t
 		UPDATE SET 
 			t.[IsActive]	= @IsActive,
 			t.[ModifiedAt]	= @Now,
-			t.[ModifiedBy]	= @UserId;
+			t.[ModifiedById]	= @UserId;
 ";
 
                     // Update the entities
@@ -327,7 +328,7 @@ SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
+    DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 -- Deletions
 	DELETE FROM [dbo].[Custodies]
@@ -357,9 +358,9 @@ SET NOCOUNT ON;
 			    t.[Title2]					= s.[Title2],
 			    t.[Gender]					= s.[Gender],
 				t.[ModifiedAt]		        = @Now,
-				t.[ModifiedBy]		        = @UserId
+				t.[ModifiedById]		        = @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([TenantId], [CustodyType], [Name], [Name2], [Code], [Address], [BirthDateTime], [AgentType], [IsRelated], [TaxIdentificationNumber], [Title], [Title2], [Gender], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
+			INSERT ([TenantId], [CustodyType], [Name], [Name2], [Code], [Address], [BirthDateTime], [AgentType], [IsRelated], [TaxIdentificationNumber], [Title], [Title2], [Gender], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
 			VALUES (@TenantId, 'Agent', s.[Name], s.[Name2], s.[Code], s.[Address], s.[BirthDateTime], @AgentType, s.[IsRelated], s.[TaxIdentificationNumber], s.[Title], [Title2], s.[Gender], @Now, @UserId, @Now, @UserId)
 		OUTPUT s.[Index], inserted.[Id] 
 	) AS x;

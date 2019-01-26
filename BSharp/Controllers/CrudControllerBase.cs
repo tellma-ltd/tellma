@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
+using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -37,7 +38,7 @@ namespace BSharp.Controllers
 
         // Constructor
 
-        public CrudControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper) : base(logger, localizer, mapper)
+        public CrudControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
         {
             _logger = logger;
             _localizer = localizer;

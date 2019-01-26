@@ -1,5 +1,6 @@
 ﻿using BSharp.Services.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 namespace BSharp.Data.Migrations.Application
 {
@@ -10,6 +11,9 @@ namespace BSharp.Data.Migrations.Application
         protected static string CodeList = nameof(CodeList);
         protected static string IdList = nameof(IdList);
         protected static string MeasurementUnitForSaveList = nameof(MeasurementUnitForSaveList);
+        protected static string AgentForSaveList = nameof(AgentForSaveList);
+        protected static string RoleForSaveList = nameof(RoleForSaveList);
+        protected static string PermissionForSaveList = nameof(PermissionForSaveList);
 
         protected override void Up(MigrationBuilder builder)
         {
@@ -71,6 +75,62 @@ namespace BSharp.Data.Migrations.Application
                     BaseAmount = udt.Column<double>(nullable: true),
                 }
             );
+
+            builder.CreateUserDefinedTableType(
+                name: AgentForSaveList,
+                columns: udt => new
+                {
+                    Index = udt.Column<int>(nullable: false),
+
+                    Id = udt.Column<int>(nullable: true),
+                    EntityState = udt.Column<string>(nullable: false, maxLength: 255),
+
+                    Name = udt.Column<string>(nullable: true, maxLength: 255),
+                    Name2 = udt.Column<string>(nullable: true, maxLength: 255),
+                    Code = udt.Column<string>(nullable: true, maxLength: 255),
+                    Address = udt.Column<string>(nullable: true, maxLength: 1024),
+                    BirthDateTime = udt.Column<DateTimeOffset>(nullable: true),
+                    IsRelated = udt.Column<bool>(nullable: true),
+                    TaxIdentificationNumber = udt.Column<string>(nullable: true, maxLength: 255),
+                    Title = udt.Column<string>(nullable: true, maxLength: 255),
+                    Title2 = udt.Column<string>(nullable: true, maxLength: 255),
+                    Gender = udt.Column<char>(nullable: true)
+                }
+            );
+
+            builder.CreateUserDefinedTableType(
+                name: RoleForSaveList,
+                columns: udt => new
+                {
+                    Index = udt.Column<int>(nullable: false),
+
+                    Id = udt.Column<int>(nullable: true),
+                    EntityState = udt.Column<string>(nullable: false, maxLength: 255),
+
+                    Name = udt.Column<string>(nullable: true, maxLength: 255),
+                    Name2 = udt.Column<string>(nullable: true, maxLength: 255),
+                    Code = udt.Column<string>(nullable: true, maxLength: 255),
+                    IsPublic = udt.Column<bool>(nullable: true)
+                }
+            );
+
+            builder.CreateUserDefinedTableType(
+                name: PermissionForSaveList,
+                columns: udt => new
+                {
+                    Index = udt.Column<int>(nullable: false),
+                    HeaderIndex = udt.Column<int>(nullable: false),
+
+                    Id = udt.Column<int>(nullable: true),
+                    EntityState = udt.Column<string>(nullable: false, maxLength: 255),
+
+                    ViewId = udt.Column<string>(nullable: true, maxLength: 255),
+                    RoleId = udt.Column<int>(nullable: true, maxLength: 255),
+                    Level = udt.Column<string>(nullable: true, maxLength: 255),
+                    Criteria = udt.Column<string>(nullable: true, maxLength: 1024),
+                    Memo = udt.Column<string>(nullable: true, maxLength: 255)
+                }
+            );
         }
 
         protected override void Down(MigrationBuilder builder)
@@ -80,6 +140,10 @@ namespace BSharp.Data.Migrations.Application
             builder.DropUserDefinedTableType(name: CodeList);
             builder.DropUserDefinedTableType(name: IdList);
             builder.DropUserDefinedTableType(name: MeasurementUnitForSaveList);
+            builder.DropUserDefinedTableType(name: AgentForSaveList);
+            builder.DropUserDefinedTableType(name: RoleForSaveList);
+            builder.DropUserDefinedTableType(name: PermissionForSaveList);
         }
+
     }
 }

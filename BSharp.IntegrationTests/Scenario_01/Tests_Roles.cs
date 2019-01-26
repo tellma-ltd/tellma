@@ -65,13 +65,13 @@ namespace BSharp.IntegrationTests.Scenario_01
                     new PermissionForSave
                     {
                         EntityState = "Inserted",
-                        ViewId = "Individual",
+                        ViewId = "individuals",
                         Level = "Read"
                     },
                     new PermissionForSave
                     {
                         EntityState = "Inserted",
-                        ViewId = "Organization",
+                        ViewId = "organizations",
                         Level = "Update"
                     }
                 }

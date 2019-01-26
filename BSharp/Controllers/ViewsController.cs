@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
 using BSharp.Data;
+using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -27,7 +28,7 @@ namespace BSharp.Controllers
         private readonly IMapper _mapper;
 
         public ViewsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<ViewsController> logger,
-            IStringLocalizer<ViewsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
+            IStringLocalizer<ViewsController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
         {
             _db = db;
             _metadataProvider = metadataProvider;
@@ -187,11 +188,11 @@ namespace BSharp.Controllers
             if (_staticViews == null)
             {
                 _staticViews = new[] {
-                    new StaticViewDefinition(name: "View_All", code: "All", levels: "ReadUpdate"),
-                    new StaticViewDefinition(name: "MeasurementUnits", code: "MeasurementUnit", levels: "ReadUpdate"),
-                    new StaticViewDefinition(name: "Roles", code: "Role", levels: "ReadUpdate"),
-                    new StaticViewDefinition(name: "Individuals", code: "Individual", levels: "ReadUpdate"),
-                    new StaticViewDefinition(name: "Organizations", code: "Organization", levels: "ReadUpdate")
+                    new StaticViewDefinition(name: "View_All", code: "all", levels: "ReadUpdate"),
+                    new StaticViewDefinition(name: "MeasurementUnits", code: "measurement-units", levels: "ReadUpdate"),
+                    new StaticViewDefinition(name: "Roles", code: "roles", levels: "ReadUpdate"),
+                    new StaticViewDefinition(name: "Individuals", code: "individuals", levels: "ReadUpdate"),
+                    new StaticViewDefinition(name: "Organizations", code: "organizations", levels: "ReadUpdate")
                 }.ToList();
             }
 
@@ -213,7 +214,7 @@ namespace BSharp.Controllers
                     Id = view.Code,
                     Name = _localizer[view.Name],
                     Name2 = _localizer2[view.Name],
-                    IsActive = activeViewCodes.Contains(view.Code) || view.Code == "All",
+                    IsActive = activeViewCodes.Contains(view.Code) || view.Code == "all",
                     AllowedPermissionLevels = view.AllowedPermissionLevels
                 });
             }

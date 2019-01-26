@@ -2,6 +2,7 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,7 @@ namespace BSharp.Controllers
         private readonly IMapper _mapper;
 
         public RolesController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<RolesController> logger,
-            IStringLocalizer<RolesController> localizer, IMapper mapper) : base(logger, localizer, mapper)
+            IStringLocalizer<RolesController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
         {
             _db = db;
             _metadataProvider = metadataProvider;
@@ -72,7 +73,7 @@ namespace BSharp.Controllers
 
                     string sql = @"
 DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
+DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 MERGE INTO [dbo].[Roles] AS t
 	USING (
@@ -84,7 +85,7 @@ MERGE INTO [dbo].[Roles] AS t
 		UPDATE SET 
 			t.[IsActive]	= @IsActive,
 			t.[ModifiedAt]	= @Now,
-			t.[ModifiedBy]	= @UserId;
+			t.[ModifiedById]	= @UserId;
 ";
 
                     // Update the entities
@@ -435,7 +436,7 @@ SET NOCOUNT ON;
 	FROM @Permissions P
 	WHERE P.ViewId NOT IN (
 		SELECT [Id] FROM dbo.[Views] WHERE IsActive = 1
-		) AND P.ViewId <> 'All'
+		) AND P.ViewId <> 'all'
 	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
 SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 ", rolesTvp, permissionsTvp).ToListAsync();
@@ -477,7 +478,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
     DECLARE @IndexedIds [dbo].[IndexedIdList], @PermissionsIndexedIds [dbo].[IndexedIdList];
 	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	DELETE FROM [dbo].[Permissions]
 	WHERE [Id] IN (SELECT [Id] FROM @Permissions WHERE [EntityState] = N'Deleted');
@@ -501,10 +502,10 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 				t.[IsPublic]	= s.[IsPublic],
 				t.[Code]		= s.[Code],
 				t.[ModifiedAt]	= @Now,
-				t.[ModifiedBy]	= @UserId
+				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[TenantId], [Name], [Name2],	[IsPublic],		[Code], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy]
+				[TenantId], [Name], [Name2],	[IsPublic],		[Code], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById]
 			)
 			VALUES (
 				@TenantId, s.[Name], s.[Name2], s.[IsPublic], s.[Code], @Now,		@UserId,		@Now,		@UserId
@@ -526,9 +527,9 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 				t.[Criteria]	= s.[Criteria],
 				t.[Memo]		= s.[Memo],
 				t.[ModifiedAt]	= @Now,
-				t.[ModifiedBy]	= @UserId
+				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([TenantId], [RoleId],	[ViewId],	[Level],	[Criteria], [Memo], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
+			INSERT ([TenantId], [RoleId],	[ViewId],	[Level],	[Criteria], [Memo], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
 			VALUES (@TenantId, s.[RoleId], s.[ViewId], s.[Level], s.[Criteria], s.[Memo], @Now,		@UserId,		@Now,		@UserId);
 ";
             // Optimization

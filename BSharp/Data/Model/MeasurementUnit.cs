@@ -33,16 +33,13 @@ namespace BSharp.Data.Model
 
         public DateTimeOffset CreatedAt { get; set; }
 
-        [Required]
-        [MaxLength(450)]
-        public string CreatedBy { get; set; }
+        public int CreatedById { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         public DateTimeOffset ModifiedAt { get; set; }
 
-        [Required]
-        [MaxLength(450)]
-        public string ModifiedBy { get; set; }
-
+        public int ModifiedById { get; set; }
+        public LocalUser ModifiedBy { get; set; }
 
         internal static void OnModelCreating(ModelBuilder builder)
         {
@@ -50,7 +47,20 @@ namespace BSharp.Data.Model
             builder.Entity<MeasurementUnit>().Property(e => e.IsActive).HasDefaultValue(true);
 
             // Code is unique
-            builder.Entity<MeasurementUnit>().HasIndex("TenantId", nameof(Code)).IsUnique();
+            builder.Entity<MeasurementUnit>().HasIndex(TenantId, nameof(Code)).IsUnique();
+
+            // Audit foreign keys
+            builder.Entity<MeasurementUnit>()
+                .HasOne(e => e.CreatedBy)
+                .WithMany()
+                .HasForeignKey(TenantId, nameof(CreatedById))
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<MeasurementUnit>()
+                .HasOne(e => e.ModifiedBy)
+                .WithMany()
+                .HasForeignKey(TenantId, nameof(ModifiedById))
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

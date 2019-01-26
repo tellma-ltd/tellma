@@ -9,10 +9,12 @@ namespace BSharp.Data.Model
     {
         DateTimeOffset CreatedAt { get; set; }
 
-        string CreatedBy { get; set; }
+        int CreatedById { get; set; }
+        LocalUser CreatedBy { get; set; }
 
         DateTimeOffset ModifiedAt { get; set; }
 
-        string ModifiedBy { get; set; }
+        int ModifiedById { get; set; }
+        LocalUser ModifiedBy { get; set; }
     }
 }

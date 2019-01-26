@@ -12,7 +12,7 @@ namespace BSharp.Data
     /// <summary>
     /// This is the identity context for 
     /// </summary>
-    public class IdentityContext : IdentityUserContext<ApplicationUser>
+    public class IdentityContext : IdentityUserContext<User>
     {
         public IdentityContext(DbContextOptions<AdminContext> opt) : base(opt) { }
     }

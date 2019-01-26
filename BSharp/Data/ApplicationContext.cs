@@ -6,7 +6,6 @@ using BSharp.Services.Sharding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -26,9 +25,14 @@ namespace BSharp.Data
         public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
         public DbSet<Custody> Custodies { get; set; }
         public DbSet<Agent> Agents { get; set; }
+
+        // Security
+        public DbSet<LocalUser> LocalUsers { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<View> Views { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RoleMembership> RoleMemberships { get; set; }
+
 
         /// <summary>
         /// A query for returning strongly typed validation errors from SQL
@@ -49,7 +53,7 @@ namespace BSharp.Data
         private readonly ITenantIdProvider _tenantIdProvider;
 
         // Constructor
-        public ApplicationContext(IShardResolver shardProvider, ITenantIdProvider tenantIdProvider, IUserIdProvider userIdProvider) :
+        public ApplicationContext(IShardResolver shardProvider, ITenantIdProvider tenantIdProvider, IUserService userIdProvider) :
             base(CreateDbContextOptions(shardProvider, tenantIdProvider, userIdProvider))
         {
             _tenantIdProvider = tenantIdProvider;
@@ -63,7 +67,7 @@ namespace BSharp.Data
         /// <param name="tenantIdProvider">The service that retrieves tenants Ids from the headers</param>
         /// <returns></returns>
         private static DbContextOptions<ApplicationContext> CreateDbContextOptions(
-            IShardResolver shardResolver, ITenantIdProvider tenantIdProvider, IUserIdProvider userIdProvider)
+            IShardResolver shardResolver, ITenantIdProvider tenantIdProvider, IUserService userService)
         {
             // Prepare the options based on the connection created with the shard manager
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
@@ -80,18 +84,52 @@ namespace BSharp.Data
 
                 SqlCommand cmd = sqlConnection.CreateCommand();
                 cmd.CommandText = @"
+-- Get the User Id
+DECLARE @UserId INT, @ExternalId NVARCHAR(450), @Email NVARCHAR(255);
+SELECT
+    @UserId = Id,
+    @ExternalId = ExternalId,
+    @Email = Email FROM [dbo].[LocalUsers] 
+WHERE TenantId = @TenantId AND IsActive = 1 AND (ExternalId = @ExternalUserId OR (@ExternalUserId IS NULL AND Email = @UserEmail));
+
+-- Set LastAccess (Works only if @UserId IS NOT NULL)
+UPDATE [dbo].[LocalUsers] SET LastAccess = SYSDATETIMEOFFSET() WHERE Id = @UserId;
+
+-- Set the global values of the session context
 EXEC sp_set_session_context @key=N'TenantId', @value=@TenantId;
 EXEC sp_set_session_context @key=N'UserId', @value=@UserId;
 EXEC sp_set_session_context @key=N'Culture', @value=@Culture;
 EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
+
+-- Return the user information
+SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
 ";
-                cmd.Parameters.AddWithValue("@TenantId", tenantIdProvider.GetTenantId() ?? throw new InvalidOperationException("Tenant Id was not supplied"));
-                cmd.Parameters.AddWithValue("@UserId", userIdProvider.GetUserId());
+                cmd.Parameters.AddWithValue("@TenantId", tenantIdProvider.GetTenantId() ?? throw new Controllers.Misc.BadRequestException("Tenant Id was not supplied"));
+                cmd.Parameters.AddWithValue("@ExternalUserId", userService.GetUserId());
+                cmd.Parameters.AddWithValue("@UserEmail", userService.GetUserEmail());
                 cmd.Parameters.AddWithValue("@Culture", CultureInfo.CurrentCulture.Name);
                 cmd.Parameters.AddWithValue("@NeutralCulture", CultureInfo.CurrentCulture.IsNeutralCulture ? CultureInfo.CurrentCulture.Name : CultureInfo.CurrentCulture.Parent.Name);
 
                 sqlConnection.Open();
-                cmd.ExecuteNonQuery();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        var user = new DbUser
+                        {
+                            Id = reader.IsDBNull(0) ? (int?)null : reader.GetInt32(0),
+                            ExternalId = reader.IsDBNull(0) ? null : reader.GetString(1),
+                            Email = reader.IsDBNull(0) ? null : reader.GetString(2),
+                        };
+
+                        // Provide the user throughout the current session
+                        userService.SetDbUser(user);
+                    }
+                    else
+                    {
+                        throw new Controllers.Misc.BadRequestException("Something went wrong while querying the user ID from the Database");
+                    }
+                }
 
                 // Prepare the options based on the connection created with the shard manager
                 optionsBuilder = optionsBuilder.UseSqlServer(sqlConnection);
@@ -117,7 +155,7 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
             AddTenantId<Custody>(builder);
             Custody.OnModelCreating(builder);
 
-            // Agent : Custody
+            // Agents : Custodies
             Agent.OnModelCreating_Agent(builder);
 
             // Roles
@@ -128,10 +166,17 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
             AddTenantId<View>(builder);
             View.OnModelCreating(builder);
 
+            // Local Users
+            AddTenantId<LocalUser>(builder);
+            LocalUser.OnModelCreating(builder);
+
+            // Role Memberships
+            AddTenantId<RoleMembership>(builder);
+            RoleMembership.OnModelCreating(builder);
+
             // Permissions
             AddTenantId<Permission>(builder);
             Permission.OnModelCreating(builder);
-
         }
 
         public override void Dispose()
@@ -211,11 +256,26 @@ EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
             }
         }
 
-        public class DesignTimeUserIdProvider : IUserIdProvider
+        public class DesignTimeUserIdProvider : IUserService
         {
+            public DbUser GetDbUser()
+            {
+                return new DbUser { };
+            }
+
+            public string GetUserEmail()
+            {
+                return "<FakeUserEmail>";
+            }
+
             public string GetUserId()
             {
                 return "<FakeUserId>";
+            }
+
+            public void SetDbUser(DbUser user)
+            {
+
             }
         }
 

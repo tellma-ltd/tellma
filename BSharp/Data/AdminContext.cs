@@ -1,8 +1,7 @@
 ﻿using BSharp.Data.Model;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-// dotnet ef migrations add <MigrationName> -c=AdminContext -o=Data/Migrations/Admin
+// dotnet ef migrations add Initial -c=AdminContext -o=Data/Migrations/Admin
 namespace BSharp.Data
 {
     /// <summary>
@@ -23,6 +22,8 @@ namespace BSharp.Data
         // Shard Manager
         public DbSet<Shard> Shards { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
+        public DbSet<GlobalUser> GlobalUsers { get; set; }
+        public DbSet<TenantMembership> TenantMemberships { get; set; }
 
         // Localization
         public DbSet<Culture> Cultures { get; set; }
@@ -34,10 +35,16 @@ namespace BSharp.Data
 
             // All the model definitions has been moved to the
             // model files themselves for better code readability
+
+            // Shard Manager
+            Shard.OnModelCreating(builder);
+            Tenant.OnModelCreating(builder);
+            GlobalUser.OnModelCreating(builder);
+            TenantMembership.OnModelCreating(builder);
+
+            // Localization
             Culture.OnModelCreating(builder);
             Translation.OnModelCreating(builder);
-            Tenant.OnModelCreating(builder);
-            Shard.OnModelCreating(builder);
         }
     }
 }

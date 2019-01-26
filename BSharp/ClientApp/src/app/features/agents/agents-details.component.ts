@@ -6,7 +6,7 @@ import { Agent, AgentForSave, Agent_Gender } from '~/app/data/dto/agent';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
   selector: 'b-agents-details',
@@ -18,16 +18,16 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   private _genderChoices: { name: string, value: any }[];
   private notifyDestruct$ = new Subject<void>();
   private agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$); // for intellisense
-  private _agentType: 'Individual' | 'Organization';
+  private _agentType: 'individuals' | 'organizations';
 
   public birthDateTimeName: string;
 
   @Input()
-  public get agentType(): 'Individual' | 'Organization' {
+  public get agentType(): 'individuals' | 'organizations' {
     return this._agentType;
   }
 
-  public set agentType(t: 'Individual' | 'Organization') {
+  public set agentType(t: 'individuals' | 'organizations') {
     if (this._agentType !== t) {
       this._agentType = t;
       this.agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$);
@@ -41,7 +41,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return result;
   }
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute, private router: Router) {
     super();
   }
 
@@ -49,25 +49,32 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     if (this.mode === 'screen') {
       this.route.paramMap.subscribe((params: ParamMap) => {
         // This triggers changes on the screen
-        const t = params.get('agentType');
-        let agentType: 'Individual' | 'Organization';
+        const agentType = params.get('agentType');
 
-        if (t === 'individuals') {
-          agentType = 'Individual';
-        }
-        if (t === 'organizations') {
-          agentType = 'Organization';
+        if (['individuals', 'organizations'].indexOf(agentType) === -1) {
+          this.router.navigate(['page-not-found']);
         }
 
         if (this.agentType !== agentType) {
-            this.agentType = agentType;
+          this.agentType = <'individuals' | 'organizations'>agentType;
         }
       });
     }
   }
 
+  public get masterCrumb(): string {
+    // TODO After implementing configuration
+    const agentType = this.agentType;
+    if (!!agentType) {
+      return agentType.charAt(0).toUpperCase() + agentType.slice(1);
+    }
+
+    return agentType;
+  }
+
+
   get isIndividual(): boolean {
-    return this.agentType === 'Individual';
+    return this.agentType === 'individuals';
   }
 
   get genderChoices(): { name: string, value: any }[] {

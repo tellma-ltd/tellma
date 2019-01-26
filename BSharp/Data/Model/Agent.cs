@@ -26,6 +26,8 @@ namespace BSharp.Data.Model
 
         public char? Gender { get; set; }
 
+        public ICollection<LocalUser> Users { get; set; }
+
         internal static void OnModelCreating_Agent(ModelBuilder builder)
         {
             // IsRelated defaults to FALSE

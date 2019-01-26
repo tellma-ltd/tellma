@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BSharp.Controllers.DTO
 {
-    [CollectionName("Roles")]
-    public class RoleForSave<TPermission> : DtoForSaveKeyBase<int?>
+    [CollectionName("LocalUsers")]
+    public class LocalUserForSave<TRoleMembership> : DtoForSaveKeyBase<int?>
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -18,23 +20,22 @@ namespace BSharp.Controllers.DTO
         public string Name2 { get; set; }
 
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "Code")]
-        public string Code { get; set; }
-
-        [Display(Name = "Role_IsPublic")]
-        public bool IsPublic { get; set; }
+        [Display(Name = "User_Email")]
+        public string Email { get; set; }
 
         [Display(Name = "Permissions")]
-        public List<TPermission> Permissions { get; set; }
+        public List<TRoleMembership> Permissions { get; set; }
+
+        [Display(Name = "User_Agent")]
+        public int? AgentId { get; set; }
     }
 
-    public class RoleForSave : RoleForSave<PermissionForSave>
-    {
+    public class LocalUserForSave : LocalUserForSave<RoleMembershipForSave> { }
 
-    }
-
-    public class Role : RoleForSave<Permission>, IAuditedDto
+    public class LocalUser : LocalUserForSave<RoleMembership>, IAuditedDto
     {
+        public string ExternalId { get; set; }
+
         [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }
 

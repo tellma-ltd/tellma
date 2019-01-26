@@ -1,4 +1,4 @@
-using BSharp.Data;
+﻿using BSharp.Data;
 using BSharp.Data.Model;
 using BSharp.Services.Sharding;
 using Microsoft.AspNetCore;
@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Diagnostics;
 using System.Linq;
 using static BSharp.Data.ApplicationContext;
 
@@ -82,6 +81,35 @@ namespace BSharp
                             new DesignTimeTenantIdProvider(), new DesignTimeUserIdProvider());
 
                         appContext.Database.Migrate();
+
+                        // Add first user
+                        var cmd = appContext.Database.GetDbConnection().CreateCommand();
+
+
+                        var now = DateTimeOffset.Now;
+                        appContext.Database.ExecuteSqlCommand(
+                            @"
+DECLARE @NextId INT = IDENT_CURRENT('[dbo].[LocalUsers]') + 1;
+INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, Name2, CreatedById, ModifiedById, TenantId)
+                            VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, 101)",
+                            "support@banan-it.com", // {0}
+                            "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
+                            now, // {2}
+                            "Banan IT Support", // {3}
+                            "فريق مساندة بنان"); // {4}
+
+
+                        //// Add the views
+                        //string[] viewIds = { "measurement-units", "individuals", "organizations", "roles" };
+                        //foreach(var viewId in viewIds)
+                        //{
+                        //    if(!appContext.Views.Any(e => e.Id == viewId))
+                        //    {
+                        //        appContext.Views.Add(new View { Id = viewId, IsActive = true });
+                        //    }
+                        //}
+
+                        appContext.SaveChanges();
                     }
                     catch (Exception ex)
                     {

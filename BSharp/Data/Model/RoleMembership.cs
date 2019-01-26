@@ -1,28 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Data.Model
 {
-    public class Permission : ModelBase, IAuditedModel
+    public class RoleMembership : ModelBase, IAuditedModel
     {
         public int Id { get; set; }
+
+        public int UserId { get; set; }
+        public LocalUser User { get; set; }
 
         public int RoleId { get; set; }
         public Role Role { get; set; }
 
-        [Required]
-        [MaxLength(255)]
-        public string ViewId { get; set; }
-
-        [Required]
-        [MaxLength(255)]
-        public string Level { get; set; }
-
-        [MaxLength(1024)]
-        public string Criteria { get; set; }
-
-        [MaxLength(255)]
         public string Memo { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
@@ -38,20 +28,26 @@ namespace BSharp.Data.Model
         internal static void OnModelCreating(ModelBuilder builder)
         {
             // Role foreign key
-            builder.Entity<Permission>()
+            builder.Entity<RoleMembership>()
                 .HasOne(e => e.Role)
-                .WithMany(e => e.Permissions)
+                .WithMany(e => e.Members)
                 .HasForeignKey(TenantId, nameof(RoleId))
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<RoleMembership>()
+                .HasOne(e => e.User)
+                .WithMany(e => e.Roles)
+                .HasForeignKey(TenantId, nameof(UserId))
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Audit foreign keys
-            builder.Entity<Permission>()
+            builder.Entity<RoleMembership>()
                 .HasOne(e => e.CreatedBy)
                 .WithMany()
                 .HasForeignKey(TenantId, nameof(CreatedById))
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Permission>()
+            builder.Entity<RoleMembership>()
                 .HasOne(e => e.ModifiedBy)
                 .WithMany()
                 .HasForeignKey(TenantId, nameof(ModifiedById))

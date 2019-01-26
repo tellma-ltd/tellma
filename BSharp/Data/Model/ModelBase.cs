@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BSharp.Data.Model
+﻿namespace BSharp.Data.Model
 {
     /// <summary>
     /// Only for type-safety during development, i.e to prevent the silly 
@@ -12,5 +6,6 @@ namespace BSharp.Data.Model
     /// </summary>
     public abstract class ModelBase
     {
+        public static readonly string TenantId = nameof(TenantId);
     }
 }

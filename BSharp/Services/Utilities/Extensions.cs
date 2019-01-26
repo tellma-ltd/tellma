@@ -28,6 +28,14 @@ namespace BSharp.Services.Utilities
         }
 
         /// <summary>
+        /// Retrieves the email of the authenticated claims principal
+        /// </summary>
+        public static string Email(this ClaimsPrincipal user)
+        {
+            return "support@banan-it.com"; // TODO
+        }
+
+        /// <summary>
         /// Extracts all errors inside an IdentityResult and concatenates them together, 
         /// falling back to a default message if no errors were found in the IdentityResult object
         /// </summary>

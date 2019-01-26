@@ -23,19 +23,19 @@ namespace BSharp.Data.Model
 
         public bool IsActive { get; set; }
 
+        public ICollection<RoleMembership> Members { get; set; }
+
+        public ICollection<Permission> Permissions { get; set; }
+
         public DateTimeOffset CreatedAt { get; set; }
 
-        [Required]
-        [MaxLength(450)]
-        public string CreatedBy { get; set; }
+        public int CreatedById { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         public DateTimeOffset ModifiedAt { get; set; }
 
-        [Required]
-        [MaxLength(450)]
-        public string ModifiedBy { get; set; }
-
-        public ICollection<Permission> Permissions { get; set; }
+        public int ModifiedById { get; set; }
+        public LocalUser ModifiedBy { get; set; }
 
         internal static void OnModelCreating(ModelBuilder builder)
         {
@@ -43,13 +43,29 @@ namespace BSharp.Data.Model
             builder.Entity<Role>().Property(e => e.IsActive).HasDefaultValue(true);
 
             // Code is unique
-            builder.Entity<Role>().HasIndex("TenantId", nameof(Code)).IsUnique();
+            builder.Entity<Role>().HasIndex(TenantId, nameof(Code)).IsUnique();
 
             // Name is unique
-            builder.Entity<Role>().HasIndex("TenantId", nameof(Name)).IsUnique();
+            builder.Entity<Role>().HasIndex(TenantId, nameof(Name)).IsUnique();
 
             // Name2 is unique
-            builder.Entity<Role>().HasIndex("TenantId", nameof(Name2)).IsUnique();
+            builder.Entity<Role>().HasIndex(TenantId, nameof(Name2)).IsUnique();
+
+            // For efficiently querying over IsPublic = true
+            builder.Entity<Role>().HasIndex(TenantId, nameof(IsPublic)).HasFilter("[IsPublic] = 1");
+
+            // Audit foreign keys
+            builder.Entity<Role>()
+                .HasOne(e => e.CreatedBy)
+                .WithMany()
+                .HasForeignKey(TenantId, nameof(CreatedById))
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Role>()
+                .HasOne(e => e.ModifiedBy)
+                .WithMany()
+                .HasForeignKey(TenantId, nameof(ModifiedById))
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

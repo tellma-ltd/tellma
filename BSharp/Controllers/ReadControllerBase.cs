@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
+using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -39,14 +40,17 @@ namespace BSharp.Controllers
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly IMapper _mapper;
+        private readonly IUserService _userService;
+        protected static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never expires
 
         // Constructor
 
-        public ReadControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper)
+        public ReadControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper, IUserService userService)
         {
             _logger = logger;
             _localizer = localizer;
             _mapper = mapper;
+            _userService = userService;
         }
 
         // HTTP Methods
@@ -586,10 +590,10 @@ namespace BSharp.Controllers
             // Any type that contains a CreatedBy property defines a keyword "CreatedByMe"
             if (keyword == "CreatedByMe")
             {
-                var createdByProperty = typeof(TModel).GetProperty("CreatedBy");
+                var createdByProperty = typeof(TModel).GetProperty("CreatedById");
                 if (createdByProperty != null)
                 {
-                    var me = Expression.Constant(this.User.UserId(), typeof(string));
+                    var me = Expression.Constant(_userService.GetDbUser().Id.Value, typeof(int));
                     return Expression.Equal(Expression.Property(param, createdByProperty), me);
                 }
             }
@@ -759,15 +763,16 @@ namespace BSharp.Controllers
             }
 
             var relatedDtos = relatedModels.Select(e => _mapper.Map<DtoBase>(e));
-
-            // This groups the related entities by type name, and maps them to DTO using the mapper
-            var relatedEntities = relatedModels.GroupBy(e => GetCollectionName(e.GetType()))
-                .ToDictionary(g => g.Key, g => g.Select(e => _mapper.Map<DtoBase>(e)));
+            // This groups the related entities by collection name
+            var relatedEntities = relatedDtos.GroupBy(e => GetCollectionName(e.GetType()))
+                .ToDictionary(g => g.Key, g => g.AsEnumerable());
 
             return relatedEntities;
         }
 
-        protected static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never expires
+        /// <summary>
+        /// Retrieves the collection name from the DTO type
+        /// </summary>
         protected static string GetCollectionName(Type dtoType)
         {
             if (!_getCollectionNameCache.ContainsKey(dtoType))

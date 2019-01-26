@@ -42,12 +42,12 @@ namespace BSharp.Controllers.DTO
         public DateTimeOffset? CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
-        public string CreatedBy { get; set; }
+        public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset? ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        public string ModifiedBy { get; set; }
+        public int? ModifiedById { get; set; }
     }
 }

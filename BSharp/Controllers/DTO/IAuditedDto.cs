@@ -9,10 +9,10 @@ namespace BSharp.Controllers.DTO
     {
         DateTimeOffset? CreatedAt { get; set; }
 
-        string CreatedBy { get; set; }
+        int? CreatedById { get; set; }
 
         DateTimeOffset? ModifiedAt { get; set; }
 
-        string ModifiedBy { get; set; }
+        int? ModifiedById { get; set; }
     }
 }

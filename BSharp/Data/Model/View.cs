@@ -16,9 +16,6 @@ namespace BSharp.Data.Model
 
         internal static void OnModelCreating(ModelBuilder builder)
         {
-            // Use the name as primary key
-            builder.Entity<View>().HasKey(e => e.Id);
-
             // IsActive defaults to TRUE
             builder.Entity<View>()
                 .Property(e => e.IsActive)

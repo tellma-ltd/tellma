@@ -13,7 +13,7 @@ namespace BSharp.IntegrationTests.Scenario_01
     public partial class Scenario_01
     {
         public const string organizationAgents = "03 - Organization Agents";
-        public const string organizationAgentsURL = "/api/agents/Organization";
+        public const string organizationAgentsURL = "/api/agents/organizations";
 
         [Trait(Testing, organizationAgents)]
         [Fact(DisplayName = "001 - Getting all organizations before creating any returns a 200 OK empty collection")]

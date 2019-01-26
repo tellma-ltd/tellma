@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
   selector: 'b-agents-import',
@@ -8,26 +8,32 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 })
 export class AgentsImportComponent implements OnInit {
 
-  public agentType: 'Individual' | 'Organization';
+  public agentType: 'individuals' | 'organizations';
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe((params: ParamMap) => {
       // This triggers changes on the screen
-      const t = params.get('agentType');
-      let agentType: 'Individual' | 'Organization';
+      const agentType = params.get('agentType');
 
-      if (t === 'individuals') {
-        agentType = 'Individual';
-      }
-      if (t === 'organizations') {
-        agentType = 'Organization';
+      if (['individuals', 'organizations'].indexOf(agentType) === -1) {
+        this.router.navigate(['page-not-found']);
       }
 
       if (this.agentType !== agentType) {
-          this.agentType = agentType;
+        this.agentType = <'individuals' | 'organizations'>agentType;
       }
     });
+  }
+
+  public get masterCrumb(): string {
+    // TODO After implementing configuration
+    const agentType = this.agentType;
+    if (!!agentType) {
+      return agentType.charAt(0).toUpperCase() + agentType.slice(1);
+    }
+
+    return agentType;
   }
 }

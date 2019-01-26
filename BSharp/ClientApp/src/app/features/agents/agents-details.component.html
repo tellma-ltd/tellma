@@ -1,5 +1,5 @@
 <b-details [apiEndpoint]="'agents/' + agentType" collection="Custodies" [createFunc]="create" [mode]="mode"
-  [masterCrumb]="(agentType + 's') | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+  [masterCrumb]="masterCrumb | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
               { template: activate, action: onActivate, showAction: showActivate },
               { template: deactivate, action: onDeactivate, showAction: showDeactivate }
            ]">

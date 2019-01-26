@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddApplicationIdentity(this IServiceCollection services)
         {
-            return services.AddSingleton<IUserIdProvider, UserIdProvider>();
+            return services.AddSingleton<IUserService, UserService>();
 
 
             //// This adds infrastructure for claims but not for roles

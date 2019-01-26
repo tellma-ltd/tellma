@@ -2,6 +2,7 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +29,7 @@ namespace BSharp.Controllers
         private readonly ILogger _logger;
 
         public TranslationsController(AdminContext db, ILogger<TranslationsController> logger, 
-            IStringLocalizer<TranslationsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
+            IStringLocalizer<TranslationsController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
         {
             _db = db;
             _logger = logger;

@@ -13,11 +13,26 @@ namespace BSharp.Data.Migrations.Admin
                 {
                     Id = table.Column<string>(maxLength: 255, nullable: false),
                     Name = table.Column<string>(maxLength: 255, nullable: false),
+                    Symbol = table.Column<string>(maxLength: 255, nullable: false),
                     IsActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cultures", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GlobalUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ExternalId = table.Column<string>(maxLength: 450, nullable: true),
+                    Email = table.Column<string>(maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GlobalUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,7 +74,9 @@ namespace BSharp.Data.Migrations.Admin
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 255, nullable: false),
+                    Name2 = table.Column<string>(maxLength: 255, nullable: true),
+                    Code = table.Column<string>(maxLength: 255, nullable: true),
                     ShardId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -73,20 +90,62 @@ namespace BSharp.Data.Migrations.Admin
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Cultures",
-                columns: new[] { "Id", "IsActive", "Name" },
-                values: new object[] { "en", true, "English" });
+            migrationBuilder.CreateTable(
+                name: "TenantMemberships",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(nullable: false),
+                    TenantId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TenantMemberships", x => new { x.UserId, x.TenantId });
+                    table.ForeignKey(
+                        name: "FK_TenantMemberships_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TenantMemberships_GlobalUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "GlobalUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.InsertData(
                 table: "Cultures",
-                columns: new[] { "Id", "IsActive", "Name" },
-                values: new object[] { "ar", true, "العربية" });
+                columns: new[] { "Id", "IsActive", "Name", "Symbol" },
+                values: new object[] { "en", true, "English", "En" });
+
+            migrationBuilder.InsertData(
+                table: "Cultures",
+                columns: new[] { "Id", "IsActive", "Name", "Symbol" },
+                values: new object[] { "ar", true, "العربية", "ع" });
 
             migrationBuilder.InsertData(
                 table: "Shards",
                 columns: new[] { "Id", "ConnectionString", "Name" },
                 values: new object[] { 1, "<ShardManager>", "Shard Manager" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GlobalUsers_Email",
+                table: "GlobalUsers",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GlobalUsers_ExternalId",
+                table: "GlobalUsers",
+                column: "ExternalId",
+                unique: true,
+                filter: "[ExternalId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TenantMemberships_TenantId",
+                table: "TenantMemberships",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_ShardId",
@@ -97,16 +156,22 @@ namespace BSharp.Data.Migrations.Admin
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Tenants");
+                name: "TenantMemberships");
 
             migrationBuilder.DropTable(
                 name: "Translations");
 
             migrationBuilder.DropTable(
-                name: "Shards");
+                name: "Tenants");
+
+            migrationBuilder.DropTable(
+                name: "GlobalUsers");
 
             migrationBuilder.DropTable(
                 name: "Cultures");
+
+            migrationBuilder.DropTable(
+                name: "Shards");
         }
     }
 }

@@ -222,11 +222,11 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "Agent_Title2", "Second Title"), // TODO
             Ar(Constants.Shared, "Agent_Title2", "اللقب الثاني"),
 
-            En(Constants.Shared, "Agent_Individual_BirthDateTime", "Date of Birth"),
-            Ar(Constants.Shared, "Agent_Individual_BirthDateTime", "تاريخ الميلاد"),
+            En(Constants.Shared, "Agent_individuals_BirthDateTime", "Date of Birth"),
+            Ar(Constants.Shared, "Agent_individuals_BirthDateTime", "تاريخ الميلاد"),
 
-            En(Constants.Shared, "Agent_Organization_BirthDateTime", "Date of Establishment"),
-            Ar(Constants.Shared, "Agent_Organization_BirthDateTime", "تاريخ التأسيس"),
+            En(Constants.Shared, "Agent_organizations_BirthDateTime", "Date of Establishment"),
+            Ar(Constants.Shared, "Agent_organizations_BirthDateTime", "تاريخ التأسيس"),
 
             En(Constants.Shared, "Agent_Gender", "Gender"),
             Ar(Constants.Shared, "Agent_Gender", "الجنس"),
@@ -284,6 +284,18 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "Permission_Criteria", "Criteria"),
             Ar(Constants.Shared, "Permission_Criteria", "تقييد"),
+
+            En(Constants.Shared, "User_Email", "Email"),
+            Ar(Constants.Shared, "User_Email", "البريد الإلكتروني"),
+
+            En(Constants.Shared, "User_Agent", "Agent"),
+            Ar(Constants.Shared, "User_Agent", "الذمّة"),
+
+            En(Constants.Shared, "RoleMembership_User", "User"),
+            Ar(Constants.Shared, "RoleMembership_User", "المستخدم"),
+
+            En(Constants.Shared, "RoleMembership_Role", "Role"),
+            Ar(Constants.Shared, "RoleMembership_Role", "الدور"),
 
             En(Constants.Shared, "Memo", "Memo"),
             Ar(Constants.Shared, "Memo", "ملاحظات"),

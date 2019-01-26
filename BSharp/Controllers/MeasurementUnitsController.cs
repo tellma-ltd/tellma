@@ -2,6 +2,7 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ namespace BSharp.Controllers
         private readonly IMapper _mapper;
 
         public MeasurementUnitsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<MeasurementUnitsController> logger,
-            IStringLocalizer<MeasurementUnitsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
+            IStringLocalizer<MeasurementUnitsController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
         {
             _db = db;
             _metadataProvider = metadataProvider;
@@ -74,7 +75,7 @@ namespace BSharp.Controllers
 
                     string sql = @"
 DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
+DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 MERGE INTO [dbo].MeasurementUnits AS t
 	USING (
@@ -86,7 +87,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
 		UPDATE SET 
 			t.[IsActive]	= @IsActive,
 			t.[ModifiedAt]	= @Now,
-			t.[ModifiedBy]	= @UserId;
+			t.[ModifiedById]= @UserId;
 ";
 
                     // Update the entities
@@ -335,7 +336,7 @@ SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId NVARCHAR(450) = CONVERT(NVARCHAR(450), SESSION_CONTEXT(N'UserId'));
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -357,9 +358,9 @@ SET NOCOUNT ON;
 				t.[BaseAmount]	= s.[BaseAmount],
 				t.[Code]		= s.[Code],
 				t.[ModifiedAt]	= @Now,
-				t.[ModifiedBy]	= @UserId
+				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-				INSERT ([TenantId], [UnitType], [Name], [Name2], [UnitAmount], [BaseAmount], [Code], [CreatedAt], [CreatedBy], [ModifiedAt], [ModifiedBy])
+				INSERT ([TenantId], [UnitType], [Name], [Name2], [UnitAmount], [BaseAmount], [Code], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
 				VALUES (@TenantId, s.[UnitType], s.[Name], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x

@@ -13,7 +13,7 @@ namespace BSharp.IntegrationTests.Scenario_01
     public partial class Scenario_01
     {
         public const string individualAgents = "02 - Individual Agents";
-        public const string individualAgentsURL = "/api/agents/Individual";
+        public const string individualAgentsURL = "/api/agents/individuals";
 
         [Trait(Testing, individualAgents)]
         [Fact(DisplayName = "001 - Getting all individuals before creating any returns a 200 OK empty collection")]

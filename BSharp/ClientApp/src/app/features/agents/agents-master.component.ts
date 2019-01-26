@@ -6,7 +6,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { Agent_Gender } from '~/app/data/dto/agent';
-import { ParamMap, ActivatedRoute } from '@angular/router';
+import { ParamMap, ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'b-agents-master',
@@ -16,20 +16,20 @@ import { ParamMap, ActivatedRoute } from '@angular/router';
 export class AgentsMasterComponent extends MasterBaseComponent implements OnInit {
 
   private agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$); // for intellisense
-  private _agentType: 'Individual' | 'Organization';
+  private _agentType: 'individuals' | 'organizations';
 
   @Input()
-  public get agentType(): 'Individual' | 'Organization' {
+  public get agentType(): 'individuals' | 'organizations' {
     return this._agentType;
   }
 
-  public set agentType(t: 'Individual' | 'Organization') {
+  public set agentType(t: 'individuals' | 'organizations') {
     if (this._agentType !== t) {
       this._agentType = t;
       this.agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$);
       this.birthDateTimeName = `Agent_${t}_BirthDateTime`;
 
-      if (t === 'Individual') {
+      if (t === 'individuals') {
         this.tableColumnPaths = [
           'Name', 'Name2', 'Title', 'Title2',
           'Code', 'Address', 'BirthDateTime',
@@ -38,7 +38,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
         ];
       }
 
-      if (t === 'Organization') {
+      if (t === 'organizations') {
         this.tableColumnPaths = [
           'Name', 'Name2', 'Code', 'Address', 'BirthDateTime',
           'IsRelated', 'TaxIdentificationNumber', 'IsActive'
@@ -51,7 +51,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   public birthDateTimeName: string;
   public filterDefinition: any;
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute, private router: Router) {
     super();
   }
 
@@ -59,18 +59,14 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
     if (this.mode === 'screen') {
       this.route.paramMap.subscribe((params: ParamMap) => {
         // This triggers changes on the screen
-        const t = params.get('agentType');
-        let agentType: 'Individual' | 'Organization';
+        const agentType = params.get('agentType');
 
-        if (t === 'individuals') {
-          agentType = 'Individual';
-        }
-        if (t === 'organizations') {
-          agentType = 'Organization';
+        if (['individuals', 'organizations'].indexOf(agentType) === -1) {
+          this.router.navigate(['page-not-found']);
         }
 
         if (this.agentType !== agentType) {
-            this.agentType = agentType;
+          this.agentType = <'individuals' | 'organizations'>agentType;
         }
       });
     }
@@ -82,6 +78,16 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   public genderLookup(value: string): string {
     return Agent_Gender[value];
+  }
+
+  public get masterCrumb(): string {
+    // TODO After implementing configuration
+    const agentType = this.agentType;
+    if (!!agentType) {
+      return agentType.charAt(0).toUpperCase() + agentType.slice(1);
+    }
+
+    return agentType;
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {

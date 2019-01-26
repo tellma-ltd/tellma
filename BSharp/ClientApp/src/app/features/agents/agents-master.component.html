@@ -1,4 +1,4 @@
-<b-master [apiEndpoint]="'agents/' + agentType" [mode]="mode" [masterCrumb]="(agentType + 's') | translate"
+<b-master [apiEndpoint]="'agents/' + agentType" [mode]="mode" [masterCrumb]="masterCrumb | translate"
   [tileTemplate]="tile" [tableColumnPaths]="tableColumnPaths" [tableColumnTemplates]="{
             'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
             'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },

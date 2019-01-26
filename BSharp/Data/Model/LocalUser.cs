@@ -1,16 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BSharp.Data.Model
 {
-    public class Custody : ModelBase, IAuditedModel
+    public class LocalUser : ModelBase
     {
         public int Id { get; set; }
-
-        [Required]
-        [MaxLength(255)]
-        public string CustodyType { get; set; }
+        
+        [MaxLength(450)]
+        public string ExternalId { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -18,16 +20,17 @@ namespace BSharp.Data.Model
 
         [MaxLength(255)]
         public string Name2 { get; set; }
-
+        
+        [Required]
         [MaxLength(255)]
-        public string Code { get; set; }
-
-        [MaxLength(1024)]
-        public string Address { get; set; }
-
-        public DateTimeOffset? BirthDateTime { get; set; }
+        public string Email { get; set; }
 
         public bool IsActive { get; set; }
+
+        public int? AgentId { get; set; }
+        public Agent Agent { get; set; }
+
+        public ICollection<RoleMembership> Roles { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
 
@@ -39,25 +42,34 @@ namespace BSharp.Data.Model
         public int ModifiedById { get; set; }
         public LocalUser ModifiedBy { get; set; }
 
+        public DateTimeOffset? LastAccess { get; set; }
+
         internal static void OnModelCreating(ModelBuilder builder)
         {
-            // Map the discriminator column to the concrete column
-            builder.Entity<Custody>().HasDiscriminator<string>(nameof(CustodyType));
-
             // IsActive defaults to TRUE
-            builder.Entity<Custody>().Property(e => e.IsActive).HasDefaultValue(true);
+            builder.Entity<LocalUser>().Property(e => e.IsActive).HasDefaultValue(true);
 
-            // Code is unique
-            builder.Entity<Custody>().HasIndex(TenantId, nameof(Code)).IsUnique();
+            // ExternalId is unique
+            builder.Entity<LocalUser>().HasIndex(TenantId, nameof(ExternalId)).IsUnique();
+
+            // Email is unique
+            builder.Entity<LocalUser>().HasIndex(TenantId, nameof(Email)).IsUnique();
+
+            // Role foreign key
+            builder.Entity<LocalUser>()
+                .HasOne(e => e.Agent)
+                .WithMany(e => e.Users)
+                .HasForeignKey(TenantId, nameof(AgentId))
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Audit foreign keys
-            builder.Entity<Custody>()
+            builder.Entity<LocalUser>()
                 .HasOne(e => e.CreatedBy)
                 .WithMany()
                 .HasForeignKey(TenantId, nameof(CreatedById))
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Custody>()
+            builder.Entity<LocalUser>()
                 .HasOne(e => e.ModifiedBy)
                 .WithMany()
                 .HasForeignKey(TenantId, nameof(ModifiedById))

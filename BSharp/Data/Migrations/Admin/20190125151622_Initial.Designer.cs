@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BSharp.Data.Migrations.Admin
 {
     [DbContext(typeof(AdminContext))]
-    [Migration("20181220112838_Initial")]
+    [Migration("20190125151622_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,10 @@ namespace BSharp.Data.Migrations.Admin
                         .IsRequired()
                         .HasMaxLength(255);
 
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
                     b.HasKey("Id");
 
                     b.ToTable("Cultures");
@@ -41,14 +45,41 @@ namespace BSharp.Data.Migrations.Admin
                         {
                             Id = "en",
                             IsActive = true,
-                            Name = "English"
+                            Name = "English",
+                            Symbol = "En"
                         },
                         new
                         {
                             Id = "ar",
                             IsActive = true,
-                            Name = "العربية"
+                            Name = "العربية",
+                            Symbol = "ع"
                         });
+                });
+
+            modelBuilder.Entity("BSharp.Data.Model.GlobalUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("ExternalId")
+                        .HasMaxLength(450);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasFilter("[ExternalId] IS NOT NULL");
+
+                    b.ToTable("GlobalUsers");
                 });
 
             modelBuilder.Entity("BSharp.Data.Model.Shard", b =>
@@ -81,7 +112,15 @@ namespace BSharp.Data.Migrations.Admin
                 {
                     b.Property<int>("Id");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Code")
+                        .HasMaxLength(255);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255);
+
+                    b.Property<string>("Name2")
+                        .HasMaxLength(255);
 
                     b.Property<int>("ShardId");
 
@@ -90,6 +129,19 @@ namespace BSharp.Data.Migrations.Admin
                     b.HasIndex("ShardId");
 
                     b.ToTable("Tenants");
+                });
+
+            modelBuilder.Entity("BSharp.Data.Model.TenantMembership", b =>
+                {
+                    b.Property<int>("UserId");
+
+                    b.Property<int>("TenantId");
+
+                    b.HasKey("UserId", "TenantId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("TenantMemberships");
                 });
 
             modelBuilder.Entity("BSharp.Data.Model.Translation", b =>
@@ -118,6 +170,19 @@ namespace BSharp.Data.Migrations.Admin
                     b.HasOne("BSharp.Data.Model.Shard", "Shard")
                         .WithMany()
                         .HasForeignKey("ShardId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("BSharp.Data.Model.TenantMembership", b =>
+                {
+                    b.HasOne("BSharp.Data.Model.Tenant", "Tenant")
+                        .WithMany("Members")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("BSharp.Data.Model.GlobalUser", "User")
+                        .WithMany("Memberships")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

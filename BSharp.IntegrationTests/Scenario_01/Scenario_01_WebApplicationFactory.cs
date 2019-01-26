@@ -2,13 +2,11 @@
 using BSharp.Data.Model;
 using BSharp.IntegrationTests.Utilities;
 using BSharp.Services.Sharding;
-using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,8 +73,17 @@ namespace BSharp.IntegrationTests.Scenario_01
                     adminContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[Translations]");
 
                     adminContext.Translations.AddRange(Translation.TRANSLATIONS);
-                    adminContext.SaveChanges();
+                    adminContext.GlobalUsers.Add(new GlobalUser
+                    {
+                        Email = "support@banan-it.com",
+                        ExternalId = "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35",
+                        Memberships = new List<TenantMembership> {
+                            new TenantMembership { TenantId = 101 },
+                            new TenantMembership { TenantId = 102 }
+                        }
+                    });
 
+                    adminContext.SaveChanges();
 
                     // (2) Application Context requires special handling in development, don't resolve it with DI
                     var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
@@ -85,9 +92,24 @@ namespace BSharp.IntegrationTests.Scenario_01
 
                     appContext.Database.Migrate();
 
-                    appContext.Views.Add(new View { Id = "MeasurementUnits", IsActive = true });
-                    appContext.Views.Add(new View { Id = "Individual", IsActive = true });
-                    appContext.Views.Add(new View { Id = "Organization", IsActive = true });
+                    // Add first user
+                    var now = DateTimeOffset.Now;
+                    appContext.Database.ExecuteSqlCommand(
+                        @"
+DECLARE @NextId INT = IDENT_CURRENT('[dbo].[LocalUsers]') + 1;
+INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, Name2, CreatedById, ModifiedById, TenantId)
+                            VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, 101)",
+                        "support@banan-it.com", // {0}
+                        "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
+                        now, // {2}
+                        "Banan IT Support", // {3}
+                        "فريق مساندة بنان"); // {4}
+
+                    // Add the views
+                    appContext.Views.Add(new View { Id = "measurement-units", IsActive = true });
+                    appContext.Views.Add(new View { Id = "individuals", IsActive = true });
+                    appContext.Views.Add(new View { Id = "organizations", IsActive = true });
+                    appContext.Views.Add(new View { Id = "roles", IsActive = true });
 
                     appContext.SaveChanges();
                 }
@@ -121,7 +143,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         private SharedCollection _shared;
         public SharedCollection GetSharedCollection()
         {
-            if(_shared == null)
+            if (_shared == null)
             {
                 _shared = new SharedCollection();
             }
