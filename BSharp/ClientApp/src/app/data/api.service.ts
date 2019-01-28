@@ -234,12 +234,12 @@ export class ApiService {
 
       const paramsArray: string[] = [];
 
-      if (!!args.ReturnEntities) {
-        paramsArray.push(`returnEntities=${args.ReturnEntities}`);
+      if (!!args.returnEntities) {
+        paramsArray.push(`returnEntities=${args.returnEntities}`);
       }
 
-      if (!!args.Expand) {
-        paramsArray.push(`expand=${args.Expand}`);
+      if (!!args.expand) {
+        paramsArray.push(`expand=${args.expand}`);
       }
 
       const params: string = paramsArray.join('&');
@@ -269,12 +269,12 @@ export class ApiService {
 
       const paramsArray: string[] = [];
 
-      if (!!args.ReturnEntities) {
-        paramsArray.push(`returnEntities=${args.ReturnEntities}`);
+      if (!!args.returnEntities) {
+        paramsArray.push(`returnEntities=${args.returnEntities}`);
       }
 
-      if (!!args.Expand) {
-        paramsArray.push(`expand=${args.Expand}`);
+      if (!!args.expand) {
+        paramsArray.push(`expand=${args.expand}`);
       }
 
       const params: string = paramsArray.join('&');

@@ -1,4 +1,4 @@
-<b-details apiEndpoint="roles" expand="Permissions/View" collection="Roles" [createFunc]="create" [mode]="mode"
+<b-details apiEndpoint="roles" expand="Permissions/View" collection="Roles" [createFunc]="create" [mode]="mode" [idString]="idString"
   [masterCrumb]="'Roles' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
               { template: activate, action: onActivate, showAction: showActivate },
               { template: deactivate, action: onDeactivate, showAction: showDeactivate }

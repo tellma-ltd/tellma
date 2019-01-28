@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, HostBinding, TemplateRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdown, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlacementArray } from '@ng-bootstrap/ng-bootstrap/util/positioning';
 import { fromEvent, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap, expand } from 'rxjs/operators';
@@ -49,11 +49,11 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   @ViewChild(NgbDropdown)
   resultsDropdown: NgbDropdown;
 
-  @ViewChild(MasterBaseComponent)
-  master: MasterBaseComponent;
+  @ViewChild('detailsWrapperTemplate')
+  detailsWrapperTemplate: TemplateRef<any>;
 
-  @ViewChild(DetailsBaseComponent)
-  details: DetailsBaseComponent;
+  @ViewChild('masterWrapperTemplate')
+  masterWrapperTemplate: TemplateRef<any>;
 
   @HostBinding('class.w-100')
   w100 = true;
@@ -78,16 +78,10 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   @Input()
   focusIf = false;
-  // set focusIf(v: boolean) {
-  //   if (this._focusIf !== v) {
-  //     this._focusIf = v;
-  //   }
-  // }
 
   private MIN_CHARS_TO_SEARCH = 2;
   private SEARCH_PAGE_SIZE = 15;
 
-  private _focusIf = false;
   private cancelRunningCall$ = new Subject<void>();
   private userInputSubscription: Subscription;
   private _status: SearchStatus = null;
@@ -96,6 +90,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   private _highlightedIndex = 0;
   private chosenItem: string | number;
   private _errorMessage: string;
+  private _initialText: string;
   private api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$); // for intellisense
 
   @Input()
@@ -105,7 +100,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   ///////////////// Lifecycle Hooks
-  constructor(private apiService: ApiService, private workspace: WorkspaceService) { }
+  constructor(private apiService: ApiService, private workspace: WorkspaceService, public modalService: NgbModal) { }
 
   public focus = () => {
     this.input.nativeElement.focus();
@@ -207,7 +202,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     this.updateUI(item);
 
     // Signal ControlValueAccessor
-    this.onChange(item); // TODO only the ID
+    this.onChange(item);
 
     // Close the dropdown
     this.status = null;
@@ -296,6 +291,10 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   onBlur() {
+
+    // Capture the current value before it gets wiped away
+    this.captureInitialValue();
+
     // Restart input stream and cancel existing backend calls
     this.cancelRunningCall$.next();
 
@@ -358,22 +357,19 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
         case Key.Enter:
         case Key.Tab:
 
-          if (this._highlightedIndex < this.searchResults.length) {
+          if (this._highlightedIndex === this.indexCreateNew && this.showCreateNew) {
+            this.onCreateFromKeyDown();
+          } else {
             // Retrieve the selected value
             const chosenValue = this._searchResults[this._highlightedIndex];
-
             if (!!chosenValue) {
 
               // Event has been handled
               event.preventDefault();
               event.stopPropagation();
-
             }
 
             this.chooseItem(chosenValue);
-
-          } else {
-
           }
 
           break;
@@ -419,7 +415,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   get showCreateNew(): boolean {
-    return !!this.detailsTemplate;
+    return !!this.detailsTemplate && (this.showNoItemsFound || this.showResults);
   }
 
   get highlightCreateNew(): boolean {
@@ -429,4 +425,72 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   get showMagnifier(): boolean {
     return !!this.masterTemplate;
   }
+
+  // The following methods handle displaying and interacting with master and details template
+
+  onMagnifier() {
+
+    this.modalService.open(this.masterWrapperTemplate, { windowClass: 'b-master-modal' })
+
+      // this guarantees that the input will be focused again when the modal closes
+      .result.then(this.onFocusInput, this.onFocusInput);
+  }
+
+  onUpdate = (id: number | string) => {
+    this.chooseItem(id);
+    // this.onFocusInput();
+  }
+
+  onCreateFromKeyDown = () => {
+    // close the dropdown
+    this.status = null;
+
+    // otherwise Angular complains that the value has changed after it has been checked
+    this.onTouched();
+
+    // if we don't use timeout it doesn't work for some reason
+    setTimeout(() => {
+      this.captureInitialValue();
+      this.launchCreateModal();
+    }, 1);
+  }
+
+  onCreateFromExternal = () => {
+    this.captureInitialValue();
+    this.launchCreateModal();
+  }
+
+  captureInitialValue = () => {
+    // This is what the user just typed in the input field, it may be used
+    // when creating a new item as an initial value for the Name field for example
+    // to save the user from having to type again what s/he just typed
+    // We capture it in a private field to avoid "Expression Changed After Checked" error
+    if (this.input.nativeElement.value === this.formatter(this.chosenItem)) {
+      this._initialText = null;
+    } else {
+      this._initialText = this.input.nativeElement.value;
+    }
+  }
+
+  onCreateFromFocus = () => {
+    // The value is already captured in onBlur() which is triggered before onCreateFromFocus() 
+    this.launchCreateModal();
+  }
+
+  launchCreateModal = () => {
+    // Launch the details modal
+    this.modalService.open(this.detailsWrapperTemplate, { windowClass: 'b-details-modal' })
+
+      // this guarantees that the input will be focused again when the modal closes
+      .result.then(this.onFocusInput, this.onFocusInput);
+  }
+
+  onFocusInput = () => {
+    this.input.nativeElement.focus();
+  }
+
+  get initialText(): string {
+    return this._initialText;
+  }
+
 }

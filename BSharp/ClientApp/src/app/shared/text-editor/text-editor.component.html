@@ -1,5 +1,6 @@
 <input class="form-control b-input" type="text"
        #input
+       autocomplete="dont"
        [placeholder]="placeholder"
        (input)="onChange($event.target.value)"
        (blur)="onTouched();"

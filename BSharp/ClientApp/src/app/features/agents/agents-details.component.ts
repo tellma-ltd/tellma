@@ -98,7 +98,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
   public onActivate = (model: Agent): void => {
     if (!!model && !!model.Id) {
-      this.agentsApi.activate([model.Id], { ReturnEntities: true }).pipe(
+      this.agentsApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
@@ -106,7 +106,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
   public onDeactivate = (model: Agent): void => {
     if (!!model && !!model.Id) {
-      this.agentsApi.deactivate([model.Id], { ReturnEntities: true }).pipe(
+      this.agentsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }

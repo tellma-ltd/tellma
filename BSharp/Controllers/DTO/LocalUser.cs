@@ -19,6 +19,7 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "Name2")]
         public string Name2 { get; set; }
 
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "User_Email")]

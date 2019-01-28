@@ -25,7 +25,7 @@ export class RolesMasterComponent extends MasterBaseComponent {
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.rolesApi.activate(ids, { ReturnEntities: true }).pipe(
+    const obs$ = this.rolesApi.activate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -34,7 +34,7 @@ export class RolesMasterComponent extends MasterBaseComponent {
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.rolesApi.deactivate(ids, { ReturnEntities: true }).pipe(
+    const obs$ = this.rolesApi.deactivate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 

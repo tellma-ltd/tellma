@@ -15,8 +15,14 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   @Input()
   public mode: 'screen' | 'popup' = 'screen';
 
+  @Input()
+  public idString: string | number;
+
+  @Input()
+  public initialText: string;
+
   @Output()
-  save = new EventEmitter<number | string>();
+  saved = new EventEmitter<number | string>();
 
   @Output()
   cancel = new EventEmitter<void>();
@@ -43,11 +49,8 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
 
       // subscribe to new details events
       if (!!this._details) {
-        this.detailsSave = this._details.save.subscribe(this.save); // TODO verify this works
-
-        this.detailsCancel = this._details.cancel.subscribe(_ => {
-          this.cancel.emit();
-        });
+        this.detailsSave = this._details.saved.subscribe(this.saved);
+        this.detailsCancel = this._details.cancel.subscribe(this.cancel);
       }
     }
   }

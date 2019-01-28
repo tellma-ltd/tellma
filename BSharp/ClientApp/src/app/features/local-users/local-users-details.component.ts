@@ -18,6 +18,8 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   private notifyDestruct$ = new Subject<void>();
   private localUsersApi = this.api.localUsersApi(this.notifyDestruct$); // for intellisense
 
+  public expand = 'Agent,Roles/Role';
+
   create = () => {
     const result = new LocalUserForSave();
     result.Roles = [];
@@ -32,7 +34,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
 
   public onActivate = (model: LocalUser): void => {
     if (!!model && !!model.Id) {
-      this.localUsersApi.activate([model.Id], { ReturnEntities: true }).pipe(
+      this.localUsersApi.activate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
@@ -40,7 +42,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
 
   public onDeactivate = (model: LocalUser): void => {
     if (!!model && !!model.Id) {
-      this.localUsersApi.deactivate([model.Id], { ReturnEntities: true }).pipe(
+      this.localUsersApi.deactivate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }

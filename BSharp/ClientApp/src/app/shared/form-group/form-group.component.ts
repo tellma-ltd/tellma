@@ -57,6 +57,10 @@ export class FormGroupComponent {
         if (errors.ngbDate) {
           result.push('InvalidDate');
         }
+
+        if (errors.email) {
+          result.push('InvalidEmail');
+        }
       }
 
       return result;

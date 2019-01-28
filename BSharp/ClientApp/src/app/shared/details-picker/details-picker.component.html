@@ -2,15 +2,16 @@
 
   <!-- The Search Field -->
   <div class="d-flex">
-    <input class="form-control b-input" #input (blur)="onBlur();" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
+    <input class="form-control b-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
       ngbDropdownAnchor autocomplete="off" />
-    <button class="btn btn-light btn-sm text-primary b-white-button p-0 pl-1 pr-1" *ngIf="showMagnifier" type="button" title="{{ 'Search' | translate }}">
+    <button class="btn btn-light btn-sm text-primary b-white-button p-0 pl-1 pr-1" *ngIf="showMagnifier" type="button"
+      title="{{ 'Search' | translate }}" (click)="onMagnifier()">
       <fa-icon icon="search"></fa-icon>
     </button>
   </div>
 
   <!-- The Results Dropdown -->
-  <div class="shadow" ngbDropdownMenu aria-labelledby="drop">
+  <div class="shadow" ngbDropdownMenu aria-labelledby="drop" style="z-index:1050">
     <ng-container *ngIf="showResults">
       <button class="dropdown-item" *ngFor="let item of searchResults; let i = index" [class.active]="i===highlightedIndex"
         (mouseenter)="onMouseEnter(i)" style="cursor:default" (focus)="onFocus(item)">
@@ -26,14 +27,24 @@
       <b-error-message *ngIf="showError"> {{ errorMessage }}</b-error-message>
       <span class="font-italic text-muted" *ngIf="showNoItemsFound">{{ 'NoItemsFound' | translate }}</span>
     </div>
-    <ng-container *ngIf="showResults || showNoItemsFound">
-      <hr *ngIf="showCreateNew" />
+    <ng-container *ngIf="showCreateNew">
+      <hr />
       <!-- <button class="dropdown-item text-primary b-slightly-bold" *ngIf="showEditSelected" [class.active]="highlightEditSelected">
         Edit Selected...
       </button> -->
-      <button class="dropdown-item text-primary b-slightly-bold" *ngIf="showCreateNew" [class.active]="highlightCreateNew">
+      <button class="dropdown-item text-primary b-slightly-bold" [class.active]="highlightCreateNew" (focus)="onCreateFromFocus()">
         {{ 'Create' | translate }}...
       </button>
     </ng-container>
   </div>
 </div>
+
+<ng-template #detailsWrapperTemplate let-modal>
+  <ng-container *ngTemplateOutlet="detailsTemplate;context: { update: onUpdate, modal: modal, initialText: initialText }">
+  </ng-container>
+</ng-template>
+
+<ng-template #masterWrapperTemplate let-modal>
+    <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal }">
+    </ng-container>
+  </ng-template>

@@ -73,7 +73,7 @@ a {
 
 .btn {
   // makes button labels a little thicker
-  font-weight: 500;
+  font-weight: 600;
 }
 
 // support RTL for NGB modal
@@ -141,7 +141,7 @@ ngb-datepicker {
   .dropdown-menu {
     text-align: right;
   }
-  
+
   // otherwise the browser adds a default right padding of 40px
   .nav {
     padding-right: 0;
@@ -168,7 +168,6 @@ ngb-datepicker {
 ngb-tabset li.nav-item .small {
   font-weight: 500;
 }
-
 
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
@@ -328,15 +327,12 @@ ngb-tabset li.nav-item .small {
   }
 }
 
-.b-tile-container.b-popup-tile-container {
-  flex: 0 0 100%;
-  max-width: 100%;
-}
-
-@media (min-width: 576px) {
+@media (min-width: 992px) {
+  // prevents the tiles inside a modal from become too narrow, remember that the
+  // media query works on the screen as a whole not the width of the modal
   .b-tile-container.b-popup-tile-container {
-    flex: 0 0 50%;
-    max-width: 50%;
+    flex: 0 0 25%;
+    max-width: 25%;
   }
 }
 
@@ -421,14 +417,13 @@ input::-ms-clear {
 
 // the below code styles the state flow chart, credit goes to
 // this gentleman: https://css-tricks.com/triangle-breadcrumbs/
-$flow-state-active: #f8f9fa;
+$flow-state-active: #f1f2f3; // #eaebec; // #f8f9fa;
 $flow-border: $gray-300;
 $flow-state: white;
 $flow-text: #6c757d;
 
 .b-flow-chart {
   overflow: hidden;
-  margin-right: -0.125rem !important;
   border-left: 1px solid $flow-border;
 }
 
@@ -486,7 +481,6 @@ $flow-text: #6c757d;
 
 .b-lone-state {
   border-left: 1px solid $flow-border;
-  margin-right: -0.125rem !important;
   padding: 10px 20px;
 }
 
@@ -502,6 +496,58 @@ $flow-text: #6c757d;
 
 .b-flow-chart div.active span::after {
   border-left-color: $flow-state-active;
+}
+
+.b-rtl {
+  // For RTL state chart
+
+  .b-flow-chart {
+    border-left-width: 0;
+    border-right: 1px solid $flow-border;
+  }
+
+  .b-flow-chart div {
+    float: right;
+  }
+
+  .b-flow-chart div span {
+    padding: 10px 50px 10px 0px;
+    // float: right;
+  }
+
+  .b-flow-chart div:first-child span {
+    padding-right: 25px;
+  }
+
+  .b-flow-chart div:last-child span {
+    padding-left: 25px;
+  }
+
+  .b-flow-chart div span::after {
+    border-left-width: 0;
+    border-right: 30px solid $flow-state;
+    //  left: initial;
+    right: 100%;
+  }
+
+  .b-flow-chart div span::before {
+    border-left-width: 0;
+    border-right: 30px solid $flow-border;
+    //  margin-left: 0;
+    margin-right: 1px;
+    // left: initial;
+    right: 100%;
+  }
+
+  .b-lone-state {
+    border-left: 0px solid $flow-border;
+    border-right: 1px solid $flow-border;
+  }
+
+  .b-flow-chart div.active span::after {
+    //   border-left-color: transparent;
+    border-right-color: $flow-state-active;
+  }
 }
 
 // set the layout for the main document and the sidebar
@@ -571,20 +617,18 @@ table.b-master-table th {
   border: 1px solid #6c757d; // border color
 }
 
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #f8f9fa; // light background
+}
 
-  .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
-    background-color: #f8f9fa; // light background
-  }
-  
-  .custom-control-input:checked ~ .custom-control-label::before {
-    background-color: #f8f9fa; // light background
-  }
-  
-  // Override the color of the checkbox indicator
-  .custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E")
-  }
-    
+.custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #f8f9fa; // light background
+}
+
+// Override the color of the checkbox indicator
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E");
+}
 
 // center the checkbox
 div.custom-control.custom-checkbox.b-labelless-checkbox {
@@ -619,7 +663,7 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 1100;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -716,10 +760,45 @@ tr.b-highlight {
   background-color: rgba(17, 17, 17, 0.075) !important;
 }
 
-.b-slightly-bold {
+.b-slightly-bold,
+.b-view-link {
   font-weight: 500;
 }
 
 .b-transparent {
   color: transparent;
+}
+
+.b-details-modal, .b-master-modal 
+{
+  .modal-dialog {
+    max-width: 1050px;
+  }
+  .modal-body,
+  .model-footer {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+.b-master-modal {
+  .modal-content {
+    height: 100%;
+  }
+  .modal-dialog {
+    height: calc(100% - 1rem);
+  }
+  .modal-body {
+    height: 100%;
+  }
+}
+
+@media (min-width: 576px) {
+  .b-master-modal {
+    .modal-content {
+      height: 100%;
+    }
+    .modal-dialog {
+      height: calc(100% - 3.5rem);
+    }
+  }
 }

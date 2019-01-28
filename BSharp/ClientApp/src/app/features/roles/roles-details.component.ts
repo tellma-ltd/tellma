@@ -21,6 +21,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
   create = () => {
     const result = new RoleForSave();
+    result.Name = this.initialText;
     result.IsPublic = false;
     result.Permissions = [];
     return result;
@@ -55,7 +56,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
   public onActivate = (model: Role): void => {
     if (!!model && !!model.Id) {
-      this.rolesApi.activate([model.Id], { ReturnEntities: true }).pipe(
+      this.rolesApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
@@ -63,7 +64,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
   public onDeactivate = (model: Role): void => {
     if (!!model && !!model.Id) {
-      this.rolesApi.deactivate([model.Id], { ReturnEntities: true }).pipe(
+      this.rolesApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }

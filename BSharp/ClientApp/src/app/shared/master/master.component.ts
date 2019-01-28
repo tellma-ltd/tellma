@@ -113,14 +113,15 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Input()
   exportFileName: string;
 
-  @Input()
-  searchView: SearchView;
 
   @Output()
   select = new EventEmitter<number | string>();
 
   @Output()
   create = new EventEmitter<void>();
+
+  @Output()
+  cancel = new EventEmitter<void>();
 
   @ViewChild('errorModal')
   public errorModal: TemplateRef<any>;
@@ -135,8 +136,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   private _tableColumnPathsAndExtras: string[];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
+  public searchView: SearchView = SearchView.tiles;
   public checked = {};
-  public exportFormat: 'csv' | 'xlsx' = 'xlsx';
+  public exportFormat: 'csv' | 'xlsx';
   public exportSkip = 0;
   public showExportSpinner = false;
   public exportErrorMessage: string;
@@ -159,21 +161,28 @@ export class MasterComponent implements OnInit, OnDestroy {
     allSignals.pipe(
       switchMap(() => this.doFetch())
     ).subscribe();
+
+    // this will only work in screen mode
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      if (params.has('view')) {
+        this.searchView = SearchView[params.get('view')];
+      }
+    });
   }
 
   ngOnInit() {
 
-    // Set the crud API
+    // Reset the state of the master component state
+    this.localState = new MasterDetailsStore();
+    this._formatChoices = null;
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
-
-    // Set the view from the URL or to 'tiles' by default
-    if (this.mode === 'screen') {
-      // in popup mode don't read from query parameters
-      this.route.paramMap.subscribe((params: ParamMap) => {
-        this.searchView = params.has('view') ?
-          SearchView[params.get('view')] : SearchView.tiles; // tiles by default
-      });
-    }
+    this.checked = {};
+    this.exportFormat = 'xlsx';
+    this.exportSkip = 0;
+    this.showExportSpinner = false;
+    this.exportErrorMessage = null;
+    this.actionErrorMessage = null;
+    this.actionValidationErrors = {};
 
     // Unless the data is already loaded, start loading
     if (this.state.masterStatus !== MasterStatus.loaded) {
@@ -385,18 +394,26 @@ export class MasterComponent implements OnInit, OnDestroy {
     return !this.isPopupMode && this.showExportButton;
   }
 
+  get isScreenMode(): boolean {
+    return this.mode === 'screen';
+  }
+
   get isPopupMode(): boolean {
     return this.mode === 'popup';
   }
 
   onTilesView() {
     this.searchView = SearchView.tiles;
-    this.urlStateChange();
+    if (this.isScreenMode) {
+      this.urlStateChange();
+    }
   }
 
   onTableView() {
     this.searchView = SearchView.table;
-    this.urlStateChange();
+    if (this.isScreenMode) {
+      this.urlStateChange();
+    }
   }
 
   onCreate() {
@@ -507,7 +524,7 @@ export class MasterComponent implements OnInit, OnDestroy {
         result = [];
       }
 
-      if (this.allowMultiselect) {
+      if (this.allowMultiselect && this.isScreenMode) {
         result = result.slice();
         result.unshift('errors');
         result.unshift('multiselect');
@@ -802,6 +819,10 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   isRecentlyViewed(id: number | string) {
     return this.state.detailsId === id;
+  }
+
+  onCancel() {
+    this.cancel.emit();
   }
 
 }

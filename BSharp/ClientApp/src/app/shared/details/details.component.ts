@@ -21,9 +21,6 @@ import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   @Input()
-  apiEndpoint: string;
-
-  @Input()
   collection: string;
 
   @Input()
@@ -34,6 +31,9 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   @Input()
   detailsCrumb: string;
+
+  @Input()
+  documentHeaderTemplate: TemplateRef<any>;
 
   @Input()
   documentTemplate: TemplateRef<any>;
@@ -55,11 +55,48 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @Input() // popup: only the title and the document are visible
   mode: 'popup' | 'screen' = 'screen';
 
+  // apiEndpoint and idString both represent the identity of an abstract "instance" of this screen
+  // so when they change it will be as if a screen closed and another screen opened from the point
+  // of view of the user, for performance reasons Angular does not destroy and recreate the component
+  // if the same component is still used but its input has changed, so to simulate a screen change
+  // we call destroy and init in the property setters of these two properties, if this is not the
+  // first time they are being set, the same pattern is used in the master screen
+
+  @Input()
+  public set apiEndpoint(v: string) {
+    // apiEndpoint cannot be reset to null
+    if (!!v && this._apiEndpoint !== v) {
+      if (this.alreadyInit) {
+        this.ngOnDestroy();
+      }
+
+      this._apiEndpoint = v;
+
+      if (this.alreadyInit) {
+        this.ngOnInit();
+      }
+      // this.fetch();
+    }
+  }
+
+  public get apiEndpoint() {
+    return this._apiEndpoint;
+  }
+
   @Input()
   public set idString(v: string) {
-    if (this._idString !== v) {
+    // idString cannot be reset to null
+    if (!!v && this._idString !== v) {
+      if (this.alreadyInit) {
+        this.ngOnDestroy();
+      }
+
       this._idString = v;
-      this.fetch();
+
+      if (this.alreadyInit) {
+        this.ngOnInit();
+      }
+      // this.fetch();
     }
   }
 
@@ -68,7 +105,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   @Output()
-  save = new EventEmitter<number | string>();
+  saved = new EventEmitter<number | string>();
 
   @Output()
   cancel = new EventEmitter<void>();
@@ -79,20 +116,26 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @ViewChild('unsavedChangesModal')
   public unsavedChangesModal: TemplateRef<any>;
 
+  private alreadyInit: boolean;
   private _idString: string;
+  private _apiEndpoint: string;
   private _editModel: DtoForSaveKeyBase;
-  private notifyFetch$ = new BehaviorSubject<any>(null);
+  private notifyFetch$: Subject<void>;
   private notifyDestruct$ = new Subject<void>();
   private localState = new MasterDetailsStore();  // Used in popup mode
   private _errorMessage: string; // in the document area itself
   private _modalErrorMessage: string; // in the modal
   private _validationErrors: { [id: string]: string[] } = {}; // on the fields
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
-  private _viewModelJson;
+  private _viewModelJson: string;
 
   // Moved below the fields to keep tslint happy
   @Input()
   createFunc: () => DtoForSaveKeyBase = () => ({ Id: null, EntityState: 'Inserted' })
+
+  @Input()
+  isInactive: (model: DtoForSaveKeyBase) => string = (model: DtoForSaveKeyBase) =>
+  (model['IsActive'] == null || model['IsActive'] === false) ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
 
   @Input()
   cloneFunc: (item: DtoForSaveKeyBase) => DtoForSaveKeyBase = (item: DtoForSaveKeyBase) => {
@@ -108,30 +151,47 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private location: Location, private router: Router,
-    private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) { }
+  constructor(private workspace: WorkspaceService, private api: ApiService, private location: Location,
+    private router: Router, private route: ActivatedRoute, public modalService: NgbModal, private translate: TranslateService) {
+    // The constructor contains initializations and wiring
+    // that survives over the lifetime of the component itself
+    // even if apiEndpoint or idString change
 
-  ngOnInit() {
-
-    this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
-
-    // When the URI 'id' parameter changes in screen mode,
-    // set idString which in turn fetches a new record
-    if (this.mode === 'screen') {
-      this.route.paramMap.subscribe((params: ParamMap) => {
-        // This triggers a refresh
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      // The id parameter from the URI is only avaialble in screen mode
+      // when it changes set idString which triggers a new refresh
+      if (params.has('id')) {
         this.idString = params.get('id');
-      });
-    }
+      }
+    });
 
     // When the notifyFetch$ subject fires, cancel existing backend
     // call and dispatch a new backend call
+    this.notifyFetch$ = new Subject<any>();
     this.notifyFetch$.pipe(
       switchMap(() => this.doFetch())
     ).subscribe();
   }
 
+  ngOnInit() {
+    // As if the screen is opened a new
+    this.localState = new MasterDetailsStore();
+    this._errorMessage = null;
+    this._modalErrorMessage = null;
+    this._validationErrors = {};
+    this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
+    this._viewModelJson = null;
+
+    // Fetch the data of the screen based on apiEndpoint and idString
+    this.fetch();
+
+    // This signals the setters of apiEndpoint and idString to manually
+    // invoke ngOnInit next time they are called
+    this.alreadyInit = true;
+  }
+
   ngOnDestroy() {
+    // Cancel any backend operations
     this.notifyDestruct$.next();
   }
 
@@ -300,7 +360,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return !!s.detailsId ? this.workspace.current[this.collection][s.detailsId] : null;
   }
 
-  public handleActionError(friendlyError) {
+  public handleActionError = (friendlyError) => {
 
     // This handles any errors caused by actions
     if (friendlyError.status === 422) {
@@ -373,12 +433,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   get isScreenMode() {
-    // the part above the main content area
     return this.mode === 'screen';
   }
 
   get isPopupMode() {
-    // the part above the main content area
     return this.mode === 'popup';
   }
 
@@ -434,12 +492,18 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   onEdit(): void {
     if (this.viewModel) {
-      // clone the model (to allow for canceling changes)
-      this._viewModelJson = JSON.stringify(this.viewModel);
-      this._editModel = JSON.parse(this._viewModelJson);
+      const error = this.isInactive(this.viewModel);
+      if (error) {
+        this.displayModalError(this.translate.instant(error));
+      } else {
+        // clone the model (to allow for canceling changes)
+        this._viewModelJson = JSON.stringify(this.viewModel);
+        this._editModel = JSON.parse(this._viewModelJson);
 
-      // show the edit view
-      this.state.detailsStatus = DetailsStatus.edit;
+        // show the edit view
+        this.state.detailsStatus = DetailsStatus.edit;
+
+      }
     }
   }
 
@@ -449,10 +513,11 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   onSave(): void {
+    // if it's new the user expects a save to happen even if there is no red asterisk
     if (!this.isDirty && !this.isNew) {
       if (this.mode === 'popup') {
         // In popup mode, just notify the outside world that a save has happened
-        this.save.emit();
+        this.saved.emit(this._editModel.Id);
 
       } else {
         // since no changes, don't save to the database
@@ -491,8 +556,8 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
           if (this.mode === 'popup') {
             // in popup mode, just notify the outside world that a save has happened
-            this.save.emit();
             this.onEdit(); // to replace the edit mode with the one from the server
+            this.saved.emit(s.detailsId);
 
           } else {
             // in screen mode always close the edit view

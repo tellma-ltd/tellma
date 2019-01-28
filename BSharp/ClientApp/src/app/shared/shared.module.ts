@@ -69,6 +69,7 @@ import { DatePickerLocalization } from './date-picker/date-picker-localization';
 import { TableComponent } from './table/table.component';
 import { DetailsPickerComponent } from './details-picker/details-picker.component';
 import { DropdownAppendToBodyDirective } from './details-picker/dropdown-append-to-body.directive';
+import { ViewLinkComponent } from './view-link/view-link.component';
 
 // Icons to be used in the web app
 library.add(
@@ -99,7 +100,8 @@ library.add(
     DatePickerComponent,
     TableComponent,
     DetailsPickerComponent,
-    DropdownAppendToBodyDirective
+    DropdownAppendToBodyDirective,
+    ViewLinkComponent
   ],
   imports: [
     CommonModule,
@@ -147,7 +149,8 @@ library.add(
     MasterBaseComponent,
     DatePickerComponent,
     TableComponent,
-    DetailsPickerComponent
+    DetailsPickerComponent,
+    ViewLinkComponent
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },

@@ -29,7 +29,7 @@ export class LocalUsersMasterComponent extends MasterBaseComponent {
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.localUsersApi.activate(ids, { ReturnEntities: true }).pipe(
+    const obs$ = this.localUsersApi.activate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -38,7 +38,7 @@ export class LocalUsersMasterComponent extends MasterBaseComponent {
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.localUsersApi.deactivate(ids, { ReturnEntities: true }).pipe(
+    const obs$ = this.localUsersApi.deactivate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 

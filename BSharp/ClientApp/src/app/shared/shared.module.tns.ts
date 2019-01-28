@@ -20,6 +20,7 @@ import { NativeScriptFormsModule } from 'nativescript-angular/forms';
 import { DatePickerComponent } from './date-picker/date-picker.component';
 import { TableComponent } from './table/table.component';
 import { DetailsPickerComponent } from './details-picker/details-picker.component';
+import { ViewLinkComponent } from './view-link/view-link.component';
 // import { NativeScriptLocalizeModule } from 'nativescript-localize/angular';
 
 @NgModule({
@@ -39,7 +40,8 @@ import { DetailsPickerComponent } from './details-picker/details-picker.componen
     WarningMessageComponent,
     DatePickerComponent,
     TableComponent,
-    DetailsPickerComponent],
+    DetailsPickerComponent,
+    ViewLinkComponent],
   imports: [
     NativeScriptCommonModule
   ],

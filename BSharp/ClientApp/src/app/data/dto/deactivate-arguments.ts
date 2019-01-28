@@ -1,4 +1,4 @@
 export class DeactivateArguments {
-  ReturnEntities?: boolean;
-  Expand?: string;
+  returnEntities?: boolean;
+  expand?: string;
 }

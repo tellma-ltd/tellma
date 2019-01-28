@@ -112,7 +112,12 @@ namespace BSharp.Controllers
 
         protected override IQueryable<ViewDefinition> Search(IQueryable<ViewDefinition> query, string search)
         {
-            return query.Where(e => e.Name.ToLower().Contains(search.ToLower()) || (e.Name != null && e.Name2.ToLower().Contains(search.ToLower())));
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(e => e.Name.ToLower().Contains(search.ToLower()) || (e.Name != null && e.Name2.ToLower().Contains(search.ToLower())));
+            }
+
+            return query;
         }
 
         protected override IQueryable<ViewDefinition> Expand(IQueryable<ViewDefinition> query, string expand)
@@ -191,6 +196,7 @@ namespace BSharp.Controllers
                     new StaticViewDefinition(name: "View_All", code: "all", levels: "ReadUpdate"),
                     new StaticViewDefinition(name: "MeasurementUnits", code: "measurement-units", levels: "ReadUpdate"),
                     new StaticViewDefinition(name: "Roles", code: "roles", levels: "ReadUpdate"),
+                    new StaticViewDefinition(name: "Users", code: "local-users", levels: "ReadUpdate"),
                     new StaticViewDefinition(name: "Individuals", code: "individuals", levels: "ReadUpdate"),
                     new StaticViewDefinition(name: "Organizations", code: "organizations", levels: "ReadUpdate")
                 }.ToList();

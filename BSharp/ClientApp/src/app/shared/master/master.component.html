@@ -1,8 +1,25 @@
 <div class="h-100 d-flex flex-column">
-  <div class="row  border-bottom">
+
+  <div class="row border-bottom justify-content-between flex-row" *ngIf="isPopupMode">
 
     <!-- Breadcrumb -->
-    <div class="col-6 p-1">
+    <div class="p-2">
+      <ul class="breadcrumb bg-white mb-0">
+        <li class="breadcrumb-item">
+          {{ masterCrumb }}
+        </li>
+      </ul>
+    </div>
+
+    <button type="button" class="close pr-3 pl-3" aria-label="Close" (click)="onCancel()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="row border-bottom">
+
+    <!-- Breadcrumb -->
+    <div class="col-6 p-1" *ngIf="isScreenMode">
       <ul class="breadcrumb bg-white mb-0">
         <li class="breadcrumb-item active">
           {{ masterCrumb }}
@@ -11,10 +28,10 @@
     </div>
 
     <!-- Search and Filter -->
-    <div class="col-6 p-1">
+    <div class="p-1" [class.col-6]="isScreenMode" [class.col-12]="isPopupMode">
       <div class="d-flex b-search">
         <!-- Search Box -->
-        <b-text-editor placeholder="{{ 'Search' | translate }}..." [(ngModel)]="search"></b-text-editor>
+        <b-text-editor placeholder="{{ 'Search' | translate }}..." [(ngModel)]="search" [focusIf]="isPopupMode"></b-text-editor>
 
         <!-- Filter -->
         <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">
@@ -145,8 +162,7 @@
         </div>
 
         <!-- Cancel -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" type="button" *ngIf="!isPopupMode"
-          (click)="onCancelMultiselect()">
+        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" type="button" (click)="onCancelMultiselect()">
           <fa-icon icon="times"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
         </button>
@@ -351,7 +367,6 @@
     </button>
   </div>
 </ng-template>
-
 
 <!-- Error Modal -->
 <ng-template #errorModal let-modal>

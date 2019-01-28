@@ -102,7 +102,7 @@ namespace BSharp.Data.Model
 
             En(Constants.Server, "Error_TheView0IsInactive", "The view with code '{0}' is not activated"),
             Ar(Constants.Server, "Error_TheView0IsInactive", "الواجهة ذات الكود ({0}) غير منشطة"),
-            
+
             En(Constants.Server, "Error_NoFileWasUploaded", "No file was uploaded"),
             Ar(Constants.Server, "Error_NoFileWasUploaded", "لم يتم رفع أي ملف"),
 
@@ -130,6 +130,15 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_TheValue0IsNotValidFor1Field", "The value '{0}' is not valid for the {1} field"),
             Ar(Constants.Server, "Error_TheValue0IsNotValidFor1Field", "القيمة ({0}) ليست صالحة لحقل {1}"),
 
+            En(Constants.Server, "Error_CannotDeactivateYourOwnUser", "You cannot deactivate your own user"),
+            Ar(Constants.Server, "Error_CannotDeactivateYourOwnUser", "لا يمكنك إيقاف نشاط المستخدم خاصتك"),
+
+            En(Constants.Server, "Error_CannotDeleteYourOwnUser", "You cannot delete your own user"),
+            Ar(Constants.Server, "Error_CannotDeleteYourOwnUser", "لا يمكنك حذف المستخدم خاصتك"),
+
+            En(Constants.Server, "Error_TheEmailCannotBeModified", "The user email cannot be modified from here"),
+            Ar(Constants.Server, "Error_TheEmailCannotBeModified", "لا يمكن تعديل عنوان بريد المستخدم من هنا"),        
+                       
 
             // Client Errors
             En(Constants.Client, "Error_UnableToReachServer", "Unable to reach the server, please check the connection of your device"),
@@ -152,6 +161,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Error_UnkownClientError", "An unknown error occurred on the client, please contact your IT department"),
             Ar(Constants.Client, "Error_UnkownClientError", "حدث خطأ غير معروف على على النظام العميل، يرجى مراجعة إدارة المعلومات"),
+
+            En(Constants.Client, "Error_CannotModifyInactiveItemPleaseActivate", "An inactive item cannot be edited, please activate it first"),
+            Ar(Constants.Client, "Error_CannotModifyInactiveItemPleaseActivate", "لا يمكن تعديل بيان غير منشط، يرجى تنشيط البيان أولا"),
             
             
             // Labels
@@ -241,7 +253,7 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "Views", "Views"),
             Ar(Constants.Shared, "Views", "واجهات"),
-            
+
             En(Constants.Shared, "Role", "Role"),
             Ar(Constants.Shared, "Role", "دور"),
 
@@ -301,6 +313,12 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "User_Companies", "Companies"),
             Ar(Constants.Shared, "User_Companies", "الشركات"),
+
+            En(Constants.Shared, "User_New", "New"),
+            Ar(Constants.Shared, "User_New", "جديد"),
+
+            En(Constants.Shared, "User_Confirmed", "Confirmed"),
+            Ar(Constants.Shared, "User_Confirmed", "مؤكد"),
 
             En(Constants.Shared, "RoleMembership_User", "User"),
             Ar(Constants.Shared, "RoleMembership_User", "المستخدم"),
@@ -412,6 +430,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "InvalidDate", "Invalid Date"),
             Ar(Constants.Client, "InvalidDate", "تاريخ غير سليم"),
+
+            En(Constants.Client, "InvalidEmail", "Invalid Email"),
+            Ar(Constants.Client, "InvalidEmail", "عنوان بريد غير سليم"),
 
             En(Constants.Client, "Tiles", "Tiles"),
             Ar(Constants.Client, "Tiles", "مستطيلات"),

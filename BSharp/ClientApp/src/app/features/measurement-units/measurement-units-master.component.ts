@@ -30,7 +30,7 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.measurementUnitsApi.activate(ids, { ReturnEntities: true }).pipe(
+    const obs$ = this.measurementUnitsApi.activate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -39,7 +39,7 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.measurementUnitsApi.deactivate(ids, { ReturnEntities: true }).pipe(
+    const obs$ = this.measurementUnitsApi.deactivate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 

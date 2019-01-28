@@ -1,4 +1,4 @@
 export class ActivateArguments {
-  ReturnEntities?: boolean;
-  Expand?: string;
+  returnEntities?: boolean;
+  expand?: string;
 }

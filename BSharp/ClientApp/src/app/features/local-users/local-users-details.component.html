@@ -1,5 +1,6 @@
-<b-details apiEndpoint="local-users" expand="Agent,Roles/Role" collection="LocalUsers" [createFunc]="create" [mode]="mode"
-  [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+<b-details apiEndpoint="local-users" [expand]="expand" collection="LocalUsers" [createFunc]="create" [mode]="mode"
+  [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
+  [documentHeaderTemplate]="documentHeader" [actions]="[
               { template: activate, action: onActivate, showAction: showActivate },
               { template: deactivate, action: onDeactivate, showAction: showDeactivate }
            ]">
@@ -11,9 +12,23 @@
   <span>{{ model?.Name }}</span>
 </ng-template>
 
+<ng-template #documentHeader let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
+  <div class="w-100 p-0 p-md-1 d-flex justify-content-end">
+    <div class="b-flow-chart small d-none d-md-block">
+      <div [class.active]="!model?.ExternalId"><span>{{'User_New' | translate}}</span></div>
+      <!-- <div><span> Invited </span></div> -->
+      <div [class.active]="!!model?.ExternalId"><span>{{'User_Confirmed' | translate}}</span></div>
+    </div>
+    <div class="small b-lone-state active d-block d-md-none">
+      <span>{{ (!!model?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span>
+    </div>
+  </div>
+</ng-template>
 
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
+
+
   <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="validationErrors.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
@@ -26,18 +41,20 @@
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
-  <!-- Code -->
-  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="validationErrors.Code">
-    <div *ngIf="!isEdit">{{ model?.Code }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  <!-- Email -->
+  <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="validationErrors.Email">
+    <div *ngIf="!isEdit">{{ model?.Email }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Email" [ngModelOptions]="{ updateOn: 'blur' }" email required
+      [disabled]="!model.Id"></b-text-editor>
   </b-form-group>
 
   <!-- Agent -->
   <b-form-group class="b-form-group" [label]="'User_Agent' | translate">
-    <div *ngIf="!isEdit">{{ ws.get('Custodies', model?.AgentId)?.Name }}</div>
-    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.AgentId"
-        apiEndpoint="agents/individuals" collection="Custodies">
-  </b-details-picker>
+    <b-view-link *ngIf="!isEdit" link="../../agents/{{ ws.get('Custodies', model?.AgentId)?.AgentType }}" [itemId]="model?.AgentId">
+      {{ ws.get('Custodies', model?.AgentId)?.Name }}
+    </b-view-link>
+    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" apiEndpoint="agents/individuals" collection="Custodies">
+    </b-details-picker>
   </b-form-group>
 
   <!-- Is Active -->
@@ -53,8 +70,8 @@
         <span *ngIf="showRolesError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span>
       </ng-template>
       <ng-template ngbTabContent>
-        <b-table [dataSource]="model?.Roles" [isEdit]="isEdit" [columnPaths]="['RoleId', 'Memo']" [errors]="validationErrors" errorsPrefix="Roles"
-          [columnTemplates]="{
+        <b-table [dataSource]="model?.Roles" [isEdit]="isEdit" [columnPaths]="['RoleId', 'Memo']" [errors]="validationErrors"
+          errorsPrefix="Roles" [columnTemplates]="{
               'RoleId' : { headerTemplate : header_RoleId, rowTemplate : row_RoleId, weight : 1 },
               'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
             }">
@@ -64,10 +81,29 @@
         <ng-template #header_RoleId>{{ 'RoleMembership_Role' | translate }}</ng-template>
         <ng-template #row_RoleId let-item="item" let-index="originalIndex" let-update="update">
           <b-form-group class="b-form-group" [serverErrors]="validationErrors['Roles[' + index + '].RoleId']">
-            <div *ngIf="!isEdit">{{ ws.get('Roles', item.RoleId)?.Name }}</div>
-            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)"
-              apiEndpoint="roles" collection="Roles">
+            <b-view-link *ngIf="!isEdit" link="../../roles" [itemId]="item?.RoleId">{{ ws.get('Roles',
+              item.RoleId)?.Name }}</b-view-link>
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)" apiEndpoint="roles"
+              [masterTemplate]="roleMaster" [detailsTemplate]="roleDetails" collection="Roles">
             </b-details-picker>
+
+            <!-- The Role Details Modal -->
+            <ng-template #roleDetails let-modal="modal" let-update="update" let-initialText="initialText">
+              <div class="modal-body">
+                <b-roles-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);"
+                  (saved)="modal.close(true); update($event);">
+                </b-roles-details>
+              </div>
+            </ng-template>
+
+            <!-- The Role Master Modal -->
+            <ng-template #roleMaster let-modal="modal" let-update="update" let-create="create">
+              <div class="modal-body">
+                <b-roles-master mode="popup" (cancel)="modal.close(false);" (select)="modal.close(true); update($event);"
+                  (create)="modal.close(false); create()">
+                </b-roles-master>
+              </div>
+            </ng-template>
           </b-form-group>
         </ng-template>
 
@@ -83,7 +119,6 @@
     </ngb-tab>
   </ngb-tabset>
 </ng-template>
-
 
 <!-- Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>

@@ -1,26 +1,25 @@
-<b-master apiEndpoint="local-users"
-          expand="Agent"
-          [mode]="mode"
-          [masterCrumb]="'Users' | translate"
-          [tileTemplate]="tile"
-          [tableColumnPaths]="['Name', 'Name2' , 'Email', 'Agent/Name', 'IsActive']"
-          [tableColumnTemplates]="{
+<b-master apiEndpoint="local-users" expand="Agent" [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
+  [tableColumnPaths]="['Name', 'Name2', 'ExternalId' , 'Email', 'Agent/Name', 'IsActive']" [tableColumnTemplates]="{
             'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
             'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
-            'Email' : { headerTemplate : header_Code, rowTemplate : row_Code, weight : 1.5 },
+            'ExternalId' : { headerTemplate : header_ExternalId, rowTemplate : stateTemplate, weight : 1 },
+            'Email' : { headerTemplate : header_Email, rowTemplate : row_Email, weight : 1.5 },
             'Agent/Name' : { headerTemplate : header_AgentId, rowTemplate : row_AgentId, weight : 1.5 },
             'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
           }"
-          [multiselectActions]="[
+  [multiselectActions]="[
             { template : activate, action: onActivate },
             { template : deactivate, action: onDeactivate }
           ]"
-          [includeInactiveLabel]="'IncludeInactive' | translate"
-          [filterDefinition]="{
+  [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedByMe'}
             ],
-            'IsPublic' : [
+            'ExternalId' : [
+              { template: new, expression: 'ExternalId eq null'},
+              { template: confirmed, expression: 'ExternalId ne null'}
+            ],
+            'AgentId' : [
               { template: withAgent, expression: 'AgentId ne null'},
               { template: withoutAgent, expression: 'AgentId eq null'}
             ]
@@ -33,7 +32,8 @@
     <span class="d-block text-truncate">{{ c[id].Name }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <span>{{ c[id].Code }}</span>
+    <span class="text-truncate">{{ c[id].Email }}</span>
+    <ng-container *ngTemplateOutlet="stateTemplate; context: { id: id }"></ng-container>
   </div>
 </ng-template>
 
@@ -45,11 +45,13 @@
 <ng-template #header_Name2>{{ 'Name2' | translate }}</ng-template>
 <ng-template #row_Name2 let-id="id"> {{ c[id].Name2 }} </ng-template>
 
-<ng-template #header_Code>{{ 'User_Email' | translate }}</ng-template>
-<ng-template #row_Code let-id="id"> {{ c[id].Email }} </ng-template>
+<ng-template #header_Email>{{ 'User_Email' | translate }}</ng-template>
+<ng-template #row_Email let-id="id"> {{ c[id].Email }} </ng-template>
 
 <ng-template #header_AgentId>{{ 'User_Agent' | translate }}</ng-template>
 <ng-template #row_AgentId let-id="id"> {{ ws.get('Custodies', c[id].AgentId)?.Name }} </ng-template>
+
+<ng-template #header_ExternalId>{{ 'State' | translate }}</ng-template>
 
 <ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
 <ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
@@ -63,5 +65,14 @@
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
+<ng-template #new> {{ 'User_New' | translate }} </ng-template>
+<ng-template #confirmed> {{ 'User_Confirmed' | translate }} </ng-template>
+
 <ng-template #withAgent> {{ 'WithAgent' | translate }} </ng-template>
 <ng-template #withoutAgent> {{ 'WithoutAgent' | translate }} </ng-template>
+
+<!-- Templeate for a colorful state -->
+<ng-template #stateTemplate let-id="id">
+  <span class="text-white pl-1 pr-1 b-slightly-bold" [class.bg-secondary]="!c[id]?.ExternalId" [class.bg-success]="!!c[id]?.ExternalId">{{
+    (!!c[id]?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span>
+</ng-template>

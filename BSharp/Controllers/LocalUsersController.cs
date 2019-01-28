@@ -34,6 +34,7 @@ namespace BSharp.Controllers
         private readonly ILogger<LocalUsersController> _logger;
         private readonly IStringLocalizer<LocalUsersController> _localizer;
         private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
         public LocalUsersController(
             ApplicationContext db, AdminContext adminDb, ITenantIdProvider tenantIdProvider,
@@ -47,6 +48,7 @@ namespace BSharp.Controllers
             _logger = logger;
             _localizer = localizer;
             _mapper = mapper;
+            _userService = userService;
         }
 
         [HttpPut("activate")]
@@ -58,6 +60,12 @@ namespace BSharp.Controllers
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<LocalUser>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
+            var currentUserId = _userService.GetDbUser()?.Id;
+            if(ids.Any(id => id == currentUserId))
+            {
+                return BadRequest(_localizer["Error_CannotDeactivateYourOwnUser"].Value);
+            }
+
             return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
         }
 
@@ -133,7 +141,7 @@ namespace BSharp.Controllers
     SELECT Id, @TenantId FROM [dbo].[GlobalUsers] WHERE Email IN (SELECT Code from @Emails);
 ", emailsTvp, tenantId);
 
-                            } 
+                            }
                             else
                             {
                                 // Delete efficiently with a SQL query
@@ -341,7 +349,6 @@ namespace BSharp.Controllers
 		FE.Email AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
 	FROM @LocalUsers FE 
 	JOIN [dbo].LocalUsers BE ON FE.Email = BE.Email
-	WHERE FE.[Email] IS NOT NULL
 	AND ((FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id))
 	OPTION(HASH JOIN);
 
@@ -358,7 +365,16 @@ namespace BSharp.Controllers
 		HAVING COUNT(*) > 1
 	) OPTION(HASH JOIN);
 
-	-- No inactive view
+    -- No email can change 
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
+	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Email' As [Key], N'Error_TheEmailCannotBeModified' As [ErrorName],
+		NULL AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
+	FROM @LocalUsers FE 
+	JOIN [dbo].LocalUsers BE ON FE.Id = BE.Id
+	AND ((FE.[EntityState] = N'Updated') AND (FE.Email <> BE.Email))
+	OPTION(HASH JOIN);
+
+	-- No inactive role
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
 	SELECT '[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Roles[' + 
 				CAST(P.[Index] AS NVARCHAR(255)) + '].RoleId' As [Key], N'Error_TheView0IsInactive' As [ErrorName],
@@ -582,6 +598,13 @@ namespace BSharp.Controllers
 
         protected override async Task DeleteImplAsync(List<int?> ids)
         {
+            // Make sure the user is not deleting his/her own account
+            var currentUserId = _userService.GetDbUser()?.Id;
+            if (ids.Any(id => id == currentUserId))
+            {
+                throw new BadRequestException(_localizer["Error_CannotDeleteYourOwnUser"].Value);
+            }
+
             // It's unfortunate that EF Core does not support distributed transactions, so there is no
             // guarantee that deletes to both the shard and the manager will run one without the other
 

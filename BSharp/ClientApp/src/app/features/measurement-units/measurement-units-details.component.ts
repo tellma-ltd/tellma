@@ -53,7 +53,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
 
   public onActivate = (model: MeasurementUnit): void => {
     if (!!model && !!model.Id) {
-      this.measurementUnitsApi.activate([model.Id], { ReturnEntities: true }).pipe(
+      this.measurementUnitsApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
@@ -61,7 +61,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
 
   public onDeactivate = (model: MeasurementUnit): void => {
     if (!!model && !!model.Id) {
-      this.measurementUnitsApi.deactivate([model.Id], { ReturnEntities: true }).pipe(
+      this.measurementUnitsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }

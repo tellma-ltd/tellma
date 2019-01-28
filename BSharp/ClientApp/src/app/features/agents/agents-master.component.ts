@@ -91,7 +91,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.agentsApi.activate(ids, { ReturnEntities: true }).pipe(
+    const obs$ = this.agentsApi.activate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -100,7 +100,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.agentsApi.deactivate(ids, { ReturnEntities: true }).pipe(
+    const obs$ = this.agentsApi.deactivate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 

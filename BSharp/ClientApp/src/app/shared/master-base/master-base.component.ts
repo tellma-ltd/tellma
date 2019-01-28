@@ -20,8 +20,12 @@ export class MasterBaseComponent implements OnDestroy {
   @Output()
   create = new EventEmitter<void>();
 
+  @Output()
+  cancel = new EventEmitter<void>();
+
   private _master: MasterComponent;
   private masterSelect: Subscription;
+  private masterCreate: Subscription;
   private masterCancel: Subscription;
   public notifyDestruct$ = new Subject<void>();
 
@@ -34,6 +38,10 @@ export class MasterBaseComponent implements OnDestroy {
         this.masterSelect.unsubscribe();
       }
 
+      if (!!this.masterCreate) {
+        this.masterCreate.unsubscribe();
+      }
+
       if (!!this.masterCancel) {
         this.masterCancel.unsubscribe();
       }
@@ -43,11 +51,9 @@ export class MasterBaseComponent implements OnDestroy {
 
       // subscribe to new details events
       if (!!this._master) {
-        this.masterSelect = this._master.select.subscribe(this.select); // TODO verify this works
-
-        this.masterCancel = this._master.create.subscribe((_: any) => {
-          this.create.emit();
-        });
+        this.masterSelect = this._master.select.subscribe(this.select);
+        this.masterCreate = this._master.create.subscribe(this.create);
+        this.masterCancel = this._master.cancel.subscribe(this.cancel);
       }
     }
   }
@@ -60,6 +66,10 @@ export class MasterBaseComponent implements OnDestroy {
     // cleanup duty
     if (!!this.masterSelect) {
       this.masterSelect.unsubscribe();
+    }
+
+    if (!!this.masterCreate) {
+      this.masterCreate.unsubscribe();
     }
 
     if (!!this.masterCancel) {
