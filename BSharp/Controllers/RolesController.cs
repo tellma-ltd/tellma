@@ -146,6 +146,11 @@ MERGE INTO [dbo].[Roles] AS t
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
+        protected override string ViewId()
+        {
+            return "roles";
+        }
+
         protected override IQueryable<M.Role> GetBaseQuery() => _db.Roles;
 
         protected override IQueryable<M.Role> SingletonQuery(IQueryable<M.Role> query, int? id)

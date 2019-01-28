@@ -213,6 +213,11 @@ namespace BSharp.Controllers
                 return Ok(response);
             }
         }
+        
+        protected override string ViewId()
+        {
+            return "local-users";
+        }
 
         protected override async Task<IDbContextTransaction> BeginSaveTransaction()
         {

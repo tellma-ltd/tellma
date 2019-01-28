@@ -40,11 +40,40 @@
 </div>
 
 <ng-template #detailsWrapperTemplate let-modal>
-  <ng-container *ngTemplateOutlet="detailsTemplate;context: { update: onUpdate, modal: modal, initialText: initialText }">
+  <ng-container *ngTemplateOutlet="detailsTemplate;context: { update: onUpdate, modal: modal, initialText: initialText, viewId: viewId }">
   </ng-container>
 </ng-template>
 
 <ng-template #masterWrapperTemplate let-modal>
-    <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal }">
-    </ng-container>
-  </ng-template>
+  <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal }">
+  </ng-container>
+</ng-template>
+
+<!-- Details Options Modal -->
+<ng-template #detailsOptionsTemplate let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title"> {{ 'CreateOptions' | translate }} </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    <div class="mb-2"> {{ 'CreateOptionsMessage' | translate }} </div>
+    <button class="btn btn-primary m-1" *ngFor="let option of detailsOptions; let i= index" (click)="modal.close(option.id)"
+      ngbAutofocus>
+      {{ option.name }}
+    </button>
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()">
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>

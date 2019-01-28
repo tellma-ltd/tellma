@@ -29,6 +29,7 @@ namespace BSharp.Controllers
         // Constants
 
         private const int DEFAULT_MAX_PAGE_SIZE = 10000;
+        public const string ALL = "all";
 
         // Private Fields
 
@@ -134,6 +135,14 @@ namespace BSharp.Controllers
         /// Returns the query from which the GET endpoint retrieves the results
         /// </summary>
         protected abstract IQueryable<TModel> GetBaseQuery();
+
+        protected virtual IQueryable<TModel> ReadPermissions(IQueryable<TModel> query)
+        {
+            return query;
+        }
+
+        protected abstract string ViewId();
+
 
         /// <summary>
         /// Returns the query from which the GET by Id endpoint retrieves the result

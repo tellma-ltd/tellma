@@ -169,6 +169,10 @@ ngb-tabset li.nav-item .small {
   font-weight: 500;
 }
 
+.dropdown-menu {
+  z-index: 1050;
+}
+
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
   direction: rtl;
@@ -801,4 +805,8 @@ tr.b-highlight {
       height: calc(100% - 3.5rem);
     }
   }
+}
+
+.b-document-header {
+  padding: 2px;
 }

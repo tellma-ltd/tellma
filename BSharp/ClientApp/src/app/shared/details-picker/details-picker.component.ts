@@ -55,6 +55,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   @ViewChild('masterWrapperTemplate')
   masterWrapperTemplate: TemplateRef<any>;
 
+  @ViewChild('detailsOptionsTemplate')
+  detailsOptionsTemplate: TemplateRef<any>;
+
   @HostBinding('class.w-100')
   w100 = true;
 
@@ -77,6 +80,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   detailsTemplate: TemplateRef<any>;
 
   @Input()
+  detailsOptions: { id: string, name: string }[] = [];
+
+  @Input()
   focusIf = false;
 
   private MIN_CHARS_TO_SEARCH = 2;
@@ -91,6 +97,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   private chosenItem: string | number;
   private _errorMessage: string;
   private _initialText: string;
+  private _viewId: string;
   private api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$); // for intellisense
 
   @Input()
@@ -119,6 +126,12 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     this.userInputSubscription = fromEvent(this.input.nativeElement, 'input').pipe(
       map((e: any) => <string>e.target.value),
       tap(term => {
+
+        // here capture what the user is typing, in case s/he clicks on 'Create'
+        // we pass this value to the details template which can use it as an initial
+        // value for the name saving the user from having to type again what s/he just typed
+        this._initialText = term;
+
         // As soon as the user starts typing:
         this._searchResults = []; // clear the results
         this.status = null; // hide the dropdown
@@ -292,9 +305,6 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   onBlur() {
 
-    // Capture the current value before it gets wiped away
-    this.captureInitialValue();
-
     // Restart input stream and cancel existing backend calls
     this.cancelRunningCall$.next();
 
@@ -430,6 +440,10 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   onMagnifier() {
 
+    // it would be confusing if the user opens the details form the master
+    // and find the text s/he typed in the input field a while ago
+    this._initialText = '';
+
     this.modalService.open(this.masterWrapperTemplate, { windowClass: 'b-master-modal' })
 
       // this guarantees that the input will be focused again when the modal closes
@@ -437,8 +451,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   onUpdate = (id: number | string) => {
+    // Called externally by the master or the details template
+    // to specify the item Id just saved or selected
     this.chooseItem(id);
-    // this.onFocusInput();
   }
 
   onCreateFromKeyDown = () => {
@@ -450,35 +465,39 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
     // if we don't use timeout it doesn't work for some reason
     setTimeout(() => {
-      this.captureInitialValue();
-      this.launchCreateModal();
+      this.openCreateModal();
     }, 1);
   }
 
   onCreateFromExternal = () => {
-    this.captureInitialValue();
-    this.launchCreateModal();
-  }
-
-  captureInitialValue = () => {
-    // This is what the user just typed in the input field, it may be used
-    // when creating a new item as an initial value for the Name field for example
-    // to save the user from having to type again what s/he just typed
-    // We capture it in a private field to avoid "Expression Changed After Checked" error
-    if (this.input.nativeElement.value === this.formatter(this.chosenItem)) {
-      this._initialText = null;
-    } else {
-      this._initialText = this.input.nativeElement.value;
-    }
+    this.openCreateModal();
   }
 
   onCreateFromFocus = () => {
-    // The value is already captured in onBlur() which is triggered before onCreateFromFocus() 
-    this.launchCreateModal();
+    // The value is already captured in onBlur() which is triggered before onCreateFromFocus()
+    this.openCreateModal();
   }
 
-  launchCreateModal = () => {
+  private openCreateModal = () => {
+    if (this.detailsOptions.length > 1) {
+      this.modalService.open(this.detailsOptionsTemplate)
+        .result.then(
+          (result) => {
+            this.openCreateModalInner(result);
+          },
+          (_: any) => {
+
+          }
+        );
+    } else {
+      const detailsOption = this.detailsOptions[0];
+      this.openCreateModalInner(!!detailsOption ? detailsOption.id : null);
+    }
+  }
+
+  private openCreateModalInner = (viewId?: string) => {
     // Launch the details modal
+    this._viewId = viewId;
     this.modalService.open(this.detailsWrapperTemplate, { windowClass: 'b-details-modal' })
 
       // this guarantees that the input will be focused again when the modal closes
@@ -491,6 +510,10 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   get initialText(): string {
     return this._initialText;
+  }
+
+  get viewId(): string {
+    return this._viewId;
   }
 
 }

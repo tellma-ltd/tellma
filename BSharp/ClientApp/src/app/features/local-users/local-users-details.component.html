@@ -13,7 +13,7 @@
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
-  <div class="w-100 p-0 p-md-1 d-flex justify-content-end">
+  <div class="w-100 b-document-header d-flex justify-content-end">
     <div class="b-flow-chart small d-none d-md-block">
       <div [class.active]="!model?.ExternalId"><span>{{'User_New' | translate}}</span></div>
       <!-- <div><span> Invited </span></div> -->
@@ -45,7 +45,7 @@
   <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="validationErrors.Email">
     <div *ngIf="!isEdit">{{ model?.Email }}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Email" [ngModelOptions]="{ updateOn: 'blur' }" email required
-      [disabled]="!model.Id"></b-text-editor>
+      [disabled]="!!model.Id"></b-text-editor>
   </b-form-group>
 
   <!-- Agent -->
@@ -53,8 +53,29 @@
     <b-view-link *ngIf="!isEdit" link="../../agents/{{ ws.get('Custodies', model?.AgentId)?.AgentType }}" [itemId]="model?.AgentId">
       {{ ws.get('Custodies', model?.AgentId)?.Name }}
     </b-view-link>
-    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" apiEndpoint="agents/individuals" collection="Custodies">
+    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" apiEndpoint="agents/all" collection="Custodies"
+      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" [detailsOptions]="[{ id: 'individuals', 
+      name: ('Individual' | translate) }, { id: 'organizations', name: ('Organization' | translate) }]">
     </b-details-picker>
+
+    <!-- The Agents Details Modal -->
+    <ng-template #agentDetails let-modal="modal" let-update="update" let-initialText="initialText" let-viewId="viewId">
+      <div class="modal-body">
+        <b-agents-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);"
+          (saved)="modal.close(true); update($event);" [agentType]="viewId">
+        </b-agents-details>
+      </div>
+    </ng-template>
+
+    <!-- The Agents Master Modal -->
+    <ng-template #agentMaster let-modal="modal" let-update="update" let-create="create">
+      <div class="modal-body">
+        <b-agents-master mode="popup" (cancel)="modal.close(false);" (select)="modal.close(true); update($event); "
+          (create)="modal.close(false); create()" agentType="all">
+        </b-agents-master>
+      </div>
+    </ng-template>
+
   </b-form-group>
 
   <!-- Is Active -->

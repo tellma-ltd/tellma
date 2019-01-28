@@ -15,15 +15,8 @@ import { ParamMap, ActivatedRoute, Router } from '@angular/router';
 })
 export class AgentsMasterComponent extends MasterBaseComponent implements OnInit {
 
-  private agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$); // for intellisense
-  private _agentType: 'individuals' | 'organizations';
-
   @Input()
-  public get agentType(): 'individuals' | 'organizations' {
-    return this._agentType;
-  }
-
-  public set agentType(t: 'individuals' | 'organizations') {
+  public set agentType(t: 'individuals' | 'organizations' | 'all') {
     if (this._agentType !== t) {
       this._agentType = t;
       this.agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$);
@@ -44,8 +37,22 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
           'IsRelated', 'TaxIdentificationNumber', 'IsActive'
         ];
       }
+
+      if (t === 'all') {
+        this.tableColumnPaths = [
+          'Name', 'Name2', 'Code', 'Address',
+          'IsRelated', 'TaxIdentificationNumber', 'IsActive'
+        ];
+      }
     }
   }
+
+  public get agentType(): 'individuals' | 'organizations' | 'all' {
+    return this._agentType;
+  }
+
+  private agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$); // for intellisense
+  private _agentType: 'individuals' | 'organizations' | 'all';
 
   public tableColumnPaths: string[];
   public birthDateTimeName: string;
@@ -53,23 +60,25 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute, private router: Router) {
     super();
-  }
 
-  ngOnInit(): void {
-    if (this.mode === 'screen') {
-      this.route.paramMap.subscribe((params: ParamMap) => {
-        // This triggers changes on the screen
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      // This triggers changes on the screen
+      if (params.has('agentType')) {
         const agentType = params.get('agentType');
 
-        if (['individuals', 'organizations'].indexOf(agentType) === -1) {
+        if (['individuals', 'organizations', 'all'].indexOf(agentType) === -1
+        || agentType === 'all' && this.mode === 'screen') {
           this.router.navigate(['page-not-found']);
         }
 
         if (this.agentType !== agentType) {
-          this.agentType = <'individuals' | 'organizations'>agentType;
+          this.agentType = <'individuals' | 'organizations' | 'all'>agentType;
         }
-      });
-    }
+      }
+    });
+  }
+
+  ngOnInit(): void {
   }
 
   public get ws() {
@@ -84,7 +93,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
     // TODO After implementing configuration
     const agentType = this.agentType;
     if (!!agentType) {
-      return agentType.charAt(0).toUpperCase() + agentType.slice(1);
+      return agentType === 'all' ? 'Agents' : agentType.charAt(0).toUpperCase() + agentType.slice(1);
     }
 
     return agentType;

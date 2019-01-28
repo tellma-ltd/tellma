@@ -143,6 +143,11 @@ MERGE INTO [dbo].MeasurementUnits AS t
             }
         }
 
+        protected override string ViewId()
+        {
+            return "measurement-units";
+        }
+
         protected override async Task<IDbContextTransaction> BeginSaveTransaction()
         {
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);

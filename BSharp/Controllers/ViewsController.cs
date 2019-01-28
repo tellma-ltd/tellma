@@ -42,6 +42,11 @@ namespace BSharp.Controllers
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
+        protected override string ViewId()
+        {
+            return "views";
+        }
+
         protected override Task<GetResponse<View>> GetImplAsync(GetArguments args)
         {
             // TODO Authorize for GET
@@ -187,7 +192,6 @@ namespace BSharp.Controllers
             _localizer2 = localizer.WithCulture(new System.Globalization.CultureInfo("ar")); // TODO
         }
 
-
         public static IEnumerable<StaticViewDefinition> GetAllStaticViews()
         {
             if (_staticViews == null)
@@ -204,7 +208,6 @@ namespace BSharp.Controllers
 
             return _staticViews;
         }
-
 
         public IEnumerable<ViewDefinition> GetAllViews()
         {
@@ -240,7 +243,6 @@ namespace BSharp.Controllers
             return allViews;
         }
     }
-
 
     public class StaticViewDefinition
     {

@@ -203,6 +203,12 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "Custodies", "Custodies"),
             Ar(Constants.Shared, "Custodies", "عُهد"),
 
+            En(Constants.Shared, "Agent", "Agent"),
+            Ar(Constants.Shared, "Agent", "ذمة"),
+
+            En(Constants.Shared, "Agents", "Agents"),
+            Ar(Constants.Shared, "Agents", "ذمم"),
+
             En(Constants.Shared, "Custody_Address", "Address"),
             Ar(Constants.Shared, "Custody_Address", "العنوان"),
 
@@ -572,6 +578,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Confirmation", "Confirmation"),
             Ar(Constants.Client, "Confirmation", "توكيد"),
 
+            En(Constants.Client, "CreateOptions", "Create Options"),
+            Ar(Constants.Client, "CreateOptions", "خيارات الإنشاء"),
+
             En(Constants.Client, "NewLine", "New Line"),
             Ar(Constants.Client, "NewLine", "سطر جديد"),
 
@@ -586,6 +595,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "PublicRoleWarning", "Warning! This role is public, therefore the permissions and signatures here are granted to ALL users"),
             Ar(Constants.Client, "PublicRoleWarning", "تنبيه! هذا الدور عام وبالتالي الأذونات والتوقيعات المعرفة هنا متاحة لجميع المستخدمين"),
+
+            En(Constants.Client, "CreateOptionsMessage", "What type of record would you like to create?"),
+            Ar(Constants.Client, "CreateOptionsMessage", "ما نوع البيان الذي تود إنشاءه؟"),
 
             En(Constants.Client, "Activate", "Activate"),
             Ar(Constants.Client, "Activate", "تنشيط"),
@@ -605,8 +617,8 @@ namespace BSharp.Data.Model
             En(Constants.Client, "ActionDidNotPassValidation", "The action did not pass validation, see the highlighted rows for details"),
             Ar(Constants.Client, "ActionDidNotPassValidation", "الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل"),
 
-            // Choice lists
 
+            // Choice lists
             En(Constants.Shared, "MU_Pure", "Pure"),
             Ar(Constants.Shared, "MU_Pure", "محض"),
 

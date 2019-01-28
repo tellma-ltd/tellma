@@ -108,5 +108,10 @@ namespace BSharp.Controllers
         {
             throw new NotImplementedException();
         }
+
+        protected override string ViewId()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

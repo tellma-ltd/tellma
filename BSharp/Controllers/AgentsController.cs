@@ -5,6 +5,7 @@ using BSharp.Data;
 using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -147,11 +148,18 @@ MERGE INTO [dbo].[Custodies] AS t
             }
         }
 
-        private string AgentType()
+        protected override string ViewId()
         {
             string agentType = RouteData.Values["agentType"]?.ToString();
-            var allowedAgentTypes = new string[] { ORGANIZATION, INDIVIDUAL };
-            if (!allowedAgentTypes.Contains(agentType))
+            var allowedAgentTypes = new string[] { ORGANIZATION, INDIVIDUAL, ALL };
+
+            // Make sure the agentType is supported
+            if(agentType == ALL && (HttpContext.Request.Method != HttpMethods.Get || HttpContext.Request.Path.Value.EndsWith("/template")))
+            {
+                // Programmer mistake
+                throw new BadRequestException("The type 'all' is only supported for HTTP GET requests other than /template");
+            }
+            else if (!allowedAgentTypes.Contains(agentType))
             {
                 // Programmer mistake
                 throw new BadRequestException("Only the following agent types are supported: " + string.Join(", ", allowedAgentTypes));
@@ -162,12 +170,12 @@ MERGE INTO [dbo].[Custodies] AS t
 
         private string SingularName()
         {
-            return _localizer[AgentType()];
+            return _localizer[ViewId()];
         }
 
         private string PluralName()
         {
-            return _localizer[AgentType() + "s"]; // Works for both Individual and Organization
+            return _localizer[ViewId() + "s"]; // Works for both Individual and Organization
         }
 
         protected override async Task<IDbContextTransaction> BeginSaveTransaction()
@@ -177,8 +185,8 @@ MERGE INTO [dbo].[Custodies] AS t
 
         protected override IQueryable<M.Agent> GetBaseQuery()
         {
-            string agentType = AgentType();
-            return _db.Agents.Where(e => e.AgentType == agentType);
+            string agentType = ViewId();
+            return agentType == ALL ? _db.Agents : _db.Agents.Where(e => e.AgentType == agentType);
         }
 
         protected override IQueryable<M.Agent> Search(IQueryable<M.Agent> query, string search)
@@ -209,7 +217,7 @@ MERGE INTO [dbo].[Custodies] AS t
         protected override async Task ValidateAsync(List<AgentForSave> entities)
         {
             // Get the agent type from the context
-            string agentType = AgentType();
+            string agentType = ViewId();
 
             // Hash the indices for performance
             var indices = entities.ToIndexDictionary();
@@ -292,7 +300,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
         protected override async Task<List<M.Agent>> PersistAsync(List<AgentForSave> entities, SaveArguments args)
         {
             // Some properties are always set to null for organizations
-            string agentType = AgentType();
+            string agentType = ViewId();
             if (agentType == ORGANIZATION)
             {
                 entities.ForEach(e =>
@@ -416,7 +424,7 @@ SET NOCOUNT ON;
                 try
                 {
                     // Delete efficiently with a SQL query
-                    string agentType = AgentType();
+                    string agentType = ViewId();
                     await _db.Database.ExecuteSqlCommandAsync(
                         $"DELETE FROM dbo.[Custodies] WHERE CustodyType = 'Agent' AND AgentType = '{agentType}' AND Id IN (SELECT Id FROM @Ids)"
                         , idsTvp);
@@ -446,7 +454,7 @@ SET NOCOUNT ON;
             var agentProps = agentType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             var props = custodyProps.Union(agentProps);
 
-            if (AgentType() == ORGANIZATION)
+            if (ViewId() == ORGANIZATION)
             {
                 // For organizations, some properties are left blank
                 var exemptProperties = new string[] { nameof(Agent.Title), nameof(Agent.Title2), nameof(Agent.Gender) };
@@ -484,7 +492,7 @@ SET NOCOUNT ON;
 
             var props = saveProps.Union(readProps);
 
-            if (AgentType() == ORGANIZATION)
+            if (ViewId() == ORGANIZATION)
             {
                 // For organizations, some properties are left blank
                 var exemptProperties = new string[] { nameof(Agent.Title), nameof(Agent.Title2), nameof(Agent.Gender) };
@@ -564,7 +572,7 @@ SET NOCOUNT ON;
 
             var saveProps = custodySaveType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                 .Union(agentSaveType.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
-                .Where(e => AgentType() == INDIVIDUAL || orgExemptProperties.Contains(e.Name)) // Take away
+                .Where(e => ViewId() == INDIVIDUAL || orgExemptProperties.Contains(e.Name)) // Take away
                 .ToDictionary(prop => _metadataProvider.GetMetadataForProperty(agentSaveType, prop.Name)?.DisplayName ?? prop.Name, StringComparer.InvariantCultureIgnoreCase);
 
             // Maps the index of the grid column to a property on the DtoForSave
@@ -705,7 +713,7 @@ SET NOCOUNT ON;
                     SqlDbType = SqlDbType.Structured
                 };
 
-                string agentType = AgentType();
+                string agentType = ViewId();
 
                 var idCodesDic = await _db.CodeIds.FromSql(
                     $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[Custodies] e ON c.Code = e.Code WHERE e.CustodyType = 'Agent' && e.AgentType == {agentType};"

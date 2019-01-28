@@ -37,6 +37,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
   create = () => {
     const result = new AgentForSave();
+    result.Name = this.initialText;
     result.IsRelated = false;
     return result;
   }
