@@ -262,6 +262,7 @@ namespace BSharp.Controllers
         protected virtual async Task<EntitiesResponse<TDto>> SaveImplAsync(List<TDtoForSave> entities, SaveArguments args)
         {
             // TODO Authorize POST
+            // ...
 
             // Trim all strings as a preprocessing step
             entities.ForEach(e => TrimStringProperties(e));
@@ -339,62 +340,6 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// Constructs a SQL data table containing all the public properties of the 
-        /// entities' type and populates the data table with the provided entities
-        /// </summary>
-        protected DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
-        {
-            DataTable table = new DataTable();
-            if (addIndex)
-            {
-                // The column order MUST match the column order in the user-defined table type
-                table.Columns.Add(new DataColumn("Index", typeof(int)));
-            }
-
-            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList());
-            foreach (var prop in props)
-            {
-                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                var column = new DataColumn(prop.Name, propType);
-                if (propType == typeof(string))
-                {
-                    // For string columns, it is more performant to explicitly specify the maximum column size
-                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
-                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
-                    if (stringLengthAttribute != null)
-                    {
-                        column.MaxLength = stringLengthAttribute.MaximumLength;
-                    }
-                }
-
-                table.Columns.Add(column);
-            }
-
-            int index = 0;
-            foreach (var entity in entities)
-            {
-                DataRow row = table.NewRow();
-
-                // We add an index property since SQL works with un-ordered sets
-                if (addIndex)
-                {
-                    row["Index"] = index++;
-                }
-
-                // Add the remaining properties
-                foreach (var prop in props)
-                {
-                    var propValue = prop.GetValue(entity);
-                    row[prop.Name] = propValue ?? DBNull.Value;
-                }
-
-                table.Rows.Add(row);
-            }
-
-            return table;
-        }
-
-        /// <summary>
         /// Constructs a SQL data table containing all the entities in all the collections
         /// and adds an index and a header index, this is useful for child collections that
         /// are passed to SQL alongside their headers, the include predicate optionally filters
@@ -459,28 +404,6 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// This is alternative for <see cref="Type.GetProperties"/>
-        /// that returns base class properties before inherited class properties
-        /// Credit: https://bit.ly/2UGAkKj
-        /// </summary>
-        protected PropertyInfo[] GetPropertiesBaseFirst(Type type)
-        {
-            var orderList = new List<Type>();
-            var iteratingType = type;
-            do
-            {
-                orderList.Insert(0, iteratingType);
-                iteratingType = iteratingType.BaseType;
-            } while (iteratingType != null);
-
-            var props = type.GetProperties()
-                .OrderBy(x => orderList.IndexOf(x.DeclaringType))
-                .ToArray();
-
-            return props;
-        }
-
-        /// <summary>
         /// Syntactic sugar for localizing an error, prefixing it with "Row N: " and adding it to ModelState with an appropriate key
         /// </summary>
         /// <returns>False if the maximum errors was reached</returns>
@@ -497,54 +420,6 @@ namespace BSharp.Controllers
         protected bool IsForeignKeyViolation(SqlException ex)
         {
             return ex.Number == 547;
-        }
-
-        /// <summary>
-        /// Attempts to intelligently parse an object (that comes from an imported file) to a DateTime
-        /// </summary>
-        protected DateTime? ParseImportedDateTime(object value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-
-            DateTime dateTime;
-
-            if (value.GetType() == typeof(double))
-            {
-                // Double indicates the OLE Automation date typically represented in excel
-                dateTime = DateTime.FromOADate((double)value);
-            }
-            else
-            {
-                // Parse the import value into a DateTime
-                var valueString = value.ToString();
-                dateTime = DateTime.Parse(valueString);
-            }
-
-
-            return dateTime;
-        }
-
-        /// <summary>
-        /// Changes the DateTime into a DateTimeOffset by adding the user's local timezone, this effectively
-        /// acts as the reverse of <see cref="ToExportDateTime(DateTimeOffset?)"/>
-        /// </summary>
-        protected DateTimeOffset? AddUserTimeZone(DateTime? value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-
-            // The date time supplied in the import does not the contain time zone offset
-            // The code below adds the current user time zone to the date time supplied
-            var timeZone = TimeZoneInfo.Local;  // TODO: Use the user time zone   
-            var offset = timeZone.GetUtcOffset(DateTimeOffset.Now);
-            var dtOffset = new DateTimeOffset(value.Value, offset);
-
-            return dtOffset;
         }
 
         // Private methods

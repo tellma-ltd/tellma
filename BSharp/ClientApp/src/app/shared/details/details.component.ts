@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, TemplateRef, ViewChi
 import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
@@ -12,6 +11,8 @@ import { EntitiesResponse } from '~/app/data/dto/get-response';
 import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
+import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
+import { Subject, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'b-details',
@@ -43,6 +44,9 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   @Input()
   savePreprocessing: (mode: DtoForSaveKeyBase) => void;
+
+  @Input()
+  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase };
 
   @Input()
   actions: {
@@ -135,7 +139,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   @Input()
   isInactive: (model: DtoForSaveKeyBase) => string = (model: DtoForSaveKeyBase) =>
-  (model['IsActive'] == null || model['IsActive'] === false) ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
+    (model['IsActive'] == null || model['IsActive'] === false) ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
 
   @Input()
   cloneFunc: (item: DtoForSaveKeyBase) => DtoForSaveKeyBase = (item: DtoForSaveKeyBase) => {
@@ -262,7 +266,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
           tap((response: GetByIdResponse) => {
 
             // add the server item to the workspace
-            this.state.detailsId = addSingleToWorkspace(response, this.workspace);
+            this.state.detailsId = addSingleToWorkspace(response, this.workspace, this.workspaceApplyFns);
 
             if (isCloning) {
               // call the same method again but this time the cloned
@@ -315,6 +319,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   private get globalState(): MasterDetailsStore {
     if (!this.workspace.current.mdState[this.apiEndpoint]) {
+      this.workspace.current.mdState = {}; // This forces any other master/details screen to refresh
       this.workspace.current.mdState[this.apiEndpoint] = new MasterDetailsStore();
     }
 
@@ -547,7 +552,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
           // update the workspace with the DTO from the server
           const s = this.state;
-          s.detailsId = addToWorkspace(response, this.workspace)[0];
+          s.detailsId = addToWorkspace(response, this.workspace, this.workspaceApplyFns)[0];
 
           // IF it's a new entity add it to the global state, (not the local one one even if inside a popup)
           if (isNew) {

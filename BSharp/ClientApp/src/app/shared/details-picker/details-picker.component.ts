@@ -9,8 +9,6 @@ import { GetResponse } from '~/app/data/dto/get-response';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { addToWorkspace } from '~/app/data/util';
-import { DetailsBaseComponent } from '../details-base/details-base.component';
-import { MasterBaseComponent } from '../master-base/master-base.component';
 
 
 enum SearchStatus {
@@ -84,6 +82,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   @Input()
   focusIf = false;
+
+  @Input()
+  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase };
 
   private MIN_CHARS_TO_SEARCH = 2;
   private SEARCH_PAGE_SIZE = 15;
@@ -167,7 +168,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     ).subscribe((results: GetResponse<DtoKeyBase>) => {
       // Populate the dropdown with the results
       if (!!results) {
-        this._searchResults = addToWorkspace(results, this.workspace);
+        this._searchResults = addToWorkspace(results, this.workspace, this.workspaceApplyFns);
       }
 
       // Auto select the first result

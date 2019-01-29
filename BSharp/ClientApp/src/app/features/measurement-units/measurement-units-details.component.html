@@ -1,6 +1,8 @@
 <b-details apiEndpoint="measurement-units"
            collection="MeasurementUnits"
            [createFunc]="create"
+           [expand]="expand"
+           [workspaceApplyFns]="workspaceApplyFns" 
            [mode]="mode"
            [masterCrumb]="'MeasurementUnits' | translate"
            [detailsCrumb]="detailsCrumb"

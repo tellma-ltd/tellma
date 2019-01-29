@@ -6,6 +6,7 @@ import { MeasurementUnit, MeasurementUnitForSave, MeasurementUnit_UnitType } fro
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
+import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 
 @Component({
   selector: 'b-measurement-units-details',
@@ -17,6 +18,10 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   private _unitTypeChoices: { name: string, value: any }[];
   private notifyDestruct$ = new Subject<void>();
   private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
+
+  public expand = '';
+  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
+  };
 
   create = () => {
     const result = new MeasurementUnitForSave();
@@ -54,7 +59,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   public onActivate = (model: MeasurementUnit): void => {
     if (!!model && !!model.Id) {
       this.measurementUnitsApi.activate([model.Id], { returnEntities: true }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
+        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
       ).subscribe(null, this.details.handleActionError);
     }
   }
@@ -62,7 +67,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   public onDeactivate = (model: MeasurementUnit): void => {
     if (!!model && !!model.Id) {
       this.measurementUnitsApi.deactivate([model.Id], { returnEntities: true }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
+        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
       ).subscribe(null, this.details.handleActionError);
     }
   }

@@ -109,7 +109,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override string ViewId()
+        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
         {
             throw new NotImplementedException();
         }

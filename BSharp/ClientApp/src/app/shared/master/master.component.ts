@@ -10,6 +10,7 @@ import { GetResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
 import { addToWorkspace, downloadBlob } from '~/app/data/util';
 import { MasterDetailsStore, MasterStatus, WorkspaceService } from '~/app/data/workspace.service';
+import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 
 enum SearchView {
   tiles = 'tiles',
@@ -80,6 +81,9 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   @Input()
   allowMultiselect = true;
+
+  @Input()
+  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase };
 
   @Input()
   multiselectActions: {
@@ -231,7 +235,7 @@ export class MasterComponent implements OnInit, OnDestroy {
         s.desc = response.Desc;
         s.total = response.TotalCount;
         s.bag = response.Bag;
-        s.masterIds = addToWorkspace(response, this.workspace);
+        s.masterIds = addToWorkspace(response, this.workspace, this.workspaceApplyFns);
       }),
       catchError((friendlyError) => {
         s = this.state; // get the source
@@ -257,6 +261,7 @@ export class MasterComponent implements OnInit, OnDestroy {
 
       // screens on the other hand use a global store
       if (!this.workspace.current.mdState[this.apiEndpoint]) {
+        this.workspace.current.mdState = {}; // This forces any other master/details screen to refresh
         this.workspace.current.mdState[this.apiEndpoint] = new MasterDetailsStore();
       }
 

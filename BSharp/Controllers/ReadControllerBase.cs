@@ -11,6 +11,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -59,6 +62,11 @@ namespace BSharp.Controllers
                 var result = await GetImplAsync(args);
                 return Ok(result);
             }
+            catch (ForbiddenException)
+            {
+                // Forbidden result
+                return StatusCode(403);
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
@@ -71,17 +79,30 @@ namespace BSharp.Controllers
         {
             try
             {
-                // TODO Authorize GET by Id
+                // Single by Id
+                var query = GetBaseQuery().AsNoTracking();
+                query = SingletonQuery(query, id);
+
+                // Check that the entity exists
+                int count = await query.CountAsync();
+                if (count == 0)
+                {
+                    throw new NotFoundException<TKey>(id);
+                }
+
+                // Apply read permissions
+                query = await ApplyReadPermissions(query);
 
                 // Expand
-                var query = SingletonQuery(GetBaseQuery(), id);
                 query = Expand(query, args.Expand);
 
                 // Load
                 var dbEntity = await query.FirstOrDefaultAsync();
                 if (dbEntity == null)
                 {
-                    throw new NotFoundException<TKey>(id);
+                    // We already checked for not found earlier,
+                    // This can only mean lack of permissions
+                    throw new ForbiddenException();
                 }
 
                 // Flatten Related Entities
@@ -99,6 +120,11 @@ namespace BSharp.Controllers
                 };
 
                 return Ok(result);
+            }
+            catch (ForbiddenException)
+            {
+                // Forbidden result
+                return StatusCode(403);
             }
             catch (NotFoundException<TKey> ex)
             {
@@ -136,13 +162,50 @@ namespace BSharp.Controllers
         /// </summary>
         protected abstract IQueryable<TModel> GetBaseQuery();
 
-        protected virtual IQueryable<TModel> ReadPermissions(IQueryable<TModel> query)
+        protected virtual async Task<IQueryable<TModel>> ApplyReadPermissions(IQueryable<TModel> query)
         {
+            // Check if the user has any permissions on ViewId at all, else throw forbidden exception
+            // If the user has some permissions on ViewId, OR all their criteria together and apply the where clause
+
+            var userPermissions = await UserPermissions(PermissionLevel.Read);
+            if (!userPermissions.Any())
+            {
+                // Not even authorized to call this API
+                throw new ForbiddenException();
+            }
+            else if (userPermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+            {
+                // The user can read the entire data set
+                return query;
+            }
+            else
+            {
+                // The user has access to part of the data set based on a list of filters that will 
+                // be ORed together in a dynamic linq query
+                IEnumerable<string> criteriaList = userPermissions.Select(e => e.Criteria);
+
+                // The parameter on which the expression is based
+                var eParam = Expression.Parameter(typeof(TModel));
+
+                // First criteria
+                Expression fullExpression = ParseFilterExpression<TModel>(criteriaList.First(), eParam);
+
+                // The remaining criteria
+                foreach (var criteria in criteriaList.Skip(1))
+                {
+                    var criteriaExpression = ParseFilterExpression<TModel>(criteria, eParam);
+                    fullExpression = Expression.OrElse(fullExpression, criteriaExpression);
+                }
+
+                // Create lambda and apply it
+                var lambda = Expression.Lambda<Func<TModel, bool>>(fullExpression, eParam);
+                query = query.Where(lambda);
+            }
+
             return query;
         }
 
-        protected abstract string ViewId();
-
+        protected abstract Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level);
 
         /// <summary>
         /// Returns the query from which the GET by Id endpoint retrieves the result
@@ -173,6 +236,9 @@ namespace BSharp.Controllers
 
             // Get a readonly query
             IQueryable<TModel> query = GetBaseQuery().AsNoTracking();
+
+            // Apply read permissions
+            query = await ApplyReadPermissions(query);
 
             // Include inactive
             query = IncludeInactive(query, inactive: args.Inactive);
@@ -258,21 +324,49 @@ namespace BSharp.Controllers
         {
             if (!string.IsNullOrWhiteSpace(filter))
             {
-                // Below are the standard steps of any compiler
+                // The parameter on which the expression is based
+                var eParam = Expression.Parameter(typeof(TModel));
+                var expression = ParseFilterExpression<TModel>(filter, eParam);
+                var lambda = Expression.Lambda<Func<TModel, bool>>(expression, eParam);
+                query = query.Where(lambda);
+            }
 
-                //////// (1) Preprocessing
+            return query;
+        }
 
-                // Ensure no spaces are repeated
-                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                filter = regex.Replace(filter, " ");
+        /// <summary>
+        /// Parses the OData like filter expression into a linq lambda expression
+        /// </summary>
+        protected virtual Expression ParseFilterExpression<T>(string filter, ParameterExpression eParam, Func<string, ParameterExpression, Expression> parseSpecial = null)
+        {
+            if (string.IsNullOrWhiteSpace(filter))
+            {
+                throw new ArgumentNullException(nameof(filter));
+            }
 
-                // Trim
-                filter = filter.Trim();
+            if (eParam == null)
+            {
+                throw new ArgumentNullException(nameof(eParam));
+            }
+
+            // This function is a hook to override the default parsing behavior of atomic expressions
+            parseSpecial = parseSpecial ?? ParseSpecialFilterKeyword;
+
+            // Below are the standard steps of any compiler
+
+            //////// (1) Preprocessing
+
+            // Ensure no spaces are repeated
+            Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+            filter = regex.Replace(filter, " ");
+
+            // Trim
+            filter = filter.Trim();
 
 
-                //////// (2) Lexical Analysis of string into token stream
+            //////// (2) Lexical Analysis of string into token stream
 
-                List<string> symbols = new List<string>(new string[] {
+            List<string> symbols = new List<string>(new string[] {
 
                     // Logical Operators
                     " and ", " or ",
@@ -281,312 +375,313 @@ namespace BSharp.Controllers
                     "(", ")",
                 });
 
-                List<string> tokens = new List<string>();
-                bool insideQuotes = false;
-                string acc = "";
-                int index = 0;
-                while (index < filter.Length)
+            List<string> tokens = new List<string>();
+            bool insideQuotes = false;
+            string acc = "";
+            int index = 0;
+            while (index < filter.Length)
+            {
+                // Lexical anaysis ignores what's inside single quotes
+                if (filter[index] == '\'' && (index == 0 || filter[index - 1] != '\'') && (index == filter.Length - 1 || filter[index + 1] != '\''))
                 {
-                    // Lexical anaysis ignores what's inside single quotes
-                    if (filter[index] == '\'' && (index == 0 || filter[index - 1] != '\'') && (index == filter.Length - 1 || filter[index + 1] != '\''))
+                    insideQuotes = !insideQuotes;
+                    acc += filter[index];
+                    index++;
+                }
+                else if (insideQuotes)
+                {
+                    acc += filter[index];
+                    index++;
+                }
+                else
+                {
+                    // Everything that is not inside single quotes is ripe for lexical analysis      
+                    var matchingSymbol = symbols.FirstOrDefault(filter.Substring(index).StartsWith);
+                    if (matchingSymbol != null)
                     {
-                        insideQuotes = !insideQuotes;
-                        acc += filter[index];
-                        index++;
-                    }
-                    else if (insideQuotes)
-                    {
-                        acc += filter[index];
-                        index++;
+                        // Add all that has been accumulating before the symbol
+                        if (!string.IsNullOrWhiteSpace(acc))
+                        {
+                            tokens.Add(acc.Trim());
+                            acc = "";
+                        }
+
+                        // And add the symbol
+                        tokens.Add(matchingSymbol.Trim());
+                        index = index + matchingSymbol.Length;
                     }
                     else
                     {
-                        // Everything that is not inside single quotes is ripe for lexical analysis      
-                        var matchingSymbol = symbols.FirstOrDefault(filter.Substring(index).StartsWith);
-                        if (matchingSymbol != null)
-                        {
-                            // Add all that has been accumulating before the symbol
-                            if (!string.IsNullOrWhiteSpace(acc))
-                            {
-                                tokens.Add(acc.Trim());
-                                acc = "";
-                            }
+                        acc += filter[index];
+                        index++;
+                    }
+                }
+            }
 
-                            // And add the symbol
-                            tokens.Add(matchingSymbol.Trim());
-                            index = index + matchingSymbol.Length;
+            if (insideQuotes)
+            {
+                // Programmer mistake
+                throw new BadRequestException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
+            }
+
+            if (!string.IsNullOrWhiteSpace(acc))
+            {
+                tokens.Add(acc.Trim());
+            }
+
+
+            //////// (3) Parse token stream to Abstract Syntax Tree (AST)
+
+            Ast ParseToAst(IEnumerable<string> tokenStream)
+            {
+                if (tokenStream.IsEnclosedInPairBrackets())
+                {
+                    return ParseBrackets(tokenStream);
+                }
+                else if (tokenStream.OutsideBrackets().Any(e => e == "or"))
+                {
+                    // OR has lower precedence than AND
+                    return ParseDisjunction(tokenStream);
+                }
+                else if (tokenStream.OutsideBrackets().Any(e => e == "and"))
+                {
+                    return ParseConjunction(tokenStream);
+                }
+                else if (tokenStream.Count() <= 1)
+                {
+                    return ParseAtom(tokenStream);
+                }
+                else
+                {
+                    // Programmer mistake
+                    throw new BadRequestException("Badly formatted filter parameter");
+                }
+            }
+
+            AstBrackets ParseBrackets(IEnumerable<string> tokenStream)
+            {
+                return new AstBrackets
+                {
+                    Inner = ParseToAst(tokenStream.Skip(1).Take(tokenStream.Count() - 2))
+                };
+            }
+
+            AstConjunction ParseConjunction(IEnumerable<string> tokenStream)
+            {
+                // find first occurrence of AND outside the brackets, and then parse both sides
+                int i = tokenStream.OutsideBrackets().ToList().IndexOf("and");
+                var left = tokenStream.Take(i);
+                var right = tokenStream.Skip(i + 1);
+
+                return new AstConjunction
+                {
+                    Left = ParseToAst(left),
+                    Right = ParseToAst(right),
+                };
+            }
+
+            AstDisjunction ParseDisjunction(IEnumerable<string> tokenStream)
+            {
+                // find first occurrence of AND outside the brackets, and then parse both sides
+                int i = tokenStream.OutsideBrackets().ToList().IndexOf("or");
+                var left = tokenStream.Take(i);
+                var right = tokenStream.Skip(i + 1);
+
+                return new AstDisjunction
+                {
+                    Left = ParseToAst(left),
+                    Right = ParseToAst(right),
+                };
+            }
+
+            AstAtom ParseAtom(IEnumerable<string> tokenStream)
+            {
+                return new AstAtom { Value = tokenStream.SingleOrDefault() ?? "" };
+            }
+
+            Ast ast = ParseToAst(tokens);
+
+
+            //////// (4) Compile the AST to Linq lambda
+
+            // Recursive function to turn the AST to linq
+            Expression ToExpression(Ast tree)
+            {
+                if (tree is AstBrackets bracketsAst)
+                {
+                    return ToExpression(bracketsAst.Inner);
+                }
+
+                if (tree is AstConjunction conAst)
+                {
+                    return Expression.AndAlso(ToExpression(conAst.Left), ToExpression(conAst.Right));
+                }
+
+                if (tree is AstDisjunction disAst)
+                {
+                    return Expression.OrElse(ToExpression(disAst.Left), ToExpression(disAst.Right));
+                }
+
+                if (tree is AstAtom atom)
+                {
+                    var modelType = typeof(T);
+                    var v = atom.Value;
+
+                    // Indicates a programmer mistake
+                    if (string.IsNullOrWhiteSpace(v))
+                    {
+                        throw new InvalidOperationException("An atomic expression cannot be empty");
+                    }
+                    // Some controllers may define their own set of keywords which 
+                    // take precedence over the default parsing of expression atoms
+                    Expression result = parseSpecial(v, eParam);
+
+                    // If the controller does not handle this atom, we use the default parser
+                    if (result == null)
+                    {
+                        // The default parser assumes the following syntax: Path Op Value, for example: Address/Street eq 'Huntington Rd.'
+                        var pieces = v.Split(" ");
+                        if (pieces.Count() < 3)
+                        {
+                            // Programmer mistake
+                            throw new InvalidOperationException("An atomic expression must either be a reserved word or come in the form of 'Property Op Value'");
                         }
                         else
                         {
-                            acc += filter[index];
-                            index++;
-                        }
-                    }
-                }
+                            // (A) Parse the member access path (e.g. "Address/Street")
+                            var path = pieces[0];
 
-                if (insideQuotes)
-                {
-                    // Programmer mistake
-                    throw new BadRequestException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
-                }
-
-                if (!string.IsNullOrWhiteSpace(acc))
-                {
-                    tokens.Add(acc.Trim());
-                }
-
-
-                //////// (3) Parse token stream to Abstract Syntax Tree (AST)
-
-                Ast ParseToAst(IEnumerable<string> tokenStream)
-                {
-                    if (tokenStream.IsEnclosedInPairBrackets())
-                    {
-                        return ParseBrackets(tokenStream);
-                    }
-                    else if (tokenStream.OutsideBrackets().Any(e => e == "or"))
-                    {
-                        // OR has lower precedence than AND
-                        return ParseDisjunction(tokenStream);
-                    }
-                    else if (tokenStream.OutsideBrackets().Any(e => e == "and"))
-                    {
-                        return ParseConjunction(tokenStream);
-                    }
-                    else if (tokenStream.Count() <= 1)
-                    {
-                        return ParseAtom(tokenStream);
-                    }
-                    else
-                    {
-                        // Programmer mistake
-                        throw new BadRequestException("Badly formatted filter parameter");
-                    }
-                }
-
-                AstBrackets ParseBrackets(IEnumerable<string> tokenStream)
-                {
-                    return new AstBrackets
-                    {
-                        Inner = ParseToAst(tokenStream.Skip(1).Take(tokenStream.Count() - 2))
-                    };
-                }
-
-                AstConjunction ParseConjunction(IEnumerable<string> tokenStream)
-                {
-                    // find first occurrence of AND outside the brackets, and then parse both sides
-                    int i = tokenStream.OutsideBrackets().ToList().IndexOf("and");
-                    var left = tokenStream.Take(i);
-                    var right = tokenStream.Skip(i + 1);
-
-                    return new AstConjunction
-                    {
-                        Left = ParseToAst(left),
-                        Right = ParseToAst(right),
-                    };
-                }
-
-                AstDisjunction ParseDisjunction(IEnumerable<string> tokenStream)
-                {
-                    // find first occurrence of AND outside the brackets, and then parse both sides
-                    int i = tokenStream.OutsideBrackets().ToList().IndexOf("or");
-                    var left = tokenStream.Take(i);
-                    var right = tokenStream.Skip(i + 1);
-
-                    return new AstDisjunction
-                    {
-                        Left = ParseToAst(left),
-                        Right = ParseToAst(right),
-                    };
-                }
-
-                AstAtom ParseAtom(IEnumerable<string> tokenStream)
-                {
-                    return new AstAtom { Value = tokenStream.SingleOrDefault() ?? "" };
-                }
-
-                Ast ast = ParseToAst(tokens);
-
-
-                //////// (4) Compile the AST to Linq lambda
-
-                // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(TModel));
-
-                // Recursive function to turn the AST to linq
-                Expression ToExpression(Ast tree)
-                {
-                    if (tree is AstBrackets bracketsAst)
-                    {
-                        return ToExpression(bracketsAst.Inner);
-                    }
-
-                    if (tree is AstConjunction conAst)
-                    {
-                        return Expression.AndAlso(ToExpression(conAst.Left), ToExpression(conAst.Right));
-                    }
-
-                    if (tree is AstDisjunction disAst)
-                    {
-                        return Expression.OrElse(ToExpression(disAst.Left), ToExpression(disAst.Right));
-                    }
-
-                    if (tree is AstAtom atom)
-                    {
-                        var modelType = typeof(TModel);
-                        var v = atom.Value;
-
-                        // Indicates a programmer mistake
-                        if (string.IsNullOrWhiteSpace(v))
-                        {
-                            throw new InvalidOperationException("An atomic expression cannot be empty");
-                        }
-                        // Some controllers may define their own set of keywords which 
-                        // take precedence over the default parsing of expression atoms
-                        Expression result = ParseSpecialFilterKeyword(v, eParam);
-
-                        // If the controller does not handle this atom, we use the default parser
-                        if (result == null)
-                        {
-                            // The default parser assumes the following syntax: Path Op Value, for example: Address/Street eq 'Huntington Rd.'
-                            var pieces = v.Split(" ");
-                            if (pieces.Count() < 3)
+                            var steps = path.Split('/');
+                            PropertyInfo prop = null;
+                            Type propType = modelType;
+                            Expression memberAccess = eParam;
+                            foreach (var step in steps)
                             {
-                                // Programmer mistake
-                                throw new InvalidOperationException("An atomic expression must either be a reserved word or come in the form of 'Property Op Value'");
+                                prop = propType.GetProperty(step);
+                                if (prop == null)
+                                {
+                                    throw new InvalidOperationException(
+                                        $"The property '{step}' from the filter argument is not a navigation property of entity type '{propType.Name}'.");
+                                }
+
+                                var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
+                                if (isCollection)
+                                {
+                                    // Programmer mistake
+                                    throw new InvalidOperationException("Filter parameters cannot access collection properties");
+                                }
+
+                                propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                                memberAccess = Expression.Property(memberAccess, prop);
+                            }
+
+                            // (B) Parse the value (e.g. "'Huntington Rd.'")
+                            var valueString = string.Join(" ", pieces.Skip(2));
+                            object value;
+                            if (valueString == "null")
+                            {
+                                value = null;
                             }
                             else
                             {
-                                // (A) Parse the member access path (e.g. "Address/Street")
-                                var path = pieces[0];
-
-                                var steps = path.Split('/');
-                                PropertyInfo prop = null;
-                                Type propType = modelType;
-                                Expression memberAccess = eParam;
-                                foreach (var step in steps)
+                                if (propType == typeof(string) || propType == typeof(char) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
                                 {
-                                    prop = propType.GetProperty(step);
-                                    if (prop == null)
-                                    {
-                                        throw new InvalidOperationException(
-                                            $"The property '{step}' from the filter argument is not a navigation property of entity type '{propType.Name}'.");
-                                    }
-
-                                    var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
-                                    if (isCollection)
+                                    if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
                                     {
                                         // Programmer mistake
-                                        throw new InvalidOperationException("Filter parameters cannot access collection properties");
+                                        throw new InvalidOperationException($"Property {prop.Name} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
                                     }
 
-                                    propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                                    memberAccess = Expression.Property(memberAccess, prop);
+                                    valueString = valueString.Substring(1, valueString.Length - 2);
                                 }
 
-                                // (B) Parse the value (e.g. "'Huntington Rd.'")
-                                var valueString = string.Join(" ", pieces.Skip(2));
-                                object value;
-                                if (valueString == "null")
+                                try
                                 {
-                                    value = null;
-                                }
-                                else
-                                {
-                                    if (propType == typeof(string) || propType == typeof(char) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
+                                    // The default Convert.ChangeType cannot handle converting types to
+                                    // nullable types also it cannot handle DateTimeOffset
+                                    // this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
+                                    object ChangeType(object val, Type conversion)
                                     {
-                                        if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
+                                        var t = conversion;
+                                        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
                                         {
-                                            // Programmer mistake
-                                            throw new InvalidOperationException($"Property {prop.Name} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
-                                        }
-
-                                        valueString = valueString.Substring(1, valueString.Length - 2);
-                                    }
-
-                                    try
-                                    {
-                                        // The default Convert.ChangeType cannot handle converting types to nullable types
-                                        // Therefore this method overcomes this limitation, credit: https://bit.ly/2DgqJmL
-                                        object ChangeType(object val, Type conversion)
-                                        {
-                                            var t = conversion;
-                                            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+                                            if (val == null)
                                             {
-                                                if (val == null)
-                                                {
-                                                    return null;
-                                                }
-
-                                                t = Nullable.GetUnderlyingType(t);
+                                                return null;
                                             }
 
-                                            return Convert.ChangeType(val, t);
+                                            t = Nullable.GetUnderlyingType(t);
                                         }
 
-                                        value = ChangeType(valueString, prop.PropertyType);
+                                        if (t.IsDateOrTime())
+                                        {
+                                            var date = ParseImportedDateTime(val);
+                                            if (t.IsDateTimeOffset())
+                                            {
+                                                return AddUserTimeZone(date);
+                                            }
+
+                                            return date;
+                                        }
+
+                                        return Convert.ChangeType(val, t);
                                     }
-                                    catch (ArgumentException)
-                                    {
-                                        // Programmer mistake
-                                        throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
-                                    }
+
+                                    value = ChangeType(valueString, prop.PropertyType);
                                 }
-
-                                var constant = Expression.Constant(value, prop.PropertyType);
-
-                                // (C) parse the operator (e.g. "eq")
-                                var op = pieces[1];
-                                op = op?.ToLower() ?? "";
-                                switch (op)
+                                catch (ArgumentException)
                                 {
-                                    case "gt":
-                                        return Expression.GreaterThan(memberAccess, constant);
-
-                                    case "ge":
-                                        return Expression.GreaterThanOrEqual(memberAccess, constant);
-
-                                    case "lt":
-                                        return Expression.LessThan(memberAccess, constant);
-
-                                    case "le":
-                                        return Expression.LessThanOrEqual(memberAccess, constant);
-
-                                    case "eq":
-                                        return Expression.Equal(memberAccess, constant);
-
-                                    case "ne":
-                                        return Expression.NotEqual(memberAccess, constant);
-
-                                    case "contains":
-                                        return memberAccess.Contains(constant);
-
-                                    case "ncontains":
-                                        return Expression.Not(memberAccess.Contains(constant));
-
-                                    default:
-                                        throw new InvalidOperationException($"The filter operator '{op}' is not recognized");
+                                    // Programmer mistake
+                                    throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
                                 }
                             }
-                        }
 
-                        return result;
+                            var constant = Expression.Constant(value, prop.PropertyType);
+
+                            // (C) parse the operator (e.g. "eq")
+                            var op = pieces[1];
+                            op = op?.ToLower() ?? "";
+                            switch (op)
+                            {
+                                case "gt":
+                                    return Expression.GreaterThan(memberAccess, constant);
+
+                                case "ge":
+                                    return Expression.GreaterThanOrEqual(memberAccess, constant);
+
+                                case "lt":
+                                    return Expression.LessThan(memberAccess, constant);
+
+                                case "le":
+                                    return Expression.LessThanOrEqual(memberAccess, constant);
+
+                                case "eq":
+                                    return Expression.Equal(memberAccess, constant);
+
+                                case "ne":
+                                    return Expression.NotEqual(memberAccess, constant);
+
+                                case "contains":
+                                    return memberAccess.Contains(constant);
+
+                                case "ncontains":
+                                    return Expression.Not(memberAccess.Contains(constant));
+
+                                default:
+                                    throw new InvalidOperationException($"The filter operator '{op}' is not recognized");
+                            }
+                        }
                     }
 
-                    // Programmer mistake
-                    throw new Exception("Unknown AST type");
+                    return result;
                 }
 
-                var expression = ToExpression(ast);
-                var lambda = Expression.Lambda<Func<TModel, bool>>(expression, eParam);
-
-
-                //////// (5) Apply lambda to the query
-
-                query = query.Where(lambda);
+                // Programmer mistake
+                throw new Exception("Unknown AST type");
             }
 
-            return query;
+            var expression = ToExpression(ast);
+            return expression;
         }
 
         /// <summary>
@@ -866,7 +961,133 @@ namespace BSharp.Controllers
             return dateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd hh:mm";
         }
 
-        // Private methods
+        /// <summary>
+        /// Attempts to intelligently parse an object (that comes from an imported file) to a DateTime
+        /// </summary>
+        protected DateTime? ParseImportedDateTime(object value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            DateTime dateTime;
+
+            if (value.GetType() == typeof(double))
+            {
+                // Double indicates the OLE Automation date typically represented in excel
+                dateTime = DateTime.FromOADate((double)value);
+            }
+            else
+            {
+                // Parse the import value into a DateTime
+                var valueString = value.ToString();
+                dateTime = DateTime.Parse(valueString);
+            }
+
+
+            return dateTime;
+        }
+
+        /// <summary>
+        /// Changes the DateTime into a DateTimeOffset by adding the user's local timezone, this effectively
+        /// acts as the reverse of <see cref="ToExportDateTime(DateTimeOffset?)"/>
+        /// </summary>
+        protected DateTimeOffset? AddUserTimeZone(DateTime? value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            // The date time supplied in the import does not the contain time zone offset
+            // The code below adds the current user time zone to the date time supplied
+            var timeZone = TimeZoneInfo.Local;  // TODO: Use the user time zone   
+            var offset = timeZone.GetUtcOffset(DateTimeOffset.Now);
+            var dtOffset = new DateTimeOffset(value.Value, offset);
+
+            return dtOffset;
+        }
+
+        /// <summary>
+        /// Constructs a SQL data table containing all the public properties of the 
+        /// entities' type and populates the data table with the provided entities
+        /// </summary>
+        protected DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
+        {
+            DataTable table = new DataTable();
+            if (addIndex)
+            {
+                // The column order MUST match the column order in the user-defined table type
+                table.Columns.Add(new DataColumn("Index", typeof(int)));
+            }
+
+            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList());
+            foreach (var prop in props)
+            {
+                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                var column = new DataColumn(prop.Name, propType);
+                if (propType == typeof(string))
+                {
+                    // For string columns, it is more performant to explicitly specify the maximum column size
+                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
+                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
+                    if (stringLengthAttribute != null)
+                    {
+                        column.MaxLength = stringLengthAttribute.MaximumLength;
+                    }
+                }
+
+                table.Columns.Add(column);
+            }
+
+            int index = 0;
+            foreach (var entity in entities)
+            {
+                DataRow row = table.NewRow();
+
+                // We add an index property since SQL works with un-ordered sets
+                if (addIndex)
+                {
+                    row["Index"] = index++;
+                }
+
+                // Add the remaining properties
+                foreach (var prop in props)
+                {
+                    var propValue = prop.GetValue(entity);
+                    row[prop.Name] = propValue ?? DBNull.Value;
+                }
+
+                table.Rows.Add(row);
+            }
+
+            return table;
+        }
+
+        /// <summary>
+        /// This is alternative for <see cref="Type.GetProperties"/>
+        /// that returns base class properties before inherited class properties
+        /// Credit: https://bit.ly/2UGAkKj
+        /// </summary>
+        protected PropertyInfo[] GetPropertiesBaseFirst(Type type)
+        {
+            var orderList = new List<Type>();
+            var iteratingType = type;
+            do
+            {
+                orderList.Insert(0, iteratingType);
+                iteratingType = iteratingType.BaseType;
+            } while (iteratingType != null);
+
+            var props = type.GetProperties()
+                .OrderBy(x => orderList.IndexOf(x.DeclaringType))
+                .ToArray();
+
+            return props;
+        }
+
+        // Helper methods
 
         private FileResult AbstractGridToFileResult(AbstractDataGrid abstractFile, string format)
         {
@@ -891,6 +1112,79 @@ namespace BSharp.Controllers
 
             var fileStream = handler.ToFileStream(abstractFile);
             return File(((MemoryStream)fileStream).ToArray(), contentType);
+        }
+
+        protected async Task<IEnumerable<M.AbstractPermission>> GetPermissions(DbQuery<M.AbstractPermission> q, PermissionLevel level, params string[] viewIds)
+        {
+            // Validate parameters
+            if (q == null)
+            {
+                // Programmer mistake
+                throw new ArgumentNullException(nameof(q));
+            }
+
+            if (viewIds == null)
+            {
+                // Programmer mistake
+                throw new ArgumentNullException(nameof(viewIds));
+            }
+
+            if (viewIds.Any(e => e == ALL))
+            {
+                // Programmer mistake
+                throw new BadRequestException("'GetPermissions' cannot handle the 'all' case");
+            }
+
+            // Add all and prepare the TVP
+            viewIds = viewIds.Union(new[] { ALL }).ToArray();
+            var viewIdsTable = DataTable(viewIds.Select(e => new { Code = e }));
+            var viewIdsTvp = new SqlParameter("@ViewIds", viewIdsTable)
+            {
+                TypeName = $"dbo.CodeList",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // Prepare the WHERE clause that corresponds to the permission level
+            string levelWhereClause;
+            switch (level)
+            {
+                case PermissionLevel.Read:
+                    levelWhereClause = $"E.Level LIKE '{Constants.Read}%' OR E.Level = '{Constants.Update}' OR E.Level = '{Constants.Sign}'";
+                    break;
+                case PermissionLevel.Update:
+                    levelWhereClause = $"E.Level = '{Constants.Update}' OR E.Level = '{Constants.Sign}'";
+                    break;
+                case PermissionLevel.Create:
+                    levelWhereClause = $"E.Level LIKE '%{Constants.Read}'";
+                    break;
+                case PermissionLevel.Sign:
+                    levelWhereClause = $"E.Level = '{Constants.Sign}'";
+                    break;
+                default:
+                    throw new Exception("Unhandled PermissionLevel enum value"); // Programmer mistake
+            }
+
+            // Retrieve the permissions
+            var result = await q.FromSql($@"
+SELECT * FROM (
+    SELECT ViewId, Criteria, Level 
+    FROM [dbo].[Permissions] P
+    JOIN [dbo].[Roles] R ON P.RoleId = R.Id
+    JOIN [dbo].[RoleMemberships] RM ON R.Id = RM.RoleId
+    WHERE R.IsActive = 1 
+    AND RM.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')) 
+    AND P.ViewId IN (SELECT Code FROM @ViewIds)
+    UNION
+    SELECT ViewId, Criteria, Level 
+    FROM [dbo].[Permissions] P
+    JOIN [dbo].[Roles] R ON P.RoleId = R.Id
+    WHERE R.IsPublic = 1 
+    AND R.IsActive = 1
+    AND P.ViewId IN (SELECT Code FROM @ViewIds)
+) AS E WHERE {levelWhereClause}
+", viewIdsTvp).ToListAsync();
+
+            return result;
         }
     }
 }

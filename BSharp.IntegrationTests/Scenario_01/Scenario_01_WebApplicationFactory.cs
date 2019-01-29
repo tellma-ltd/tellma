@@ -87,31 +87,85 @@ namespace BSharp.IntegrationTests.Scenario_01
 
                     // (2) Application Context requires special handling in development, don't resolve it with DI
                     var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
-                    var appContext = new ApplicationContext(shardResolver,
-                        new DesignTimeTenantIdProvider(), new DesignTimeUserIdProvider());
+                    using (var appContext = new ApplicationContext(shardResolver,
+                        new DesignTimeTenantIdProvider(), new DesignTimeUserIdProvider()))
+                    {
 
-                    appContext.Database.Migrate();
+                        appContext.Database.Migrate();
 
-                    // Add first user
-                    var now = DateTimeOffset.Now;
-                    appContext.Database.ExecuteSqlCommand(
-                        @"
+                        // Add first user
+                        var now = DateTimeOffset.Now;
+                        appContext.Database.ExecuteSqlCommand(
+                            @"
 DECLARE @NextId INT = IDENT_CURRENT('[dbo].[LocalUsers]') + 1;
 INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, Name2, CreatedById, ModifiedById, TenantId)
                             VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, 101)",
-                        "support@banan-it.com", // {0}
-                        "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
-                        now, // {2}
-                        "Banan IT Support", // {3}
-                        "فريق مساندة بنان"); // {4}
 
-                    // Add the views
-                    appContext.Views.Add(new View { Id = "measurement-units", IsActive = true });
-                    appContext.Views.Add(new View { Id = "individuals", IsActive = true });
-                    appContext.Views.Add(new View { Id = "organizations", IsActive = true });
-                    appContext.Views.Add(new View { Id = "roles", IsActive = true });
+                            "support@banan-it.com", // {0}
+                            "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
+                            now, // {2}
+                            "Banan IT Support", // {3}
+                            "فريق مساندة بنان"); // {4}
 
-                    appContext.SaveChanges();
+                        // The security administrator role
+                        int userId = 1;
+                        var saRole = new Role
+                        {
+                            Name = "Security Administrator",
+                            Name2 = "مدير الأمان",
+                            Code = "SA",
+                            IsActive = true,
+                            CreatedById = userId,
+                            ModifiedById = userId,
+                            CreatedAt = now,
+                            ModifiedAt = now,
+                            Permissions = new List<Permission>
+                            {
+                                new Permission {
+                                    ViewId = "local-users",
+                                    Level = "Update",
+                                    CreatedById = userId,
+                                    ModifiedById = userId,
+                                    CreatedAt = now,
+                                    ModifiedAt = now,
+                                },
+                                new Permission {
+                                    ViewId = "roles",
+                                    Level = "Update",
+                                    CreatedById = userId,
+                                    ModifiedById = userId,
+                                    CreatedAt = now,
+                                    ModifiedAt = now,
+                                }
+                            },
+                                Members = new List<RoleMembership>
+                            {
+                                new RoleMembership {
+                                    UserId = 1,
+                                    CreatedById = userId,
+                                    ModifiedById = userId,
+                                    CreatedAt = now,
+                                    ModifiedAt = now,
+                                }
+                            }
+                        };
+
+                        appContext.Roles.Add(saRole);
+
+                        appContext.Entry(saRole).Property("TenantId").CurrentValue = 101;
+                        appContext.Entry(saRole.Permissions.First()).Property("TenantId").CurrentValue = 101;
+                        appContext.Entry(saRole.Permissions.Last()).Property("TenantId").CurrentValue = 101;
+                        appContext.Entry(saRole.Members.Last()).Property("TenantId").CurrentValue = 101;
+
+                        // Add the views
+                        appContext.Views.Add(new View { Id = "local-users", IsActive = true });
+                        appContext.Views.Add(new View { Id = "roles", IsActive = true });
+                        appContext.Views.Add(new View { Id = "measurement-units", IsActive = true });
+                        appContext.Views.Add(new View { Id = "individuals", IsActive = true });
+                        appContext.Views.Add(new View { Id = "organizations", IsActive = true });
+
+                        appContext.SaveChanges();
+                    }
                 }
             });
         }

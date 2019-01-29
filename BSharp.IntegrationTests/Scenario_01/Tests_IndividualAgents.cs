@@ -1,5 +1,6 @@
 ﻿using BSharp.Controllers.DTO;
 using BSharp.IntegrationTests.Utilities;
+using BSharp.Services.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -15,10 +16,27 @@ namespace BSharp.IntegrationTests.Scenario_01
         public const string individualAgents = "02 - Individual Agents";
         public const string individualAgentsURL = "/api/agents/individuals";
 
+
+        [Trait(Testing, individualAgents)]
+        [Fact(DisplayName = "001 - Getting all individuals before granting permissions returns a 403 Forbidden response")]
+        public async Task Test10000()
+        {
+            var response = await _client.GetAsync(individualAgentsURL);
+
+            // Call the API
+            _output.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert the result is 403 OK
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        }
+
         [Trait(Testing, individualAgents)]
         [Fact(DisplayName = "001 - Getting all individuals before creating any returns a 200 OK empty collection")]
         public async Task Test1000()
         {
+            // Grant permission
+            await GrantPermissionToSecurityAdministrator("individuals", Constants.Update);
+
             var response = await _client.GetAsync(individualAgentsURL);
 
             // Call the API

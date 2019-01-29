@@ -1,4 +1,4 @@
-<b-master apiEndpoint="local-users" expand="Agent" [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
+<b-master apiEndpoint="local-users" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
   [tableColumnPaths]="['Name', 'Name2', 'ExternalId' , 'Email', 'Agent/Name', 'IsActive']" [tableColumnTemplates]="{
             'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
             'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },

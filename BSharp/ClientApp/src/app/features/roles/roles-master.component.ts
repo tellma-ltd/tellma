@@ -5,6 +5,8 @@ import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
+import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
+import { Roles_DoNotApplyPermissions } from '~/app/data/dto/role';
 
 @Component({
   selector: 'b-roles-master',
@@ -14,6 +16,12 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 export class RolesMasterComponent extends MasterBaseComponent {
 
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
+
+  public expand = '';
+  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
+    // This ensures that any existing permissions won't get wiped out
+    Roles: Roles_DoNotApplyPermissions
+  };
 
   constructor(private workspace: WorkspaceService, private api: ApiService) {
     super();
@@ -26,7 +34,7 @@ export class RolesMasterComponent extends MasterBaseComponent {
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.rolesApi.activate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace))
+      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
     );
 
     // The master template handles any errors
@@ -35,7 +43,7 @@ export class RolesMasterComponent extends MasterBaseComponent {
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.rolesApi.deactivate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace))
+      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
     );
 
     // The master template handles any errors

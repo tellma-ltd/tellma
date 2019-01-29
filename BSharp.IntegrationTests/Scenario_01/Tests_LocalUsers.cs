@@ -16,7 +16,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public const string localUsersURL = "/api/local-users";
 
         [Trait(Testing, localUsers)]
-        [Fact(DisplayName = "001 - Getting all localUsers before creating any returns a 200 OK empty collection")]
+        [Fact(DisplayName = "001 - Getting all localUsers before creating any returns a 200 OK singleton collection")]
         public async Task Test3100()
         {
             var response = await _client.GetAsync(localUsersURL);

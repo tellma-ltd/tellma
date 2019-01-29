@@ -8,11 +8,12 @@ import { DtoKeyBase } from './dto/dto-key-base';
 // this pattern ensures that entities are not spread everywhere in the app, but are
 // maintained in a centralized workspace instead, so an update to the entity name for example
 // will see that reflected updated everywhere where that name is displayed
-export function addToWorkspace(response: EntitiesResponse, workspace: WorkspaceService): (number | string)[] {
+export function addToWorkspace(response: EntitiesResponse, workspace: WorkspaceService,
+  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase }): (number | string)[] {
 
   // Add related entities
   const relatedEntities = response.RelatedEntities;
-  addRelatedEntitiesToWorkspace(relatedEntities, workspace);
+  addRelatedEntitiesToWorkspace(relatedEntities, workspace, workspaceApplyFns);
 
   // Add main entities
   {
@@ -23,8 +24,9 @@ export function addToWorkspace(response: EntitiesResponse, workspace: WorkspaceS
       console.error('collectionName is not specified by the server');
     } else {
       for (let i = 0; i < mainEntities.length; i++) {
-        const entity = mainEntities[i];
-        workspace.current[collectionName][entity.Id] = entity;
+        const freshItem = mainEntities[i];
+        const staleItem = workspace.current[collectionName][freshItem.Id];
+        apply(freshItem, staleItem, workspace, collectionName, workspaceApplyFns);
       }
     }
 
@@ -33,38 +35,52 @@ export function addToWorkspace(response: EntitiesResponse, workspace: WorkspaceS
   }
 }
 
-export function addSingleToWorkspace(response: GetByIdResponse, workspace: WorkspaceService): (number | string) {
+export function addSingleToWorkspace(response: GetByIdResponse, workspace: WorkspaceService,
+  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase }): (number | string) {
 
   // Add related entities
   const relatedEntities = response.RelatedEntities;
-  addRelatedEntitiesToWorkspace(relatedEntities, workspace);
+  addRelatedEntitiesToWorkspace(relatedEntities, workspace, workspaceApplyFns);
 
   // Add main entities
-  const entity = response.Entity;
+  const freshItem = response.Entity;
   const collectionName = response.CollectionName;
   if (!collectionName) {
     // Programmer mistake
     console.error('collectionName is not specified by the server');
   } else {
-    workspace.current[collectionName][entity.Id] = entity;
+    const staleItem = workspace.current[collectionName][freshItem.Id];
+    apply(freshItem, staleItem, workspace, collectionName, workspaceApplyFns);
   }
 
   // Return the IDs of the main entities
-  return entity.Id;
+  return freshItem.Id;
 }
 
-function addRelatedEntitiesToWorkspace(relatedEntities: { [key: string]: DtoKeyBase[] }, workspace: WorkspaceService) {
+function addRelatedEntitiesToWorkspace(relatedEntities: { [key: string]: DtoKeyBase[] },
+  workspace: WorkspaceService, workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase }) {
   if (!!relatedEntities) {
     const collectionNames = Object.keys(relatedEntities);
     for (let c = 0; c < collectionNames.length; c++) {
       const collectionName = collectionNames[c];
       const collection = relatedEntities[collectionName];
       for (let i = 0; i < collection.length; i++) {
-        const entity = collection[i];
-        workspace.current[collectionName][entity.Id] = entity;
+        const freshItem = collection[i];
+        const staleItem = workspace.current[collectionName][freshItem.Id];
+        apply(freshItem, staleItem, workspace, collectionName, workspaceApplyFns);
       }
     }
   }
+}
+
+function apply(freshItem: DtoKeyBase, staleItem: DtoKeyBase, workspace: WorkspaceService, collectionName: string,
+  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase }) {
+    if (!!staleItem) {
+      const applyFn = workspaceApplyFns ? workspaceApplyFns[collectionName] : null;
+      workspace.current[collectionName][freshItem.Id] = applyFn ? applyFn(staleItem, freshItem) : freshItem;
+    } else {
+      workspace.current[collectionName][freshItem.Id] = freshItem;
+    }
 }
 
 export function downloadBlob(blob: Blob, fileName: string) {
@@ -89,7 +105,7 @@ export function downloadBlob(blob: Blob, fileName: string) {
     a.click();
     a.remove();
 
-    // Best practice to prevent a memory leak, especially in a SPA like bSharp
+    // Best practice to prevent a memory leak, especially in a SPA
     window.URL.revokeObjectURL(url);
   }
 }

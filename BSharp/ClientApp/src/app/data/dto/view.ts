@@ -11,5 +11,15 @@ export class View extends ViewForSave<Permission> {
     Name2: string;
     Code: string;
     IsActive: boolean;
-    AllowedPermissionLevels: ('Read' | 'Update' | 'Create' | 'ReadAndCreate' | 'Sign')[];
+    AllowedPermissionLevels: ('Read' | 'Update' | 'Create' | 'ReadCreate' | 'Sign')[];
+}
+
+export function Views_DoNotApplyPermissions(stale: View, fresh: View): View {
+    // Set all props except for Permissions
+    // TODO
+    // Object.keys(stale).concat(Object.keys(fresh))
+    //     .filter(p => ['Permissions'].indexOf(p) < 0)
+    //     .forEach(p => stale[p] = fresh[p]);
+    // return stale;
+    return fresh;
 }

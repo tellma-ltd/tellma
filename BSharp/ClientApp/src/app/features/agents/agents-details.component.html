@@ -1,4 +1,4 @@
-<b-details [apiEndpoint]="'agents/' + agentType" collection="Custodies" [createFunc]="create" [mode]="mode" [idString]="idString"
+<b-details [apiEndpoint]="'agents/' + agentType" collection="Custodies" [createFunc]="create" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" [mode]="mode" [idString]="idString"
   [masterCrumb]="masterCrumb | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
               { template: activate, action: onActivate, showAction: showActivate },
               { template: deactivate, action: onDeactivate, showAction: showDeactivate }

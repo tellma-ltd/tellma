@@ -1,5 +1,5 @@
-<b-details apiEndpoint="local-users" [expand]="expand" collection="LocalUsers" [createFunc]="create" [mode]="mode"
-  [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
+<b-details apiEndpoint="local-users" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" collection="LocalUsers" [createFunc]="create" [mode]="mode"
+  [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" 
   [documentHeaderTemplate]="documentHeader" [actions]="[
               { template: activate, action: onActivate, showAction: showActivate },
               { template: deactivate, action: onDeactivate, showAction: showDeactivate }
@@ -14,12 +14,12 @@
 
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
   <div class="w-100 b-document-header d-flex justify-content-end">
-    <div class="b-flow-chart small d-none d-md-block">
+    <div class="b-flow-chart small d-none d-sm-block">
       <div [class.active]="!model?.ExternalId"><span>{{'User_New' | translate}}</span></div>
       <!-- <div><span> Invited </span></div> -->
       <div [class.active]="!!model?.ExternalId"><span>{{'User_Confirmed' | translate}}</span></div>
     </div>
-    <div class="small b-lone-state active d-block d-md-none">
+    <div class="small b-lone-state active d-block d-sm-none">
       <span>{{ (!!model?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span>
     </div>
   </div>
@@ -105,7 +105,7 @@
             <b-view-link *ngIf="!isEdit" link="../../roles" [itemId]="item?.RoleId">{{ ws.get('Roles',
               item.RoleId)?.Name }}</b-view-link>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)" apiEndpoint="roles"
-              [masterTemplate]="roleMaster" [detailsTemplate]="roleDetails" collection="Roles">
+              [masterTemplate]="roleMaster" [detailsTemplate]="roleDetails" collection="Roles" [workspaceApplyFns]="workspaceApplyFns">
             </b-details-picker>
 
             <!-- The Role Details Modal -->

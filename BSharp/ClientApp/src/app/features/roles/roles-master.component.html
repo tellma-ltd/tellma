@@ -1,5 +1,7 @@
 <b-master apiEndpoint="roles"
           [mode]="mode"
+          [expand]="expand" 
+          [workspaceApplyFns]="workspaceApplyFns"
           [masterCrumb]="'Roles' | translate"
           [tileTemplate]="tile"
           [tableColumnPaths]="['Name', 'Name2' , 'Code', 'IsPublic', 'IsActive']"

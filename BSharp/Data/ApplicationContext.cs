@@ -57,6 +57,11 @@ namespace BSharp.Data
         /// </summary>
         public DbQuery<DbString> Strings { get; set; }
 
+        /// <summary>
+        /// Unified model for both application and admin contexts for querying user permissions
+        /// </summary>
+        public DbQuery<AbstractPermission> AbstractPermissions { get; set; }
+
         // Private fields
         private readonly ITenantIdProvider _tenantIdProvider;
 

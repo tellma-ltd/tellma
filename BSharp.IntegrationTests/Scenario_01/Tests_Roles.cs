@@ -16,7 +16,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public const string rolesURL = "/api/roles";
 
         [Trait(Testing, roles)]
-        [Fact(DisplayName = "001 - Getting all roles before creating any returns a 200 OK empty collection")]
+        [Fact(DisplayName = "001 - Getting all roles before creating any returns a 200 OK singleton collection")]
         public async Task Test3000()
         {
             var response = await _client.GetAsync(rolesURL);
@@ -33,15 +33,15 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Assert the result makes sense
             Assert.Equal("Roles", responseData.CollectionName);
 
-            Assert.Equal(0, responseData.TotalCount);
-            Assert.Empty(responseData.Data);
+            Assert.Equal(1, responseData.TotalCount);
+            Assert.Single(responseData.Data); // Security Administrator role
         }
 
         [Trait(Testing, roles)]
         [Fact(DisplayName = "002 - Getting a non-existent role id returns a 404 Not Found")]
         public async Task Test3001()
         {
-            int nonExistentId = 1;
+            int nonExistentId = 999;
             var response = await _client.GetAsync($"{rolesURL}/{nonExistentId}");
 
             _output.WriteLine(await response.Content.ReadAsStringAsync());

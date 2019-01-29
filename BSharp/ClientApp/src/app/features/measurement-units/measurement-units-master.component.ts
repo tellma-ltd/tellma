@@ -6,6 +6,7 @@ import { MeasurementUnit_UnitType } from '~/app/data/dto/measurement-unit';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
+import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 
 @Component({
   selector: 'b-measurement-units-master',
@@ -15,6 +16,10 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
 
   private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
+
+  public expand = '';
+  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
+  };
 
   constructor(private workspace: WorkspaceService, private api: ApiService) {
     super();
@@ -30,8 +35,8 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.measurementUnitsApi.activate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace))
+    const obs$ = this.measurementUnitsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
+      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
     );
 
     // The master template handles any errors
@@ -39,8 +44,8 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.measurementUnitsApi.deactivate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace))
+    const obs$ = this.measurementUnitsApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
+      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
     );
 
     // The master template handles any errors

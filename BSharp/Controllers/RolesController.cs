@@ -146,9 +146,10 @@ MERGE INTO [dbo].[Roles] AS t
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
-        protected override string ViewId()
+
+        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
         {
-            return "roles";
+            return GetPermissions(_db.AbstractPermissions, level, "roles");
         }
 
         protected override IQueryable<M.Role> GetBaseQuery() => _db.Roles;

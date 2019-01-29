@@ -3,10 +3,11 @@ import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { LocalUser, LocalUserForSave } from '~/app/data/dto/local-user';
-import { RoleMembership, RoleMembershipForSave } from '~/app/data/dto/role-membership';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
+import { Roles_DoNotApplyPermissions } from '~/app/data/dto/role';
+import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 
 @Component({
   selector: 'b-local-users-details',
@@ -19,6 +20,11 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   private localUsersApi = this.api.localUsersApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Agent,Roles/Role';
+  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
+    // Roles/Role This ensures that permissions won't get wiped out when the Role navigation properties are loaded
+    Roles: Roles_DoNotApplyPermissions
+    // Agent
+  };
 
   create = () => {
     const result = new LocalUserForSave();
@@ -35,7 +41,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   public onActivate = (model: LocalUser): void => {
     if (!!model && !!model.Id) {
       this.localUsersApi.activate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
+        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
       ).subscribe(null, this.details.handleActionError);
     }
   }
@@ -43,7 +49,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   public onDeactivate = (model: LocalUser): void => {
     if (!!model && !!model.Id) {
       this.localUsersApi.deactivate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
+        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
       ).subscribe(null, this.details.handleActionError);
     }
   }

@@ -7,6 +7,9 @@ import { Permission, PermissionForSave, Permission_Level } from '~/app/data/dto/
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
+import { Views_DoNotApplyPermissions } from '~/app/data/dto/view';
+import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
+import { LocalUsers_DoNotApplyAgentOrRoles } from '~/app/data/dto/local-user';
 
 @Component({
   selector: 'b-roles-details',
@@ -18,6 +21,13 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   private _permissionLevelChoices: { [allowedLevels: string]: { name: string, value: any }[] } = {};
   private notifyDestruct$ = new Subject<void>();
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
+
+  public expand = 'Permissions/View';
+  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
+    // This ensures that any existing permissions won't get wiped out
+    Views: Views_DoNotApplyPermissions,
+    LocalUsers: LocalUsers_DoNotApplyAgentOrRoles
+  };
 
   create = () => {
     const result = new RoleForSave();
@@ -56,16 +66,16 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
   public onActivate = (model: Role): void => {
     if (!!model && !!model.Id) {
-      this.rolesApi.activate([model.Id], { returnEntities: true }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
+      this.rolesApi.activate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
+        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
       ).subscribe(null, this.details.handleActionError);
     }
   }
 
   public onDeactivate = (model: Role): void => {
     if (!!model && !!model.Id) {
-      this.rolesApi.deactivate([model.Id], { returnEntities: true }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
+      this.rolesApi.deactivate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
+        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
       ).subscribe(null, this.details.handleActionError);
     }
   }

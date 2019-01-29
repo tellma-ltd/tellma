@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
+using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
@@ -42,10 +43,10 @@ namespace BSharp.Controllers
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
-        protected override string ViewId()
-        {
-            return "views";
-        }
+        //protected override string ViewId()
+        //{
+        //    return "views";
+        //}
 
         protected override Task<GetResponse<View>> GetImplAsync(GetArguments args)
         {
@@ -175,6 +176,11 @@ namespace BSharp.Controllers
         protected override Task<(List<ViewForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
         {
             throw new NotImplementedException();
+        }
+
+        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
+        {
+            return GetPermissions(_db.AbstractPermissions, level, "views");
         }
     }
 

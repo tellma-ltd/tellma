@@ -808,5 +808,11 @@ tr.b-highlight {
 }
 
 .b-document-header {
-  padding: 2px;
+  padding: 0;
+}
+
+@media (min-width: 576px) {
+  .b-document-header {
+    padding: 2px;
+  }
 }

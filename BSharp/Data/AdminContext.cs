@@ -33,6 +33,7 @@ namespace BSharp.Data
 
         // Queries
         public DbQuery<GlobalUsersMatch> GlobalUsersMatches { get; set; }
+        public DbQuery<AbstractPermission> AbstractPermissions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

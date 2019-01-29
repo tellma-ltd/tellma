@@ -7,6 +7,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { Agent_Gender } from '~/app/data/dto/agent';
 import { ParamMap, ActivatedRoute, Router } from '@angular/router';
+import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 
 @Component({
   selector: 'b-agents-master',
@@ -57,6 +58,9 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   public tableColumnPaths: string[];
   public birthDateTimeName: string;
   public filterDefinition: any;
+  public expand = '';
+  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
+  };
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute, private router: Router) {
     super();
@@ -101,7 +105,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.agentsApi.activate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace))
+      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
     );
 
     // The master template handles any errors
@@ -110,7 +114,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.agentsApi.deactivate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace))
+      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
     );
 
     // The master template handles any errors

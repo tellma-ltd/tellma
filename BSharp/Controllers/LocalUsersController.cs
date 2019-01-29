@@ -213,10 +213,10 @@ namespace BSharp.Controllers
                 return Ok(response);
             }
         }
-        
-        protected override string ViewId()
+
+        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
         {
-            return "local-users";
+            return GetPermissions(_db.AbstractPermissions, level, "local-users");
         }
 
         protected override async Task<IDbContextTransaction> BeginSaveTransaction()
@@ -525,8 +525,8 @@ namespace BSharp.Controllers
 			UPDATE SET
 				t.[Name]		    = s.[Name],
 				t.[Name2]		    = s.[Name2],
-				t.[Email]		    = s.[Email],
-				t.[ExternalId]		= s.[ExternalId],
+				-- t.[Email]		    = s.[Email],
+				-- t.[ExternalId]		= s.[ExternalId],
 				t.[AgentId]	        = s.[AgentId],
 				t.[ModifiedAt]	    = @Now,
 				t.[ModifiedById]    = @UserId

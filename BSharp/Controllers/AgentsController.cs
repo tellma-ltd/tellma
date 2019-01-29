@@ -18,6 +18,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
@@ -148,13 +149,13 @@ MERGE INTO [dbo].[Custodies] AS t
             }
         }
 
-        protected override string ViewId()
+        protected string ViewId()
         {
             string agentType = RouteData.Values["agentType"]?.ToString();
             var allowedAgentTypes = new string[] { ORGANIZATION, INDIVIDUAL, ALL };
 
             // Make sure the agentType is supported
-            if(agentType == ALL && (HttpContext.Request.Method != HttpMethods.Get || HttpContext.Request.Path.Value.EndsWith("/template")))
+            if (agentType == ALL && (HttpContext.Request.Method != HttpMethods.Get || HttpContext.Request.Path.Value.EndsWith("/template")))
             {
                 // Programmer mistake
                 throw new BadRequestException("The type 'all' is only supported for HTTP GET requests other than /template");
@@ -166,6 +167,98 @@ MERGE INTO [dbo].[Custodies] AS t
             }
 
             return agentType;
+        }
+
+        protected override async Task<IQueryable<M.Agent>> ApplyReadPermissions(IQueryable<M.Agent> query)
+        {
+            if (ViewId() != ALL)
+            {
+                // More efficient
+                return await base.ApplyReadPermissions(query);
+            }
+            else
+            {
+                // Prepare agent types
+                string[] agentTypes = { INDIVIDUAL, ORGANIZATION };
+
+                // Get all permissions related to agents
+                var allPermissions = await GetPermissions(_db.AbstractPermissions, PermissionLevel.Read, agentTypes);
+                if (!allPermissions.Any())
+                {
+                    // User doesn't have access to any type of agent
+                    throw new ForbiddenException();
+                }
+                else if (allPermissions.Any(e => e.ViewId == ALL))
+                {
+                    // Optimization
+                    return query;
+                }
+                else if (agentTypes.All(t => allPermissions.Any(e => e.ViewId == t && string.IsNullOrWhiteSpace(e.Criteria))))
+                {
+                    // this might be risky if the developer forgets to add an agent type in 'agentTypes' array
+                    return query;
+                }
+                else
+                {
+                    /* IF we reach here it means the user can only see a filtered list of agents
+                     * The purpose of the code below is to construct a dynamic linq query that looks like this:
+                     *
+                     * e => 
+                     * (e.AgentType == "individuals" && <dynamic linq for individuals>) ||
+                     * (e.AgentType == "organizations" && <dynamic linq for organizations>) ||
+                     * 
+                     */
+
+                    // The parameter on which the dynamic LINQ expression is based
+                    var eParam = Expression.Parameter(typeof(M.Agent));
+
+                    Expression fullExpression = null;
+                    foreach (var g in allPermissions.GroupBy(e => e.ViewId))
+                    {
+                        string viewId = g.Key;
+
+                        Expression typePropAccess = Expression.Property(eParam, nameof(M.Agent.AgentType));
+                        Expression viewIdConstant = Expression.Constant(viewId);
+                        Expression typePropEquality = Expression.Equal(typePropAccess, viewIdConstant);
+                        Expression viewIdExpression;
+
+                        if (g.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+                        {
+                            // The user can read all records of this type
+                            viewIdExpression = typePropEquality;
+                        }
+                        else
+                        {
+                            // The user has access to part of the data set based on a list of filters that will 
+                            // be ORed together in a dynamic linq query
+                            IEnumerable<string> criteriaList = g.Select(e => e.Criteria);
+
+                            // First criteria
+                            viewIdExpression = ParseFilterExpression<M.Agent>(criteriaList.First(), eParam);
+
+                            // The remaining criteria
+                            foreach (var criteria in criteriaList.Skip(1))
+                            {
+                                var criteriaExpression = ParseFilterExpression<M.Agent>(criteria, eParam);
+                                viewIdExpression = Expression.OrElse(viewIdExpression, criteriaExpression);
+                            }
+
+                            viewIdExpression = Expression.AndAlso(typePropEquality, viewIdExpression);
+                        }
+
+                        // OR this viewId expression with the remaining viewId expressions
+                        fullExpression = fullExpression == null ? viewIdExpression : Expression.OrElse(fullExpression, viewIdExpression);
+                    }
+
+                    var lambda = Expression.Lambda<Func<M.Agent, bool>>(fullExpression, eParam);
+                    return query.Where(lambda);
+                }
+            }
+        }
+
+        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
+        {
+            return GetPermissions(_db.AbstractPermissions, level, ViewId());
         }
 
         private string SingularName()

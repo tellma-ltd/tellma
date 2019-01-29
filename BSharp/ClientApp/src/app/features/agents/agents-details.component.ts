@@ -7,6 +7,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 
 @Component({
   selector: 'b-agents-details',
@@ -21,6 +22,9 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   private _agentType: 'individuals' | 'organizations';
 
   public birthDateTimeName: string;
+  public expand = '';
+  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
+  };
 
   @Input()
   public get agentType(): 'individuals' | 'organizations' {
@@ -100,7 +104,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   public onActivate = (model: Agent): void => {
     if (!!model && !!model.Id) {
       this.agentsApi.activate([model.Id], { returnEntities: true }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
+        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
       ).subscribe(null, this.details.handleActionError);
     }
   }
@@ -108,7 +112,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   public onDeactivate = (model: Agent): void => {
     if (!!model && !!model.Id) {
       this.agentsApi.deactivate([model.Id], { returnEntities: true }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
+        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
       ).subscribe(null, this.details.handleActionError);
     }
   }
