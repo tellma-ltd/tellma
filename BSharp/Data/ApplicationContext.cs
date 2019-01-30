@@ -97,8 +97,17 @@ namespace BSharp.Data
 
                 SqlCommand cmd = sqlConnection.CreateCommand();
                 cmd.CommandText = @"
+
+
+
+-- Set the global values of the session context
+EXEC sp_set_session_context @key=N'TenantId', @value=@TenantId;
+EXEC sp_set_session_context @key=N'Culture', @value=@Culture;
+EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
+
 -- Get the User Id
 DECLARE @UserId INT, @ExternalId NVARCHAR(450), @Email NVARCHAR(255);
+
 SELECT
     @UserId = Id,
     @ExternalId = ExternalId,
@@ -108,11 +117,8 @@ WHERE TenantId = @TenantId AND IsActive = 1 AND (ExternalId = @ExternalUserId OR
 -- Set LastAccess (Works only if @UserId IS NOT NULL)
 UPDATE [dbo].[LocalUsers] SET LastAccess = SYSDATETIMEOFFSET() WHERE Id = @UserId;
 
--- Set the global values of the session context
-EXEC sp_set_session_context @key=N'TenantId', @value=@TenantId;
+-- Set the User Id
 EXEC sp_set_session_context @key=N'UserId', @value=@UserId;
-EXEC sp_set_session_context @key=N'Culture', @value=@Culture;
-EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
 
 -- Return the user information
 SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;

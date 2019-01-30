@@ -312,6 +312,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
       return this.localState;
     } else {
+
       // screen mode on the other hand use the global state
       return this.globalState;
     }
@@ -319,7 +320,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   private get globalState(): MasterDetailsStore {
     if (!this.workspace.current.mdState[this.apiEndpoint]) {
-      this.workspace.current.mdState = {}; // This forces any other master/details screen to refresh
+      if (this.mode === 'screen') {
+        this.workspace.current.mdState = {}; // This forces any other master/details screen to refresh
+      }
+
       this.workspace.current.mdState[this.apiEndpoint] = new MasterDetailsStore();
     }
 

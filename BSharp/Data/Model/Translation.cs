@@ -168,7 +168,7 @@ namespace BSharp.Data.Model
             
             // Labels
             En(Constants.Shared, "AppName", "BSharp"),
-            Ar(Constants.Shared, "AppName", "إياس"),
+            Ar(Constants.Shared, "AppName", "بيشارپ"),
 
             En(Constants.Shared, "CreatedBy", "Created By"),
             Ar(Constants.Shared, "CreatedBy", "الإنشاء من قبل"),
@@ -534,25 +534,25 @@ namespace BSharp.Data.Model
             Ar(Constants.Client, "ShortMonth12", "ديسمبر"),
 
             En(Constants.Client, "ShortDay1", "Mo"),
-            Ar(Constants.Client, "ShortDay1", "إث"),
+            Ar(Constants.Client, "ShortDay1", "ن"),
 
             En(Constants.Client, "ShortDay2", "Tu"),
-            Ar(Constants.Client, "ShortDay2", "ثلا"),
+            Ar(Constants.Client, "ShortDay2", "ث"),
 
             En(Constants.Client, "ShortDay3", "We"),
-            Ar(Constants.Client, "ShortDay3", "أر"),
+            Ar(Constants.Client, "ShortDay3", "ر"),
 
             En(Constants.Client, "ShortDay4", "Th"),
-            Ar(Constants.Client, "ShortDay4", "خم"),
+            Ar(Constants.Client, "ShortDay4", "خ"),
 
             En(Constants.Client, "ShortDay5", "Fr"),
-            Ar(Constants.Client, "ShortDay5", "جم"),
+            Ar(Constants.Client, "ShortDay5", "ج"),
 
             En(Constants.Client, "ShortDay6", "Sa"),
-            Ar(Constants.Client, "ShortDay6", "ست"),
+            Ar(Constants.Client, "ShortDay6", "س"),
 
             En(Constants.Client, "ShortDay7", "Su"),
-            Ar(Constants.Client, "ShortDay7", "أح"),
+            Ar(Constants.Client, "ShortDay7", "ح"),
 
             En(Constants.Client, "ImportStep1Instructions", "Download the template file and populate it with your data:"),
             Ar(Constants.Client, "ImportStep1Instructions", "حمل ملف القالب على جهازك واملأه بالبيانات"),
