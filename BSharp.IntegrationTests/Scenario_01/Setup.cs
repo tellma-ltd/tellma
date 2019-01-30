@@ -34,7 +34,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
 
 
-        protected async Task GrantPermissionToSecurityAdministrator(string viewId, string level, string criteria = null)
+        protected async Task GrantPermissionToSecurityAdministrator(string viewId, string level, string criteria)
         {
             // Query the API for the Id that was just returned from the Save
 

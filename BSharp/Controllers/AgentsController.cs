@@ -62,9 +62,7 @@ namespace BSharp.Controllers
 
         private async Task<ActionResult<EntitiesResponse<Agent>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
-            // TODO Authorize Activate
-
-            // TODO Validate (No used units, no duplicate Ids, no missing Ids?)
+            await CheckActionPermissions(ids.Cast<int?>());
 
             var isActiveParam = new SqlParameter("@IsActive", isActive);
 
@@ -502,7 +500,7 @@ SET NOCOUNT ON;
             }
         }
 
-        protected override async Task DeleteImplAsync(List<int?> ids)
+        protected override async Task DeleteAsync(List<int?> ids)
         {
             // Prepare a list of Ids to delete
             DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
@@ -903,6 +901,61 @@ SET NOCOUNT ON;
             }
 
             return (result, errorKeyMap);
+        }
+
+        protected override async Task CheckPermissionsForNew(IEnumerable<AgentForSave> newItems, Expression<Func<M.Agent, bool>> lambda)
+        {
+            // Add created entities
+            DataTable entitiesTable = DataTable(newItems.ToList(), addIndex: true);
+            var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"dbo.{nameof(AgentForSave)}List",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // Other parameters
+            var custodyType = new SqlParameter("@CustodyType", "Agent");
+            var agentType = new SqlParameter("@AgentType", ViewId());
+
+            string saveSql = $@"
+	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @True BIT = 1;
+
+    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Code, E.Address, E.BirthDateTime, 
+    E.IsRelated, E.TaxIdentificationNumber, E.Title, E.Title2, E.Gender, @CustodyType AS CustodyType, @AgentType AS AgentType,
+    @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @Now AS ModifiedAt, @UserId AS ModifiedById 
+    FROM @Entities E
+";
+            var countBeforeFilter = newItems.Count();
+            var countAfterFilter = await _db.Agents.FromSql(saveSql, entitiesTvp, custodyType, agentType).Where(lambda).CountAsync();
+
+            if (countBeforeFilter > countAfterFilter)
+            {
+                throw new ForbiddenException();
+            }
+        }
+
+        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<M.Agent, bool>> lambda)
+        {
+            // Load the entities using their Ids
+            DataTable idsTable = DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
+            var idsTvp = new SqlParameter("Ids", idsTable)
+            {
+                TypeName = $"dbo.IdList",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // apply the lambda
+            var q = _db.Agents.FromSql("SELECT * FROM [dbo].[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            int countBeforeFilter = await q.CountAsync();
+            int countAfterFilter = await q.Where(lambda).CountAsync();
+
+            if (countBeforeFilter > countAfterFilter)
+            {
+                throw new ForbiddenException();
+            }
         }
     }
 }

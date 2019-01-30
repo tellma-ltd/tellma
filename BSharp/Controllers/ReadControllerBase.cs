@@ -167,13 +167,13 @@ namespace BSharp.Controllers
             // Check if the user has any permissions on ViewId at all, else throw forbidden exception
             // If the user has some permissions on ViewId, OR all their criteria together and apply the where clause
 
-            var userPermissions = await UserPermissions(PermissionLevel.Read);
-            if (!userPermissions.Any())
+            var readPermissions = await UserPermissions(PermissionLevel.Read);
+            if (!readPermissions.Any())
             {
                 // Not even authorized to call this API
                 throw new ForbiddenException();
             }
-            else if (userPermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+            else if (readPermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
             {
                 // The user can read the entire data set
                 return query;
@@ -182,27 +182,33 @@ namespace BSharp.Controllers
             {
                 // The user has access to part of the data set based on a list of filters that will 
                 // be ORed together in a dynamic linq query
-                IEnumerable<string> criteriaList = userPermissions.Select(e => e.Criteria);
+                IEnumerable<string> criteriaList = readPermissions.Select(e => e.Criteria);
 
                 // The parameter on which the expression is based
                 var eParam = Expression.Parameter(typeof(TModel));
+                var whereClause = ToORedWhereClause<TModel>(criteriaList, eParam);
+                var lambda = Expression.Lambda<Func<TModel, bool>>(whereClause, eParam);
 
-                // First criteria
-                Expression fullExpression = ParseFilterExpression<TModel>(criteriaList.First(), eParam);
-
-                // The remaining criteria
-                foreach (var criteria in criteriaList.Skip(1))
-                {
-                    var criteriaExpression = ParseFilterExpression<TModel>(criteria, eParam);
-                    fullExpression = Expression.OrElse(fullExpression, criteriaExpression);
-                }
-
-                // Create lambda and apply it
-                var lambda = Expression.Lambda<Func<TModel, bool>>(fullExpression, eParam);
                 query = query.Where(lambda);
             }
 
             return query;
+        }
+
+        protected Expression ToORedWhereClause<T>(IEnumerable<string> criteriaList, ParameterExpression eParam)
+        {
+
+            // First criteria
+            Expression fullExpression = ParseFilterExpression<T>(criteriaList.First(), eParam);
+
+            // The remaining criteria
+            foreach (var criteria in criteriaList.Skip(1))
+            {
+                var criteriaExpression = ParseFilterExpression<T>(criteria, eParam);
+                fullExpression = Expression.OrElse(fullExpression, criteriaExpression);
+            }
+
+            return fullExpression;
         }
 
         protected abstract Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level);

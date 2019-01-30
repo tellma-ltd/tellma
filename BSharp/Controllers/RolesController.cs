@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
@@ -54,6 +55,8 @@ namespace BSharp.Controllers
 
         private async Task<ActionResult<EntitiesResponse<Role>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
+            await CheckActionPermissions(ids.Cast<int?>());
+
             using (var trx = await _db.Database.BeginTransactionAsync())
             {
                 try
@@ -539,7 +542,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             }
         }
 
-        protected override async Task DeleteImplAsync(List<int?> ids)
+        protected override async Task DeleteAsync(List<int?> ids)
         {
             // Prepare a list of Ids to delete
             DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
@@ -585,6 +588,56 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
         protected override Task<(List<RoleForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
         {
             throw new NotImplementedException();
+        }
+
+        protected override async Task CheckPermissionsForNew(IEnumerable<RoleForSave> newItems, Expression<Func<M.Role, bool>> lambda)
+        {
+            // Add created entities
+            DataTable entitiesTable = DataTable(newItems.ToList(), addIndex: true);
+            var entitiesTvp = new SqlParameter("Entities", entitiesTable)
+            {
+                TypeName = $"dbo.{nameof(RoleForSave)}List",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            string saveSql = $@"
+	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @True BIT = 1;
+
+    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Code, E.IsPublic,
+    @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @Now AS ModifiedAt, @UserId AS ModifiedById 
+    FROM @Entities E
+";
+            var countBeforeFilter = newItems.Count();
+            var countAfterFilter = await _db.Roles.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
+
+            if (countBeforeFilter > countAfterFilter)
+            {
+                throw new ForbiddenException();
+            }
+        }
+
+        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<M.Role, bool>> lambda)
+        {
+            // Load the entities using their Ids
+            DataTable idsTable = DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
+            var idsTvp = new SqlParameter("Ids", idsTable)
+            {
+                TypeName = $"dbo.IdList",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // apply the lambda
+            var q = _db.Roles.FromSql("SELECT * FROM [dbo].[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            int countBeforeFilter = await q.CountAsync();
+            int countAfterFilter = await q.Where(lambda).CountAsync();
+
+            if (countBeforeFilter > countAfterFilter)
+            {
+                throw new ForbiddenException();
+            }
         }
     }
 }

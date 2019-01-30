@@ -17,7 +17,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public const string organizationAgentsURL = "/api/agents/organizations";
 
         [Trait(Testing, organizationAgents)]
-        [Fact(DisplayName = "001 - Getting all organizations before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "000 - Getting all organizations before granting permissions returns a 403 Forbidden response")]
         public async Task Test20000()
         {
             var response = await _client.GetAsync(organizationAgentsURL);
@@ -34,7 +34,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test2000()
         {
             // Grant permission
-            await GrantPermissionToSecurityAdministrator("organizations", Constants.Update);
+            await GrantPermissionToSecurityAdministrator("organizations", Constants.Update, "Id lt 100000");
 
             var response = await _client.GetAsync(organizationAgentsURL);
 

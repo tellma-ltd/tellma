@@ -17,6 +17,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
@@ -56,14 +57,12 @@ namespace BSharp.Controllers
 
         private async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
+            await CheckActionPermissions(ids.Cast<int?>());
+
             using (var trx = await _db.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    // TODO Authorize Activate
-
-                    // TODO Validate (No used units, no duplicate Ids, no missing Ids?)
-
                     var isActiveParam = new SqlParameter("@IsActive", isActive);
 
                     DataTable idsTable = DataTable(ids.Select(id => new { Id = id }));
@@ -143,9 +142,9 @@ MERGE INTO [dbo].MeasurementUnits AS t
             }
         }
 
-        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override async Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
         {
-            return GetPermissions(_db.AbstractPermissions, level, "measurement-units");
+            return await GetPermissions(_db.AbstractPermissions, level, "measurement-units");
         }
 
         protected override async Task<IDbContextTransaction> BeginSaveTransaction()
@@ -400,7 +399,7 @@ SET NOCOUNT ON;
             }
         }
 
-        protected override async Task DeleteImplAsync(List<int?> ids)
+        protected override async Task DeleteAsync(List<int?> ids)
         {
             // Prepare a list of Ids to delete
             DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
@@ -763,6 +762,144 @@ SET NOCOUNT ON;
             }
 
             return (result, errorKeyMap);
+        }
+
+        protected async Task ApplyUpdatePermissionsOnNew2(List<MeasurementUnitForSave> entities, SaveArguments args)
+        {
+            var updatePermissions = await GetPermissions(_db.AbstractPermissions, PermissionLevel.Update, "measurement-units");
+            if (!updatePermissions.Any())
+            {
+                // User has no permissions on this table whatsoever, forbid
+                throw new ForbiddenException();
+            }
+            else if (updatePermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+            {
+                // User has unfiltered update permission on the table => proceed
+                return;
+            }
+            else
+            {
+                // User can update items under certain conditions, so we check those conditions here
+                IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
+
+                // The parameter on which the expression is based
+                var eParam = Expression.Parameter(typeof(M.MeasurementUnit));
+
+                // Prepare the lambda
+                Expression whereClause = ToORedWhereClause<M.MeasurementUnit>(criteriaList, eParam);
+                var lambda = Expression.Lambda<Func<M.MeasurementUnit, bool>>(whereClause, eParam);
+
+                /////// Part (1) Permissions must allow manipulating the original data before the update
+
+                var existingItems = entities.Where(e => e.EntityState == EntityStates.Updated ||
+                    e.EntityState == EntityStates.Deleted);
+
+                if (existingItems.Any())
+                {
+                    // Load the entities using their Ids
+                    DataTable idsTable = DataTable(existingItems.Select(e => new { e.Id }));
+                    var idsTvp = new SqlParameter("Ids", idsTable)
+                    {
+                        TypeName = $"dbo.IdList",
+                        SqlDbType = SqlDbType.Structured
+                    };
+
+                    // apply the lambda
+                    var q = _db.MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                    int countBeforeFilter = await q.CountAsync();
+                    int countAfterFilter = await q.Where(lambda).CountAsync();
+
+                    if (countBeforeFilter > countAfterFilter)
+                    {
+                        throw new ForbiddenException();
+                    }
+                }
+
+
+                /////// Part (2) Permissions must work for the new data after the update, only for the modified properties
+
+                var newItems = entities.Where(e => e.EntityState == EntityStates.Inserted ||
+                    e.EntityState == EntityStates.Updated);
+
+                if (newItems.Any())
+                {
+                    // Add created entities
+                    DataTable entitiesTable = DataTable(newItems, addIndex: true);
+                    var entitiesTvp = new SqlParameter("Entities", entitiesTable)
+                    {
+                        TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List",
+                        SqlDbType = SqlDbType.Structured
+                    };
+
+                    string saveSql = $@"
+	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @True BIT = 1;
+
+    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Code, E.UnitType, E.UnitAmount, E.BaseAmount,
+    @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @Now AS ModifiedAt, @UserId AS ModifiedById 
+    FROM @Entities E
+";
+                    var countBeforeFilter = newItems.Count();
+                    var countAfterFilter = await _db.MeasurementUnits.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
+
+                    if (countBeforeFilter > countAfterFilter)
+                    {
+                        throw new ForbiddenException();
+                    }
+                }
+            }
+        }
+
+        protected override async Task CheckPermissionsForNew(IEnumerable<MeasurementUnitForSave> newItems, Expression<Func<M.MeasurementUnit, bool>> lambda)
+        {
+            // Add created entities
+            DataTable entitiesTable = DataTable(newItems, addIndex: true);
+            var entitiesTvp = new SqlParameter("Entities", entitiesTable)
+            {
+                TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            string saveSql = $@"
+	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @True BIT = 1;
+
+    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Code, E.UnitType, E.UnitAmount, E.BaseAmount,
+    @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @Now AS ModifiedAt, @UserId AS ModifiedById 
+    FROM @Entities E
+";
+            var countBeforeFilter = newItems.Count();
+            var countAfterFilter = await _db.MeasurementUnits.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
+
+            if (countBeforeFilter > countAfterFilter)
+            {
+                throw new ForbiddenException();
+            }
+        }
+
+        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<M.MeasurementUnit, bool>> lambda)
+        {
+            // Load the entities using their Ids
+            DataTable idsTable = DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
+            var idsTvp = new SqlParameter("Ids", idsTable)
+            {
+                TypeName = $"dbo.IdList",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // apply the lambda
+            var q = _db.MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            int countBeforeFilter = await q.CountAsync();
+            int countAfterFilter = await q.Where(lambda).CountAsync();
+
+            if (countBeforeFilter > countAfterFilter)
+            {
+                throw new ForbiddenException();
+            }
         }
     }
 }

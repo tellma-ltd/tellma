@@ -18,7 +18,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
 
         [Trait(Testing, individualAgents)]
-        [Fact(DisplayName = "001 - Getting all individuals before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "000 - Getting all individuals before granting permissions returns a 403 Forbidden response")]
         public async Task Test10000()
         {
             var response = await _client.GetAsync(individualAgentsURL);
@@ -35,7 +35,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test1000()
         {
             // Grant permission
-            await GrantPermissionToSecurityAdministrator("individuals", Constants.Update);
+            await GrantPermissionToSecurityAdministrator("individuals", Constants.Update, "Id lt 100000");
 
             var response = await _client.GetAsync(individualAgentsURL);
 

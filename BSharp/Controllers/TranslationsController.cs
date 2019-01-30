@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
@@ -59,7 +60,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override Task DeleteImplAsync(List<string> ids)
+        protected override Task DeleteAsync(List<string> ids)
         {
             throw new NotImplementedException();
         }
@@ -110,6 +111,16 @@ namespace BSharp.Controllers
         }
 
         protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task CheckPermissionsForNew(IEnumerable<TranslationForSave> newItems, Expression<Func<M.Translation, bool>> lambda)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task CheckPermissionsForOld(IEnumerable<string> entityIds, Expression<Func<M.Translation, bool>> lambda)
         {
             throw new NotImplementedException();
         }

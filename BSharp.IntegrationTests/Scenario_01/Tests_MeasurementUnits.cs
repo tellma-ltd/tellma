@@ -16,7 +16,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public const string MeasurementUnits = "01 - Measurement Units";
 
         [Trait(Testing, MeasurementUnits)]
-        [Fact(DisplayName = "001 - Getting all measurement units before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "000 - Getting all measurement units before granting permissions returns a 403 Forbidden response")]
         public async Task Test00000()
         {
             var response = await _client.GetAsync($"/api/measurement-units");
@@ -32,7 +32,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "001 - Getting all measurement units before creating any returns a 200 OK empty collection")]
         public async Task Test0000()
         {
-            await GrantPermissionToSecurityAdministrator("measurement-units", Constants.Update);
+            await GrantPermissionToSecurityAdministrator("measurement-units", Constants.Update, "Id lt 100000");
 
             // Call the API
             var response = await _client.GetAsync($"/api/measurement-units");

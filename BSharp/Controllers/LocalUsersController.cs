@@ -18,6 +18,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
@@ -71,9 +72,7 @@ namespace BSharp.Controllers
 
         private async Task<ActionResult<EntitiesResponse<LocalUser>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
-            // TODO Authorize Activate
-
-            // TODO Validate (No used users, no missing Ids?)
+            await CheckActionPermissions(ids.Cast<int?>());
 
             var isActiveParam = new SqlParameter("@IsActive", isActive);
 
@@ -601,7 +600,7 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override async Task DeleteImplAsync(List<int?> ids)
+        protected override async Task DeleteAsync(List<int?> ids)
         {
             // Make sure the user is not deleting his/her own account
             var currentUserId = _userService.GetDbUser()?.Id;
@@ -697,5 +696,56 @@ namespace BSharp.Controllers
         {
             throw new NotImplementedException();
         }
+
+        protected override async Task CheckPermissionsForNew(IEnumerable<LocalUserForSave> newItems, Expression<Func<M.LocalUser, bool>> lambda)
+        {
+            // Add created entities
+            DataTable entitiesTable = LocalUsersDataTable(newItems.ToList());
+            var entitiesTvp = new SqlParameter("Entities", entitiesTable)
+            {
+                TypeName = $"dbo.{nameof(LocalUserForSave)}List",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            string saveSql = $@"
+	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @True BIT = 1;
+
+    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Email, E.ExternalId, E.AgentId, NULL AS LastAccess,
+    @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @UserId AS CreatedById1, @TenantId AS CreatedByTenantId , @Now AS ModifiedAt, @UserId AS ModifiedById 
+    FROM @Entities E
+";
+            var countBeforeFilter = newItems.Count();
+            var countAfterFilter = await _db.LocalUsers.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
+
+            if (countBeforeFilter > countAfterFilter)
+            {
+                throw new ForbiddenException();
+            }
+        }
+
+        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<M.LocalUser, bool>> lambda)
+        {
+            // Load the entities using their Ids
+            DataTable idsTable = DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
+            var idsTvp = new SqlParameter("Ids", idsTable)
+            {
+                TypeName = $"dbo.IdList",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // apply the lambda
+            var q = _db.LocalUsers.FromSql("SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            int countBeforeFilter = await q.CountAsync();
+            int countAfterFilter = await q.Where(lambda).CountAsync();
+
+            if (countBeforeFilter > countAfterFilter)
+            {
+                throw new ForbiddenException();
+            }
+        }
+
     }
 }

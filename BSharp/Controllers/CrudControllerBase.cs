@@ -18,6 +18,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
@@ -57,6 +58,11 @@ namespace BSharp.Controllers
                 var result = await SaveImplAsync(entities, args);
                 return Ok(result);
             }
+            catch (ForbiddenException)
+            {
+                // Forbidden status code
+                return StatusCode(403);
+            }
             catch (UnprocessableEntityException ex)
             {
                 return UnprocessableEntity(ex.ModelState);
@@ -73,10 +79,13 @@ namespace BSharp.Controllers
         {
             try
             {
-                // TODO: Authorize DELETE
-
-                await DeleteImplAsync(ids);
+                await DeleteAsync(ids);
                 return Ok();
+            }
+            catch (ForbiddenException)
+            {
+                // Forbidden status code
+                return StatusCode(403);
             }
             catch (UnprocessableEntityException ex)
             {
@@ -255,6 +264,109 @@ namespace BSharp.Controllers
 
         protected abstract AbstractDataGrid GetImportTemplate();
 
+
+        /// <summary>
+        /// Verifies that the user has sufficient permissions to update he list of entities provided, this implementation 
+        /// assumes that the view has permission levels Read and Update only, which most entities
+        /// </summary>
+        protected virtual async Task CheckUpdatePermissions(List<TDtoForSave> entities, SaveArguments args)
+        {
+            var updatePermissions = await UserPermissions(PermissionLevel.Update);
+            if (!updatePermissions.Any())
+            {
+                // User has no permissions on this table whatsoever, forbid
+                throw new ForbiddenException();
+            }
+            else if (updatePermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+            {
+                // User has unfiltered update permission on the table => proceed
+                return;
+            }
+            else
+            {
+                // User can update items under certain conditions, so we check those conditions here
+                IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
+
+                // The parameter on which the expression is based
+                var eParam = Expression.Parameter(typeof(TModel));
+
+                // Prepare the lambda
+                Expression whereClause = ToORedWhereClause<TModel>(criteriaList, eParam);
+                var lambda = Expression.Lambda<Func<TModel, bool>>(whereClause, eParam);
+
+
+                /////// Part (1) Permissions must allow manipulating the original data before the update
+
+                var existingItems = entities.Where(e => e.EntityState == EntityStates.Updated ||
+                    e.EntityState == EntityStates.Deleted);
+
+                if (existingItems.Any())
+                {
+                    await CheckPermissionsForOld(existingItems.Select(e => e.Id), lambda);
+                }
+
+
+                /////// Part (2) Permissions must work for the new data after the update, only for the modified properties
+
+                var newItems = entities.Where(e => e.EntityState == EntityStates.Inserted ||
+                    e.EntityState == EntityStates.Updated);
+
+                if (newItems.Any())
+                {
+                    await CheckPermissionsForNew(newItems, lambda);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Verifies that the user has sufficient permissions to update he list of entities provided, this implementation 
+        /// assumes that the view has permission levels Read and Update only, which most entities
+        /// </summary>
+        protected virtual async Task CheckActionPermissions(IEnumerable<TKey> entityIds)
+        {
+            var updatePermissions = await UserPermissions(PermissionLevel.Update);
+            if (!updatePermissions.Any())
+            {
+                // User has no permissions on this table whatsoever, forbid
+                throw new ForbiddenException();
+            }
+            else if (updatePermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+            {
+                // User has unfiltered update permission on the table => proceed
+                return;
+            }
+            else
+            {
+                // User can update items under certain conditions, so we check those conditions here
+                IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
+
+                // The parameter on which the expression is based
+                var eParam = Expression.Parameter(typeof(TModel));
+
+                // Prepare the lambda
+                Expression whereClause = ToORedWhereClause<TModel>(criteriaList, eParam);
+                var lambda = Expression.Lambda<Func<TModel, bool>>(whereClause, eParam);
+
+                await CheckPermissionsForOld(entityIds, lambda);
+            }
+        }
+
+        /// <summary>
+        /// Check that all saved newItems are covered by the user permissions, throws a <see cref="ForbiddenException"/> otherwise,
+        /// if the view allows for the 'Create' permission level, the developer should ignore this method and override <see cref="CheckUpdatePermissions(List{TDtoForSave}, SaveArguments)"/>
+        /// and <see cref="CheckActionPermissions(IEnumerable{TKey})"/> instead
+        /// and <see cref="CheckActionPermissions"/>
+        /// </summary>
+        protected abstract Task CheckPermissionsForNew(IEnumerable<TDtoForSave> newItems, Expression<Func<TModel, bool>> lambda);
+
+        /// <summary>
+        /// Check that all modified/deleted Ids are covered by the user permissions, throws a <see cref="ForbiddenException"/> otherwise,
+        /// if the view allows for the 'Create' permission level, the developer should ignore this method and override <see cref="CheckUpdatePermissions(List{TDtoForSave}, SaveArguments)"/>
+        /// and <see cref="CheckActionPermissions(IEnumerable{TKey})"/> instead
+        /// and <see cref="CheckActionPermissions"/>
+        /// </summary>
+        protected abstract Task CheckPermissionsForOld(IEnumerable<TKey> entityIds, Expression<Func<TModel, bool>> lambda);
+
         /// <summary>
         /// Saves the entities (Insert or Update) into the database after authorization and validation
         /// </summary>
@@ -262,7 +374,7 @@ namespace BSharp.Controllers
         protected virtual async Task<EntitiesResponse<TDto>> SaveImplAsync(List<TDtoForSave> entities, SaveArguments args)
         {
             // TODO Authorize POST
-            // ...
+            await CheckUpdatePermissions(entities, args);
 
             // Trim all strings as a preprocessing step
             entities.ForEach(e => TrimStringProperties(e));
@@ -327,9 +439,21 @@ namespace BSharp.Controllers
         protected abstract Task<IDbContextTransaction> BeginSaveTransaction();
 
         /// <summary>
-        /// Deletes the entities specified by the list of Ids
+        /// Assumes that the view does not allow 'Create' permission level, if it does
+        /// need to override it
         /// </summary>
-        protected abstract Task DeleteImplAsync(List<TKey> ids);
+        protected virtual async Task DeleteImplAsync(List<TKey> ids)
+        {
+            await CheckActionPermissions(ids);
+            await DeleteAsync(ids);
+        }
+
+        /// <summary>
+        /// Deletes the entities specified by the list of Ids
+        /// Assumes that the view does not allow 'Create' permission level, if it does
+        /// ignore this method and override <see cref="DeleteImplAsync(List{TKey})"/> instead
+        /// </summary>
+        protected abstract Task DeleteAsync(List<TKey> ids);
 
         /// <summary>
         /// Trims all string properties of the entity
