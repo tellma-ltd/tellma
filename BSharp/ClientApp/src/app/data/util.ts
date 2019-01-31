@@ -57,7 +57,7 @@ export function addSingleToWorkspace(response: GetByIdResponse, workspace: Works
   return freshItem.Id;
 }
 
-function addRelatedEntitiesToWorkspace(relatedEntities: { [key: string]: DtoKeyBase[] },
+export function addRelatedEntitiesToWorkspace(relatedEntities: { [key: string]: DtoKeyBase[] },
   workspace: WorkspaceService, workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase }) {
   if (!!relatedEntities) {
     const collectionNames = Object.keys(relatedEntities);

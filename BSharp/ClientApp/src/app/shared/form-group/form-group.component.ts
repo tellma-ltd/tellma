@@ -17,6 +17,9 @@ export class FormGroupComponent {
   label: string;
 
   @Input()
+  description: string;
+
+  @Input()
   serverErrors: string[];
 
   @ContentChild(NgControl)
@@ -32,6 +35,10 @@ export class FormGroupComponent {
 
   get showLabel(): boolean {
     return !!this.label;
+  }
+
+  get showDescription(): boolean {
+    return !!this.description;
   }
 
   get invalid(): boolean {
@@ -71,8 +78,12 @@ export class FormGroupComponent {
     return !!this.serverErrors && !!this.serverErrors.length;
   }
 
+  get isRtl(): boolean {
+    return this.workspace.ws.isRtl
+  }
+
   get popoverPlacement(): string {
-    return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
+    return this.isRtl ? 'bottom-left' : 'bottom-right';
   }
 
 }

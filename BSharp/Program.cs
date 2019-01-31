@@ -78,38 +78,69 @@ namespace BSharp
                         // (2) Application Context requires special handling in development, don't resolve it with DI
                         var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
                         var appContext = new ApplicationContext(shardResolver,
-                            new DesignTimeTenantIdProvider(), new DesignTimeUserIdProvider());
+                            new DesignTimeTenantIdProvider(101), new DesignTimeUserIdProvider());
 
                         appContext.Database.Migrate();
 
-                        // Add first user
-                        var cmd = appContext.Database.GetDbConnection().CreateCommand();
 
+                        // Add the views
+                        appContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[Views]");
+                        string[] viewIds = { "measurement-units", "individuals", "organizations", "roles", "local-users", "views", "settings" };
 
+                        foreach(var viewId in viewIds)
+                        {
+                            var view = new View
+                            {
+                                Id = viewId,
+                                IsActive = true
+                            };
+
+                            appContext.Views.Add(view);
+                            appContext.Entry(view).Property("TenantId").CurrentValue = 101;
+                        }
+
+                        // Add settings
                         var now = DateTimeOffset.Now;
-                        appContext.Database.ExecuteSqlCommand(
-                            @"
+                        if (!appContext.Settings.Any())
+                        {
+                            // Add the settings
+                            var settings = new Settings
+                            {
+                                PrimaryLanguageId = "en",
+                                SecondaryLanguageId = "ar",
+                                PrimaryLanguageSymbol = "En",
+                                SecondaryLanguageSymbol = "ع",
+                                ShortCompanyName2 = "كونتوسو المحدودة",
+                                ProvisionedAt = now,
+                                ModifiedAt = now,
+                                ModifiedById = 1,
+                                ShortCompanyName = "Contoso, Inc."
+                            };
+                            appContext.Settings.Add(settings);
+                            appContext.Entry(settings).Property("TenantId").CurrentValue = 101;
+                        }
+
+                        appContext.SaveChanges();
+
+
+                        // Add first user
+                        try
+                        {
+                            var cmd = appContext.Database.GetDbConnection().CreateCommand();
+                            appContext.Database.ExecuteSqlCommand(
+                                @"
 DECLARE @NextId INT = IDENT_CURRENT('[dbo].[LocalUsers]') + 1;
 INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, Name2, CreatedById, ModifiedById, TenantId)
                             VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, 101)",
-                            "support@banan-it.com", // {0}
-                            "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
-                            now, // {2}
-                            "Banan IT Support", // {3}
-                            "فريق مساندة بنان"); // {4}
+                                "support@banan-it.com", // {0}
+                                "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
+                                now, // {2}
+                                "Banan IT Support", // {3}
+                                "فريق مساندة بنان"); // {4}
 
+                        }
+                        catch { }
 
-                        //// Add the views
-                        //string[] viewIds = { "measurement-units", "individuals", "organizations", "roles" };
-                        //foreach(var viewId in viewIds)
-                        //{
-                        //    if(!appContext.Views.Any(e => e.Id == viewId))
-                        //    {
-                        //        appContext.Views.Add(new View { Id = viewId, IsActive = true });
-                        //    }
-                        //}
-
-                        appContext.SaveChanges();
                     }
                     catch (Exception ex)
                     {

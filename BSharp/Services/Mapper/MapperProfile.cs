@@ -54,6 +54,13 @@ namespace BSharp.Services.Mapper
 
             CreateDtoMap<M.Translation, Translation>()
                 .ForMember(e => e.Id, opt => opt.MapFrom(e => $"{e.Culture}|{e.Name}"));
+
+            // Settings
+            CreateMap<SettingsForSave, M.Settings>();
+            CreateDtoMap<M.Settings, Settings>();
+
+            // Cultures
+            CreateDtoMap<Controllers.CultureDefinition, Culture>();
         }
 
         /// <summary>

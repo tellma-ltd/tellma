@@ -49,62 +49,62 @@ namespace BSharp.Controllers
         //    return "views";
         //}
 
-        protected override Task<GetResponse<View>> GetImplAsync(GetArguments args)
-        {
-            // TODO Authorize for GET
+        //protected override Task<GetResponse<View>> GetImplAsync(GetArguments args)
+        //{
+        //    // TODO Authorize for GET
 
-            // Get a readonly query
-            IQueryable<ViewDefinition> query = GetBaseQuery().AsNoTracking();
+        //    // Get a readonly query
+        //    IQueryable<ViewDefinition> query = GetBaseQuery().AsNoTracking();
 
-            // Include inactive
-            query = IncludeInactive(query, inactive: args.Inactive);
+        //    // Include inactive
+        //    query = IncludeInactive(query, inactive: args.Inactive);
 
-            // Search
-            query = Search(query, args.Search);
+        //    // Search
+        //    query = Search(query, args.Search);
 
-            // Filter
-            query = Filter(query, args.Filter);
+        //    // Filter
+        //    query = Filter(query, args.Filter);
 
-            // Before ordering or paging, retrieve the total count
-            int totalCount = query.Count();
+        //    // Before ordering or paging, retrieve the total count
+        //    int totalCount = query.Count();
 
-            // OrderBy
-            query = OrderBy(query, args.OrderBy, args.Desc);
+        //    // OrderBy
+        //    query = OrderBy(query, args.OrderBy, args.Desc);
 
-            // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
-            var top = args.Top;
-            var skip = args.Skip;
-            top = Math.Min(top, MaximumPageSize());
-            query = query.Skip(skip).Take(top);
+        //    // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
+        //    var top = args.Top;
+        //    var skip = args.Skip;
+        //    top = Math.Min(top, MaximumPageSize());
+        //    query = query.Skip(skip).Take(top);
 
-            // Apply the expand, which has the general format 'Expand=A,B/C,D'
-            query = Expand(query, args.Expand);
+        //    // Apply the expand, which has the general format 'Expand=A,B/C,D'
+        //    query = Expand(query, args.Expand);
 
-            // Load the data, transform it and wrap it in some metadata
-            var memoryList = query.ToList();
+        //    // Load the data, transform it and wrap it in some metadata
+        //    var memoryList = query.ToList();
 
-            // Flatten related entities and map each to its respective DTO 
-            var relatedEntities = FlattenRelatedEntities(memoryList, args.Expand);
+        //    // Flatten related entities and map each to its respective DTO 
+        //    var relatedEntities = FlattenRelatedEntities(memoryList, args.Expand);
 
-            // Map the primary result to DTOs as well
-            var resultData = Map(memoryList);
+        //    // Map the primary result to DTOs as well
+        //    var resultData = Map(memoryList);
 
-            // Prepare the result in a response object
-            var result = new GetResponse<View>
-            {
-                Skip = skip,
-                Top = resultData.Count(),
-                OrderBy = args.OrderBy,
-                Desc = args.Desc,
-                TotalCount = totalCount,
-                Data = resultData,
-                RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(View))
-            };
+        //    // Prepare the result in a response object
+        //    var result = new GetResponse<View>
+        //    {
+        //        Skip = skip,
+        //        Top = resultData.Count(),
+        //        OrderBy = args.OrderBy,
+        //        Desc = args.Desc,
+        //        TotalCount = totalCount,
+        //        Data = resultData,
+        //        RelatedEntities = relatedEntities,
+        //        CollectionName = GetCollectionName(typeof(View))
+        //    };
 
-            // Finally return the result
-            return Task.FromResult(result);
-        }
+        //    // Finally return the result
+        //    return Task.FromResult(result);
+        //}
 
         protected override IQueryable<ViewDefinition> GetBaseQuery()
         {
@@ -197,6 +197,7 @@ namespace BSharp.Controllers
 
     public class ViewsRepository
     {
+        private static readonly object _staticViewsLock = new object();
         private static List<StaticViewDefinition> _staticViews;
         private readonly ApplicationContext _db;
         private readonly IStringLocalizer _localizer;
@@ -213,14 +214,22 @@ namespace BSharp.Controllers
         {
             if (_staticViews == null)
             {
-                _staticViews = new[] {
-                    new StaticViewDefinition(name: "View_All", code: "all", levels: "ReadUpdate"),
-                    new StaticViewDefinition(name: "MeasurementUnits", code: "measurement-units", levels: "ReadUpdate"),
-                    new StaticViewDefinition(name: "Roles", code: "roles", levels: "ReadUpdate"),
-                    new StaticViewDefinition(name: "Users", code: "local-users", levels: "ReadUpdate"),
-                    new StaticViewDefinition(name: "Individuals", code: "individuals", levels: "ReadUpdate"),
-                    new StaticViewDefinition(name: "Organizations", code: "organizations", levels: "ReadUpdate")
-                }.ToList();
+                lock (_staticViewsLock)
+                {
+                    if (_staticViews == null)
+                    {
+                        _staticViews = new[] {
+                            new StaticViewDefinition(name: "View_All", code: "all", levels: "ReadUpdate"),
+                            new StaticViewDefinition(name: "MeasurementUnits", code: "measurement-units", levels: "ReadUpdate"),
+                            new StaticViewDefinition(name: "Roles", code: "roles", levels: "ReadUpdate"),
+                            new StaticViewDefinition(name: "Users", code: "local-users", levels: "ReadUpdate"),
+                            new StaticViewDefinition(name: "Views", code: "views", levels: "Read"),
+                            new StaticViewDefinition(name: "Individuals", code: "individuals", levels: "ReadUpdate"),
+                            new StaticViewDefinition(name: "Organizations", code: "organizations", levels: "ReadUpdate"),
+                            new StaticViewDefinition(name: "Settings", code: "settings", levels: "ReadUpdate")
+                        }.ToList();
+                    }
+                }
             }
 
             return _staticViews;

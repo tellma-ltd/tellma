@@ -18,6 +18,7 @@ import { RolesDetailsComponent } from './roles/roles-details.component';
 import { LocalUsersDetailsComponent } from './local-users/local-users-details.component';
 import { LocalUsersMasterComponent } from './local-users/local-users-master.component';
 import { LocalUsersImportComponent } from './local-users/local-users-import.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   {
@@ -92,9 +93,16 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
+      // Settings
+      {
+        path: 'settings',
+        component: SettingsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
       // Misc
       { path: 'main-menu', component: MainMenuComponent },
-      { path: '', redirectTo: 'local-users', pathMatch: 'full' },
+      { path: '', redirectTo: 'settings', pathMatch: 'full' },
       { path: '**', component: ApplicationPageNotFoundComponent },
     ]
   }
@@ -117,7 +125,8 @@ const routes: Routes = [
     RolesDetailsComponent,
     LocalUsersDetailsComponent,
     LocalUsersMasterComponent,
-    LocalUsersImportComponent],
+    LocalUsersImportComponent,
+    SettingsComponent],
   imports: [
     SharedModule,
     RouterModule.forChild(routes)

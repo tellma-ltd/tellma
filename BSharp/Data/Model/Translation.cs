@@ -137,9 +137,15 @@ namespace BSharp.Data.Model
             Ar(Constants.Server, "Error_CannotDeleteYourOwnUser", "لا يمكنك حذف المستخدم خاصتك"),
 
             En(Constants.Server, "Error_TheEmailCannotBeModified", "The user email cannot be modified from here"),
-            Ar(Constants.Server, "Error_TheEmailCannotBeModified", "لا يمكن تعديل عنوان بريد المستخدم من هنا"),        
-                       
+            Ar(Constants.Server, "Error_TheEmailCannotBeModified", "لا يمكن تعديل عنوان بريد المستخدم من هنا"),
 
+            En(Constants.Server, "Error_TheField0MustBeAValidColorFormat", "The field {0} must be a valid HTML hexadecimal color, such as: #AB12E5"),
+            Ar(Constants.Server, "Error_TheField0MustBeAValidColorFormat", "حقل {0} يجب أن يكون لون HTML سداسي عشري صالح، مثال: #AB12E5 "),
+
+            En(Constants.Server, "Error_InvalidLanguageId0", "Invalid Language Id '{0}'"),
+            Ar(Constants.Server, "Error_InvalidLanguageId0", "مفتاح اللغة ({0}) غير معروف"),
+
+            
             // Client Errors
             En(Constants.Client, "Error_UnableToReachServer", "Unable to reach the server, please check the connection of your device"),
             Ar(Constants.Client, "Error_UnableToReachServer", "تعذر الوصول إلى الخادم، يرجى التأكد من اتصال جهازك بالشبكة"),
@@ -232,9 +238,6 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "Agent_IsRelated", "Is Related"),
             Ar(Constants.Shared, "Agent_IsRelated", "ذو علاقة"),
-
-            En(Constants.Shared, "Agent_UserId", "User"),
-            Ar(Constants.Shared, "Agent_UserId", "المستخدم"),
 
             En(Constants.Shared, "Agent_TaxIdentificationNumber", "Tax ID Number"),
             Ar(Constants.Shared, "Agent_TaxIdentificationNumber", "رقم السجل الضريبي"),
@@ -331,6 +334,40 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "RoleMembership_Role", "Role"),
             Ar(Constants.Shared, "RoleMembership_Role", "الدور"),
+
+            En(Constants.Shared, "Settings", "Settings"),
+            Ar(Constants.Shared, "Settings", "إعدادات"),
+
+            En(Constants.Shared, "Settings_ShortCompanyName", "Short Company Name"),
+            Ar(Constants.Shared, "Settings_ShortCompanyName", "اسم المؤسسة"),
+            En(Constants.Client, "Settings_ShortCompanyNameDescription", "The company name that will appear to users on the screens"),
+            Ar(Constants.Client, "Settings_ShortCompanyNameDescription", "اسم المؤسسة الذي يظهر للمستخدمين على الشاشات"),
+
+            En(Constants.Shared, "Settings_PrimaryLanguage", "Primary Language"),
+            Ar(Constants.Shared, "Settings_PrimaryLanguage", "اللغة الرئيسية"),
+            En(Constants.Client, "Settings_PrimaryLanguageDescription", "Data entry is required using this language"),
+            Ar(Constants.Client, "Settings_PrimaryLanguageDescription", "إدخال البيانات إلزامي بهذه اللغة"),
+
+            En(Constants.Shared, "Settings_PrimaryLanguageSymbol", "Primary Language Symbol"),
+            Ar(Constants.Shared, "Settings_PrimaryLanguageSymbol", "رمز اللغة الرئيسية"),
+            En(Constants.Client, "Settings_LanguageSymbolDescription", "This symbol distinguishes the language of bilingual fields"),
+            Ar(Constants.Client, "Settings_LanguageSymbolDescription", "الرمز الذي يميز لغة الحقول المزدوجة اللغة"),
+
+            En(Constants.Client, "Settings_SecondaryLanguage", "Secondary Language"),
+            Ar(Constants.Shared, "Settings_SecondaryLanguage", "اللغة الثانوية"),
+            En(Constants.Shared, "Settings_SecondaryLanguageDescription", "Allows users to enter data and view reports in 2 languages"),
+            Ar(Constants.Client, "Settings_SecondaryLanguageDescription", "تتيح للمستخدمين إدخال البيانات واستعراض التقارير بلغتين"),
+
+            En(Constants.Shared, "Settings_SecondaryLanguageSymbol", "Secondary Language Symbol"),
+            Ar(Constants.Shared, "Settings_SecondaryLanguageSymbol", "رمز اللغة الثانوية"),
+
+            En(Constants.Shared, "Settings_BrandColor", "Brand Color"),
+            Ar(Constants.Shared, "Settings_BrandColor", "لون العلامة التجارية"),
+            En(Constants.Client, "Settings_BrandColorDescription", "The color of the navigation bar at the top of the user interface"),
+            Ar(Constants.Client, "Settings_BrandColorDescription", "لون شريط التصفح في أعلى واجهة المستخدم"),
+
+            En(Constants.Shared, "Settings_ProvisionedAt", "Provisioned At"),
+            Ar(Constants.Shared, "Settings_ProvisionedAt", "زمن الإنشاء"),
 
             En(Constants.Shared, "Memo", "Memo"),
             Ar(Constants.Shared, "Memo", "ملاحظات"),
@@ -496,6 +533,12 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "UndoDelete", "Undo Delete"),
             Ar(Constants.Client, "UndoDelete", "تراجع عن الحذف"),
+
+            En(Constants.Client, "GeneralSettings", "General Settings"),
+            Ar(Constants.Client, "GeneralSettings", "إعدادات عامة"),
+
+            En(Constants.Client, "Branding", "General Settings"),
+            Ar(Constants.Client, "Branding", "إعدادات عامة"),
 
             En(Constants.Client, "ShortMonth1", "Jan"),
             Ar(Constants.Client, "ShortMonth1", "يناير"),

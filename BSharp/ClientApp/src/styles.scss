@@ -365,7 +365,7 @@ input.b-h2,
 
 .b-input {
   border-width: 0 0 1px 0;
-  border-color: grey;
+  border-color: $gray-600;
   background-color: transparent;
   padding: 0 !important;
   height: auto;
@@ -811,8 +811,8 @@ tr.b-highlight {
   padding: 0;
 }
 
-@media (min-width: 576px) {
-  .b-document-header {
-    padding: 2px;
-  }
-}
+// @media (min-width: 576px) {
+//   .b-document-header {
+//     padding: 2px;
+//   }
+// }

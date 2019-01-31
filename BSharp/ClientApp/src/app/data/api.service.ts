@@ -19,6 +19,7 @@ import { appconfig } from './appconfig';
 import { Agent } from './dto/agent';
 import { Role } from './dto/role';
 import { View } from './dto/view';
+import { Settings } from './dto/settings';
 
 @Injectable({
   providedIn: 'root'
@@ -63,6 +64,60 @@ export class ApiService {
     return {
       activate: this.activateFactory<View>('local-users', cancellationToken$),
       deactivate: this.deactivateFactory<View>('local-users', cancellationToken$)
+    };
+  }
+
+  public settingsApi(cancellationToken$: Observable<void>) {
+    return {
+      get: (args: GetByIdArguments) => {
+        args = args || {};
+        const paramsArray: string[] = [];
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/settings?${params}`;
+
+        const obs$ = this.http.get<GetByIdResponse<Settings>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      save: (entity: Settings, args: SaveArguments) => {
+        this.saveInProgress = true;
+        args = args || {};
+        const paramsArray: string[] = [];
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/settings?${params}`;
+
+        const obs$ = this.http.post<GetByIdResponse<Settings>>(url, entity, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.saveInProgress = false),
+          catchError((error) => {
+            this.saveInProgress = false;
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.saveInProgress = false)
+        );
+
+        return obs$;
+      }
     };
   }
 

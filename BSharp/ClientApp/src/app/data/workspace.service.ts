@@ -1,10 +1,10 @@
-import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
-import { MeasurementUnit, MeasurementUnitForSave } from './dto/measurement-unit';
+import { MeasurementUnit } from './dto/measurement-unit';
 import { Injectable } from '@angular/core';
 import { Custody } from './dto/custody';
 import { Role } from './dto/role';
 import { View } from './dto/view';
 import { LocalUser } from './dto/local-user';
+import { Culture } from './dto/culture';
 import { DtoKeyBase } from './dto/dto-key-base';
 
 export enum MasterStatus {
@@ -35,7 +35,7 @@ export enum DetailsStatus {
 }
 
 // Represents a collection of savable entities, indexed by their IDs
-export class EntityWorkspace<T extends DtoForSaveKeyBase> {
+export class EntityWorkspace<T extends DtoKeyBase> {
   [id: string]: T;
 }
 
@@ -55,6 +55,7 @@ export class TenantWorkspace {
   Roles: EntityWorkspace<Role>;
   Views: EntityWorkspace<View>;
   LocalUsers: EntityWorkspace<LocalUser>;
+  Cultures: EntityWorkspace<Culture>;
 
   get(collection: string, id: number | string) {
     if (!id) {
@@ -76,6 +77,7 @@ export class TenantWorkspace {
     this.Roles = new EntityWorkspace<Role>();
     this.Views = new EntityWorkspace<View>();
     this.LocalUsers = new EntityWorkspace<LocalUser>();
+    this.Cultures = new EntityWorkspace<Culture>();
   }
 }
 

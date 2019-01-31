@@ -32,7 +32,7 @@ namespace BSharp.Controllers
         // Constants
 
         private const int DEFAULT_MAX_PAGE_SIZE = 10000;
-        public const string ALL = "all";
+        public const string ALL = ControllerUtilities.ALL;
 
         // Private Fields
 
@@ -84,7 +84,8 @@ namespace BSharp.Controllers
                 query = SingletonQuery(query, id);
 
                 // Check that the entity exists
-                int count = await query.CountAsync();
+                bool supportsAsync = query is IAsyncEnumerable<TModel>;
+                int count = supportsAsync ? await query.CountAsync() : query.Count();
                 if (count == 0)
                 {
                     throw new NotFoundException<TKey>(id);
@@ -97,7 +98,7 @@ namespace BSharp.Controllers
                 query = Expand(query, args.Expand);
 
                 // Load
-                var dbEntity = await query.FirstOrDefaultAsync();
+                var dbEntity = supportsAsync ? await query.FirstOrDefaultAsync() : query.FirstOrDefault();
                 if (dbEntity == null)
                 {
                     // We already checked for not found earlier,
@@ -256,7 +257,8 @@ namespace BSharp.Controllers
             query = Filter(query, args.Filter);
 
             // Before ordering or paging, retrieve the total count
-            int totalCount = query.Count();
+            bool supportsAsync = query is IAsyncEnumerable<TModel>;
+            int totalCount = supportsAsync ? await query.CountAsync() : query.Count();
 
             // OrderBy
             query = OrderBy(query, args.OrderBy, args.Desc);
@@ -271,7 +273,7 @@ namespace BSharp.Controllers
             query = Expand(query, args.Expand);
 
             // Load the data, transform it and wrap it in some metadata
-            var memoryList = await query.ToListAsync();
+            var memoryList = supportsAsync ? await query.ToListAsync() : query.ToList();
 
             // Flatten related entities and map each to its respective DTO 
             var relatedEntities = FlattenRelatedEntities(memoryList, args.Expand);
@@ -1021,6 +1023,62 @@ namespace BSharp.Controllers
         /// </summary>
         protected DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
         {
+            return ControllerUtilities.DataTable<T>(entities, addIndex);
+        }
+
+        /// <summary>
+        /// This is alternative for <see cref="Type.GetProperties"/>
+        /// that returns base class properties before inherited class properties
+        /// Credit: https://bit.ly/2UGAkKj
+        /// </summary>
+        protected PropertyInfo[] GetPropertiesBaseFirst(Type type)
+        {
+            return ControllerUtilities.GetPropertiesBaseFirst(type);
+        }
+
+        // Helper methods
+
+        protected async Task<IEnumerable<M.AbstractPermission>> GetPermissions(DbQuery<M.AbstractPermission> q, PermissionLevel level, params string[] viewIds)
+        {
+            return await ControllerUtilities.GetPermissions(q, level, viewIds);
+        }
+
+        private FileResult AbstractGridToFileResult(AbstractDataGrid abstractFile, string format)
+        {
+            // Get abstract grid
+
+            FileHandlerBase handler;
+            string contentType;
+            if (format == FileFormats.Xlsx)
+            {
+                handler = new ExcelHandler(_localizer);
+                contentType = MimeTypes.Xlsx;
+            }
+            else if (format == FileFormats.Csv)
+            {
+                handler = new CsvHandler(_localizer);
+                contentType = MimeTypes.Csv;
+            }
+            else
+            {
+                throw new FormatException(_localizer["Error_UnknownFileFormat"]);
+            }
+
+            var fileStream = handler.ToFileStream(abstractFile);
+            return File(((MemoryStream)fileStream).ToArray(), contentType);
+        }
+    }
+
+    public static class ControllerUtilities
+    {
+        public const string ALL = "all";
+
+        /// <summary>
+        /// Constructs a SQL data table containing all the public properties of the 
+        /// entities' type and populates the data table with the provided entities
+        /// </summary>
+        public static DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
+        {
             DataTable table = new DataTable();
             if (addIndex)
             {
@@ -1076,7 +1134,7 @@ namespace BSharp.Controllers
         /// that returns base class properties before inherited class properties
         /// Credit: https://bit.ly/2UGAkKj
         /// </summary>
-        protected PropertyInfo[] GetPropertiesBaseFirst(Type type)
+        public static PropertyInfo[] GetPropertiesBaseFirst(Type type)
         {
             var orderList = new List<Type>();
             var iteratingType = type;
@@ -1093,34 +1151,7 @@ namespace BSharp.Controllers
             return props;
         }
 
-        // Helper methods
-
-        private FileResult AbstractGridToFileResult(AbstractDataGrid abstractFile, string format)
-        {
-            // Get abstract grid
-
-            FileHandlerBase handler;
-            string contentType;
-            if (format == FileFormats.Xlsx)
-            {
-                handler = new ExcelHandler(_localizer);
-                contentType = MimeTypes.Xlsx;
-            }
-            else if (format == FileFormats.Csv)
-            {
-                handler = new CsvHandler(_localizer);
-                contentType = MimeTypes.Csv;
-            }
-            else
-            {
-                throw new FormatException(_localizer["Error_UnknownFileFormat"]);
-            }
-
-            var fileStream = handler.ToFileStream(abstractFile);
-            return File(((MemoryStream)fileStream).ToArray(), contentType);
-        }
-
-        protected async Task<IEnumerable<M.AbstractPermission>> GetPermissions(DbQuery<M.AbstractPermission> q, PermissionLevel level, params string[] viewIds)
+        public static async Task<IEnumerable<M.AbstractPermission>> GetPermissions(DbQuery<M.AbstractPermission> q, PermissionLevel level, params string[] viewIds)
         {
             // Validate parameters
             if (q == null)

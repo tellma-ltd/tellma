@@ -13,7 +13,7 @@ using System.Linq;
 
 // [CLI Commands]
 // dotnet ef migrations add Initial -c=ApplicationContext -o=Data/Migrations/Application
-// dotnet ef database update LastGoodMigration --context=ApplicationContext
+// dotnet ef database update Custom1 --context=ApplicationContext
 // dotnet ef migrations remove --context=ApplicationContext
 namespace BSharp.Data
 {
@@ -24,6 +24,8 @@ namespace BSharp.Data
     /// </summary>
     public class ApplicationContext : DbContext
     {
+        #region Tables
+
         // The database tables are listed below
         public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
         public DbSet<Custody> Custodies { get; set; }
@@ -36,6 +38,95 @@ namespace BSharp.Data
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RoleMembership> RoleMemberships { get; set; }
 
+
+        // Settings
+        public DbSet<Settings> Settings { get; set; }
+
+        #endregion
+
+        #region Modelling
+
+        /// <summary>
+        /// This method configures the database model with EF Core's fluent API
+        /// </summary>
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            string tenantId = "TenantId";
+
+            // Measurement Units
+            AddTenantId<MeasurementUnit>(builder);
+            MeasurementUnit.OnModelCreating(builder);
+
+            // Custodies
+            AddTenantId<Custody>(builder);
+            Custody.OnModelCreating(builder);
+
+            // Agents : Custodies
+            Agent.OnModelCreating_Agent(builder);
+
+            // Roles
+            AddTenantId<Role>(builder);
+            Role.OnModelCreating(builder);
+
+            // Views
+            AddTenantId<View>(builder);
+            View.OnModelCreating(builder);
+
+            // Local Users
+            AddTenantId<LocalUser>(builder);
+            LocalUser.OnModelCreating(builder);
+
+            // Role Memberships
+            AddTenantId<RoleMembership>(builder);
+            RoleMembership.OnModelCreating(builder);
+
+            // Permissions
+            AddTenantId<Permission>(builder);
+            Permission.OnModelCreating(builder);
+
+            // Settings
+            AddTenantId<Settings>(builder, tenantId);
+            Data.Model.Settings.OnModelCreating(builder);
+        }
+
+        /// <summary>
+        /// Adds a shadow property "TenantId" to the entity collection, adds that property to the entity keys, 
+        /// and adds a query filter based on the tenantIdProvider
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="builder"></param>
+        /// <param name="keyPropertyNames">The properties to include in the primary key, it uses one property "Id" by default if none are specified</param>
+        private void AddTenantId<T>(ModelBuilder builder, params string[] keyPropertyNames) where T : class
+        {
+            string tenantId = "TenantId";
+
+            // Add the TenantId shadow property
+            builder.Entity<T>().Property<int>(tenantId)
+                .ValueGeneratedNever();
+
+            // Add the TenantId query filter (TODO: Remove and rely on security policy instead)
+            builder.Entity<T>().HasQueryFilter(e => EF.Property<int?>(e, tenantId) == _tenantIdProvider.GetTenantId());
+
+            // Make TenantId part of the composite primary key
+            List<string> keys = new List<string>(keyPropertyNames);
+            if (keys.Count == 0)
+            {
+                keys.Add("Id");
+                builder.Entity<T>()
+                    .Property("Id")
+                    .ValueGeneratedOnAdd();
+
+                keys = keys.Prepend(tenantId).ToList();
+            }
+
+            builder.Entity<T>().HasKey(keys.ToArray());
+        }
+
+        #endregion
+
+        #region Queries
 
         /// <summary>
         /// A query for returning strongly typed validation errors from SQL
@@ -61,6 +152,10 @@ namespace BSharp.Data
         /// Unified model for both application and admin contexts for querying user permissions
         /// </summary>
         public DbQuery<AbstractPermission> AbstractPermissions { get; set; }
+
+        #endregion
+
+        #region Constructor
 
         // Private fields
         private readonly ITenantIdProvider _tenantIdProvider;
@@ -159,44 +254,9 @@ SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
                 .Options;
         }
 
-        /// <summary>
-        /// This method configures the database model with EF Core's fluent API
-        /// </summary>
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
+        #endregion
 
-            // Measurement Units
-            AddTenantId<MeasurementUnit>(builder);
-            MeasurementUnit.OnModelCreating(builder);
-
-            // Custodies
-            AddTenantId<Custody>(builder);
-            Custody.OnModelCreating(builder);
-
-            // Agents : Custodies
-            Agent.OnModelCreating_Agent(builder);
-
-            // Roles
-            AddTenantId<Role>(builder);
-            Role.OnModelCreating(builder);
-
-            // Views
-            AddTenantId<View>(builder);
-            View.OnModelCreating(builder);
-
-            // Local Users
-            AddTenantId<LocalUser>(builder);
-            LocalUser.OnModelCreating(builder);
-
-            // Role Memberships
-            AddTenantId<RoleMembership>(builder);
-            RoleMembership.OnModelCreating(builder);
-
-            // Permissions
-            AddTenantId<Permission>(builder);
-            Permission.OnModelCreating(builder);
-        }
+        #region Dispose
 
         public override void Dispose()
         {
@@ -209,36 +269,7 @@ SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
             base.Dispose();
         }
 
-        /// <summary>
-        /// Adds a shadow property "TenantId" to the entity collection, adds that property to the entity keys, 
-        /// and adds a query filter based on the tenantIdProvider
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="builder"></param>
-        /// <param name="keyPropertyNames">The properties to include in the primary key, it uses one property "Id" by default if none are specified</param>
-        private void AddTenantId<T>(ModelBuilder builder, params string[] keyPropertyNames) where T : class
-        {
-            string tenantId = "TenantId";
-
-            // Add the TenantId shadow property
-            builder.Entity<T>().Property<int>(tenantId);
-
-            // Add the TenantId query filter (TODO: Remove)
-            builder.Entity<T>().HasQueryFilter(e => EF.Property<int?>(e, tenantId) == _tenantIdProvider.GetTenantId());
-
-            // Make TenantId part of the composite primary key
-            List<string> keys = new List<string>(keyPropertyNames);
-            if (keys.Count == 0)
-            {
-                keys.Add("Id");
-                builder.Entity<T>()
-                    .Property("Id")
-                    .ValueGeneratedOnAdd();
-            }
-
-            keys = keys.Prepend(tenantId).ToList();
-            builder.Entity<T>().HasKey(keys.ToArray());
-        }
+        #endregion
 
         #region Design Time Factory
 
@@ -269,9 +300,16 @@ SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
 
         public class DesignTimeTenantIdProvider : ITenantIdProvider
         {
+            private readonly int? _tenantId;
+
+            public DesignTimeTenantIdProvider(int? tenantId = null)
+            {
+                _tenantId = tenantId;
+            }
+
             public int? GetTenantId()
             {
-                return -1;
+                return _tenantId ?? -1;
             }
         }
 

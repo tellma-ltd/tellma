@@ -1,6 +1,5 @@
 import { DtoForSaveKeyBase } from './dto-for-save-key-base';
 import { Permission, PermissionForSave } from './permission';
-import { DtoKeyBase } from './dto-key-base';
 
 export class RoleForSave<TPermission = PermissionForSave> extends DtoForSaveKeyBase {
     Name: string;

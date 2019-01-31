@@ -138,9 +138,18 @@ INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, 
                                     ModifiedById = userId,
                                     CreatedAt = now,
                                     ModifiedAt = now,
+                                },
+                                new Permission {
+                                    ViewId = "views",
+                                    Level = "Read",
+                                    Criteria = null,
+                                    CreatedById = userId,
+                                    ModifiedById = userId,
+                                    CreatedAt = now,
+                                    ModifiedAt = now,
                                 }
                             },
-                                Members = new List<RoleMembership>
+                            Members = new List<RoleMembership>
                             {
                                 new RoleMembership {
                                     UserId = 1,
@@ -165,7 +174,22 @@ INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, 
                         appContext.Views.Add(new View { Id = "measurement-units", IsActive = true });
                         appContext.Views.Add(new View { Id = "individuals", IsActive = true });
                         appContext.Views.Add(new View { Id = "organizations", IsActive = true });
+                        appContext.Views.Add(new View { Id = "views", IsActive = true });
+                        appContext.Views.Add(new View { Id = "settings", IsActive = true });
 
+                        // Add the settings
+                        var settings = new Settings
+                        {
+                            PrimaryLanguageId = "en",
+                            ProvisionedAt = now,
+                            ModifiedAt = now,
+                            ModifiedById = userId,
+                            ShortCompanyName = "Contoso, Inc."
+                        };
+                        appContext.Settings.Add(settings);
+                        appContext.Entry(settings).Property("TenantId").CurrentValue = 101;
+
+                        // Save all of the above
                         appContext.SaveChanges();
                     }
                 }
