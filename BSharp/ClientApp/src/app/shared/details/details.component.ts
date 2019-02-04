@@ -133,9 +133,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   private localState = new MasterDetailsStore();  // Used in popup mode
   private _errorMessage: string; // in the document area itself
   private _modalErrorMessage: string; // in the modal
-  private _validationErrors: { [id: string]: string[] } = {}; // on the fields
-  private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
+  private _unboundServerErrors: string[]; // in the modal
   private _viewModelJson: string;
+  private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
+
 
   // Moved below the fields to keep tslint happy
   @Input()
@@ -186,7 +187,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.localState = new MasterDetailsStore();
     this._errorMessage = null;
     this._modalErrorMessage = null;
-    this._validationErrors = {};
+    this._unboundServerErrors = [];
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
     this._viewModelJson = null;
 
@@ -301,7 +302,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   private clearErrors(): void {
     this._errorMessage = null;
     this._modalErrorMessage = null;
-    this._validationErrors = {};
+    this._unboundServerErrors = [];
   }
 
   public get state(): MasterDetailsStore {
@@ -373,23 +374,17 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return !!s.detailsId ? this.workspace.current[this.collection][s.detailsId] : null;
   }
 
-  public handleActionError = (friendlyError) => {
+  public handleActionError = (friendlyError: any) => {
 
-    // This handles any errors caused by actions
+    // This handles 422 ModelState errors
     if (friendlyError.status === 422) {
-      const keys = Object.keys(friendlyError.error);
+      this._unboundServerErrors = [];
+      const serverErrors = applyServerErrors([this.activeModel], friendlyError.error);
+      const keys = Object.keys(serverErrors);
       keys.forEach(key => {
-        // most validation error keys are expected to start with '[0].'
-        // the code below removes this prefix
-        let modifiedKey: string;
-        const prefix = '[0].';
-        if (key.startsWith(prefix)) {
-          modifiedKey = key.substring(prefix.length);
-        } else {
-          modifiedKey = key;
-        }
-
-        this._validationErrors[modifiedKey] = friendlyError.error[key];
+        serverErrors[key].forEach(error => {
+          this._unboundServerErrors.push(error);
+        });
       });
 
     } else {
@@ -407,8 +402,8 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return this._modalErrorMessage;
   }
 
-  get validationErrors() {
-    return this._validationErrors;
+  get unboundServerErrors(): string[] {
+    return this._unboundServerErrors;
   }
 
   get activeModel(): DtoForSaveKeyBase {
@@ -568,6 +563,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
         // since no changes, don't save to the database
         // just go back to view mode
         this.clearErrors();
+        clearServerErrors(this._editModel);
         this._editModel = null;
         this.state.detailsStatus = DetailsStatus.loaded;
       }
@@ -575,6 +571,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
       // clear any errors displayed
       this.clearErrors();
+      clearServerErrors(this._editModel);
 
       // we need the original value for when the save API call returns
       const isNew = this.isNew;
@@ -794,6 +791,100 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     } else {
       // don't show a tooltip by default
       return '';
+    }
+  }
+}
+
+export function applyServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[],
+  errors: { [key: string]: string[] }): { [key: string]: string[] } {
+
+  if (!entity) {
+    return;
+  }
+
+  if (!errors) {
+    return;
+  }
+
+  const paths = Object.keys(errors);
+  const leftovers: { [key: string]: string[] } = {};
+  for (let p = 0; p < paths.length; p++) {
+    const path = paths[p];
+    const steps = path.split('.');
+
+    let current = entity;
+    for (let s = 0; s < steps.length - 1; s++) {
+      const step = steps[s];
+      if (!current) {
+        // Do nothing
+
+      } else if (step.endsWith(']')) {
+        // handle array
+        const parts = step.substring(0, step.length - 1).split('[');
+        const arrayPart = parts[0];
+        const indexPart = +parts[1];
+
+        if (isNaN(indexPart)) {
+          // ignore a malformed error path
+          leftovers[path] = errors[path];
+          break;
+        }
+
+        if (!arrayPart) {
+          // sometimes the entire entity is an array
+          current = current[indexPart];
+        } else {
+          current = current[arrayPart][indexPart];
+        }
+
+      } else {
+        // handle non-array
+        current = current[step];
+      }
+    }
+
+    if (!!current) {
+      // we have to use the property indexer here otherwise typescript will complain
+      // in reality we are setting serverErrors even if the target is an array, javascript
+      // allows that but typescript doesn't
+      if (!current['serverErrors']) {
+        current['serverErrors'] = {};
+      }
+
+      const lastStep = steps[steps.length - 1];
+      current['serverErrors'][lastStep] = errors[path];
+
+    } else {
+      leftovers[path] = errors[path];
+    }
+  }
+
+  return leftovers;
+}
+
+export function clearServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[]) {
+  if (!entity) {
+    // nothing to clear
+    return;
+
+  } else {
+    if (!!entity['serverErrors']) {
+      delete entity['serverErrors'];
+
+    } if (Array.isArray(entity)) {
+      // loop over the array items and clear them
+      for (let i = 0; i < entity.length; i++) {
+        const item = entity[i];
+        clearServerErrors(item);
+      }
+    } else if (!!entity.EntityState || !!entity.serverErrors) {
+      // loop over the navigation properties and clear them
+      const props = Object.keys(entity);
+      for (let i = 0; i < props.length; i++) {
+        const prop = props[i];
+        const item = entity[prop];
+        clearServerErrors(item);
+      }
     }
   }
 }

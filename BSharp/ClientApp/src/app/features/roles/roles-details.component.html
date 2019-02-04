@@ -13,17 +13,17 @@
 
 
 <!-- Edit/View Template -->
-<ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
+<ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Name -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isFirstLanguage" [serverErrors]="validationErrors.Name">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isFirstLanguage" [serverErrors]="model?.serverErrors?.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
       [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
   </b-form-group>
 
   <!-- Header Name2 -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="validationErrors.Name2">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="model?.serverErrors?.Name2">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
       [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'"></b-text-editor>
@@ -31,21 +31,21 @@
   <ng-container *ngIf="ws.settings.SecondaryLanguageId">
     <!-- Name -->
     <b-form-group class="b-form-group" *ngIf="ws.isSecondaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
-      [serverErrors]="validationErrors.Name">
+      [serverErrors]="model?.serverErrors?.Name">
       <div *ngIf="!isEdit">{{ model?.Name }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
     </b-form-group>
 
     <!-- Name2 -->
     <b-form-group class="b-form-group" *ngIf="ws.isFirstLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
-      [serverErrors]="validationErrors.Name2">
+      [serverErrors]="model?.serverErrors?.Name2">
       <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
     </b-form-group>
   </ng-container>
 
   <!-- Code -->
-  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="validationErrors.Code">
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
     <div *ngIf="!isEdit">{{ model?.Code }}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
@@ -76,7 +76,7 @@
         <span *ngIf="showPermissionsError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span>
       </ng-template>
       <ng-template ngbTabContent>
-        <b-table [dataSource]="model?.Permissions" [filter]="isPermission" [isEdit]="isEdit" [columnPaths]="['ViewId', 'Level', 'Criteria', 'Memo']" [errors]="validationErrors" errorsPrefix="Permissions"
+        <b-table [dataSource]="model?.Permissions" [filter]="isPermission" [isEdit]="isEdit" [columnPaths]="['ViewId', 'Level', 'Criteria', 'Memo']"
           [columnTemplates]="{
               'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
               'Level' : { headerTemplate : header_Level, rowTemplate : row_Level, weight : 1 },
@@ -88,7 +88,7 @@
         <!-- View -->
         <ng-template #header_ViewId>{{ 'Permission_View' | translate }}</ng-template>
         <ng-template #row_ViewId let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].ViewId']">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.ViewId">
             <div *ngIf="!isEdit">{{ ws.getMultilingualValue('Views', item.ViewId, 'Name') }}</div>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId" (ngModelChange)="update(item); item.Level = null;"
               apiEndpoint="views" collection="Views">
@@ -99,7 +99,7 @@
         <!-- Level -->
         <ng-template #header_Level>{{ 'Permission_Level' | translate }}</ng-template>
         <ng-template #row_Level let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Level']">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.Level">
             <div *ngIf="!isEdit">{{ permissionLevelLookup(item?.Level) | translate }}</div>
             <b-selector *ngIf="isEdit" [(ngModel)]="item.Level" (ngModelChange)="update(item);" [ngModelOptions]="{ updateOn: 'blur' }"
               [choices]="permissionLevelChoices(item)" [disabled]="!item.ViewId"></b-selector>
@@ -109,7 +109,7 @@
         <!-- Criteria -->
         <ng-template #header_Criteria>{{ 'Permission_Criteria' | translate }}</ng-template>
         <ng-template #row_Criteria let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Criteria']">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.Criteria">
             <div *ngIf="!isEdit">{{ item.Criteria }}</div>
             <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Criteria" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
           </b-form-group>
@@ -117,7 +117,7 @@
 
         <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
         <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Memo']">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.Memo">
             <div *ngIf="!isEdit">{{ item.Memo }}</div>
             <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
           </b-form-group>
@@ -133,7 +133,7 @@
         <span *ngIf="showSignaturesError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span>
       </ng-template>
       <ng-template ngbTabContent>
-        <b-table [dataSource]="model?.Permissions" [filter]="isSignature" [onNewItem]="onNewSignature" [isEdit]="isEdit" [errors]="validationErrors" errorsPrefix="Permissions"
+        <b-table [dataSource]="model?.Permissions" [filter]="isSignature" [onNewItem]="onNewSignature" [isEdit]="isEdit"
           [columnPaths]="['ViewId', 'Criteria', 'Memo']" [columnTemplates]="{
               'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
               'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },
@@ -144,7 +144,7 @@
         <!-- View -->
         <ng-template #header_ViewId>{{ 'Permission_View' | translate }}</ng-template>
         <ng-template #row_ViewId let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].ViewId']">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.ViewId">
             <div *ngIf="!isEdit">{{ ws.get('Views', item.ViewId)?.Name }}</div>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId" (ngModelChange)="update(item)" apiEndpoint="views"
               collection="Views" filter="AllowedPermissionLevels contains 'Sign'"></b-details-picker>
@@ -154,7 +154,7 @@
         <!-- Criteria -->
         <ng-template #header_Criteria>{{ 'Permission_Criteria' | translate }}</ng-template>
         <ng-template #row_Criteria let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Criteria']">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.Criteria">
             <div *ngIf="!isEdit">{{ item.Criteria }}</div>
             <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Criteria" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
           </b-form-group>
@@ -162,7 +162,7 @@
 
         <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
         <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Permissions[' + index + '].Memo']">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.Memo">
             <div *ngIf="!isEdit">{{ item.Memo }}</div>
             <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
           </b-form-group>

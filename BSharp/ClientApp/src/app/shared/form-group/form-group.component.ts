@@ -24,12 +24,6 @@ export class FormGroupComponent {
   @ContentChild(NgControl)
   control: NgControl;
 
-  private clearServerErrors() {
-    if (!!this.serverErrors) {
-      this.serverErrors.splice(0, this.serverErrors.length);
-    }
-  }
-
   constructor(private workspace: WorkspaceService) { }
 
   get showLabel(): boolean {

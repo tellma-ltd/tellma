@@ -135,21 +135,6 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   private showTabError(model: Role, pred: (item: Permission) => boolean): boolean {
-    if (!!model && !!model.Permissions) {
-      const hash = {};
-      Object.keys(this.details.validationErrors)
-        .filter(e => this.details.validationErrors[e].length > 0 && e.startsWith('Permissions['))
-        .map(e => e.split(']')[0] + ']')
-        .forEach(e => hash[e] = true);
-
-      for (let i = 0; i < model.Permissions.length; i++) {
-        const item = model.Permissions[i];
-        if (pred(item) && hash['Permissions[' + i + ']']) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+    return !!model && !!model.Permissions && model.Permissions.some(e => pred(e) && !!e.serverErrors);
   }
 }

@@ -12,7 +12,7 @@
   <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
 </ng-template>
 
-<ng-template #documentHeader let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
+<ng-template #documentHeader let-model="model" let-isEdit="isEdit">
   <div class="w-100 b-document-header d-flex justify-content-end">
     <div class="b-flow-chart small d-none d-sm-block">
       <div [class.active]="!model?.ExternalId"><span>{{'User_New' | translate}}</span></div>
@@ -26,17 +26,17 @@
 </ng-template>
 
 <!-- Edit/View Template -->
-<ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
+<ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Name -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isFirstLanguage" [serverErrors]="validationErrors.Name">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isFirstLanguage" [serverErrors]="model?.serverErrors?.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
       [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
   </b-form-group>
 
   <!-- Header Name2 -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="validationErrors.Name2">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="model?.serverErrors?.Name2">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
       [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'"></b-text-editor>
@@ -44,14 +44,14 @@
   <ng-container *ngIf="ws.settings.SecondaryLanguageId">
     <!-- Name -->
     <b-form-group class="b-form-group" *ngIf="ws.isSecondaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
-      [serverErrors]="validationErrors.Name">
+      [serverErrors]="model?.serverErrors?.Name">
       <div *ngIf="!isEdit">{{ model?.Name }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
     </b-form-group>
 
     <!-- Name2 -->
     <b-form-group class="b-form-group" *ngIf="ws.isFirstLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
-      [serverErrors]="validationErrors.Name2">
+      [serverErrors]="model?.serverErrors?.Name2">
       <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
     </b-form-group>
@@ -59,7 +59,7 @@
 
 
   <!-- Email -->
-  <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="validationErrors.Email">
+  <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="model?.serverErrors?.Email">
     <div *ngIf="!isEdit">{{ model?.Email }}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Email" [ngModelOptions]="{ updateOn: 'blur' }" email required
       [disabled]="!!model.Id"></b-text-editor>
@@ -108,8 +108,7 @@
         <span *ngIf="showRolesError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span>
       </ng-template>
       <ng-template ngbTabContent>
-        <b-table [dataSource]="model?.Roles" [isEdit]="isEdit" [columnPaths]="['RoleId', 'Memo']" [errors]="validationErrors"
-          errorsPrefix="Roles" [columnTemplates]="{
+        <b-table [dataSource]="model?.Roles" [isEdit]="isEdit" [columnPaths]="['RoleId', 'Memo']" [columnTemplates]="{
               'RoleId' : { headerTemplate : header_RoleId, rowTemplate : row_RoleId, weight : 1 },
               'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
             }">
@@ -118,7 +117,7 @@
         <!-- RoleId -->
         <ng-template #header_RoleId>{{ 'RoleMembership_Role' | translate }}</ng-template>
         <ng-template #row_RoleId let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Roles[' + index + '].RoleId']">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.RoleId">
             <b-view-link *ngIf="!isEdit" link="../../roles" [itemId]="item?.RoleId">{{ ws.getMultilingualValue('Roles',
               item.RoleId, 'Name') }}</b-view-link>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)" apiEndpoint="roles" [detailsOptions]="[{ id: 'roles', name: '- not important -' }]"
@@ -148,7 +147,7 @@
         <!-- Memo -->
         <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
         <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="validationErrors['Roles[' + index + '].Memo']">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.Memo">
             <div *ngIf="!isEdit">{{ item.Memo }}</div>
             <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
           </b-form-group>

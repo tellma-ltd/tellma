@@ -14,17 +14,17 @@
 
 
 <!-- Edit/View Template -->
-<ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
+<ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Name -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isFirstLanguage" [serverErrors]="validationErrors.Name">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isFirstLanguage" [serverErrors]="model?.serverErrors?.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
       [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
   </b-form-group>
 
   <!-- Header Name2 -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="validationErrors.Name2">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="model?.serverErrors?.Name2">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
       [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'"></b-text-editor>
@@ -32,7 +32,7 @@
 
   <!-- Title -->
   <ng-container *ngIf="isIndividual">
-    <b-form-group class="b-form-group" [label]="('Agent_Title' | translate) + ws.primaryPostfix" [serverErrors]="validationErrors.Title">
+    <b-form-group class="b-form-group" [label]="('Agent_Title' | translate) + ws.primaryPostfix" [serverErrors]="model?.serverErrors?.Title">
       <div *ngIf="!isEdit">{{ model?.Title }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Title" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
     </b-form-group>
@@ -41,14 +41,14 @@
   <ng-container *ngIf="ws.settings.SecondaryLanguageId">
     <!-- Name -->
     <b-form-group class="b-form-group" *ngIf="ws.isSecondaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
-      [serverErrors]="validationErrors.Name">
+      [serverErrors]="model?.serverErrors?.Name">
       <div *ngIf="!isEdit">{{ model?.Name }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
     </b-form-group>
 
     <!-- Name2 -->
     <b-form-group class="b-form-group" *ngIf="ws.isFirstLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
-      [serverErrors]="validationErrors.Name2">
+      [serverErrors]="model?.serverErrors?.Name2">
       <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
     </b-form-group>
@@ -57,46 +57,46 @@
   <!-- Title2 -->
   <ng-container *ngIf="isIndividual">
     <b-form-group class="b-form-group" *ngIf="ws.settings.SecondaryLanguageId" [label]="('Agent_Title' | translate) + ws.secondaryPostfix"
-      [serverErrors]="validationErrors.Title2">
+      [serverErrors]="model?.serverErrors?.Title2">
       <div *ngIf="!isEdit">{{ model?.Title2 }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Title2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
     </b-form-group>
   </ng-container>
 
   <!-- Code -->
-  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="validationErrors.Code">
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
     <div *ngIf="!isEdit">{{ model?.Code }}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
   <!-- Address -->
-  <b-form-group class="b-form-group" [label]="'Custody_Address' | translate" [serverErrors]="validationErrors.Address">
+  <b-form-group class="b-form-group" [label]="'Custody_Address' | translate" [serverErrors]="model?.serverErrors?.Address">
     <div *ngIf="!isEdit">{{ model?.Address }}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Address" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
   <!-- BirthDateTime -->
-  <b-form-group class="b-form-group" [label]="birthDateTimeName | translate" [serverErrors]="validationErrors.BirthDateTime">
+  <b-form-group class="b-form-group" [label]="birthDateTimeName | translate" [serverErrors]="model?.serverErrors?.BirthDateTime">
     <div *ngIf="!isEdit">{{ model?.BirthDateTime | date:'yyyy-MM-dd' }}</div>
     <b-date-picker *ngIf="isEdit" [(ngModel)]="model.BirthDateTime" [ngModelOptions]="{ updateOn: 'change' }"></b-date-picker>
   </b-form-group>
 
   <!-- TaxIdentificationNumber -->
-  <b-form-group class="b-form-group" [label]="'Agent_TaxIdentificationNumber' | translate" [serverErrors]="validationErrors.TaxIdentificationNumber">
+  <b-form-group class="b-form-group" [label]="'Agent_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
     <div *ngIf="!isEdit">{{ model?.TaxIdentificationNumber }}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
   <!-- Gender -->
   <ng-container *ngIf="isIndividual">
-    <b-form-group class="b-form-group" [label]="'Agent_Gender' | translate" [serverErrors]="validationErrors.Gender">
+    <b-form-group class="b-form-group" [label]="'Agent_Gender' | translate" [serverErrors]="model?.serverErrors?.Gender">
       <div *ngIf="!isEdit">{{ genderLookup(model?.Gender) | translate }}</div>
       <b-selector *ngIf="isEdit" [(ngModel)]="model.Gender" [choices]="genderChoices" required></b-selector>
     </b-form-group>
   </ng-container>
 
   <!-- IsRelated -->
-  <b-form-group class="b-form-group" [label]="'Agent_IsRelated' | translate" [serverErrors]="validationErrors.IsRelated">
+  <b-form-group class="b-form-group" [label]="'Agent_IsRelated' | translate" [serverErrors]="model?.serverErrors?.IsRelated">
     <div *ngIf="!isEdit">{{ (model?.IsRelated ? 'Yes' : 'No') | translate }}</div>
     <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
       <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsRelated" id="isRelated">

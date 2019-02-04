@@ -68,8 +68,6 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   }
 
   showRolesError(model: LocalUser) {
-    return !!model && !!model.Roles &&
-      Object.keys(this.details.validationErrors)
-        .some(key => key.startsWith('Roles['));
+    return !!model && !!model.Roles && model.Roles.some(r => !!r.serverErrors);
   }
 }

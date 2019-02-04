@@ -75,12 +75,6 @@ export class TableComponent implements OnInit {
     }
   }
 
-  @Input()
-  errors: { [key: string]: string[] };
-
-  @Input()
-  errorsPrefix: string;
-
   get filter(): (item: DtoForSaveKeyBase) => boolean {
     return this._filter;
   }
@@ -157,36 +151,6 @@ export class TableComponent implements OnInit {
       // remove from original
       const originalIndex = this.mapIndex(index);
       this._dataSource.splice(originalIndex, 1);
-
-      // Clear the errors associated with that line and decrease the index
-      // of all subsequent errors by one
-      if (!!this.errors && !!this.errorsPrefix) {
-        const keys = Object.keys(this.errors);
-        const newKeys: { key: string, errors: string[] }[] = [];
-        for (let k = 0; k < keys.length; k++) {
-          const key = keys[k];
-          if (key.startsWith(this.errorsPrefix + '[' + originalIndex + ']')) {
-            delete this.errors[key];
-          } else {
-            // if the key has an index higher than the deleted item, shift it down by one
-            // here we delete the old key and add the new one to a collection newKeys to be assigned
-            // later to prevent overwriting existing errors that are larger than the original index
-            const split = key.substring(this.errorsPrefix.length + 1).split(']');
-            if (split.length > 1) {
-              const n = +split[0];
-              const rest = split.slice(1, split.length).join(']');
-              if (n > originalIndex) {
-                newKeys.push({ key: this.errorsPrefix + '[' + (n - 1) + ']' + rest, errors: this.errors[key] });
-                delete this.errors[key];
-              }
-            }
-          }
-        }
-
-        newKeys.forEach(e => {
-          this.errors[e.key] = e.errors;
-        });
-      }
 
       // remove from copy
       const copyOfCopy = this._dataSourceCopy.slice();
