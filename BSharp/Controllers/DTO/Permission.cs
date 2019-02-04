@@ -52,4 +52,24 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
     }
+
+    // The two DTOs below carry permission information to the client so
+    // the client can adjust the UI accordingly, the string key in the dictionary
+    // represents the ViewId, its mere presence indicates that the user has read access
+    // and the 3 boolean values indicate whether the user can create, update or sign
+    // the associated view id
+    public class PermissionsForClient : Dictionary<string, ViewPermissionsForClient>
+    {
+    }
+
+    public class ViewPermissionsForClient
+    {
+        // The mere presence of this ViewPermission means that 
+        // the user has read access over the associated viewId
+
+        public bool? Read { get; set; }
+        public bool? Create { get; set; }
+        public bool? Update { get; set; }
+        public bool? Sign { get; set; }
+    }
 }

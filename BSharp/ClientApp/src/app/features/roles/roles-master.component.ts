@@ -28,8 +28,12 @@ export class RolesMasterComponent extends MasterBaseComponent {
     this.rolesApi = this.api.rolesApi(this.notifyDestruct$);
   }
 
-  public get ws() {
+  public get c() {
     return this.workspace.current.Roles;
+  }
+
+  public get ws() {
+    return this.workspace.current;
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {

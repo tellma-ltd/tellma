@@ -31,17 +31,21 @@
       <!-- View Toolbar -->
       <div *ngIf="showViewToolbar">
         <!-- Edit -->
-        <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onEdit()" [disabled]="!canEdit">
-          <fa-icon icon="pen"></fa-icon>
-          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Edit' | translate }}</span>
-        </button>
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="editTooltip" container="body">
+          <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onEdit()" [disabled]="!canEdit">
+            <fa-icon icon="pen"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Edit' | translate }}</span>
+          </button>
+        </div>
 
         <!-- Create -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCreate()"
-          [disabled]="!canCreate">
-          <fa-icon icon="plus"></fa-icon>
-          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
-        </button>
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body">
+          <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCreate()"
+            [disabled]="!canCreate">
+            <fa-icon icon="plus"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
+          </button>
+        </div>
 
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
           <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle"
@@ -51,19 +55,26 @@
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngFor="let action of actions">
-              <button type="button" class="dropdown-item btn-light" (click)="action.action(activeModel)" [disabled]="!canAction(action)"
-                *ngIf="showAction(action)">
-                <ng-container *ngTemplateOutlet="action.template"></ng-container>
-              </button>
+              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action)" container="body" container="body">
+                <button type="button" class="dropdown-item btn-light" (click)="action.action(activeModel)" [disabled]="!canAction(action)">
+                  <ng-container *ngTemplateOutlet="action.template"></ng-container>
+                </button>
+              </div>
             </ng-container>
-            <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)" [disabled]="!canDelete"
-              *ngIf="showDelete">
-              {{ 'Delete' | translate }}
-            </button>
-            <button type="button" class="dropdown-item btn-light" (click)="onClone()" [disabled]="!canClone" *ngIf="showClone">
-              {{ 'Clone' | translate }}
-            </button>
 
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body">
+              <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)" [disabled]="!canDelete"
+                *ngIf="showDelete">
+                {{ 'Delete' | translate }}
+              </button>
+            </div>
+
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="cloneTooltip" container="body">
+              <button type="button" class="dropdown-item btn-light" *ngIf="showClone" (click)="onClone()" [disabled]="!canClone">
+                {{ 'Clone' | translate }}
+              </button>
+
+            </div>
           </div>
         </div>
 

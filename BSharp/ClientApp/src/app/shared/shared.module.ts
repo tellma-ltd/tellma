@@ -15,7 +15,8 @@ import {
   NgbDatepickerModule,
   NgbDateAdapter,
   NgbDatepickerI18n,
-  NgbTabsetModule
+  NgbTabsetModule,
+  NgbTooltipModule
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -116,7 +117,8 @@ library.add(
     NgbModalModule,
     NgbPopoverModule,
     NgbDatepickerModule,
-    NgbTabsetModule
+    NgbTabsetModule,
+    NgbTooltipModule
   ],
   exports: [
     // Modules
@@ -127,6 +129,7 @@ library.add(
     NgbCollapseModule,
     NgbPopoverModule,
     NgbTabsetModule,
+    NgbTooltipModule,
     TranslateModule,
     FormsModule,
     FontAwesomeModule,

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Services.Identity
 {
-    public class DbUser
+    public class DbUserInfo
     {
         public int? Id { get; set; }
         public string ExternalId { get; set; }

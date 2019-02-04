@@ -152,7 +152,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   ////////// UI Bindings
 
-  get primaryPostFix(): string {
+  get primaryPostfix(): string {
     if (this.model && this.model.SecondaryLanguageId) {
       return ` (${this.model.PrimaryLanguageSymbol})`;
     }
@@ -160,7 +160,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return '';
   }
 
-  get secondaryPostFix(): string {
+  get secondaryPostfix(): string {
     if (this.model && this.model.SecondaryLanguageId) {
       return ` (${this.model.SecondaryLanguageSymbol})`;
     }
@@ -223,10 +223,16 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   onRefresh(): void {
-    this.fetch();
+    if (this.detailsStatus !== DetailsStatus.loading) {
+      this.fetch();
+    }
   }
 
   onEdit(): void {
+    if (!this.canEdit) {
+      return;
+    }
+
     if (this._viewModel) {
       // clone the model (to allow for canceling changes)
       this._viewModelJson = JSON.stringify(this._viewModel);
@@ -237,9 +243,21 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
+  get canEditPermissions(): boolean {
+
+    return this.workspace.current.canUpdate('settings', null);
+  }
+
   get canEdit(): boolean {
-    // TODO  Permissions
-    return !!this.model;
+    return !!this.model && this.canEditPermissions;
+  }
+
+  get editTooltip(): string {
+    return this.canEditPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
+
+  get placement() {
+    return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
   onSave(): void {

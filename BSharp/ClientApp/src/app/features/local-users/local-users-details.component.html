@@ -1,15 +1,15 @@
-<b-details apiEndpoint="local-users" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" collection="LocalUsers" [createFunc]="create" [mode]="mode"
-  [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" 
-  [documentHeaderTemplate]="documentHeader" [actions]="[
-              { template: activate, action: onActivate, showAction: showActivate },
-              { template: deactivate, action: onDeactivate, showAction: showDeactivate }
+<b-details apiEndpoint="local-users" viewId="local-users" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" collection="LocalUsers"
+  [createFunc]="create" [mode]="mode" [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb"
+  [documentTemplate]="document" [documentHeaderTemplate]="documentHeader" [actions]="[
+            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
 
 </b-details>
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
-  <span>{{ model?.Name }}</span>
+  <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
@@ -28,18 +28,35 @@
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
 
-
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="validationErrors.Name">
+  <!-- Header Name -->
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isFirstLanguage" [serverErrors]="validationErrors.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
-      [placeholder]="('Name' | translate) + '...'" required></b-text-editor>
+      [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
   </b-form-group>
 
-  <!-- Name2 -->
-  <b-form-group class="b-form-group" [label]="'Name2' | translate" [serverErrors]="validationErrors.Name2">
-    <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  <!-- Header Name2 -->
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="validationErrors.Name2">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
+      [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'"></b-text-editor>
   </b-form-group>
+  <ng-container *ngIf="ws.settings.SecondaryLanguageId">
+    <!-- Name -->
+    <b-form-group class="b-form-group" *ngIf="ws.isSecondaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+      [serverErrors]="validationErrors.Name">
+      <div *ngIf="!isEdit">{{ model?.Name }}</div>
+      <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
+    </b-form-group>
+
+    <!-- Name2 -->
+    <b-form-group class="b-form-group" *ngIf="ws.isFirstLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
+      [serverErrors]="validationErrors.Name2">
+      <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
+      <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+    </b-form-group>
+  </ng-container>
+
 
   <!-- Email -->
   <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="validationErrors.Email">
@@ -51,7 +68,7 @@
   <!-- Agent -->
   <b-form-group class="b-form-group" [label]="'User_Agent' | translate">
     <b-view-link *ngIf="!isEdit" link="../../agents/{{ ws.get('Custodies', model?.AgentId)?.AgentType }}" [itemId]="model?.AgentId">
-      {{ ws.get('Custodies', model?.AgentId)?.Name }}
+      {{ ws.getMultilingualValue('Custodies', model?.AgentId, 'Name') }}
     </b-view-link>
     <b-details-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" apiEndpoint="agents/all" collection="Custodies"
       [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" [detailsOptions]="[{ id: 'individuals', 
@@ -102,9 +119,9 @@
         <ng-template #header_RoleId>{{ 'RoleMembership_Role' | translate }}</ng-template>
         <ng-template #row_RoleId let-item="item" let-index="originalIndex" let-update="update">
           <b-form-group class="b-form-group" [serverErrors]="validationErrors['Roles[' + index + '].RoleId']">
-            <b-view-link *ngIf="!isEdit" link="../../roles" [itemId]="item?.RoleId">{{ ws.get('Roles',
-              item.RoleId)?.Name }}</b-view-link>
-            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)" apiEndpoint="roles"
+            <b-view-link *ngIf="!isEdit" link="../../roles" [itemId]="item?.RoleId">{{ ws.getMultilingualValue('Roles',
+              item.RoleId, 'Name') }}</b-view-link>
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)" apiEndpoint="roles" [detailsOptions]="[{ id: 'roles', name: '- not important -' }]"
               [masterTemplate]="roleMaster" [detailsTemplate]="roleDetails" collection="Roles" [workspaceApplyFns]="workspaceApplyFns">
             </b-details-picker>
 

@@ -43,9 +43,14 @@ a {
   margin-right: 0;
 }
 
-.navbar-nav {
+.nav.navbar-nav {
   padding-left: 30px;
   padding-right: 30px;
+}
+
+.nav.nav-tabs {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .breadcrumb-item {
@@ -172,6 +177,7 @@ ngb-tabset li.nav-item .small {
 .dropdown-menu {
   z-index: 1050;
 }
+
 
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
@@ -816,3 +822,12 @@ tr.b-highlight {
 //     padding: 2px;
 //   }
 // }
+
+.b-dark {
+  background-color: $gray-800;
+}
+
+// opposite of bootstraps small
+.b-large {
+  font-size: 120%;
+}

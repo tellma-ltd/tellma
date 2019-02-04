@@ -6,6 +6,8 @@ import { View } from './dto/view';
 import { LocalUser } from './dto/local-user';
 import { Culture } from './dto/culture';
 import { DtoKeyBase } from './dto/dto-key-base';
+import { SettingsForClient } from './dto/settings';
+import { PermissionsForClient } from './dto/permission';
 
 export enum MasterStatus {
 
@@ -41,13 +43,16 @@ export class EntityWorkspace<T extends DtoKeyBase> {
 
 // This contains all the state that is specific to a particular tenant
 export class TenantWorkspace {
-  ////// Tenant state
-  name: string;
-  name2: string;
-  userName: string;
-  userName2: string;
 
-  // Keeps the state of every
+  ////// Globals
+  // cannot navigate to any tenant screen until these global values are initialized via a router guard
+  settings: SettingsForClient;
+  settingsVersion: string;
+
+  permissions: PermissionsForClient;
+  permissionsVersion: string;
+
+  // Keeps the state of every master-details pair in screen mode
   mdState: { [key: string]: MasterDetailsStore };
 
   MeasurementUnits: EntityWorkspace<MeasurementUnit>;
@@ -57,6 +62,23 @@ export class TenantWorkspace {
   LocalUsers: EntityWorkspace<LocalUser>;
   Cultures: EntityWorkspace<Culture>;
 
+  constructor(private workspaceService: WorkspaceService) {
+    this.reset();
+  }
+
+  public reset() {
+
+    this.mdState = {};
+
+    this.MeasurementUnits = new EntityWorkspace<MeasurementUnit>();
+    this.Custodies = new EntityWorkspace<Custody>();
+    this.Roles = new EntityWorkspace<Role>();
+    this.Views = new EntityWorkspace<View>();
+    this.LocalUsers = new EntityWorkspace<LocalUser>();
+    this.Cultures = new EntityWorkspace<Culture>();
+  }
+
+  ////// the methods below provide easy access to the global tenant values
   get(collection: string, id: number | string) {
     if (!id) {
       return null;
@@ -65,19 +87,99 @@ export class TenantWorkspace {
     return this[collection][id];
   }
 
-  constructor() {
-    this.reset();
+  // don't change signature, a lot of HTML binds to this
+  get primaryPostfix(): string {
+    if (this.settings && this.settings.SecondaryLanguageId) {
+      return ` (${this.settings.PrimaryLanguageSymbol})`;
+    }
+
+    return '';
   }
 
-  public reset() {
+  // don't change signature, a lot of HTML binds to this
+  get secondaryPostfix(): string {
+    if (this.settings && this.settings.SecondaryLanguageId) {
+      return ` (${this.settings.SecondaryLanguageSymbol})`;
+    }
 
-    this.mdState = {};
-    this.MeasurementUnits = new EntityWorkspace<MeasurementUnit>();
-    this.Custodies = new EntityWorkspace<Custody>();
-    this.Roles = new EntityWorkspace<Role>();
-    this.Views = new EntityWorkspace<View>();
-    this.LocalUsers = new EntityWorkspace<LocalUser>();
-    this.Cultures = new EntityWorkspace<Culture>();
+    return '';
+  }
+
+  get isFirstLanguage(): boolean {
+    return !this.isSecondaryLanguage;
+  }
+
+  get isSecondaryLanguage(): boolean {
+    if (!!this.settings) {
+      const secondLang = this.settings.SecondaryLanguageId || '??';
+      const currentUserLang = this.workspaceService.ws.culture || 'en';
+
+      return secondLang === currentUserLang ||
+        secondLang.startsWith(currentUserLang) ||
+        currentUserLang.startsWith(secondLang);
+    }
+
+    return false;
+  }
+
+  getMultilingualValue(collection: string, id: number | string, propName: string) {
+    if (!!id && !!propName) {
+      const propName2 = propName + '2';
+      const item = this.get(collection, id);
+
+      if (!!item) {
+        if (this.isSecondaryLanguage && !!item[propName2]) {
+          return item[propName2];
+        } else {
+          return item[propName];
+        }
+      }
+    }
+
+    return null;
+  }
+
+  public canRead(viewId: string) {
+    if (!viewId) {
+      return false;
+    }
+
+    if (viewId === 'all') {
+      return true;
+    }
+
+    const viewPerms = this.permissions[viewId];
+    const allPerms = this.permissions['all'];
+    return (!!viewPerms || !!allPerms);
+  }
+
+  public canCreate(viewId: string) {
+    if (!viewId) {
+      return false;
+    }
+
+    if (viewId === 'all') {
+      return true;
+    }
+
+    const viewPerms = this.permissions[viewId];
+    const allPerms = this.permissions['all'];
+    return (!!viewPerms && (viewPerms.Create || viewPerms.Update || viewPerms.Sign))
+      || (!!allPerms && (allPerms.Create || allPerms.Update || allPerms.Sign));
+  }
+
+  public canUpdate(viewId: string, createdById: string | number) {
+
+    if (!viewId) {
+      return false;
+    }
+
+    const viewPerms = this.permissions[viewId];
+    const allPerms = this.permissions['all'];
+    const userId = this.settings.UserId;
+    // (userId === createdById) ||
+    return (!!viewPerms && (viewPerms.Update || viewPerms.Sign))
+      || (!!allPerms && (allPerms.Update || allPerms.Sign));
   }
 }
 
@@ -87,6 +189,7 @@ export class Workspace {
   // Current UI culture selected by the user
   culture: string;
   isRtl = false;
+  errorLoadingCompanyMessage: string;
 
   // Current tenantID selected by the user
   tenantId: number;
@@ -100,7 +203,7 @@ export class Workspace {
 
 export class MasterDetailsStore {
 
-  top = 50; // +
+  top = 50;
   skip = 0;
   search: string;
   orderBy: string;
@@ -153,11 +256,17 @@ export class WorkspaceService {
 
   // Syntactic sugar for current tenant workspace
   public get current(): TenantWorkspace {
-    if (!this.ws.tenants[this.ws.tenantId]) {
-      this.ws.tenants[this.ws.tenantId] = new TenantWorkspace();
-    }
 
-    return this.ws.tenants[this.ws.tenantId];
+    const tenantId = this.ws.tenantId;
+    if (!!tenantId) {
+      if (!this.ws.tenants[tenantId]) {
+        this.ws.tenants[tenantId] = new TenantWorkspace(this);
+      }
+
+      return this.ws.tenants[tenantId];
+    } else {
+      return null;
+    }
   }
 
   // Wipes the application state clean, usually upon signing out

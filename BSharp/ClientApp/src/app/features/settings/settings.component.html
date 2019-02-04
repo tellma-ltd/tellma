@@ -18,9 +18,11 @@
       <!-- View Toolbar -->
       <div *ngIf="showViewToolbar">
         <!-- Edit -->
-        <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onEdit()" [disabled]="!canEdit">
-          <fa-icon icon="pen"></fa-icon>&nbsp;&nbsp;{{ 'Edit' | translate }}
-        </button>
+        <div class="d-inline-block" [placement]="placement" [ngbTooltip]="editTooltip" container="body">
+          <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onEdit()" [disabled]="!canEdit">
+            <fa-icon icon="pen"></fa-icon>&nbsp;&nbsp;{{ 'Edit' | translate }}
+          </button>
+        </div>
       </div>
 
       <!-- Edit Toolbar -->
@@ -48,7 +50,7 @@
   </div>
 
   <!-- Content Area -->
-  <div class="row b-rest-of-screen bg-white">
+  <div class="row b-rest-of-screen" [class.bg-light]="!showDocument">
     <div class="w-100 h-100">
 
       <!-- Document -->
@@ -62,15 +64,15 @@
             </p>
 
             <!-- Short Company Name -->
-            <b-form-group class="b-form-group" [label]="('Settings_ShortCompanyName' | translate) + primaryPostFix" [description]="'Settings_ShortCompanyNameDescription' | translate"
-              [serverErrors]="validationErrors.ShortCompanyName">
+            <b-form-group class="b-form-group" [label]="('Settings_ShortCompanyName' | translate) + primaryPostfix"
+              [description]="'Settings_ShortCompanyNameDescription' | translate" [serverErrors]="validationErrors.ShortCompanyName">
               <div *ngIf="!isEdit">{{ model?.ShortCompanyName }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
             </b-form-group>
-                        
+
             <!-- Short Company Name 2 -->
-            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="('Settings_ShortCompanyName' | translate) + secondaryPostFix" [description]="'Settings_ShortCompanyNameDescription' | translate"
-              [serverErrors]="validationErrors.ShortCompanyName2">
+            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="('Settings_ShortCompanyName' | translate) + secondaryPostfix"
+              [description]="'Settings_ShortCompanyNameDescription' | translate" [serverErrors]="validationErrors.ShortCompanyName2">
               <div *ngIf="!isEdit">{{ model?.ShortCompanyName2 }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
             </b-form-group>
@@ -93,23 +95,23 @@
             </b-form-group>
 
             <!-- Primary Language Symbol -->
-            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="'Settings_PrimaryLanguageSymbol' | translate" [description]="'Settings_LanguageSymbolDescription' | translate"
-              [serverErrors]="validationErrors.PrimaryLanguageSymbol">
+            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="'Settings_PrimaryLanguageSymbol' | translate"
+              [description]="'Settings_LanguageSymbolDescription' | translate" [serverErrors]="validationErrors.PrimaryLanguageSymbol">
               <div *ngIf="!isEdit">{{ model?.PrimaryLanguageSymbol || '-' }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
             </b-form-group>
-            
+
             <!-- Secondary Language Symbol -->
-            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="'Settings_SecondaryLanguageSymbol' | translate" [description]="'Settings_LanguageSymbolDescription' | translate"
-              [serverErrors]="validationErrors.SecondaryLanguageSymbol">
+            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="'Settings_SecondaryLanguageSymbol' | translate"
+              [description]="'Settings_LanguageSymbolDescription' | translate" [serverErrors]="validationErrors.SecondaryLanguageSymbol">
               <div *ngIf="!isEdit">{{ model?.SecondaryLanguageSymbol || '-' }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
             </b-form-group>
 
-            
+
             <p class="col-12 bg-light p-2">
-                {{ 'Branding' | translate }}
-              </p>
+              {{ 'Branding' | translate }}
+            </p>
 
             <!-- Brand Color -->
             <b-form-group class="b-form-group" [label]="'Settings_BrandColor' | translate" [description]="'Settings_BrandColorDescription' | translate"

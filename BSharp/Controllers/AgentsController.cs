@@ -2,8 +2,8 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
-using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
+using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +26,7 @@ using M = BSharp.Data.Model;
 namespace BSharp.Controllers
 {
     [Route("api/agents/{agentType}")]
+    [LoadTenantInfo]
     public class AgentsController : CrudControllerBase<M.Agent, Agent, AgentForSave, int?>
     {
         // Hard-coded agent types
@@ -37,27 +38,33 @@ namespace BSharp.Controllers
         private readonly ILogger<AgentsController> _logger;
         private readonly IStringLocalizer<AgentsController> _localizer;
         private readonly IMapper _mapper;
+        private readonly ITenantUserInfoAccessor _tenantInfo;
 
         public AgentsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<AgentsController> logger,
-            IStringLocalizer<AgentsController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
+            IStringLocalizer<AgentsController> localizer, IMapper mapper, ITenantUserInfoAccessor tenantInfo) : base(logger, localizer, mapper)
         {
             _db = db;
             _metadataProvider = metadataProvider;
             _logger = logger;
             _localizer = localizer;
             _mapper = mapper;
+            _tenantInfo = tenantInfo;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Agent>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
-            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true);
+            return await CallAndHandleErrorsAsync(() =>
+                ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
+            );
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Agent>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
-            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
+            return await CallAndHandleErrorsAsync(() =>
+                ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
+            );
         }
 
         private async Task<ActionResult<EntitiesResponse<Agent>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
@@ -101,8 +108,7 @@ MERGE INTO [dbo].[Custodies] AS t
                 catch (Exception ex)
                 {
                     trx.Rollback();
-                    _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                    return BadRequest(ex.Message);
+                    throw ex;
                 }
             }
 
@@ -554,18 +560,19 @@ SET NOCOUNT ON;
 
             var propsArray = props.ToArray();
 
-
-
             // The result that will be returned
             var result = new AbstractDataGrid(propsArray.Length, 1);
 
             // Add the header
             var header = result[result.AddRow()];
-            for (int i = 0; i < propsArray.Length; i++)
+            int i = 0;
+            foreach (var prop in props)
             {
-                var prop = propsArray[i];
                 var display = _metadataProvider.GetMetadataForProperty(agentType, prop.Name)?.DisplayName ?? prop.Name;
-                header[i] = AbstractDataCell.Cell(display);
+                if (display != Constants.Hidden)
+                {
+                    header[i++] = AbstractDataCell.Cell(display);
+                }
             }
 
             return result;
@@ -596,20 +603,28 @@ SET NOCOUNT ON;
             var result = new AbstractDataGrid(propsArray.Length, response.Data.Count() + 1);
 
             // Add the header
-            var header = result[result.AddRow()];
-            for (int i = 0; i < propsArray.Length; i++)
+            List<PropertyInfo> addedProps = new List<PropertyInfo>(propsArray.Length);
             {
-                var prop = propsArray[i];
-                var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
-
-                header[i] = AbstractDataCell.Cell(display);
-
-                // Add the proper styling
-                if (prop.PropertyType.IsDateOrTime())
+                var header = result[result.AddRow()];
+                int i = 0;
+                foreach(var prop in propsArray)
                 {
-                    var att = prop.GetCustomAttribute<DataTypeAttribute>();
-                    var isDateOnly = att != null && att.DataType == DataType.Date;
-                    header[i].NumberFormat = ExportDateTimeFormat(dateOnly: isDateOnly);
+                    var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
+                    if (display != Constants.Hidden)
+                    {
+                        header[i] = AbstractDataCell.Cell(display);
+
+                        // Add the proper styling
+                        if (prop.PropertyType.IsDateOrTime())
+                        {
+                            var att = prop.GetCustomAttribute<DataTypeAttribute>();
+                            var isDateOnly = att != null && att.DataType == DataType.Date;
+                            header[i].NumberFormat = ExportDateTimeFormat(dateOnly: isDateOnly);
+                        }
+
+                        addedProps.Add(prop);
+                        i++;
+                    }
                 }
             }
 
@@ -618,9 +633,9 @@ SET NOCOUNT ON;
             foreach (var entity in response.Data)
             {
                 var row = result[result.AddRow()];
-                for (int i = 0; i < propsArray.Length; i++)
+                int i = 0;
+                foreach (var prop in addedProps)
                 {
-                    var prop = propsArray[i];
                     var content = prop.GetValue(entity);
 
                     // Special handling for choice lists
@@ -642,6 +657,7 @@ SET NOCOUNT ON;
                     }
 
                     row[i] = AbstractDataCell.Cell(content);
+                    i++;
                 }
             }
 
@@ -956,6 +972,11 @@ SET NOCOUNT ON;
             {
                 throw new ForbiddenException();
             }
+        }
+
+        protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
+        {
+            return ControllerUtilities.CreatedByMeFilter<Agent>(keyword, param, _tenantInfo.GetCurrentInfo().UserId.Value);
         }
     }
 }

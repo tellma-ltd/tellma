@@ -11,13 +11,20 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
 import { WorkspaceService } from './data/workspace.service';
 import { RootHttpInterceptor } from './data/root-http-interceptor';
+import { StorageService } from './data/storage.service';
+import { ApiService } from './data/api.service';
+import { UnauthorizedForCompanyComponent } from './features/unauthorized-for-company/unauthorized-for-company.component';
+import { ErrorLoadingCompanyComponent } from './features/error-loading-company/error-loading-company.component';
+import { Router } from '@angular/router';
 
 
 @NgModule({
   declarations: [
     RootComponent,
     CompaniesComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    UnauthorizedForCompanyComponent,
+    ErrorLoadingCompanyComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +43,7 @@ import { RootHttpInterceptor } from './data/root-http-interceptor';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RootHttpInterceptor,
-      deps: [WorkspaceService],
+      deps: [WorkspaceService, ApiService, StorageService, Router],
       multi: true
     }
   ],

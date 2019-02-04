@@ -9,7 +9,7 @@ import { GetResponse } from '~/app/data/dto/get-response';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { addToWorkspace } from '~/app/data/util';
-
+import { TranslateService } from '@ngx-translate/core';
 
 enum SearchStatus {
   showSpinner = 'showSpinner',
@@ -99,16 +99,16 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   private _errorMessage: string;
   private _initialText: string;
   private _viewId: string;
+  private langChangeSubscription: Subscription;
   private api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$); // for intellisense
 
   @Input()
-  formatter: (id: number | string) => string = (id: number | string) => {
-    const item = this.workspace.current.get(this.collection, id);
-    return !!item ? item.Name : '';
-  }
+  formatter: (id: number | string) => string = (id: number | string) =>
+    this.workspace.current.getMultilingualValue(this.collection, id, 'Name')
 
   ///////////////// Lifecycle Hooks
-  constructor(private apiService: ApiService, private workspace: WorkspaceService, public modalService: NgbModal) { }
+  constructor(private apiService: ApiService, private workspace: WorkspaceService,
+    public modalService: NgbModal, private translate: TranslateService) { }
 
   public focus = () => {
     this.input.nativeElement.focus();
@@ -174,12 +174,21 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
       // Auto select the first result
       this._highlightedIndex = 0; // auto select the first item
     });
+
+    // it's frequently the case that the displayed value depends on the translation
+    this.langChangeSubscription = this.translate.onLangChange.subscribe(() => {
+      this.updateUI(this.chosenItem);
+    });
   }
 
   ngOnDestroy(): void {
     // cleanup duty
     if (!!this.userInputSubscription) {
       this.userInputSubscription.unsubscribe();
+    }
+
+    if (!!this.langChangeSubscription) {
+      this.langChangeSubscription.unsubscribe();
     }
   }
 
@@ -330,7 +339,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
       // if (this.showEditSelected) {
       //   offset = offset + 1;
       // }
-      if (this.showCreateNew) {
+      if (this.showCreateNew && this.canCreateNew) {
         offset = offset + 1;
       }
       const maxIndex = this._searchResults.length - 1 + offset;
@@ -430,7 +439,20 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   get highlightCreateNew(): boolean {
-    return this.indexCreateNew === this.highlightedIndex;
+    return this.indexCreateNew === this.highlightedIndex && this.canCreateNew;
+  }
+
+  get canCreateNewPermissions(): boolean {
+    return !!this.detailsOptions && (this.detailsOptions.length !== 1 ||
+      (this.canCreatePermissions(this.detailsOptions[0].id)));
+  }
+
+  get canCreateNew(): boolean {
+    return this.canCreateNewPermissions;
+  }
+
+  get createNewTooltip(): string {
+    return this.canCreateNewPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
   get showMagnifier(): boolean {
@@ -458,6 +480,10 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   onCreateFromKeyDown = () => {
+    if (!this.canCreateNew) {
+      return;
+    }
+
     // close the dropdown
     this.status = null;
 
@@ -475,6 +501,10 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   onCreateFromFocus = () => {
+    if (!this.canCreateNew) {
+      return;
+    }
+
     // The value is already captured in onBlur() which is triggered before onCreateFromFocus()
     this.openCreateModal();
   }
@@ -483,8 +513,11 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     if (this.detailsOptions.length > 1) {
       this.modalService.open(this.detailsOptionsTemplate)
         .result.then(
-          (result) => {
-            this.openCreateModalInner(result);
+          (viewId) => {
+            if (!this.canCreateFromOptions(viewId)) {
+              return;
+            }
+            this.openCreateModalInner(viewId);
           },
           (_: any) => {
 
@@ -515,6 +548,18 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   get viewId(): string {
     return this._viewId;
+  }
+
+  public canCreatePermissions = (viewId: string): boolean => {
+    return this.workspace.current.canCreate(viewId);
+  }
+
+  public canCreateFromOptions = (viewId: string): boolean => {
+    return this.canCreatePermissions(viewId);
+  }
+
+  public createFromOptionsTooltip = (viewId: string): string => {
+    return this.canCreatePermissions(viewId) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
 }

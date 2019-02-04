@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BSharp.Controllers.Misc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,11 +11,11 @@ namespace BSharp.Controllers.DTO
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "Settings_ShortCompanyName")]
+        [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Primary)]
         public string ShortCompanyName { get; set; }
 
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "Settings_ShortCompanyName")]
+        [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Secondary)]
         public string ShortCompanyName2 { get; set; }
 
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -68,5 +69,31 @@ namespace BSharp.Controllers.DTO
         /// </summary>
         [Display(Name = "ModifiedBy")]
         public int ModifiedById { get; set; }
+    }
+
+
+    public class SettingsForClient
+    {
+        public int UserId { get; set; }
+
+        public string ShortCompanyName { get; set; }
+
+        public string ShortCompanyName2 { get; set; }
+
+        public string PrimaryLanguageId { get; set; }
+
+        public string PrimaryLanguageName { get; set; }
+
+        public string PrimaryLanguageSymbol { get; set; }
+
+        public string SecondaryLanguageId { get; set; }
+
+        public string SecondaryLanguageName { get; set; }
+
+        public string SecondaryLanguageSymbol { get; set; }
+
+        public string BrandColor { get; set; }
+               
+        public DateTimeOffset ProvisionedAt { get; set; }
     }
 }

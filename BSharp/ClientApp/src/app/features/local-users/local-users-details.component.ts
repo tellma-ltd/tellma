@@ -8,6 +8,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { Roles_DoNotApplyPermissions } from '~/app/data/dto/role';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-local-users-details',
@@ -32,7 +33,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
-  constructor(public workspace: WorkspaceService, private api: ApiService) {
+  constructor(public workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
     this.localUsersApi = this.api.localUsersApi(this.notifyDestruct$);
@@ -56,6 +57,11 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
 
   public showActivate = (model: LocalUser) => !!model && !model.IsActive;
   public showDeactivate = (model: LocalUser) => !!model && model.IsActive;
+
+  public canActivateDeactivateItem = (model: LocalUser) => this.ws.canUpdate('local-users', model.Id);
+
+  public activateDeactivateTooltip = (model: LocalUser) => this.canActivateDeactivateItem(model) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get ws() {
     return this.workspace.current;

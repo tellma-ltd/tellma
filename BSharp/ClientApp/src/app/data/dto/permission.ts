@@ -23,3 +23,14 @@ export const Permission_Level = {
   'ReadCreate': 'Permission_ReadAndCreate',
   'Sign': 'Permission_Sign',
 };
+
+export class PermissionsForClient {
+  [viewId: string]: ViewPermissionsForClient;
+}
+
+export class ViewPermissionsForClient {
+  Read: boolean;
+  Create: boolean;
+  Update: boolean;
+  Sign: boolean;
+}

@@ -85,8 +85,12 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   ngOnInit(): void {
   }
 
-  public get ws() {
+  public get c() {
     return this.workspace.current.Custodies;
+  }
+
+  public get ws() {
+    return this.workspace.current;
   }
 
   public genderLookup(value: string): string {

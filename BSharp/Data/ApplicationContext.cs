@@ -38,7 +38,6 @@ namespace BSharp.Data
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RoleMembership> RoleMemberships { get; set; }
 
-
         // Settings
         public DbSet<Settings> Settings { get; set; }
 
@@ -161,8 +160,8 @@ namespace BSharp.Data
         private readonly ITenantIdProvider _tenantIdProvider;
 
         // Constructor
-        public ApplicationContext(IShardResolver shardProvider, ITenantIdProvider tenantIdProvider, IUserService userIdProvider) :
-            base(CreateDbContextOptions(shardProvider, tenantIdProvider, userIdProvider))
+        public ApplicationContext(IShardResolver shardProvider, ITenantIdProvider tenantIdProvider, IUserProvider userIdProvider, ITenantUserInfoAccessor accessor) :
+            base(CreateDbContextOptions(shardProvider, tenantIdProvider, userIdProvider, accessor))
         {
             _tenantIdProvider = tenantIdProvider;
         }
@@ -175,7 +174,8 @@ namespace BSharp.Data
         /// <param name="tenantIdProvider">The service that retrieves tenants Ids from the headers</param>
         /// <returns></returns>
         private static DbContextOptions<ApplicationContext> CreateDbContextOptions(
-            IShardResolver shardResolver, ITenantIdProvider tenantIdProvider, IUserService userService)
+            IShardResolver shardResolver, ITenantIdProvider tenantIdProvider, 
+            IUserProvider userService, ITenantUserInfoAccessor accessor)
         {
             // Prepare the options based on the connection created with the shard manager
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
@@ -187,38 +187,74 @@ namespace BSharp.Data
             }
             else
             {
+                int tenantId = tenantIdProvider.GetTenantId() ?? throw new Controllers.Misc.BadRequestException("Tenant Id was not supplied");
+
                 // Unless this is a fake design time resolver, apply row level security and pass context info
                 SqlConnection sqlConnection = new SqlConnection(connectionString);
 
                 SqlCommand cmd = sqlConnection.CreateCommand();
                 cmd.CommandText = @"
+    -- Set the global values of the session context
+    EXEC sp_set_session_context @key=N'TenantId', @value=@TenantId;
+    EXEC sp_set_session_context @key=N'Culture', @value=@Culture;
+    EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
 
+    -- Get the User Id
+    DECLARE 
+        @UserId INT, 
+        @ExternalId NVARCHAR(450), 
+        @Email NVARCHAR(255), 
+        @SettingsVersion UNIQUEIDENTIFIER, 
+        @PermissionsVersion UNIQUEIDENTIFIER,
+        @ViewsAndSpecsVersion UNIQUEIDENTIFIER,
+        @UserSettingsVersion UNIQUEIDENTIFIER,
+        @PrimaryLanguageId NVARCHAR(255),
+        @PrimaryLanguageSymbol NVARCHAR(255),
+        @SecondaryLanguageId NVARCHAR(255),
+        @SecondaryLanguageSymbol NVARCHAR(255)
+;
 
+    SELECT
+        @UserId = Id,
+        @ExternalId = ExternalId,
+        @Email = Email,
+        @PermissionsVersion = PermissionsVersion,
+        @UserSettingsVersion = UserSettingsVersion
+    FROM [dbo].[LocalUsers] 
+    WHERE TenantId = @TenantId AND IsActive = 1 AND (ExternalId = @ExternalUserId OR Email = @UserEmail);
 
--- Set the global values of the session context
-EXEC sp_set_session_context @key=N'TenantId', @value=@TenantId;
-EXEC sp_set_session_context @key=N'Culture', @value=@Culture;
-EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
+    -- Set LastAccess (Works only if @UserId IS NOT NULL)
+    UPDATE [dbo].[LocalUsers] SET LastAccess = SYSDATETIMEOFFSET() WHERE Id = @UserId;
 
--- Get the User Id
-DECLARE @UserId INT, @ExternalId NVARCHAR(450), @Email NVARCHAR(255);
+    -- Get hashes
+    SELECT 
+        @SettingsVersion = SettingsVersion,
+        @ViewsAndSpecsVersion = ViewsAndSpecsVersion,
+        @PrimaryLanguageId = PrimaryLanguageId,
+        @PrimaryLanguageSymbol = PrimaryLanguageSymbol,
+        @SecondaryLanguageId = SecondaryLanguageId,
+        @SecondaryLanguageSymbol = SecondaryLanguageSymbol
+    FROM [dbo].[Settings]
+    WHERE TenantId = @TenantId 
 
-SELECT
-    @UserId = Id,
-    @ExternalId = ExternalId,
-    @Email = Email FROM [dbo].[LocalUsers] 
-WHERE TenantId = @TenantId AND IsActive = 1 AND (ExternalId = @ExternalUserId OR Email = @UserEmail);
+    -- Set the User Id
+    EXEC sp_set_session_context @key=N'UserId', @value=@UserId;
 
--- Set LastAccess (Works only if @UserId IS NOT NULL)
-UPDATE [dbo].[LocalUsers] SET LastAccess = SYSDATETIMEOFFSET() WHERE Id = @UserId;
-
--- Set the User Id
-EXEC sp_set_session_context @key=N'UserId', @value=@UserId;
-
--- Return the user information
-SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
+    -- Return the user information
+    SELECT 
+        @UserId AS userId, 
+        @ExternalId AS ExternalId, 
+        @Email AS Email, 
+        @SettingsVersion AS SettingsVersion, 
+        @PermissionsVersion AS PermissionsVersion,
+        @UserSettingsVersion AS UserSettingsVersion,
+        @ViewsAndSpecsVersion AS ViewsAndSpecsVersion,
+        @PrimaryLanguageId AS PrimaryLanguageId,
+        @PrimaryLanguageSymbol AS PrimaryLanguageSymbol,
+        @SecondaryLanguageId AS SecondaryLanguageId,
+        @SecondaryLanguageSymbol AS SecondaryLanguageSymbol;
 ";
-                cmd.Parameters.AddWithValue("@TenantId", tenantIdProvider.GetTenantId() ?? throw new Controllers.Misc.BadRequestException("Tenant Id was not supplied"));
+                cmd.Parameters.AddWithValue("@TenantId", tenantId);
                 cmd.Parameters.AddWithValue("@ExternalUserId", userService.GetUserId());
                 cmd.Parameters.AddWithValue("@UserEmail", userService.GetUserEmail());
                 cmd.Parameters.AddWithValue("@Culture", CultureInfo.CurrentCulture.Name);
@@ -229,15 +265,24 @@ SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
                 {
                     if (reader.Read())
                     {
-                        var user = new DbUser
+                        int i = 0;
+                        var info = new TenantUserInfo
                         {
-                            Id = reader.IsDBNull(0) ? (int?)null : reader.GetInt32(0),
-                            ExternalId = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            Email = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++),
+                            ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            Email = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            SettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                            PermissionsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                            UserSettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                            ViewsAndSpecsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                            PrimaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            PrimaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            SecondaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            SecondaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
                         };
 
                         // Provide the user throughout the current session
-                        userService.SetDbUser(user);
+                        accessor.SetInfo(tenantId, info);                        
                     }
                     else
                     {
@@ -285,7 +330,8 @@ SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
                 return new ApplicationContext(
                     new DesignTimeShardResolver(),
                     new DesignTimeTenantIdProvider(),
-                    new DesignTimeUserIdProvider()
+                    new DesignTimeUserIdProvider(),
+                    new DesignTimeTenantUserInfoAccessor()
                 );
             }
         }
@@ -313,11 +359,11 @@ SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
             }
         }
 
-        public class DesignTimeUserIdProvider : IUserService
+        public class DesignTimeUserIdProvider : IUserProvider
         {
-            public DbUser GetDbUser()
+            public DbUserInfo GetUserInfo()
             {
-                return new DbUser { };
+                return new DbUserInfo { };
             }
 
             public string GetUserEmail()
@@ -330,9 +376,26 @@ SELECT @UserId as userId, @ExternalId as ExternalId, @Email as Email;
                 return "<FakeUserId>";
             }
 
-            public void SetDbUser(DbUser user)
+            public void SetUserInfo(DbUserInfo user)
             {
 
+            }
+        }
+
+        public class DesignTimeTenantUserInfoAccessor : ITenantUserInfoAccessor
+        {
+            public TenantUserInfo GetCurrentInfo()
+            {
+                return new TenantUserInfo();
+            }
+
+            public TenantUserInfo GetInfo(int tenantId)
+            {
+                return new TenantUserInfo();
+            }
+
+            public void SetInfo(int tenantId, TenantUserInfo info)
+            {
             }
         }
 

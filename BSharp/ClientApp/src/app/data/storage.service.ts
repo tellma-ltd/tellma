@@ -6,14 +6,14 @@ import { Injectable } from '@angular/core';
 export class StorageService {
 
   public getItem(key: string): string {
-    return sessionStorage.getItem(key); // TODO Change to local storage
+    return localStorage.getItem(key); // TODO Change to local storage
   }
 
   public setItem(key: string, value: string): void {
-    sessionStorage.setItem(key, value);
+    localStorage.setItem(key, value);
   }
 
   public removeItem(key: string): void {
-    sessionStorage.removeItem(key);
+    localStorage.removeItem(key);
   }
 }

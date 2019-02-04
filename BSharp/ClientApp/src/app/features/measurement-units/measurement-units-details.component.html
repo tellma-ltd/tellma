@@ -1,38 +1,49 @@
-<b-details apiEndpoint="measurement-units"
-           collection="MeasurementUnits"
-           [createFunc]="create"
-           [expand]="expand"
-           [workspaceApplyFns]="workspaceApplyFns" 
-           [mode]="mode"
-           [masterCrumb]="'MeasurementUnits' | translate"
-           [detailsCrumb]="detailsCrumb"
-           [documentTemplate]="document"
-           [actions]="[
-              { template: activate, action: onActivate, showAction: showActivate },
-              { template: deactivate, action: onDeactivate, showAction: showDeactivate }
+<b-details apiEndpoint="measurement-units" viewId="measurement-units" collection="MeasurementUnits" [createFunc]="create"
+  [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" [mode]="mode" [masterCrumb]="'MeasurementUnits' | translate"
+  [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
 
 </b-details>
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
-  <span>{{ model?.Name }}</span>
+  <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
 </ng-template>
 
 
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit" let-validationErrors="validationErrors">
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="validationErrors.Name">
+
+  <!-- Header Name -->
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isFirstLanguage" [serverErrors]="validationErrors.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" [focusIf]="!model.Id"
-                   [placeholder]="('Name' | translate) + '...'" required></b-text-editor>
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
+      [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
   </b-form-group>
 
-  <!-- Name2 -->
-  <b-form-group class="b-form-group" [label]="'Name2' | translate" [serverErrors]="validationErrors.Name2">
-    <div *ngIf="!isEdit">{{model?.Name2}}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  <!-- Header Name2 -->
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="validationErrors.Name2">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
+      [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'"></b-text-editor>
   </b-form-group>
+  <ng-container *ngIf="ws.settings.SecondaryLanguageId">
+    <!-- Name -->
+    <b-form-group class="b-form-group" *ngIf="ws.isSecondaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+      [serverErrors]="validationErrors.Name">
+      <div *ngIf="!isEdit">{{ model?.Name }}</div>
+      <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required></b-text-editor>
+    </b-form-group>
+
+    <!-- Name2 -->
+    <b-form-group class="b-form-group" *ngIf="ws.isFirstLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
+      [serverErrors]="validationErrors.Name2">
+      <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
+      <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+    </b-form-group>
+  </ng-container>
 
   <!-- Code -->
   <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="validationErrors.Code">

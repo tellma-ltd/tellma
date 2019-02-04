@@ -1,3 +1,14 @@
-<p>
-  main-menu works!
-</p>
+<div class="container">
+  <div class="b-paper p-3">
+    <h1>Main Menu</h1>
+    <p>
+      TODO: This screen should show buttons to all the screens that the user has access to
+    </p>
+    <a class="btn btn-primary m-1" routerLink="../measurement-units">{{ 'MeasurementUnits' | translate }}</a>
+    <a class="btn btn-primary m-1" routerLink="../agents/individuals">{{ 'Individuals' | translate }}</a>
+    <a class="btn btn-primary m-1" routerLink="../agents/organizations">{{ 'Organizations' | translate }}</a>
+    <a class="btn btn-primary m-1" routerLink="../roles">{{ 'Roles' | translate }}</a>
+    <a class="btn btn-primary m-1" routerLink="../local-users">{{ 'Users' | translate }}</a>
+    <a class="btn btn-primary m-1" routerLink="../settings">{{ 'Settings' | translate }}</a>
+  </div>
+</div>

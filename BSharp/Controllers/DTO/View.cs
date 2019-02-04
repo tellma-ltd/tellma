@@ -18,10 +18,10 @@ namespace BSharp.Controllers.DTO
 
     public class View : ViewForSave<Permission>
     {
-        [Display(Name = "Name")]
+        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         public string Name { get; set; }
 
-        [Display(Name = "Name2")]
+        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         public string Name2 { get; set; }
 
         [Display(Name = "Code")]

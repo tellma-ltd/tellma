@@ -145,6 +145,9 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_InvalidLanguageId0", "Invalid Language Id '{0}'"),
             Ar(Constants.Server, "Error_InvalidLanguageId0", "مفتاح اللغة ({0}) غير معروف"),
 
+            En(Constants.Server, "Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage", "Secondary language cannot be the same as the primary language"),
+            Ar(Constants.Server, "Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage", "اللغة الثانوية هي نفسها اللغة الرئيسية"),
+            
             
             // Client Errors
             En(Constants.Client, "Error_UnableToReachServer", "Unable to reach the server, please check the connection of your device"),
@@ -170,6 +173,12 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Error_CannotModifyInactiveItemPleaseActivate", "An inactive item cannot be edited, please activate it first"),
             Ar(Constants.Client, "Error_CannotModifyInactiveItemPleaseActivate", "لا يمكن تعديل بيان غير منشط، يرجى تنشيط البيان أولا"),
+
+            En(Constants.Client, "Error_UnauthorizedForCompany", "Your account is no longer a member of this company"),
+            Ar(Constants.Client, "Error_UnauthorizedForCompany", "حسابك على النظام لم يعد معرفا كعضو في هذه الشركة"),
+
+            En(Constants.Client, "Error_LoadingCompanySettings", "Error loading company settings"),
+            Ar(Constants.Client, "Error_LoadingCompanySettings", "حدث خطأ أثناء تحميل إعدادات الشركة"),
             
             
             // Labels
@@ -244,9 +253,6 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "Agent_Title", "Title"),
             Ar(Constants.Shared, "Agent_Title", "اللقب"),
-
-            En(Constants.Shared, "Agent_Title2", "Second Title"), // TODO
-            Ar(Constants.Shared, "Agent_Title2", "اللقب الثاني"),
 
             En(Constants.Shared, "Agent_individuals_BirthDateTime", "Date of Birth"),
             Ar(Constants.Shared, "Agent_individuals_BirthDateTime", "تاريخ الميلاد"),
@@ -338,6 +344,9 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "Settings", "Settings"),
             Ar(Constants.Shared, "Settings", "إعدادات"),
 
+            En(Constants.Shared, "State", "State"),
+            Ar(Constants.Shared, "State", "الحالة"),
+
             En(Constants.Shared, "Settings_ShortCompanyName", "Short Company Name"),
             Ar(Constants.Shared, "Settings_ShortCompanyName", "اسم المؤسسة"),
             En(Constants.Client, "Settings_ShortCompanyNameDescription", "The company name that will appear to users on the screens"),
@@ -374,9 +383,6 @@ namespace BSharp.Data.Model
 
             En(Constants.Shared, "Name", "Name"),
             Ar(Constants.Shared, "Name", "الاسم"),
-
-            En(Constants.Shared, "Name2", "Second Name"), // TODO
-            Ar(Constants.Shared, "Name2", "الاسم الثاني"),
 
             En(Constants.Shared, "Code", "Code"),
             Ar(Constants.Shared, "Code", "الكود"),
@@ -468,6 +474,15 @@ namespace BSharp.Data.Model
             En(Constants.Client, "New", "New"),
             Ar(Constants.Client, "New", "جديد"),
 
+            En(Constants.Client, "MyCompanies", "My Companies"),
+            Ar(Constants.Client, "MyCompanies", "شركاتي"),
+
+            En(Constants.Client, "GoBack", "Go Back"),
+            Ar(Constants.Client, "GoBack", "رجوع"),
+
+            En(Constants.Client, "TryAgain", "Try Again"),
+            Ar(Constants.Client, "TryAgain", "حاول مجددا"),
+
             En(Constants.Client, "RequiredField", "Required Field"),
             Ar(Constants.Client, "RequiredField", "حقل مطلوب"),
 
@@ -537,8 +552,8 @@ namespace BSharp.Data.Model
             En(Constants.Client, "GeneralSettings", "General Settings"),
             Ar(Constants.Client, "GeneralSettings", "إعدادات عامة"),
 
-            En(Constants.Client, "Branding", "General Settings"),
-            Ar(Constants.Client, "Branding", "إعدادات عامة"),
+            En(Constants.Client, "Branding", "Branding"),
+            Ar(Constants.Client, "Branding", "علامة تجارية"),
 
             En(Constants.Client, "ShortMonth1", "Jan"),
             Ar(Constants.Client, "ShortMonth1", "يناير"),
@@ -650,6 +665,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Error", "Error"),
             Ar(Constants.Client, "Error", "حدث خطأ"),
+
+            En(Constants.Client, "Unauthorized", "Unauthorized"),
+            Ar(Constants.Client, "Unauthorized", "غير مصرح"),
 
             En(Constants.Client, "Dismiss", "Dismiss"),
             Ar(Constants.Client, "Dismiss", "إزالة"),

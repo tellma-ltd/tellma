@@ -1,7 +1,6 @@
 import { Component, Input, ContentChild, AfterContentInit, OnDestroy } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { NgControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'b-form-group',
@@ -79,7 +78,7 @@ export class FormGroupComponent {
   }
 
   get isRtl(): boolean {
-    return this.workspace.ws.isRtl
+    return this.workspace.ws.isRtl;
   }
 
   get popoverPlacement(): string {

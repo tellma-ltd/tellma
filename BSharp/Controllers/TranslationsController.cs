@@ -30,7 +30,7 @@ namespace BSharp.Controllers
         private readonly ILogger _logger;
 
         public TranslationsController(AdminContext db, ILogger<TranslationsController> logger, 
-            IStringLocalizer<TranslationsController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
+            IStringLocalizer<TranslationsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
         {
             _db = db;
             _logger = logger;

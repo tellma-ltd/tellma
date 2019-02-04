@@ -65,7 +65,9 @@ namespace BSharp.Data.Model
 
         internal static void OnModelCreating(ModelBuilder builder)
         {
+            // Just a random GUID
             Guid defaultGuid = new Guid("132e9cf1-e0d2-4dfd-a3a8-22e4b9b8b9fd");
+
             builder.Entity<Settings>().Property(e => e.SettingsVersion).HasDefaultValue(defaultGuid);
             builder.Entity<Settings>().Property(e => e.ViewsAndSpecsVersion).HasDefaultValue(defaultGuid);
         }

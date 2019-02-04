@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BSharp.Controllers.DTO
+{
+    /// <summary>
+    /// This DTO carries data with a version (etag) associated with it,
+    /// clients are expected to cache this data permanently, until the user signs out
+    /// (e.g. in web storage), clients are also expected to pass all versions in the 
+    /// headers of EVERY API request, and the API returns in the headers whether each 
+    /// version is fresh or stale. 
+    /// This pattern is used when a piece of data is required before client startup
+    /// (because it affects the UI for example), and we want to achieve near instantaneous
+    /// startup for clients that rely on backend data to manipulate their UI
+    /// 
+    /// Examples of such data are:
+    ///  - User permissions
+    ///  - Some settings, e.g. language settings
+    ///  - Views and configurable documents specs
+    /// </summary>
+    public class DataWithVersion<TData>
+    {
+        public string Version { get; set; }
+
+        public TData Data { get; set; }
+    }
+}

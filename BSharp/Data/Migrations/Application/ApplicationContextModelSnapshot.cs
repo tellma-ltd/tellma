@@ -115,6 +115,14 @@ namespace BSharp.Data.Migrations.Application
                     b.Property<string>("Name2")
                         .HasMaxLength(255);
 
+                    b.Property<Guid>("PermissionsVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(new Guid("aafc6590-cadf-45fe-8c4a-045f4d6f73b1"));
+
+                    b.Property<Guid>("UserSettingsVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(new Guid("aafc6590-cadf-45fe-8c4a-045f4d6f73b1"));
+
                     b.HasKey("TenantId", "Id");
 
                     b.HasIndex("CreatedByTenantId", "CreatedById1")

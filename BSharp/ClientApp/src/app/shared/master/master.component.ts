@@ -57,6 +57,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   @Input()
+  viewId: string; // for the permissions
+
+  @Input()
   tileTemplate: TemplateRef<any>;
 
   @Input()
@@ -80,6 +83,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   showExportButton = true;
 
   @Input()
+  showDeleteButton = true;
+
+  @Input()
   allowMultiselect = true;
 
   @Input()
@@ -88,7 +94,8 @@ export class MasterComponent implements OnInit, OnDestroy {
   @Input()
   multiselectActions: {
     template: TemplateRef<any>,
-    action: (p: (string | number)[]) => Observable<any>
+    action: (p: (string | number)[]) => Observable<any>,
+    requiresUpdatePermission: boolean
   }[] = [];
 
   @Input()
@@ -187,6 +194,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.exportErrorMessage = null;
     this.actionErrorMessage = null;
     this.actionValidationErrors = {};
+    this.originalTableColumnPaths = null;
 
     // Unless the data is already loaded, start loading
     if (this.state.masterStatus !== MasterStatus.loaded) {
@@ -422,6 +430,10 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   onCreate() {
+    if (!this.canCreate) {
+      return;
+    }
+
     if (this.isPopupMode) {
       this.create.emit();
     } else {
@@ -437,6 +449,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   onImport() {
+    if (!this.canImport) {
+      return;
+    }
     this.router.navigate(['.', 'import'], { relativeTo: this.route });
   }
 
@@ -452,15 +467,63 @@ export class MasterComponent implements OnInit, OnDestroy {
     return this.showCreateButton;
   }
 
-  get canCreate() {
-    return true; // TODO !this.canCreatePred || this.canCreatePred();
+  get canCreatePermissions(): boolean {
+    return this.workspace.current.canCreate(this.viewId);
   }
 
-  trackById(_, id: number | string) {
+  get canCreate(): boolean {
+    return this.canCreatePermissions;
+  }
+
+  get createTooltip(): string {
+    return this.canCreatePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
+
+  get canImportPermissions(): boolean {
+    return this.workspace.current.canCreate(this.viewId);
+  }
+
+  get canImport(): boolean {
+    return this.canImportPermissions;
+  }
+
+  get importTooltip(): string {
+    return this.canImportPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
+
+  get canExportPermissions(): boolean {
+    return this.workspace.current.canRead(this.viewId);
+  }
+
+  get canExport(): boolean {
+    return this.canExportPermissions;
+  }
+
+  get exportTooltip(): string {
+    return this.canExportPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
+
+  get showDelete() {
+    return this.showDeleteButton;
+  }
+
+  get canDeletePermissions(): boolean {
+    return this.workspace.current.canUpdate(this.viewId, null);
+  }
+
+  get canDelete(): boolean {
+    return this.canDeletePermissions;
+  }
+
+  get deleteTooltip(): string {
+    return this.canDeletePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  }
+
+  trackById(_: any, id: number | string) {
     return id;
   }
 
-  colWith(colPath: string) {
+  colWidth(colPath: string) {
     // This returns an html percentage width based on the weights assigned to this column and all the other columns
 
     // Get the weight of this column
@@ -521,16 +584,16 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   public get tableColumnPathsAndExtras() {
     if (this.originalTableColumnPaths !== this.tableColumnPaths) {
+      this.originalTableColumnPaths = this.tableColumnPaths;
 
       // This method conditionally adds the multi-select column
-      let result = this.tableColumnPaths;
+      let result: string[] = [];
 
-      if (!result) {
-        result = [];
+      if (!!this.tableColumnPaths) {
+        result = this.tableColumnPaths.slice();
       }
 
       if (this.allowMultiselect && this.isScreenMode) {
-        result = result.slice();
         result.unshift('errors');
         result.unshift('multiselect');
       }
@@ -579,6 +642,10 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   onExport() {
+    if (!this.canExport) {
+      return;
+    }
+
     const from = this.fromExport;
     const to = this.toExport;
     const format = this.exportFormat;
@@ -607,6 +674,7 @@ export class MasterComponent implements OnInit, OnDestroy {
         this.exportErrorMessage = friendlyError.error;
       }
     );
+
   }
 
   // Multiselect-related stuff
@@ -645,6 +713,14 @@ export class MasterComponent implements OnInit, OnDestroy {
   onCancelMultiselect() {
     this.checked = {};
     this.actionValidationErrors = {};
+  }
+
+  canAction(requiresUpdatePermission: boolean) {
+    return !requiresUpdatePermission || this.workspace.current.canUpdate(this.viewId, null);
+  }
+
+  actionTooltip(requiresUpdatePermission: boolean) {
+    return this.canAction(requiresUpdatePermission) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
   onAction(action: (p: (string | number)[]) => Observable<void>) {

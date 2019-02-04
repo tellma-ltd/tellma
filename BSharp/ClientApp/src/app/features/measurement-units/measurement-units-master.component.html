@@ -1,10 +1,11 @@
 <b-master apiEndpoint="measurement-units"
+          viewId="measurement-units"
           [expand]="expand" 
           [workspaceApplyFns]="workspaceApplyFns"
           [mode]="mode"
           [masterCrumb]="'MeasurementUnits' | translate"
           [tileTemplate]="tile"
-          [tableColumnPaths]="['Name', 'Name2' , 'Code', 'UnitType', 'UnitAmount', 'BaseAmount', 'IsActive']"
+          [tableColumnPaths]="adjustForMultilingual(['Name', 'Name2' , 'Code', 'UnitType', 'UnitAmount', 'BaseAmount', 'IsActive'], ['Name'], ws)"
           [tableColumnTemplates]="{
             'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
             'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
@@ -15,8 +16,8 @@
             'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
           }"
           [multiselectActions]="[
-            { template : activate, action: onActivate },
-            { template : deactivate, action: onDeactivate }
+            { template : activate, action: onActivate, requiresUpdatePermission: true },
+            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
           ]"
           [includeInactiveLabel]="'IncludeInactive' | translate"
           [filterDefinition]="{
@@ -37,35 +38,35 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ ws[id].Name }}</span>
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('MeasurementUnits', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <span>{{ ws[id].Code }}</span>
+    <span>{{ c[id].Code }}</span>
   </div>
 </ng-template>
 
 
 <!-- Table Templates -->
-<ng-template #header_Name>{{ 'Name' | translate }}</ng-template>
-<ng-template #row_Name let-id="id"> {{ ws[id].Name }} </ng-template>
+<ng-template #header_Name>{{ ('Name' | translate) + ws.primaryPostfix }}</ng-template>
+<ng-template #row_Name let-id="id"> {{ c[id].Name }} </ng-template>
 
-<ng-template #header_Name2>{{ 'Name2' | translate }}</ng-template>
-<ng-template #row_Name2 let-id="id"> {{ ws[id].Name2 }} </ng-template>
+<ng-template #header_Name2>{{ ('Name' | translate) + ws.secondaryPostfix }}</ng-template>
+<ng-template #row_Name2 let-id="id"> {{ c[id].Name2 }} </ng-template>
 
 <ng-template #header_Code>{{ 'Code' | translate }}</ng-template>
-<ng-template #row_Code let-id="id"> {{ ws[id].Code }} </ng-template>
+<ng-template #row_Code let-id="id"> {{ c[id].Code }} </ng-template>
 
 <ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
-<ng-template #row_IsActive let-id="id"> {{ (ws[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
+<ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
 
 <ng-template #header_UnitType>{{ 'MU_UnitType' | translate }}</ng-template>
-<ng-template #row_UnitType let-id="id"> {{ unitTypeLookup(ws[id].UnitType) | translate }} </ng-template>
+<ng-template #row_UnitType let-id="id"> {{ unitTypeLookup(c[id].UnitType) | translate }} </ng-template>
 
 <ng-template #header_UnitAmount>{{ 'MU_UnitAmount' | translate }}</ng-template>
-<ng-template #row_UnitAmount let-id="id"> {{ ws[id].UnitAmount | number }} </ng-template>
+<ng-template #row_UnitAmount let-id="id"> {{ c[id].UnitAmount | number }} </ng-template>
 
 <ng-template #header_BaseAmount>{{ 'MU_BaseAmount' | translate }}</ng-template>
-<ng-template #row_BaseAmount let-id="id"> {{ ws[id].BaseAmount | number }} </ng-template>
+<ng-template #row_BaseAmount let-id="id"> {{ c[id].BaseAmount | number }} </ng-template>
 
 
 <!-- Multiselect Actions -->

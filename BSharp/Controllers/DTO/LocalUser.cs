@@ -12,11 +12,11 @@ namespace BSharp.Controllers.DTO
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "Name")]
+        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         public string Name { get; set; }
 
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "Name2")]
+        [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
         public string Name2 { get; set; }
 
         [Required(ErrorMessage = nameof(RequiredAttribute))]

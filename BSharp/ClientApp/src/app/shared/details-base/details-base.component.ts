@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, Input, EventEmitter, OnDestroy, Output } 
 import { DetailsComponent } from '~/app/shared/details/details.component';
 import { Observable, Subscription } from 'rxjs';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
+import { TenantWorkspace } from '~/app/data/workspace.service';
 
 @Component({
   template: ''
@@ -75,4 +76,19 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
     return !!this.details ? this.details.canDeactivate() : true;
   }
 
+  getMultilingualValue(item: any, propName: string, ws: TenantWorkspace) {
+    if (!!propName) {
+      const propName2 = propName + '2';
+
+      if (!!item) {
+        if (ws.isSecondaryLanguage && !!item[propName2]) {
+          return item[propName2];
+        } else {
+          return item[propName];
+        }
+      }
+    }
+
+    return null;
+  }
 }

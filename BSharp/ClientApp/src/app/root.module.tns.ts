@@ -12,12 +12,16 @@ import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
 import { WorkspaceService } from './data/workspace.service';
 import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { NativeScriptLocalizeModule } from 'nativescript-localize/angular';
+import { UnauthorizedForCompanyComponent } from './features/unauthorized-for-company/unauthorized-for-company.component';
+import { ErrorLoadingCompanyComponent } from './features/error-loading-company/error-loading-company.component';
 
 @NgModule({
   declarations: [
     RootComponent,
     CompaniesComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    UnauthorizedForCompanyComponent,
+    ErrorLoadingCompanyComponent
   ],
   imports: [
     NativeScriptModule,

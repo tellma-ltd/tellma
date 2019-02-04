@@ -26,8 +26,12 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
     this.measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$);
   }
 
-  public get ws() {
+  public get c() {
     return this.workspace.current.MeasurementUnits;
+  }
+
+  public get ws() {
+    return this.workspace.current;
   }
 
   public unitTypeLookup(value: string): string {

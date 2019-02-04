@@ -19,7 +19,9 @@ import { appconfig } from './appconfig';
 import { Agent } from './dto/agent';
 import { Role } from './dto/role';
 import { View } from './dto/view';
-import { Settings } from './dto/settings';
+import { Settings, SettingsForClient } from './dto/settings';
+import { DataWithVersion } from './dto/data-with-version';
+import { PermissionsForClient } from './dto/permission';
 
 @Injectable({
   providedIn: 'root'
@@ -91,6 +93,28 @@ export class ApiService {
         return obs$;
       },
 
+      getForClient: () => {
+        const url = appconfig.apiAddress + `api/settings/client`;
+        const obs$ = this.http.get<DataWithVersion<SettingsForClient>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      ping: () => {
+        const url = appconfig.apiAddress + `api/settings/ping`;
+        const obs$ = this.http.get(url).pipe(
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
       save: (entity: Settings, args: SaveArguments) => {
         this.saveInProgress = true;
         args = args || {};
@@ -118,6 +142,23 @@ export class ApiService {
 
         return obs$;
       }
+    };
+  }
+
+  public permissionsApi(cancellationToken$: Observable<void>) {
+    return {
+      getForClient: () => {
+        const url = appconfig.apiAddress + `api/permissions/client`;
+        const obs$ = this.http.get<DataWithVersion<PermissionsForClient>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
     };
   }
 
@@ -388,7 +429,10 @@ export class ApiService {
   }
 
   // Function to turn status codes into friendly localized human-readable errors
-  friendly(error: any) {
+  friendly(error: any): {
+    status: number,
+    error: any
+  } {
     const friendlyStructure = (status: number, err: any) => {
       return {
         status: status,

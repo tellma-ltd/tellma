@@ -27,7 +27,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
-
         [Trait(Testing, settings)]
         [Fact(DisplayName = "002 - Getting settings returns a 200 OK settings object")]
         public async Task Test3301()
@@ -90,7 +89,29 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(settings.BrandColor, responseDto.BrandColor);
 
             // Make sure the settings hash is updated
-            Assert.NotEqual(settings.SettingsHash, responseDto.SettingsHash);
+            Assert.NotEqual(settings.SettingsVersion, responseDto.SettingsVersion);
+        }
+
+        [Trait(Testing, settings)]
+        [Fact(DisplayName = "004 - Getting settings for client returns a 200 OK settings object with a version")]
+        public async Task Test3303()
+        {
+            // Call the API
+            var response = await _client.GetAsync($"{settingsURL}/client");
+            _output.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert the result is 200 OK
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            // Confirm the result is a well formed response
+            var responseData = await response.Content.ReadAsAsync<DataWithVersion<SettingsForClient>>();
+
+            // Assert the result makes sense
+            Assert.NotNull(responseData.Version);
+            var settings = responseData.Data;
+
+            Assert.Contains("Contoso", settings.ShortCompanyName);
+            Assert.Equal("English", settings.PrimaryLanguageName);
         }
     }
 }

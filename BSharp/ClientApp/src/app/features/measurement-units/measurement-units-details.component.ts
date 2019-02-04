@@ -7,6 +7,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-measurement-units-details',
@@ -30,7 +31,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
-  constructor(private workspace: WorkspaceService, private api: ApiService) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
     this.measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$);
@@ -55,6 +56,9 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
     return MeasurementUnit_UnitType[value];
   }
 
+  public get ws() {
+    return this.workspace.current;
+  }
 
   public onActivate = (model: MeasurementUnit): void => {
     if (!!model && !!model.Id) {
@@ -74,4 +78,9 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
 
   public showActivate = (model: MeasurementUnit) => !!model && !model.IsActive;
   public showDeactivate = (model: MeasurementUnit) => !!model && model.IsActive;
+
+  public canActivateDeactivateItem = (model: MeasurementUnit) => this.ws.canUpdate('measurement-units', model.Id);
+
+  public activateDeactivateTooltip = (model: MeasurementUnit) => this.canActivateDeactivateItem(model) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

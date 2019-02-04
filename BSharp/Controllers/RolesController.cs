@@ -4,6 +4,7 @@ using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
+using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -23,6 +24,7 @@ using M = BSharp.Data.Model;
 namespace BSharp.Controllers
 {
     [Route("api/roles")]
+    [LoadTenantInfo]
     public class RolesController : CrudControllerBase<M.Role, Role, RoleForSave, int?>
     {
         private readonly ApplicationContext _db;
@@ -30,29 +32,34 @@ namespace BSharp.Controllers
         private readonly ILogger<RolesController> _logger;
         private readonly IStringLocalizer<RolesController> _localizer;
         private readonly IMapper _mapper;
+        private readonly ITenantUserInfoAccessor _tenantInfoAccessor;
 
         public RolesController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<RolesController> logger,
-            IStringLocalizer<RolesController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
+            IStringLocalizer<RolesController> localizer, IMapper mapper, ITenantUserInfoAccessor tenantInfoAccessor) : base(logger, localizer, mapper)
         {
             _db = db;
             _metadataProvider = metadataProvider;
             _logger = logger;
             _localizer = localizer;
             _mapper = mapper;
+            _tenantInfoAccessor = tenantInfoAccessor;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Role>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
-            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true);
+            return await CallAndHandleErrorsAsync(() =>
+                ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
+            );
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Role>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
-            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
+            return await CallAndHandleErrorsAsync(() =>
+                ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
+            );
         }
-
         private async Task<ActionResult<EntitiesResponse<Role>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             await CheckActionPermissions(ids.Cast<int?>());
@@ -75,6 +82,10 @@ namespace BSharp.Controllers
                     };
 
                     string sql = @"
+-- TODO: PermissionsVersion
+DECLARE @NewId UNIQUEIDENTIFIER = NEWID();
+UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
+
 DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
@@ -98,8 +109,7 @@ MERGE INTO [dbo].[Roles] AS t
                 catch (Exception ex)
                 {
                     trx.Rollback();
-                    _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                    return BadRequest(ex.Message);
+                    throw ex;
                 }
             }
 
@@ -217,7 +227,7 @@ MERGE INTO [dbo].[Roles] AS t
 
                 // Manually include the views by invoking the Views repository
                 var viewIds = models.SelectMany(e => e.Permissions).Select(e => e.ViewId).Where(e => e != null).Distinct();
-                var repo = new ViewsRepository(_db, _localizer);
+                var repo = new ViewsRepository(_db, _localizer, _tenantInfoAccessor);
                 var allViews = repo.GetAllViews().ToDictionary(e => e.Id);
 
                 var viewList = new List<View>(viewIds.Count());
@@ -441,6 +451,10 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             };
 
             string saveSql = $@"
+-- TODO: PermissionsVersion
+DECLARE @NewId UNIQUEIDENTIFIER = NEWID();
+UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
+
 -- Procedure: Roles__Save
     DECLARE @IndexedIds [dbo].[IndexedIdList], @PermissionsIndexedIds [dbo].[IndexedIdList];
 	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
@@ -557,7 +571,12 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
                 try
                 {
                     // Delete efficiently with a SQL query
-                    await _db.Database.ExecuteSqlCommandAsync("DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                    await _db.Database.ExecuteSqlCommandAsync(@"
+-- TODO: PermissionsVersion
+DECLARE @NewId UNIQUEIDENTIFIER = NEWID();
+UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
+
+DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
 
                     // Commit and return
                     trx.Commit();
@@ -638,6 +657,11 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             {
                 throw new ForbiddenException();
             }
+        }
+
+        protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
+        {
+            return ControllerUtilities.CreatedByMeFilter<Agent>(keyword, param, _tenantInfoAccessor.GetCurrentInfo().UserId.Value);
         }
     }
 }

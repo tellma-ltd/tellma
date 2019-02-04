@@ -2,7 +2,6 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
-using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
@@ -26,6 +25,7 @@ using M = BSharp.Data.Model;
 namespace BSharp.Controllers
 {
     [Route("api/local-users")]
+    [LoadTenantInfo]
     public class LocalUsersController : CrudControllerBase<M.LocalUser, LocalUser, LocalUserForSave, int?>
     {
         private readonly ApplicationContext _db;
@@ -35,12 +35,13 @@ namespace BSharp.Controllers
         private readonly ILogger<LocalUsersController> _logger;
         private readonly IStringLocalizer<LocalUsersController> _localizer;
         private readonly IMapper _mapper;
-        private readonly IUserService _userService;
 
-        public LocalUsersController(
-            ApplicationContext db, AdminContext adminDb, ITenantIdProvider tenantIdProvider,
+        private readonly ITenantUserInfoAccessor _tenantInfo;
+
+        public LocalUsersController(ApplicationContext db, AdminContext adminDb,
             IModelMetadataProvider metadataProvider, ILogger<LocalUsersController> logger,
-            IStringLocalizer<LocalUsersController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
+            IStringLocalizer<LocalUsersController> localizer, IMapper mapper, ITenantIdProvider tenantIdProvider,
+            ITenantUserInfoAccessor tenantInfo) : base(logger, localizer, mapper)
         {
             _db = db;
             _adminDb = adminDb;
@@ -49,25 +50,31 @@ namespace BSharp.Controllers
             _logger = logger;
             _localizer = localizer;
             _mapper = mapper;
-            _userService = userService;
+            _tenantInfo = tenantInfo;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<LocalUser>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
-            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true);
+            return await CallAndHandleErrorsAsync(() =>
+                ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
+            );
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<LocalUser>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
-            var currentUserId = _userService.GetDbUser()?.Id;
-            if(ids.Any(id => id == currentUserId))
-            {
-                return BadRequest(_localizer["Error_CannotDeactivateYourOwnUser"].Value);
-            }
+            return await CallAndHandleErrorsAsync(async () =>
+                {
+                    var currentUserId = _tenantInfo.GetCurrentInfo().UserId.Value;
+                    if (ids.Any(id => id == currentUserId))
+                    {
+                        return BadRequest(_localizer["Error_CannotDeactivateYourOwnUser"].Value);
+                    }
 
-            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
+                    return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
+                }
+            );
         }
 
         private async Task<ActionResult<EntitiesResponse<LocalUser>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
@@ -167,8 +174,7 @@ namespace BSharp.Controllers
                 catch (Exception ex)
                 {
                     trxApp.Rollback();
-                    _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                    return BadRequest(ex.Message);
+                    throw ex;
                 }
             }
 
@@ -528,7 +534,8 @@ namespace BSharp.Controllers
 				-- t.[ExternalId]		= s.[ExternalId],
 				t.[AgentId]	        = s.[AgentId],
 				t.[ModifiedAt]	    = @Now,
-				t.[ModifiedById]    = @UserId
+				t.[ModifiedById]    = @UserId,
+                t.[PermissionsVersion] = NEWID() -- in case the permissions have changed
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[TenantId], [Name], [Name2],	[Email],	[ExternalId],    [AgentId], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById]
@@ -603,7 +610,7 @@ namespace BSharp.Controllers
         protected override async Task DeleteAsync(List<int?> ids)
         {
             // Make sure the user is not deleting his/her own account
-            var currentUserId = _userService.GetDbUser()?.Id;
+            var currentUserId = _tenantInfo.GetCurrentInfo().UserId.Value;
             if (ids.Any(id => id == currentUserId))
             {
                 throw new BadRequestException(_localizer["Error_CannotDeleteYourOwnUser"].Value);
@@ -713,7 +720,7 @@ namespace BSharp.Controllers
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @True BIT = 1;
 
-    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Email, E.ExternalId, E.AgentId, NULL AS LastAccess,
+    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Email, E.ExternalId, E.AgentId, NULL AS LastAccess, NEWID() AS PermissionsVersion, NEWID() AS UserSettingsVersion,
     @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @UserId AS CreatedById1, @TenantId AS CreatedByTenantId , @Now AS ModifiedAt, @UserId AS ModifiedById 
     FROM @Entities E
 ";
@@ -747,5 +754,9 @@ namespace BSharp.Controllers
             }
         }
 
+        protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
+        {
+            return ControllerUtilities.CreatedByMeFilter<Agent>(keyword, param, _tenantInfo.GetCurrentInfo().UserId.Value);
+        }
     }
 }

@@ -81,22 +81,30 @@
       <!-- Left Buttons -->
       <div>
         <!-- Create -->
-        <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()" *ngIf="showCreate" [disabled]="!canCreate">
-          <fa-icon icon="plus"></fa-icon>
-          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
-        </button>
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body">
+          <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()" *ngIf="showCreate" [disabled]="!canCreate">
+            <fa-icon icon="plus"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
+          </button>
+        </div>
 
         <!-- Import -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" *ngIf="showImport" (click)="onImport()">
-          <fa-icon icon="upload"></fa-icon>
-          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Import' | translate }}</span>
-        </button>
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="importTooltip" container="body">
+          <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" *ngIf="showImport" (click)="onImport()"
+            [disabled]="!canImport">
+            <fa-icon icon="upload"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Import' | translate }}</span>
+          </button>
+        </div>
 
         <!-- Export -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" *ngIf="showExport" (click)="modalService.open(exportModal)">
-          <fa-icon icon="download"></fa-icon>
-          <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
-        </button>
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body">
+          <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" *ngIf="showExport" (click)="modalService.open(exportModal)"
+            [disabled]="!canExport">
+            <fa-icon icon="download"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- Right Buttons -->
@@ -151,13 +159,17 @@
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngFor="let action of multiselectActions">
-              <button type="button" class="dropdown-item btn-light" (click)="onAction(action.action)">
-                <ng-container *ngTemplateOutlet="action.template"></ng-container>
-              </button>
+              <div [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action.requiresUpdatePermission)" container="body">
+                <button type="button" class="dropdown-item btn-light" (click)="onAction(action.action)" [disabled]="!canAction(action.requiresUpdatePermission)">
+                  <ng-container *ngTemplateOutlet="action.template"></ng-container>
+                </button>
+              </div>
             </ng-container>
-            <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)">
-              {{ 'Delete' | translate }}
-            </button>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body">
+              <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)" [disabled]="!canDelete">
+                {{ 'Delete' | translate }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -241,7 +253,7 @@
               <ng-container cdkColumnDef="{{colPath}}">
 
                 <!-- Column header -->
-                <th class="b-pointer" [style.width]="colWith(colPath)" [class.dropdown-toggle]="orderBy === colPath"
+                <th class="b-pointer" [style.width]="colWidth(colPath)" [class.dropdown-toggle]="orderBy === colPath"
                   cdk-header-cell *cdkHeaderCellDef (click)="onOrderBy(colPath)">
                   <ng-content *ngTemplateOutlet="tableColumnTemplates[colPath].headerTemplate">
                   </ng-content>

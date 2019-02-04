@@ -8,6 +8,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-agents-details',
@@ -46,7 +47,8 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return result;
   }
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute, private router: Router) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute,
+    private router: Router, private translate: TranslateService) {
     super();
   }
 
@@ -119,4 +121,13 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
   public showActivate = (model: Agent) => !!model && !model.IsActive;
   public showDeactivate = (model: Agent) => !!model && model.IsActive;
+
+  public canActivateDeactivateItem = (model: Agent) => this.ws.canUpdate(model.AgentType, model.Id);
+
+  public activateDeactivateTooltip = (model: Agent) => this.canActivateDeactivateItem(model) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+
+  public get ws() {
+    return this.workspace.current;
+  }
 }

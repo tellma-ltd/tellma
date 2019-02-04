@@ -22,6 +22,9 @@ import { Subject, Observable, of } from 'rxjs';
 export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   @Input()
+  viewId: string; // for the permissions
+
+  @Input()
   collection: string;
 
   @Input()
@@ -53,6 +56,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     template: TemplateRef<any>,
     action: (model: DtoForSaveKeyBase) => void,
     canAction?: (model: DtoForSaveKeyBase) => boolean,
+    actionTooltip?: (model: DtoForSaveKeyBase) => string,
     showAction?: (model: DtoForSaveKeyBase) => boolean
   }[] = [];
 
@@ -285,8 +289,8 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
             }
           }),
           catchError((friendlyError) => {
-            this.state.detailsStatus = DetailsStatus.error;
             this._errorMessage = friendlyError.error;
+            this.state.detailsStatus = DetailsStatus.error;
             return of(null);
           })
         );
@@ -320,9 +324,9 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   private get globalState(): MasterDetailsStore {
     if (!this.workspace.current.mdState[this.apiEndpoint]) {
-      if (this.mode === 'screen') {
-        this.workspace.current.mdState = {}; // This forces any other master/details screen to refresh
-      }
+      // if (this.mode === 'screen') {
+      //   this.workspace.current.mdState = {}; // This forces any other master/details screen to refresh
+      // }
 
       this.workspace.current.mdState[this.apiEndpoint] = new MasterDetailsStore();
     }
@@ -480,14 +484,30 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   onCreate(): void {
+    if (!this.canCreate) {
+      return;
+    }
+
     this.router.navigate(['..', 'new'], { relativeTo: this.route });
   }
 
+  get canCreatePermissions(): boolean {
+    return this.workspace.current.canCreate(this.viewId);
+  }
+
   get canCreate(): boolean {
-    return true; // TODO !this.canUpdatePred || this.canUpdatePred();
+    return this.canCreatePermissions;
+  }
+
+  get createTooltip(): string {
+    return this.canCreatePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
   onClone(): void {
+    if (!this.canClone) {
+      return;
+    }
+
     const params: Params = {
       cloneId: this.activeModel.Id.toString()
     };
@@ -496,10 +516,18 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   get canClone(): boolean {
-    return !!this.activeModel && !!this.activeModel;
+    return !!this.activeModel && !!this.activeModel && this.canCreate;
+  }
+
+  get cloneTooltip(): string {
+    return this.createTooltip;
   }
 
   onEdit(): void {
+    if (!this.canEdit) {
+      return;
+    }
+
     if (this.viewModel) {
       const error = this.isInactive(this.viewModel);
       if (error) {
@@ -511,14 +539,22 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
         // show the edit view
         this.state.detailsStatus = DetailsStatus.edit;
-
       }
     }
   }
 
+  get canEditPermissions(): boolean {
+
+    const createdById = this.activeModel ? this.activeModel['CreatedById'] : null;
+    return this.workspace.current.canUpdate(this.viewId, createdById);
+  }
+
   get canEdit(): boolean {
-    // TODO  (!this.canUpdatePred || this.canUpdatePred()) && (this.activeModel && this.enableEditButtonPred(this.activeModel));
-    return !!this.activeModel;
+    return this.activeModel && this.canEditPermissions;
+  }
+
+  get editTooltip(): string {
+    return this.canEditPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
   onSave(): void {
@@ -627,9 +663,16 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     );
   }
 
+  get canDeletePermissions(): boolean {
+    return this.canEditPermissions;
+  }
+
   get canDelete(): boolean {
-    // TODO && (!this.canUpdatePred || this.canUpdatePred());
-    return !!this.viewModel;
+    return !!this.viewModel && this.canDeletePermissions;
+  }
+
+  get deleteTooltip(): string {
+    return this.canDeletePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
   onNext(): void {
@@ -742,4 +785,15 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
+  public actionTooltip(action: {
+    actionTooltip?: (model: DtoForSaveKeyBase) => string
+  }): string {
+
+    if (!!action.actionTooltip) {
+      return action.actionTooltip(this.activeModel);
+    } else {
+      // don't show a tooltip by default
+      return '';
+    }
+  }
 }

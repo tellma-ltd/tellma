@@ -19,11 +19,13 @@ import { LocalUsersDetailsComponent } from './local-users/local-users-details.co
 import { LocalUsersMasterComponent } from './local-users/local-users-master.component';
 import { LocalUsersImportComponent } from './local-users/local-users-import.component';
 import { SettingsComponent } from './settings/settings.component';
+import { TenantResolverGuard } from '../data/tenant-resolver.guard';
 
 const routes: Routes = [
   {
     path: ':tenantId',
     component: ApplicationShellComponent,
+    canActivate: [TenantResolverGuard],
     children: [
       // Measurement Units
       {

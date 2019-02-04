@@ -17,11 +17,11 @@ namespace BSharp.Controllers.DTO
         public string TaxIdentificationNumber { get; set; }
 
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "Agent_Title")]
+        [MultilingualDisplay(Name = "Agent_Title", Language = Language.Primary)]
         public string Title { get; set; }
 
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [Display(Name = "Agent_Title2")]
+        [MultilingualDisplay(Name = "Agent_Title", Language = Language.Secondary)]
         public string Title2 { get; set; }
 
         [ChoiceList(new object[] { 'M', 'F' }, new string[] { "Agent_Male", "Agent_Female" })]

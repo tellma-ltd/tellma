@@ -1,5 +1,5 @@
-<b-master [apiEndpoint]="'agents/' + agentType" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" [mode]="mode" [masterCrumb]="masterCrumb | translate"
-  [tileTemplate]="tile" [tableColumnPaths]="tableColumnPaths" [tableColumnTemplates]="{
+<b-master [apiEndpoint]="'agents/' + agentType" [viewId]="agentType" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" [mode]="mode" [masterCrumb]="masterCrumb | translate"
+  [tileTemplate]="tile" [tableColumnPaths]="adjustForMultilingual(tableColumnPaths, ['Name', 'Title'], ws)" [tableColumnTemplates]="{
             'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
             'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
             'Title' : { headerTemplate : header_Title, rowTemplate : row_Title, weight : 1 },
@@ -13,8 +13,8 @@
             'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
           }"
   [multiselectActions]="[
-            { template : activate, action: onActivate },
-            { template : deactivate, action: onDeactivate }
+            { template : activate, action: onActivate, requiresUpdatePermission: true },
+            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
           ]"
   [includeInactiveLabel]="'IncludeInactive' | translate" 
   [filterDefinition]="agentType === 'individuals' ? {
@@ -37,50 +37,47 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ ws[id].Name }}</span>
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Custodies', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <span>{{ ws[id].Code }}</span>
+    <span>{{ c[id].Code }}</span>
   </div>
 </ng-template>
 
 
 <!-- Table Templates -->
-<ng-template #header_Name>{{ 'Name' | translate }}</ng-template>
-<ng-template #row_Name let-id="id"> {{ ws[id].Name }} </ng-template>
+<ng-template #header_Name>{{ ('Name' | translate) + ws.primaryPostfix }}</ng-template>
+<ng-template #row_Name let-id="id"> {{ c[id].Name }} </ng-template>
 
-<ng-template #header_Name2>{{ 'Name2' | translate }}</ng-template>
-<ng-template #row_Name2 let-id="id"> {{ ws[id].Name2 }} </ng-template>
+<ng-template #header_Name2>{{ ('Name' | translate) + ws.secondaryPostfix }}</ng-template>
+<ng-template #row_Name2 let-id="id"> {{ c[id].Name2 }} </ng-template>
 
-<ng-template #header_Title>{{ 'Agent_Title' | translate }}</ng-template>
-<ng-template #row_Title let-id="id"> {{ ws[id].Title }} </ng-template>
+<ng-template #header_Title>{{ ('Agent_Title' | translate) + ws.primaryPostfix }}</ng-template>
+<ng-template #row_Title let-id="id"> {{ c[id].Title }} </ng-template>
 
-<ng-template #header_Title2>{{ 'Agent_Title2' | translate }}</ng-template>
-<ng-template #row_Title2 let-id="id"> {{ ws[id].Title2 }} </ng-template>
+<ng-template #header_Title2>{{ ('Agent_Title' | translate) + ws.secondaryPostfix }}</ng-template>
+<ng-template #row_Title2 let-id="id"> {{ c[id].Title2 }} </ng-template>
 
 <ng-template #header_Code>{{ 'Code' | translate }}</ng-template>
-<ng-template #row_Code let-id="id"> {{ ws[id].Code }} </ng-template>
+<ng-template #row_Code let-id="id"> {{ c[id].Code }} </ng-template>
 
 <ng-template #header_Address>{{ 'Custody_Address' | translate }}</ng-template>
-<ng-template #row_Address let-id="id"> {{ ws[id].Address }} </ng-template>
+<ng-template #row_Address let-id="id"> {{ c[id].Address }} </ng-template>
 
 <ng-template #header_BirthDateTime>{{ birthDateTimeName | translate }}</ng-template>
-<ng-template #row_BirthDateTime let-id="id"> {{ ws[id].BirthDateTime | date:'yyyy-MM-dd' }} </ng-template>
+<ng-template #row_BirthDateTime let-id="id"> {{ c[id].BirthDateTime | date:'yyyy-MM-dd' }} </ng-template>
 
 <ng-template #header_IsRelated>{{ 'Agent_IsRelated' | translate }}</ng-template>
-<ng-template #row_IsRelated let-id="id"> {{ (ws[id].IsRelated ? 'Yes' : 'No') | translate }} </ng-template>
+<ng-template #row_IsRelated let-id="id"> {{ (c[id].IsRelated ? 'Yes' : 'No') | translate }} </ng-template>
 
 <ng-template #header_TaxIdentificationNumber>{{ 'Agent_TaxIdentificationNumber' | translate }}</ng-template>
-<ng-template #row_TaxIdentificationNumber let-id="id"> {{ ws[id].TaxIdentificationNumber }} </ng-template>
+<ng-template #row_TaxIdentificationNumber let-id="id"> {{ c[id].TaxIdentificationNumber }} </ng-template>
 
 <ng-template #header_Gender>{{ 'Agent_Gender' | translate }}</ng-template>
-<ng-template #row_Gender let-id="id"> {{ genderLookup(ws[id].Gender) | translate }} </ng-template>
+<ng-template #row_Gender let-id="id"> {{ genderLookup(c[id].Gender) | translate }} </ng-template>
 
 <ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
-<ng-template #row_IsActive let-id="id"> {{ (ws[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
-
-
-
+<ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
 
 
 <!-- Multiselect Actions -->

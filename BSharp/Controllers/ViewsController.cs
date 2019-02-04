@@ -4,6 +4,7 @@ using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
+using BSharp.Services.MultiTenancy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -21,6 +23,7 @@ using M = BSharp.Data.Model;
 namespace BSharp.Controllers
 {
     [Route("api/views")]
+    [LoadTenantInfo]
     public class ViewsController : CrudControllerBase<ViewDefinition, View, ViewForSave, string>
     {
         private readonly ApplicationContext _db;
@@ -28,15 +31,17 @@ namespace BSharp.Controllers
         private readonly ILogger<ViewsController> _logger;
         private readonly IStringLocalizer<ViewsController> _localizer;
         private readonly IMapper _mapper;
+        private readonly ITenantUserInfoAccessor _accessor;
 
         public ViewsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<ViewsController> logger,
-            IStringLocalizer<ViewsController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
+            IStringLocalizer<ViewsController> localizer, IMapper mapper, ITenantUserInfoAccessor accessor) : base(logger, localizer, mapper)
         {
             _db = db;
             _metadataProvider = metadataProvider;
             _logger = logger;
             _localizer = localizer;
             _mapper = mapper;
+            _accessor = accessor;
         }
 
         protected override async Task<IDbContextTransaction> BeginSaveTransaction()
@@ -44,71 +49,9 @@ namespace BSharp.Controllers
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
-        //protected override string ViewId()
-        //{
-        //    return "views";
-        //}
-
-        //protected override Task<GetResponse<View>> GetImplAsync(GetArguments args)
-        //{
-        //    // TODO Authorize for GET
-
-        //    // Get a readonly query
-        //    IQueryable<ViewDefinition> query = GetBaseQuery().AsNoTracking();
-
-        //    // Include inactive
-        //    query = IncludeInactive(query, inactive: args.Inactive);
-
-        //    // Search
-        //    query = Search(query, args.Search);
-
-        //    // Filter
-        //    query = Filter(query, args.Filter);
-
-        //    // Before ordering or paging, retrieve the total count
-        //    int totalCount = query.Count();
-
-        //    // OrderBy
-        //    query = OrderBy(query, args.OrderBy, args.Desc);
-
-        //    // Apply the paging (Protect against DOS attacks by enforcing a maximum page size)
-        //    var top = args.Top;
-        //    var skip = args.Skip;
-        //    top = Math.Min(top, MaximumPageSize());
-        //    query = query.Skip(skip).Take(top);
-
-        //    // Apply the expand, which has the general format 'Expand=A,B/C,D'
-        //    query = Expand(query, args.Expand);
-
-        //    // Load the data, transform it and wrap it in some metadata
-        //    var memoryList = query.ToList();
-
-        //    // Flatten related entities and map each to its respective DTO 
-        //    var relatedEntities = FlattenRelatedEntities(memoryList, args.Expand);
-
-        //    // Map the primary result to DTOs as well
-        //    var resultData = Map(memoryList);
-
-        //    // Prepare the result in a response object
-        //    var result = new GetResponse<View>
-        //    {
-        //        Skip = skip,
-        //        Top = resultData.Count(),
-        //        OrderBy = args.OrderBy,
-        //        Desc = args.Desc,
-        //        TotalCount = totalCount,
-        //        Data = resultData,
-        //        RelatedEntities = relatedEntities,
-        //        CollectionName = GetCollectionName(typeof(View))
-        //    };
-
-        //    // Finally return the result
-        //    return Task.FromResult(result);
-        //}
-
         protected override IQueryable<ViewDefinition> GetBaseQuery()
         {
-            var repo = new ViewsRepository(_db, _localizer);
+            var repo = new ViewsRepository(_db, _localizer, _accessor);
             return repo.GetAllViews().AsQueryable();
         }
 
@@ -203,11 +146,17 @@ namespace BSharp.Controllers
         private readonly IStringLocalizer _localizer;
         private readonly IStringLocalizer _localizer2;
 
-        public ViewsRepository(ApplicationContext db, IStringLocalizer localizer)
+        public ViewsRepository(ApplicationContext db, IStringLocalizer localizer, ITenantUserInfoAccessor accessor)
         {
             _db = db;
-            _localizer = localizer;
-            _localizer2 = localizer.WithCulture(new System.Globalization.CultureInfo("ar")); // TODO
+
+            // Initialize localizer 1 and localizer 2 based on the company languages
+            var tenantInfo = accessor.GetCurrentInfo();
+            _localizer = localizer.WithCulture(new CultureInfo(tenantInfo.PrimaryLanguageId));
+            if(tenantInfo.SecondaryLanguageId != null)
+            {
+                _localizer2 = localizer.WithCulture(new CultureInfo(tenantInfo.SecondaryLanguageId)); // TODO
+            }
         }
 
         public static IEnumerable<StaticViewDefinition> GetAllStaticViews()
@@ -248,7 +197,7 @@ namespace BSharp.Controllers
                 {
                     Id = view.Code,
                     Name = _localizer[view.Name],
-                    Name2 = _localizer2[view.Name],
+                    Name2 = _localizer2 != null ? _localizer2[view.Name] : "",
                     IsActive = activeViewCodes.Contains(view.Code) || view.Code == "all",
                     AllowedPermissionLevels = view.AllowedPermissionLevels
                 });

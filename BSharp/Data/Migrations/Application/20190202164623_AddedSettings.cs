@@ -7,6 +7,18 @@ namespace BSharp.Data.Migrations.Application
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<Guid>(
+                name: "PermissionsVersion",
+                table: "LocalUsers",
+                nullable: false,
+                defaultValue: new Guid("aafc6590-cadf-45fe-8c4a-045f4d6f73b1"));
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "UserSettingsVersion",
+                table: "LocalUsers",
+                nullable: false,
+                defaultValue: new Guid("aafc6590-cadf-45fe-8c4a-045f4d6f73b1"));
+
             migrationBuilder.CreateTable(
                 name: "Settings",
                 columns: table => new
@@ -35,6 +47,14 @@ namespace BSharp.Data.Migrations.Application
         {
             migrationBuilder.DropTable(
                 name: "Settings");
+
+            migrationBuilder.DropColumn(
+                name: "PermissionsVersion",
+                table: "LocalUsers");
+
+            migrationBuilder.DropColumn(
+                name: "UserSettingsVersion",
+                table: "LocalUsers");
         }
     }
 }

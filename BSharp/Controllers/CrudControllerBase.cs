@@ -39,7 +39,7 @@ namespace BSharp.Controllers
 
         // Constructor
 
-        public CrudControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
+        public CrudControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper) : base(logger, localizer, mapper)
         {
             _logger = logger;
             _localizer = localizer;
@@ -53,49 +53,22 @@ namespace BSharp.Controllers
         {
             // Note here we use lists https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=netcore-2.1
             // since the order is symantically relevant for reporting validation errors on the entities
-            try
+
+            return await CallAndHandleErrorsAsync(async () =>
             {
                 var result = await SaveImplAsync(entities, args);
                 return Ok(result);
-            }
-            catch (ForbiddenException)
-            {
-                // Forbidden status code
-                return StatusCode(403);
-            }
-            catch (UnprocessableEntityException ex)
-            {
-                return UnprocessableEntity(ex.ModelState);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+            });
         }
 
         [HttpDelete]
         public virtual async Task<ActionResult> Delete([FromBody] List<TKey> ids)
         {
-            try
+            return await CallAndHandleErrorsAsync(async () =>
             {
                 await DeleteAsync(ids);
                 return Ok();
-            }
-            catch (ForbiddenException)
-            {
-                // Forbidden status code
-                return StatusCode(403);
-            }
-            catch (UnprocessableEntityException ex)
-            {
-                return UnprocessableEntity(ex.ModelState);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+            });
         }
 
         [HttpGet("template")]
@@ -126,7 +99,7 @@ namespace BSharp.Controllers
             decimal attributeValidationInCSharp = 0;
             decimal validatingAndSaving = 0;
 
-            try
+            return await CallAndHandleErrorsAsync(async () =>
             {
                 // Parse the file into DTOs + map back to row numbers (The way source code is compiled into machine code + symbols file)
                 var (dtos, rowNumberFromErrorKeyMap) = await ParseImplAsync(args); // This should check for primary code consistency!
@@ -172,16 +145,7 @@ namespace BSharp.Controllers
                 result.ValidatingAndSaving = validatingAndSaving;
 
                 return Ok(result);
-            }
-            catch (UnprocessableEntityException ex)
-            {
-                return UnprocessableEntity(ex.ModelState);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+            });
         }
 
         [HttpPost("parse"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB

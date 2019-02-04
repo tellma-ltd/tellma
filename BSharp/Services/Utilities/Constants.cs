@@ -19,5 +19,8 @@ namespace BSharp.Services.Utilities
         public const string Create = nameof(Create);
         public const string ReadCreate = nameof(ReadCreate);
         public const string Sign = nameof(Sign);
+
+        // Indicates a hidden field
+        public const string Hidden = "<X-HIDDEN-FIELD>";
     }
 }

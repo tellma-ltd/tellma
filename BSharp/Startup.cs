@@ -168,7 +168,9 @@ namespace BSharp
                     builder
                         .AllowAnyOrigin()
                         .AllowAnyHeader()
-                        .AllowAnyMethod();
+                        .AllowAnyMethod()
+                        .WithExposedHeaders("x-settings-version")
+                        .WithExposedHeaders("x-permissions-version");
                 });
             }
 

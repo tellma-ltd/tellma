@@ -1,6 +1,7 @@
 import { Component, ViewChild, Input, EventEmitter, OnDestroy, Output } from '@angular/core';
-import { Observable, Subscription, Subject } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { MasterComponent } from '../master/master.component';
+import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 
 @Component({
   template: ''
@@ -23,6 +24,8 @@ export class MasterBaseComponent implements OnDestroy {
   @Output()
   cancel = new EventEmitter<void>();
 
+  private _columns: string[];
+  private _adjustedColumns: string[];
   private _master: MasterComponent;
   private masterSelect: Subscription;
   private masterCreate: Subscription;
@@ -79,4 +82,22 @@ export class MasterBaseComponent implements OnDestroy {
     this.notifyDestruct$.next();
   }
 
+  public adjustForMultilingual(columns: string[], multilingualColumns: string[], workspace: TenantWorkspace): string[] {
+
+      // IF there is only one language, remove the second one
+      if (!workspace.settings.SecondaryLanguageId) {
+        if (this._columns !== columns) {
+          this._columns = columns;
+
+          const toRemove = multilingualColumns.map(e => e + '2');
+          this._adjustedColumns = columns.filter(e => toRemove.indexOf(e) === -1);
+        }
+
+        return this._adjustedColumns;
+      }
+
+      return columns;
+
+      // Note: this would have to change if we add a 3rd column;
+  }
 }

@@ -32,9 +32,13 @@
       <!-- <button class="dropdown-item text-primary b-slightly-bold" *ngIf="showEditSelected" [class.active]="highlightEditSelected">
         Edit Selected...
       </button> -->
-      <button class="dropdown-item text-primary b-slightly-bold" [class.active]="highlightCreateNew" (focus)="onCreateFromFocus()">
-        {{ 'Create' | translate }}...
-      </button>
+      <div [placement]="placement" [ngbTooltip]="createNewTooltip">
+        <button class="dropdown-item b-slightly-bold" [class.text-primary]="canCreateNew" [class.text-muted]="!canCreateNew"
+          [class.active]="highlightCreateNew" (focus)="onCreateFromFocus()" [disabled]="!canCreateNew">
+          {{ 'Create' | translate }}...
+        </button>
+      </div>
+
     </ng-container>
   </div>
 </div>
@@ -63,10 +67,13 @@
   <!-- body -->
   <div class="modal-body">
     <div class="mb-2"> {{ 'CreateOptionsMessage' | translate }} </div>
-    <button class="btn btn-primary m-1" *ngFor="let option of detailsOptions; let i= index" (click)="modal.close(option.id)"
-      ngbAutofocus>
-      {{ option.name }}
-    </button>
+    <div class="d-inline-block" *ngFor="let option of detailsOptions; let i= index" [placement]="placement"
+      [ngbTooltip]="createFromOptionsTooltip(option.id)">
+      <button class="btn btn-primary m-1" (click)="modal.close(option.id)" ngbAutofocus [disabled]="!canCreateFromOptions(option.id)">
+        {{ option.name }}
+      </button>
+
+    </div>
   </div>
 
   <!-- footer -->

@@ -10,6 +10,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { Views_DoNotApplyPermissions } from '~/app/data/dto/view';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { LocalUsers_DoNotApplyAgentOrRoles } from '~/app/data/dto/local-user';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-roles-details',
@@ -37,7 +38,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
-  constructor(public workspace: WorkspaceService, private api: ApiService) {
+  constructor(public workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
     this.rolesApi = this.api.rolesApi(this.notifyDestruct$);
@@ -82,6 +83,11 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
   public showActivate = (model: Role) => !!model && !model.IsActive;
   public showDeactivate = (model: Role) => !!model && model.IsActive;
+
+  public canActivateDeactivateItem = (model: Role) => this.ws.canUpdate('roles', model.Id);
+
+  public activateDeactivateTooltip = (model: Role) => this.canActivateDeactivateItem(model) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get ws() {
     return this.workspace.current;

@@ -26,7 +26,7 @@ namespace BSharp.Controllers
         private readonly IMapper _mapper;
 
         public CulturesController(ILogger<CulturesController> logger, IStringLocalizer<CulturesController> localizer,
-            IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
+            IMapper mapper) : base(logger, localizer, mapper)
         {
             _logger = logger;
             _localizer = localizer;
@@ -92,6 +92,11 @@ namespace BSharp.Controllers
 
         public CultureDefinition GetCulture(string cultureId)
         {
+            if(cultureId == null)
+            {
+                return null;
+            }
+
             try
             {
                 var cultureInfo =  CultureInfo.GetCultureInfo(cultureId);

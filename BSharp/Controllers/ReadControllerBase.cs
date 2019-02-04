@@ -39,17 +39,15 @@ namespace BSharp.Controllers
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly IMapper _mapper;
-        private readonly IUserService _userService;
         protected static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never expires
 
         // Constructor
 
-        public ReadControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper, IUserService userService)
+        public ReadControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper)
         {
             _logger = logger;
             _localizer = localizer;
             _mapper = mapper;
-            _userService = userService;
         }
 
         // HTTP Methods
@@ -57,27 +55,17 @@ namespace BSharp.Controllers
         [HttpGet]
         public virtual async Task<ActionResult<GetResponse<TDto>>> Get([FromQuery] GetArguments args)
         {
-            try
+            return await CallAndHandleErrorsAsync(async () =>
             {
                 var result = await GetImplAsync(args);
                 return Ok(result);
-            }
-            catch (ForbiddenException)
-            {
-                // Forbidden result
-                return StatusCode(403);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+            });
         }
 
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<GetByIdResponse<TDto>>> GetById(TKey id, [FromQuery] GetByIdArguments args)
         {
-            try
+            return await CallAndHandleErrorsAsync(async () =>
             {
                 // Single by Id
                 var query = GetBaseQuery().AsNoTracking();
@@ -121,46 +109,27 @@ namespace BSharp.Controllers
                 };
 
                 return Ok(result);
-            }
-            catch (ForbiddenException)
-            {
-                // Forbidden result
-                return StatusCode(403);
-            }
-            catch (NotFoundException<TKey> ex)
-            {
-                return NotFound(ex.Ids);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+            });
         }
 
         [HttpGet("export")]
         public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args)
         {
-            try
+            return await CallAndHandleErrorsAsync(async () =>
             {
                 // Get abstract grid
                 var response = await GetImplAsync(args);
                 var abstractFile = DtosToAbstractGrid(response, args);
                 return AbstractGridToFileResult(abstractFile, args.Format);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+            });
         }
 
 
         // Abstract and virtual members
 
-        /// <summary>
-        /// Returns the query from which the GET endpoint retrieves the results
-        /// </summary>
+            /// <summary>
+            /// Returns the query from which the GET endpoint retrieves the results
+            /// </summary>
         protected abstract IQueryable<TModel> GetBaseQuery();
 
         protected virtual async Task<IQueryable<TModel>> ApplyReadPermissions(IQueryable<TModel> query)
@@ -698,20 +667,6 @@ namespace BSharp.Controllers
         /// </summary>
         protected virtual Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
         {
-            // This method is overridden by controllers to provide special keywords that represent certain
-            // complicated linq expressions that cannot be expressed with normal ODATA filter
-
-            // Any type that contains a CreatedBy property defines a keyword "CreatedByMe"
-            if (keyword == "CreatedByMe")
-            {
-                var createdByProperty = typeof(TModel).GetProperty("CreatedById");
-                if (createdByProperty != null)
-                {
-                    var me = Expression.Constant(_userService.GetDbUser().Id.Value, typeof(int));
-                    return Expression.Equal(Expression.Property(param, createdByProperty), me);
-                }
-            }
-
             return null;
         }
 
@@ -1067,6 +1022,64 @@ namespace BSharp.Controllers
             var fileStream = handler.ToFileStream(abstractFile);
             return File(((MemoryStream)fileStream).ToArray(), contentType);
         }
+
+        protected async Task<ActionResult<T>> CallAndHandleErrorsAsync<T>(Func<Task<ActionResult<T>>> func)
+        {
+            try
+            {
+                return await func();
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+            catch (NotFoundException<int?> ex)
+            {
+                return NotFound(ex.Ids);
+            }
+            catch (UnprocessableEntityException ex)
+            {
+                return UnprocessableEntity(ex.ModelState);
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        protected async Task<ActionResult> CallAndHandleErrorsAsync(Func<Task<ActionResult>> func)
+        {
+            try
+            {
+                return await func();
+            }
+            catch (ForbiddenException)
+            {
+                return StatusCode(403);
+            }
+            catch (NotFoundException<int?> ex)
+            {
+                return NotFound(ex.Ids);
+            }
+            catch (UnprocessableEntityException ex)
+            {
+                return UnprocessableEntity(ex.ModelState);
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                return BadRequest(ex.Message);
+            }
+        }
     }
 
     public static class ControllerUtilities
@@ -1202,6 +1215,7 @@ namespace BSharp.Controllers
             }
 
             // Retrieve the permissions
+            // Note: There is another query similiar to this one in PermissionsController
             var result = await q.FromSql($@"
 SELECT * FROM (
     SELECT ViewId, Criteria, Level 
@@ -1222,6 +1236,25 @@ SELECT * FROM (
 ", viewIdsTvp).ToListAsync();
 
             return result;
+        }
+
+        public static Expression CreatedByMeFilter<TModel>(string keyword, ParameterExpression param, int userId)
+        {
+            // This method is overridden by controllers to provide special keywords that represent certain
+            // complicated linq expressions that cannot be expressed with normal ODATA filter
+
+            // Any type that contains a CreatedBy property defines a keyword "CreatedByMe"
+            if (keyword == "CreatedByMe")
+            {
+                var createdByProperty = typeof(TModel).GetProperty("CreatedById");
+                if (createdByProperty != null)
+                {
+                    var me = Expression.Constant(userId, typeof(int));
+                    return Expression.Equal(Expression.Property(param, createdByProperty), me);
+                }
+            }
+
+            return null;
         }
     }
 }

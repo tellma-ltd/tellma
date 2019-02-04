@@ -88,7 +88,9 @@ namespace BSharp.IntegrationTests.Scenario_01
                     // (2) Application Context requires special handling in development, don't resolve it with DI
                     var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
                     using (var appContext = new ApplicationContext(shardResolver,
-                        new DesignTimeTenantIdProvider(), new DesignTimeUserIdProvider()))
+                        new DesignTimeTenantIdProvider(), 
+                        new DesignTimeUserIdProvider(), 
+                        new DesignTimeTenantUserInfoAccessor()))
                     {
 
                         appContext.Database.Migrate();
@@ -214,7 +216,7 @@ INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, 
             if (_client == null)
             {
                 _client = CreateClient();
-                _client.DefaultRequestHeaders.Add("Tenant-Id", "101");
+                _client.DefaultRequestHeaders.Add("X-Tenant-Id", "101");
             }
 
             return _client;

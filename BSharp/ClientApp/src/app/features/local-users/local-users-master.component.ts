@@ -53,4 +53,8 @@ export class LocalUsersMasterComponent extends MasterBaseComponent {
     // The master template handles any errors
     return obs$;
   }
+
+  public canActivateOrDeactivate = () => {
+    return this.workspace.current.canUpdate('measurement-units', null);
+  }
 }

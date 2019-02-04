@@ -4,6 +4,7 @@ using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
+using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -25,6 +26,7 @@ using M = BSharp.Data.Model;
 namespace BSharp.Controllers
 {
     [Route("api/measurement-units")]
+    [LoadTenantInfo]
     public class MeasurementUnitsController : CrudControllerBase<M.MeasurementUnit, MeasurementUnit, MeasurementUnitForSave, int?>
     {
         private readonly ApplicationContext _db;
@@ -32,27 +34,33 @@ namespace BSharp.Controllers
         private readonly ILogger<MeasurementUnitsController> _logger;
         private readonly IStringLocalizer<MeasurementUnitsController> _localizer;
         private readonly IMapper _mapper;
+        private readonly ITenantUserInfoAccessor _tenantInfo;
 
         public MeasurementUnitsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<MeasurementUnitsController> logger,
-            IStringLocalizer<MeasurementUnitsController> localizer, IMapper mapper, IUserService userService) : base(logger, localizer, mapper, userService)
+            IStringLocalizer<MeasurementUnitsController> localizer, IMapper mapper,ITenantUserInfoAccessor tenantInfo) : base(logger, localizer, mapper)
         {
             _db = db;
             _metadataProvider = metadataProvider;
             _logger = logger;
             _localizer = localizer;
             _mapper = mapper;
+            _tenantInfo = tenantInfo;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
-            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true);
+            return await CallAndHandleErrorsAsync(() =>
+                ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
+            );
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
-            return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
+            return await CallAndHandleErrorsAsync(() =>
+                ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
+            );
         }
 
         private async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
@@ -96,8 +104,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
                 catch (Exception ex)
                 {
                     trx.Rollback();
-                    _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                    return BadRequest(ex.Message);
+                    throw ex;
                 }
             }
 
@@ -443,12 +450,14 @@ SET NOCOUNT ON;
 
             // Add the header
             var header = result[result.AddRow()];
-            for (int i = 0; i < props.Length; i++)
+            int i = 0;
+            foreach(var prop in props)
             {
-                var prop = props[i];
                 var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
-                // var display = _localizer["MeasurementUnit_Code"].Value;
-                header[i] = AbstractDataCell.Cell(display);
+                if(display != Constants.Hidden)
+                {
+                    header[i++] = AbstractDataCell.Cell(display);
+                }
             }
 
             return result;
@@ -466,31 +475,38 @@ SET NOCOUNT ON;
             var result = new AbstractDataGrid(props.Length, response.Data.Count() + 1);
 
             // Add the header
-            var header = result[result.AddRow()];
-            for (int i = 0; i < props.Length; i++)
+            List<PropertyInfo> addedProps = new List<PropertyInfo>(props.Length);
             {
-                var prop = props[i];
-                var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
-
-                header[i] = AbstractDataCell.Cell(display);
-
-                // Add the proper styling for DateTime and DateTimeOffset
-                if (prop.PropertyType.IsDateOrTime())
+                var header = result[result.AddRow()];
+                int i = 0;
+                foreach (var prop in props)
                 {
-                    var att = prop.GetCustomAttribute<DataTypeAttribute>();
-                    var isDateOnly = att != null && att.DataType == DataType.Date;
-                    header[i].NumberFormat = ExportDateTimeFormat(dateOnly: isDateOnly);
+                    var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
+                    if (display != Constants.Hidden)
+                    {
+                        header[i] = AbstractDataCell.Cell(display);
+
+                        // Add the proper styling for DateTime and DateTimeOffset
+                        if (prop.PropertyType.IsDateOrTime())
+                        {
+                            var att = prop.GetCustomAttribute<DataTypeAttribute>();
+                            var isDateOnly = att != null && att.DataType == DataType.Date;
+                            header[i].NumberFormat = ExportDateTimeFormat(dateOnly: isDateOnly);
+                        }
+
+                        addedProps.Add(prop);
+                        i++;
+                    }
                 }
             }
-
 
             // Add the rows
             foreach (var entity in response.Data)
             {
                 var row = result[result.AddRow()];
-                for (int i = 0; i < props.Length; i++)
-                {
-                    var prop = props[i];
+                int i = 0;
+                foreach (var prop in addedProps)
+                { 
                     var content = prop.GetValue(entity);
 
                     // Special handling for choice lists
@@ -512,6 +528,7 @@ SET NOCOUNT ON;
                     }
 
                     row[i] = AbstractDataCell.Cell(content);
+                    i++;
                 }
             }
 
@@ -764,94 +781,6 @@ SET NOCOUNT ON;
             return (result, errorKeyMap);
         }
 
-        protected async Task ApplyUpdatePermissionsOnNew2(List<MeasurementUnitForSave> entities, SaveArguments args)
-        {
-            var updatePermissions = await GetPermissions(_db.AbstractPermissions, PermissionLevel.Update, "measurement-units");
-            if (!updatePermissions.Any())
-            {
-                // User has no permissions on this table whatsoever, forbid
-                throw new ForbiddenException();
-            }
-            else if (updatePermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
-            {
-                // User has unfiltered update permission on the table => proceed
-                return;
-            }
-            else
-            {
-                // User can update items under certain conditions, so we check those conditions here
-                IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
-
-                // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(M.MeasurementUnit));
-
-                // Prepare the lambda
-                Expression whereClause = ToORedWhereClause<M.MeasurementUnit>(criteriaList, eParam);
-                var lambda = Expression.Lambda<Func<M.MeasurementUnit, bool>>(whereClause, eParam);
-
-                /////// Part (1) Permissions must allow manipulating the original data before the update
-
-                var existingItems = entities.Where(e => e.EntityState == EntityStates.Updated ||
-                    e.EntityState == EntityStates.Deleted);
-
-                if (existingItems.Any())
-                {
-                    // Load the entities using their Ids
-                    DataTable idsTable = DataTable(existingItems.Select(e => new { e.Id }));
-                    var idsTvp = new SqlParameter("Ids", idsTable)
-                    {
-                        TypeName = $"dbo.IdList",
-                        SqlDbType = SqlDbType.Structured
-                    };
-
-                    // apply the lambda
-                    var q = _db.MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-                    int countBeforeFilter = await q.CountAsync();
-                    int countAfterFilter = await q.Where(lambda).CountAsync();
-
-                    if (countBeforeFilter > countAfterFilter)
-                    {
-                        throw new ForbiddenException();
-                    }
-                }
-
-
-                /////// Part (2) Permissions must work for the new data after the update, only for the modified properties
-
-                var newItems = entities.Where(e => e.EntityState == EntityStates.Inserted ||
-                    e.EntityState == EntityStates.Updated);
-
-                if (newItems.Any())
-                {
-                    // Add created entities
-                    DataTable entitiesTable = DataTable(newItems, addIndex: true);
-                    var entitiesTvp = new SqlParameter("Entities", entitiesTable)
-                    {
-                        TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List",
-                        SqlDbType = SqlDbType.Structured
-                    };
-
-                    string saveSql = $@"
-	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @True BIT = 1;
-
-    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Code, E.UnitType, E.UnitAmount, E.BaseAmount,
-    @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @Now AS ModifiedAt, @UserId AS ModifiedById 
-    FROM @Entities E
-";
-                    var countBeforeFilter = newItems.Count();
-                    var countAfterFilter = await _db.MeasurementUnits.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
-
-                    if (countBeforeFilter > countAfterFilter)
-                    {
-                        throw new ForbiddenException();
-                    }
-                }
-            }
-        }
-
         protected override async Task CheckPermissionsForNew(IEnumerable<MeasurementUnitForSave> newItems, Expression<Func<M.MeasurementUnit, bool>> lambda)
         {
             // Add created entities
@@ -900,6 +829,11 @@ SET NOCOUNT ON;
             {
                 throw new ForbiddenException();
             }
+        }
+
+        protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
+        {
+            return ControllerUtilities.CreatedByMeFilter<Agent>(keyword, param, _tenantInfo.GetCurrentInfo().UserId.Value);
         }
     }
 }

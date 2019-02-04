@@ -1,5 +1,6 @@
 ﻿using BSharp.Controllers.DTO;
 using BSharp.Data.Model;
+using BSharp.Services.MultiTenancy;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,14 @@ namespace BSharp.Services.Utilities
         public static string UserId(this ClaimsPrincipal user)
         {
             return "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35"; // TODO
+        }
+
+        /// <summary>
+        /// Returns the internal user Id of the currently signed in user according to the tenant database
+        /// </summary>
+        public static int UserId(this ITenantUserInfoAccessor @this)
+        {
+            return @this.GetCurrentInfo().UserId.Value;
         }
 
         /// <summary>

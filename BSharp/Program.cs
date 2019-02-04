@@ -45,6 +45,8 @@ namespace BSharp
                 {
                     try
                     {
+                        int[] tenantIds = new[] { 101, 102 };
+
                         // (1) Admin Context migrated the usual way, add one tenant for dev and all translations
                         var adminContext = scope.ServiceProvider.GetRequiredService<AdminContext>();
                         adminContext.Database.Migrate();
@@ -52,14 +54,14 @@ namespace BSharp
                         {
                             adminContext.Tenants.Add(new Tenant
                             {
-                                Id = 101,
+                                Id = tenantIds[0],
                                 Name = "Contoso, Inc.",
                                 ShardId = 1
                             });
 
                             adminContext.Tenants.Add(new Tenant
                             {
-                                Id = 102,
+                                Id = tenantIds[1],
                                 Name = "Fabrikam & Co.",
                                 ShardId = 1
                             });
@@ -74,73 +76,77 @@ namespace BSharp
                         adminContext.Translations.AddRange(Translation.TRANSLATIONS);
                         adminContext.SaveChanges();
 
-
-                        // (2) Application Context requires special handling in development, don't resolve it with DI
-                        var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
-                        var appContext = new ApplicationContext(shardResolver,
-                            new DesignTimeTenantIdProvider(101), new DesignTimeUserIdProvider());
-
-                        appContext.Database.Migrate();
-
-
-                        // Add the views
-                        appContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[Views]");
-                        string[] viewIds = { "measurement-units", "individuals", "organizations", "roles", "local-users", "views", "settings" };
-
-                        foreach(var viewId in viewIds)
+                        foreach(var tenantId in tenantIds.Take(1))
                         {
-                            var view = new View
+                            // (2) Application Context requires special handling in development, don't resolve it with DI
+                            var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
+                            var appContext = new ApplicationContext(shardResolver,
+                                new DesignTimeTenantIdProvider(tenantId),
+                                new DesignTimeUserIdProvider(),
+                                new DesignTimeTenantUserInfoAccessor());
+
+                            appContext.Database.Migrate();
+
+
+                            // Add the views
+                            appContext.Database.ExecuteSqlCommand($"DELETE FROM [dbo].[Views] WHERE TenantId = {tenantId}");
+                            string[] viewIds = { "measurement-units", "individuals", "organizations", "roles", "local-users", "views", "settings" };
+
+                            foreach (var viewId in viewIds)
                             {
-                                Id = viewId,
-                                IsActive = true
-                            };
+                                var view = new View
+                                {
+                                    Id = viewId,
+                                    IsActive = true
+                                };
 
-                            appContext.Views.Add(view);
-                            appContext.Entry(view).Property("TenantId").CurrentValue = 101;
-                        }
+                                appContext.Views.Add(view);
+                                appContext.Entry(view).Property("TenantId").CurrentValue = tenantId;
+                            }
 
-                        // Add settings
-                        var now = DateTimeOffset.Now;
-                        if (!appContext.Settings.Any())
-                        {
-                            // Add the settings
-                            var settings = new Settings
+                            // Add settings
+                            var now = DateTimeOffset.Now;
+                            if (!appContext.Settings.Any())
                             {
-                                PrimaryLanguageId = "en",
-                                SecondaryLanguageId = "ar",
-                                PrimaryLanguageSymbol = "En",
-                                SecondaryLanguageSymbol = "ع",
-                                ShortCompanyName2 = "كونتوسو المحدودة",
-                                ProvisionedAt = now,
-                                ModifiedAt = now,
-                                ModifiedById = 1,
-                                ShortCompanyName = "Contoso, Inc."
-                            };
-                            appContext.Settings.Add(settings);
-                            appContext.Entry(settings).Property("TenantId").CurrentValue = 101;
-                        }
+                                // Add the settings
+                                var settings = new Settings
+                                {
+                                    PrimaryLanguageId = "en",
+                                    SecondaryLanguageId = "ar",
+                                    PrimaryLanguageSymbol = "En",
+                                    SecondaryLanguageSymbol = "ع",
+                                    ShortCompanyName2 = "كونتوسو المحدودة",
+                                    ProvisionedAt = now,
+                                    ModifiedAt = now,
+                                    ModifiedById = 1,
+                                    ShortCompanyName = "Contoso, Inc."
+                                };
+                                appContext.Settings.Add(settings);
+                                appContext.Entry(settings).Property("TenantId").CurrentValue = tenantId;
+                            }
 
-                        appContext.SaveChanges();
+                            appContext.SaveChanges();
 
 
-                        // Add first user
-                        try
-                        {
-                            var cmd = appContext.Database.GetDbConnection().CreateCommand();
-                            appContext.Database.ExecuteSqlCommand(
-                                @"
+                            // Add first user
+                            try
+                            {
+                                var cmd = appContext.Database.GetDbConnection().CreateCommand();
+                                appContext.Database.ExecuteSqlCommand(
+                                    @"
 DECLARE @NextId INT = IDENT_CURRENT('[dbo].[LocalUsers]') + 1;
 INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, Name2, CreatedById, ModifiedById, TenantId)
-                            VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, 101)",
-                                "support@banan-it.com", // {0}
-                                "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
-                                now, // {2}
-                                "Banan IT Support", // {3}
-                                "فريق مساندة بنان"); // {4}
+                            VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, {5})",
+                                    "support@banan-it.com", // {0}
+                                    "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
+                                    now, // {2}
+                                    "Banan IT Support", // {3}
+                                    "فريق مساندة بنان",
+                                    tenantId); // {4}
 
+                            }
+                            catch { }
                         }
-                        catch { }
-
                     }
                     catch (Exception ex)
                     {

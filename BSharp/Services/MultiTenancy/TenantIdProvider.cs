@@ -13,7 +13,7 @@ namespace BSharp.Services.MultiTenancy
     /// </summary>
     public class TenantIdProvider : ITenantIdProvider
     {
-        private const string REQUEST_HEADER_TENANT_ID = "Tenant-Id";
+        public const string REQUEST_HEADER_TENANT_ID = "X-Tenant-Id";
         private readonly IHttpContextAccessor _accessor;
 
         public TenantIdProvider(IHttpContextAccessor accessor)
