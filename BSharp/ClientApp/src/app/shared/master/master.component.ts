@@ -407,6 +407,10 @@ export class MasterComponent implements OnInit, OnDestroy {
     return !this.isPopupMode && this.showExportButton;
   }
 
+  get showDataDropdown(): boolean {
+    return this.showImport || this.showExport;
+  }
+
   get isScreenMode(): boolean {
     return this.mode === 'screen';
   }

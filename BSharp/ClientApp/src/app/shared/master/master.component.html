@@ -82,28 +82,33 @@
       <div>
         <!-- Create -->
         <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body">
-          <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()" *ngIf="showCreate" [disabled]="!canCreate">
+          <button type="button" class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()" *ngIf="showCreate"
+            [disabled]="!canCreate">
             <fa-icon icon="plus"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
           </button>
         </div>
-
-        <!-- Import -->
-        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="importTooltip" container="body">
-          <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" *ngIf="showImport" (click)="onImport()"
-            [disabled]="!canImport">
-            <fa-icon icon="upload"></fa-icon>
-            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Import' | translate }}</span>
+        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement" *ngIf="showDataDropdown">
+          <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle"
+            ngbDropdownToggle>
+            {{ 'Data' | translate }}
           </button>
-        </div>
+          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
 
-        <!-- Export -->
-        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body">
-          <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" *ngIf="showExport" (click)="modalService.open(exportModal)"
-            [disabled]="!canExport">
-            <fa-icon icon="download"></fa-icon>
-            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Export' | translate }}</span>
-          </button>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="importTooltip" container="body">
+              <button type="button" class="dropdown-item btn-light" (click)="onImport()" [disabled]="!canImport" *ngIf="showImport">
+                {{ 'Import' | translate }}
+              </button>
+            </div>
+
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body">
+              <button type="button" class="dropdown-item btn-light" *ngIf="showExport" (click)="modalService.open(exportModal)"
+                [disabled]="!canExport">
+                {{ 'Export' | translate }}
+              </button>
+
+            </div>
+          </div>
         </div>
       </div>
 
@@ -159,7 +164,8 @@
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngFor="let action of multiselectActions">
-              <div [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action.requiresUpdatePermission)" container="body">
+              <div [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action.requiresUpdatePermission)"
+                container="body">
                 <button type="button" class="dropdown-item btn-light" (click)="onAction(action.action)" [disabled]="!canAction(action.requiresUpdatePermission)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
@@ -327,7 +333,8 @@
         </button>
 
         <div class="d-inline ml-2 mr-2">
-          <span class="b-vertical-align-middle"> <span>{{ fromExport | number }}</span> - <span>{{ toExport | number }}</span>
+          <span class="b-vertical-align-middle"> <span>{{ fromExport | number }}</span> - <span>{{ toExport | number
+              }}</span>
           </span>
           <span class="b-vertical-align-middle"> / {{ totalExport | number }}</span>
         </div>

@@ -54,75 +54,77 @@
     <div class="w-100 h-100">
 
       <!-- Document -->
-      <div class=" h-100 p-0 d-flex flex-column align-items-center" *ngIf="showDocument">
+      <div class="w-100 h-100 p-0 d-flex flex-column" *ngIf="showDocument">
 
-        <div class="bg-white w-100 h-100">
-          <div class="row m-0 pl-1 pl-sm-3 pr-1 pr-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5" style="max-width:1100px">
+          <div class="m-0 pl-1 pl-sm-3 pr-1 pr-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5">
 
             <p class="col-12 bg-light b-settings-header">
               {{ 'GeneralSettings' | translate }}
             </p>
 
-            <!-- Short Company Name -->
-            <b-form-group class="b-form-group" [label]="('Settings_ShortCompanyName' | translate) + primaryPostfix"
-              [description]="'Settings_ShortCompanyNameDescription' | translate" [serverErrors]="validationErrors.ShortCompanyName">
-              <div *ngIf="!isEdit">{{ model?.ShortCompanyName }}</div>
-              <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
+            <div class="row col-12 b-settings-section">
 
-            <!-- Short Company Name 2 -->
-            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="('Settings_ShortCompanyName' | translate) + secondaryPostfix"
-              [description]="'Settings_ShortCompanyNameDescription' | translate" [serverErrors]="validationErrors.ShortCompanyName2">
-              <div *ngIf="!isEdit">{{ model?.ShortCompanyName2 }}</div>
-              <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
+              <!-- Short Company Name -->
+              <b-form-group class="b-form-group" [label]="('Settings_ShortCompanyName' | translate) + primaryPostfix"
+                [description]="'Settings_ShortCompanyNameDescription' | translate" [serverErrors]="validationErrors.ShortCompanyName">
+                <div *ngIf="!isEdit">{{ model?.ShortCompanyName }}</div>
+                <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+              </b-form-group>
 
-            <!-- Primary Language -->
-            <b-form-group class="b-form-group" [label]="'Settings_PrimaryLanguage' | translate" [description]="'Settings_PrimaryLanguageDescription' | translate"
-              [serverErrors]="validationErrors.PrimaryLanguageId">
-              <div *ngIf="!isEdit">{{ ws.get('Cultures', model?.PrimaryLanguageId)?.Name || '-' }}</div>
-              <b-details-picker *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageId" apiEndpoint="cultures" collection="Cultures">
-              </b-details-picker>
-            </b-form-group>
+              <!-- Short Company Name 2 -->
+              <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="('Settings_ShortCompanyName' | translate) + secondaryPostfix"
+                [description]="'Settings_ShortCompanyNameDescription' | translate" [serverErrors]="validationErrors.ShortCompanyName2">
+                <div *ngIf="!isEdit">{{ model?.ShortCompanyName2 }}</div>
+                <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+              </b-form-group>
 
-            <!-- Secondary Language -->
-            <b-form-group class="b-form-group" [label]="'Settings_SecondaryLanguage' | translate" [description]="'Settings_SecondaryLanguageDescription' | translate"
-              [serverErrors]="validationErrors.SecondaryLanguageId">
-              <div *ngIf="!isEdit">{{ ws.get('Cultures', model?.SecondaryLanguageId)?.Name || '-' }}</div>
-              <b-details-picker *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageId" apiEndpoint="cultures"
-                collection="Cultures">
-              </b-details-picker>
-            </b-form-group>
+              <!-- Primary Language -->
+              <b-form-group class="b-form-group" [label]="'Settings_PrimaryLanguage' | translate" [description]="'Settings_PrimaryLanguageDescription' | translate"
+                [serverErrors]="validationErrors.PrimaryLanguageId">
+                <div *ngIf="!isEdit">{{ ws.get('Cultures', model?.PrimaryLanguageId)?.Name || '-' }}</div>
+                <b-details-picker *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageId" apiEndpoint="cultures"
+                  collection="Cultures">
+                </b-details-picker>
+              </b-form-group>
 
-            <!-- Primary Language Symbol -->
-            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="'Settings_PrimaryLanguageSymbol' | translate"
-              [description]="'Settings_LanguageSymbolDescription' | translate" [serverErrors]="validationErrors.PrimaryLanguageSymbol">
-              <div *ngIf="!isEdit">{{ model?.PrimaryLanguageSymbol || '-' }}</div>
-              <b-text-editor *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
+              <!-- Secondary Language -->
+              <b-form-group class="b-form-group" [label]="'Settings_SecondaryLanguage' | translate" [description]="'Settings_SecondaryLanguageDescription' | translate"
+                [serverErrors]="validationErrors.SecondaryLanguageId">
+                <div *ngIf="!isEdit">{{ ws.get('Cultures', model?.SecondaryLanguageId)?.Name || '-' }}</div>
+                <b-details-picker *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageId" apiEndpoint="cultures"
+                  collection="Cultures">
+                </b-details-picker>
+              </b-form-group>
 
-            <!-- Secondary Language Symbol -->
-            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="'Settings_SecondaryLanguageSymbol' | translate"
-              [description]="'Settings_LanguageSymbolDescription' | translate" [serverErrors]="validationErrors.SecondaryLanguageSymbol">
-              <div *ngIf="!isEdit">{{ model?.SecondaryLanguageSymbol || '-' }}</div>
-              <b-text-editor *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
+              <!-- Primary Language Symbol -->
+              <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="'Settings_PrimaryLanguageSymbol' | translate"
+                [description]="'Settings_LanguageSymbolDescription' | translate" [serverErrors]="validationErrors.PrimaryLanguageSymbol">
+                <div *ngIf="!isEdit">{{ model?.PrimaryLanguageSymbol || '-' }}</div>
+                <b-text-editor *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+              </b-form-group>
 
+              <!-- Secondary Language Symbol -->
+              <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId" [label]="'Settings_SecondaryLanguageSymbol' | translate"
+                [description]="'Settings_LanguageSymbolDescription' | translate" [serverErrors]="validationErrors.SecondaryLanguageSymbol">
+                <div *ngIf="!isEdit">{{ model?.SecondaryLanguageSymbol || '-' }}</div>
+                <b-text-editor *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageSymbol" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+              </b-form-group>
+            </div>
 
             <p class="col-12 bg-light p-2">
               {{ 'Branding' | translate }}
             </p>
 
-            <!-- Brand Color -->
-            <b-form-group class="b-form-group" [label]="'Settings_BrandColor' | translate" [description]="'Settings_BrandColorDescription' | translate"
-              [serverErrors]="validationErrors.BrandColor">
-              <div *ngIf="!isEdit">{{ model?.BrandColor || '-' }}</div>
-              <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BrandColor" [ngModelOptions]="{ updateOn: 'blur' }"
-                placeholder="e.g. #343A40"></b-text-editor>
-            </b-form-group>
-
+            <div class="row col-12 b-settings-section">
+              <!-- Brand Color -->
+              <b-form-group class="b-form-group" [label]="'Settings_BrandColor' | translate" [description]="'Settings_BrandColorDescription' | translate"
+                [serverErrors]="validationErrors.BrandColor">
+                <div *ngIf="!isEdit">{{ model?.BrandColor || '-' }}</div>
+                <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BrandColor" [ngModelOptions]="{ updateOn: 'blur' }"
+                  placeholder="e.g. #343A40"></b-text-editor>
+              </b-form-group>
+            </div>
           </div>
-        </div>
       </div>
 
       <!-- Spinner -->

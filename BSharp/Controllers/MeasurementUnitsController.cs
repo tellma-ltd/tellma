@@ -833,7 +833,7 @@ SET NOCOUNT ON;
 
         protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
         {
-            return ControllerUtilities.CreatedByMeFilter<Agent>(keyword, param, _tenantInfo.GetCurrentInfo().UserId.Value);
+            return ControllerUtilities.CreatedByMeFilter<M.MeasurementUnit>(keyword, param, _tenantInfo.GetCurrentInfo().UserId.Value);
         }
     }
 }

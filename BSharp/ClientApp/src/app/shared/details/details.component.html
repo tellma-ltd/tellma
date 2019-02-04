@@ -55,7 +55,8 @@
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngFor="let action of actions">
-              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action)" container="body" container="body">
+              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action)"
+                container="body" container="body">
                 <button type="button" class="dropdown-item btn-light" (click)="action.action(activeModel)" [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
@@ -154,7 +155,7 @@
   </div>
 
   <!-- Content Area -->
-  <div class="row b-rest-of-screen bg-light" [class.b-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode">
+  <div class="row bg-light" [class.b-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode" [class.b-rest-of-screen]="isScreenMode">
     <div class="w-100" [class.b-main-document]="showSidebar">
 
       <!-- Document -->
@@ -192,20 +193,20 @@
       </ng-container>
     </div>
   </div>
-</div>
+  <!-- Popup Mode Footer -->
+  <div *ngIf="isPopupMode">
+    <div class="pt-3 pb-3 d-flex justify-content-end">
+      <button class="btn btn-primary b-toolbar-button" (click)="onSave()">
+        <fa-icon icon="save"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate }}
+      </button>
 
-<!-- Popup Mode Footer -->
-<div *ngIf="isPopupMode">
-  <div class="pt-3 pb-3 d-flex justify-content-end">
-    <button class="btn btn-primary b-toolbar-button" (click)="onSave()">
-      <fa-icon icon="save"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate }}
-    </button>
-
-    <button class="btn btn-light text-primary b-white-button b-toolbar-button" (click)="onCancel()">
-      <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
-    </button>
+      <button class="btn btn-light text-primary b-white-button b-toolbar-button" (click)="onCancel()">
+        <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
+      </button>
+    </div>
   </div>
 </div>
+
 
 <!-- Delete Modal -->
 <ng-template #deleteModal let-modal>

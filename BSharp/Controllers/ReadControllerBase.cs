@@ -1238,7 +1238,7 @@ SELECT * FROM (
             return result;
         }
 
-        public static Expression CreatedByMeFilter<TModel>(string keyword, ParameterExpression param, int userId)
+        public static Expression CreatedByMeFilter<TModel>(string keyword, ParameterExpression param, int userId) where TModel : M.ModelBase
         {
             // This method is overridden by controllers to provide special keywords that represent certain
             // complicated linq expressions that cannot be expressed with normal ODATA filter

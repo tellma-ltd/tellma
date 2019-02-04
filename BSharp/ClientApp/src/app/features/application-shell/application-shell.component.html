@@ -17,10 +17,10 @@
         <!-- <li class="nav-item"><a class="nav-link" routerLink="../101/roles" routerLinkActive="active" (click)="onCollapse()">Contoso</a></li> -->
       </ol>
 
-      <ol class="nav navbar-nav b-pointer" style="padding:0">
+      <ol class="nav navbar-nav p-0">
         <li class="nav-item"><a class="nav-link" routerLink="../.." (click)="onCollapse()">Companies</a></li>
-        <li class="nav-item"><a class="nav-link" (click)="onCollapse(); onPrimary();"> {{ settings.PrimaryLanguageSymbol }}</a></li>
-        <li class="nav-item"><a class="nav-link" (click)="onCollapse(); onSecondary()"> {{ settings.SecondaryLanguageSymbol }}</a></li>
+        <li class="nav-item b-pointer"><a class="nav-link" (click)="onCollapse(); onPrimary();"> {{ settings.PrimaryLanguageSymbol }}</a></li>
+        <li class="nav-item b-pointer"><a class="nav-link" (click)="onCollapse(); onSecondary()"> {{ settings.SecondaryLanguageSymbol }}</a></li>
       </ol>
     </div>
   </div>

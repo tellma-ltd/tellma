@@ -11,6 +11,9 @@ import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 import { addRelatedEntitiesToWorkspace } from '~/app/data/util';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
+import { SaveSettingsResponse } from '~/app/data/dto/save-settings-response';
+import { handleFreshSettings } from '~/app/data/tenant-resolver.guard';
+import { StorageService } from '~/app/data/storage.service';
 
 @Component({
   selector: 'b-settings',
@@ -40,8 +43,8 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @ViewChild('unsavedChangesModal')
   public unsavedChangesModal: TemplateRef<any>;
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private router: Router,
-    private route: ActivatedRoute, public modalService: NgbModal, private translate: TranslateService) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private storage: StorageService,
+    public modalService: NgbModal, private translate: TranslateService) {
 
 
     // When the notifyFetch$ subject fires, cancel existing backend
@@ -275,11 +278,17 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
       // prepare the save observable
       this.crud.save(this._editModel, { expand: this.expand, returnEntities: true }).subscribe(
-        (response: GetByIdResponse<Settings>) => {
+        (response: SaveSettingsResponse) => {
 
           // update the workspace with the DTO from the server
           this._viewModel = response.Entity;
           addRelatedEntitiesToWorkspace(response.RelatedEntities, this.workspace, this.workspaceApplyFns);
+
+          // Update the cache with fresh versions
+          if (!!response.SettingsForClient) {
+            handleFreshSettings(response.SettingsForClient,
+              this.workspace.ws.tenantId, this.workspace.current, this.storage);
+          }
 
           // in screen mode always close the edit view
           this.detailsStatus = DetailsStatus.loaded;

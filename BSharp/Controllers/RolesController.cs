@@ -661,7 +661,7 @@ DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
 
         protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
         {
-            return ControllerUtilities.CreatedByMeFilter<Agent>(keyword, param, _tenantInfoAccessor.GetCurrentInfo().UserId.Value);
+            return ControllerUtilities.CreatedByMeFilter<M.Role>(keyword, param, _tenantInfoAccessor.GetCurrentInfo().UserId.Value);
         }
     }
 }

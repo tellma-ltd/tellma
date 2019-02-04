@@ -2,7 +2,6 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
-using BSharp.Services.Identity;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +13,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
@@ -63,80 +61,21 @@ namespace BSharp.Controllers
 
             try
             {
-                M.Settings mSettings = await _db.Settings.FirstOrDefaultAsync();
-                if (mSettings == null)
-                {
-                    // This should never happen
-                    return BadRequest("Settings have not been initialized");
-                }
-
-                var settings = _mapper.Map<Settings>(mSettings);
-                var result = new GetByIdResponse<Settings>
-                {
-                    CollectionName = "Settings",
-                    Entity = settings,
-                };
-
-                if(!string.IsNullOrWhiteSpace(args.Expand))
-                {
-                    Expand(args.Expand, settings, result);
-                }
-
-                return result;
+                return await GetImpl(args);
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
                 return BadRequest(ex.Message);
             }
-        }
-
-        [HttpGet("client")]
-        public async Task<ActionResult<DataWithVersion<SettingsForClient>>> GetForClient()
-        {
-            try
-            {
-                M.Settings mSettings = await _db.Settings.FirstOrDefaultAsync();
-                if (mSettings == null)
-                {
-                    // This should never happen
-                    return BadRequest("Settings have not been initialized");
-                }
-
-                // Prepare the settings for client
-                var settings = _mapper.Map<SettingsForClient>(mSettings);
-                settings.PrimaryLanguageName = _culturesRepo.GetCulture(settings.PrimaryLanguageId)?.Name;
-                settings.SecondaryLanguageName = _culturesRepo.GetCulture(settings.SecondaryLanguageId)?.Name;
-                settings.UserId = _tenantInfo.UserId();
-
-                // Tag the settings for client with their current version
-                var result = new DataWithVersion<SettingsForClient>
-                {
-                    Version = mSettings.SettingsVersion.ToString(),
-                    Data = settings
-                };
-
-                // Return the result
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("ping")]
-        public ActionResult Ping()
-        {
-            // If all you want is to check whether the cached versions of settings and permissions 
-            // are fresh you can use this API that only does that through the [LoadTenantInfo] filter
-
-            return Ok();
         }
 
         [HttpPost]
-        public async Task<ActionResult<GetByIdResponse<Settings>>> Save([FromBody] SettingsForSave settingsForSave, [FromQuery] SaveArguments args)
+        public async Task<ActionResult<SaveSettingsResponse>> Save([FromBody] SettingsForSave settingsForSave, [FromQuery] SaveArguments args)
         {
             // Authorized access (Criteria are not supported here)
             var updatePermissions = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, PermissionLevel.Update, "settings");
@@ -178,7 +117,16 @@ namespace BSharp.Controllers
                 if (args.ReturnEntities ?? false)
                 {
                     // If requested, return the same response you would get from a GET
-                    return await Get(new GetByIdArguments { Expand = args.Expand });
+                    var res = await GetImpl(new GetByIdArguments { Expand = args.Expand });
+                    var result = new SaveSettingsResponse
+                    {
+                        CollectionName = res.CollectionName,
+                        Entity = res.Entity,
+                        RelatedEntities = res.RelatedEntities,
+                        SettingsForClient = await GetForClientImpl()
+                    };
+
+                    return result;
                 }
                 else
                 {
@@ -192,8 +140,85 @@ namespace BSharp.Controllers
             }
         }
 
+        [HttpGet("client")]
+        public async Task<ActionResult<DataWithVersion<SettingsForClient>>> GetForClient()
+        {
+            try
+            {
+                var result = await GetForClientImpl();
+                return Ok(result);
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("ping")]
+        public ActionResult Ping()
+        {
+            // If all you want is to check whether the cached versions of settings and permissions 
+            // are fresh you can use this API that only does that through the [LoadTenantInfo] filter
+
+            return Ok();
+        }
+
 
         // Helper methods
+
+        private async Task<GetByIdResponse<Settings>> GetImpl(GetByIdArguments args)
+        {
+            M.Settings mSettings = await _db.Settings.FirstOrDefaultAsync();
+            if (mSettings == null)
+            {
+                // This should never happen
+                throw new BadRequestException("Settings have not been initialized");
+            }
+
+            var settings = _mapper.Map<Settings>(mSettings);
+            var result = new GetByIdResponse<Settings>
+            {
+                CollectionName = "Settings",
+                Entity = settings,
+            };
+
+            if (!string.IsNullOrWhiteSpace(args.Expand))
+            {
+                Expand(args.Expand, settings, result);
+            }
+
+            return result;
+        }
+
+        private async Task<DataWithVersion<SettingsForClient>> GetForClientImpl()
+        {
+            M.Settings mSettings = await _db.Settings.FirstOrDefaultAsync();
+            if (mSettings == null)
+            {
+                // This should never happen
+                throw new BadRequestException("Settings have not been initialized");
+            }
+
+            // Prepare the settings for client
+            var settings = _mapper.Map<SettingsForClient>(mSettings);
+            settings.PrimaryLanguageName = _culturesRepo.GetCulture(settings.PrimaryLanguageId)?.Name;
+            settings.SecondaryLanguageName = _culturesRepo.GetCulture(settings.SecondaryLanguageId)?.Name;
+            settings.UserId = _tenantInfo.UserId();
+
+            // Tag the settings for client with their current version
+            var result = new DataWithVersion<SettingsForClient>
+            {
+                Version = mSettings.SettingsVersion.ToString(),
+                Data = settings
+            };
+
+            return result;
+        }
 
         private void Expand(string expand, Settings settings, GetByIdResponse<Settings> result)
         {
@@ -272,7 +297,7 @@ namespace BSharp.Controllers
                         _localizer[nameof(RequiredAttribute), _localizer["Settings_SecondaryLanguageSymbol"]]);
                 }
 
-                if(entity.SecondaryLanguageId == entity.PrimaryLanguageId)
+                if (entity.SecondaryLanguageId == entity.PrimaryLanguageId)
                 {
 
                     ModelState.AddModelError(nameof(entity.SecondaryLanguageId),

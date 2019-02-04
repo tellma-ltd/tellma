@@ -22,6 +22,7 @@ import { View } from './dto/view';
 import { Settings, SettingsForClient } from './dto/settings';
 import { DataWithVersion } from './dto/data-with-version';
 import { PermissionsForClient } from './dto/permission';
+import { SaveSettingsResponse } from './dto/save-settings-response';
 
 @Injectable({
   providedIn: 'root'
@@ -127,7 +128,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/settings?${params}`;
 
-        const obs$ = this.http.post<GetByIdResponse<Settings>>(url, entity, {
+        const obs$ = this.http.post<SaveSettingsResponse>(url, entity, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           tap(() => this.saveInProgress = false),

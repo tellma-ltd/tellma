@@ -97,10 +97,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
       // settings
       {
         const v = <VersionStatus>e.headers.get('x-settings-version');
-        if (v === 'Fresh') {
-          console.log('Versions are fresh :)');
-        }
-
         if (v === 'Stale') {
           this.refreshSettings();
         }
