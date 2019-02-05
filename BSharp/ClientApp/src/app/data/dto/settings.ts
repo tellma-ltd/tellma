@@ -19,7 +19,6 @@ export class Settings extends SettingsForSave {
 }
 
 export class SettingsForClient extends DtoBase {
-    UserId: number;
     ShortCompanyName: string;
     ShortCompanyName2: string;
     PrimaryLanguageId: string;

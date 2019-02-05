@@ -33,7 +33,7 @@ import {
   faAngleRight,
   faThLarge,
   faList,
-  faTrashAlt,
+  faTrash,
   faSave,
   faTimes,
   faDownload,
@@ -76,7 +76,7 @@ import { ViewLinkComponent } from './view-link/view-link.component';
 library.add(
   faExclamationTriangle, faSpinner, faSignInAlt, faSignOutAlt,
   faCheck, faPlus, faSyncAlt, faAngleDoubleLeft,
-  faAngleLeft, faAngleRight, faThLarge, faList, faPen, faTrashAlt,
+  faAngleLeft, faAngleRight, faThLarge, faList, faPen, faTrash,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
   faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
   faSearch, faAsterisk

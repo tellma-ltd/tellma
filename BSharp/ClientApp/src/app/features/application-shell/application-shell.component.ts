@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { WorkspaceService } from '~/app/data/workspace.service';
+import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { SettingsForClient } from '~/app/data/dto/settings';
+import { UserSettingsForClient } from '~/app/data/dto/local-user';
 
 @Component({
   selector: 'b-application-shell',
@@ -40,6 +41,14 @@ export class ApplicationShellComponent implements OnInit {
   }
 
   get settings(): SettingsForClient {
-return this.workspace.current.settings;
+     return this.workspace.current.settings;
+  }
+
+  get ws(): TenantWorkspace {
+    return this.workspace.current;
+  }
+
+  get userName(): string {
+    return this.ws.getMultilingualValueImmediate(this.ws.userSettings, 'Name');
   }
 }

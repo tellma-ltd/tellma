@@ -88,25 +88,24 @@
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
           </button>
         </div>
+
+        <!-- Data dropdown -->
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement" *ngIf="showDataDropdown">
           <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle"
             ngbDropdownToggle>
             {{ 'Data' | translate }}
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="importTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" (click)="onImport()" [disabled]="!canImport" *ngIf="showImport">
-                {{ 'Import' | translate }}
-              </button>
-            </div>
-
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body">
               <button type="button" class="dropdown-item btn-light" *ngIf="showExport" (click)="modalService.open(exportModal)"
                 [disabled]="!canExport">
                 {{ 'Export' | translate }}
               </button>
-
+            </div>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="importTooltip" container="body">
+              <button type="button" class="dropdown-item btn-light" (click)="onImport()" [disabled]="!canImport" *ngIf="showImport">
+                {{ 'Import' | translate }}
+              </button>
             </div>
           </div>
         </div>
@@ -377,7 +376,7 @@
   <!-- footer -->
   <div class="modal-footer">
     <button class="btn btn-danger" (click)="modal.dismiss(); onDelete();">
-      <fa-icon icon="trash-alt"></fa-icon>
+      <fa-icon icon="trash"></fa-icon>
       &nbsp;{{ 'Delete' | translate }}
     </button>
     <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()" ngbAutofocus>

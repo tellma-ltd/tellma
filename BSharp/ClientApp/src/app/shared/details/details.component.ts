@@ -862,29 +862,32 @@ export function applyServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[
   return leftovers;
 }
 
-export function clearServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[]) {
+export function clearServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[]): void {
   if (!entity) {
     // nothing to clear
     return;
 
-  } else {
-    if (!!entity['serverErrors']) {
-      delete entity['serverErrors'];
+  }
+  // if errors exist remove them, they can exist even on arrays
+  if (!!entity['serverErrors']) {
+    delete entity['serverErrors'];
+  }
 
-    } if (Array.isArray(entity)) {
-      // loop over the array items and clear them
-      for (let i = 0; i < entity.length; i++) {
-        const item = entity[i];
-        clearServerErrors(item);
-      }
-    } else if (!!entity.EntityState || !!entity.serverErrors) {
-      // loop over the navigation properties and clear them
-      const props = Object.keys(entity);
-      for (let i = 0; i < props.length; i++) {
-        const prop = props[i];
-        const item = entity[prop];
-        clearServerErrors(item);
-      }
+  // if the property is an array, recursively clear the errors from all the items
+  if (Array.isArray(entity)) {
+    // loop over the array items and clear them
+    for (let i = 0; i < entity.length; i++) {
+      const item = entity[i];
+      clearServerErrors(item);
+    }
+  } else if (!!entity.EntityState || !!entity.Id) {
+    // if the property is a DTO loop over the navigation properties and recursively clear their errors
+    const props = Object.keys(entity);
+    for (let i = 0; i < props.length; i++) {
+      const prop = props[i];
+      const item = entity[prop];
+      clearServerErrors(item);
     }
   }
+
 }

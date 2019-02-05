@@ -9,9 +9,11 @@ import { DataWithVersion } from './dto/data-with-version';
 import { PermissionsForClient } from './dto/permission';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
 import { CanActivate } from '@angular/router';
+import { UserSettingsForClient } from './dto/local-user';
 
 export const SETTINGS_PREFIX = 'settings';
 export const PERMISSIONS_PREFIX = 'permissions';
+export const USER_SETTINGS_PREFIX = 'user_settings';
 
 export function storageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}`; }
 export function versionStorageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}_version`; }
@@ -41,6 +43,19 @@ export function handleFreshPermissions(result: DataWithVersion<PermissionsForCli
   tws.permissionsVersion = version;
 }
 
+export function handleFreshUserSettings(result: DataWithVersion<UserSettingsForClient>,
+  tenantId: number, tws: TenantWorkspace, storage: StorageService) {
+
+  const userSettings = result.Data;
+  const version = result.Version;
+  const prefix = USER_SETTINGS_PREFIX;
+  storage.setItem(storageKey(prefix, tenantId), JSON.stringify(userSettings));
+  storage.setItem(versionStorageKey(prefix, tenantId), version);
+
+  tws.userSettings = userSettings;
+  tws.userSettingsVersion = version;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -52,6 +67,7 @@ export class TenantResolverGuard implements CanActivate {
   private cancellationToken$: Subject<void>;
   private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
+  private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
   private ping: () => Observable<any>;
 
   constructor(private workspace: WorkspaceService, private storage: StorageService,
@@ -62,6 +78,7 @@ export class TenantResolverGuard implements CanActivate {
     this.settingsApi = settingsApi.getForClient;
     this.ping = settingsApi.ping;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
+    this.userSettingsApi = this.api.localUsersApi(this.cancellationToken$).getForClient;
   }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> {
@@ -110,6 +127,24 @@ export class TenantResolverGuard implements CanActivate {
           getPermissionsFromStorage();
         }
 
+        // check user settings
+        const getUserSettingsFromStorage = () => {
+
+          // Try to retrieve the user settings from local storage
+          const prefix = USER_SETTINGS_PREFIX;
+          const cachedUserSettings = <UserSettingsForClient>JSON.parse(this.storage.getItem(storageKey(prefix, tenantId)));
+          const cachedUserSettingsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
+          if (!!cachedUserSettings) {
+            current.userSettings = cachedUserSettings;
+            current.userSettingsVersion = cachedUserSettingsVersion || '???';
+          }
+        };
+
+        // check user settings
+        if (!current.userSettings) {
+          getUserSettingsFromStorage();
+        }
+
         // subscribe to changes in the storage
         // If the user signs out or signs in from another window
         // we automatically sign out/in in this window in order to
@@ -131,11 +166,19 @@ export class TenantResolverGuard implements CanActivate {
                 getPermissionsFromStorage();
               }
             }
+
+            // user settings
+            const userSettingsKey = versionStorageKey(USER_SETTINGS_PREFIX, tenantId);
+            if (e.key === userSettingsKey) {
+              if (e.newValue !== current.userSettingsVersion) {
+                getUserSettingsFromStorage();
+              }
+            }
           }, false);
         }
 
         // IF this is a new browser/machine, need to get the globals from the backend
-        if (current.settings && current.permissions) {
+        if (current.settings && current.permissions && current.userSettings) {
           // In case our cached globals are stale this will trigger their refresh
           this.ping().pipe(retry(2)).subscribe();
 
@@ -146,12 +189,13 @@ export class TenantResolverGuard implements CanActivate {
           this.api.saveInProgress = true; // To show the rotator
 
           // using forkJoin is recommended for running HTTP calls in parallel
-          const obs$ = forkJoin(this.settingsApi(), this.permissionsApi()).pipe(
+          const obs$ = forkJoin(this.settingsApi(), this.permissionsApi(), this.userSettingsApi()).pipe(
             tap(result => {
               this.api.saveInProgress = false;
               // cache the settings and set it in the workspace
               handleFreshSettings(result[0], tenantId, current, this.storage);
               handleFreshPermissions(result[1], tenantId, current, this.storage);
+              handleFreshUserSettings(result[2], tenantId, current, this.storage);
             }),
             map(() => true),
             catchError((err: { status: number, error: any }) => {
@@ -161,7 +205,7 @@ export class TenantResolverGuard implements CanActivate {
                 this.router.navigate(['unauthorized']);
               } else {
                 this.workspace.ws.errorLoadingCompanyMessage = err.error;
-                this.router.navigate(['error-loading-company'], { queryParams: { retryUrl: state.url }});
+                this.router.navigate(['error-loading-company'], { queryParams: { retryUrl: state.url } });
               }
 
               // Prevent navigation
@@ -177,7 +221,6 @@ export class TenantResolverGuard implements CanActivate {
       }
     }
 
-    console.log('from guard!');
     this.router.navigate(['page-not-found']);
     return false;
   }

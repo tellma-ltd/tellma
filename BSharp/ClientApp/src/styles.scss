@@ -178,6 +178,15 @@ ngb-tabset li.nav-item .small {
   z-index: 1050;
 }
 
+.dropdown-item {
+  cursor: pointer;
+}
+
+// to stop the flickering
+.tooltip { 
+  pointer-events: none; 
+}
+
 
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {

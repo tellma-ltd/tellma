@@ -9,9 +9,10 @@ import { PermissionsForClient } from './dto/permission';
 import { StorageService } from './storage.service';
 import {
   handleFreshSettings, handleFreshPermissions, versionStorageKey,
-  storageKey, SETTINGS_PREFIX, PERMISSIONS_PREFIX
+  storageKey, SETTINGS_PREFIX, PERMISSIONS_PREFIX, USER_SETTINGS_PREFIX, handleFreshUserSettings
 } from './tenant-resolver.guard';
 import { Router } from '@angular/router';
+import { UserSettingsForClient } from './dto/local-user';
 
 type VersionStatus = 'Fresh' | 'Stale' | 'Unauthorized';
 
@@ -19,9 +20,11 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
   private notifyRefreshSettings$: Subject<void>;
   private notifyRefreshPermissions$: Subject<void>;
+  private notifyRefreshUserSettings$: Subject<void>;
   private cancellationToken$: Subject<void>;
   private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
+  private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private storage: StorageService, private router: Router) {
     // Note: We use exhaustMap to prevent making another call while a call is in progress
@@ -36,13 +39,18 @@ export class RootHttpInterceptor implements HttpInterceptor {
       exhaustMap(() => this.doRefreshPermissions())
     ).subscribe();
 
+    this.notifyRefreshUserSettings$ = new Subject<void>();
+    this.notifyRefreshUserSettings$.pipe(
+      exhaustMap(() => this.doRefreshUserSettings())
+    ).subscribe();
+
     this.cancellationToken$ = new Subject<void>();
     this.settingsApi = this.api.settingsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
+    this.userSettingsApi = this.api.localUsersApi(this.cancellationToken$).getForClient;
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
 
     // we accumulate all the headers params in these objects
     const headers = {};
@@ -71,6 +79,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     if (!!current) {
       headers['X-Settings-Version'] = current.settingsVersion || '???';
       headers['X-Permissions-Version'] = current.permissionsVersion || '???';
+      headers['X-User-Settings-Version'] = current.userSettingsVersion || '???';
     }
 
     // clone the request and set the headers and parameters
@@ -111,6 +120,8 @@ export class RootHttpInterceptor implements HttpInterceptor {
           this.storage.removeItem(versionStorageKey(SETTINGS_PREFIX, tenantId));
           this.storage.removeItem(storageKey(PERMISSIONS_PREFIX, tenantId));
           this.storage.removeItem(versionStorageKey(PERMISSIONS_PREFIX, tenantId));
+          this.storage.removeItem(storageKey(USER_SETTINGS_PREFIX, tenantId));
+          this.storage.removeItem(versionStorageKey(USER_SETTINGS_PREFIX, tenantId));
 
           // (3) Take the user to unauthorized screen
           this.router.navigate(['unauthorized']);
@@ -122,6 +133,14 @@ export class RootHttpInterceptor implements HttpInterceptor {
         const v = <VersionStatus>e.headers.get('x-permissions-version');
         if (v === 'Stale') {
           this.refreshPermissions();
+        }
+      }
+
+      // user settings
+      {
+        const v = <VersionStatus>e.headers.get('x-user-settings-version');
+        if (v === 'Stale') {
+          this.refreshUserSettings();
         }
       }
     }
@@ -178,8 +197,25 @@ export class RootHttpInterceptor implements HttpInterceptor {
     return obs$;
   }
 
-  clearTenant(tenantId: number) {
+  refreshUserSettings() {
+    this.notifyRefreshUserSettings$.next();
+  }
 
+  doRefreshUserSettings = () => {
+
+    const current = this.workspace.current;
+    const tenantId = this.workspace.ws.tenantId;
+
+    // using forkJoin is recommended for running HTTP calls in parallel
+    const obs$ = this.userSettingsApi().pipe(
+      tap(result => {
+        // Cache the user settings and set them in the workspace
+        handleFreshUserSettings(result, tenantId, current, this.storage);
+      }),
+      retry(2)
+    );
+
+    return obs$;
   }
 
 }

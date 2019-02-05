@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Custody } from './dto/custody';
 import { Role } from './dto/role';
 import { View } from './dto/view';
-import { LocalUser } from './dto/local-user';
+import { LocalUser, UserSettingsForClient } from './dto/local-user';
 import { Culture } from './dto/culture';
 import { DtoKeyBase } from './dto/dto-key-base';
 import { SettingsForClient } from './dto/settings';
@@ -51,6 +51,9 @@ export class TenantWorkspace {
 
   permissions: PermissionsForClient;
   permissionsVersion: string;
+
+  userSettings: UserSettingsForClient;
+  userSettingsVersion: string;
 
   // Keeps the state of every master-details pair in screen mode
   mdState: { [key: string]: MasterDetailsStore };
@@ -123,10 +126,17 @@ export class TenantWorkspace {
   }
 
   getMultilingualValue(collection: string, id: number | string, propName: string) {
-    if (!!id && !!propName) {
-      const propName2 = propName + '2';
+    if (!!id) {
       const item = this.get(collection, id);
+      return this.getMultilingualValueImmediate(item, propName);
+    }
 
+    return null;
+  }
+
+  getMultilingualValueImmediate(item: any, propName: string) {
+    if (!!propName) {
+      const propName2 = propName + '2';
       if (!!item) {
         if (this.isSecondaryLanguage && !!item[propName2]) {
           return item[propName2];
@@ -176,7 +186,7 @@ export class TenantWorkspace {
 
     const viewPerms = this.permissions[viewId];
     const allPerms = this.permissions['all'];
-    const userId = this.settings.UserId;
+    // const userId = this.userSettings.UserId;
     // (userId === createdById) ||
     return (!!viewPerms && (viewPerms.Update || viewPerms.Sign))
       || (!!allPerms && (allPerms.Update || allPerms.Sign));

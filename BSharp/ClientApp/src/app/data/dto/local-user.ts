@@ -33,3 +33,12 @@ export function LocalUsers_DoNotApplyRoles(s: LocalUser, f: LocalUser): LocalUse
         .forEach(p => s[p] = f[p]);
     return s;
 }
+
+export class UserSettingsForClientForSave {
+}
+
+export class UserSettingsForClient {
+    UserId: number;
+    Name: string;
+    Name2: string;
+}

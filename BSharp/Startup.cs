@@ -170,7 +170,8 @@ namespace BSharp
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .WithExposedHeaders("x-settings-version")
-                        .WithExposedHeaders("x-permissions-version");
+                        .WithExposedHeaders("x-permissions-version")
+                        .WithExposedHeaders("x-user-settings-version");
                 });
             }
 

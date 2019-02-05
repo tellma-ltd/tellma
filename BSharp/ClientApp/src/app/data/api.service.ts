@@ -23,6 +23,7 @@ import { Settings, SettingsForClient } from './dto/settings';
 import { DataWithVersion } from './dto/data-with-version';
 import { PermissionsForClient } from './dto/permission';
 import { SaveSettingsResponse } from './dto/save-settings-response';
+import { UserSettingsForClient } from './dto/local-user';
 
 @Injectable({
   providedIn: 'root'
@@ -66,7 +67,19 @@ export class ApiService {
   public localUsersApi(cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<View>('local-users', cancellationToken$),
-      deactivate: this.deactivateFactory<View>('local-users', cancellationToken$)
+      deactivate: this.deactivateFactory<View>('local-users', cancellationToken$),
+      getForClient: () => {
+        const url = appconfig.apiAddress + `api/local-users/client`;
+        const obs$ = this.http.get<DataWithVersion<UserSettingsForClient>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      }
     };
   }
 

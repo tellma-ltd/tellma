@@ -35,7 +35,6 @@ namespace BSharp.Controllers
         private readonly ILogger<LocalUsersController> _logger;
         private readonly IStringLocalizer<LocalUsersController> _localizer;
         private readonly IMapper _mapper;
-
         private readonly ITenantUserInfoAccessor _tenantInfo;
 
         public LocalUsersController(ApplicationContext db, AdminContext adminDb,
@@ -75,6 +74,37 @@ namespace BSharp.Controllers
                     return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
                 }
             );
+        }
+
+        [HttpGet("client")]
+        public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> UserSettingsForClient()
+        {
+            try
+            {
+                int userId = _tenantInfo.UserId();
+                var user = await _db.LocalUsers.FirstOrDefaultAsync(e => e.Id == userId);
+
+                // prepare the result
+                var forClient = new UserSettingsForClient
+                {
+                    UserId = userId,
+                    Name = user.Name,
+                    Name2 = user.Name2
+                };
+
+                var result = new DataWithVersion<UserSettingsForClient>
+                {
+                     Version = user.UserSettingsVersion.ToString(),
+                     Data = forClient
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
+                return BadRequest(ex.Message);
+            }
         }
 
         private async Task<ActionResult<EntitiesResponse<LocalUser>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
@@ -535,7 +565,8 @@ namespace BSharp.Controllers
 				t.[AgentId]	        = s.[AgentId],
 				t.[ModifiedAt]	    = @Now,
 				t.[ModifiedById]    = @UserId,
-                t.[PermissionsVersion] = NEWID() -- in case the permissions have changed
+                t.[PermissionsVersion] = NEWID(), -- in case the permissions have changed
+                t.[UserSettingsVersion] = NEWID() -- in case the permissions have changed
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[TenantId], [Name], [Name2],	[Email],	[ExternalId],    [AgentId], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById]

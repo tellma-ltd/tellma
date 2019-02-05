@@ -57,6 +57,7 @@ namespace BSharp.Controllers.Misc
                     // company since the user is no longer a member of it
                     context.HttpContext.Response.Headers.Add("x-settings-version", UNAUTHORIZED);
                     context.HttpContext.Response.Headers.Add("x-permissions-version", UNAUTHORIZED);
+                    context.HttpContext.Response.Headers.Add("x-user-settings-version", UNAUTHORIZED);
                     return;
                 }
 
@@ -69,7 +70,7 @@ namespace BSharp.Controllers.Misc
                 // TODO
 
 
-                // (5) If version headers are supplied, confirm their freshness
+                // (5) If any version headers are supplied: confirm their freshness
                 {
                     // Settings
                     var clientVersion = context.HttpContext.Request.Headers["X-Settings-Version"].FirstOrDefault();
@@ -88,6 +89,17 @@ namespace BSharp.Controllers.Misc
                     {
                         var serverVersion = tenantInfo.PermissionsVersion;
                         context.HttpContext.Response.Headers.Add("x-permissions-version",
+                            clientVersion == serverVersion ? FRESH : STALE);
+                    }
+                }
+
+                {
+                    // User Settings
+                    var clientVersion = context.HttpContext.Request.Headers["X-User-Settings-Version"].FirstOrDefault();
+                    if (!string.IsNullOrWhiteSpace(clientVersion))
+                    {
+                        var serverVersion = tenantInfo.UserSettingsVersion;
+                        context.HttpContext.Response.Headers.Add("x-user-settings-version",
                             clientVersion == serverVersion ? FRESH : STALE);
                     }
                 }

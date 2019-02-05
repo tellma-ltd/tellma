@@ -109,7 +109,7 @@ namespace BSharp.Controllers
 
                 mSettings.ModifiedAt = DateTimeOffset.Now;
                 mSettings.ModifiedById = _tenantInfo.GetCurrentInfo().UserId.Value;
-                mSettings.SettingsVersion = Guid.NewGuid(); // promps clients to refresh
+                mSettings.SettingsVersion = Guid.NewGuid(); // prompts clients to refresh
 
                 await _db.SaveChangesAsync();
 
@@ -208,7 +208,6 @@ namespace BSharp.Controllers
             var settings = _mapper.Map<SettingsForClient>(mSettings);
             settings.PrimaryLanguageName = _culturesRepo.GetCulture(settings.PrimaryLanguageId)?.Name;
             settings.SecondaryLanguageName = _culturesRepo.GetCulture(settings.SecondaryLanguageId)?.Name;
-            settings.UserId = _tenantInfo.UserId();
 
             // Tag the settings for client with their current version
             var result = new DataWithVersion<SettingsForClient>

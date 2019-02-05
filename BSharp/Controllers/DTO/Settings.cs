@@ -74,8 +74,6 @@ namespace BSharp.Controllers.DTO
 
     public class SettingsForClient
     {
-        public int UserId { get; set; }
-
         public string ShortCompanyName { get; set; }
 
         public string ShortCompanyName2 { get; set; }
