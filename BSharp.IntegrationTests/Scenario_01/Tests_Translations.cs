@@ -10,7 +10,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 {
     public partial class Scenario_01
     {
-        public const string Translations = "99- Translations";
+        public const string Translations = "99 - Translations";
 
 
         [Trait(Testing, Translations)]

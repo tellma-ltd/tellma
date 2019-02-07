@@ -48,7 +48,9 @@ import {
   faCalendarAlt,
   faPen,
   faSearch,
-  faAsterisk
+  faAsterisk,
+  faCameraRetro,
+  faUser
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
 import { DecimalEditorComponent } from './decimal-editor/decimal-editor.component';
@@ -71,6 +73,7 @@ import { TableComponent } from './table/table.component';
 import { DetailsPickerComponent } from './details-picker/details-picker.component';
 import { DropdownAppendToBodyDirective } from './details-picker/dropdown-append-to-body.directive';
 import { ViewLinkComponent } from './view-link/view-link.component';
+import { ImageComponent } from './image/image.component';
 
 // Icons to be used in the web app
 library.add(
@@ -79,7 +82,7 @@ library.add(
   faAngleLeft, faAngleRight, faThLarge, faList, faPen, faTrash,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
   faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
-  faSearch, faAsterisk
+  faSearch, faAsterisk, faCameraRetro, faUser
 );
 
 @NgModule({
@@ -102,7 +105,8 @@ library.add(
     TableComponent,
     DetailsPickerComponent,
     DropdownAppendToBodyDirective,
-    ViewLinkComponent
+    ViewLinkComponent,
+    ImageComponent
   ],
   imports: [
     CommonModule,
@@ -153,7 +157,8 @@ library.add(
     DatePickerComponent,
     TableComponent,
     DetailsPickerComponent,
-    ViewLinkComponent
+    ViewLinkComponent,
+    ImageComponent
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },

@@ -1,0 +1,23 @@
+.b-image-placeholder {
+  color: lightgrey;
+}
+
+.b-image-controls {
+  height: 23px;
+  margin-top: -23px;
+}
+
+@media (min-width: 768px) {
+  .b-image-controls {
+    opacity: 0;
+    transition: opacity ease 100ms;
+  }
+
+  .b-image:hover .b-image-controls {
+    opacity: 1;
+  }
+}
+
+.b-image-round {
+  border-radius: 50%;
+}

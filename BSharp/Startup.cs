@@ -1,5 +1,6 @@
 using AutoMapper;
 using BSharp.Data;
+using BSharp.Services.BlobStorage;
 using BSharp.Services.Migrations;
 using BSharp.Services.ModelMetadata;
 using BSharp.Services.Utilities;
@@ -66,6 +67,25 @@ namespace BSharp
                 });
             }
 
+            // Add a blob service depending on wheter 
+            var azureBlobConfig = _config.GetSection("AzureBlobStorage");
+            if (azureBlobConfig.Exists())
+            {
+                // If Azure blob storage info is provided use it
+                // Note: This setup of using one azure blob storage may become a
+                // bottleneck in the extremely far future we will worry about it then                
+                services.AddAzureBlobStorage(opt =>
+                {
+                    opt.ConnectionString = azureBlobConfig["ConnectionString"];
+                    opt.ContainerName = azureBlobConfig["ContainerName"];
+                });
+            }
+            else
+            {
+                // If a connection string to an Azure blob storage is not provided use the sql db as blob storage
+                // This uses the ApplicationContext itself to store blobs: more expensive but easier to set up on-premise
+                services.AddSqlTableBlobStorage();
+            }
 
             // Add all our custom services
             services.AddMultiTenancy();
@@ -169,6 +189,7 @@ namespace BSharp
                         .AllowAnyOrigin()
                         .AllowAnyHeader()
                         .AllowAnyMethod()
+                        .WithExposedHeaders("x-image-id")
                         .WithExposedHeaders("x-settings-version")
                         .WithExposedHeaders("x-permissions-version")
                         .WithExposedHeaders("x-user-settings-version");

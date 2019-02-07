@@ -7,10 +7,12 @@ export class LocalUserForSave<TRoleMembership = RoleMembershipForSave> extends D
     Email: string;
     Roles: TRoleMembership[];
     AgentId: number | string;
+    Image: string;
 }
 
 export class LocalUser extends LocalUserForSave<RoleMembership> {
     ExternalId: string;
+    ImageId: string;
     IsActive: boolean;
     CreatedAt: string;
     CreatedById: number | string;
@@ -39,6 +41,7 @@ export class UserSettingsForClientForSave {
 
 export class UserSettingsForClient {
     UserId: number;
+    ImageId: string;
     Name: string;
     Name2: string;
 }

@@ -183,10 +183,20 @@ ngb-tabset li.nav-item .small {
 }
 
 // to stop the flickering
-.tooltip { 
-  pointer-events: none; 
+.tooltip {
+  pointer-events: none;
 }
 
+// to ease the vertical alignment of the buttons inside it
+@media (min-width: 768px) {
+  .navbar {
+    height: 50px;
+  }
+}
+
+.breadcrumb {
+  background-color: transparent;
+}
 
 ///////////////////////////////// BSharp /////////////////////////////////
 .b-rtl {
@@ -290,63 +300,63 @@ ngb-tabset li.nav-item .small {
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
   .b-tile-container {
     flex: 0 0 33.33333333%;
     max-width: 33.33333333%;
   }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1300px) {
   .b-tile-container {
     flex: 0 0 25%;
     max-width: 25%;
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1750px) {
   .b-tile-container {
     flex: 0 0 20%;
     max-width: 20%;
   }
 }
 
-@media (min-width: 1534px) {
+@media (min-width: 2100px) {
   .b-tile-container {
     flex: 0 0 16.66666667%;
     max-width: 16.66666667%;
   }
 }
 
-@media (min-width: 1870px) {
+@media (min-width: 2450px) {
   .b-tile-container {
     flex: 0 0 14.28571428%;
     max-width: 14.28571428%;
   }
 }
 
-@media (min-width: 2200px) {
+@media (min-width: 2800px) {
   .b-tile-container {
     flex: 0 0 12.5%;
     max-width: 12.5%;
   }
 }
 
-@media (min-width: 2500px) {
+@media (min-width: 3150px) {
   .b-tile-container {
     flex: 0 0 11.11111111%;
     max-width: 11.11111111%;
   }
 }
 
-@media (min-width: 2800px) {
+@media (min-width: 3500px) {
   .b-tile-container {
     flex: 0 0 10;
     max-width: 10%;
   }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 1050px) {
   // prevents the tiles inside a modal from become too narrow, remember that the
   // media query works on the screen as a whole not the width of the modal
   .b-tile-container.b-popup-tile-container {
@@ -380,7 +390,7 @@ input.b-h2,
 
 .b-input {
   border-width: 0 0 1px 0;
-  border-color: $gray-600;
+  border-color: $gray-500;
   background-color: transparent;
   padding: 0 !important;
   height: auto;
@@ -739,9 +749,9 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
 
 // a form group is a form control + optional label + optional errors
 // taking half the screen on wide screen, and full screen on smaller screen
-.b-form-group {
+.b-form-group,
+.b-wide-form-group {
   margin-top: 0.75rem !important;
-  // instead of col-12
   flex: 0 0 100%;
   max-width: 100%;
   position: relative;
@@ -752,7 +762,8 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
 }
 
 @media (min-width: 992px) {
-  .b-form-group {
+  .b-form-group,
+  .b-wide-form-group {
     margin-top: 0.5rem !important;
   }
 }
@@ -788,8 +799,8 @@ tr.b-highlight {
   color: transparent;
 }
 
-.b-details-modal, .b-master-modal 
-{
+.b-details-modal,
+.b-master-modal {
   .modal-dialog {
     max-width: 1050px;
   }
@@ -839,4 +850,67 @@ tr.b-highlight {
 // opposite of bootstraps small
 .b-large {
   font-size: 120%;
+}
+
+.b-dp-wrapper {
+  //  display: inline-block;
+  border-radius: 50%;
+  border: 1px solid $gray-300;
+}
+
+.b-dp-dark {
+  // Borders on a dark background
+  border-color: $gray-900;
+}
+
+.b-mw-0 {
+  min-width: 0;
+}
+
+.b-brand-link {
+  padding: 0.5rem 0.625rem;
+  text-decoration: none !important;
+}
+
+// styling for my account box in the top right corner
+.b-navbar-button {
+  cursor: pointer;
+  height: 100%;
+  border-width: 0;
+  color: rgba(255, 255, 255, 0.75) !important;
+  background-color: rgba(0, 0, 0, 0);
+  padding: 0.5rem;
+  display: block;
+  text-align: left;
+}
+
+.b-rtl .b-navbar-button {
+  text-align: right;
+}
+
+.b-navbar-button:hover,
+.dropdown.show .b-navbar-button,
+.b-navbar-button.active22 {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+button.b-navbar-button:focus {
+  outline: none;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.b-details-image-container {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+@media (min-width: 768px) {
+  .b-details-image-container {
+    padding-top: 0;
+    padding-bottom: 0;
+    justify-content: flex-end;
+  }
 }

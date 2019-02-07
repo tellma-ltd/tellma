@@ -6,6 +6,7 @@ using BSharp.Services.Sharding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -30,6 +31,7 @@ namespace BSharp.Data
         public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
         public DbSet<Custody> Custodies { get; set; }
         public DbSet<Agent> Agents { get; set; }
+        public DbSet<Blob> Blobs { get; set; }
 
         // Security
         public DbSet<LocalUser> LocalUsers { get; set; }
@@ -88,6 +90,10 @@ namespace BSharp.Data
             // Settings
             AddTenantId<Settings>(builder, tenantId);
             Data.Model.Settings.OnModelCreating(builder);
+
+            // Blobs
+            AddTenantId<Blob>(builder, nameof(Blob.Id), tenantId);
+            Blob.OnModelCreating(builder);
         }
 
         /// <summary>
@@ -143,7 +149,7 @@ namespace BSharp.Data
         public DbQuery<CodeId> CodeIds { get; set; }
 
         /// <summary>
-        /// A query for returning the Ids that correspond to a bunch of codes
+        /// A query for returning a list of strings
         /// </summary>
         public DbQuery<DbString> Strings { get; set; }
 
@@ -151,6 +157,11 @@ namespace BSharp.Data
         /// Unified model for both application and admin contexts for querying user permissions
         /// </summary>
         public DbQuery<AbstractPermission> AbstractPermissions { get; set; }
+
+        /// <summary>
+        /// A query for returning a list of GUIDs
+        /// </summary>
+        public DbQuery<DbGuid> Guids { get; set; }
 
         #endregion
 
@@ -174,7 +185,7 @@ namespace BSharp.Data
         /// <param name="tenantIdProvider">The service that retrieves tenants Ids from the headers</param>
         /// <returns></returns>
         private static DbContextOptions<ApplicationContext> CreateDbContextOptions(
-            IShardResolver shardResolver, ITenantIdProvider tenantIdProvider, 
+            IShardResolver shardResolver, ITenantIdProvider tenantIdProvider,
             IUserProvider userService, ITenantUserInfoAccessor accessor)
         {
             // Prepare the options based on the connection created with the shard manager
@@ -282,7 +293,7 @@ namespace BSharp.Data
                         };
 
                         // Provide the user throughout the current session
-                        accessor.SetInfo(tenantId, info);                        
+                        accessor.SetInfo(tenantId, info);
                     }
                     else
                     {
@@ -400,5 +411,48 @@ namespace BSharp.Data
         }
 
         #endregion
+
+        //public DbSet<MyCustody> MyCustodies { get; set; }
+
+        //public DbSet<MyAgent> MyAgents { get; set; }
+
+        //public DbSet<MyPlace> MyPlaces { get; set; }
+
+        //public DbSet<Customer> Customers { get; set; }
+
+        //public DbSet<Employee> Employees { get; set; }
+
+        //public DbSet<BankAccount> BankAccounts { get; set; }
     }
+
+    //public abstract class MyCustody
+    //{
+    //    public int Id { get; set; }
+    //    public string Name { get; set; }
+    //}
+
+    //public abstract class MyAgent : MyCustody
+    //{
+    //    public DateTime TIN { get; set; }
+    //}
+
+    //public abstract class MyPlace : MyCustody
+    //{
+    //    public string Address { get; set; }
+    //}
+
+    //public class Customer :MyAgent
+    //{
+    //    public decimal CreditLine { get; set; }
+    //}
+
+    //public class Employee: MyAgent
+    //{
+    //    public string JobTitle { get; set; }
+    //}
+
+    //public class BankAccount : MyPlace
+    //{
+    //    public string AccountNumber { get; set; }
+    //}
 }

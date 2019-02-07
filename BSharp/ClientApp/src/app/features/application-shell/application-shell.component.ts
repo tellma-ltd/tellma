@@ -51,4 +51,19 @@ export class ApplicationShellComponent implements OnInit {
   get userName(): string {
     return this.ws.getMultilingualValueImmediate(this.ws.userSettings, 'Name');
   }
+  get companyName(): string {
+    return this.ws.getMultilingualValueImmediate(this.ws.settings, 'ShortCompanyName');
+  }
+
+  get myAccountDropdownPlacement() {
+    return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
+  }
+
+  public onMyAccount(): void {
+    alert('To be implemented');
+  }
+
+  public onSignOut(): void {
+    alert('To be implemented');
+  }
 }

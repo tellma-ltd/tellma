@@ -16,7 +16,7 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Name -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isFirstLanguage" [serverErrors]="model?.serverErrors?.Name">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" *ngIf="ws.isPrimaryLanguage" [serverErrors]="model?.serverErrors?.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
       [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
@@ -37,7 +37,7 @@
     </b-form-group>
 
     <!-- Name2 -->
-    <b-form-group class="b-form-group" *ngIf="ws.isFirstLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
+    <b-form-group class="b-form-group" *ngIf="ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
       [serverErrors]="model?.serverErrors?.Name2">
       <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>

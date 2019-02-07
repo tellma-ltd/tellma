@@ -17,6 +17,7 @@ namespace BSharp.Controllers
     [Route("api/permissions")]
     [ApiController]
     [LoadTenantInfo]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class PermissionsController : ControllerBase
     {
         // Private fields

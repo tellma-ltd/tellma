@@ -21,6 +21,7 @@ namespace BSharp.Controllers
     [Route("api/settings")]
     [ApiController]
     [LoadTenantInfo]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class SettingsController : ControllerBase
     {
         // Private fields

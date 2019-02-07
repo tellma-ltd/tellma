@@ -1,0 +1,27 @@
+<div class="b-image" [style.width]="size + sizeUnit" [style.height]="size + sizeUnit" [class.b-image-round]="isRound">
+
+  <div class="d-flex align-items-center justify-content-center w-100 h-100">
+    <!-- image -->
+    <img *ngIf="showImg" [src]="dataUrl" width="100%" height="100%" alt="" [class.b-image-round]="isRound">
+
+    <!-- placeholder if image is null -->
+    <fa-icon class="b-image-placeholder" *ngIf="showIcon" [icon]="icon" [style.font-size]="placeholderFontSize + 'rem'"></fa-icon>
+
+    <!-- error -->
+    <fa-icon class="text-danger" *ngIf="showError" icon="exclamation-triangle" style="font-size: 1.5rem"></fa-icon>
+  </div>
+
+  <!-- edit controls -->
+  <div class="b-image-controls w-100" *ngIf="showEditControls">
+    <!-- we use divs to avoid tabbing and focus since they are hidden by default unless you hover and it's bad to let the user tab through hidden controls -->
+    <div class="btn btn-primary p-0 pr-1 pl-1 w-50" (click)="onEdit()">
+      <fa-icon icon="pen"></fa-icon>
+    </div>
+    <div class="btn btn-primary p-0 pr-1 pl-1 w-50" (click)="onDelete()">
+      <fa-icon icon="trash"></fa-icon>
+    </div>
+  </div>
+</div>
+
+<!-- for the file dialog -->
+<input type="file" accept=".jpg,.jpeg,.bmp,.png" class="d-none" #input (change)="onFileSelected(input)" />

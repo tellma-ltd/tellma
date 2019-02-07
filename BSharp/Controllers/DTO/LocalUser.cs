@@ -30,6 +30,9 @@ namespace BSharp.Controllers.DTO
 
         [Display(Name = "User_Agent")]
         public int? AgentId { get; set; }
+
+        [Display(Name = "Image")]
+        public byte[] Image { get; set; }
     }
 
     public class LocalUserForSave : LocalUserForSave<RoleMembershipForSave> { }
@@ -37,6 +40,8 @@ namespace BSharp.Controllers.DTO
     public class LocalUser : LocalUserForSave<RoleMembership>, IAuditedDto
     {
         public string ExternalId { get; set; }
+
+        public string ImageId { get; set; }
 
         [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }
@@ -67,7 +72,11 @@ namespace BSharp.Controllers.DTO
     public class UserSettingsForClient : UserSettingsForClientForSave
     {
         public int? UserId { get; set; }
+
+        public string ImageId { get; set; }
+
         public string Name { get; set; }
+
         public string Name2 { get; set; }
     }
 }

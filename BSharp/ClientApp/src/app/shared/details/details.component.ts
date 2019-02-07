@@ -162,19 +162,19 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private location: Location,
     private router: Router, private route: ActivatedRoute, public modalService: NgbModal, private translate: TranslateService) {
-    // The constructor contains initializations and wiring
+    // the constructor contains initializations and wiring
     // that survives over the lifetime of the component itself
     // even if apiEndpoint or idString change
 
     this.route.paramMap.subscribe((params: ParamMap) => {
-      // The id parameter from the URI is only avaialble in screen mode
+      // the id parameter from the URI is only avaialble in screen mode
       // when it changes set idString which triggers a new refresh
       if (params.has('id')) {
         this.idString = params.get('id');
       }
     });
 
-    // When the notifyFetch$ subject fires, cancel existing backend
+    // when the notifyFetch$ subject fires, cancel existing backend
     // call and dispatch a new backend call
     this.notifyFetch$ = new Subject<any>();
     this.notifyFetch$.pipe(
@@ -183,7 +183,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   ngOnInit() {
-    // As if the screen is opened a new
+    // as if the screen is opened a new
     this.localState = new MasterDetailsStore();
     this._errorMessage = null;
     this._modalErrorMessage = null;
@@ -200,7 +200,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   ngOnDestroy() {
-    // Cancel any backend operations
+    // cancel any backend operations
     this.notifyDestruct$.next();
   }
 

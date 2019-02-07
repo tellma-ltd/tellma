@@ -109,5 +109,3 @@ export function downloadBlob(blob: Blob, fileName: string) {
     window.URL.revokeObjectURL(url);
   }
 }
-
-

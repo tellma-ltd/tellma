@@ -1,27 +1,83 @@
 <div class="d-flex flex-column h-100">
-  <div class="navbar navbar-dark b-dark navbar-expand-md" [style.background-color]="settings.BrandColor">
-    <a routerLink="main-menu">
-      <b-brand></b-brand>
+  <div class="navbar navbar-dark b-dark navbar-expand-md p-0" [style.background-color]="settings.BrandColor">
+    <a class="b-brand-link b-navbar-button h-100" routerLink="main-menu">
+      <b-brand [scale]="1.2"></b-brand>
     </a>
-    <button type="button" class="navbar-toggler" (click)="onToggleCollapse()">
+    <button type="button" class="navbar-toggler ml-2 mr-2" (click)="onToggleCollapse()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse justify-content-between" [ngbCollapse]="isCollapsed">
-      <ol class="nav navbar-nav">
-        <li class="nav-item"><a class="nav-link" routerLink="./measurement-units" routerLinkActive="active" (click)="onCollapse()">{{ 'MeasurementUnits' | translate }}</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="./agents/individuals" routerLinkActive="active" (click)="onCollapse()">{{ 'Individuals' | translate }}</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="./agents/organizations" routerLinkActive="active" (click)="onCollapse()">{{ 'Organizations' | translate }}</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="./roles" routerLinkActive="active" (click)="onCollapse()">{{ 'Roles' | translate }}</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="./local-users" routerLinkActive="active" (click)="onCollapse()">{{ 'Users' | translate }}</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="./settings" routerLinkActive="active" (click)="onCollapse()">{{ 'Settings' | translate }}</a></li>
-        <!-- <li class="nav-item"><a class="nav-link" routerLink="../101/roles" routerLinkActive="active" (click)="onCollapse()">Contoso</a></li> -->
+    <div class="collapse navbar-collapse justify-content-between h-100" [ngbCollapse]="isCollapsed">
+      <ol class="nav navbar-nav h-100">
+        <li class="nav-item h-100">
+          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./agents/individuals"
+            (click)="onCollapse()">
+            {{ 'Individuals' | translate }}
+          </a>
+        </li>
+        <li class="nav-item h-100">
+          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./agents/organizations"
+            (click)="onCollapse()">
+            {{ 'Organizations' | translate }}
+          </a>
+        </li>
+        <li class="nav-item h-100">
+          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./roles"
+            (click)="onCollapse()">
+            {{ 'Roles' | translate }}
+          </a>
+        </li>
+        <li class="nav-item h-100">
+          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./local-users"
+            (click)="onCollapse()">
+            {{ 'Users' | translate }}
+          </a>
+        </li>
+        <li class="nav-item h-100">
+          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./settings"
+            (click)="onCollapse()">
+            {{ 'Settings' | translate }}
+          </a>
+        </li>
       </ol>
 
-      <ol class="nav navbar-nav p-0">
-        <li class="nav-item"><a class="nav-link" routerLink="../.." (click)="onCollapse()">Companies</a></li>
-        <li class="nav-item b-pointer"><a class="nav-link" (click)="onCollapse(); onPrimary();"> {{ settings.PrimaryLanguageName }}</a></li>
-        <li class="nav-item b-pointer"><a class="nav-link" (click)="onCollapse(); onSecondary()"> {{ settings.SecondaryLanguageName }}</a></li>
-        <li class="nav-item b-pointer"><a class="nav-link"> {{ userName }}</a></li>
+      <ol class="nav navbar-nav p-0 h-100">
+        <li class="nav-item h-100" ngbDropdown [placement]="myAccountDropdownPlacement">
+          <button class="w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
+            <div class="align-self-center">
+              <div class="b-dp-wrapper b-dp-dark bg-white ml-1 mr-1">
+                <b-image [src]="'local-users/' + ws.userSettings.UserId + '/image'" [imageId]="ws.userSettings.ImageId"
+                  shape="circle" [size]="28"></b-image>
+              </div>
+            </div>
+            &nbsp;&nbsp;
+            <div class="h-100 d-flex flex-column justify-content-center">
+              <div style="line-height:1.1rem">{{ userName }}</div>
+              <div class="small font-weight-bold"> {{ companyName }}</div>
+            </div>
+            &nbsp;&nbsp;
+          </button>
+          <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action">
+            <ng-container *ngIf="ws.settings.SecondaryLanguageId">
+              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isSecondaryLanguage" (click)="onPrimary();onCollapse()">
+                {{ settings.PrimaryLanguageName }}
+              </button>
+              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isPrimaryLanguage" (click)="onSecondary();onCollapse()">
+                {{ settings.SecondaryLanguageName }}
+              </button>
+              <hr />
+            </ng-container>
+
+            <button type="button" class="dropdown-item btn-light" routerLink="../.." (click)="onCollapse()">
+              {{ 'MyCompanies' | translate }}
+            </button>
+            <button type="button" class="dropdown-item btn-light" (click)="onMyAccount();onCollapse()">
+              {{ 'MyAccount' | translate }}
+            </button>
+            <button type="button" class="dropdown-item btn-light" (click)="onSignOut();onCollapse()">
+              {{ 'SignOut' | translate }}
+            </button>
+          </div>
+        </li>
       </ol>
     </div>
   </div>

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
-using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +13,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -25,6 +23,7 @@ using M = BSharp.Data.Model;
 namespace BSharp.Controllers
 {
     [ApiController]
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public abstract class ReadControllerBase<TModel, TDto, TKey> : ControllerBase
         where TModel : M.ModelBase
         where TDto : DtoKeyBase<TKey>
@@ -67,47 +66,7 @@ namespace BSharp.Controllers
         {
             return await CallAndHandleErrorsAsync(async () =>
             {
-                // Single by Id
-                var query = GetBaseQuery().AsNoTracking();
-                query = SingletonQuery(query, id);
-
-                // Check that the entity exists
-                bool supportsAsync = query is IAsyncEnumerable<TModel>;
-                int count = supportsAsync ? await query.CountAsync() : query.Count();
-                if (count == 0)
-                {
-                    throw new NotFoundException<TKey>(id);
-                }
-
-                // Apply read permissions
-                query = await ApplyReadPermissions(query);
-
-                // Expand
-                query = Expand(query, args.Expand);
-
-                // Load
-                var dbEntity = supportsAsync ? await query.FirstOrDefaultAsync() : query.FirstOrDefault();
-                if (dbEntity == null)
-                {
-                    // We already checked for not found earlier,
-                    // This can only mean lack of permissions
-                    throw new ForbiddenException();
-                }
-
-                // Flatten Related Entities
-                var relatedEntities = FlattenRelatedEntities(dbEntity, args.Expand);
-
-                // Map the primary result to DTO too
-                var entity = Map(dbEntity);
-
-                // Return
-                var result = new GetByIdResponse<TDto>
-                {
-                    Entity = entity,
-                    CollectionName = GetCollectionName(typeof(TDto)),
-                    RelatedEntities = relatedEntities
-                };
-
+                var result = await GetByIdImplAsync(id, args);
                 return Ok(result);
             });
         }
@@ -124,12 +83,11 @@ namespace BSharp.Controllers
             });
         }
 
-
         // Abstract and virtual members
 
-            /// <summary>
-            /// Returns the query from which the GET endpoint retrieves the results
-            /// </summary>
+        /// <summary>
+        /// Returns the query from which the GET endpoint retrieves the results
+        /// </summary>
         protected abstract IQueryable<TModel> GetBaseQuery();
 
         protected virtual async Task<IQueryable<TModel>> ApplyReadPermissions(IQueryable<TModel> query)
@@ -264,6 +222,55 @@ namespace BSharp.Controllers
             };
 
             // Finally return the result
+            return result;
+        }
+
+        /// <summary>
+        /// Returns a singel entity as per the ID and specifications in the get request
+        /// </summary>
+        protected virtual async Task<GetByIdResponse<TDto>> GetByIdImplAsync(TKey id, [FromQuery] GetByIdArguments args)
+        {
+            // Single by Id
+            var query = GetBaseQuery().AsNoTracking();
+            query = SingletonQuery(query, id);
+
+            // Check that the entity exists
+            bool supportsAsync = query is IAsyncEnumerable<TModel>;
+            int count = supportsAsync ? await query.CountAsync() : query.Count();
+            if (count == 0)
+            {
+                throw new NotFoundException<TKey>(id);
+            }
+
+            // Apply read permissions
+            query = await ApplyReadPermissions(query);
+
+            // Expand
+            query = Expand(query, args.Expand);
+
+            // Load
+            var dbEntity = supportsAsync ? await query.FirstOrDefaultAsync() : query.FirstOrDefault();
+            if (dbEntity == null)
+            {
+                // We already checked for not found earlier,
+                // This can only mean lack of permissions
+                throw new ForbiddenException();
+            }
+
+            // Flatten Related Entities
+            var relatedEntities = FlattenRelatedEntities(dbEntity, args.Expand);
+
+            // Map the primary result to DTO too
+            var entity = Map(dbEntity);
+
+            // Return
+            var result = new GetByIdResponse<TDto>
+            {
+                Entity = entity,
+                CollectionName = GetCollectionName(typeof(TDto)),
+                RelatedEntities = relatedEntities
+            };
+
             return result;
         }
 
@@ -1020,7 +1027,7 @@ namespace BSharp.Controllers
             }
 
             var fileStream = handler.ToFileStream(abstractFile);
-            return File(((MemoryStream)fileStream).ToArray(), contentType);
+            return File(fileStream, contentType);
         }
 
         protected async Task<ActionResult<T>> CallAndHandleErrorsAsync<T>(Func<Task<ActionResult<T>>> func)

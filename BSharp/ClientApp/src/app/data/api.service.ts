@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpHeaders, HttpRequest } from '@angula
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, finalize, takeUntil, tap } from 'rxjs/operators';
+import { catchError, finalize, takeUntil, tap, map } from 'rxjs/operators';
 import { ActivateArguments } from './dto/activate-arguments';
 import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
 import { GetArguments } from './dto/get-arguments';
@@ -336,6 +336,25 @@ export class ApiService {
         return obs$;
       }
     };
+  }
+
+  // We refactored this out to support the b-image component
+  public getImage(endpoint: string, imageId: string, cancellationToken$: Observable<void>) {
+
+    // Note: cache=true instructs the HTTP interceptor to not add cache-busting parameters
+    const url = appconfig.apiAddress + `api/${endpoint}?imageId=${imageId}`;
+    const obs$ = this.http.get(url, { responseType: 'blob', observe : 'response' }).pipe(
+      map(res => {
+        return { image: res.body, imageId: res.headers.get('x-image-id')  };
+      }),
+      catchError(error => {
+        const friendlyError = this.friendly(error);
+        return throwError(friendlyError);
+      }),
+      takeUntil(cancellationToken$)
+    );
+
+    return obs$;
   }
 
   private activateFactory<TDto extends DtoForSaveKeyBase>(endpoint: string, cancellationToken$: Observable<void>) {

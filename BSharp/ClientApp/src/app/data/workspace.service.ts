@@ -108,7 +108,7 @@ export class TenantWorkspace {
     return '';
   }
 
-  get isFirstLanguage(): boolean {
+  get isPrimaryLanguage(): boolean {
     return !this.isSecondaryLanguage;
   }
 

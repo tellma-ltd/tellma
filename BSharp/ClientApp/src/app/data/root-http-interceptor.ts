@@ -54,10 +54,10 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
     // we accumulate all the headers params in these objects
     const headers = {};
-    const params = {};
+    const params = { };
 
     // cache buster
-    params['t'] = encodeURIComponent(new Date().getTime().toString());
+    // params['t'] = encodeURIComponent(new Date().getTime().toString());
 
     // tenant ID
     const tenantId = this.workspace.ws.tenantId;
@@ -66,6 +66,11 @@ export class RootHttpInterceptor implements HttpInterceptor {
       // specific to the application module, but moving it there is not worth
       // the hassle now
       headers['X-Tenant-Id'] = tenantId.toString();
+
+      // Even though API response caching is disabled with server headers, this is a last defense
+      // to absolutely guarantee that caching will never cause one tenant's data to show up while
+      // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
+      params['tenantId'] = tenantId.toString();
     }
 
     // UI culture
@@ -74,9 +79,12 @@ export class RootHttpInterceptor implements HttpInterceptor {
       params['ui-culture'] = culture;
     }
 
+    // the version refresh APIs should not include the version headers
+    const isVersionRefreshRequest = req.url.endsWith('/client');
+
     // global versions
     const current = this.workspace.current;
-    if (!!current) {
+    if (!!current && !isVersionRefreshRequest) {
       headers['X-Settings-Version'] = current.settingsVersion || '???';
       headers['X-Permissions-Version'] = current.permissionsVersion || '???';
       headers['X-User-Settings-Version'] = current.userSettingsVersion || '???';
@@ -89,7 +97,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
     });
 
     // TODO add authorization header
-    // TODO add cache versions and intercept responses
     // TODO intercept 401 responses and log the user out
 
     return next.handle(req).pipe(

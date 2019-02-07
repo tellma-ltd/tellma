@@ -450,11 +450,11 @@ namespace BSharp.Data.Model
             En(Constants.Client, "NotPublic", "Not Public"),
             Ar(Constants.Client, "NotPublic", "غير عام للجميع"),
 
-            En(Constants.Client, "WithAgent", "With Agent"),
-            Ar(Constants.Client, "WithAgent", "ذمة معرفة"),
+            En(Constants.Client, "WithPicture", "With Picture"),
+            Ar(Constants.Client, "WithPicture", "مع صورة"),
 
-            En(Constants.Client, "WithoutAgent", "Without Agent"),
-            Ar(Constants.Client, "WithoutAgent", "ذمة غير معرفة"),
+            En(Constants.Client, "WithoutPicture", "Without Picture"),
+            Ar(Constants.Client, "WithoutPicture", "بدون صورة"),
 
             En(Constants.Client, "ExportRange", "Exporting Range"),
             Ar(Constants.Client, "ExportRange", "نطاق التصدير"),
@@ -506,6 +506,15 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Next", "Next"),
             Ar(Constants.Client, "Next", "التالي"),
+
+            En(Constants.Client, "SignOut", "Sign Out"),
+            Ar(Constants.Client, "SignOut", "تسجيل خروج"),
+
+            En(Constants.Client, "SignIn", "Sign In"),
+            Ar(Constants.Client, "SignIn", "تسجيل دخول"),
+
+            En(Constants.Client, "MyAccount", "My Account"),
+            Ar(Constants.Client, "MyAccount", "حسابي على النظام"),
 
             En(Constants.Client, "NoItemsFound", "No Items Found."),
             Ar(Constants.Client, "NoItemsFound", "لا يوجد بيانات"),

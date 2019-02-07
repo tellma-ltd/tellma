@@ -54,6 +54,12 @@ namespace BSharp.Data.Model
         /// </summary>
         public Guid UserSettingsVersion { get; set; }
 
+        /// <summary>
+        /// The ID of the image blob in the blob storage, the client still retrieves the
+        /// image using the user Id, but it uses this value to bust the browser cache
+        /// </summary>
+        public string ImageId { get; set; }
+
         internal static void OnModelCreating(ModelBuilder builder)
         {
             // IsActive defaults to TRUE

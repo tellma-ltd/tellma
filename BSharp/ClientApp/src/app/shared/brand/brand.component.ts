@@ -8,7 +8,4 @@ export class BrandComponent {
 
   @Input()
   public scale = 1;
-
-  @HostBinding('class.navbar-brand')
-  navbarBrand = true;
 }

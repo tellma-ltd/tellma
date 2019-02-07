@@ -4,7 +4,7 @@
 
     <!-- Breadcrumb -->
     <div class="col-12 p-1">
-      <ul class="breadcrumb bg-white mb-0">
+      <ul class="breadcrumb mb-0">
         <li class="breadcrumb-item">
           <a class="text-primary" [routerLink]="['..']">
             {{ masterCrumb }}
@@ -50,7 +50,6 @@
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
           <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle"
             ngbDropdownToggle>
-            <!--<fa-icon icon="check"></fa-icon>-->
             {{ 'Actions' | translate }}
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
@@ -128,7 +127,7 @@
 
     <!-- Modal Breadcrumb -->
     <div class="p-2">
-      <ul class="breadcrumb bg-white mb-0">
+      <ul class="breadcrumb mb-0">
         <li class="breadcrumb-item">
           {{ masterCrumb }}
         </li>
