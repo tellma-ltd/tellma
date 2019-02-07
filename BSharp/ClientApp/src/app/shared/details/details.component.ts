@@ -524,17 +524,13 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
 
     if (this.viewModel) {
-      const error = this.isInactive(this.viewModel);
-      if (error) {
-        this.displayModalError(this.translate.instant(error));
-      } else {
-        // clone the model (to allow for canceling changes)
-        this._viewModelJson = JSON.stringify(this.viewModel);
-        this._editModel = JSON.parse(this._viewModelJson);
 
-        // show the edit view
-        this.state.detailsStatus = DetailsStatus.edit;
-      }
+      // clone the model (to allow for canceling changes)
+      this._viewModelJson = JSON.stringify(this.viewModel);
+      this._editModel = JSON.parse(this._viewModelJson);
+
+      // show the edit view
+      this.state.detailsStatus = DetailsStatus.edit;
     }
   }
 
@@ -545,11 +541,13 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   get canEdit(): boolean {
-    return this.activeModel && this.canEditPermissions;
+    return this.activeModel && !this.isInactive(this.viewModel) && this.canEditPermissions;
   }
 
   get editTooltip(): string {
-    return this.canEditPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    const error = this.isInactive(this.viewModel);
+    return this.canEditPermissions ? (!error ? '' : this.translate.instant(error))
+      : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
   onSave(): void {
