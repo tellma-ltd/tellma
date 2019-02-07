@@ -411,48 +411,5 @@ namespace BSharp.Data
         }
 
         #endregion
-
-        //public DbSet<MyCustody> MyCustodies { get; set; }
-
-        //public DbSet<MyAgent> MyAgents { get; set; }
-
-        //public DbSet<MyPlace> MyPlaces { get; set; }
-
-        //public DbSet<Customer> Customers { get; set; }
-
-        //public DbSet<Employee> Employees { get; set; }
-
-        //public DbSet<BankAccount> BankAccounts { get; set; }
     }
-
-    //public abstract class MyCustody
-    //{
-    //    public int Id { get; set; }
-    //    public string Name { get; set; }
-    //}
-
-    //public abstract class MyAgent : MyCustody
-    //{
-    //    public DateTime TIN { get; set; }
-    //}
-
-    //public abstract class MyPlace : MyCustody
-    //{
-    //    public string Address { get; set; }
-    //}
-
-    //public class Customer :MyAgent
-    //{
-    //    public decimal CreditLine { get; set; }
-    //}
-
-    //public class Employee: MyAgent
-    //{
-    //    public string JobTitle { get; set; }
-    //}
-
-    //public class BankAccount : MyPlace
-    //{
-    //    public string AccountNumber { get; set; }
-    //}
 }

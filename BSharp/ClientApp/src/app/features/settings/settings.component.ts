@@ -252,7 +252,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   get canEdit(): boolean {
-    return !!this.model && this.canEditPermissions;
+    return !!this.showDocument && this.canEditPermissions;
   }
 
   get editTooltip(): string {

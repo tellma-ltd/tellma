@@ -143,7 +143,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   createFunc: () => DtoForSaveKeyBase = () => ({ Id: null, EntityState: 'Inserted' })
 
   @Input()
-  isInactive: (model: DtoForSaveKeyBase) => string = (model: DtoForSaveKeyBase) =>
+  isInactive: (model: DtoForSaveKeyBase) => string = (model: DtoForSaveKeyBase) => !!model &&
     (model['IsActive'] == null || model['IsActive'] === false) ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
 
   @Input()
@@ -541,7 +541,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   get canEdit(): boolean {
-    return this.activeModel && !this.isInactive(this.viewModel) && this.canEditPermissions;
+    return this.showDocument && !this.isInactive(this.viewModel) && this.canEditPermissions;
   }
 
   get editTooltip(): string {

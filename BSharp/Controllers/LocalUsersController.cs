@@ -73,7 +73,8 @@ namespace BSharp.Controllers
                 if (imageId != null)
                 {
                     // Get the bytes
-                    var imageBytes = await _blobService.LoadBlob(imageId);
+                    string blobName = BlobName(imageId);
+                    var imageBytes = await _blobService.LoadBlob(blobName);
 
                     Response.Headers.Add("x-image-id", imageId);
                     return File(imageBytes, "image/jpeg");
@@ -680,7 +681,7 @@ namespace BSharp.Controllers
                     var entitiesDic = entities.ToIndexDictionary();
                     // Retrieve blobs to delete
                     var blobsToDelete = usersWithModifiedImgs.Where(e => e.EntityState == EntityStates.Updated)
-                        .Select(u => sortedSavedEntities[entitiesDic[u]].ImageId).Where(e => e != null).ToList();
+                        .Select(u => sortedSavedEntities[entitiesDic[u]].ImageId).Where(e => e != null).Select(e => BlobName(e)).ToList();
 
 
                     var blobsToSave = new List<(string name, byte[] content)>();
@@ -732,7 +733,7 @@ namespace BSharp.Controllers
                             }
 
                             // Add it to blobs to save
-                            blobsToSave.Add((imageId, imageBytes));
+                            blobsToSave.Add((BlobName(imageId), imageBytes));
                         }
                     }
 
@@ -836,7 +837,7 @@ namespace BSharp.Controllers
 ", emailsTvp, tenantId);
 
                             // Delete the blobs just before committing the transaction
-                            await _blobService.DeleteBlobs(deletedImages);
+                            await _blobService.DeleteBlobs(deletedImages.Select(e => BlobName(e)));
 
                             // Commit and return
                             trxAdmin.Commit();
