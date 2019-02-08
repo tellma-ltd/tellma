@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace BSharp.Controllers.DTO
 {
     [CollectionName("Roles")]
-    public class RoleForSave<TPermission> : DtoForSaveKeyBase<int?>
+    public class RoleForSave<TPermission, TRoleMembership> : DtoForSaveKeyBase<int?>
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -26,14 +26,17 @@ namespace BSharp.Controllers.DTO
 
         [Display(Name = "Permissions")]
         public List<TPermission> Permissions { get; set; }
+
+        [Display(Name = "Members")]
+        public List<TRoleMembership> Members { get; set; }
     }
 
-    public class RoleForSave : RoleForSave<PermissionForSave>
+    public class RoleForSave : RoleForSave<PermissionForSave, RoleMembershipForSave>
     {
 
     }
 
-    public class Role : RoleForSave<Permission>, IAuditedDto
+    public class Role : RoleForSave<Permission, RoleMembership>, IAuditedDto
     {
         [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }

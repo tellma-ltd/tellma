@@ -103,6 +103,9 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_TheView0IsInactive", "The view with code '{0}' is not activated"),
             Ar(Constants.Server, "Error_TheView0IsInactive", "الواجهة ذات الكود ({0}) غير منشطة"),
 
+            En(Constants.Server, "Error_TheUser0IsInactive", "The user '{0}' is not active"),
+            Ar(Constants.Server, "Error_TheUser0IsInactive", "المستخدم ({0}) غير منشط"),
+
             En(Constants.Server, "Error_NoFileWasUploaded", "No file was uploaded"),
             Ar(Constants.Server, "Error_NoFileWasUploaded", "لم يتم رفع أي ملف"),
 

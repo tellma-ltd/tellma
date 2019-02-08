@@ -74,12 +74,21 @@ namespace BSharp.IntegrationTests.Scenario_01
                         ViewId = "organizations",
                         Level = "Update"
                     }
+                },
+                Members = new List<RoleMembershipForSave>
+                {
+                    new RoleMembershipForSave
+                    {
+                        EntityState = "Inserted",
+                        UserId = 1,
+                        Memo = "So Good"
+                    }
                 }
             };
 
             // Save it
             var dtosForSave = new List<RoleForSave> { dtoForSave };
-            var response = await _client.PostAsJsonAsync($"{rolesURL}?expand=Permissions", dtosForSave);
+            var response = await _client.PostAsJsonAsync($"{rolesURL}?expand=Permissions,Members", dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             _output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -99,15 +108,26 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code, responseDto.Code);
             Assert.Equal(dtoForSave.IsPublic, responseDto.IsPublic);
             Assert.Collection(responseDto.Permissions,
-                    p => {
+                    p =>
+                    {
                         Assert.Equal(dtoForSave.Permissions[0].Level, p.Level);
                         Assert.Equal(dtoForSave.Permissions[0].ViewId, p.ViewId);
                         Assert.NotNull(p.Id);
                     },
-                    p => {
+                    p =>
+                    {
                         Assert.Equal(dtoForSave.Permissions[1].Level, p.Level);
                         Assert.Equal(dtoForSave.Permissions[1].ViewId, p.ViewId);
                         Assert.NotNull(p.Id);
+                    }
+                );
+
+            Assert.Collection(responseDto.Members,
+                    m =>
+                    {
+                        Assert.Equal(dtoForSave.Members[0].UserId, m.UserId);
+                        Assert.Equal(dtoForSave.Members[0].Memo, m.Memo);
+                        Assert.NotNull(m.Id);
                     }
                 );
 
@@ -121,7 +141,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var entity = _shared.GetItem<Role>("Role_SalesManager");
             var id = entity.Id;
-            var response = await _client.GetAsync($"{rolesURL}/{id}?expand=Permissions");
+            var response = await _client.GetAsync($"{rolesURL}/{id}?expand=Permissions,Members");
 
             _output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -137,15 +157,27 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(entity.Code, responseDto.Code);
             Assert.Equal(entity.IsPublic, responseDto.IsPublic);
             Assert.Collection(responseDto.Permissions,
-                    p => {
+                    p =>
+                    {
                         Assert.Equal(entity.Permissions[0].Level, p.Level);
                         Assert.Equal(entity.Permissions[0].ViewId, p.ViewId);
                         Assert.NotNull(p.Id);
                     },
-                    p => {
+                    p =>
+                    {
                         Assert.Equal(entity.Permissions[1].Level, p.Level);
                         Assert.Equal(entity.Permissions[1].ViewId, p.ViewId);
                         Assert.NotNull(p.Id);
+                    }
+                );
+
+
+            Assert.Collection(responseDto.Members,
+                    m =>
+                    {
+                        Assert.Equal(entity.Members[0].UserId, m.UserId);
+                        Assert.Equal(entity.Members[0].Memo, m.Memo);
+                        Assert.NotNull(m.Id);
                     }
                 );
         }
@@ -199,18 +231,20 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the entity we just saved
             var id = _shared.GetItem<Role>("Role_SalesManager").Id;
-            var response1 = await _client.GetAsync($"{rolesURL}/{id}?expand=Permissions");
+            var response1 = await _client.GetAsync($"{rolesURL}/{id}?expand=Permissions, Members");
             var dto = (await response1.Content.ReadAsAsync<GetByIdResponse<Role>>()).Entity;
-            
+
             // Modify it slightly
             dto.EntityState = "Updated";
             dto.Permissions[0].Level = "Create";
             dto.Permissions[0].EntityState = "Updated";
             dto.Permissions[1].EntityState = "Deleted";
 
+            dto.Members[0].EntityState = "Deleted";
+
             // Save it and get the result back
             var dtosForSave = new List<Role> { dto };
-            var response2 = await _client.PostAsJsonAsync($"{rolesURL}?expand=Permissions", dtosForSave);
+            var response2 = await _client.PostAsJsonAsync($"{rolesURL}?expand=Permissions,Members", dtosForSave);
             _output.WriteLine(await response2.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
             var dto2 = (await response2.Content.ReadAsAsync<EntitiesResponse<Role>>()).Data.FirstOrDefault();
@@ -221,11 +255,14 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dto.Code, dto2.Code);
             Assert.Equal(dto.IsPublic, dto2.IsPublic);
             Assert.Collection(dto2.Permissions,
-                    p => {
+                    p =>
+                    {
                         Assert.Equal(dto.Permissions[0].Level, p.Level);
                         Assert.Equal(dto.Permissions[0].ViewId, p.ViewId);
                     }
                 );
+
+            Assert.Empty(dto2.Members);
         }
 
         [Trait(Testing, roles)]
@@ -273,7 +310,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Confirm that the entity was activated
             Assert.True(responseDto.IsActive, "The role was not activated");
         }
-
 
         [Trait(Testing, roles)]
         [Fact(DisplayName = "009 - Deleting an existing role Id returns a 200 OK")]

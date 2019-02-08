@@ -360,8 +360,8 @@ ngb-tabset li.nav-item .small {
   // prevents the tiles inside a modal from become too narrow, remember that the
   // media query works on the screen as a whole not the width of the modal
   .b-tile-container.b-popup-tile-container {
-    flex: 0 0 25%;
-    max-width: 25%;
+    flex: 0 0 33.33333333%;
+    max-width: 33.33333333%;
   }
 }
 

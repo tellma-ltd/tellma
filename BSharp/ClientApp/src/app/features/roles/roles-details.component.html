@@ -51,7 +51,7 @@
   </b-form-group>
 
   <!-- Is Public -->
-  <b-form-group class="b-form-group" [label]="'Role_IsPublic' | translate">
+  <b-form-group class="b-form-group" [label]="'Role_IsPublic' | translate" *ngIf="showIsPublic">
     <div *ngIf="!isEdit">{{ (model?.IsPublic ? 'Yes' : 'No') | translate }}</div>
     <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
       <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsPublic" id="isPublic">
@@ -70,7 +70,7 @@
   <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
 
     <!-- Permissions -->
-    <ngb-tab>
+    <ngb-tab *ngIf="showPermissions">
       <ng-template ngbTabTitle><span class="small">{{ 'Permissions' | translate }} ({{ permissionsCount(model) | number
           }})</span>
         <span *ngIf="showPermissionsError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span>
@@ -127,7 +127,7 @@
 
 
     <!-- Signatures -->
-    <ngb-tab>
+    <ngb-tab *ngIf="showPermissions">
       <ng-template ngbTabTitle><span class="small">{{ 'Signatures' | translate }} ({{ signaturesCount(model) | number
           }})</span>
         <span *ngIf="showSignaturesError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span>
@@ -175,7 +175,53 @@
     <ngb-tab *ngIf="showMembersTab(model)">
       <ng-template ngbTabTitle><span class="small">{{ 'Members' | translate }} ({{ membersCount(model) }})</span></ng-template>
       <ng-template ngbTabContent>
-        To be implemented
+          <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['UserId', 'Memo']" [columnTemplates]="{
+            'UserId' : { headerTemplate : header_UserId, rowTemplate : row_UserId, weight : 1 },
+            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
+          }">
+        </b-table>
+        
+        <!-- UserId -->
+        <ng-template #header_UserId>{{ 'RoleMembership_User' | translate }}</ng-template>
+        <ng-template #row_UserId let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.UserId">
+            <b-view-link *ngIf="!isEdit" link="../../local-users" [itemId]="item?.UserId">
+              {{ ws.getMultilingualValue('LocalUsers', item.UserId, 'Name') }}
+            </b-view-link>
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.UserId" (ngModelChange)="update(item)" apiEndpoint="local-users"
+              [detailsOptions]="[{ id: 'local-users', name: '- not important -' }]" [masterTemplate]="localUsersMaster"
+              [detailsTemplate]="localUsersDetails" collection="LocalUsers" [workspaceApplyFns]="workspaceApplyFns">
+            </b-details-picker>
+
+            <!-- The User Details Modal -->
+            <ng-template #localUsersDetails let-modal="modal" let-update="update" let-initialText="initialText">
+              <div class="modal-body">
+                <b-local-users-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);"
+                  (saved)="modal.close(true); update($event);" [showRoles]="false">
+                </b-local-users-details>
+              </div>
+            </ng-template>
+
+            <!-- The Users Master Modal -->
+            <ng-template #localUsersMaster let-modal="modal" let-update="update" let-create="create">
+              <div class="modal-body">
+                <b-local-users-master mode="popup" (cancel)="modal.close(false);" (select)="modal.close(true); update($event);"
+                  (create)="modal.close(false); create()">
+                </b-local-users-master>
+              </div>
+            </ng-template>
+          </b-form-group>
+        </ng-template>
+
+        <!-- Memo -->
+        <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
+        <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.Memo">
+            <div *ngIf="!isEdit">{{ item.Memo }}</div>
+            <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+          </b-form-group>
+        </ng-template>
+
       </ng-template>
     </ngb-tab>
   </ngb-tabset>

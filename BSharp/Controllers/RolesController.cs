@@ -2,7 +2,6 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
-using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
@@ -60,6 +59,7 @@ namespace BSharp.Controllers
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
             );
         }
+
         private async Task<ActionResult<EntitiesResponse<Role>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             await CheckActionPermissions(ids.Cast<int?>());
@@ -158,7 +158,6 @@ MERGE INTO [dbo].[Roles] AS t
         {
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
-
 
         protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
         {
@@ -281,22 +280,50 @@ MERGE INTO [dbo].[Roles] AS t
             }
 
             // Check that line ids are unique
-            var duplicateLineIds = entities.SelectMany(e => e.Permissions) // All lines
+            entities.ForEach(e => { if (e.Permissions == null) { e.Permissions = new List<PermissionForSave>(); } });
+            var duplicatePermissionId = entities.SelectMany(e => e.Permissions) // All lines
                 .Where(e => e.Id != null).GroupBy(e => e.Id.Value).Where(g => g.Count() > 1) // Duplicate Ids
                 .SelectMany(g => g).ToDictionary(e => e, e => e.Id.Value); // to dictionary
 
+            // Check that line ids are unique
+            entities.ForEach(e => { if (e.Members == null) { e.Members = new List<RoleMembershipForSave>(); } });
+            var duplicateMembershipId = entities.SelectMany(e => e.Members) // All lines
+                .Where(e => e.Id != null).GroupBy(e => e.Id.Value).Where(g => g.Count() > 1) // Duplicate Ids
+                .SelectMany(g => g).ToDictionary(e => e, e => e.Id.Value); // to dictionary
+
+
+            // Check that line ids are unique
+            //var duplicateLineIds = entities.SelectMany(e => e.Permissions) // All lines
+            //    .Where(e => e.Id != null).GroupBy(e => e.Id.Value).Where(g => g.Count() > 1) // Duplicate Ids
+            //    .SelectMany(g => g).ToDictionary(e => e, e => e.Id.Value); // to dictionary
+
             foreach (var entity in entities)
             {
-                var lineIndices = entity.Permissions.ToIndexDictionary();
+                var permissionIndices = entity.Permissions.ToIndexDictionary();
                 foreach (var line in entity.Permissions)
                 {
-                    if (duplicateLineIds.ContainsKey(line))
+                    if (duplicatePermissionId.ContainsKey(line))
                     {
                         // This error indicates a bug
                         var index = indices[entity];
-                        var lineIndex = lineIndices[line];
-                        var id = duplicateLineIds[line];
+                        var lineIndex = permissionIndices[line];
+                        var id = duplicatePermissionId[line];
                         ModelState.AddModelError($"[{index}].{nameof(entity.Permissions)}[{lineIndex}].{nameof(entity.Id)}",
+                            _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
+                    }
+
+                }
+
+                var membersIndices = entity.Members.ToIndexDictionary();
+                foreach (var line in entity.Members)
+                {
+                    if (duplicateMembershipId.ContainsKey(line))
+                    {
+                        // This error indicates a bug
+                        var index = indices[entity];
+                        var lineIndex = membersIndices[line];
+                        var id = duplicateMembershipId[line];
+                        ModelState.AddModelError($"[{index}].{nameof(entity.Members)}[{lineIndex}].{nameof(entity.Id)}",
                             _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", id]);
                     }
                 }
@@ -318,6 +345,10 @@ MERGE INTO [dbo].[Roles] AS t
             DataTable permissionsTable = DataTableWithHeaderIndex(permissionHeaderIndices, e => e.EntityState != null);
             var permissionsTvp = new SqlParameter("Permissions", permissionsTable) { TypeName = $"dbo.{nameof(PermissionForSave)}List", SqlDbType = SqlDbType.Structured };
 
+            var memberHeaderIndices = indices.Keys.Select(role => (role.Members, indices[role]));
+            DataTable membersTable = DataTableWithHeaderIndex(memberHeaderIndices, e => e.EntityState != null);
+            var membersTvp = new SqlParameter("Members", membersTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
+
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
 
             // (1) Code must be unique
@@ -325,6 +356,7 @@ MERGE INTO [dbo].[Roles] AS t
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @Language INT = dbo.fn_User__Language();
 
     INSERT INTO @ValidationErrors([Key], [ErrorName])
     SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_CannotModifyInactiveItem' As [ErrorName]
@@ -405,6 +437,17 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	) OPTION(HASH JOIN);
 
+	-- No inactive user
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
+	SELECT '[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Members[' + 
+				CAST(P.[Index] AS NVARCHAR(255)) + '].UserId' As [Key], N'Error_TheUser0IsInactive' As [ErrorName],
+				CASE WHEN @Language = 2 THEN [dbo].[fn_IsNullOrEmpty](U.[Name2], U.[Name]) ELSE U.[Name] END AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
+	FROM @Members P JOIN [dbo].[LocalUsers] U ON P.UserId = U.Id
+	WHERE P.UserId NOT IN (
+		SELECT [Id] FROM dbo.[LocalUsers] WHERE IsActive = 1
+		)
+	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
+
 	-- No inactive view
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
 	SELECT '[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Permissions[' + 
@@ -416,7 +459,7 @@ SET NOCOUNT ON;
 		) AND P.ViewId <> 'all'
 	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
 SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
-", rolesTvp, permissionsTvp).ToListAsync();
+", rolesTvp, permissionsTvp, membersTvp).ToListAsync();
 
             // Loop over the errors returned from SQL and add them to ModelState
             foreach (var sqlError in sqlErrors)
@@ -450,6 +493,14 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
                 SqlDbType = SqlDbType.Structured
             };
 
+            var memberHeaderIndices = roleIndices.Keys.Select(role => (role.Members, roleIndices[role]));
+            DataTable membersTable = DataTableWithHeaderIndex(memberHeaderIndices, e => e.EntityState != null);
+            var membersTvp = new SqlParameter("Members", membersTable)
+            {
+                TypeName = $"dbo.{nameof(RoleMembershipForSave)}List",
+                SqlDbType = SqlDbType.Structured
+            };
+
             string saveSql = $@"
 -- TODO: PermissionsVersion
 DECLARE @NewId UNIQUEIDENTIFIER = NEWID();
@@ -463,6 +514,9 @@ UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
 
 	DELETE FROM [dbo].[Permissions]
 	WHERE [Id] IN (SELECT [Id] FROM @Permissions WHERE [EntityState] = N'Deleted');
+
+	DELETE FROM [dbo].[RoleMemberships]
+	WHERE [Id] IN (SELECT [Id] FROM @Members WHERE [EntityState] = N'Deleted');
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -512,12 +566,30 @@ UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
 		WHEN NOT MATCHED THEN
 			INSERT ([TenantId], [RoleId],	[ViewId],	[Level],	[Criteria], [Memo], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
 			VALUES (@TenantId, s.[RoleId], s.[ViewId], s.[Level], s.[Criteria], s.[Memo], @Now,		@UserId,		@Now,		@UserId);
+
+    MERGE INTO [dbo].[RoleMemberships] AS t
+		USING (
+			SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [UserId], [Memo]
+			FROM @Members L
+			JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
+			WHERE L.[EntityState] IN (N'Inserted', N'Updated')
+		) AS s ON t.Id = s.Id
+		WHEN MATCHED THEN
+			UPDATE SET 
+				t.[UserId]		    = s.[UserId], 
+				t.[RoleId]		    = s.[RoleId],
+				t.[Memo]		    = s.[Memo],
+				t.[ModifiedAt]	    = @Now,
+				t.[ModifiedById]	= @UserId
+		WHEN NOT MATCHED THEN
+			INSERT ([TenantId], [UserId],	[RoleId],	 [Memo], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
+			VALUES (@TenantId, s.[UserId], s.[RoleId], s.[Memo], @Now,		@UserId,		@Now,		@UserId);
 ";
             // Optimization
             if (!(args.ReturnEntities ?? false))
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
-                await _db.Database.ExecuteSqlCommandAsync(saveSql, rolesTvp, permissionsTvp);
+                await _db.Database.ExecuteSqlCommandAsync(saveSql, rolesTvp, permissionsTvp, membersTvp);
                 return new List<M.Role>();
             }
             else
@@ -526,7 +598,7 @@ UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
                 saveSql = saveSql += "SELECT * FROM @IndexedIds;";
 
                 // Retrieve the map from Indexes to Ids
-                var indexedIds = await _db.Saving.FromSql(saveSql, rolesTvp, permissionsTvp).ToListAsync();
+                var indexedIds = await _db.Saving.FromSql(saveSql, rolesTvp, permissionsTvp, membersTvp).ToListAsync();
 
                 //// Load the entities using their Ids
                 //DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }));

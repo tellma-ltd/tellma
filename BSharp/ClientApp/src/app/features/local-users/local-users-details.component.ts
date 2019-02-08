@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
@@ -17,6 +17,9 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class LocalUsersDetailsComponent extends DetailsBaseComponent {
 
+  @Input()
+  showRoles = true;
+
   private notifyDestruct$ = new Subject<void>();
   private localUsersApi = this.api.localUsersApi(this.notifyDestruct$); // for intellisense
 
@@ -29,6 +32,11 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
 
   create = () => {
     const result = new LocalUserForSave();
+    if (this.ws.isPrimaryLanguage) {
+      result.Name = this.initialText;
+    } else {
+      result.Name2 = this.initialText;
+    }
     result.Roles = [];
     return result;
   }

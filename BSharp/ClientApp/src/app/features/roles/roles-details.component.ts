@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
@@ -7,7 +7,7 @@ import { Permission, PermissionForSave, Permission_Level } from '~/app/data/dto/
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { Views_DoNotApplyPermissions } from '~/app/data/dto/view';
+import { Views_DoNotApplyPermissionsOrMembers } from '~/app/data/dto/view';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { LocalUsers_DoNotApplyAgentOrRoles } from '~/app/data/dto/local-user';
 import { TranslateService } from '@ngx-translate/core';
@@ -19,20 +19,33 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class RolesDetailsComponent extends DetailsBaseComponent {
 
+  @Input()
+  public showMembers = true;
+
+  @Input()
+  public showPermissions = true;
+
+  @Input()
+  public showIsPublic = true;
+
   private _permissionLevelChoices: { [allowedLevels: string]: { name: string, value: any }[] } = {};
   private notifyDestruct$ = new Subject<void>();
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Permissions/View';
+  public expand = 'Permissions/View,Members/User';
   workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
     // This ensures that any existing permissions won't get wiped out
-    Views: Views_DoNotApplyPermissions,
+    Views: Views_DoNotApplyPermissionsOrMembers,
     LocalUsers: LocalUsers_DoNotApplyAgentOrRoles
   };
 
   create = () => {
     const result = new RoleForSave();
-    result.Name = this.initialText;
+    if (this.ws.isPrimaryLanguage) {
+      result.Name = this.initialText;
+    } else {
+      result.Name2 = this.initialText;
+    }
     result.IsPublic = false;
     result.Permissions = [];
     return result;
@@ -115,11 +128,11 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   showMembersTab(model: Role) {
-    return !model || !model.IsPublic;
+    return this.showMembers && (!model || !model.IsPublic);
   }
 
   membersCount(model: Role): number {
-    return 0; // TODO
+    return !!model && !!model.Members ? model.Members.filter(e => e.EntityState !== 'Deleted').length : 0;
   }
 
   showPublicRoleWarning(model: Role) {

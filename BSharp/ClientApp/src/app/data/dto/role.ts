@@ -1,15 +1,17 @@
 import { DtoForSaveKeyBase } from './dto-for-save-key-base';
 import { Permission, PermissionForSave } from './permission';
+import { RoleMembershipForSave, RoleMembership } from './role-membership';
 
-export class RoleForSave<TPermission = PermissionForSave> extends DtoForSaveKeyBase {
+export class RoleForSave<TPermission = PermissionForSave, TRoleMembership = RoleMembershipForSave> extends DtoForSaveKeyBase {
     Name: string;
     Name2: string;
     Code: string;
     IsPublic: boolean;
     Permissions: TPermission[];
+    Members: TRoleMembership[];
 }
 
-export class Role extends RoleForSave<Permission> {
+export class Role extends RoleForSave<Permission, RoleMembership> {
     IsActive: boolean;
     CreatedAt: string;
     CreatedById: number | string;

@@ -12,7 +12,7 @@ import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
-import { Subject, Observable, of } from 'rxjs';
+import { Subject, Observable, of, Subscription } from 'rxjs';
 
 @Component({
   selector: 'b-details',
@@ -169,8 +169,12 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.route.paramMap.subscribe((params: ParamMap) => {
       // the id parameter from the URI is only avaialble in screen mode
       // when it changes set idString which triggers a new refresh
-      if (params.has('id')) {
-        this.idString = params.get('id');
+      if (this.isScreenMode) {
+        // even though this might get set in a popup because the parent has an id param,
+        // it gets wiped out afterwards when angular initializes the input properties
+        if (params.has('id')) {
+          this.idString = params.get('id');
+        }
       }
     });
 

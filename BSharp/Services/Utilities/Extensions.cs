@@ -111,9 +111,12 @@ namespace BSharp.Services.Utilities
                     if (isDtoList)
                     {
                         var dtoList = (IEnumerable<DtoBase>)prop.GetValue(entity);
-                        foreach (var dto in dtoList)
+                        if(dtoList != null)
                         {
-                            dto.TrimStringProperties();
+                            foreach (var dto in dtoList)
+                            {
+                                dto.TrimStringProperties();
+                            }
                         }
                     }
                 }

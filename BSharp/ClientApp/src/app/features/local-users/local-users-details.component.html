@@ -1,4 +1,4 @@
-<b-details apiEndpoint="local-users" viewId="local-users" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns"
+<b-details apiEndpoint="local-users" viewId="local-users" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" [idString]="idString"
   collection="LocalUsers" [createFunc]="create" [mode]="mode" [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb"
   [documentTemplate]="document" [documentHeaderTemplate]="documentHeader" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -27,21 +27,19 @@
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
+  <!-- Header Name -->
+  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" *ngIf="ws.isPrimaryLanguage" [serverErrors]="model?.serverErrors?.Name">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
+      [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
+  </b-form-group>
 
-      <!-- Header Name -->
-      <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" *ngIf="ws.isPrimaryLanguage" [serverErrors]="model?.serverErrors?.Name">
-        <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
-        <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
-          [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
-      </b-form-group>
-
-      <!-- Header Name2 -->
-      <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="model?.serverErrors?.Name2">
-        <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
-        <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
-          [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'"></b-text-editor>
-      </b-form-group>
-
+  <!-- Header Name2 -->
+  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage" [serverErrors]="model?.serverErrors?.Name2">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"
+      [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'"></b-text-editor>
+  </b-form-group>
 
   <div class="col-12 col-md-4 b-details-image-container">
     <div class="border">
@@ -49,7 +47,6 @@
         [isEdit]="isEdit"></b-image>
     </div>
   </div>
-
 
   <!-- Email -->
   <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="model?.serverErrors?.Email">
@@ -108,7 +105,7 @@
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
   </b-form-group>
 
-  <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
+  <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true" *ngIf="showRoles">
 
     <!-- Roles -->
     <ngb-tab [disabled]="true">
@@ -139,7 +136,7 @@
             <ng-template #roleDetails let-modal="modal" let-update="update" let-initialText="initialText">
               <div class="modal-body">
                 <b-roles-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);"
-                  (saved)="modal.close(true); update($event);">
+                  (saved)="modal.close(true); update($event);" [showMembers]="false" [showIsPublic]="false">
                 </b-roles-details>
               </div>
             </ng-template>
