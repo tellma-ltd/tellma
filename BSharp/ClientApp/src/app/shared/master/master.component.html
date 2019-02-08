@@ -31,7 +31,7 @@
     <div class="p-1" [class.col-6]="isScreenMode" [class.col-12]="isPopupMode">
       <div class="d-flex b-search">
         <!-- Search Box -->
-        <b-text-editor placeholder="{{ 'Search' | translate }}..." [(ngModel)]="search" [focusIf]="isPopupMode"></b-text-editor>
+        <b-text-editor [placeholder]="('Search' | translate) + '...'" [(ngModel)]="search" [focusIf]="isPopupMode"></b-text-editor>
 
         <!-- Filter -->
         <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">

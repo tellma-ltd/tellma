@@ -21,10 +21,15 @@ namespace BSharp.Services.ImportExport
             using (var excelPackage = new ExcelPackage(fileStream))
             {
                 // Determine which sheet is to be imported
-                var sheet = excelPackage.Workbook.Worksheets.SingleOrDefault();
-                if (sheet == null)
+                var sheets = excelPackage.Workbook.Worksheets;
+                ExcelWorksheet sheet;
+                if(sheets.Count == 1)
                 {
-                    sheet = excelPackage.Workbook.Worksheets.SingleOrDefault(e => e.Name == _localizer["Data"]);
+                    sheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+                }
+                else
+                {
+                    sheet = excelPackage.Workbook.Worksheets.FirstOrDefault(e => e.Name == _localizer["Data"]);
                 }
 
                 if (sheet == null)
