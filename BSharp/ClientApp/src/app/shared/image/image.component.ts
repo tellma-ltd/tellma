@@ -4,6 +4,7 @@ import { Subject, of, Observable } from 'rxjs';
 import { switchMap, tap, map, catchError } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { StorageService } from '~/app/data/storage.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 enum ImageStatus {
   // The image data is currently being fetched from the server
@@ -81,6 +82,9 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @ViewChild('input')
   input: ElementRef;
 
+  @ViewChild('errorModal')
+  errorModal: ElementRef;
+
   private notifyCancel$ = new Subject<void>();
   private notifyUpdate$: Subject<void>;
   private _src: string;
@@ -91,6 +95,7 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
 
   public status: ImageStatus;
   public dataUrl: string = null;
+  public maxSize = 5 * 1024 * 1024;
 
   ///////////////// Implementation of ControlValueAccessor
   public isDisabled = false;
@@ -128,7 +133,7 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
     this.isDisabled = isDisabled;
   }
 
-  constructor(private api: ApiService, private storage: StorageService) {
+  constructor(private api: ApiService, private storage: StorageService, private modalService: NgbModal) {
 
     this.notifyUpdate$ = new Subject<void>();
     this.notifyUpdate$.pipe(
@@ -291,6 +296,11 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
     }
 
     const file = files[0];
+    if (file.size > this.maxSize) {
+      this.modalService.open(this.errorModal);
+      return;
+    }
+
     input.value = '';
     this.getDataURL(file).subscribe(dataUrl => {
 

@@ -1027,6 +1027,7 @@ namespace BSharp.Controllers
             }
 
             var fileStream = handler.ToFileStream(abstractFile);
+            fileStream.Seek(0, System.IO.SeekOrigin.Begin);
             return File(fileStream, contentType);
         }
 

@@ -34,7 +34,7 @@
       </button> -->
       <div [placement]="placement" [ngbTooltip]="createNewTooltip">
         <button class="dropdown-item b-slightly-bold" [class.text-primary]="canCreateNew" [class.text-muted]="!canCreateNew"
-          [class.active]="highlightCreateNew" (focus)="onCreateFromFocus()" [disabled]="!canCreateNew">
+          [class.active]="highlightCreateNew" (click)="onCreateFromFocus()" [disabled]="!canCreateNew">
           {{ 'Create' | translate }}...
         </button>
       </div>

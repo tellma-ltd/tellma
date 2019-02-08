@@ -215,8 +215,8 @@ export class MasterDetailsStore {
 
   top = 50;
   skip = 0;
-  search: string;
-  orderBy: string;
+  search: string = null;
+  orderBy: string = null;
   desc: boolean;
   total = 0;
   expand: string;

@@ -216,16 +216,17 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   private chooseItem(item: string | number) {
-    // Restart input stream
-    this.cancelRunningCall$.next(null);
 
     this.chosenItem = item;
+
+    // Signal ControlValueAccessor
+    this.onChange(item);
 
     // Show the selection in the input box
     this.updateUI(item);
 
-    // Signal ControlValueAccessor
-    this.onChange(item);
+    // Restart input stream
+    this.cancelRunningCall$.next(null);
 
     // Close the dropdown
     this.status = null;

@@ -25,3 +25,30 @@
 
 <!-- for the file dialog -->
 <input type="file" accept=".jpg,.jpeg,.bmp,.png" class="d-none" #input (change)="onFileSelected(input)" />
+
+<!-- Error Modal -->
+<ng-template #errorModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <fa-icon class="text-danger" icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;{{ 'Error' | translate }}
+      </h5>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  
+    <!-- body -->
+    <div class="modal-body">
+      {{ 'Error_ImageExceedsTheMaximumSizeOfX' | translate: { maxSize: maxSize / (1024 * 1024) } }}
+    </div>
+  
+    <!-- footer -->
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+        <fa-icon icon="times"></fa-icon>
+        &nbsp;{{ 'Dismiss' | translate }}
+      </button>
+    </div>
+  </ng-template>

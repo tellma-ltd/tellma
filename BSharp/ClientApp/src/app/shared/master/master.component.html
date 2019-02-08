@@ -97,7 +97,7 @@
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" *ngIf="showExport" (click)="modalService.open(exportModal)"
+              <button type="button" class="dropdown-item btn-light" *ngIf="showExport" (click)="exportErrorMessage = null; modalService.open(exportModal);"
                 [disabled]="!canExport">
                 {{ 'Export' | translate }}
               </button>
@@ -344,11 +344,17 @@
       {{ 'MaxExportSizeWarning' | translate: { max: (maxTotalExport | number) } }}
     </b-warning-message>
 
+    <!-- Error message -->
+    <b-error-message *ngIf="showExportErrorMessage">
+      {{ exportErrorMessage }}
+    </b-error-message>
+
   </div>
   <div class="modal-footer">
     <button class="btn btn-primary" (click)="onExport(modal);" ngbAutofocus>
       <fa-icon icon="download"></fa-icon>
       &nbsp;{{ 'Export' | translate }}
+      <b-spinner class="ml-1" *ngIf="showExportSpinner" [scale]="1"></b-spinner>
     </button>
     <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()">
       <fa-icon icon="times"></fa-icon>

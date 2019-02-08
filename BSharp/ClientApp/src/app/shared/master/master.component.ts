@@ -562,6 +562,10 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   set search(val: string) {
+    if (!val) {
+      val = null;
+    }
+
     const s = this.state;
     if (s.search !== val) {
       s.search = val;
@@ -653,6 +657,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     const from = this.fromExport;
     const to = this.toExport;
     const format = this.exportFormat;
+    this.exportErrorMessage = null;
     this.showExportSpinner = true;
 
     const s = this.state;
@@ -676,9 +681,15 @@ export class MasterComponent implements OnInit, OnDestroy {
       (friendlyError: any) => {
         this.showExportSpinner = false;
         this.exportErrorMessage = friendlyError.error;
+      },
+      () => {
+        this.showExportSpinner = false;
       }
     );
+  }
 
+  public get showExportErrorMessage(): boolean {
+    return !!this.exportErrorMessage;
   }
 
   // Multiselect-related stuff
