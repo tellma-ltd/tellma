@@ -153,6 +153,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
       clone.Id = null;
       clone.EntityState = 'Inserted';
 
+      if (clone['ImageId']) {
+        delete clone['ImageId'];
+      }
+
       return clone;
     } else {
       console.error('Cloning a non existing item');

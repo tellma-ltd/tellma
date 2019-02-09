@@ -19,10 +19,10 @@ export class Role extends RoleForSave<Permission, RoleMembership> {
     ModifiedById: number | string;
 }
 
-export function Roles_DoNotApplyPermissions(stale: Role, fresh: Role): Role {
+export function Roles_DoNotApplyPermissionsOrMembers(stale: Role, fresh: Role): Role {
     // Set all props except for Permissions
     Object.keys(stale).concat(Object.keys(fresh))
-        .filter(p => ['Permissions'].indexOf(p) < 0)
+        .filter(p => ['Permissions', 'Members'].indexOf(p) < 0)
         .forEach(p => stale[p] = fresh[p]);
     return stale;
 }

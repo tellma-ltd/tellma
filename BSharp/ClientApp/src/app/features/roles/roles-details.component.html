@@ -1,5 +1,6 @@
-<b-details apiEndpoint="roles" viewId="roles" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" collection="Roles" [createFunc]="create" [mode]="mode" [idString]="idString"
-  [masterCrumb]="'Roles' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+<b-details apiEndpoint="roles" viewId="roles" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" collection="Roles"
+  [createFunc]="create" [mode]="mode" [idString]="idString" [masterCrumb]="'Roles' | translate" [detailsCrumb]="detailsCrumb"
+  [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -173,14 +174,15 @@
 
     <!-- Members -->
     <ngb-tab *ngIf="showMembersTab(model)">
-      <ng-template ngbTabTitle><span class="small">{{ 'Members' | translate }} ({{ membersCount(model) }})</span></ng-template>
+      <ng-template ngbTabTitle><span class="small">{{ 'Members' | translate }} ({{ membersCount(model) }})</span>
+        <span *ngIf="showMembersError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon></span></ng-template>
       <ng-template ngbTabContent>
-          <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['UserId', 'Memo']" [columnTemplates]="{
+        <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['UserId', 'Memo']" [columnTemplates]="{
             'UserId' : { headerTemplate : header_UserId, rowTemplate : row_UserId, weight : 1 },
             'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
           }">
         </b-table>
-        
+
         <!-- UserId -->
         <ng-template #header_UserId>{{ 'RoleMembership_User' | translate }}</ng-template>
         <ng-template #row_UserId let-item="item" let-index="originalIndex" let-update="update">

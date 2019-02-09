@@ -6,7 +6,7 @@ import { LocalUser, LocalUserForSave } from '~/app/data/dto/local-user';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { Roles_DoNotApplyPermissions } from '~/app/data/dto/role';
+import { Roles_DoNotApplyPermissionsOrMembers } from '~/app/data/dto/role';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -26,7 +26,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   public expand = 'Agent,Roles/Role';
   public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
     // Roles/Role This ensures that permissions won't get wiped out when the Role navigation properties are loaded
-    Roles: Roles_DoNotApplyPermissions
+    Roles: Roles_DoNotApplyPermissionsOrMembers
     // Agent
   };
 

@@ -268,8 +268,8 @@ namespace BSharp.Data
                 cmd.Parameters.AddWithValue("@TenantId", tenantId);
                 cmd.Parameters.AddWithValue("@ExternalUserId", userService.GetUserId());
                 cmd.Parameters.AddWithValue("@UserEmail", userService.GetUserEmail());
-                cmd.Parameters.AddWithValue("@Culture", CultureInfo.CurrentCulture.Name);
-                cmd.Parameters.AddWithValue("@NeutralCulture", CultureInfo.CurrentCulture.IsNeutralCulture ? CultureInfo.CurrentCulture.Name : CultureInfo.CurrentCulture.Parent.Name);
+                cmd.Parameters.AddWithValue("@Culture", CultureInfo.CurrentUICulture.Name);
+                cmd.Parameters.AddWithValue("@NeutralCulture", CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name);
 
                 sqlConnection.Open();
                 using (var reader = cmd.ExecuteReader())

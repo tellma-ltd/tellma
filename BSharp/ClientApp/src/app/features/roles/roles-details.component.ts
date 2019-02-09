@@ -7,7 +7,7 @@ import { Permission, PermissionForSave, Permission_Level } from '~/app/data/dto/
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { Views_DoNotApplyPermissionsOrMembers } from '~/app/data/dto/view';
+import { Views_DoNotApplyPermissions } from '~/app/data/dto/view';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { LocalUsers_DoNotApplyAgentOrRoles } from '~/app/data/dto/local-user';
 import { TranslateService } from '@ngx-translate/core';
@@ -35,7 +35,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   public expand = 'Permissions/View,Members/User';
   workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
     // This ensures that any existing permissions won't get wiped out
-    Views: Views_DoNotApplyPermissionsOrMembers,
+    Views: Views_DoNotApplyPermissions,
     LocalUsers: LocalUsers_DoNotApplyAgentOrRoles
   };
 
@@ -149,5 +149,9 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
   private showTabError(model: Role, pred: (item: Permission) => boolean): boolean {
     return !!model && !!model.Permissions && model.Permissions.some(e => pred(e) && !!e.serverErrors);
+  }
+
+  showMembersError(model: Role) {
+    return !!model && !!model.Members && model.Members.some(e => !!e.serverErrors);
   }
 }

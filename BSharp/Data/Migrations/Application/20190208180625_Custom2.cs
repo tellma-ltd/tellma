@@ -7,12 +7,12 @@ namespace BSharp.Data.Migrations.Application
         protected override void Up(MigrationBuilder builder)
         {
             builder.Sql(@"
-    CREATE FUNCTION [dbo].[fn_User__Language]()
+    EXEC('CREATE FUNCTION [dbo].[fn_User__Language]()
     RETURNS INT
     AS
     BEGIN
-	    DECLARE @Culture NVARCHAR(255) = CONVERT(NVARCHAR(255), SESSION_CONTEXT(N'Culture'));
-	    DECLARE @NeutralCulture NVARCHAR(255) = CONVERT(NVARCHAR(255), SESSION_CONTEXT(N'NeutralCulture'));
+	    DECLARE @Culture NVARCHAR(255) = CONVERT(NVARCHAR(255), SESSION_CONTEXT(N''Culture''));
+	    DECLARE @NeutralCulture NVARCHAR(255) = CONVERT(NVARCHAR(255), SESSION_CONTEXT(N''NeutralCulture''));
 	    DECLARE @TenantLanguage2 NVARCHAR(255);
         SELECT @TenantLanguage2 = SecondaryLanguageId FROM [dbo].[Settings];
 
@@ -20,18 +20,18 @@ namespace BSharp.Data.Migrations.Application
 		    WHEN @TenantLanguage2 IN (@Culture, @NeutralCulture) THEN 2
 		    ELSE 1
 	    END;
-    END;
+    END;')
 ");
 
             builder.Sql(@"
-    CREATE FUNCTION dbo.[fn_IsNullOrEmpty](@Str2 VARCHAR(MAX), @Str VARCHAR(MAX))
-    RETURNS VARCHAR(MAX) AS
+    EXEC('CREATE FUNCTION dbo.[fn_IsNullOrEmpty](@Str2 NVARCHAR(MAX), @Str NVARCHAR(MAX))
+    RETURNS NVARCHAR(MAX) AS
     BEGIN
         RETURN CASE 
             WHEN @Str2 IS NOT NULL AND LEN(@Str2) > 0 THEN @Str2
             ELSE @Str
         END;
-    END;
+    END;')
 ");
         }
 

@@ -14,7 +14,7 @@ export class View extends ViewForSave<Permission> {
     AllowedPermissionLevels: ('Read' | 'Update' | 'Create' | 'ReadCreate' | 'Sign')[];
 }
 
-export function Views_DoNotApplyPermissionsOrMembers(stale: View, fresh: View): View {
+export function Views_DoNotApplyPermissions(stale: View, fresh: View): View {
     // Set all props except for Permissions
     // TODO
     // Object.keys(stale).concat(Object.keys(fresh))
