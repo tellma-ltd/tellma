@@ -372,11 +372,6 @@ namespace BSharp.Data
 
         public class DesignTimeUserIdProvider : IUserProvider
         {
-            public DbUserInfo GetUserInfo()
-            {
-                return new DbUserInfo { };
-            }
-
             public string GetUserEmail()
             {
                 return "<FakeUserEmail>";
@@ -385,11 +380,6 @@ namespace BSharp.Data
             public string GetUserId()
             {
                 return "<FakeUserId>";
-            }
-
-            public void SetUserInfo(DbUserInfo user)
-            {
-
             }
         }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Subject, of, Observable } from 'rxjs';
-import { switchMap, tap, map, catchError } from 'rxjs/operators';
+import { Subject, of, Observable, timer } from 'rxjs';
+import { switchMap, tap, map, catchError, timeInterval } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { StorageService } from '~/app/data/storage.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -174,6 +174,7 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
 
     } else if (!this._src || !this._imageId) {
 
+      // this usually indicates that the image was deleted on the server
       if (!!this._src) {
         this.storage.removeItem(this._src);
       }
@@ -183,6 +184,7 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
       this.status = ImageStatus.loaded;
       this.dataUrl = null;
       return of();
+
     } else {
       const src = this._src;
       const imageId = this._imageId;

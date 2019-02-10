@@ -2,7 +2,7 @@
 
   <div class="d-flex align-items-center justify-content-center w-100 h-100">
     <!-- image -->
-    <img *ngIf="showImg" [src]="dataUrl" width="100%" height="100%" alt="" [class.b-image-round]="isRound">
+    <img *ngIf="showImg" [src]="dataUrl" alt="" [class.b-image-round]="isRound" [style.max-width]="size + sizeUnit" [style.max-height]="size + sizeUnit">
 
     <!-- placeholder if image is null -->
     <fa-icon class="b-image-placeholder" *ngIf="showIcon" [icon]="icon" [style.font-size]="placeholderFontSize + 'rem'"></fa-icon>

@@ -25,10 +25,12 @@ namespace BSharp
     public class Startup
     {
         private readonly IConfiguration _config;
+        private readonly IHostingEnvironment _env;
 
-        public Startup(IConfiguration config)
+        public Startup(IConfiguration config, IHostingEnvironment env)
         {
             _config = config;
+            _env = env;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -69,15 +71,17 @@ namespace BSharp
 
             // Add a blob service depending on wheter 
             var azureBlobConfig = _config.GetSection("AzureBlobStorage");
-            if (azureBlobConfig.Exists())
+            var azureBlobConnString = azureBlobConfig["ConnectionString"];
+            var azureBlobContainerName = azureBlobConfig["ContainerName"];
+            if (!string.IsNullOrWhiteSpace(azureBlobConnString) && !string.IsNullOrWhiteSpace(azureBlobContainerName))
             {
                 // If Azure blob storage info is provided use it
                 // Note: This setup of using one azure blob storage may become a
                 // bottleneck in the extremely far future we will worry about it then                
                 services.AddAzureBlobStorage(opt =>
                 {
-                    opt.ConnectionString = azureBlobConfig["ConnectionString"];
-                    opt.ContainerName = azureBlobConfig["ContainerName"];
+                    opt.ConnectionString = azureBlobConnString;
+                    opt.ContainerName = azureBlobContainerName;
                 });
             }
             else
@@ -93,9 +97,11 @@ namespace BSharp
             services.AddSqlLocalization();
             services.AddDynamicModelMetadata();
 
-            // TODO: Register and configure identity related services properly
-            services.AddApplicationIdentity();
+            // Setup an embedded instance of identity service in the same domain as the API if enabled in the configuration
+            services.AddEmbeddedIdentityServerIfEnabled(_config, _env);
 
+            // Add services for authenticating API calls against an OIDC authority, and helper services for accessing claims
+            services.AddApiAuthentication(_config);
 
             // Register MVC using the most up to date version
             services.AddMvc(opt =>
@@ -149,9 +155,9 @@ namespace BSharp
             services.AddAutoMapper();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
         {
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -180,7 +186,7 @@ namespace BSharp
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseCors(builder =>
                 {
@@ -196,6 +202,12 @@ namespace BSharp
                 });
             }
 
+            // Serves the identity server
+            if(_config["EmbeddedIdentityServer:Enabled"]?.ToLower() == "true")
+            {
+                app.UseIdentityServer();
+            }
+
             // Serves the API
             app.UseMvc(routes =>
             {
@@ -208,7 +220,7 @@ namespace BSharp
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-                if (env.IsDevelopment())
+                if (_env.IsDevelopment())
                 {
                     spa.UseAngularCliServer(npmScript: "start");
                 }

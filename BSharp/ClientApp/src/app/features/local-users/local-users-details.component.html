@@ -43,7 +43,7 @@
 
   <div class="col-12 col-md-4 b-details-image-container">
     <div class="border">
-      <b-image *ngIf="!!model" [src]="'local-users/' + model.Id + '/image'" [imageId]="model?.ImageId" [(ngModel)]="model.Image"
+      <b-image *ngIf="!!model"  [src]="model.Id ? 'local-users/' + model.Id + '/image' : null" [imageId]="model?.ImageId" [(ngModel)]="model.Image"
         [isEdit]="isEdit"></b-image>
     </div>
   </div>
