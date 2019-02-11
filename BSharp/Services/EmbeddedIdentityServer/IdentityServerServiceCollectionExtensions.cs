@@ -2,12 +2,14 @@
 using BSharp.Data.Model;
 using BSharp.Services.EmbeddedIdentityServer;
 using BSharp.Services.Utilities;
+using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -54,12 +56,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Add default identity setup for the embedded IdentityServer instance
             services.AddIdentity<User, IdentityRole>()
-
+                .AddDefaultTokenProviders()
                 // Use the identity context database
-                .AddEntityFrameworkStores<IdentityContext>()
-
-                // For email confirmation and password reset tokens
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<IdentityContext>();
 
 
             // For windows authentication
@@ -75,6 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 opt.UserInteraction.LoginUrl = "/identity/sign-in";
                 opt.UserInteraction.LogoutUrl = "/identity/sign-out";
+                opt.UserInteraction.ErrorUrl = "/error";
             })
                 .AddInMemoryIdentityResources(GetIdentityResources())
                 .AddInMemoryApiResources(GetApiResources())
@@ -124,18 +124,26 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var googleSection = embeddedIdentitySection.GetSection("Google");
             var googleClientId = googleSection["ClientId"];
+            var googleClientSecret = googleSection["ClientSecret"];
             if (!string.IsNullOrWhiteSpace(googleClientId))
             {
                 services.Configure<GoogleOptions>(googleSection);
-                authBuilder.AddGoogle();
+                authBuilder.AddGoogle("Google", "Google", opt =>
+                {
+                   // opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                    opt.ClientId = googleClientId;
+                    opt.ClientSecret = googleClientSecret;
+                });
             }
 
             var microsoftSection = embeddedIdentitySection.GetSection("Microsoft");
             var microsoftClientId = microsoftSection["ClientId"];
             if (!string.IsNullOrWhiteSpace(microsoftClientId))
             {
-                services.Configure<MicrosoftAccountOptions>(microsoftSection);
-                authBuilder.AddMicrosoftAccount();
+                // TODO: Add Support for Microsoft
+                //services.Configure<MicrosoftAccountOptions>(microsoftSection);
+                //authBuilder.AddMicrosoftAccount();
             }
 
             return services;

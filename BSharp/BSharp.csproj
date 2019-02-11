@@ -25,6 +25,7 @@
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
+    <PackageReference Include="Sendgrid" Version="9.10.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
@@ -36,12 +37,14 @@
     <Compile Remove="ClientApp\dist\**" />
     <Compile Remove="ClientApp\hooks\**" />
     <Compile Remove="ClientApp\platforms\**" />
+    <Compile Remove="Pages\Account\**" />
     <Content Remove="$(SpaRoot)**" />
     <Content Remove="ClientAppOld\dist\**" />
     <Content Remove="ClientAppOld\platforms\**" />
     <Content Remove="ClientApp\dist\**" />
     <Content Remove="ClientApp\hooks\**" />
     <Content Remove="ClientApp\platforms\**" />
+    <Content Remove="Pages\Account\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
@@ -51,11 +54,13 @@
     <EmbeddedResource Remove="ClientApp\dist\**" />
     <EmbeddedResource Remove="ClientApp\hooks\**" />
     <EmbeddedResource Remove="ClientApp\platforms\**" />
+    <EmbeddedResource Remove="Pages\Account\**" />
     <None Remove="ClientAppOld\dist\**" />
     <None Remove="ClientAppOld\platforms\**" />
     <None Remove="ClientApp\dist\**" />
     <None Remove="ClientApp\hooks\**" />
     <None Remove="ClientApp\platforms\**" />
+    <None Remove="Pages\Account\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,7 +78,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\Application\" />
-    <Folder Include="Pages\Account\" />
     <Folder Include="wwwroot\lib\qrcode\" />
   </ItemGroup>
 

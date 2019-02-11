@@ -1,4 +1,5 @@
-﻿using IdentityServer4;
+﻿using BSharp.Services.Utilities;
+using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
@@ -59,7 +60,7 @@ namespace BSharp.Services.EmbeddedIdentityServer
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
-                        "MyAPI"
+                        Constants.ApiResourceName
                     }
             };
 

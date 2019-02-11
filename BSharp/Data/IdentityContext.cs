@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-// dotnet ef migrations add <MigrationName> -c=IdentityContext -o=Data/Migrations/Identity
+// dotnet ef migrations add Initial -c=IdentityContext -o=Data/Migrations/Identity
 namespace BSharp.Data
 {
     /// <summary>

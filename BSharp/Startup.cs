@@ -1,6 +1,7 @@
 using AutoMapper;
 using BSharp.Data;
 using BSharp.Services.BlobStorage;
+using BSharp.Services.Email;
 using BSharp.Services.Migrations;
 using BSharp.Services.ModelMetadata;
 using BSharp.Services.Utilities;
@@ -35,6 +36,9 @@ namespace BSharp
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // Global configurations maybe used in many places
+            services.Configure<GlobalConfiguration>(_config);
+
             // Register the admin context
             services.AddDbContext<AdminContext>(opt =>
                 opt.UseSqlServer(_config.GetConnectionString(Constants.AdminConnection))
@@ -125,7 +129,27 @@ namespace BSharp
                     // To response size
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+
+                // TODO: Only when using embedded identity
+                .AddRazorPagesOptions(options =>
+                {
+                    options.AllowAreas = true;
+                    options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
+                    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+                    
+                });
+
+            // TODO: Only when using embedded identity
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = $"/identity/sign-in";
+                options.LogoutPath = $"/identity/sign-out";
+                options.AccessDeniedPath = $"/identity/access-denied";
+            });
+
+            // TODO: Only when using embedded identity
+            services.AddEmail(_config.GetSection("Email"));
 
             // To allow a client that is hosted on another server
             services.AddCors();
@@ -203,7 +227,7 @@ namespace BSharp
             }
 
             // Serves the identity server
-            if(_config["EmbeddedIdentityServer:Enabled"]?.ToLower() == "true")
+            if (_config["EmbeddedIdentityServer:Enabled"]?.ToLower() == "true")
             {
                 app.UseIdentityServer();
             }

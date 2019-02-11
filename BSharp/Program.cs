@@ -3,6 +3,7 @@ using BSharp.Data.Model;
 using BSharp.Services.Sharding;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -46,6 +47,28 @@ namespace BSharp
                 {
                     try
                     {
+                        var idContext = scope.ServiceProvider.GetService<IdentityContext>();
+                        var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
+                        if (idContext != null && userManager != null)
+                        {
+                            idContext.Database.Migrate();
+                            var adminEmail = "support@banan-it.com";
+                            var adminTask = userManager.FindByEmailAsync(adminEmail);
+                            adminTask.Wait();
+                            var admin = adminTask.Result;
+
+                            if(admin == null)
+                            {
+                                userManager.CreateAsync(new User
+                                {
+                                    UserName = adminEmail,
+                                    Email = adminEmail,
+                                    EmailConfirmed = true                                     
+                                }, "Banan@123").Wait();
+                            }
+                        }
+
+
                         int[] tenantIds = new[] { 101, 102 };
 
                         // (1) Admin Context migrated the usual way, add one tenant for dev and all translations
