@@ -156,7 +156,7 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Error_UnableToReachServer", "Unable to reach the server, please check the connection of your device"),
             Ar(Constants.Client, "Error_UnableToReachServer", "تعذر الوصول إلى الخادم، يرجى التأكد من اتصال جهازك بالشبكة"),
 
-            En(Constants.Client, "Error_LoginSessionExpired", "Your login session has expired, please login again"),
+            En(Constants.Client, "Error_LoginSessionExpired", "Your session has expired, please sign-in again"),
             Ar(Constants.Client, "Error_LoginSessionExpired", "إنتهت صلاحية تسجيل دخولك، يرجى تسحيل الدخول من جديد"),
 
             En(Constants.Client, "Error_AccountDoesNotHaveSufficientPermissions", "Your account does not have sufficient permissions"),
@@ -185,6 +185,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Error_ImageExceedsTheMaximumSizeOfX", "The file you selected exceeds the maximum allowed size of {{maxSize}} MB"),
             Ar(Constants.Client, "Error_ImageExceedsTheMaximumSizeOfX", "حجم الملف الذي اخترته يتجاوز الحد الأقصى المسموح به وهو {{maxSize}} ميجابايت"),
+
+            En(Constants.Client, "Error_UnableToValidateYourCredentials", "Could not validate your credentials, this is likely due to misconfigured system"),
+            Ar(Constants.Client, "Error_UnableToValidateYourCredentials", "تعذر التأكد من صحة هويتك، السبب غالبا هو أن إعدادات النظام غير سليمة"),
 
             
             // Labels
@@ -486,6 +489,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "MyCompanies", "My Companies"),
             Ar(Constants.Client, "MyCompanies", "شركاتي"),
 
+            En(Constants.Client, "ChangeCompany", "Change Company"),
+            Ar(Constants.Client, "ChangeCompany", "تغيير الشركة"),
+
             En(Constants.Client, "GoBack", "Go Back"),
             Ar(Constants.Client, "GoBack", "رجوع"),
 
@@ -522,8 +528,11 @@ namespace BSharp.Data.Model
             En(Constants.Client, "SignIn", "Sign In"),
             Ar(Constants.Client, "SignIn", "تسجيل دخول"),
 
-            En(Constants.Client, "MyAccount", "My Account"),
-            Ar(Constants.Client, "MyAccount", "حسابي على النظام"),
+            En(Constants.Client, "My0Account", "My {{placeholder}} Account"),
+            Ar(Constants.Client, "My0Account", "حسابي على {{placeholder}}"),
+
+            En(Constants.Client, "WelcomePage", "Welcome Page"),
+            Ar(Constants.Client, "WelcomePage", "الصفحة الرئيسية"),
 
             En(Constants.Client, "NoItemsFound", "No Items Found."),
             Ar(Constants.Client, "NoItemsFound", "لا يوجد بيانات"),

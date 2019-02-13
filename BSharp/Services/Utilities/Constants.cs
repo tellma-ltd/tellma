@@ -12,7 +12,7 @@ namespace BSharp.Services.Utilities
         public const string Server = "Server";
         public const string Client = "Client";
         public const string Shared = "Shared";
-        public const string ApiResourceName = "BSharpAPI";
+        public const string ApiResourceName = "bsharp";
 
         // Permission Levels
         public const string Read = nameof(Read);

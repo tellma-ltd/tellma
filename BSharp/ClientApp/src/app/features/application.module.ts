@@ -20,12 +20,14 @@ import { LocalUsersMasterComponent } from './local-users/local-users-master.comp
 import { LocalUsersImportComponent } from './local-users/local-users-import.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TenantResolverGuard } from '../data/tenant-resolver.guard';
+import { AuthGuard } from '../data/auth.guard';
 
 const routes: Routes = [
   {
     path: ':tenantId',
     component: ApplicationShellComponent,
     canActivate: [TenantResolverGuard],
+    canActivateChild: [AuthGuard],
     children: [
       // Measurement Units
       {
@@ -104,7 +106,7 @@ const routes: Routes = [
 
       // Misc
       { path: 'main-menu', component: MainMenuComponent },
-      { path: '', redirectTo: 'settings', pathMatch: 'full' },
+      { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
       { path: '**', component: ApplicationPageNotFoundComponent },
     ]
   }

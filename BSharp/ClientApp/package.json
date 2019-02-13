@@ -36,6 +36,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.6.3",
     "@ng-bootstrap/ng-bootstrap": "^4.0.1",
     "@ngx-translate/core": "^11.0.1",
+    "angular-oauth2-oidc": "^5.0.2",
     "bootstrap": "^4.2.1",
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.5.4",

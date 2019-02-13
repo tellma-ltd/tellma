@@ -1,6 +1,7 @@
 ﻿using BSharp.Controllers.DTO;
 using BSharp.Data.Model;
 using BSharp.Services.MultiTenancy;
+using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,19 @@ namespace BSharp.Services.Utilities
         /// <summary>
         /// Retrieves the username of the authenticated claims principal
         /// </summary>
-        public static string UserId(this ClaimsPrincipal user)
+        public static string ExternalUserId(this ClaimsPrincipal user)
         {
-            return "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35"; // TODO
+            string externalId = user.FindFirstValue(JwtClaimTypes.Subject);
+            return externalId;
+        }
+
+        /// <summary>
+        /// Retrieves the email of the authenticated claims principal
+        /// </summary>
+        public static string Email(this ClaimsPrincipal user)
+        {
+            string email = user.FindFirstValue(JwtClaimTypes.Email);
+            return email;
         }
 
         /// <summary>
@@ -34,14 +45,6 @@ namespace BSharp.Services.Utilities
         public static int UserId(this ITenantUserInfoAccessor @this)
         {
             return @this.GetCurrentInfo().UserId.Value;
-        }
-
-        /// <summary>
-        /// Retrieves the email of the authenticated claims principal
-        /// </summary>
-        public static string Email(this ClaimsPrincipal user)
-        {
-            return "support@banan-it.com"; // TODO
         }
 
         /// <summary>

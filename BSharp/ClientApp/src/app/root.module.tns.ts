@@ -14,6 +14,7 @@ import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { NativeScriptLocalizeModule } from 'nativescript-localize/angular';
 import { UnauthorizedForCompanyComponent } from './features/unauthorized-for-company/unauthorized-for-company.component';
 import { ErrorLoadingCompanyComponent } from './features/error-loading-company/error-loading-company.component';
+import { SignOutComponent } from './features/sign-out/sign-out.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { ErrorLoadingCompanyComponent } from './features/error-loading-company/e
     CompaniesComponent,
     PageNotFoundComponent,
     UnauthorizedForCompanyComponent,
-    ErrorLoadingCompanyComponent
+    ErrorLoadingCompanyComponent,
+    SignOutComponent
   ],
   imports: [
     NativeScriptModule,

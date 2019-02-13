@@ -2,6 +2,7 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Services.ApiAuthentication;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ namespace BSharp.Controllers
 {
     [Route("api/permissions")]
     [ApiController]
+    [AuthorizeAccess]
     [LoadTenantInfo]
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public class PermissionsController : ControllerBase

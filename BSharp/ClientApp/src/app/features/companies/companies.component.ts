@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '~/app/data/auth.service';
 
 @Component({
   selector: 'b-companies',
@@ -8,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class CompaniesComponent implements OnInit {
 
-  constructor(public router: Router) { }
+  constructor(public router: Router, public auth: AuthService) { }
 
   ngOnInit() {
   }

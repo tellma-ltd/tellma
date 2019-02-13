@@ -1,5 +1,5 @@
 <div class="d-flex flex-column h-100">
-  <div class="navbar navbar-dark b-dark navbar-expand-md p-0" [style.background-color]="settings.BrandColor">
+  <div class="navbar navbar-dark b-dark navbar-expand-md p-0" [style.background-color]="settings?.BrandColor">
     <a class="b-brand-link b-navbar-button h-100" routerLink="main-menu" [title]="'Home' | translate">
       <b-brand [scale]="1.2"></b-brand>
     </a>
@@ -51,7 +51,7 @@
           <button class="w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
             <div class="align-self-center">
               <div class="b-dp-wrapper b-dp-dark bg-white ml-1 mr-1">
-                <b-image [src]="'local-users/' + ws.userSettings.UserId + '/image'" [imageId]="ws.userSettings.ImageId"
+                <b-image [src]="'local-users/' + ws?.userSettings?.UserId + '/image'" [imageId]="ws?.userSettings?.ImageId"
                   shape="circle" [size]="28"></b-image>
               </div>
             </div>
@@ -63,21 +63,27 @@
             &nbsp;&nbsp;
           </button>
           <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action">
-            <ng-container *ngIf="ws.settings.SecondaryLanguageId">
+            <ng-container *ngIf="ws?.settings?.SecondaryLanguageId">
               <button type="button" class="dropdown-item btn-light" *ngIf="ws.isSecondaryLanguage" (click)="onPrimary();onCollapse()">
-                {{ settings.PrimaryLanguageName }}
+                {{ settings?.PrimaryLanguageName }}
               </button>
               <button type="button" class="dropdown-item btn-light" *ngIf="ws.isPrimaryLanguage" (click)="onSecondary();onCollapse()">
-                {{ settings.SecondaryLanguageName }}
+                {{ settings?.SecondaryLanguageName }}
               </button>
               <hr />
             </ng-container>
 
-            <button type="button" class="dropdown-item btn-light" routerLink="../.." (click)="onCollapse()">
-              {{ 'MyCompanies' | translate }}
+            <button type="button" class="dropdown-item btn-light" routerLink="/companies" (click)="onCollapse()">
+              {{ 'ChangeCompany' | translate }}
+            </button>
+            <button type="button" class="dropdown-item btn-light" routerLink="/welcome" (click)="onCollapse()">
+              {{ 'WelcomePage' | translate }}
             </button>
             <button type="button" class="dropdown-item btn-light" (click)="onMyAccount();onCollapse()">
-              {{ 'MyAccount' | translate }}
+              {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
+            </button>
+            <button type="button" class="dropdown-item btn-light" (click)="onMyAccount();onCollapse()">
+              {{ 'My0Account' | translate: { placeholder: companyName } }}
             </button>
             <button type="button" class="dropdown-item btn-light" (click)="onSignOut();onCollapse()">
               {{ 'SignOut' | translate }}

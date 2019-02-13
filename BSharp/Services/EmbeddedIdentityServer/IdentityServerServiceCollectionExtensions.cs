@@ -2,14 +2,12 @@
 using BSharp.Data.Model;
 using BSharp.Services.EmbeddedIdentityServer;
 using BSharp.Services.Utilities;
-using IdentityServer4;
+using IdentityModel;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -130,7 +128,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Configure<GoogleOptions>(googleSection);
                 authBuilder.AddGoogle("Google", "Google", opt =>
                 {
-                   // opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    // opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 
                     opt.ClientId = googleClientId;
                     opt.ClientSecret = googleClientSecret;
@@ -152,6 +150,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
             yield return new IdentityResources.OpenId();
+            yield return new IdentityResources.Email();
             yield return new IdentityResources.Profile();
         }
 
@@ -160,7 +159,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IEnumerable<ApiResource> GetApiResources()
         {
-            yield return new ApiResource(Constants.ApiResourceName);
+            yield return new ApiResource(Constants.ApiResourceName)
+            {
+                UserClaims = { JwtClaimTypes.Email, JwtClaimTypes.EmailVerified }
+            };
         }
     }
 }

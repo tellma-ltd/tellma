@@ -38,22 +38,24 @@ namespace BSharp.Services.EmbeddedIdentityServer
             var uri = _config.WebClientUri;
             if (string.IsNullOrWhiteSpace(uri))
             {
-                // If it is not defined, then use the same origin as IdentityServer by default
+                // IF it is not defined, then use the same origin as IdentityServer by default
                 var request = _accessor?.HttpContext?.Request;
                 uri = $"https://{request?.Host}/{request?.PathBase}";
             }
 
-            // Return the Application Client Web App
+            // return the Application Client Web App
             yield return new Client
             {
                 ClientId = "WebClient",
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
 
-                RedirectUris = { $"{uri}signin-callback", $"{uri}silent-refresh-callback" },
-                PostLogoutRedirectUris = { $"{uri}landing-page" },
+                RedirectUris = { $"{uri}sign-in-callback", $"{uri}assets/silent-refresh-callback.html" },
+                PostLogoutRedirectUris = { $"{uri}landing" },
+                AllowedCorsOrigins = { uri },
+
                 RequireConsent = false,
-                AccessTokenLifetime = 70,
+                AccessTokenLifetime = 60 * 60 * 24 * 3, // 3 days
 
                 AllowedScopes =
                     {
@@ -61,7 +63,7 @@ namespace BSharp.Services.EmbeddedIdentityServer
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
                         Constants.ApiResourceName
-                    }
+                    },
             };
 
             //// TODO: Return the Mobile Client App 

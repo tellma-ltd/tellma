@@ -1,0 +1,20 @@
+<div class="container p-5">
+  <div class="d-flex justify-content-end">
+    <a class="btn btn-primary ml-1 mr-1" routerLink="/companies"> 
+      <span *ngIf="isAuthenticated">Go to BSharp</span>
+      <span *ngIf="!isAuthenticated">{{ 'SignIn' | translate }}</span>
+    </a>
+  </div>
+  <h1>
+    Welcome Page 
+  </h1>
+  <p>
+    TODO: Welcome to BSharp! This page should look pretty and show some promotional material about bSharp and general information 
+    about its history, social media links etc, this page is accessibile to unauthenticated users and they get
+    automatically redirected to it when they navigate to the base address
+  </p>
+
+  <div class="mt-4">
+    <b-error-message *ngIf="showError"> {{ error | translate }} </b-error-message>
+  </div>
+</div>

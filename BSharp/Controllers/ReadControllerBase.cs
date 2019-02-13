@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
+using BSharp.Services.ApiAuthentication;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,7 @@ using M = BSharp.Data.Model;
 namespace BSharp.Controllers
 {
     [ApiController]
+    [AuthorizeAccess]
     [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     public abstract class ReadControllerBase<TModel, TDto, TKey> : ControllerBase
         where TModel : M.ModelBase

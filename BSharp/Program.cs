@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using static BSharp.Data.ApplicationContext;
 
@@ -47,25 +48,29 @@ namespace BSharp
                 {
                     try
                     {
+                        string adminEmail = "support@banan-it.com";
                         var idContext = scope.ServiceProvider.GetService<IdentityContext>();
                         var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
+                        string externalId = null;
                         if (idContext != null && userManager != null)
                         {
                             idContext.Database.Migrate();
-                            var adminEmail = "support@banan-it.com";
                             var adminTask = userManager.FindByEmailAsync(adminEmail);
                             adminTask.Wait();
                             var admin = adminTask.Result;
 
-                            if(admin == null)
+                            if (admin == null)
                             {
-                                userManager.CreateAsync(new User
+                                admin = new User
                                 {
                                     UserName = adminEmail,
                                     Email = adminEmail,
-                                    EmailConfirmed = true                                     
-                                }, "Banan@123").Wait();
+                                    EmailConfirmed = true
+                                };
+                                userManager.CreateAsync(admin, "Banan@123").Wait();
                             }
+
+                            externalId = admin.Id;
                         }
 
 
@@ -93,6 +98,23 @@ namespace BSharp
                             adminContext.SaveChanges();
                         }
 
+                        var globalUser = adminContext.GlobalUsers.FirstOrDefault(e => e.Email == adminEmail);
+                        if (globalUser == null)
+                        {
+                            globalUser = new GlobalUser
+                            {
+                                Email = adminEmail,
+                                ExternalId = externalId,
+                            };
+
+                            globalUser.Memberships = new List<TenantMembership> {
+                                new TenantMembership {  TenantId = tenantIds[0] }
+                            };
+
+                            adminContext.GlobalUsers.Add(globalUser);
+                            adminContext.SaveChanges();
+                        }
+
                         // Translations are seeded here for a better development experience since they change 
                         // frequently, in the future this seeding will be moved to migrations instead
                         adminContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[Translations]");
@@ -100,7 +122,7 @@ namespace BSharp
                         adminContext.Translations.AddRange(Translation.TRANSLATIONS);
                         adminContext.SaveChanges();
 
-                        foreach(var tenantId in tenantIds.Take(1))
+                        foreach (var tenantId in tenantIds.Take(1))
                         {
                             // (2) Application Context requires special handling in development, don't resolve it with DI
                             var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
@@ -161,8 +183,8 @@ namespace BSharp
 DECLARE @NextId INT = IDENT_CURRENT('[dbo].[LocalUsers]') + 1;
 INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, Name2, CreatedById, ModifiedById, TenantId)
                             VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, {5})",
-                                    "support@banan-it.com", // {0}
-                                    "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
+                                    adminEmail, // {0}
+                                    externalId, // {1}
                                     now, // {2}
                                     "Banan IT Support", // {3}
                                     "فريق مساندة بنان",

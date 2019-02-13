@@ -5,6 +5,7 @@ using BSharp.Data;
 using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,7 @@ namespace BSharp.Controllers
         }
 
         [HttpGet("client-translations/{culture}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Dictionary<string, string>>> GetClientTranslations(string culture)
         {
             try

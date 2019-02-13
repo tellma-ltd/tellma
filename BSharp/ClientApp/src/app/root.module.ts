@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { RootRoutingModule } from './root-routing.module';
+import { RootRoutingModule, PlaceholderComponent } from './root-routing.module';
 import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
 import { PageNotFoundComponent } from './features/page-not-found/page-not-found.component';
@@ -16,6 +16,9 @@ import { ApiService } from './data/api.service';
 import { UnauthorizedForCompanyComponent } from './features/unauthorized-for-company/unauthorized-for-company.component';
 import { ErrorLoadingCompanyComponent } from './features/error-loading-company/error-loading-company.component';
 import { Router } from '@angular/router';
+import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
+import { CleanerService } from './data/cleaner.service';
+import { SignOutComponent } from './features/sign-out/sign-out.component';
 
 
 @NgModule({
@@ -24,13 +27,16 @@ import { Router } from '@angular/router';
     CompaniesComponent,
     PageNotFoundComponent,
     UnauthorizedForCompanyComponent,
-    ErrorLoadingCompanyComponent
+    ErrorLoadingCompanyComponent,
+    PlaceholderComponent,
+    SignOutComponent
   ],
   imports: [
     BrowserModule,
     FontAwesomeModule,
     RootRoutingModule,
     HttpClientModule,
+    OAuthModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -40,10 +46,11 @@ import { Router } from '@angular/router';
     })
   ],
   providers: [
+    { provide: OAuthStorage, useValue: localStorage },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RootHttpInterceptor,
-      deps: [WorkspaceService, ApiService, StorageService, Router],
+      deps: [WorkspaceService, ApiService, StorageService, Router, OAuthStorage, CleanerService],
       multi: true
     }
   ],

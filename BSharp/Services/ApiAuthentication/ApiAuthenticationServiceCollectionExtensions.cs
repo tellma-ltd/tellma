@@ -3,6 +3,7 @@ using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -13,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add the authentication schemes
             var authorityUri = config["ApiAuthentication:AuthorityUri"];
 
-            if (!string.IsNullOrWhiteSpace(authorityUri))
+            if (string.IsNullOrWhiteSpace(authorityUri))
             {
                 // IF Authority URI is not supplied assume the embedded identity server instance is enabled and used
                 authorityUri = "https://localhost:44339"; // TODO: Make this automatic somehow
@@ -27,6 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     options.Authority = authorityUri;
                     options.ApiName = Constants.ApiResourceName;
+                    options.JwtValidationClockSkew = TimeSpan.FromSeconds(0);
                 });
 
             // Add helper services

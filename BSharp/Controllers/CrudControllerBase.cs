@@ -25,7 +25,6 @@ using M = BSharp.Data.Model;
 
 namespace BSharp.Controllers
 {
-    [ApiController]
     public abstract class CrudControllerBase<TModel, TDto, TDtoForSave, TKey> : ReadControllerBase<TModel, TDto, TKey>
         where TModel : M.ModelBase
         where TDtoForSave : DtoForSaveKeyBase<TKey>

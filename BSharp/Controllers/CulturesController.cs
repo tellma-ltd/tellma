@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
+using BSharp.Services.ApiAuthentication;
 using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
@@ -18,6 +19,7 @@ using M = BSharp.Data.Model;
 namespace BSharp.Controllers
 {
     [Route("api/[controller]")]
+    [AuthorizeAccess]
     [ApiController]
     public class CulturesController : ReadControllerBase<CultureDefinition, Culture, string>
     {

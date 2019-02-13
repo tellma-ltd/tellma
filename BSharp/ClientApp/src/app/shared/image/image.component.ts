@@ -314,7 +314,7 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
       this.update();
 
     }, (err) => {
-
+      console.error(err);
     });
   }
 }

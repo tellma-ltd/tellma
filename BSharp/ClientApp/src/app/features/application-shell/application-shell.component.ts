@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { SettingsForClient } from '~/app/data/dto/settings';
 import { UserSettingsForClient } from '~/app/data/dto/local-user';
+import { AuthService } from '~/app/data/auth.service';
 
 @Component({
   selector: 'b-application-shell',
@@ -14,7 +15,7 @@ export class ApplicationShellComponent implements OnInit {
   // For the menu on small screens
   public isCollapsed = true;
 
-  constructor(public workspace: WorkspaceService, private translate: TranslateService) {
+  constructor(public workspace: WorkspaceService, private translate: TranslateService, private auth: AuthService) {
   }
 
   ngOnInit() {
@@ -41,7 +42,7 @@ export class ApplicationShellComponent implements OnInit {
   }
 
   get settings(): SettingsForClient {
-     return this.workspace.current.settings;
+     return !!this.workspace.current ? this.workspace.current.settings : null;
   }
 
   get ws(): TenantWorkspace {
@@ -64,6 +65,10 @@ export class ApplicationShellComponent implements OnInit {
   }
 
   public onSignOut(): void {
-    alert('To be implemented');
+    this.auth.signOut();
+  }
+
+  public onSignIn(): void {
+    this.auth.initImplicitFlow();
   }
 }

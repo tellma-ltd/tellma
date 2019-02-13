@@ -19,7 +19,7 @@ namespace BSharp.Services.Identity
 
         public string GetUserId()
         {
-            return _httpContextAccessor?.HttpContext?.User?.UserId();
+            return _httpContextAccessor?.HttpContext?.User?.ExternalUserId();
         }
     }
 }

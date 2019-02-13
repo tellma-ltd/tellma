@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
 import { StorageService } from './data/storage.service';
+import { AuthService } from './data/auth.service';
 
 @Component({
   selector: 'b-root',

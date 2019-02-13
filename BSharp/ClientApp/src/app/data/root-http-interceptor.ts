@@ -1,4 +1,4 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable, Subject, of, throwError } from 'rxjs';
 import { WorkspaceService } from './workspace.service';
 import { tap, exhaustMap, retry, catchError } from 'rxjs/operators';
@@ -13,6 +13,8 @@ import {
 } from './tenant-resolver.guard';
 import { Router } from '@angular/router';
 import { UserSettingsForClient } from './dto/local-user';
+import { OAuthStorage } from 'angular-oauth2-oidc';
+import { CleanerService } from './cleaner.service';
 
 type VersionStatus = 'Fresh' | 'Stale' | 'Unauthorized';
 
@@ -26,7 +28,9 @@ export class RootHttpInterceptor implements HttpInterceptor {
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
   private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private storage: StorageService, private router: Router) {
+  constructor(private workspace: WorkspaceService, private api: ApiService,
+    private storage: StorageService, private router: Router,
+    private authStorage: OAuthStorage, private cleaner: CleanerService) {
     // Note: We use exhaustMap to prevent making another call while a call is in progress
     // https://www.learnrxjs.io/operators/transformation/exhaustmap.html
     this.notifyRefreshSettings$ = new Subject<void>();
@@ -54,10 +58,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
     // we accumulate all the headers params in these objects
     const headers = {};
-    const params = { };
-
-    // cache buster
-    // params['t'] = encodeURIComponent(new Date().getTime().toString());
+    const params = {};
 
     // tenant ID
     const tenantId = this.workspace.ws.tenantId;
@@ -71,6 +72,13 @@ export class RootHttpInterceptor implements HttpInterceptor {
       // to absolutely guarantee that caching will never cause one tenant's data to show up while
       // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
       params['tenantId'] = tenantId.toString();
+    }
+
+    if (!!this.authStorage) {
+      const accessToken = this.authStorage.getItem('access_token');
+      if (!!accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
     }
 
     // UI culture
@@ -103,6 +111,11 @@ export class RootHttpInterceptor implements HttpInterceptor {
       tap(e => this.handleServerVersions(e, tenantId)),
       catchError(e => {
         this.handleServerVersions(e, tenantId);
+        // If it's a 401 then quickly delete the app state and challenge user
+        if (e instanceof HttpErrorResponse && e.status === 401) {
+          this.router.navigateByUrl('/welcome?error=401');
+          this.cleaner.cleanState();
+        }
         return throwError(e);
       })
     );
