@@ -7,6 +7,7 @@ using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
 
 namespace BSharp.Areas.Identity.Pages.Account
 {
@@ -14,17 +15,19 @@ namespace BSharp.Areas.Identity.Pages.Account
     public class ConfirmEmailModel : PageModel
     {
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<ConfirmEmailModel> _logger;
 
-        public ConfirmEmailModel(UserManager<User> userManager)
+        public ConfirmEmailModel(UserManager<User> userManager, ILogger<ConfirmEmailModel> logger)
         {
             _userManager = userManager;
+            _logger = logger;
         }
 
-        public async Task<IActionResult> OnGetAsync(string userId, string code)
+        public async Task<IActionResult> OnGetAsync(string userId, string code, string passwordCode)
         {
             if (userId == null || code == null)
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage("./Login");
             }
 
             var user = await _userManager.FindByIdAsync(userId);
@@ -36,10 +39,19 @@ namespace BSharp.Areas.Identity.Pages.Account
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if (!result.Succeeded)
             {
-                throw new InvalidOperationException($"Error confirming email for user with ID '{userId}':");
+                string message = $"Error confirming email for user with ID '{userId}':";
+                _logger.LogInformation(message);
+                return BadRequest(message);
             }
 
-            return Page();
+            if(passwordCode != null)
+            {
+                return RedirectToPage("./ResetPassword", new { code = passwordCode, justConfirmedEmail = true });
+            }
+            else
+            {
+                return Page();
+            }
         }
     }
 }

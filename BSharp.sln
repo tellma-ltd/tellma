@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BSharp", "BSharp\BSharp.csproj", "{94FB2436-EC57-4997-B8A7-D1C8621DD14D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSharp.IntegrationTests", "BSharp.IntegrationTests\BSharp.IntegrationTests.csproj", "{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BSharp.IntegrationTests", "BSharp.IntegrationTests\BSharp.IntegrationTests.csproj", "{1CE3D080-8BDA-46D9-B00A-996D0EE53E6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

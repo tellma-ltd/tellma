@@ -54,8 +54,11 @@ namespace BSharp.Data.Model
             En(Constants.Server, nameof(StringLengthAttribute), "The field {0} must be a string with a maximum length of {1}"),
             Ar(Constants.Server, nameof(StringLengthAttribute), "حقل {0} ينبغي ألا يتعدى طول محنواه {1} حرفا"),
 
+            En(Constants.Server, nameof(StringLengthAttribute) + "2", "The field {0} must be at least {2} and at max {1} characters long."),
+            Ar(Constants.Server, nameof(StringLengthAttribute) + "2", "حقل {0} ينبغي ألا يقل طول محنواه عن عدد {2} من الحروف وألا يتجاوز عدد {1} من الحروف"),
+
             En(Constants.Server, nameof(EmailAddressAttribute), "The {0} field is not a valid e-mail address"),
-            Ar(Constants.Server, nameof(EmailAddressAttribute), "حقل {0} لا يحتوي على عنوان بريد سليم"),            
+            Ar(Constants.Server, nameof(EmailAddressAttribute), "حقل {0} لا يحتوي على عنوان بريد إلكتروني سليم"),            
 
             // Server Errors
             En(Constants.Server, "Error_TheId0WasNotFound", "The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing"),
@@ -522,11 +525,11 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Next", "Next"),
             Ar(Constants.Client, "Next", "التالي"),
 
-            En(Constants.Client, "SignOut", "Sign Out"),
-            Ar(Constants.Client, "SignOut", "تسجيل خروج"),
+            En(Constants.Shared, "SignOut", "Sign Out"),
+            Ar(Constants.Shared, "SignOut", "تسجيل خروج"),
 
-            En(Constants.Client, "SignIn", "Sign In"),
-            Ar(Constants.Client, "SignIn", "تسجيل دخول"),
+            En(Constants.Shared, "SignIn", "Sign In"),
+            Ar(Constants.Shared, "SignIn", "تسجيل دخول"),
 
             En(Constants.Client, "My0Account", "My {{placeholder}} Account"),
             Ar(Constants.Client, "My0Account", "حسابي على {{placeholder}}"),
@@ -543,8 +546,8 @@ namespace BSharp.Data.Model
             En(Constants.Client, "ImportAFile", "Import a File"),
             Ar(Constants.Client, "ImportAFile", "استيراد ملف"),
 
-            En(Constants.Client, "Cancel", "Cancel"),
-            Ar(Constants.Client, "Cancel", "إلغاء"),
+            En(Constants.Shared, "Cancel", "Cancel"),
+            Ar(Constants.Shared, "Cancel", "إلغاء"),
 
             En(Constants.Client, "Save", "Save"),
             Ar(Constants.Client, "Save", "حفظ"),
@@ -704,6 +707,159 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "ActionDidNotPassValidation", "The action did not pass validation, see the highlighted rows for details"),
             Ar(Constants.Client, "ActionDidNotPassValidation", "الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل"),
+
+
+
+
+
+
+
+
+
+
+            // Identity Labels            
+            
+            En(Constants.Server, "RememberMe", "Remember me?"),
+            Ar(Constants.Server, "RememberMe", "إبق متصلا؟"),
+
+            En(Constants.Server, "Email", "Email"),
+            Ar(Constants.Server, "Email", "البريد الإلكتروني"),
+
+            En(Constants.Server, "Password", "Password"),
+            Ar(Constants.Server, "Password", "كلمة المرور"),
+
+            En(Constants.Server, "ConfirmPassword", "Confirm Password"),
+            Ar(Constants.Server, "ConfirmPassword", "تأكيد كلمة المرور"),
+
+            En(Constants.Server, "Error_ThePasswordAndConfirmationPasswordDoNotMatch", "The password and confirmation password do not match."),
+            Ar(Constants.Server, "Error_ThePasswordAndConfirmationPasswordDoNotMatch", "كلمة المرور وتأكيدها غير متطابقين"),
+
+            En(Constants.Server, "ForgotYourPassword", "Forgot your password?"),
+            Ar(Constants.Server, "ForgotYourPassword", "نسيت كلمة المرور؟"),
+
+            En(Constants.Server, "ForgotPasswordConfirmation", "Forgot password confirmation"),
+            Ar(Constants.Server, "ForgotPasswordConfirmation", "تأكيد فقد كلمة المرور"),
+
+            En(Constants.Server, "ForgotPasswordConfirmationMessage", "Please check your email to reset your password."),
+            Ar(Constants.Server, "ForgotPasswordConfirmationMessage", "راجع بريدك الإكتروني لتحديد كلمة مرور جديدة"),
+
+            En(Constants.Server, "ResetPasswordConfirmation", "Reset password confirmation"),
+            Ar(Constants.Server, "ResetPasswordConfirmation", "تأكيد إعادة تعيين كلمة المرور"),
+
+            En(Constants.Server, "ResetPasswordConfirmationMessage", "Your password has been reset, click below to sign in"),
+            Ar(Constants.Server, "ResetPasswordConfirmationMessage", "أعيد تعيين كلمة مرورك بنجاح، يمكنك تسجيل دخولك بالضغط على الزر أدناه"),
+
+            En(Constants.Server, "ClickHere", "Click here"),
+            Ar(Constants.Server, "ClickHere", "إضغط هنا"),
+
+            En(Constants.Server, "ClickHereLower", "click here"),
+            Ar(Constants.Server, "ClickHereLower", "إضغط هنا"),
+
+            En(Constants.Server, "SignInWith0", "Sign in with {0}"),
+            Ar(Constants.Server, "SignInWith0", "تسجيل دخول بواسطة {0}"),
+
+            En(Constants.Server, "Google", "Google"),
+            Ar(Constants.Server, "Google", "جوجل"),
+
+            En(Constants.Server, "Microsoft", "Microsoft"),
+            Ar(Constants.Server, "Microsoft", "مايكروسوفت"),
+
+            En(Constants.Server, "Facebook", "Facebook"),
+            Ar(Constants.Server, "Facebook", "الفيسبوك"),
+
+            En(Constants.Server, "Twitter", "Twitter"),
+            Ar(Constants.Server, "Twitter", "تويتر"),
+
+            En(Constants.Server, "CopyrightNotice0", "Copyright © {0} Banan IT, Ltd. All rights reserved."),
+            Ar(Constants.Server, "CopyrightNotice0", "بنان لتقنية المعلومات © {0} جميع الحقوق محفوظة"),
+
+            En(Constants.Server, "PrivacyPolicy", "Privacy Policy"),
+            Ar(Constants.Server, "PrivacyPolicy", "سياسة الخصوصية"),
+
+            En(Constants.Server, "TermsOfService", "Terms of Service"),
+            Ar(Constants.Server, "TermsOfService", "شروط الخدمة"),
+
+            En(Constants.Server, "Or", "Or"),
+            Ar(Constants.Server, "Or", "أو"),
+
+            En(Constants.Server, "EnterYourEmail", "Enter your email"),
+            Ar(Constants.Server, "EnterYourEmail", "أدخل عنوان بريدك الإلكتروني"),
+
+            En(Constants.Server, "ResetMyPassword", "Reset My Password"),
+            Ar(Constants.Server, "ResetMyPassword", "إعادة تعيين كلمة المرور"),
+
+            En(Constants.Server, "CreateAPassword", "Create a Password"),
+            Ar(Constants.Server, "CreateAPassword", "تحديد كلمة المرور"),
+
+            En(Constants.Server, "ResetYourPassword", "Reset your password"),
+            Ar(Constants.Server, "ResetYourPassword", "إعادة تعيين كلمة المرور"),
+
+            En(Constants.Server, "ResetPasswordEmailMessage", "Please reset your password by <a href='{0}'>clicking here</a>."),
+            Ar(Constants.Server, "ResetPasswordEmailMessage", "حدد كلمة مرور جديدة عبر <a href='{0}'>هذه الوصلة</a>."),
+
+            En(Constants.Server, "AccessDenied", "Access Denied"),
+            Ar(Constants.Server, "AccessDenied", "غير مسموح بالدخول"),
+
+            En(Constants.Server, "AccessDeniedMessage", "You do not have access to this resource."),
+            Ar(Constants.Server, "AccessDeniedMessage", "ليس لديك حق الوصول إلى هذا المورد."),
+
+            En(Constants.Server, "LockedOut", "Locked Out"),
+            Ar(Constants.Server, "LockedOut", "حساب معلق"),
+
+            En(Constants.Server, "LockedOutMessage", "This account has been temporarily locked out, please try again later."),
+            Ar(Constants.Server, "LockedOutMessage", ".هذا الحساب تم تعليقه مؤقتا، يرجى المحاولة مرة أخرى لاحقا"),
+
+            En(Constants.Server, "PleaseConfirm", "Please Confirm"),
+            Ar(Constants.Server, "PleaseConfirm", "يرجى التأكيد"),
+
+            En(Constants.Server, "SignOutMessage0", "Would you like to sign out of {0}?"),
+            Ar(Constants.Server, "SignOutMessage0", "هل تود تسجيل خروجك من {0}؟"),
+
+            En(Constants.Server, "SignOutConfirmation", "Sign out confirmation"),
+            Ar(Constants.Server, "SignOutConfirmation", "تأكيد تسجيل الخروج"),
+
+            En(Constants.Server, "SignOutConfirmationMessage", "You are now signed out"),
+            Ar(Constants.Server, "SignOutConfirmationMessage", "تم تسجيل خروجك"),
+
+            En(Constants.Server, "ConfirmEmail", "Confirm Email"),
+            Ar(Constants.Server, "ConfirmEmail", "تأكيد البريد الإلكتروني"),
+
+            En(Constants.Server, "EmailConfirmationMessage", "Thank you for confirming your email"),
+            Ar(Constants.Server, "EmailConfirmationMessage", "شكرا على تأكيد عنوان بريدك الإلكتروني"),
+
+            En(Constants.Server, "TwoFactorAuthentication", "Two-Factor Authentication"),
+            Ar(Constants.Server, "TwoFactorAuthentication", "توثيق مزدوج العوامل"),
+
+            En(Constants.Server, "TwoFactorAuthenticationInstructions", "Your account is protected with an authenticator app. Enter your authenticator code below"),
+            Ar(Constants.Server, "TwoFactorAuthenticationInstructions", "حسابك محمي بتطبيق (authenticator)، أدخل الكود الذي يعرضه التطبيق في الحقل أدناه"),
+
+            En(Constants.Server, "AuthenticatorCode", "Authenticator Code"),
+            Ar(Constants.Server, "AuthenticatorCode", "الكود من تطبيق (authenticator)"),
+
+            En(Constants.Server, "InvalidAuthenticatorCode", "Invalid authenticator code."),
+            Ar(Constants.Server, "InvalidAuthenticatorCode", "الكود غير سليم."),
+
+            En(Constants.Server, "RememberThisDevice", "Remember this device"),
+            Ar(Constants.Server, "RememberThisDevice", "تذكر هذا الجهاز"),
+
+            En(Constants.Server, "TwoFactorAuthenticationRecoveryInstructions", "Don't have access to your authenticator device? To log in with a recovery code"),
+            Ar(Constants.Server, "TwoFactorAuthenticationRecoveryInstructions", "تطبيق (authenticator) ليس في متناول يدك؟ لتسجيل دخولك باستخدام كود استرداد "),
+
+            En(Constants.Server, "RecoveryCodeVerification", "Recovery Code Verification"),
+            Ar(Constants.Server, "RecoveryCodeVerification", "التحقق من كود الاسترداد"),
+
+            En(Constants.Server, "RecoveryCode", "Recovery Code"),
+            Ar(Constants.Server, "RecoveryCode", "كود الاسترداد"),
+
+            En(Constants.Server, "RecoveryCodeVerificationMessage", "You have requested to log in with a recovery code. This session will not be remembered until you provide an authenticator app code or disable 2-factor authentication and sign in again."),
+            Ar(Constants.Server, "RecoveryCodeVerificationMessage", "إذا كنت تود تسجيل دخولك باستخدام كود استرداد فإن دخولك لن يستمر لفترة ممتدة ما لم تأت بكود من تطبيق (authenticator) أو تقوم بتعطيل ميزة التوثيق المزدوج العوامل ومن ثم تعيد تسجيل دخولك مجددا."),
+
+            En(Constants.Server, "InvalidRecoveryCode", "Invalid recovery code."),
+            Ar(Constants.Server, "InvalidRecoveryCode", "كود الاسترداد غير سليم."),
+
+            
+            
+
 
 
             // Choice lists

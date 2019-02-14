@@ -4,7 +4,6 @@ using BSharp.Services.EmbeddedIdentityServer;
 using BSharp.Services.Utilities;
 using IdentityModel;
 using IdentityServer4.Models;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -53,7 +52,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Configure<IdentityOptions>(embeddedIdentitySection);
 
             // Add default identity setup for the embedded IdentityServer instance
-            services.AddIdentity<User, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>(opt =>
+            {
+                // When the server is online, the system should require a a valid email
+                // opt.SignIn.RequireConfirmedEmail = config["IsOnline"]?.ToLower() == "true";
+                opt.SignIn.RequireConfirmedEmail = true;
+            })
                 .AddDefaultTokenProviders()
                 // Use the identity context database
                 .AddEntityFrameworkStores<IdentityContext>();
@@ -125,11 +129,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var googleClientSecret = googleSection["ClientSecret"];
             if (!string.IsNullOrWhiteSpace(googleClientId))
             {
-                services.Configure<GoogleOptions>(googleSection);
                 authBuilder.AddGoogle("Google", "Google", opt =>
                 {
-                    // opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
                     opt.ClientId = googleClientId;
                     opt.ClientSecret = googleClientSecret;
                 });
@@ -137,11 +138,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var microsoftSection = embeddedIdentitySection.GetSection("Microsoft");
             var microsoftClientId = microsoftSection["ClientId"];
+            var microsoftClientSecret = microsoftSection["ClientSecret"];
             if (!string.IsNullOrWhiteSpace(microsoftClientId))
             {
-                // TODO: Add Support for Microsoft
-                //services.Configure<MicrosoftAccountOptions>(microsoftSection);
-                //authBuilder.AddMicrosoftAccount();
+                authBuilder.AddMicrosoftAccount("Microsoft", "Microsoft", opt =>
+                {
+                    opt.ClientId = microsoftClientId;
+                    opt.ClientSecret = microsoftClientSecret;
+                });
             }
 
             return services;

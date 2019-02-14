@@ -209,32 +209,19 @@ ngb-tabset li.nav-item .small {
 }
 
 .b-banner {
-  display: none;
+  display: flex;
+  height: 100vh;
+  background-image: url('/assets/background.jpg');
+  background-position: 50%;
+  background-size: cover;
 }
 
-@media only screen and (min-width: 1200px) {
-  // this optimization ensures that the large banner image is only loaded when it is
-  // displayed on large screens, saving the bandwidth and data usage on mobile phones
-  .b-banner {
-    display: flex;
-    height: 100vh;
-    /*background-image: url('assets/images/banner.jpg');*/
-    background-position: 50%;
-    background-size: cover;
-    text-align: center !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  .b-marketing-banner-text {
-    width: 100%;
-    color: white;
-    font-size: 3rem;
-    letter-spacing: -1px;
-    background: rgb(0, 0, 0);
-    background: rgba(0, 0, 0, 0.7);
-    padding: 10px;
-  }
+.b-banner2 {
+  display: flex;
+  height: 100vh;
+  background-image: url('/assets/background2.jpg');
+  background-position: 50%;
+  background-size: cover;
 }
 
 // if its parent is a column flex box, it occupies the rest of the screen

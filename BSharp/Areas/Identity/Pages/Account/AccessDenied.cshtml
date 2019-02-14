@@ -1,10 +1,11 @@
 ﻿@page "/identity/access-denied"
+@inject IViewLocalizer Localizer
 @model AccessDeniedModel
 @{
-    ViewData["Title"] = "Access denied";
+    ViewData["Title"] = Localizer["AccessDenied"];
 }
 
-<header>
+<header class="text-center b-auth-title">
     <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">You do not have access to this resource.</p>
+    <p class="text-danger">@Localizer["AccessDeniedMessage"]</p>
 </header>

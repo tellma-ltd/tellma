@@ -1,10 +1,16 @@
 ﻿@page "/identity/sign-out"
+@inject IViewLocalizer Localizer
 @model LogoutModel
 @{
-    ViewData["Title"] = "Sign out";
+    ViewData["Title"] = Localizer["SignOut"];
 }
 
 <header>
-    <h1>@ViewData["Title"]</h1>
-    <p>You have successfully logged out of the application.</p>
+    <h4 class="b-auth-title">@Localizer["PleaseConfirm"]</h4>
+    <p class="text-center">@Localizer["SignOutMessage0", Localizer["AppName"]]</p>
+
+    <form method="post">
+        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-sign-out-alt 
+          @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "fa-flip-horizontal": "")"></i>&nbsp;&nbsp;@Localizer["SignOut"]</button>
+    </form>
 </header>

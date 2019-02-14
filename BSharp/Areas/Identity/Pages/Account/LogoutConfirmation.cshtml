@@ -1,0 +1,15 @@
+﻿@page "/identity/sign-out-confirmation"
+@inject IViewLocalizer Localizer
+@model LogoutModel
+@{
+    ViewData["Title"] = Localizer["SignOutConfirmation"];
+}
+
+<div class="text-center pt-3">
+    <div class="alert-success p-2">
+        <i class="fas fa-check"></i>&nbsp;
+        <span>
+            @Localizer["SignOutConfirmationMessage"]
+        </span>
+    </div>
+</div>

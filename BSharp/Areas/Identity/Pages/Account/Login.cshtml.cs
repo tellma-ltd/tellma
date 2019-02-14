@@ -37,15 +37,17 @@ namespace BSharp.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = nameof(RequiredAttribute))]
+            [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
+            [Display(Name = "Email")]
             public string Email { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = nameof(RequiredAttribute))]
             [DataType(DataType.Password)]
+            [Display(Name = "Password")]
             public string Password { get; set; }
 
-            [Display(Name = "Remember me?")]
+            [Display(Name = "RememberMe")]
             public bool RememberMe { get; set; }
         }
 

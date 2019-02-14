@@ -36,7 +36,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                         scope.ServiceProvider.GetRequiredService<IConfiguration>(), adminDbName: "BSharp-Scenario-01");
 
                     services.AddSingleton<IConfiguration>(config);
-                    new Startup(config).ConfigureServices(services);
+                    new Startup(config, null).ConfigureServices(services);
                 }
 
                 //////////// Setup

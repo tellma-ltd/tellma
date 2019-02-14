@@ -1,12 +1,19 @@
 ﻿@page "/identity/confirm-email"
+@inject IViewLocalizer Localizer
 @model ConfirmEmailModel
 @{
-    ViewData["Title"] = "Confirm email";
+    ViewData["Title"] = Localizer["ConfirmEmail"];
 }
 
-<h1>@ViewData["Title"]</h1>
-<div>
-    <p>
-        Thank you for confirming your email.
-    </p>
+<div class="text-center pt-3 pb-3">
+    <div class="alert-success p-2">
+        <i class="fas fa-check"></i>&nbsp;
+        <span>
+            @Localizer["EmailConfirmationMessage"]
+        </span>
+    </div>
 </div>
+
+<a class="btn btn-primary w-100" asp-page="./Login">
+    <i class="fas fa-sign-in-alt @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "fa-flip-horizontal": "")"></i>&nbsp;&nbsp;@Localizer["SignIn"]
+</a>
