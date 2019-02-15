@@ -1,4 +1,23 @@
-﻿@inject IViewLocalizer Localizer
+﻿@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Http.Extensions
+
+@inject IViewLocalizer Localizer
+
+@{
+    var httpContext = ViewContext.HttpContext;
+    var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
+    var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
+
+    // TODO: Load actual available languages IStringLocalizerFactory
+    string[] cultureNames = { "en", "ar" };
+    var cultureInfos = cultureNames.Select(e => new CultureInfo(e));
+    var culturesList = cultureInfos.Select(e => new SelectListItem
+    {
+        Value = e.Name,
+        Text = e.NativeName,
+        Selected = e.Name == currentCulture.Name
+    });
+}
 
 <!DOCTYPE html>
 <html class="h-100">
@@ -12,24 +31,24 @@
 </head>
 <body class="h-100 bg-light b-banner justify-content-center @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "b-rtl": "")">
     @*<header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
-                <div class="container">
-                    <a class="navbar-brand" asp-area="" asp-page="/Error">BSharp</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                        <partial name="_LoginPartial" />
-                        <ul class="navbar-nav flex-grow-1">
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
-                            </li>
-                        </ul>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+                    <div class="container">
+                        <a class="navbar-brand" asp-area="" asp-page="/Error">BSharp</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                            <partial name="_LoginPartial" />
+                            <ul class="navbar-nav flex-grow-1">
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            </nav>
-    </header>*@
+                </nav>
+        </header>*@
     <div class="h-100 d-flex flex-column align-items-center p-0 pt-sm-5">
 
         <partial name="_CookieConsentPartial" />
@@ -66,11 +85,9 @@
                     &nbsp;|&nbsp;
                     <a asp-area="" asp-page="/TermsOfService">@Localizer["TermsOfService"]</a>
                     &nbsp;|
-                    <form class="d-inline" method="post">
-                        <select class="text-primary bg-white" style="border: 1px solid white">
-                            <option value="en" selected>English</option>
-                            <option value="ar">العربية</option>
-                        </select>
+
+                    <form class="d-inline" asp-area="" asp-page="/SetCulture" asp-route-currentUrl="@currentUrl" method="post">
+                        <select asp-items="culturesList" name="culture" class="text-primary bg-white" style="border: 1px solid white" onchange="this.form.submit()"></select>
                     </form>
                 </div>
             </footer>
