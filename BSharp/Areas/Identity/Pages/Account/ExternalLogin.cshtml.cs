@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Localization;
 
 namespace BSharp.Areas.Identity.Pages.Account
 {
@@ -19,33 +20,22 @@ namespace BSharp.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly IStringLocalizer<ExternalLoginModel> _localizer;
 
         public ExternalLoginModel(
             SignInManager<User> signInManager,
             UserManager<User> userManager,
-            ILogger<ExternalLoginModel> logger)
+            ILogger<ExternalLoginModel> logger,
+            IStringLocalizer<ExternalLoginModel> localizer)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _localizer = localizer;
         }
-
-        [BindProperty]
-        public InputModel Input { get; set; }
-
-        public string LoginProvider { get; set; }
-
-        public string ReturnUrl { get; set; }
 
         [TempData]
         public string ErrorMessage { get; set; }
-
-        public class InputModel
-        {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; }
-        }
 
         public IActionResult OnGetAsync()
         {
@@ -65,13 +55,13 @@ namespace BSharp.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (remoteError != null)
             {
-                ErrorMessage = $"Error from external provider: {remoteError}";
+                ErrorMessage = _localizer["Error_ErrorFromExternalProvider0", remoteError];
                 return RedirectToPage("./Login", new {ReturnUrl = returnUrl });
             }
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information.";
+                ErrorMessage = _localizer["Error_LoadingExternalLoginInformation"];
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
@@ -88,54 +78,60 @@ namespace BSharp.Areas.Identity.Pages.Account
             }
             else
             {
-                // If the user does not have an account, then ask the user to create an account.
-                ReturnUrl = returnUrl;
-                LoginProvider = info.LoginProvider;
-                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+                // If we don't find a matching login we try to match the email claim to one of the existing users
+                string email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                if(email == null)
                 {
-                    Input = new InputModel
-                    {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    };
+                    ErrorMessage = _localizer["Error_EmailNotProvidedByExternalSignIn"];
+                    return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
                 }
-                return Page();
-            }
-        }
 
-        public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
-        {
-            returnUrl = returnUrl ?? Url.Content("~/");
-            // Get the information about the user from the external login provider
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                ErrorMessage = "Error loading external login information during confirmation.";
-                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
-            }
-
-            if (ModelState.IsValid)
-            {
-                var user = new User { UserName = Input.Email, Email = Input.Email };
-                var result = await _userManager.CreateAsync(user);
-                if (result.Succeeded)
+                var user = await _userManager.FindByEmailAsync(email);
+                if(user == null)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
-                    if (result.Succeeded)
+                    ErrorMessage = _localizer["Error_AUserWithEmail0CouldNotBeFound", email];
+                    return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                }
+
+                if(!await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    var emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var confirmEmailResult = await _userManager.ConfirmEmailAsync(user, emailConfirmationToken);
+
+                    if(!confirmEmailResult.Succeeded)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                        return LocalRedirect(returnUrl);
+                        ErrorMessage = _localizer["Error_ConfirmingYourEmail"];
+                        string errors = string.Join(", ", confirmEmailResult.Errors.Select(e => e.Description));
+                        _logger.LogError($"Failed to confirm email for user with ID '{user.Id}' and email '{user.Email}', errors: " + errors);
+
+                        return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
                     }
                 }
-                foreach (var error in result.Errors)
+
+                var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                if (!addLoginResult.Succeeded)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ErrorMessage = _localizer["Error_AddingLoginForUserWithEmail0", email];
+                    return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                }
+
+                result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+                    return LocalRedirect(returnUrl);
+                }
+                if (result.IsLockedOut)
+                {
+                    return RedirectToPage("./Lockout");
+                }
+                else
+                {
+                    ErrorMessage = _localizer["Error_TryingToSignYouInWithExternalProvider"];
+                    _logger.LogError($"Failed to log user with ID '{user.Id}' and email '{user.Email}'");
+                    return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
                 }
             }
-
-            LoginProvider = info.LoginProvider;
-            ReturnUrl = returnUrl;
-            return Page();
         }
     }
 }

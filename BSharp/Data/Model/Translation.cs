@@ -857,7 +857,29 @@ namespace BSharp.Data.Model
             En(Constants.Server, "InvalidRecoveryCode", "Invalid recovery code."),
             Ar(Constants.Server, "InvalidRecoveryCode", "كود الاسترداد غير سليم."),
 
-            
+            En(Constants.Server, "Error_ErrorFromExternalProvider0", "Error from external provider: {0}"),
+            Ar(Constants.Server, "Error_ErrorFromExternalProvider0", "رسالة خطأ من مسجل الدخول الخارجي"),
+
+            En(Constants.Server, "Error_LoadingExternalLoginInformation", "Error loading external login information."),
+            Ar(Constants.Server, "Error_LoadingExternalLoginInformation", "حدث خطأ لدى تحميل معلومات مسجل الدخول الخارجي"),
+
+            En(Constants.Server, "Error_EmailNotProvidedByExternalSignIn", "The email was not provided by the external sign-in"),
+            Ar(Constants.Server, "Error_EmailNotProvidedByExternalSignIn", "مسجل الدخول الخارجي لم يفصح عن عنوان بريدك الإلكتروني"),
+
+            En(Constants.Server, "Error_AUserWithEmail0CouldNotBeFound", "A user with email '{0}' could not be found"),
+            Ar(Constants.Server, "Error_AUserWithEmail0CouldNotBeFound", "لم يتم العثور على حساب مستخدم عنوان بريده الإكتروني ({0})"),
+
+            En(Constants.Server, "Error_AddingLoginForUserWithEmail0", "Unexpected error occurred adding external login for user with email '{0}'."),
+            Ar(Constants.Server, "Error_AddingLoginForUserWithEmail0", "حدث خطأ غير متوقع عند تعريف مسجل الدخول الخارجي للمستخدم ذي عنوان البريد الإكتروني ({0})"),
+
+            En(Constants.Server, "Error_TryingToSignYouInWithExternalProvider", "An unknown error occurred while trying to sign you in using the external provider"),
+            Ar(Constants.Server, "Error_TryingToSignYouInWithExternalProvider", "حدث خطأ مجهول لدى تسجيل دخولك عن طريق مسجل الدخول الخارجي"),
+
+            En(Constants.Server, "Error_ConfirmingYourEmail", "An error occurred while confirming your email"),
+            Ar(Constants.Server, "Error_ConfirmingYourEmail", "حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني"),
+
+            En(Constants.Server, "Error_InvalidLoginAttempt", "Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox"),
+            Ar(Constants.Server, "Error_InvalidLoginAttempt", "تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد"),
             
 
 

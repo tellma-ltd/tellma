@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Localization;
 
 namespace BSharp.Areas.Identity.Pages.Account
 {
@@ -18,11 +19,13 @@ namespace BSharp.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IStringLocalizer<LoginModel> _localizer;
 
-        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger, IStringLocalizer<LoginModel> localizer)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _localizer = localizer;
         }
 
         [BindProperty]
@@ -93,10 +96,18 @@ namespace BSharp.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    // Clear the existing external cookie to ensure a clean login process
+                    await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+                    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+                    ModelState.AddModelError(string.Empty, _localizer["Error_InvalidLoginAttempt"]);
                     return Page();
                 }
             }
+
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             // If we got this far, something failed, redisplay form
             return Page();

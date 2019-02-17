@@ -51,7 +51,7 @@ namespace BSharp.Services.EmbeddedIdentityServer
                 AllowAccessTokensViaBrowser = true,
 
                 RedirectUris = { $"{uri}sign-in-callback", $"{uri}assets/silent-refresh-callback.html" },
-                PostLogoutRedirectUris = { $"{uri}landing" },
+                PostLogoutRedirectUris = { $"{uri}welcome" },
                 AllowedCorsOrigins = { uri },
 
                 RequireConsent = false,
