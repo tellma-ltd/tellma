@@ -1,22 +1,120 @@
-﻿@{
-    Layout = "/Pages/Shared/_Layout.cshtml";
+﻿@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Http.Extensions
+@using Microsoft.Extensions.Options
+@using BSharp.Services.EmbeddedIdentityServer
+
+@inject IViewLocalizer Localizer
+@inject UserManager<User> UserManager
+@inject IOptions<ClientStoreConfiguration> Config
+
+@{
+    var httpContext = ViewContext.HttpContext;
+    var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
+    var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
+
+    // TODO: Load actual available languages IStringLocalizerFactory
+    string[] cultureNames = { "en", "ar" };
+    var cultureInfos = cultureNames.Select(e => new CultureInfo(e));
+    var culturesList = cultureInfos.Select(e => new SelectListItem
+    {
+        Value = e.Name,
+        Text = e.NativeName,
+        Selected = e.Name == currentCulture.Name
+    });
 }
 
-<h1>Manage your account</h1>
+<!DOCTYPE html>
+<html class="h-100">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @Localizer["AppName"]</title>
+    <link rel="stylesheet" href="~/lib/fontawesome-free-5.7.2-web/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="h-100 bg-light @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "b-rtl": "")">
+    <header>
+        <nav class="navbar navbar-dark b-dark navbar-expand-md p-0">
+            <a class="b-brand-link b-navbar-button h-100" href="@Config.Value.WebClientUri">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>
+                                <img src="/favicon.ico" width="30">
+                            </th>
+                            <th>
+                                <span style="font-size:120%">
+                                    <span class="font-weight-normal text-light">&nbsp;&nbsp;@Localizer["AppName"]</span><span class="font-weight-bold b-brand">ERP</span>
+                                </span>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </a>
 
-<div>
-    <h4>Change your account settings</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
-            <partial name="_ManageNav" />
-        </div>
-        <div class="col-md-9">
-            @RenderBody()
-        </div>
-    </div>
-</div>
+            <button class="navbar-toggler ml-2 mr-2" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between h-100">
+                <ol class="nav navbar-nav h-100">
+                    <li class="nav-item h-100">
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./Index">@Localizer["Menu_Profile"]</a>
+                    </li>
+                    <li class="nav-item h-100">
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./ChangePassword">@Localizer["Menu_Password"]</a>
+                    </li>
+                    <li class="nav-item h-100">
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./ExternalLogins">@Localizer["Menu_ExternalSignIns"]</a>
+                    </li>
+                    <li class="nav-item h-100">
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./TwoFactorAuthentication">@Localizer["Menu_TwoFactorAuthentication"]</a>
+                    </li>
+                    <li class="nav-item h-100">
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" href="@Config.Value.WebClientUri">@Localizer["GoTo0", Localizer["AppName"]]</a>
+                    </li>
+                </ol>
 
-@section Scripts {
+                <ol class="nav navbar-nav p-0 h-100">
+                    <li class="nav-item h-100 dropdown">
+                        <button class="w-100 d-flex b-navbar-button b-no-arrow pl-3 pr-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <div class="h-100 d-flex flex-column justify-content-center">
+                                @UserManager.GetUserName(User)
+                            </div>
+                        </button>
+                        <div class="dropdown-menu shadow m-0  @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "": "dropdown-menu-right")" aria-labelledby="dropdownMenuButton">
+                            @if (cultureInfos.Count() > 1)
+                            {
+                                <form method="post" asp-area="" asp-page="/SetCulture" asp-route-currentUrl="@currentUrl">
+                                    @foreach (var culture in cultureInfos.Where(e => e.Name != currentCulture.Name))
+                                    {
+                                        <button type="submit" class="dropdown-item btn-light" name="culture" value="@culture.Name">
+                                            @culture.NativeName
+                                        </button>
+                                    }
+
+                                </form>
+                                <hr />
+                            }
+                            <form class="form-inline h-100" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Login", new { area = "Identity" })" method="get">
+                                <button type="submit" class="dropdown-item btn-light">@Localizer["SignOut"]</button>
+                            </form>
+                        </div>
+                    </li>
+
+                </ol>
+            </div>
+        </nav>
+    </header>
+    <main class="container p-4">
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
     @RenderSection("Scripts", required: false)
-}
+</body>
+</html>

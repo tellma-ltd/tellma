@@ -79,10 +79,10 @@
             <button type="button" class="dropdown-item btn-light" routerLink="/welcome" (click)="onCollapse()">
               {{ 'WelcomePage' | translate }}
             </button>
-            <button type="button" class="dropdown-item btn-light" (click)="onMyAccount();onCollapse()">
+            <button type="button" class="dropdown-item btn-light" (click)="onMySystemAccount();onCollapse()">
               {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
             </button>
-            <button type="button" class="dropdown-item btn-light" (click)="onMyAccount();onCollapse()">
+            <button type="button" class="dropdown-item btn-light" (click)="onMyCompanyAccount();onCollapse()">
               {{ 'My0Account' | translate: { placeholder: companyName } }}
             </button>
             <button type="button" class="dropdown-item btn-light" (click)="onSignOut();onCollapse()">

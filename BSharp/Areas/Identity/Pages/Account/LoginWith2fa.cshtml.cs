@@ -69,7 +69,7 @@ namespace BSharp.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl = returnUrl ?? Url.Page("/Account/Manage/Index", new { area = "Identity" });
 
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)

@@ -1,4 +1,5 @@
 ﻿using BSharp.Services.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
@@ -549,8 +550,8 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "Cancel", "Cancel"),
             Ar(Constants.Shared, "Cancel", "إلغاء"),
 
-            En(Constants.Client, "Save", "Save"),
-            Ar(Constants.Client, "Save", "حفظ"),
+            En(Constants.Shared, "Save", "Save"),
+            Ar(Constants.Shared, "Save", "حفظ"),
 
             En(Constants.Client, "Proceed", "Proceed"),
             Ar(Constants.Client, "Proceed", "متأكد"),
@@ -839,8 +840,8 @@ namespace BSharp.Data.Model
             En(Constants.Server, "InvalidAuthenticatorCode", "Invalid authenticator code."),
             Ar(Constants.Server, "InvalidAuthenticatorCode", "الكود غير سليم."),
 
-            En(Constants.Server, "RememberThisDevice", "Remember this device"),
-            Ar(Constants.Server, "RememberThisDevice", "تذكر هذا الجهاز"),
+            En(Constants.Server, "RememberThisDevice", "Remember this browser"),
+            Ar(Constants.Server, "RememberThisDevice", "تذكر هذا المتصفح"),
 
             En(Constants.Server, "TwoFactorAuthenticationRecoveryInstructions", "Don't have access to your authenticator device? To log in with a recovery code"),
             Ar(Constants.Server, "TwoFactorAuthenticationRecoveryInstructions", "تطبيق (authenticator) ليس في متناول يدك؟ لتسجيل دخولك باستخدام كود استرداد "),
@@ -880,6 +881,259 @@ namespace BSharp.Data.Model
 
             En(Constants.Server, "Error_InvalidLoginAttempt", "Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox"),
             Ar(Constants.Server, "Error_InvalidLoginAttempt", "تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد"),
+
+
+            En(Constants.Shared, "GoTo0", "Go to {0}"),
+            Ar(Constants.Shared, "GoTo0", "ذهاب إلى {0}"),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // Identity Management
+            
+            En(Constants.Server, "Menu_Profile", "Profile"),
+            Ar(Constants.Server, "Menu_Profile", "الملف الشخصي"),
+
+            En(Constants.Server, "Menu_Password", "Password"),
+            Ar(Constants.Server, "Menu_Password", "كلمة المرور"),
+
+            En(Constants.Server, "Menu_ExternalSignIns", "External Sign-ins"),
+            Ar(Constants.Server, "Menu_ExternalSignIns", "تسجيل الدخول الخارجي"),
+
+            En(Constants.Server, "Menu_TwoFactorAuthentication", "2FA"),
+            Ar(Constants.Server, "Menu_TwoFactorAuthentication", "التوثيق مزدوج العوامل"),
+
+            En(Constants.Server, "PhoneNumber", "Phone Number"),
+            Ar(Constants.Server, "PhoneNumber", "رقم الهاتف"),
+
+            En(Constants.Server, "UserName", "User Name"),
+            Ar(Constants.Server, "UserName", "اسم المستخدم"),
+
+            En(Constants.Server, "YourProfileHasBeenUpdated", "Your profile has been updated."),
+            Ar(Constants.Server, "YourProfileHasBeenUpdated", "تم تحديث حسابك."),
+
+            En(Constants.Server, "ChangePassword", "Change Password"),
+            Ar(Constants.Server, "ChangePassword", "تغير كلمة المرور"),
+
+            En(Constants.Server, "CurrentPassword", "Current Password"),
+            Ar(Constants.Server, "CurrentPassword", "كلمة المرور الحالية"),
+
+            En(Constants.Server, "NewPassword", "New Password"),
+            Ar(Constants.Server, "NewPassword", "كلمة المرور الجديدة"),
+
+            En(Constants.Server, "ConfirmNewPassword", "Confirm New Password"),
+            Ar(Constants.Server, "ConfirmNewPassword", "تأكيد كلمة المرور الجديدة"),
+
+            En(Constants.Server, "YourPasswordHasBeenChanged", "Your password has been changed."),
+            Ar(Constants.Server, "YourPasswordHasBeenChanged", "تم تحديث كلمة مرورك."),
+
+            En(Constants.Server, "RegisteredExternalSignIns", "Your External Sign-ins"),
+            Ar(Constants.Server, "RegisteredExternalSignIns", "مسجلو دخولك الخارجيون"),
+            
+            En(Constants.Server, "AddAnExternalSignIn", "Add an External Sign-in"),
+            Ar(Constants.Server, "AddAnExternalSignIn", "أضف مسجل دخول خارجي"),
+
+            En(Constants.Server, "Remove0SignInFromYourAccount", "Remove {0} sign in from your account"),
+            Ar(Constants.Server, "Remove0SignInFromYourAccount", "إزالة {0} كمسجل دخول خارجي إلى حسابك"),
+
+            En(Constants.Server, "SignInUsingYour0Account", "Sign in using your {0} account"),
+            Ar(Constants.Server, "SignInUsingYour0Account", "سجل دخولك عن طريق حسابك عند {0}"),
+
+            En(Constants.Server, "TheExternalSignInWasAdded", "The external login was added."),
+            Ar(Constants.Server, "TheExternalSignInWasAdded", "تم إضافة مسجل الدخول الخارجي."),
+
+            En(Constants.Server, "TheExternalSignInWasRemoved", "Sign in using your {0} account>"),
+            Ar(Constants.Server, "TheExternalSignInWasRemoved", "تم إزالة مسجل الدخول الخارجي."),
+
+            En(Constants.Server, "SetPassword", "Set Password"),
+            Ar(Constants.Server, "SetPassword", "تحديد كلمة المرور"),
+
+            En(Constants.Server, "SetPasswordMessage", "You do not have a local username/password for this application. Add a local password so you can log in without an external sign-in provider."),
+            Ar(Constants.Server, "SetPasswordMessage", "ليس لديك اسم مستخدم وكلمة مرور خاصين بهذا التطبيق، أضف كلمة مرور حتى يتسنى لك تسجيل دخولك من دون مسجل دخول خارجي."),
+
+            En(Constants.Server, "YourPasswordHasBeenSet", "Your password has been set."),
+            Ar(Constants.Server, "YourPasswordHasBeenSet", "تم تحديد كلمة مرورك."),
+
+            En(Constants.Server, "ConfigureAuthenticatorApp", "Configure Authenticator App"),
+            Ar(Constants.Server, "ConfigureAuthenticatorApp", "ضبط تطبيق (Authenticator)"),
+
+            En(Constants.Server, "ConfigureAuthenticatorIntro", "To use an authenticator app go through the following steps:"),
+            Ar(Constants.Server, "ConfigureAuthenticatorIntro", "لاستخدام تطبيق (authenticator) قم باتباع الخطوات التالية:"),
+
+            En(Constants.Server, "ConfigureAuthenticatorStep1", "Download a two-factor authenticator app like Google Authenticator:"),
+            Ar(Constants.Server, "ConfigureAuthenticatorStep1", "حمل تطبيقا للتوثيق المزدوج العوامل، مثلا (Google Authenticator):"),
+
+            En(Constants.Server, "ConfigureAuthenticatorStep2", "Scan the QR Code or enter the following key into your two factor authenticator app. Spaces and casing do not matter:"),
+            Ar(Constants.Server, "ConfigureAuthenticatorStep2", "قم بمسح الباركود أدناه أو قم بإدخال الكود التالي في تطبيق (authenticator)، حجم الرموز لا يؤثر وكذلك المسافات بينها:"),
+
+            En(Constants.Server, "ConfigureAuthenticatorStep3", "Once you have scanned the QR code or input the key above, your authenticator app will provide you with a secret code. Enter the code in the confirmation box below."),
+            Ar(Constants.Server, "ConfigureAuthenticatorStep3", "بعد مسح الباركود أو إدخال الكود، سيعرض لك التطبيق رقما سريا للتحقق، قم بإدخاله في الحقل أدناه."),
+            
+            En(Constants.Server, "Android", "Android"),
+            Ar(Constants.Server, "Android", "الآندرويد"),
+
+            En(Constants.Server, "iOS", "iOS"),
+            Ar(Constants.Server, "iOS", "الآيفون"),
+
+            En(Constants.Server, "Verify", "Verify"),
+            Ar(Constants.Server, "Verify", "تحقق"),
+
+            En(Constants.Server, "VerificationCode", "Verification Code"),
+            Ar(Constants.Server, "VerificationCode", "رقم التحقق"),
+
+            En(Constants.Server, "VerificationCodeInvalid", "Verification code is invalid."),
+            Ar(Constants.Server, "VerificationCodeInvalid", "رقم التحقق غير صحيح"),
+
+            En(Constants.Server, "YourAuthenticatorAppHasBeenVerified", "Your authenticator app has been verified."),
+            Ar(Constants.Server, "YourAuthenticatorAppHasBeenVerified", "تم التحقق من تطبيق (authenticator) خاصتك"),
+
+            En(Constants.Server, "ResetAuthenticatorKey", "Reset Authenticator Key"),
+            Ar(Constants.Server, "ResetAuthenticatorKey", "إعادة تعيين مفتاح الـ(Authenticator)"),
+
+            En(Constants.Server, "ResetAuthenticatorKeyWarningTitle", "If you reset your authenticator key your authenticator app will not work until you reconfigure it."),
+            Ar(Constants.Server, "ResetAuthenticatorKeyWarningTitle", "إذا أعدت تعيين هذا المفتاح، لن يعمل تطبيق (authenticator) الخاص بك ما لم تقم بإعادة ضبطه مجددا"),
+
+            En(Constants.Server, "ResetAuthenticatorKeyWarningBody", "This process disables 2FA until you verify your authenticator app. If you do not complete your authenticator app configuration you may lose access to your account."),
+            Ar(Constants.Server, "ResetAuthenticatorKeyWarningBody", "هذه العملية تقوم متعطيل التحقيق مزدوج العوامل حتى تقوم بضبط تطبيق (authenticator) مرة أخرى، إذا لم تقم بعملية الضبط على الفور قد تفقد إمكانية الدخول باستخدام هذا الحساب"),
+
+            En(Constants.Server, "YourAuthenticatorAppKeyHasBeenReset", "Your authenticator app key has been reset, you will need to configure your authenticator app using the new key."),
+            Ar(Constants.Server, "YourAuthenticatorAppKeyHasBeenReset", "تم إعادة تعيين مفتاح تطبيق (authenticator)، عليك بإعادة ضبط التطبيق حالا باستخدام المفتاح الجديد"),
+
+            En(Constants.Server, "DisableTwoFactorAuthentication", "Disable Two-Factor Authentication (2FA)"),
+            Ar(Constants.Server, "DisableTwoFactorAuthentication", "تعطيل التوثيق مزدوج العوامل"),
+
+            En(Constants.Server, "DisableTwoFactorAuthenticationTitle", "This action only disables 2FA."),
+            Ar(Constants.Server, "DisableTwoFactorAuthenticationTitle", "هذا الأمر يقوم بتعطيل التوثيق مزدوج العوامل"),
+
+            En(Constants.Server, "DisableTwoFactorAuthenticationBody", "Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key used in an authenticator app"),
+            Ar(Constants.Server, "DisableTwoFactorAuthenticationBody", "تعطيل التوثيق مزدوج العوامل لا يقوم بإعادة تعيين مفتاح الـ(authenticator) خاصتك، لإعادة تعيين المفتاح"),
+
+            En(Constants.Server, "TwoFactorAuthenticatorHasBeenDisabled", "2FA has been disabled. You can re-enable 2FA by setting up an authenticator app"),
+            Ar(Constants.Server, "TwoFactorAuthenticatorHasBeenDisabled", "تم تعطيل التوثيق مزدوج العوامل، لإعادة تشغيله ثقم بضبط تطبيق (authenticator)"),
+
+            En(Constants.Server, "GenerateTwoFactorAuthenticationRecoveryCodes", "Generate Two-Factor Authentication (2FA) Recovery Codes"),
+            Ar(Constants.Server, "GenerateTwoFactorAuthenticationRecoveryCodes", "توليد أكواد استرداد للتوثيق مزدوج العوامل"),
+
+            En(Constants.Server, "GenerateRecoveryCodes", "Generate Recovery Codes"),
+            Ar(Constants.Server, "GenerateRecoveryCodes", "توليد أكواد الاسترداد"),
+
+            En(Constants.Server, "RecoveryCodesWarningTitle", "Put these codes in a safe place."),
+            Ar(Constants.Server, "RecoveryCodesWarningTitle", "احتفظ بهذه الأكواد في مكان آمن"),
+
+            En(Constants.Server, "RecoveryCodesWarningBody", "If you lose your authenticator app and you don't have the recovery codes you will lose access to your account."),
+            Ar(Constants.Server, "RecoveryCodesWarningBody", "إذا فقدت جهازك ذا تطبيق (authenticator) وفقدت معه هذه الأكواد لن تتمكن من تسجيل دخولك على هذا الحساب مرة أخرى."),
+
+            En(Constants.Server, "YouHaveGeneratedNewRecoveryCodes", "You have generated new recovery codes."),
+            Ar(Constants.Server, "YouHaveGeneratedNewRecoveryCodes", "لقد قمت بتوليد أكواد استرداد جديدة"),
+
+            En(Constants.Server, "RecoveryCodes", "Recovery Codes"),
+            Ar(Constants.Server, "RecoveryCodes", "أكواد الاسترداد"),
+
+            En(Constants.Server, "Page_TwoFactorAuthentication", "Two-Factor Authentication (2FA)"),
+            Ar(Constants.Server, "Page_TwoFactorAuthentication", "التوثيق مزدوج العوامل"),
+
+            En(Constants.Server, "RecoveryCodesLeft0", "Remaining recovery codes: {0}"),
+            Ar(Constants.Server, "RecoveryCodesLeft0", "عدد أكواد الاسترداد المتبقية: {0}"),
+
+            En(Constants.Server, "YouShouldGenerateNewRecoveryCodes", "You should generate a new set of recovery codes."),
+            Ar(Constants.Server, "YouShouldGenerateNewRecoveryCodes", "عليك بتوليد مجموعة جديدة من أكواد الاسترداد،"),
+
+            En(Constants.Server, "AuthenticatorApp", "Authenticator App"),
+            Ar(Constants.Server, "AuthenticatorApp", "تطبيق (Authenticator)"),
+
+            En(Constants.Server, "ForgetThisBrowser", "Forget This Browser"),
+            Ar(Constants.Server, "ForgetThisBrowser", "تناسى المتصفح الحالي"),
+
+            En(Constants.Server, "TheCurrentBrowserHasBeenForgotten", "The current browser has been forgotten. When you login again from this browser you will be prompted for your 2fa code."),
+            Ar(Constants.Server, "TheCurrentBrowserHasBeenForgotten", "تم تناسي المتصفح الحالي، عند تسجيل دخولك من هذا المتصفح في المرة المقبلة سيطالبك النظام بالكود من تطبيق (authenticator)."),
+
+            En(Constants.Server, "Button_DisableTwoFactorAuthentication", "Disable 2FA"),
+            Ar(Constants.Server, "Button_DisableTwoFactorAuthentication", "تعطيل التوثيق مزدوج العوامل"),
+
+            En(Constants.Server, "ResetRecoveryCodes", "Reset Recovery Codes"),
+            Ar(Constants.Server, "ResetRecoveryCodes", "إعادة توليد أكواد الاسترداد"),
+
+
+
+
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.DefaultError), "An unknown failure has occurred."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.DefaultError), "حدث خطأ غير معروف."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.PasswordMismatch), "Incorrect password."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.PasswordMismatch), "كلمة المرور غير صحيحة."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.InvalidToken), "Invalid token."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.InvalidToken), "الرمز غير سليم."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.LoginAlreadyAssociated), "A user with this login already exists."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.LoginAlreadyAssociated), "مسجل الدخول الخارجي هذا مرتبط بمستخدم حالي."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.InvalidUserName), "User name '{0}' is invalid, can only contain letters or digits."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.InvalidUserName), "اسم المستخدم ({0}) غير سليم، يجب أن يحتوي فقط على حروف وأرقام."),
+
+            En(Constants.Server, "Identity_" + nameof(IdentityErrorDescriber.InvalidEmail), "Email '{0}' is invalid."),
+            Ar(Constants.Server, "Identity_" + nameof(IdentityErrorDescriber.InvalidEmail), "عنوان البريد الإلكتروني ({0}) غير سليم."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.DuplicateUserName), "User name '{0}' is already taken."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.DuplicateUserName), "اسم المستخدم ({0}) محجوز."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.DuplicateEmail), "Email '{0}' is already taken."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.DuplicateEmail), "عنوان البريد الإلكتروني ({0}) محجوز."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.InvalidRoleName), "Role name '{0}' is invalid."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.InvalidRoleName), "اسم الدور ({0}) غير سليم."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.DuplicateRoleName), "Role name '{0}' is already taken."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.DuplicateRoleName), "اسم الدور ({0}) محجوز."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.UserAlreadyHasPassword), "User already has a password set."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.UserAlreadyHasPassword), "المستخدم لديه كلمة مرور."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.UserLockoutNotEnabled), "Lockout is not enabled for this user."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.UserLockoutNotEnabled), "تعليق الحساب غير متاح لهذا المستخدم"),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.UserAlreadyInRole), "User already in role '{0}'."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.UserAlreadyInRole), "المستخدم موجود في دور ({0})."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.UserNotInRole), "User is not in role '{0}'."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.UserNotInRole), "المستخدم ليس عنده دور ({0})."),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.PasswordTooShort), "Passwords must be at least {0} characters."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.PasswordTooShort), "يجب ألا يقل طول كلمة المرور عن {0} رموز"),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresNonAlphanumeric), "Passwords must have at least one non alphanumeric character."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresNonAlphanumeric), "يجب أن تحتوي كلمة المرور على رمز غير أبجدي واحد على الأقل"),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresDigit), "Passwords must have at least one digit ('0'-'9')."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresDigit), "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل ('0'-'9')"),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresLower), "Passwords must have at least one lowercase ('a'-'z')."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresLower), "يجب أن تحتوي كلمة المرور على حرف لاتيني صغير واحد على الأقل ('a'-'z')"),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresUpper), "Passwords must have at least one uppercase ('A'-'Z')."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresUpper), "يجب أن تحتوي كلمة المرور على حرف لاتيني كبير واحد على الأقل ('A'-'Z')"),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresUniqueChars), "Passwords must use at least {0} different characters."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.PasswordRequiresUniqueChars), "يجب أن تحتوي كلمة المرور على الأقل على عدد {0} من الحروف المميزة عن بعضها"),
+
+            En(Constants.Server, nameof(IdentityErrorDescriber.RecoveryCodeRedemptionFailed), "Recovery code redemption failed."),
+            Ar(Constants.Server, nameof(IdentityErrorDescriber.RecoveryCodeRedemptionFailed), "تحصيل كود الاسترداد لم يكلل بالنجاح"),
+
+
+
+
             
 
 

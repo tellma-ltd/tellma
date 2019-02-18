@@ -75,7 +75,7 @@ namespace BSharp.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("User with ID '{UserId}' logged in with a recovery code.", user.Id);
-                return LocalRedirect(returnUrl ?? Url.Content("~/"));
+                return LocalRedirect(returnUrl ?? Url.Page("/Account/Manage/Index", new { area = "Identity" }));
             }
             if (result.IsLockedOut)
             {

@@ -61,7 +61,7 @@ namespace BSharp.Areas.Identity.Pages.Account
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
 
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl = returnUrl ?? DefaultReturnUrl();
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
@@ -71,9 +71,14 @@ namespace BSharp.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
+        private string DefaultReturnUrl()
+        {
+            return Url.Page("/Account/Manage/Index", new { area = "Identity" });
+        }
+
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl = returnUrl ?? DefaultReturnUrl(); // Url.Content("~/");
 
             if (ModelState.IsValid)
             {

@@ -7,6 +7,7 @@ using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 
 namespace BSharp.Areas.Identity.Pages.Account.Manage
 {
@@ -14,13 +15,16 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IStringLocalizer<SetPasswordModel> _localizer;
 
         public SetPasswordModel(
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            IStringLocalizer<SetPasswordModel> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _localizer = localizer;
         }
 
         [BindProperty]
@@ -31,15 +35,15 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = nameof(RequiredAttribute))]
+            [StringLength(100, ErrorMessage = nameof(StringLengthAttribute) + "2", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "New password")]
+            [Display(Name = "NewPassword")]
             public string NewPassword { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm new password")]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+            [Display(Name = "ConfirmNewPassword")]
+            [Compare("NewPassword", ErrorMessage = "Error_ThePasswordAndConfirmationPasswordDoNotMatch")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -52,10 +56,9 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
             }
 
             var hasPassword = await _userManager.HasPasswordAsync(user);
-
             if (hasPassword)
             {
-                return RedirectToPage("./ChangePassword");
+              //  return RedirectToPage("./ChangePassword");
             }
 
             return Page();
@@ -85,7 +88,7 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your password has been set.";
+            StatusMessage = _localizer["YourPasswordHasBeenSet"];
 
             return RedirectToPage();
         }

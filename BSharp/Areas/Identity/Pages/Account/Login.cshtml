@@ -37,7 +37,7 @@
                     <i class="fas fa-sign-in-alt @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "fa-flip-horizontal": "")"></i>&nbsp;&nbsp;@Localizer["SignIn"]
                 </button>
             </div>
-            @if (Config.Value.IsOnline)
+            @if (Config.Value.Online)
             {
                 <div class="form-group">
                     <p>

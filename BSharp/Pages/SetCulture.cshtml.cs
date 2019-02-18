@@ -22,7 +22,7 @@ namespace BSharp.Pages
         /// </summary>
         public IActionResult OnPost(string currentUrl = null, string culture = null)
         {
-            currentUrl = currentUrl ?? Url.Content("~/");
+            currentUrl = currentUrl ?? Url.Page("/Account/Manage/Index", new { area = "Identity" });
 
             if (culture == null)
             {

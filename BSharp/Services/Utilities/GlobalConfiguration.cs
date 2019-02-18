@@ -7,6 +7,7 @@ namespace BSharp.Services.Utilities
 {
     public class GlobalConfiguration
     {
-        public bool IsOnline { get; set; }
+        public bool Online { get; set; }
+        public bool EmbeddedIdentityServerEnabled { get; set; }
     }
 }

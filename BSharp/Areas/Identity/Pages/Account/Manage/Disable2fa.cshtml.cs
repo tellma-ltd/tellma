@@ -6,6 +6,7 @@ using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace BSharp.Areas.Identity.Pages.Account.Manage
@@ -14,13 +15,16 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<User> _userManager;
         private readonly ILogger<Disable2faModel> _logger;
+        private readonly IStringLocalizer<Disable2faModel> _localizer;
 
         public Disable2faModel(
             UserManager<User> userManager,
-            ILogger<Disable2faModel> logger)
+            ILogger<Disable2faModel> logger,
+            IStringLocalizer<Disable2faModel> localizer)
         {
             _userManager = userManager;
             _logger = logger;
+            _localizer = localizer;
         }
 
         [TempData]
@@ -57,7 +61,7 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
             }
 
             _logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", _userManager.GetUserId(User));
-            StatusMessage = "2fa has been disabled. You can reenable 2fa when you setup an authenticator app";
+            StatusMessage = _localizer["TwoFactorAuthenticatorHasBeenDisabled"];
             return RedirectToPage("./TwoFactorAuthentication");
         }
     }

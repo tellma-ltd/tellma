@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Localization;
 
 namespace BSharp.Areas.Identity.Pages.Account.Manage
 {
@@ -14,19 +15,19 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IStringLocalizer<ExternalLoginsModel> _localizer;
 
         public ExternalLoginsModel(
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager, IStringLocalizer<ExternalLoginsModel> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _localizer = localizer;
         }
 
         public IList<UserLoginInfo> CurrentLogins { get; set; }
-
         public IList<AuthenticationScheme> OtherLogins { get; set; }
-
         public bool ShowRemoveButton { get; set; }
 
         [TempData]
@@ -64,7 +65,7 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "The external login was removed.";
+            StatusMessage = _localizer["TheExternalSignInWasRemoved"];
             return RedirectToPage();
         }
 
@@ -102,7 +103,7 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-            StatusMessage = "The external login was added.";
+            StatusMessage = _localizer["TheExternalSignInWasAdded"];
             return RedirectToPage();
         }
     }

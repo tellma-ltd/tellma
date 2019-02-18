@@ -1,10 +1,11 @@
-﻿@page "/identity/manage/generate-recovery-codes"
+﻿@page "/identity/manage/show-recovery-codes"
 @inject IViewLocalizer Localizer
-@model GenerateRecoveryCodesModel
+@model ShowRecoveryCodesModel
 @{
-    ViewData["Title"] = Localizer["GenerateTwoFactorAuthenticationRecoveryCodes"];
+    ViewData["Title"] = Localizer["RecoveryCodes"];
     ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
 }
+
 
 <partial name="_StatusMessage" for="StatusMessage" />
 <h4>@ViewData["Title"]</h4>
@@ -18,8 +19,11 @@
         @Localizer["RecoveryCodesWarningBody"]
     </p>
 </div>
-<div>
-    <form method="post" class="form-group">
-        <button class="btn btn-danger" type="submit"><i class="fas fa-exclamation-circle"></i>&nbsp;&nbsp;@Localizer["GenerateRecoveryCodes"]</button>
-    </form>
+<div class="row">
+    <div class="col-md-12">
+        @for (var row = 0; row < Model.RecoveryCodes.Length; row += 2)
+        {
+            <code class="recovery-code">@Model.RecoveryCodes[row]</code><text>&nbsp;&nbsp;</text><code class="recovery-code">@Model.RecoveryCodes[row + 1]</code><br />
+        }
+    </div>
 </div>

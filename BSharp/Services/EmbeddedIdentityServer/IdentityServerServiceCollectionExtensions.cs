@@ -37,12 +37,14 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             // Check that the embedded identity server is enabled
-            var embeddedIdentitySection = config.GetSection("EmbeddedIdentityServer");
-            var enabled = embeddedIdentitySection["Enabled"];
+            var enabled = config["EmbeddedIdentityServerEnabled"];
             if (enabled?.ToLower() != "true")
             {
                 return services;
             }
+
+            // Get the section
+            var embeddedIdentitySection = config.GetSection("EmbeddedIdentityServer");
 
             // Register the identity context
             services.AddDbContext<IdentityContext>(opt =>
@@ -55,9 +57,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddIdentity<User, IdentityRole>(opt =>
             {
                 // When the server is online, the system should require a a valid email
-                // opt.SignIn.RequireConfirmedEmail = config["IsOnline"]?.ToLower() == "true";
+                // opt.SignIn.RequireConfirmedEmail = config["Online"]?.ToLower() == "true";
                 opt.SignIn.RequireConfirmedEmail = true;
             })
+                .AddErrorDescriber<LocalizedIdentityErrorDescriptor>()
                 .AddDefaultTokenProviders()
                 // Use the identity context database
                 .AddEntityFrameworkStores<IdentityContext>();

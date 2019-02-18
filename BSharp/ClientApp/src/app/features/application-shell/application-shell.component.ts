@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { SettingsForClient } from '~/app/data/dto/settings';
-import { UserSettingsForClient } from '~/app/data/dto/local-user';
 import { AuthService } from '~/app/data/auth.service';
+import { appconfig } from '~/app/data/appconfig';
 
 @Component({
   selector: 'b-application-shell',
@@ -60,8 +59,13 @@ export class ApplicationShellComponent implements OnInit {
     return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
   }
 
-  public onMyAccount(): void {
+  public onMyCompanyAccount(): void {
     alert('To be implemented');
+  }
+
+  public onMySystemAccount(): void {
+    // TODO make these pages part of the SPA
+    location.href = appconfig.identityAddress + '/identity/manage/';
   }
 
   public onSignOut(): void {

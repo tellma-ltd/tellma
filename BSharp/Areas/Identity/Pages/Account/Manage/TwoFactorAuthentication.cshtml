@@ -1,7 +1,8 @@
 ﻿@page "/identity/manage/two-factor-authentication"
+@inject IViewLocalizer Localizer
 @model TwoFactorAuthenticationModel
 @{
-    ViewData["Title"] = "Two-factor authentication (2FA)";
+    ViewData["Title"] = Localizer["Page_TwoFactorAuthentication"];
     ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
 }
 
@@ -9,47 +10,33 @@
 <h4>@ViewData["Title"]</h4>
 @if (Model.Is2faEnabled)
 {
-    if (Model.RecoveryCodesLeft == 0)
-    {
-        <div class="alert alert-danger">
-            <strong>You have no recovery codes left.</strong>
-            <p>You must <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a> before you can log in with a recovery code.</p>
-        </div>
-    }
-    else if (Model.RecoveryCodesLeft == 1)
-    {
-        <div class="alert alert-danger">
-            <strong>You have 1 recovery code left.</strong>
-            <p>You can <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
-        </div>
-    }
-    else if (Model.RecoveryCodesLeft <= 3)
+    if (Model.RecoveryCodesLeft <= 2)
     {
         <div class="alert alert-warning">
-            <strong>You have @Model.RecoveryCodesLeft recovery codes left.</strong>
-            <p>You should <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+            <p>
+                <i class="fas fa-exclamation-triangle"></i>&nbsp;
+                <strong>@Localizer["RecoveryCodesLeft0", @Model.RecoveryCodesLeft]</strong>
+            </p>
+            <p>@Localizer["YouShouldGenerateNewRecoveryCodes"] <a asp-page="./GenerateRecoveryCodes">@Localizer["ClickHere"]</a>.</p>
         </div>
     }
 
     if (Model.IsMachineRemembered)
     {
         <form method="post" style="display: inline-block">
-            <button type="submit" class="btn btn-primary">Forget this browser</button>
+            <button type="submit" class="btn btn-primary mb-1">@Localizer["ForgetThisBrowser"]</button>
         </form>
     }
-    <a asp-page="./Disable2fa" class="btn btn-primary">Disable 2FA</a>
-    <a asp-page="./GenerateRecoveryCodes" class="btn btn-primary">Reset recovery codes</a>
+    <a asp-page="./Disable2fa" class="btn btn-primary mb-1">@Localizer["Button_DisableTwoFactorAuthentication"]</a>
+    <a asp-page="./GenerateRecoveryCodes" class="btn btn-primary mb-1">@Localizer["ResetRecoveryCodes"]</a>
 }
 
-<h5>Authenticator app</h5>
-@if (!Model.HasAuthenticator)
+<h4 class="mt-4">@Localizer["AuthenticatorApp"]</h4>
+
+<a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary mb-1">@Localizer["ConfigureAuthenticatorApp"]</a>
+@if (Model.HasAuthenticator)
 {
-    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Add authenticator app</a>
-}
-else
-{
-    <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Setup authenticator app</a>
-    <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-primary">Reset authenticator app</a>
+    <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-primary mb-1">@Localizer["ResetAuthenticatorKey"]</a>
 }
 
 @section Scripts {

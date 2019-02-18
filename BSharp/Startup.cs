@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -179,7 +180,7 @@ namespace BSharp
             services.AddAutoMapper();
         }
 
-        public void Configure(IApplicationBuilder app, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, IOptions<GlobalConfiguration> options)
         {
             if (_env.IsDevelopment())
             {
@@ -227,7 +228,7 @@ namespace BSharp
             }
 
             // Serves the identity server
-            if (_config["EmbeddedIdentityServer:Enabled"]?.ToLower() == "true")
+            if (options.Value.EmbeddedIdentityServerEnabled)
             {
                 app.UseIdentityServer();
             }

@@ -17,7 +17,7 @@ namespace BSharp.Services.Email
 
         public IEmailSender Create()
         {
-            if(_globalConfig.IsOnline)
+            if(_globalConfig.Online)
             {
                 // Scream for missing yet required stuff
                 if (string.IsNullOrWhiteSpace(_config.SendGrid.ApiKey))

@@ -1,26 +1,26 @@
 ﻿@page "/identity/manage/disable-2fa"
+@inject IViewLocalizer Localizer
 @model Disable2faModel
 @{
-    ViewData["Title"] = "Disable two-factor authentication (2FA)";
+    ViewData["Title"] = Localizer["DisableTwoFactorAuthentication"];
     ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
 }
 
 <partial name="_StatusMessage" for="StatusMessage" />
 <h1>@ViewData["Title"]</h1>
-
-<div class="alert alert-warning" role="alert">
+<hr />
+<div class="alert alert-warning mt-2" role="alert">
     <p>
-        <span class="glyphicon glyphicon-warning-sign"></span>
-        <strong>This action only disables 2FA.</strong>
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>@Localizer["DisableTwoFactorAuthenticationTitle"]</strong>
     </p>
     <p>
-        Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key
-        used in an authenticator app you should <a asp-page="./ResetAuthenticator">reset your authenticator keys.</a>
+        @Localizer["DisableTwoFactorAuthenticationBody"]&nbsp;&nbsp;<a asp-page="./ResetAuthenticator">@Localizer["ClickHereLower"]</a>
     </p>
 </div>
 
 <div>
     <form method="post" class="form-group">
-        <button class="btn btn-danger" type="submit">Disable 2FA</button>
+        <button class="btn btn-danger" type="submit"><i class="fas fa-exclamation-circle"></i>&nbsp;&nbsp;@Localizer["DisableTwoFactorAuthentication"]</button>
     </form>
 </div>
