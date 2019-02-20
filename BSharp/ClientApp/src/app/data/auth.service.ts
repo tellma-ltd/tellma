@@ -10,6 +10,10 @@ const authConfig: AuthConfig = {
   // url of the Identity Provider
   issuer: appconfig.identityAddress,
 
+  // when identity server is hosted in the same domain, we refere to it as "/" and this library complains about lack of https
+  // requireHttps: false,
+  // strictDiscoveryDocumentValidation: false,
+
   // url of the SPA to redirect the user to after login
   redirectUri: window.location.origin + '/sign-in-callback',
 

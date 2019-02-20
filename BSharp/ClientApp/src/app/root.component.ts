@@ -63,7 +63,6 @@ export class RootComponent {
 
     // TODO load from local storage properly
     const userCulture = this.storage.getItem('userCulture');
-    console.log('UI Culture: ' + userCulture);
     if (!!userCulture) {
       this.translate.use(userCulture);
     }

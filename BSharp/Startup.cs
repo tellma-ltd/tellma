@@ -1,7 +1,5 @@
 using AutoMapper;
 using BSharp.Data;
-using BSharp.Services.BlobStorage;
-using BSharp.Services.Email;
 using BSharp.Services.Migrations;
 using BSharp.Services.ModelMetadata;
 using BSharp.Services.Utilities;
@@ -39,6 +37,7 @@ namespace BSharp
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             // For some reason the integration tests are calling configure services 
             // twice, which is causing exceptions, this is a workaround until we
             // figure out the reason
@@ -131,18 +130,18 @@ namespace BSharp
                 .AddDataAnnotationsLocalization()
                 .AddJsonOptions(options =>
                 {
-                    // The JSON options below instruct the serializer to keep property names in PascalCase, 
-                    // even though this violates convention, it makes a few things easier since both client and server
-                    // sides get to see and communicate identical property names, for example 'api/customers?orderby='Name'
-                    options.SerializerSettings.ContractResolver = new DefaultContractResolver
+                        // The JSON options below instruct the serializer to keep property names in PascalCase, 
+                        // even though this violates convention, it makes a few things easier since both client and server
+                        // sides get to see and communicate identical property names, for example 'api/customers?orderby='Name'
+                        options.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
                         NamingStrategy = new DefaultNamingStrategy()
                     };
 
-                    //   options.SerializerSettings.Converters.Insert(0, new TrimmingStringConverter());
+                        //   options.SerializerSettings.Converters.Insert(0, new TrimmingStringConverter());
 
-                    // To response size
-                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                        // To response size
+                        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
 
@@ -152,7 +151,7 @@ namespace BSharp
                     options.AllowAreas = true;
                     options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
                     options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
-                    
+
                 });
 
             // TODO: Only when using embedded identity
@@ -172,15 +171,15 @@ namespace BSharp
             // Configure some custom behavior for API controllers
             services.Configure<ApiBehaviorOptions>(options =>
             {
-                // This overrides the default behavior, when there are validation
-                // errors we return a 422 unprocessable entity, instead of the default
-                // 400 bad request, this makes it easier for clients to easily distinguish 
-                // such kind of errors and handle them in a special way, for example:
-                // by showing them on the fields with a red color
-                options.InvalidModelStateResponseFactory = ctx =>
-                {
-                    return new UnprocessableEntityObjectResult(ctx.ModelState);
-                };
+                    // This overrides the default behavior, when there are validation
+                    // errors we return a 422 unprocessable entity, instead of the default
+                    // 400 bad request, this makes it easier for clients to easily distinguish 
+                    // such kind of errors and handle them in a special way, for example:
+                    // by showing them on the fields with a red color
+                    options.InvalidModelStateResponseFactory = ctx =>
+                    {
+                        return new UnprocessableEntityObjectResult(ctx.ModelState);
+                    };
             });
 
 
@@ -192,10 +191,12 @@ namespace BSharp
 
             // AutoMapper https://automapper.org/
             services.AddAutoMapper();
+
         }
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger, IOptions<GlobalConfiguration> options)
         {
+
             if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -214,11 +215,11 @@ namespace BSharp
 
                 opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUICulture);
 
-                // Formatting numbers, dates, etc.
-                opt.AddSupportedCultures(defaultCulture);
+                    // Formatting numbers, dates, etc.
+                    opt.AddSupportedCultures(defaultCulture);
 
-                // UI strings that we have localized.
-                opt.SupportedUICultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+                    // UI strings that we have localized.
+                    opt.SupportedUICultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
             });
 
             app.UseHttpsRedirection();
@@ -229,15 +230,15 @@ namespace BSharp
             {
                 app.UseCors(builder =>
                 {
-                    // TODO: Read from settings for production
-                    builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .WithExposedHeaders("x-image-id")
-                        .WithExposedHeaders("x-settings-version")
-                        .WithExposedHeaders("x-permissions-version")
-                        .WithExposedHeaders("x-user-settings-version");
+                        // TODO: Read from settings for production
+                        builder
+                                .AllowAnyOrigin()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod()
+                                .WithExposedHeaders("x-image-id")
+                                .WithExposedHeaders("x-settings-version")
+                                .WithExposedHeaders("x-permissions-version")
+                                .WithExposedHeaders("x-user-settings-version");
                 });
             }
 
