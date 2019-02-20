@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using BSharp.Services.EmbeddedIdentityServer;
 
 namespace BSharp.Areas.Identity.Pages.Account
 {
@@ -20,12 +22,14 @@ namespace BSharp.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly IStringLocalizer<LoginModel> _localizer;
+        private readonly ClientStoreConfiguration _config;
 
-        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger, IStringLocalizer<LoginModel> localizer)
+        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger, IStringLocalizer<LoginModel> localizer, IOptions<ClientStoreConfiguration> options)
         {
             _signInManager = signInManager;
             _logger = logger;
             _localizer = localizer;
+            _config = options.Value;
         }
 
         [BindProperty]
@@ -73,7 +77,7 @@ namespace BSharp.Areas.Identity.Pages.Account
 
         private string DefaultReturnUrl()
         {
-            return Url.Page("/Account/Manage/Index", new { area = "Identity" });
+            return _config.WebClientUri ?? Url.Content("~/");
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -88,11 +92,14 @@ namespace BSharp.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    if(returnUrl != null)
+                    {
+                        return SafeRedirect(returnUrl);
+                    }
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {
@@ -116,6 +123,18 @@ namespace BSharp.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        private ActionResult SafeRedirect(string url)
+        {
+            if (url == _config.WebClientUri)
+            {
+                return Redirect(url);
+            }
+            else
+            {
+                return LocalRedirect(url);
+            }
         }
     }
 }

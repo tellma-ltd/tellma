@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
+using BSharp.Services.EmbeddedIdentityServer;
+using Microsoft.Extensions.Options;
 
 namespace BSharp.Areas.Identity.Pages.Account
 {
@@ -19,12 +21,15 @@ namespace BSharp.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginWithRecoveryCodeModel> _logger;
         private readonly IStringLocalizer<LoginWithRecoveryCodeModel> _localizer;
+        private readonly ClientStoreConfiguration _config;
 
-        public LoginWithRecoveryCodeModel(SignInManager<User> signInManager, ILogger<LoginWithRecoveryCodeModel> logger, IStringLocalizer<LoginWithRecoveryCodeModel> localizer)
+        public LoginWithRecoveryCodeModel(SignInManager<User> signInManager, ILogger<LoginWithRecoveryCodeModel> logger, 
+            IStringLocalizer<LoginWithRecoveryCodeModel> localizer, IOptions<ClientStoreConfiguration> options)
         {
             _signInManager = signInManager;
             _logger = logger;
             _localizer = localizer;
+            _config = options.Value;
         }
 
         [BindProperty]
@@ -75,7 +80,7 @@ namespace BSharp.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("User with ID '{UserId}' logged in with a recovery code.", user.Id);
-                return LocalRedirect(returnUrl ?? Url.Page("/Account/Manage/Index", new { area = "Identity" }));
+                return SafeRedirect(returnUrl ?? _config.WebClientUri ?? Url.Content("~/"));
             }
             if (result.IsLockedOut)
             {
@@ -87,6 +92,18 @@ namespace BSharp.Areas.Identity.Pages.Account
                 _logger.LogWarning("Invalid recovery code entered for user with ID '{UserId}' ", user.Id);
                 ModelState.AddModelError(string.Empty, _localizer["InvalidRecoveryCode"]);
                 return Page();
+            }
+        }
+
+        private ActionResult SafeRedirect(string url)
+        {
+            if (url == _config.WebClientUri)
+            {
+                return Redirect(url);
+            }
+            else
+            {
+                return LocalRedirect(url);
             }
         }
     }

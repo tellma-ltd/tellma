@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using BSharp.Services.EmbeddedIdentityServer;
 
 namespace BSharp.Areas.Identity.Pages.Account
 {
@@ -19,12 +21,15 @@ namespace BSharp.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginWith2faModel> _logger;
         private readonly IStringLocalizer<LoginWith2faModel> _localizer;
+        private readonly ClientStoreConfiguration _config;
 
-        public LoginWith2faModel(SignInManager<User> signInManager, ILogger<LoginWith2faModel> logger, IStringLocalizer<LoginWith2faModel> localizer)
+        public LoginWith2faModel(SignInManager<User> signInManager, ILogger<LoginWith2faModel> logger, 
+            IStringLocalizer<LoginWith2faModel> localizer, IOptions<ClientStoreConfiguration> options)
         {
             _signInManager = signInManager;
             _logger = logger;
             _localizer = localizer;
+            _config = options.Value;
         }
 
         [BindProperty]
@@ -69,7 +74,7 @@ namespace BSharp.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            returnUrl = returnUrl ?? Url.Page("/Account/Manage/Index", new { area = "Identity" });
+            returnUrl = returnUrl ?? _config.WebClientUri ?? Url.Content("~/");
 
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
             if (user == null)
@@ -84,7 +89,7 @@ namespace BSharp.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", user.Id);
-                return LocalRedirect(returnUrl);
+                return SafeRedirect(returnUrl);
             }
             else if (result.IsLockedOut)
             {
@@ -96,6 +101,18 @@ namespace BSharp.Areas.Identity.Pages.Account
                 _logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", user.Id);
                 ModelState.AddModelError(string.Empty, _localizer["InvalidAuthenticatorCode"]);
                 return Page();
+            }
+        }
+
+        private ActionResult SafeRedirect(string url)
+        {
+            if (url == _config.WebClientUri)
+            {
+                return Redirect(url);
+            }
+            else
+            {
+                return LocalRedirect(url);
             }
         }
     }

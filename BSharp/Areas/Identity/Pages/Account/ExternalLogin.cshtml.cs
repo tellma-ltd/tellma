@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using BSharp.Services.EmbeddedIdentityServer;
 
 namespace BSharp.Areas.Identity.Pages.Account
 {
@@ -21,17 +23,20 @@ namespace BSharp.Areas.Identity.Pages.Account
         private readonly UserManager<User> _userManager;
         private readonly ILogger<ExternalLoginModel> _logger;
         private readonly IStringLocalizer<ExternalLoginModel> _localizer;
+        private readonly ClientStoreConfiguration _config;
 
         public ExternalLoginModel(
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             ILogger<ExternalLoginModel> logger,
-            IStringLocalizer<ExternalLoginModel> localizer)
+            IStringLocalizer<ExternalLoginModel> localizer,
+            IOptions<ClientStoreConfiguration> options)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
             _localizer = localizer;
+            _config = options.Value;
         }
 
         [TempData]
@@ -52,7 +57,7 @@ namespace BSharp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
-            returnUrl = returnUrl ?? Url.Page("/Account/Manage/Index", new { area = "Identity" });
+            returnUrl = returnUrl ?? _config.WebClientUri ?? Url.Content("~/");
             if (remoteError != null)
             {
                 ErrorMessage = _localizer["Error_ErrorFromExternalProvider0", remoteError];
@@ -70,7 +75,7 @@ namespace BSharp.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
-                return LocalRedirect(returnUrl);
+                return SafeRedirect(returnUrl);
             }
             if (result.IsLockedOut)
             {
@@ -119,7 +124,7 @@ namespace BSharp.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
-                    return LocalRedirect(returnUrl);
+                    return SafeRedirect(returnUrl); // TODO make sure it is valid
                 }
                 if (result.IsLockedOut)
                 {
@@ -131,6 +136,18 @@ namespace BSharp.Areas.Identity.Pages.Account
                     _logger.LogError($"Failed to log user with ID '{user.Id}' and email '{user.Email}'");
                     return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
                 }
+            }
+        }
+
+        private ActionResult SafeRedirect(string url)
+        {
+            if(url == _config.WebClientUri)
+            {
+                return Redirect(url);
+            }
+            else
+            {
+                return LocalRedirect(url);
             }
         }
     }
