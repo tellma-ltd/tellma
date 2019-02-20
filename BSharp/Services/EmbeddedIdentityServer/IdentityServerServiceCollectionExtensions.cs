@@ -26,6 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddEmbeddedIdentityServerIfEnabled(
             this IServiceCollection services, IConfiguration config, IHostingEnvironment env)
         {
+            // basic sanity checks
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
@@ -53,6 +54,10 @@ namespace Microsoft.Extensions.DependencyInjection
             // Setup configurations
             services.Configure<IdentityOptions>(embeddedIdentitySection);
 
+            // Increase the default tokens expiry from 1 day to 3 days
+            services.Configure<DataProtectionTokenProviderOptions>(opt =>
+                    opt.TokenLifespan = TimeSpan.FromDays(Constants.TokenExpiryInDays));
+
             // Add default identity setup for the embedded IdentityServer instance
             services.AddIdentity<User, IdentityRole>(opt =>
             {
@@ -64,7 +69,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddDefaultTokenProviders()
                 // Use the identity context database
                 .AddEntityFrameworkStores<IdentityContext>();
-
 
             // For windows authentication
             services.Configure<IISOptions>(opt =>
@@ -87,7 +91,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 // This one uses the ClientStoreConfiguration configured earlier
                 .AddClientStore<DefaultsToSameOriginClientStore>()
                 .AddAspNetIdentity<User>();
-
 
             // Add signing credentials
             if (env.IsDevelopment())
@@ -124,7 +127,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
             }
 
-            // add authentication schemes
+            // add external providers
             var authBuilder = services.AddAuthentication();
 
             var googleSection = embeddedIdentitySection.GetSection("Google");

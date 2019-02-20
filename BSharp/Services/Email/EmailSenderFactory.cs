@@ -1,5 +1,6 @@
 ﻿using System;
 using BSharp.Services.Utilities;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BSharp.Services.Email
@@ -8,11 +9,13 @@ namespace BSharp.Services.Email
     {
         private readonly EmailConfiguration _config;
         private readonly GlobalConfiguration _globalConfig;
+        private readonly ILogger<SendGridEmailSender> _logger;
 
-        public EmailSenderFactory(IOptions<EmailConfiguration> options, IOptions<GlobalConfiguration> globalOptions)
+        public EmailSenderFactory(IOptions<EmailConfiguration> options, IOptions<GlobalConfiguration> globalOptions, ILogger<SendGridEmailSender> logger)
         {
             _config = options.Value;
             _globalConfig = globalOptions.Value;
+            _logger = logger;
         }
 
         public IEmailSender Create()
@@ -26,7 +29,7 @@ namespace BSharp.Services.Email
                         $"A SendGrid API Key must be in a configuration provider under the key 'Email:SendGrid:ApiKey', you can get a free key on https://sendgrid.com/");
                 }
 
-                return new SendGridEmailSender(_config.SendGrid);
+                return new SendGridEmailSender(_config.SendGrid, _logger);
             }
             else
             {

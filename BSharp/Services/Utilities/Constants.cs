@@ -21,6 +21,9 @@ namespace BSharp.Services.Utilities
         public const string ReadCreate = nameof(ReadCreate);
         public const string Sign = nameof(Sign);
 
+        // Tokens
+        public const int TokenExpiryInDays = 3;
+
         // Indicates a hidden field when exporting to Excel
         public const string Hidden = "<HIDDEN-FIELD>";
     }

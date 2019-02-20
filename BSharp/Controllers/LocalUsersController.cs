@@ -3,15 +3,18 @@ using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.BlobStorage;
+using BSharp.Services.Email;
 using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -21,6 +24,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -39,25 +43,46 @@ namespace BSharp.Controllers
         private readonly ITenantIdProvider _tenantIdProvider;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger<LocalUsersController> _logger;
+        private readonly IEmailSender _emailSender;
+        private readonly EmailTemplatesProvider _emailTemplates;
+        private readonly GlobalConfiguration _config;
         private readonly IStringLocalizer<LocalUsersController> _localizer;
         private readonly IMapper _mapper;
         private readonly ITenantUserInfoAccessor _tenantInfo;
         private readonly IBlobService _blobService;
+        private readonly UserManager<M.User> _userManager;
 
-        public LocalUsersController(ApplicationContext db, AdminContext adminDb,
-            IModelMetadataProvider metadataProvider, ILogger<LocalUsersController> logger,
-            IStringLocalizer<LocalUsersController> localizer, IMapper mapper, ITenantIdProvider tenantIdProvider,
-            ITenantUserInfoAccessor tenantInfo, IBlobService blobService) : base(logger, localizer, mapper)
+        public LocalUsersController(
+            ApplicationContext db,
+            AdminContext adminDb,
+            IModelMetadataProvider metadataProvider,
+            ILogger<LocalUsersController> logger,
+            IOptions<GlobalConfiguration> options,
+            IServiceProvider serviceProvider,
+            IEmailSender emailSender,
+            EmailTemplatesProvider emailTemplates,
+            IStringLocalizer<LocalUsersController> localizer,
+            IMapper mapper,
+            ITenantIdProvider tenantIdProvider,
+            ITenantUserInfoAccessor tenantInfo,
+            IBlobService blobService) : base(logger, localizer, mapper)
         {
             _db = db;
             _adminDb = adminDb;
             _tenantIdProvider = tenantIdProvider;
             _metadataProvider = metadataProvider;
             _logger = logger;
+            _emailSender = emailSender;
+            _emailTemplates = emailTemplates;
+            _config = options.Value;
             _localizer = localizer;
             _mapper = mapper;
             _tenantInfo = tenantInfo;
             _blobService = blobService;
+
+            // we use this trick since this is an optional dependency, it will resolve to null if 
+            // the embedded identity server is not enabled
+            _userManager = (UserManager<M.User>)serviceProvider.GetService(typeof(UserManager<M.User>));
         }
 
         [HttpGet("{id}/image")]
@@ -492,7 +517,6 @@ namespace BSharp.Controllers
             table.Columns.Add(new DataColumn(nameof(LocalUserForSave.Name2), typeof(string)));
             table.Columns.Add(new DataColumn(nameof(LocalUserForSave.Email), typeof(string)));
             table.Columns.Add(new DataColumn(nameof(LocalUser.ExternalId), typeof(string)));
-            //  table.Columns.Add(new DataColumn(nameof(LocalUser.ImageId), typeof(string)));
             table.Columns.Add(new DataColumn(nameof(LocalUserForSave.AgentId), typeof(int)));
 
             int index = 0;
@@ -507,7 +531,6 @@ namespace BSharp.Controllers
                 row[nameof(LocalUserForSave.Name2)] = (object)entity.Name2 ?? DBNull.Value;
                 row[nameof(LocalUserForSave.Email)] = (object)entity.Email ?? DBNull.Value;
                 row[nameof(LocalUser.ExternalId)] = matches != null && matches.ContainsKey(entity.Email) ? (object)matches[entity.Email].ExternalId : DBNull.Value;
-                //       row[nameof(LocalUser.ImageId)] = entity.Image == null || entity.Image.Length == 0 ? DBNull.Value : (object)Guid.NewGuid();
                 row[nameof(LocalUserForSave.AgentId)] = (object)entity.AgentId ?? DBNull.Value;
 
                 table.Rows.Add(row);
@@ -524,19 +547,23 @@ namespace BSharp.Controllers
             // Get the inserted users
             var insertedEntities = entities.Where(e => e.EntityState == EntityStates.Inserted);
 
-            // Query the manager DB for matching emails, here I use the CodeList user-defined table type 
-            // of the manager DB, since I only want to pass a list of strings, no need to defined a new type
-            var insertedEmails = insertedEntities.Select(e => new { Code = e.Email });
-            var emailsTable = DataTable(insertedEmails);
-            var emailsTvp = new SqlParameter("Emails", emailsTable)
+            using (var trx = await _adminDb.Database.BeginTransactionAsync())
             {
-                TypeName = $"dbo.MCodeList",
-                SqlDbType = SqlDbType.Structured
-            };
+                try
+                {
+                    // Query the manager DB for matching emails, here I use the CodeList user-defined table type 
+                    // of the manager DB, since I only want to pass a list of strings, no need to defined a new type
+                    var insertedEmails = insertedEntities.Select(e => new { Code = e.Email });
+                    var emailsTable = DataTable(insertedEmails);
+                    var emailsTvp = new SqlParameter("Emails", emailsTable)
+                    {
+                        TypeName = $"dbo.MCodeList",
+                        SqlDbType = SqlDbType.Structured
+                    };
 
-            var tenantId = new SqlParameter("TenantId", _tenantIdProvider.GetTenantId());
+                    var tenantId = new SqlParameter("TenantId", _tenantIdProvider.GetTenantId());
 
-            var globalMatches = await _adminDb.GlobalUsersMatches.FromSql($@"
+                    var globalMatches = await _adminDb.GlobalUsersMatches.FromSql($@"
     DECLARE @IndexedIds [dbo].[IdList];
 
     -- Insert new users
@@ -562,23 +589,23 @@ namespace BSharp.Controllers
            GU.[ExternalId] AS [ExternalId] 
     FROM [dbo].[GlobalUsers] GU JOIN @Emails E ON GU.Email = E.Code
     WHERE GU.ExternalId IS NOT NULL",
-            emailsTvp, tenantId).ToDictionaryAsync(e => e.Email);
+                    emailsTvp, tenantId).ToDictionaryAsync(e => e.Email);
 
-            // Add created entities
-            var localUsersIndices = entities.ToIndexDictionary();
-            var localUsersTable = LocalUsersDataTable(entities, globalMatches);
-            var localUsersTvp = new SqlParameter("LocalUsers", localUsersTable)
-            {
-                TypeName = $"dbo.{nameof(LocalUserForSave)}List",
-                SqlDbType = SqlDbType.Structured
-            };
+                    // Add created entities
+                    var localUsersIndices = entities.ToIndexDictionary();
+                    var localUsersTable = LocalUsersDataTable(entities, globalMatches);
+                    var localUsersTvp = new SqlParameter("LocalUsers", localUsersTable)
+                    {
+                        TypeName = $"dbo.{nameof(LocalUserForSave)}List",
+                        SqlDbType = SqlDbType.Structured
+                    };
 
-            // Filter out roles that haven't changed for performance
-            var rolesHeaderIndices = localUsersIndices.Keys.Select(localUser => (localUser.Roles, HeaderIndex: localUsersIndices[localUser]));
-            DataTable rolesTable = DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
-            var rolesTvp = new SqlParameter("RoleMemberships", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
+                    // Filter out roles that haven't changed for performance
+                    var rolesHeaderIndices = localUsersIndices.Keys.Select(localUser => (localUser.Roles, HeaderIndex: localUsersIndices[localUser]));
+                    DataTable rolesTable = DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
+                    var rolesTvp = new SqlParameter("RoleMemberships", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
 
-            string saveSql = $@"
+                    string saveSql = $@"
 -- Procedure: LocalUsers__Save
     DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
@@ -640,128 +667,231 @@ namespace BSharp.Controllers
 			VALUES (@TenantId, s.[UserId], s.[RoleId], s.[Memo], @Now,		@UserId,		@Now,		@UserId);
 ";
 
-            // Prepare the list of users whose profile picture has changed:
-            var usersWithModifiedImgs = entities.Where(e => e.Image != null);
-            bool newPictures = usersWithModifiedImgs.Any();
-            bool returnEntities = (args.ReturnEntities ?? false);
+                    // Prepare the list of users whose profile picture has changed:
+                    var usersWithModifiedImgs = entities.Where(e => e.Image != null);
+                    bool newPictures = usersWithModifiedImgs.Any();
+                    bool returnEntities = (args.ReturnEntities ?? false);
 
-            // Optimization
-            if (!returnEntities && !newPictures)
-            {
-                // IF no returned items are expected, simply execute a non-Query and return an empty list;
-                await _db.Database.ExecuteSqlCommandAsync(saveSql, localUsersTvp, rolesTvp);
-                return new List<M.LocalUser>();
-            }
-            else
-            {
-                // If returned items are expected, append a select statement to the SQL command
-                saveSql = saveSql += "SELECT * FROM @IndexedIds;";
-
-                // Retrieve the map from Indexes to Ids
-                var indexedIds = await _db.Saving.FromSql(saveSql, localUsersTvp, rolesTvp).ToListAsync();
-                var idsString = string.Join(",", indexedIds.Select(e => e.Id));
-                var q = _db.LocalUsers.FromSql($"SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT CONVERT(INT, VALUE) AS Id FROM STRING_SPLIT({idsString}, ','))");
-                q = Expand(q, args.Expand); // includes
-                var savedEntities = await q.AsNoTracking().ToListAsync();
-
-                // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
-                Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                var sortedSavedEntities = new M.LocalUser[savedEntities.Count];
-                foreach (var item in savedEntities)
-                {
-                    int index = indices[item.Id];
-                    sortedSavedEntities[index] = item;
-                }
-
-
-                // The code inside here is not optimized for bulk, we assume for now
-                // that users will be entering images one at a time
-                if (newPictures)
-                {
-                    var entitiesDic = entities.ToIndexDictionary();
-                    // Retrieve blobs to delete
-                    var blobsToDelete = usersWithModifiedImgs.Where(e => e.EntityState == EntityStates.Updated)
-                        .Select(u => sortedSavedEntities[entitiesDic[u]].ImageId).Where(e => e != null).Select(e => BlobName(e)).ToList();
-
-
-                    var blobsToSave = new List<(string name, byte[] content)>();
-                    foreach (var user in usersWithModifiedImgs)
+                    // Optimization
+                    if (!returnEntities && !newPictures)
                     {
-                        // Get the Id of the user
-                        int index = entitiesDic[user];
-                        var savedEntity = sortedSavedEntities[entitiesDic[user]];
-                        int id = savedEntity.Id;
-                        if (user.Image.Length == 0)
+                        // IF no returned items are expected, simply execute a non-Query and return an empty list;
+                        await _db.Database.ExecuteSqlCommandAsync(saveSql, localUsersTvp, rolesTvp);
+                        return new List<M.LocalUser>();
+                    }
+                    else
+                    {
+                        // If returned items are expected, append a select statement to the SQL command
+                        saveSql = saveSql += "SELECT * FROM @IndexedIds;";
+
+                        // Retrieve the map from Indexes to Ids
+                        var indexedIds = await _db.Saving.FromSql(saveSql, localUsersTvp, rolesTvp).ToListAsync();
+                        var idsString = string.Join(",", indexedIds.Select(e => e.Id));
+                        var q = _db.LocalUsers.FromSql($"SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT CONVERT(INT, VALUE) AS Id FROM STRING_SPLIT({idsString}, ','))");
+                        q = Expand(q, args.Expand); // includes
+                        var savedEntities = await q.AsNoTracking().ToListAsync();
+
+                        // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
+                        Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
+                        var sortedSavedEntities = new M.LocalUser[savedEntities.Count];
+                        foreach (var item in savedEntities)
                         {
-                            // We simply NULL image Id
-                            await _db.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[LocalUsers] SET ImageId = NULL WHERE [Id] = {id}");
-                            savedEntity.ImageId = null;
+                            int index = indices[item.Id];
+                            sortedSavedEntities[index] = item;
+                        }
+
+
+                        // The code inside here is not optimized for bulk, we assume for now
+                        // that users will be entering images one at a time
+                        if (newPictures)
+                        {
+                            var entitiesDic = entities.ToIndexDictionary();
+                            // Retrieve blobs to delete
+                            var blobsToDelete = usersWithModifiedImgs.Where(e => e.EntityState == EntityStates.Updated)
+                                .Select(u => sortedSavedEntities[entitiesDic[u]].ImageId).Where(e => e != null).Select(e => BlobName(e)).ToList();
+
+
+                            var blobsToSave = new List<(string name, byte[] content)>();
+                            foreach (var user in usersWithModifiedImgs)
+                            {
+                                // Get the Id of the user
+                                int index = entitiesDic[user];
+                                var savedEntity = sortedSavedEntities[entitiesDic[user]];
+                                int id = savedEntity.Id;
+                                if (user.Image.Length == 0)
+                                {
+                                    // We simply NULL image Id
+                                    await _db.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[LocalUsers] SET ImageId = NULL WHERE [Id] = {id}");
+                                    savedEntity.ImageId = null;
+                                }
+                                else
+                                {
+                                    // We create a new Image Id
+                                    string imageId = Guid.NewGuid().ToString();
+                                    await _db.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[LocalUsers] SET ImageId = {imageId} WHERE [Id] = {id}");
+                                    savedEntity.ImageId = imageId;
+
+                                    // We make the image smaller and turn it into JPEG
+                                    var imageBytes = user.Image;
+                                    using (var image = Image.Load(imageBytes))
+                                    {
+                                        // Resize to 128x128px
+                                        image.Mutate(c => c.Resize(new ResizeOptions
+                                        {
+                                            // 'Max' mode maintains the aspect ratio and keeps the entire image
+                                            Mode = ResizeMode.Max,
+                                            Size = new Size(128),
+                                            Position = AnchorPositionMode.Center
+                                        }));
+
+                                        // some image formats that support transparent regions
+                                        // these regions will turn black in JPEG format unless we do this
+                                        image.Mutate(c => c.BackgroundColor(Rgba32.White)); ;
+
+                                        // Save as JPEG
+                                        var memoryStream = new MemoryStream();
+                                        image.SaveAsJpeg(memoryStream);
+                                        imageBytes = memoryStream.ToArray();
+
+                                        // Note: JPEG is the format of choice for photography
+                                        // for such pictures it provides better quality at a lower size
+                                        // Since these pictures are expected to be mostly photographs
+                                        // we save them as JPEGs
+                                    }
+
+                                    // Add it to blobs to save
+                                    blobsToSave.Add((BlobName(imageId), imageBytes));
+                                }
+                            }
+
+                            // Delete the blobs retrieved earlier
+                            if (blobsToDelete.Any())
+                            {
+                                await _blobService.DeleteBlobs(blobsToDelete);
+                            }
+
+                            // Save new blobs if any
+                            if (blobsToSave.Any())
+                            {
+                                await _blobService.SaveBlobs(blobsToSave);
+                            }
+
+                            // Note: Since the blob service is not a transactional resource it is good to do the blob calls
+                            // near the end to minimize the chance of modifying blobs first only to have the transaction roll back later
+                        }
+
+                        // Send invitation emails, sending emails is also a non transactional resource, so we keep it till the end
+                        var newUsers = insertedEntities.Where(e => !globalMatches.ContainsKey(e.Email)).ToList();
+                        int count = newUsers.Count;
+                        if (count > 0 && _config.EmbeddedIdentityServerEnabled)
+                        {
+                            // NOTE: the section below is not optimized for massive bulk (e.g. 1,000+ users), but it should be 
+                            // acceptable with the usual workloads, customers with more than 200 users are rare anyways
+
+                            var info = _tenantInfo.GetCurrentInfo();
+
+                            // The email sender parameters
+                            var tos = new string[count];
+                            var subjects = new string[count];
+                            var substitutions = new Dictionary<string, string>[count];
+
+                            // this loop adds the users to the identity database and prepares the invitation email parameters
+                            for (int i = 0; i < count; i++)
+                            {
+                                var localUser = newUsers[i];
+                                var email = localUser.Email;
+
+                                // in case the user was added in a previous failed transaction, we try to load the email from the DB first
+                                var identityUser = await _userManager.FindByNameAsync(email) ??
+                                     await _userManager.FindByNameAsync(email);
+
+                                // this is truly a new user, create it
+                                if (identityUser == null)
+                                {
+                                    // create the identity user
+                                    identityUser = new M.User
+                                    {
+                                        UserName = email,
+                                        Email = email,
+
+                                        // if the system is offline, emails are automatically confirmed
+                                        EmailConfirmed = !_config.Online
+                                    };
+
+                                    var result = await _userManager.CreateAsync(identityUser);
+                                    if (!result.Succeeded)
+                                    {
+                                        string msg = string.Join(", ", result.Errors.Select(e => e.Description));
+                                        throw new BadRequestException($"An unexpected error occurred while creating an account for '{localUser.Name}': {msg}");
+                                    }
+                                }
+
+                                // if the system is online: prepare an invitation email that contains an email confirmation link
+                                if (_config.Online)
+                                {
+                                    // TODO: Get the preferred culture of the recipient user
+                                    CultureInfo culture = CultureInfo.CurrentUICulture;
+                                    var localizer = _localizer.WithCulture(culture);
+
+                                    // Prepare the parameters
+                                    string userId = identityUser.Id;
+                                    string emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
+                                    string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
+                                    string nameOfInvitor = info.SecondaryLanguageId == culture.Name ? info.Name2 ?? info.Name : info.Name;
+
+                                    string callbackUrl = Url.Page(
+                                            "/Account/ConfirmEmail",
+                                            pageHandler: null,
+                                            values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
+                                            protocol: Request.Scheme);
+
+                                    // Prepare the email
+                                    string invitationEmail = _emailTemplates.MakeInvitationEmail(
+                                         nameOfRecipient: info.SecondaryLanguageId == culture.Name ? localUser.Name2 ?? localUser.Name : localUser.Name,
+                                         nameOfInvitor: nameOfInvitor,
+                                         validityInDays: Constants.TokenExpiryInDays,
+                                         userId: userId,
+                                         callbackUrl: callbackUrl,
+                                         culture: culture
+                                         );
+
+                                    // Add the email sender parameters
+                                    tos[i] = email;
+                                    subjects[i] = localizer["InvitationEmailSubject0", localizer["AppName"]];
+                                    substitutions[i] = new Dictionary<string, string> { { "-message-", invitationEmail } };
+                                }
+                            }
+
+                            // send all the inviation emails en masse
+                            if (_config.Online)
+                            {
+                                await _emailSender.SendEmailBulkAsync(
+                                    tos: tos.ToList(),
+                                    subjects: subjects.ToList(),
+                                    htmlMessage: $"-message-",
+                                    substitutions: substitutions.ToList()
+                                    );
+                            }
+                        }
+
+                        trx.Commit();
+
+                        // Return the saved entities if requested
+                        if (!returnEntities)
+                        {
+                            return new List<M.LocalUser>();
                         }
                         else
                         {
-                            // We create a new Image Id
-                            string imageId = Guid.NewGuid().ToString();
-                            await _db.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[LocalUsers] SET ImageId = {imageId} WHERE [Id] = {id}");
-                            savedEntity.ImageId = imageId;
-
-                            // We make the image smaller and turn it into JPEG
-                            var imageBytes = user.Image;
-                            using (var image = Image.Load(imageBytes))
-                            {
-                                // Resize to 128x128px
-                                image.Mutate(c => c.Resize(new ResizeOptions
-                                {
-                                    // 'Max' mode maintains the aspect ratio and keeps the entire image
-                                    Mode = ResizeMode.Max,
-                                    Size = new Size(128),
-                                    Position = AnchorPositionMode.Center
-                                }));
-
-                                // some image formats that support transparent regions
-                                // these regions will turn black in JPEG format unless we do this
-                                image.Mutate(c => c.BackgroundColor(Rgba32.White)); ;
-
-                                // Save as JPEG
-                                var memoryStream = new MemoryStream();
-                                image.SaveAsJpeg(memoryStream);
-                                imageBytes = memoryStream.ToArray();
-
-                                // Note: JPEG is the format of choice for photography
-                                // for such pictures it provides better quality at a lower size
-                                // Since these pictures are expected to be mostly photographs
-                                // we save them as JPEGs
-                            }
-
-                            // Add it to blobs to save
-                            blobsToSave.Add((BlobName(imageId), imageBytes));
+                            // Return the sorted collection
+                            return sortedSavedEntities.ToList();
                         }
                     }
-
-                    // Delete the blobs retrieved earlier
-                    if (blobsToDelete.Any())
-                    {
-                        await _blobService.DeleteBlobs(blobsToDelete);
-                    }
-
-                    // Save new blobs if any
-                    if (blobsToSave.Any())
-                    {
-                        await _blobService.SaveBlobs(blobsToSave);
-                    }
-
-                    // Note: Since the blob service is not a transactional resource it is good to do the blob calls
-                    // near the end to minimize the chance of modifying blobs first only to have the transaction roll back later
                 }
-
-                // Return the saved entities if requested
-                if (!returnEntities)
+                catch (Exception ex)
                 {
-                    return new List<M.LocalUser>();
-                }
-                else
-                {
-                    // Return the sorted collection
-                    return sortedSavedEntities.ToList();
+                    trx.Rollback();
+                    throw ex;
                 }
             }
         }
@@ -775,7 +905,7 @@ namespace BSharp.Controllers
         protected override async Task DeleteAsync(List<int?> ids)
         {
             // Make sure the user is not deleting his/her own account
-            var currentUserId = _tenantInfo.GetCurrentInfo().UserId.Value;
+            var currentUserId = _tenantInfo.UserId();
             if (ids.Any(id => id == currentUserId))
             {
                 throw new BadRequestException(_localizer["Error_CannotDeleteYourOwnUser"].Value);

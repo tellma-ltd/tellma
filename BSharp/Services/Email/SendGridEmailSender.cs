@@ -1,4 +1,5 @@
-﻿using SendGrid;
+﻿using Microsoft.Extensions.Logging;
+using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
@@ -11,34 +12,29 @@ namespace BSharp.Services.Email
     public class SendGridEmailSender : IEmailSender
     {
         private readonly SendGridConfiguration _config;
+        private readonly ILogger<SendGridEmailSender> _logger;
 
-        public SendGridEmailSender(SendGridConfiguration config)
+        public SendGridEmailSender(SendGridConfiguration config, ILogger<SendGridEmailSender> logger)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
+            _logger = logger;
         }
 
-        public async Task SendEmailAsync(string email, string subject, string htmlMessage, string fromEmail = null)
+        public async Task SendEmailBulkAsync(List<string> tos, List<string> subjects, string htmlMessage, List<Dictionary<string, string>> substitutions, string fromEmail = null)
         {
-            // Read from the configuration provider
             string fromName = "BSharp ERP";
             fromEmail = fromEmail ?? _config.DefaultFromEmail;
             string sendGridApiKey = _config.ApiKey;
 
-
-            // Prepare the message
             var client = new SendGridClient(sendGridApiKey);
             var from = new EmailAddress(fromEmail, fromName);
-            var to = new EmailAddress(email);
-            SendGridMessage message =
-                MailHelper.CreateSingleEmail(
-                            from: from,
-                            to: to,
-                            subject: subject,
-                            plainTextContent: "",
-                            htmlContent: htmlMessage);
+            var toAddresses = tos.Select(e => new EmailAddress(e)).ToList();
 
-            // Send the message
-            var response = await client.SendEmailAsync(message);
+
+            var msg = MailHelper.CreateMultipleEmailsToMultipleRecipients(
+                from, toAddresses, subjects, "", htmlMessage, substitutions);
+
+            var response = await client.SendEmailAsync(msg);
 
             // Handle returned errors
             if (response.StatusCode == HttpStatusCode.TooManyRequests)
@@ -49,11 +45,22 @@ namespace BSharp.Services.Email
 
             if (response.StatusCode >= HttpStatusCode.BadRequest)
             {
+                string responseMessage = await response.Body.ReadAsStringAsync();
+                _logger.LogError($"Error sending email through SendGrid, Status Code: {response.StatusCode}, Message: {responseMessage}");
+
                 throw new InvalidOperationException($"The SendGrid API returned an unknown error {response.StatusCode} when trying to send the email through it");
             }
+        }
 
-            else return;
-
+        public async Task SendEmailAsync(string email, string subject, string htmlMessage, string fromEmail = null)
+        {
+            await SendEmailBulkAsync(
+                tos: new List<string> { email },
+                subjects: new List<string> { subject },
+                htmlMessage: htmlMessage,
+                substitutions: new List<Dictionary<string, string>> { new Dictionary<string, string> { } },
+                fromEmail: fromEmail
+                );
         }
     }
 }

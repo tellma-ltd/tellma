@@ -46,7 +46,7 @@ namespace BSharp.Areas.Identity.Pages.Account
 
             if(passwordCode != null)
             {
-                return RedirectToPage("./ResetPassword", new { code = passwordCode, justConfirmedEmail = true });
+                return RedirectToPage("./ResetPassword", new { code = passwordCode, email = user.Email, justConfirmedEmail = true });
             }
             else
             {

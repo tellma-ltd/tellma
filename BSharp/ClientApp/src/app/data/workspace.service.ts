@@ -213,7 +213,7 @@ export class Workspace {
 
 export class MasterDetailsStore {
 
-  top = 50;
+  top = 40;
   skip = 0;
   search: string = null;
   orderBy: string = null;

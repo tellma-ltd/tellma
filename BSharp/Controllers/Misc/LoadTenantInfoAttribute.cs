@@ -3,10 +3,18 @@ using BSharp.Services.MultiTenancy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
+using BSharp.Services.Utilities;
+using BSharp.Services.ApiAuthentication;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace BSharp.Controllers.Misc
 {
+    /// <summary>
+    /// Loads general contextual information about the user and the tenant and stores them in the HTTP Context,
+    /// this information is accessible with the <see cref="ITenantUserInfoAccessor"/> service. 
+    /// IMPORTANT: This attribute should always be precedede with another attribute <see cref="AuthorizeAccessAttribute"/>
+    /// </summary>
     public class LoadTenantInfoAttribute : TypeFilterAttribute
     {
         public LoadTenantInfoAttribute() : base(typeof(LoadTenantInfo))
@@ -42,7 +50,7 @@ namespace BSharp.Controllers.Misc
                 // (2) Make sure the user is a member of this tenant
                 // Note: To initialize ITenantUserInfo, we simply resolve ApplicationContext from the DI
                 // container the constructor of ApplicationContext automatically does the deed
-                _provider.GetService(typeof(ApplicationContext));
+                var appContext = (ApplicationContext)_provider.GetService(typeof(ApplicationContext));
 
                 // Retrieve the TenantUserInfo with help from the DI container
                 var tenantInfoAccessor = (ITenantUserInfoAccessor)_provider.GetService(typeof(ITenantUserInfoAccessor));
@@ -62,12 +70,25 @@ namespace BSharp.Controllers.Misc
                 }
 
 
-                // (3) If the user exists but new, do the needful
-                // TODO
+                // (3) If the user exists but new, set the External Id
+                var userId = tenantInfo.UserId.Value;
+                var externalId = context.HttpContext.User.ExternalUserId();
+                var email = context.HttpContext.User.Email();
+
+                if (tenantInfo.ExternalId != externalId)
+                {
+                    // Update external Id in this tenant and in all other tenants where this user is registered
+                    appContext.Database.ExecuteSqlCommandAsync($"UPDATE [dbo].[LocalUsers] SET ExternalId = {externalId} WHERE Email = {email}");
+
+                    var adminContext = (AdminContext)_provider.GetService(typeof(AdminContext));
+                    adminContext.Database.ExecuteSqlCommandAsync($"UPDATE [dbo].[GlobalUsers] SET ExternalId = {externalId} WHERE Email = {email}");
+                }
 
 
                 // (4) If the user's email address has changed, do the needful
                 // TODO
+
+                // (5) If the user's email exists but his id changed, do the needful
 
 
                 // (5) If any version headers are supplied: confirm their freshness

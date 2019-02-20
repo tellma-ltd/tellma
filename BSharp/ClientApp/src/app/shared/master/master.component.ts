@@ -137,7 +137,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   @ViewChild('errorModal')
   public errorModal: TemplateRef<any>;
 
-  private PAGE_SIZE = 50;
+  private PAGE_SIZE = 40;
   private localState = new MasterDetailsStore();  // Used in popup mode
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
@@ -147,7 +147,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   private _tableColumnPathsAndExtras: string[];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
-  public searchView: SearchView = SearchView.tiles;
+  public searchView: SearchView = SearchView.table;
   public checked = {};
   public exportFormat: 'csv' | 'xlsx';
   public exportSkip = 0;

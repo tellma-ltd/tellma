@@ -39,6 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Register the services
             services.AddSingleton<IEmailSenderFactory, EmailSenderFactory>();
             services.AddSingleton<IEmailSender, EmailSender>();
+            services.AddSingleton<EmailTemplatesProvider>();
 
             return services;
         }

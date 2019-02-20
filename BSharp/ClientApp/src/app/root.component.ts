@@ -4,6 +4,7 @@ import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
 import { StorageService } from './data/storage.service';
 import { AuthService } from './data/auth.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'b-root',
@@ -37,7 +38,7 @@ export class RootComponent {
   ];
 
   constructor(private translate: TranslateService, private workspace: WorkspaceService,
-     private api: ApiService, private storage: StorageService) {
+    private api: ApiService, private storage: StorageService, private route: ActivatedRoute) {
 
     // Callback after the new app culture is loaded
     this.translate.onLangChange.subscribe((_: any) => {
@@ -55,16 +56,32 @@ export class RootComponent {
       this.storage.setItem('userCulture', culture);
     });
 
-     // TODO load from app configuration
+    // TODO load from app configuration
     // Fallback culture
     const defaultCulture = 'en';
     this.translate.setDefaultLang(defaultCulture);
 
     // TODO load from local storage properly
     const userCulture = this.storage.getItem('userCulture');
+    console.log('UI Culture: ' + userCulture);
     if (!!userCulture) {
       this.translate.use(userCulture);
     }
+  }
+
+  private getUrlUiCulture(): string {
+    // this is an ugly hack since we can't retrieve the url parameters on startup
+    if (!!location && !!location.href) {
+      const href = location.href;
+      const paramName = 'ui-culture';
+      const i = href.indexOf(paramName);
+      if (i !== -1) {
+        const uiCulture = href.substr(i + paramName.length + 1);
+        return decodeURIComponent(uiCulture);
+      }
+    }
+
+    return null;
   }
 
   setDocumentRTL(culture: string) {

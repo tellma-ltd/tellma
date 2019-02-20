@@ -13,6 +13,8 @@ namespace BSharp.Services.MultiTenancy
     public class TenantUserInfo
     {
         public int? UserId { get; set; }
+        public string Name { get; set; }
+        public string Name2 { get; set; }
         public string Email { get; set; }
         public string ExternalId { get; set; }
         public string PrimaryLanguageId { get; set; }

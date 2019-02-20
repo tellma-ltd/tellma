@@ -706,8 +706,26 @@ namespace BSharp.Data.Model
             En(Constants.Client, "ClearFilter", "Clear Filter"),
             Ar(Constants.Client, "ClearFilter", "إزالة التصفية"),
 
-            En(Constants.Client, "ActionDidNotPassValidation", "The action did not pass validation, see the highlighted rows for details"),
-            Ar(Constants.Client, "ActionDidNotPassValidation", "الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل"),
+            En(Constants.Server, "ActionDidNotPassValidation", "The action did not pass validation, see the highlighted rows for details"),
+            Ar(Constants.Server, "ActionDidNotPassValidation", "الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل"),
+
+            En(Constants.Server, "InvitationEmailSubject0", "Invitation to {0}"),
+            Ar(Constants.Server, "InvitationEmailSubject0", "دعوة للانضمام إلى {0}"),
+
+            En(Constants.Server, "InvitationEmailGreeting0", "Hello {0}!"),
+            Ar(Constants.Server, "InvitationEmailGreeting0", "مرحبا {0}!"),
+
+            En(Constants.Server, "InvitationEmailBody012", "{0} has invited you to join {1} ERP. Click on the button below to accept the invitation and create your account. This invitation is only valid for {2} days."),
+            Ar(Constants.Server, "InvitationEmailBody012", "لديك دعوة من {0} للانضمام إلى عائلة {1}، إضغط على الزر أدناه لقبول هذه الدعوة وإنشاء حسابك، الدعوة صالحة لمدة {2} أيام فقط."),
+
+            En(Constants.Server, "InvitationEmailButtonLabel", "Accept Invitation"),
+            Ar(Constants.Server, "InvitationEmailButtonLabel", "قبول الدعوة"),
+
+            En(Constants.Server, "InvitationEmailConclusion", "Yours,"),
+            Ar(Constants.Server, "InvitationEmailConclusion", "مبارك،"),
+
+            En(Constants.Server, "InvitationEmailSignature0", "The {0} team"),
+            Ar(Constants.Server, "InvitationEmailSignature0", "فريق {0}"),
 
 
 
@@ -881,7 +899,6 @@ namespace BSharp.Data.Model
 
             En(Constants.Server, "Error_InvalidLoginAttempt", "Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox"),
             Ar(Constants.Server, "Error_InvalidLoginAttempt", "تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد"),
-
 
             En(Constants.Shared, "GoTo0", "Go to {0}"),
             Ar(Constants.Shared, "GoTo0", "ذهاب إلى {0}"),

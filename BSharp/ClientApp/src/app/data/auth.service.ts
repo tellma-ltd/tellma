@@ -244,6 +244,7 @@ export class AuthService {
 
     // clean the app state (keep the id token since it is needed for the subsequent logout)
     const id_token = this.storage.getItem('id_token');
+    this.storage.removeItem('access_token'); // to trigger storage event more reliably
     this.storage.clear();
     this.storage.setItem('id_token', id_token);
 

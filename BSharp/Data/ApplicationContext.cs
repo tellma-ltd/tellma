@@ -213,6 +213,8 @@ namespace BSharp.Data
     -- Get the User Id
     DECLARE 
         @UserId INT, 
+        @Name NVARCHAR(255), 
+        @Name2 NVARCHAR(255), 
         @ExternalId NVARCHAR(450), 
         @Email NVARCHAR(255), 
         @SettingsVersion UNIQUEIDENTIFIER, 
@@ -227,6 +229,8 @@ namespace BSharp.Data
 
     SELECT
         @UserId = Id,
+        @Name = Name,
+        @Name2 = Name2,
         @ExternalId = ExternalId,
         @Email = Email,
         @PermissionsVersion = PermissionsVersion,
@@ -254,6 +258,8 @@ namespace BSharp.Data
     -- Return the user information
     SELECT 
         @UserId AS userId, 
+        @Name AS Name,
+        @Name2 AS Name2,
         @ExternalId AS ExternalId, 
         @Email AS Email, 
         @SettingsVersion AS SettingsVersion, 
@@ -280,6 +286,8 @@ namespace BSharp.Data
                         var info = new TenantUserInfo
                         {
                             UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++),
+                            Name = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            Name2 = reader.IsDBNull(i) ? null : reader.GetString(i++),
                             ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++),
                             Email = reader.IsDBNull(i) ? null : reader.GetString(i++),
                             SettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),

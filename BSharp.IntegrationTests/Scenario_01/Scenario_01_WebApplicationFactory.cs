@@ -36,7 +36,8 @@ namespace BSharp.IntegrationTests.Scenario_01
                         scope.ServiceProvider.GetRequiredService<IConfiguration>(), adminDbName: "BSharp-Scenario-01");
 
                     services.AddSingleton<IConfiguration>(config);
-                    new Startup(config, null).ConfigureServices(services);
+                    var env = scope.ServiceProvider.GetRequiredService<IHostingEnvironment>();
+                    new Startup(config, env).ConfigureServices(services);
                 }
 
                 //////////// Setup
@@ -217,6 +218,9 @@ INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, 
             {
                 _client = CreateClient();
                 _client.DefaultRequestHeaders.Add("X-Tenant-Id", "101");
+
+                // This extremely long lived access token (life time of 6 years) was specifically generated for the integration tests
+                _client.DefaultRequestHeaders.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjJiOGY5ZmU3NzQ3ZTA3YzA2NzlkNjMzYzg4ZDM3MmMxIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTA2MTI2ODcsImV4cCI6MTczOTgyODY4NywiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMzkiLCJhdWQiOlsiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMzkvcmVzb3VyY2VzIiwiYnNoYXJwIl0sImNsaWVudF9pZCI6IldlYkNsaWVudCIsInN1YiI6IjU1NTIyN2FiLWQ0N2MtNDY1OS1iMWJjLTYyOGIyODMzMGFlNCIsImF1dGhfdGltZSI6MTU1MDYxMjY4NSwiaWRwIjoibG9jYWwiLCJlbWFpbCI6InN1cHBvcnRAYmFuYW4taXQuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJlbWFpbCIsImJzaGFycCJdLCJhbXIiOlsicHdkIl19.po4g7c59T56X4WaqXkUUNmxsZp6t0Wu8dj_AfTG1bkLze_6XV-W_eKRKY6XUiZ9kKvwNzQ4dyQExbV_tN8I63NBWQnoqHHRB1Mw1_PDHTK-MrGzSIyLx40AtsI6-KJAyw8v74dr-71alx29Ccnvf59NJMP1uW-z-Ma945ePF5SvaY-BpRVWEhTuqO_fkS7DdxTWvPAt-cXTQ9zeREQfi9KC8eNZU6efqBXlueE5zxLKc458-aNa2PX7pmyyWJk_YupMVLzHBvu7KDT0e0M4JYkevFyRHr2742UX8G4SeHxT0-2VeYx5iA1dMMFrSKaF4c-vPNvJbccnU60b3zAdE5g");
             }
 
             return _client;
