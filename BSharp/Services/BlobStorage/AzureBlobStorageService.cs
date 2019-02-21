@@ -18,9 +18,9 @@ namespace BSharp.Services.BlobStorage
         private readonly string _notFoundError = "Sorry, the contents of this blob {0} were not found";
         private AzureBlobStorageConfiguration _config;
 
-        public AzureBlobStorageService(IOptions<AzureBlobStorageConfiguration> config)
+        public AzureBlobStorageService(AzureBlobStorageConfiguration config)
         {
-            _config = config.Value;
+            _config = config;
         }
 
         /// <summary>

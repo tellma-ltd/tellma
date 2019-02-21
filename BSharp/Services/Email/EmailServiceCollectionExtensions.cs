@@ -13,7 +13,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-
             if (action == null)
             {
                 throw new ArgumentNullException(nameof(action));

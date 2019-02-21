@@ -1,36 +1,27 @@
 ﻿using BSharp.Services.BlobStorage;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class BlobServiceCollectionExtensions
     {
-        public static IServiceCollection AddAzureBlobStorage(this IServiceCollection services, Action<AzureBlobStorageConfiguration> action)
+        public static IServiceCollection AddBlobService(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (action == null)
+            if(config != null)
             {
-                throw new ArgumentNullException(nameof(action));
+                services.Configure<BlobServiceConfiguration>(config);
             }
 
-            // Options pattern
-            services.Configure(action);
-            return services.AddScoped<IBlobService, AzureBlobStorageService>();
-        }
+            services.AddScoped<IBlobServiceFactory, BlobServiceFactory>();
+            services.AddScoped<IBlobService, BlobService>();
 
-        public static IServiceCollection AddSqlTableBlobStorage(this IServiceCollection services)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            // Options pattern
-            return services.AddScoped<IBlobService, SqlTableBlobService>();
+            return services;
         }
     }
 }

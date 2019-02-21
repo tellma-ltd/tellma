@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace BSharp.Services.BlobStorage
 {
-    public class AzureBlobStorageConfiguration
+    public interface IBlobServiceFactory
     {
-        public string ConnectionString { get; set; }
-
-        public string ContainerName { get; set; }
+        IBlobService Create();
     }
 }

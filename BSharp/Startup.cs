@@ -86,31 +86,10 @@ namespace BSharp
                 });
             }
 
-            // Add a blob service either Azure or SQL Server depending the configuration 
-            var azureBlobConfig = _config.GetSection("AzureBlobStorage");
-            var azureBlobConnString = azureBlobConfig["ConnectionString"];
-            var azureBlobContainerName = azureBlobConfig["ContainerName"];
-            if (!string.IsNullOrWhiteSpace(azureBlobConnString) && !string.IsNullOrWhiteSpace(azureBlobContainerName))
-            {
-                // If Azure blob storage info is provided use it
-                // Note: This setup of using a single azure blob storage may become a
-                // bottleneck in the extremely far future we will worry about it then                
-                services.AddAzureBlobStorage(opt =>
-                {
-                    opt.ConnectionString = azureBlobConnString;
-                    opt.ContainerName = azureBlobContainerName;
-                });
-            }
-            else
-            {
-                // If a connection string to an Azure blob storage is not provided use the sql db as blob storage
-                // This uses the ApplicationContext itself to store blobs: more expensive for Azure but easier to set up on-premise
-                services.AddSqlTableBlobStorage();
-            }
-
             // Add all our custom services
             services.AddMultiTenancy();
             services.AddSharding();
+            services.AddBlobService(_config);
             services.AddSqlLocalization();
             services.AddDynamicModelMetadata();
 
