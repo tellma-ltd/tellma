@@ -72,14 +72,12 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   @Input()
   public set apiEndpoint(v: string) {
-    // v =  v || '|';
     // apiEndpoint cannot be reset to null
     if (!!v && this._apiEndpoint !== v) {
       if (this.alreadyInit) {
         this.ngOnDestroy();
       }
 
-      const split = v.split('|');
       this._apiEndpoint = v;
 
       if (this.alreadyInit) {
@@ -106,7 +104,6 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
       if (this.alreadyInit) {
         this.ngOnInit();
       }
-      // this.fetch();
     }
   }
 
@@ -642,10 +639,27 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   onCancel(): void {
+
     if (this.mode === 'popup') {
       // in popup mode, just notify the outside world that a cancel has happened
       this.cancel.emit();
     } else {
+
+      const canCancel = this.canDeactivate();
+      if (canCancel instanceof Observable) {
+        canCancel.subscribe(can => {
+          if (can) {
+            this.doCancel();
+          }
+        });
+      } else if (canCancel) {
+        this.doCancel();
+      }
+    }
+  }
+
+  doCancel(): void {
+
       // in screen mode...
       // remove the edit model
       if (this.isNew) {
@@ -664,7 +678,6 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
         // ... and then close the edit form
         this.state.detailsStatus = DetailsStatus.loaded;
       }
-    }
   }
 
   onDelete(): void {

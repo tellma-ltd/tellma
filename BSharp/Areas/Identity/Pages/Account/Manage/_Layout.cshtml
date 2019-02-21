@@ -6,8 +6,10 @@
 @inject IViewLocalizer Localizer
 @inject UserManager<User> UserManager
 @inject IOptions<ClientStoreConfiguration> Config
-
+@inject SignInManager<User> SignInManager
 @{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+
     var httpContext = ViewContext.HttpContext;
     var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
@@ -37,7 +39,7 @@
     <header>
         <nav class="navbar navbar-dark b-dark navbar-expand-md p-0">
             <a class="b-brand-link b-navbar-button h-100" href="@(Config.Value.WebClientUri + "companies?ui-culture=" + currentCulture)">
-                <table>
+                <table class="h-100">
                     <tbody>
                         <tr>
                             <th>
@@ -65,14 +67,17 @@
                     <li class="nav-item h-100">
                         <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./ChangePassword">@Localizer["Menu_Password"]</a>
                     </li>
-                    <li class="nav-item h-100">
-                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./ExternalLogins">@Localizer["Menu_ExternalSignIns"]</a>
-                    </li>
+                    @if (hasExternalLogins)
+                    {
+                        <li class="nav-item h-100">
+                            <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./ExternalLogins">@Localizer["Menu_ExternalSignIns"]</a>
+                        </li>
+                    }
                     <li class="nav-item h-100">
                         <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./TwoFactorAuthentication">@Localizer["Menu_TwoFactorAuthentication"]</a>
                     </li>
                     <li class="nav-item h-100">
-                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" 
+                        <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center"
                            href="@(Config.Value.WebClientUri + "companies?ui-culture=" + currentCulture)">@Localizer["GoTo0", Localizer["AppName"]]</a>
                     </li>
                 </ol>
