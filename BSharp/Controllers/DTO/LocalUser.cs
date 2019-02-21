@@ -1,4 +1,5 @@
 ﻿using BSharp.Controllers.Misc;
+using BSharp.Services.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace BSharp.Controllers.DTO
 {
     [CollectionName("LocalUsers")]
-    public class LocalUserForSave<TRoleMembership> : DtoForSaveKeyBase<int?>
+    public class LocalUserForSave<TRoleMembership> : DtoForSaveKeyBase<int?>, IMultilingualName
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]

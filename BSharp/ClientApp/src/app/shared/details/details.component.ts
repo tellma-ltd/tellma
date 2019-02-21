@@ -72,12 +72,14 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   @Input()
   public set apiEndpoint(v: string) {
+    // v =  v || '|';
     // apiEndpoint cannot be reset to null
     if (!!v && this._apiEndpoint !== v) {
       if (this.alreadyInit) {
         this.ngOnDestroy();
       }
 
+      const split = v.split('|');
       this._apiEndpoint = v;
 
       if (this.alreadyInit) {
@@ -121,6 +123,9 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @ViewChild('errorModal')
   public errorModal: TemplateRef<any>;
 
+  @ViewChild('successModal')
+  public successModal: TemplateRef<any>;
+
   @ViewChild('unsavedChangesModal')
   public unsavedChangesModal: TemplateRef<any>;
 
@@ -133,6 +138,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   private localState = new MasterDetailsStore();  // Used in popup mode
   private _errorMessage: string; // in the document area itself
   private _modalErrorMessage: string; // in the modal
+  private _modalSuccessMessage: string; // in the modal
   private _unboundServerErrors: string[]; // in the modal
   private _viewModelJson: string;
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
@@ -195,6 +201,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.localState = new MasterDetailsStore();
     this._errorMessage = null;
     this._modalErrorMessage = null;
+    this._modalSuccessMessage = null;
     this._unboundServerErrors = [];
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
     this._viewModelJson = null;
@@ -374,6 +381,11 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.modalService.open(this.errorModal);
   }
 
+  public displayModalMessage(message: string) {
+    this._modalSuccessMessage = message;
+    this.modalService.open(this.successModal);
+  }
+
   get viewModel(): DtoForSaveKeyBase {
     // view data is always directly referencing the global workspace
     // this way, un update to a record in the global workspace automatically
@@ -408,6 +420,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   get modalErrorMessage() {
     return this._modalErrorMessage;
+  }
+
+  get modalSuccessMessage() {
+    return this._modalSuccessMessage;
   }
 
   get unboundServerErrors(): string[] {

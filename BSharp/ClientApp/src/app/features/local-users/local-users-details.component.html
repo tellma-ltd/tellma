@@ -1,8 +1,9 @@
 <b-details apiEndpoint="local-users" viewId="local-users" [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" [idString]="idString"
   collection="LocalUsers" [createFunc]="create" [mode]="mode" [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb"
   [documentTemplate]="document" [documentHeaderTemplate]="documentHeader" [actions]="[
-            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
-            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+            { template: activate, action: onActivate, showAction: showActivate, canAction: canAction, actionTooltip: actionTooltip },
+            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canAction, actionTooltip: actionTooltip },
+            { template: invite, action: onInvite, showAction: showInvite, canAction: canAction, actionTooltip: actionTooltip }
            ]">
 
 </b-details>
@@ -43,7 +44,7 @@
 
   <div class="col-12 col-md-4 b-details-image-container">
     <div class="border">
-      <b-image *ngIf="!!model"  [src]="model.Id ? 'local-users/' + model.Id + '/image' : null" [imageId]="model?.ImageId" [(ngModel)]="model.Image"
+      <b-image *ngIf="!!model"  [src]="model.Id ? 'local-users/' + model.Id + '/image|' + (model?.ImageId || '') : null" [(ngModel)]="model.Image"
         [isEdit]="isEdit"></b-image>
     </div>
   </div>
@@ -169,3 +170,4 @@
 <!-- Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+<ng-template #invite> {{ 'ResendInvitationEmail' | translate }} </ng-template>

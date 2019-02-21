@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BSharp.Services.Utilities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Data.Model
 {
-    public class LocalUser : ModelBase
+    public class LocalUser : ModelBase, IMultilingualName
     {
         public int Id { get; set; }
         

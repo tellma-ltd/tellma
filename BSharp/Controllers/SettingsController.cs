@@ -23,7 +23,7 @@ namespace BSharp.Controllers
     [ApiController]
     [AuthorizeAccess]
     [LoadTenantInfo]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class SettingsController : ControllerBase
     {
         // Private fields

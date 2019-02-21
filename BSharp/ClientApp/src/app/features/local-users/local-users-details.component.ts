@@ -63,12 +63,19 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
     }
   }
 
+  public onInvite = (model: LocalUser): void => {
+    if (!!model && !!model.Id) {
+      this.localUsersApi.invite(model.Id).subscribe(() => {
+        this.details.displayModalMessage(this.translate.instant('InvitationEmailSent'));
+      }, this.details.handleActionError);
+    }
+  }
   public showActivate = (model: LocalUser) => !!model && !model.IsActive;
   public showDeactivate = (model: LocalUser) => !!model && model.IsActive;
+  public showInvite = (model: LocalUser) => !!model && !model.ExternalId;
 
-  public canActivateDeactivateItem = (model: LocalUser) => this.ws.canUpdate('local-users', model.Id);
-
-  public activateDeactivateTooltip = (model: LocalUser) => this.canActivateDeactivateItem(model) ? '' :
+  public canAction = (model: LocalUser) => this.ws.canUpdate('local-users', model.Id);
+  public actionTooltip = (model: LocalUser) => this.canAction(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get ws() {

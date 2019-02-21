@@ -25,7 +25,7 @@ namespace BSharp.Controllers
 {
     [ApiController]
     [AuthorizeAccess]
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public abstract class ReadControllerBase<TModel, TDto, TKey> : ControllerBase
         where TModel : M.ModelBase
         where TDto : DtoKeyBase<TKey>

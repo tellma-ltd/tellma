@@ -39,7 +39,8 @@
         </div>
 
         <!-- Create -->
-        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body">
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip"
+          container="body">
           <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCreate()"
             [disabled]="!canCreate">
             <fa-icon icon="plus"></fa-icon>
@@ -48,29 +49,31 @@
         </div>
 
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
-          <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle"
-            ngbDropdownToggle>
+          <button type="button"
+            class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle" ngbDropdownToggle>
             {{ 'Actions' | translate }}
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngFor="let action of actions">
-              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action)"
-                container="body" container="body">
-                <button type="button" class="dropdown-item btn-light" (click)="action.action(activeModel)" [disabled]="!canAction(action)">
+              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
+                [ngbTooltip]="actionTooltip(action)" container="body" container="body">
+                <button type="button" class="dropdown-item btn-light" (click)="action.action(activeModel)"
+                  [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
               </div>
             </ng-container>
 
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)" [disabled]="!canDelete"
-                *ngIf="showDelete">
+              <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)"
+                [disabled]="!canDelete" *ngIf="showDelete">
                 {{ 'Delete' | translate }}
               </button>
             </div>
 
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="cloneTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" *ngIf="showClone" (click)="onClone()" [disabled]="!canClone">
+              <button type="button" class="dropdown-item btn-light" *ngIf="showClone" (click)="onClone()"
+                [disabled]="!canClone">
                 {{ 'Clone' | translate }}
               </button>
 
@@ -96,8 +99,8 @@
 
       <div>
         <!-- Refresh -->
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showRefresh" type="button" title="{{ 'Refresh' | translate }}"
-          (click)="onRefresh()">
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showRefresh" type="button"
+          title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
           <fa-icon icon="sync-alt"></fa-icon>
         </button>
 
@@ -109,12 +112,12 @@
             <span class="b-vertical-align-middle"> / {{ total | number }}</span>
           </div>
 
-          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button" title="{{ 'Previous' | translate }}"
-            (click)="onPrevious()" [disabled]="!canPrevious">
+          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+            title="{{ 'Previous' | translate }}" (click)="onPrevious()" [disabled]="!canPrevious">
             <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
           </button>
-          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button" title="{{ 'Next' | translate }}"
-            (click)="onNext()" [disabled]="!canNext">
+          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+            title="{{ 'Next' | translate }}" (click)="onNext()" [disabled]="!canNext">
             <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
           </button>
         </ng-container>
@@ -260,6 +263,32 @@
   <!-- body -->
   <div class="modal-body">
     {{ modalErrorMessage }}
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Dismiss' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #successModal let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title">
+      <fa-icon class="text-success" icon="check"></fa-icon>&nbsp;&nbsp;{{ 'Success' | translate }}
+    </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    {{ modalSuccessMessage }}
   </div>
 
   <!-- footer -->

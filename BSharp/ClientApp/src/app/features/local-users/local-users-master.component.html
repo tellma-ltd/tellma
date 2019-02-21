@@ -3,7 +3,7 @@
   [tableColumnTemplates]="{
             'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
             'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
-            'ExternalId' : { headerTemplate : header_ExternalId, rowTemplate : stateTemplate, weight : 1 },
+            'ExternalId' : { headerTemplate : header_ExternalId, rowTemplate : stateTemplate, weight : 1.5 },
             'Email' : { headerTemplate : header_Email, rowTemplate : row_Email, weight : 1.5 },
             'Agent/Name' : { headerTemplate : header_AgentId, rowTemplate : row_AgentId, weight : 1.5 },
             'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
@@ -32,7 +32,7 @@
 <ng-template #tile let-id="id">
   <div class="d-flex">
     <div class="border b-dp-wrapper2">
-        <b-image [src]="'local-users/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></b-image>
+        <b-image [src]="'local-users/' + c[id].Id + '/image|' + (c[id].ImageId || '')" [size]="42"></b-image>
     </div>
     &nbsp;&nbsp;&nbsp;
     <div class="flex-grow-1 d-inline-block b-mw-0">

@@ -345,10 +345,10 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "User_Companies", "Companies"),
             Ar(Constants.Shared, "User_Companies", "الشركات"),
 
-            En(Constants.Shared, "User_New", "New"),
-            Ar(Constants.Shared, "User_New", "جديد"),
+            En(Constants.Shared, "User_New", "Invited"),
+            Ar(Constants.Shared, "User_New", "مدعو"),
 
-            En(Constants.Shared, "User_Confirmed", "Confirmed"),
+            En(Constants.Shared, "User_Confirmed", "Email Confirmed"),
             Ar(Constants.Shared, "User_Confirmed", "مؤكد"),
 
             En(Constants.Shared, "RoleMembership_User", "User"),
@@ -697,6 +697,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Error", "Error"),
             Ar(Constants.Client, "Error", "حدث خطأ"),
 
+            En(Constants.Client, "Success", "Success"),
+            Ar(Constants.Client, "Success", "تم بنجاح"),
+
             En(Constants.Client, "Unauthorized", "Unauthorized"),
             Ar(Constants.Client, "Unauthorized", "غير مصرح"),
 
@@ -705,6 +708,14 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "ClearFilter", "Clear Filter"),
             Ar(Constants.Client, "ClearFilter", "إزالة التصفية"),
+
+            En(Constants.Client, "ResendInvitationEmail", "Re-Send Invitation"),
+            Ar(Constants.Client, "ResendInvitationEmail", "إعادة إرسال الدعوة"),
+
+            En(Constants.Client, "InvitationEmailSent", "The invitation email was sent again"),
+            Ar(Constants.Client, "InvitationEmailSent", "تم إرسال الدعوة مرة أخرى بالبريد الاإلكتروني"),
+
+            
 
             En(Constants.Server, "ActionDidNotPassValidation", "The action did not pass validation, see the highlighted rows for details"),
             Ar(Constants.Server, "ActionDidNotPassValidation", "الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل"),
@@ -967,10 +978,10 @@ namespace BSharp.Data.Model
             En(Constants.Server, "SignInUsingYour0Account", "Sign in using your {0} account"),
             Ar(Constants.Server, "SignInUsingYour0Account", "سجل دخولك عن طريق حسابك عند {0}"),
 
-            En(Constants.Server, "TheExternalSignInWasAdded", "The external login was added."),
+            En(Constants.Server, "TheExternalSignInWasAdded", "The external sign-in was added."),
             Ar(Constants.Server, "TheExternalSignInWasAdded", "تم إضافة مسجل الدخول الخارجي."),
 
-            En(Constants.Server, "TheExternalSignInWasRemoved", "Sign in using your {0} account>"),
+            En(Constants.Server, "TheExternalSignInWasRemoved", "The external sign-in was removed."),
             Ar(Constants.Server, "TheExternalSignInWasRemoved", "تم إزالة مسجل الدخول الخارجي."),
 
             En(Constants.Server, "SetPassword", "Set Password"),

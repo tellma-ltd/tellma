@@ -37,7 +37,6 @@ namespace BSharp
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             // For some reason the integration tests are calling configure services 
             // twice, which is causing exceptions, this is a workaround until we
             // figure out the reason
@@ -87,14 +86,14 @@ namespace BSharp
                 });
             }
 
-            // Add a blob service depending on wheter 
+            // Add a blob service either Azure or SQL Server depending the configuration 
             var azureBlobConfig = _config.GetSection("AzureBlobStorage");
             var azureBlobConnString = azureBlobConfig["ConnectionString"];
             var azureBlobContainerName = azureBlobConfig["ContainerName"];
             if (!string.IsNullOrWhiteSpace(azureBlobConnString) && !string.IsNullOrWhiteSpace(azureBlobContainerName))
             {
                 // If Azure blob storage info is provided use it
-                // Note: This setup of using one azure blob storage may become a
+                // Note: This setup of using a single azure blob storage may become a
                 // bottleneck in the extremely far future we will worry about it then                
                 services.AddAzureBlobStorage(opt =>
                 {
@@ -105,7 +104,7 @@ namespace BSharp
             else
             {
                 // If a connection string to an Azure blob storage is not provided use the sql db as blob storage
-                // This uses the ApplicationContext itself to store blobs: more expensive but easier to set up on-premise
+                // This uses the ApplicationContext itself to store blobs: more expensive for Azure but easier to set up on-premise
                 services.AddSqlTableBlobStorage();
             }
 
@@ -115,7 +114,7 @@ namespace BSharp
             services.AddSqlLocalization();
             services.AddDynamicModelMetadata();
 
-            // Setup an embedded instance of identity service in the same domain as the API if enabled in the configuration
+            // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
             services.AddEmbeddedIdentityServerIfEnabled(_config, _env);
 
             // Add services for authenticating API calls against an OIDC authority, and helper services for accessing claims
@@ -130,18 +129,15 @@ namespace BSharp
                 .AddDataAnnotationsLocalization()
                 .AddJsonOptions(options =>
                 {
-                        // The JSON options below instruct the serializer to keep property names in PascalCase, 
-                        // even though this violates convention, it makes a few things easier since both client and server
-                        // sides get to see and communicate identical property names, for example 'api/customers?orderby='Name'
-                        options.SerializerSettings.ContractResolver = new DefaultContractResolver
+                    // The JSON options below instruct the serializer to keep property names in PascalCase, 
+                    // even though this violates convention, it makes a few things easier since both client and server
+                    // sides get to see and communicate identical property names, for example 'api/customers?orderby='Name'
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
                         NamingStrategy = new DefaultNamingStrategy()
                     };
-
-                        //   options.SerializerSettings.Converters.Insert(0, new TrimmingStringConverter());
-
-                        // To response size
-                        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    // To reduce response size, some of the DTOs we use are humongously wide
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
 
@@ -171,15 +167,15 @@ namespace BSharp
             // Configure some custom behavior for API controllers
             services.Configure<ApiBehaviorOptions>(options =>
             {
-                    // This overrides the default behavior, when there are validation
-                    // errors we return a 422 unprocessable entity, instead of the default
-                    // 400 bad request, this makes it easier for clients to easily distinguish 
-                    // such kind of errors and handle them in a special way, for example:
-                    // by showing them on the fields with a red color
-                    options.InvalidModelStateResponseFactory = ctx =>
-                    {
-                        return new UnprocessableEntityObjectResult(ctx.ModelState);
-                    };
+                // This overrides the default behavior, when there are validation
+                // errors we return a 422 unprocessable entity, instead of the default
+                // 400 bad request, this makes it easier for clients to distinguish 
+                // such kind of errors and handle them in a special way, for example:
+                // by showing them on the fields with a red color
+                options.InvalidModelStateResponseFactory = ctx =>
+                {
+                    return new UnprocessableEntityObjectResult(ctx.ModelState);
+                };
             });
 
 
@@ -196,7 +192,6 @@ namespace BSharp
 
         public void Configure(IApplicationBuilder app, ILogger<Startup> logger, IOptions<GlobalConfiguration> options)
         {
-
             if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -215,11 +210,11 @@ namespace BSharp
 
                 opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUICulture);
 
-                    // Formatting numbers, dates, etc.
-                    opt.AddSupportedCultures(defaultCulture);
+                // Formatting numbers, dates, etc.
+                opt.AddSupportedCultures(defaultCulture);
 
-                    // UI strings that we have localized.
-                    opt.SupportedUICultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+                // UI strings that we have localized.
+                opt.SupportedUICultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
             });
 
             app.UseHttpsRedirection();
@@ -230,16 +225,19 @@ namespace BSharp
             {
                 app.UseCors(builder =>
                 {
-                        // TODO: Read from settings for production
-                        builder
-                                .AllowAnyOrigin()
-                                .AllowAnyHeader()
-                                .AllowAnyMethod()
-                                .WithExposedHeaders("x-image-id")
-                                .WithExposedHeaders("x-settings-version")
-                                .WithExposedHeaders("x-permissions-version")
-                                .WithExposedHeaders("x-user-settings-version");
+                    builder
+                            .AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .WithExposedHeaders("x-image-id")
+                            .WithExposedHeaders("x-settings-version")
+                            .WithExposedHeaders("x-permissions-version")
+                            .WithExposedHeaders("x-user-settings-version");
                 });
+            }
+            else
+            {
+                // TODO: Read from settings for production
             }
 
             // Serves the identity server

@@ -47,16 +47,13 @@ export enum AuthEvent {
   SignedOutFromAuthority = 'signed_out_from_authority',
 
   // the user independently navigated to Identity Server and signed in as a different user
-  SignedInFromAuthorityAsDifferentUser = 'signed_in_from_authority_as_different_user',
+  SignedInAsDifferentUser = 'signed_in_as_different_user',
 
   // misc_error_while_checking_session_state
   SessionError = 'session_error',
 
   // the user cleared the access token in the storage from another tab or manually or replaced it with an invalid one
-  StorageIsCleared = 'storage_is_cleared',
-
-  // a valid token has been added to local storage or the token has been replaced with a new valid token
-  StorageHasNewValidToken = 'storage_has_new_valid_token'
+  StorageIsCleared = 'storage_is_cleared'
 }
 
 @Injectable({
@@ -91,8 +88,15 @@ export class AuthService {
       if (e.key === 'access_token') {
         if (!e.newValue) {
           this._events$.next(AuthEvent.StorageIsCleared);
-        } else {
-          this._events$.next(AuthEvent.StorageHasNewValidToken);
+        }
+      }
+
+      if (e.key === 'id_token_claims_obj') {
+        const oldValue = JSON.parse(e.oldValue);
+        const newValue = JSON.parse(e.newValue);
+
+        if (!!oldValue && !!newValue && oldValue.sub !== newValue.sub) {
+          this._events$.next(AuthEvent.SignedInAsDifferentUser);
         }
       }
     });
@@ -107,7 +111,7 @@ export class AuthService {
       if (e instanceof OAuthErrorEvent && e.type === 'token_validation_error' && !!e.reason &&
         e.reason.toString().startsWith('After refreshing, we got an id_token for another user (sub)')) {
         // this is a little hacky but the library provides no other API to distinguish the token validation errors
-        this._events$.next(AuthEvent.SignedInFromAuthorityAsDifferentUser);
+        this._events$.next(AuthEvent.SignedInAsDifferentUser);
       }
 
       if (e.type === 'session_error') {

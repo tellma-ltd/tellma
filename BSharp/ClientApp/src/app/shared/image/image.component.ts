@@ -42,12 +42,16 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
 
   @Input()
   set src(v: string) {
-    if (this._src !== v) {
+    v = v || '|';
+
+    if (this.src !== v) {
       if (this.alreadyInit) {
         this.ngOnDestroy();
       }
 
-      this._src = v;
+      const split = v.split('|');
+      this._src = split[0];
+      this._imageId = split[1];
 
       if (this.alreadyInit) {
         this.ngOnInit();
@@ -56,27 +60,7 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
   }
 
   get src(): string {
-    return this._src;
-  }
-
-  @Input()
-  set imageId(v: string) {
-    if (this._imageId !== v) {
-
-      if (this.alreadyInit) {
-        this.ngOnDestroy();
-      }
-
-      this._imageId = v;
-
-      if (this.alreadyInit) {
-        this.ngOnInit();
-      }
-    }
-  }
-
-  get imageId(): string {
-    return this._imageId;
+    return `${this._src}|${this._imageId}`;
   }
 
   @ViewChild('input')

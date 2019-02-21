@@ -79,6 +79,22 @@ export class ApiService {
         );
 
         return obs$;
+      },
+      invite: (id: number | string) => {
+        this.saveInProgress = true;
+        const url = appconfig.apiAddress + `api/local-users/invite?id=${id}`;
+        const obs$ = this.http.put(url, null).pipe(
+          tap(() => this.saveInProgress = false),
+          catchError(error => {
+            this.saveInProgress = false;
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.saveInProgress = false)
+        );
+
+        return obs$;
       }
     };
   }

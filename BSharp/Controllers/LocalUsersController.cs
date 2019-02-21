@@ -167,6 +167,67 @@ namespace BSharp.Controllers
             }
         }
 
+        [HttpPut("invite")]
+        public async Task<ActionResult> ResendInvitationEmail(int id)
+        {
+            return await CallAndHandleErrorsAsync(async () =>
+            {
+                await CheckActionPermissions(new List<int?> { id });
+
+                var localUser = await _db.LocalUsers.FirstOrDefaultAsync(e => e.Id == id);
+                if(localUser == null)
+                {
+                    return NotFound(id);
+                }
+
+                string toEmail = localUser.Email;
+                var identityUser = await _userManager.FindByEmailAsync(toEmail);
+                if(identityUser == null)
+                {
+                    return NotFound(toEmail);
+                }
+
+                var (subject, htmlMessage) = await MakeInvitationEmailAsync(identityUser, localUser);
+                await _emailSender.SendEmailAsync(toEmail, subject, htmlMessage);
+                return Ok();
+            });
+        }
+        
+        private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(M.User recipient, IMultilingualName recipientName)
+        {
+            // Load the info
+            var info = _tenantInfo.GetCurrentInfo();
+
+            // TODO: Get the preferred culture of the recipient user
+            CultureInfo culture = CultureInfo.CurrentUICulture;
+            var localizer = _localizer.WithCulture(culture);
+
+            // Prepare the parameters
+            string userId = recipient.Id;
+            string emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(recipient);
+            string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(recipient);
+            string nameOfInvitor = info.SecondaryLanguageId == culture.Name ? info.Name2 ?? info.Name : info.Name;
+
+            string callbackUrl = Url.Page(
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
+                    protocol: Request.Scheme);
+
+            // Prepare the email
+            string invitationEmail = _emailTemplates.MakeInvitationEmail(
+                 nameOfRecipient: info.SecondaryLanguageId == culture.Name ? recipientName.Name2 ?? recipientName.Name : recipientName.Name,
+                 nameOfInvitor: nameOfInvitor,
+                 validityInDays: Constants.TokenExpiryInDays,
+                 userId: userId,
+                 callbackUrl: callbackUrl,
+                 culture: culture
+                 );
+
+            string subject = localizer["InvitationEmailSubject0", localizer["AppName"]];
+            return (subject, invitationEmail);
+        }
+
         private async Task<ActionResult<EntitiesResponse<LocalUser>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             await CheckActionPermissions(ids.Cast<int?>());
@@ -788,8 +849,6 @@ namespace BSharp.Controllers
                             // NOTE: the section below is not optimized for massive bulk (e.g. 1,000+ users), but it should be 
                             // acceptable with the usual workloads, customers with more than 200 users are rare anyways
 
-                            var info = _tenantInfo.GetCurrentInfo();
-
                             // The email sender parameters
                             var tos = new string[count];
                             var subjects = new string[count];
@@ -829,36 +888,11 @@ namespace BSharp.Controllers
                                 // if the system is online: prepare an invitation email that contains an email confirmation link
                                 if (_config.Online)
                                 {
-                                    // TODO: Get the preferred culture of the recipient user
-                                    CultureInfo culture = CultureInfo.CurrentUICulture;
-                                    var localizer = _localizer.WithCulture(culture);
-
-                                    // Prepare the parameters
-                                    string userId = identityUser.Id;
-                                    string emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
-                                    string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityUser);
-                                    string nameOfInvitor = info.SecondaryLanguageId == culture.Name ? info.Name2 ?? info.Name : info.Name;
-
-                                    string callbackUrl = Url.Page(
-                                            "/Account/ConfirmEmail",
-                                            pageHandler: null,
-                                            values: new { userId, code = emailToken, passwordCode = passwordToken, area = "Identity" },
-                                            protocol: Request.Scheme);
-
-                                    // Prepare the email
-                                    string invitationEmail = _emailTemplates.MakeInvitationEmail(
-                                         nameOfRecipient: info.SecondaryLanguageId == culture.Name ? localUser.Name2 ?? localUser.Name : localUser.Name,
-                                         nameOfInvitor: nameOfInvitor,
-                                         validityInDays: Constants.TokenExpiryInDays,
-                                         userId: userId,
-                                         callbackUrl: callbackUrl,
-                                         culture: culture
-                                         );
-
                                     // Add the email sender parameters
+                                    var (subject, body) = await MakeInvitationEmailAsync(identityUser, localUser);
                                     tos[i] = email;
-                                    subjects[i] = localizer["InvitationEmailSubject0", localizer["AppName"]];
-                                    substitutions[i] = new Dictionary<string, string> { { "-message-", invitationEmail } };
+                                    subjects[i] = subject;
+                                    substitutions[i] = new Dictionary<string, string> { { "-message-", body } };
                                 }
                             }
 

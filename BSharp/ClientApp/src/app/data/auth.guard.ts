@@ -52,7 +52,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
           this.goToLandingPage();
           this.cleaner.cleanState();
           break;
-        case AuthEvent.SignedInFromAuthorityAsDifferentUser:
+        case AuthEvent.SignedInAsDifferentUser:
           // cleaning the state before navigating is necessary here, to force loading the new user's token
           // it will throw log errors for all the bindings on display, but this is a rare marginal event anyways
           this.cleaner.cleanState();

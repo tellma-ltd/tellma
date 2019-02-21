@@ -147,7 +147,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   private _tableColumnPathsAndExtras: string[];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
-  public searchView: SearchView = SearchView.table;
+  public searchView: SearchView = (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
   public checked = {};
   public exportFormat: 'csv' | 'xlsx';
   public exportSkip = 0;
