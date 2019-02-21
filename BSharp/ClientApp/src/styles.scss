@@ -202,22 +202,29 @@ ngb-tabset li.nav-item .small {
 }
 
 .b-banner {
-  background-image: url('/assets/background.jpg');
+  background-image: url("/assets/background.jpg");
   background-position: 50%;
   background-size: cover;
 }
 
 .b-banner2 {
-  background-image: url('/assets/background2.jpg');
+  background-image: url("/assets/background2.jpg");
   background-position: 50%;
   background-size: cover;
 }
 
-// if its parent is a column flex box, it occupies the rest of the screen
-.b-rest-of-screen {
-  flex: 1 0;
-  overflow-y: auto;
-  overflow-y: overlay; // This stops the scrollbar from occupying width on webkit browsers
+@media (min-height: 768px) {
+  // if its parent is a column flex box, it occupies the rest of the screen
+  .b-rest-of-screen {
+    flex: 1 0;
+    overflow-y: auto;
+    overflow-y: overlay; // This stops the scrollbar from occupying width on webkit browsers
+  }
+  // This will make it such that when the screen is small, you will be able to
+  // scroll even the navbar out of view and not just the content area
+  .b-body {
+    height: 100% !important;
+  }
 }
 
 // these are buttons that only have an icon in them
@@ -873,7 +880,6 @@ button.b-navbar-button:focus {
   text-decoration: none !important;
 }
 
-
 .b-details-image-container {
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -887,13 +893,5 @@ button.b-navbar-button:focus {
     padding-top: 0;
     padding-bottom: 0;
     justify-content: flex-end;
-  }
-}
-
- @media (min-height: 768px) {
-  // This will make it such that when the screen is small, you will be able to
-  // scroll even the navbar out of view and not just the content area
-  .b-body {
-    height: 100% !important;
   }
 }
