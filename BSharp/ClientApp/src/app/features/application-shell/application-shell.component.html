@@ -1,64 +1,66 @@
 <div class="d-flex flex-column h-100">
-  <div class="navbar navbar-dark b-dark navbar-expand-md p-0" [style.background-color]="settings?.BrandColor">
-    <a class="b-brand-link b-navbar-button h-100" routerLink="main-menu" [title]="'Home' | translate">
-      <b-brand class="h-100" [scale]="1.2"></b-brand>
+  <!-- <div class="alert-warning p-2 px-3"><fa-icon icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp;The system license has expired. If the license is not renewed the system will become read-only in <b>22 days.</b> </div> -->
+ <b-error-message>The system license has expired. If the license is not renewed the system will become read-only in <b>22 days.</b></b-error-message>
+  <div class="navbar navbar-dark b-dark navbar-expand-lg p-0" [style.background-color]="settings?.BrandColor">
+    <a class="b-brand-link b-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
+      <b-brand [scale]="1.2"></b-brand>
     </a>
-    <button type="button" class="navbar-toggler ml-2 mr-2" (click)="onToggleCollapse()">
+    <button type="button" class="navbar-toggler mx-2" (click)="onToggleCollapse()">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse justify-content-between h-100" [ngbCollapse]="isCollapsed">
-      <ol class="nav navbar-nav h-100">
-        <li class="nav-item h-100">
-          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./main-menu"
+    <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
+      <ol class="nav navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./main-menu"
             (click)="onCollapse()">
             {{ 'Home' | translate }}
           </a>
         </li>
-        <li class="nav-item h-100">
-          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./agents/individuals"
+        <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./agents/individuals"
             (click)="onCollapse()">
             {{ 'Individuals' | translate }}
           </a>
         </li>
-        <li class="nav-item h-100">
-          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./agents/organizations"
+        <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./agents/organizations"
             (click)="onCollapse()">
             {{ 'Organizations' | translate }}
           </a>
         </li>
-        <li class="nav-item h-100">
-          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./roles"
+        <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./roles"
             (click)="onCollapse()">
             {{ 'Roles' | translate }}
           </a>
         </li>
-        <li class="nav-item h-100">
-          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./local-users"
+        <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./local-users"
             (click)="onCollapse()">
             {{ 'Users' | translate }}
           </a>
         </li>
-        <li class="nav-item h-100">
-          <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" routerLink="./settings"
+        <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./settings"
             (click)="onCollapse()">
             {{ 'Settings' | translate }}
           </a>
         </li>
       </ol>
 
-      <ol class="nav navbar-nav p-0 h-100">
-        <li class="nav-item h-100" ngbDropdown [placement]="myAccountDropdownPlacement">
-          <button class="w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
+      <ol class="nav navbar-nav p-0">
+        <li class="nav-item" ngbDropdown [placement]="myAccountDropdownPlacement">
+          <button class="h-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
             <div class="align-self-center">
-              <div class="b-dp-wrapper b-dp-dark bg-white ml-1 mr-1">
+              <div class="b-dp-wrapper b-dp-dark bg-white mx-1">
                 <b-image [src]="'local-users/' + ws?.userSettings?.UserId + '/image|' + (ws?.userSettings?.ImageId || '')"
                   shape="circle" [size]="28"></b-image>
               </div>
             </div>
             &nbsp;&nbsp;
-            <div class="h-100 d-flex flex-column justify-content-center">
-              <div style="line-height:1.1rem">{{ userName }}</div>
-              <div class="small font-weight-bold"> {{ companyName }}</div>
+            <div class="d-flex flex-column justify-content-center">
+              <div class="text-truncate" style="line-height:1.1rem">{{ userName }}</div>
+              <div class="small font-weight-bold text-truncate"> {{ companyName }}</div>
             </div>
             &nbsp;&nbsp;
           </button>

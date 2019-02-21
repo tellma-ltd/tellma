@@ -23,7 +23,7 @@ import { SignOutComponent } from './features/sign-out/sign-out.component';
     PageNotFoundComponent,
     UnauthorizedForCompanyComponent,
     ErrorLoadingCompanyComponent,
-    SignOutComponent
+    SignOutComponent,
   ],
   imports: [
     NativeScriptModule,

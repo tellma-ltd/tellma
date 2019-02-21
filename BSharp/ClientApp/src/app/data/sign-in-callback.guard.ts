@@ -26,8 +26,10 @@ export class SignInCallbackGuard implements CanActivate {
         return false;
       }),
       catchError(err => {
+
         console.error(err);
         this.router.navigateByUrl(errorUrl);
+
         return of(false);
       })
     );

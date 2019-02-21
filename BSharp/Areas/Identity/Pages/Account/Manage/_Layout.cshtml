@@ -37,8 +37,8 @@
 </head>
 <body class="h-100 bg-light @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "b-rtl": "")">
     <header>
-        <nav class="navbar navbar-dark b-dark navbar-expand-md p-0">
-            <a class="b-brand-link b-navbar-button h-100" href="@(Config.Value.WebClientUri + "companies?ui-culture=" + currentCulture)">
+        <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-stretch">
+            <a class="b-brand-link b-navbar-button" href="@(Config.Value.WebClientUri + "companies?ui-culture=" + currentCulture)">
                 <table class="h-100">
                     <tbody>
                         <tr>
@@ -59,33 +59,33 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse justify-content-between h-100">
-                <ol class="nav navbar-nav h-100">
-                    <li class="nav-item h-100">
+            <div class="collapse navbar-collapse align-items-stretch">
+                <ol class="nav navbar-nav mr-auto">
+                    <li class="nav-item">
                         <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./Index">@Localizer["Menu_Profile"]</a>
                     </li>
-                    <li class="nav-item h-100">
+                    <li class="nav-item">
                         <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./ChangePassword">@Localizer["Menu_Password"]</a>
                     </li>
                     @if (hasExternalLogins)
                     {
-                        <li class="nav-item h-100">
+                        <li class="nav-item">
                             <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./ExternalLogins">@Localizer["Menu_ExternalSignIns"]</a>
                         </li>
                     }
-                    <li class="nav-item h-100">
+                    <li class="nav-item">
                         <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center" asp-area="Identity" asp-page="./TwoFactorAuthentication">@Localizer["Menu_TwoFactorAuthentication"]</a>
                     </li>
-                    <li class="nav-item h-100">
+                    <li class="nav-item">
                         <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center"
                            href="@(Config.Value.WebClientUri + "companies?ui-culture=" + currentCulture)">@Localizer["GoTo0", Localizer["AppName"]]</a>
                     </li>
                 </ol>
 
-                <ol class="nav navbar-nav p-0 h-100">
-                    <li class="nav-item h-100 dropdown">
-                        <button class="w-100 d-flex b-navbar-button b-no-arrow pl-3 pr-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <div class="h-100 d-flex flex-column justify-content-center">
+                <ol class="nav navbar-nav p-0">
+                    <li class="nav-item dropdown">
+                        <button class="h-100 d-flex b-navbar-button b-no-arrow px-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <div class="d-flex flex-column justify-content-center">
                                 @UserManager.GetUserName(User)
                             </div>
                         </button>

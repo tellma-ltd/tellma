@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivateChild, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthService, AuthEvent } from './auth.service';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, retry } from 'rxjs/operators';
 import { CleanerService } from './cleaner.service';
 
 @Injectable({
@@ -15,12 +15,12 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     this.handleAuthEvents();
   }
 
-  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  canActivateChild(_: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     const returnUrl = state.url;
     return this.can(returnUrl);
   }
 
-  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  canActivate(_: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     const returnUrl = state.url;
     return this.can(returnUrl);
   }
@@ -44,7 +44,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   // this method listens to auth events and does the needful,
   // we put it in the auth guard since it won't be needed if
   // the auth guard is not instantiated, and the guard is a
-  // singleton too
+  // singleton too just like auth.service
   handleAuthEvents(): void {
     this.auth.events$.subscribe(e => {
       switch (e) {
@@ -53,11 +53,15 @@ export class AuthGuard implements CanActivate, CanActivateChild {
           this.cleaner.cleanState();
           break;
         case AuthEvent.SignedInAsDifferentUser:
-          // cleaning the state before navigating is necessary here, to force loading the new user's token
-          // it will throw log errors for all the bindings on display, but this is a rare marginal event anyways
+          // if a different user signed in we clean the state (including local storage)
+          // otherwise the error will keep firing no matter how many times the user
+          // refreshes the app then we automatically reload the app to fetch the new
+          // token, clearing the storage will prompt other tabs to clean their state
+          // and go to the landing page too
           this.cleaner.cleanState();
-          this.router.navigateByUrl('/companies');
+          document.location.reload();
           break;
+
         case AuthEvent.StorageIsCleared:
           this.goToLandingPage();
           this.cleaner.cleanWorkspace();
@@ -70,4 +74,3 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     this.router.navigateByUrl('/welcome');
   }
 }
-

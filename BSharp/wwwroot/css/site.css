@@ -154,12 +154,6 @@ ngb-tabset li.nav-item .small {
     pointer-events: none;
 }
 
-@media (min-width: 768px) {
-    .navbar {
-        height: 50px;
-    }
-}
-
 .breadcrumb {
     background-color: transparent;
 }
@@ -767,19 +761,12 @@ tr.b-highlight {
     min-width: 0;
 }
 
-.b-brand-link {
-    padding: 0.5rem 0.625rem;
-    text-decoration: none !important;
-}
-
 .b-navbar-button {
     cursor: pointer;
-    height: 100%;
     border-width: 0;
     color: rgba(255, 255, 255, 0.75) !important;
     background-color: rgba(0, 0, 0, 0);
     padding: 0.5rem;
-    display: block;
     text-align: left;
 }
 
@@ -797,6 +784,12 @@ button.b-navbar-button:focus {
     outline: none;
     background-color: rgba(0, 0, 0, 0.3);
 }
+
+.b-brand-link {
+    padding: 0.5rem 0.625rem;
+    text-decoration: none !important;
+}
+
 
 .b-details-image-container {
     padding-top: 1rem;

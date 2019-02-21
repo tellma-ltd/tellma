@@ -187,13 +187,6 @@ ngb-tabset li.nav-item .small {
   pointer-events: none;
 }
 
-// to ease the vertical alignment of the buttons inside it
-@media (min-width: 768px) {
-  .navbar {
-    height: 50px;
-  }
-}
-
 .breadcrumb {
   background-color: transparent;
 }
@@ -850,20 +843,13 @@ tr.b-highlight {
   min-width: 0;
 }
 
-.b-brand-link {
-  padding: 0.5rem 0.625rem;
-  text-decoration: none !important;
-}
-
 // styling for my account box in the top right corner
 .b-navbar-button {
   cursor: pointer;
-  height: 100%;
   border-width: 0;
   color: rgba(255, 255, 255, 0.75) !important;
   background-color: rgba(0, 0, 0, 0);
   padding: 0.5rem;
-  display: block;
   text-align: left;
 }
 
@@ -882,6 +868,12 @@ button.b-navbar-button:focus {
   background-color: rgba(0, 0, 0, 0.3);
 }
 
+.b-brand-link {
+  padding: 0.5rem 0.625rem;
+  text-decoration: none !important;
+}
+
+
 .b-details-image-container {
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -895,5 +887,13 @@ button.b-navbar-button:focus {
     padding-top: 0;
     padding-bottom: 0;
     justify-content: flex-end;
+  }
+}
+
+ @media (min-height: 768px) {
+  // This will make it such that when the screen is small, you will be able to
+  // scroll even the navbar out of view and not just the content area
+  .b-body {
+    height: 100% !important;
   }
 }

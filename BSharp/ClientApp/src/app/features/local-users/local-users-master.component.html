@@ -85,6 +85,6 @@
 
 <!-- Templeate for a colorful state -->
 <ng-template #stateTemplate let-id="id">
-  <span class="text-white pl-1 pr-1 b-slightly-bold" [class.bg-secondary]="!c[id]?.ExternalId" [class.bg-success]="!!c[id]?.ExternalId">{{
+  <span class="text-white pl-1 pr-1 b-slightly-bold text-truncate" [class.bg-secondary]="!c[id]?.ExternalId" [class.bg-success]="!!c[id]?.ExternalId">{{
     (!!c[id]?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span>
 </ng-template>

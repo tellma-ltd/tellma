@@ -29,7 +29,7 @@ import { SignOutComponent } from './features/sign-out/sign-out.component';
     UnauthorizedForCompanyComponent,
     ErrorLoadingCompanyComponent,
     PlaceholderComponent,
-    SignOutComponent
+    SignOutComponent,
   ],
   imports: [
     BrowserModule,

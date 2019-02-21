@@ -275,7 +275,8 @@ export class WorkspaceService {
 
       return this.ws.tenants[tenantId];
     } else {
-      return null;
+      // this only happens when the state is being cleared
+      return new TenantWorkspace(new WorkspaceService());
     }
   }
 

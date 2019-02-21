@@ -25,7 +25,6 @@ import { BaseAddressGuard } from './data/base-address.guard';
 
 @Component({ template: '<p></p>'}) export class PlaceholderComponent { }
 
-
 /*
   the root routes for the angular router
 */

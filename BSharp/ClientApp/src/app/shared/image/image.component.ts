@@ -5,6 +5,7 @@ import { switchMap, tap, map, catchError, timeInterval } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { StorageService } from '~/app/data/storage.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { WorkspaceService } from '~/app/data/workspace.service';
 
 enum ImageStatus {
   // The image data is currently being fetched from the server
@@ -117,7 +118,8 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
     this.isDisabled = isDisabled;
   }
 
-  constructor(private api: ApiService, private storage: StorageService, private modalService: NgbModal) {
+  constructor(private api: ApiService, private workspace: WorkspaceService,
+    private storage: StorageService, private modalService: NgbModal) {
 
     this.notifyUpdate$ = new Subject<void>();
     this.notifyUpdate$.pipe(
@@ -160,7 +162,7 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
 
       // this usually indicates that the image was deleted on the server
       if (!!this._src) {
-        this.storage.removeItem(this._src);
+        this.storage.removeItem(`${this.workspace.ws.tenantId}/${this._src}`);
       }
 
       // If the _value === null, then we rely on apiEndpoint and imageId
@@ -170,10 +172,12 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
       return of();
 
     } else {
+      const tenantId = this.workspace.ws.tenantId;
       const src = this._src;
       const imageId = this._imageId;
+      const storageKey = `${tenantId}/${src}`;
 
-      const storageItemString = this.storage.getItem(src);
+      const storageItemString = this.storage.getItem(storageKey);
       const storageItem: { imageId: string, dataUrl: string } = !!storageItemString ? JSON.parse(storageItemString) : null;
 
       if (!!storageItem && storageItem.imageId === imageId) {
@@ -184,7 +188,7 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
       } else {
 
         if (!!storageItemString) {
-          this.storage.removeItem(src);
+          this.storage.removeItem(storageKey);
         }
 
         // load the image from the server
@@ -196,7 +200,7 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
               this.dataUrl = dataUrl;
 
               // cache it in local storage for the future
-              this.storage.setItem(src, JSON.stringify({ imageId: b.imageId || imageId, dataUrl: dataUrl }));
+              this.storage.setItem(storageKey, JSON.stringify({ imageId: b.imageId || imageId, dataUrl: dataUrl }));
 
             }))),
           catchError((error: any) => {

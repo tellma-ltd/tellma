@@ -348,7 +348,7 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "User_New", "Invited"),
             Ar(Constants.Shared, "User_New", "مدعو"),
 
-            En(Constants.Shared, "User_Confirmed", "Email Confirmed"),
+            En(Constants.Shared, "User_Confirmed", "Confirmed"),
             Ar(Constants.Shared, "User_Confirmed", "مؤكد"),
 
             En(Constants.Shared, "RoleMembership_User", "User"),
