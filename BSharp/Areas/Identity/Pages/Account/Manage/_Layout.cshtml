@@ -37,7 +37,7 @@
 </head>
 <body class="h-100 bg-light @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "b-rtl": "")">
     <header>
-        <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-stretch">
+        <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-lg-stretch">
             <a class="b-brand-link b-navbar-button" href="@(Config.Value.WebClientUri + "companies?ui-culture=" + currentCulture)">
                 <table class="h-100">
                     <tbody>
@@ -84,7 +84,7 @@
 
                 <ol class="nav navbar-nav p-0">
                     <li class="nav-item dropdown">
-                        <button class="h-100 d-flex b-navbar-button b-no-arrow px-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow px-3" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <div class="d-flex flex-column justify-content-center">
                                 @UserManager.GetUserName(User)
                             </div>

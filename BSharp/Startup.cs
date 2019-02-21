@@ -132,6 +132,8 @@ namespace BSharp
             // TODO: Only when using embedded identity
             services.ConfigureApplicationCookie(options =>
             {
+                options.ExpireTimeSpan = TimeSpan.FromDays(Constants.TokenExpiryInDays);
+                options.SlidingExpiration = true;
                 options.LoginPath = $"/identity/sign-in";
                 options.LogoutPath = $"/identity/sign-out";
                 options.AccessDeniedPath = $"/identity/access-denied";
