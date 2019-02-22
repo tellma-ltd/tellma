@@ -34,7 +34,7 @@
         <b-text-editor [placeholder]="('Search' | translate) + '...'" [(ngModel)]="search" [focusIf]="isPopupMode"></b-text-editor>
 
         <!-- Filter -->
-        <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">
+        <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement" bDropdownAppendToBody>
           <button class="btn btn-light btn-sm b-white-button d-flex b-no-arrow b-filter-button" ngbDropdownToggle type="button"
             title="{{ 'Filter' | translate }}">
             <fa-icon icon="filter"></fa-icon>
@@ -90,7 +90,7 @@
         </div>
 
         <!-- Data dropdown -->
-        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement" *ngIf="showDataDropdown">
+        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement" *ngIf="showDataDropdown" bDropdownAppendToBody>
           <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle"
             ngbDropdownToggle>
             {{ 'Data' | translate }}

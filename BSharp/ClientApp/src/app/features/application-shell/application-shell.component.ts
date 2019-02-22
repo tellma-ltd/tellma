@@ -56,7 +56,11 @@ export class ApplicationShellComponent implements OnInit {
   }
 
   get myAccountDropdownPlacement() {
-    return this.workspace.ws.isRtl ? 'bottom-left' : 'bottom-right';
+    return this.isRtl ? 'bottom-left' : 'bottom-right';
+  }
+
+  get isRtl {
+    return this.workspace.ws.isRtl;
   }
 
   public onMyCompanyAccount(): void {

@@ -158,7 +158,8 @@ library.add(
     TableComponent,
     DetailsPickerComponent,
     ViewLinkComponent,
-    ImageComponent
+    ImageComponent,
+    DropdownAppendToBodyDirective
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },

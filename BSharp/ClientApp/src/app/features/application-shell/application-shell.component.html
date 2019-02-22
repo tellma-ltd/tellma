@@ -8,7 +8,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
-      <ol class="nav navbar-nav mr-auto">
+      <ol class="nav navbar-nav" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
         <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./main-menu"
             (click)="onCollapse()">
@@ -48,7 +48,7 @@
       </ol>
 
       <ol class="nav navbar-nav p-0">
-        <li class="nav-item" ngbDropdown [placement]="myAccountDropdownPlacement">
+        <li class="nav-item" ngbDropdown [placement]="myAccountDropdownPlacement" bDropdownAppendToBody>
           <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
             <div class="align-self-center">
               <div class="b-dp-wrapper b-dp-dark bg-white mx-1">
