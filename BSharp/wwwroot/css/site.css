@@ -826,3 +826,7 @@ button.b-navbar-button:focus {
     text-align: center;
     margin: 1.5rem!important;
 }
+
+.form-control {
+    box-shadow: inset 0px 1px rgba(0,0,0,0.075);
+}

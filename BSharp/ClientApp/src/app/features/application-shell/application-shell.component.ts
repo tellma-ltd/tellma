@@ -59,7 +59,7 @@ export class ApplicationShellComponent implements OnInit {
     return this.isRtl ? 'bottom-left' : 'bottom-right';
   }
 
-  get isRtl {
+  get isRtl(): boolean {
     return this.workspace.ws.isRtl;
   }
 
