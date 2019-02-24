@@ -21,6 +21,11 @@ namespace BSharp.Services.Utilities
         public const string ReadCreate = nameof(ReadCreate);
         public const string Sign = nameof(Sign);
 
+        // Caching
+        public const string Fresh = "Fresh";
+        public const string Stale = "Stale";
+        public const string Unauthorized = "Unauthorized";
+
         // Tokens
         public const int TokenExpiryInDays = 3;
 

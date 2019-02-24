@@ -1,5 +1,7 @@
 using AutoMapper;
+using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Services.EmbeddedIdentityServer;
 using BSharp.Services.Migrations;
 using BSharp.Services.ModelMetadata;
 using BSharp.Services.Utilities;
@@ -63,34 +65,11 @@ namespace BSharp
             // be registered in the DI the usual way with AddDbContext<T>()
             services.AddScoped<ApplicationContext>();
 
-
-            // Here we register a distributed cache, the default is SQL server unless
-            // a Redis cache is specified in a configuration provider
-            var redisConfig = _config.GetSection("RedisCache");
-            if (redisConfig.Exists())
-            {
-                services.AddDistributedRedisCache(options =>
-                {
-                    options.Configuration = redisConfig["Configuration"];
-                    options.InstanceName = redisConfig["InstanceName"];
-                });
-            }
-            else
-            {
-                services.AddDistributedSqlServerCache(opt =>
-                {
-                    opt.ConnectionString = _config.GetConnectionString(Constants.AdminConnection);
-                    opt.SchemaName = "dbo";
-                    opt.TableName = "DistributedCache";
-                    opt.ExpiredItemsDeletionInterval = TimeSpan.FromDays(15);
-                });
-            }
-
             // Add all our custom services
             services.AddMultiTenancy();
             services.AddSharding();
             services.AddBlobService(_config);
-            services.AddSqlLocalization();
+            services.AddSqlLocalization(_config);
             services.AddDynamicModelMetadata();
 
             // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
@@ -102,7 +81,9 @@ namespace BSharp
             // Register MVC using the most up to date version
             services.AddMvc(opt =>
             {
-                opt.ModelMetadataDetailsProviders.Add(new ExcludeBindingMetadataProvider(typeof(Controllers.DTO.MeasurementUnit)));
+                // This filter checks version headers (e.g. x-translations-version) supplied by the client and efficiently
+                // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
+                opt.Filters.Add(typeof(CheckGlobalVersionsFilter));
             })
                 .AddViewLocalization()
                 .AddDataAnnotationsLocalization()
@@ -159,7 +140,6 @@ namespace BSharp
                 };
             });
 
-
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(config =>
             {
@@ -207,17 +187,23 @@ namespace BSharp
                 app.UseCors(builder =>
                 {
                     builder
-                            .AllowAnyOrigin()
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .WithExposedHeaders("x-image-id")
-                            .WithExposedHeaders("x-settings-version")
-                            .WithExposedHeaders("x-permissions-version")
-                            .WithExposedHeaders("x-user-settings-version");
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithExposedHeaders("x-image-id")
+                        .WithExposedHeaders("x-settings-version")
+                        .WithExposedHeaders("x-permissions-version")
+                        .WithExposedHeaders("x-user-settings-version")
+                        .WithExposedHeaders("x-translations-version");
                 });
             }
             else
             {
+                //if (!string.IsNullOrWhiteSpace(clientOptions.Value?.WebClientUri))
+                //{
+
+                //}
+                
                 // TODO: Read from settings for production
             }
 

@@ -23,11 +23,6 @@ namespace BSharp.Controllers.Misc
 
         private class LoadTenantInfo : IResourceFilter
         {
-            private const string FRESH = "Fresh";
-            private const string STALE = "Stale";
-            private const string UNAUTHORIZED = "Unauthorized";
-
-
             private readonly IServiceProvider _provider;
 
             public LoadTenantInfo(IServiceProvider provider)
@@ -63,9 +58,9 @@ namespace BSharp.Controllers.Misc
 
                     // This indicates to the client to discard all cached information about this
                     // company since the user is no longer a member of it
-                    context.HttpContext.Response.Headers.Add("x-settings-version", UNAUTHORIZED);
-                    context.HttpContext.Response.Headers.Add("x-permissions-version", UNAUTHORIZED);
-                    context.HttpContext.Response.Headers.Add("x-user-settings-version", UNAUTHORIZED);
+                    context.HttpContext.Response.Headers.Add("x-settings-version", Constants.Unauthorized);
+                    context.HttpContext.Response.Headers.Add("x-permissions-version", Constants.Unauthorized);
+                    context.HttpContext.Response.Headers.Add("x-user-settings-version", Constants.Unauthorized);
                     return;
                 }
 
@@ -99,7 +94,7 @@ namespace BSharp.Controllers.Misc
                     {
                         var serverVersion = tenantInfo.SettingsVersion;
                         context.HttpContext.Response.Headers.Add("x-settings-version",
-                            clientVersion == serverVersion ? FRESH : STALE);
+                            clientVersion == serverVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
 
@@ -110,7 +105,7 @@ namespace BSharp.Controllers.Misc
                     {
                         var serverVersion = tenantInfo.PermissionsVersion;
                         context.HttpContext.Response.Headers.Add("x-permissions-version",
-                            clientVersion == serverVersion ? FRESH : STALE);
+                            clientVersion == serverVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
 
@@ -121,7 +116,7 @@ namespace BSharp.Controllers.Misc
                     {
                         var serverVersion = tenantInfo.UserSettingsVersion;
                         context.HttpContext.Response.Headers.Add("x-user-settings-version",
-                            clientVersion == serverVersion ? FRESH : STALE);
+                            clientVersion == serverVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
             }

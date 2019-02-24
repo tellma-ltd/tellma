@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Threading;
 
 namespace BSharp.Services.SqlLocalization
 {
@@ -13,8 +12,6 @@ namespace BSharp.Services.SqlLocalization
     public class SqlStringLocalizer : IStringLocalizer
     {
         private readonly SqlStringLocalizerFactory _factory;
-        private CascadingTranslations _translations;
-        private ReaderWriterLockSlim _translationsLock = new ReaderWriterLockSlim();
         private CultureInfo _culture;
 
         public SqlStringLocalizer(SqlStringLocalizerFactory factory)
@@ -22,7 +19,7 @@ namespace BSharp.Services.SqlLocalization
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
-        public SqlStringLocalizer(SqlStringLocalizerFactory factory, CultureInfo culture): this(factory)
+        public SqlStringLocalizer(SqlStringLocalizerFactory factory, CultureInfo culture) : this(factory)
         {
             _culture = culture;
         }
@@ -79,30 +76,12 @@ namespace BSharp.Services.SqlLocalization
         /// <returns></returns>
         private string Localize(string name)
         {
-            // Just in case 2 threads with 2 different cultures invoked the same localizer concurrently
-            // (It probably never happens, but I have seen signs that some MVC libraries might do that)
-            lock (_translationsLock)
-            {
-                // This is to workaround the behavior of certain MVC libraries
-                // which seem to re-use the same IStringLocalizer across multiple requests,
-                // even though the current UI culture is a scoped value and the localizer is transient
-                if (_translations == null || (_culture ?? CultureInfo.CurrentUICulture).Name != _translations.CultureName)
-                {
-                    _translations = _factory.GetTranslations(_culture);
-                }
+            // The culture is either the fixed value or the cultureInfo of the current thread
+            var culture = _culture ?? CultureInfo.CurrentUICulture;
 
-                // Go over the dictionaries one by one and return the first hit
-                foreach (var translationDictionary in _translations.InDescendingOrderOfPrecedence())
-                {
-                    if (translationDictionary != null && translationDictionary.ContainsKey(name))
-                    {
-                        return translationDictionary[name];
-                    }
-                }
-
-                // If all is a miss, return the name as is, forgiveness here is a virtue.
-                return name;
-            }
+            // We have no option here to use async/await since we are stuck with the non-asynchronous interface IStringLocalizer
+            // However this is OK since the vast majority of requests are expected to be satisifed from the cache and won't be blocking
+            return _factory.Localize(name, culture);
         }
     }
 }

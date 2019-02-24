@@ -1,4 +1,5 @@
 ﻿using BSharp.Services.SqlLocalization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using System;
@@ -7,16 +8,21 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class SqlLocalizationServiceCollectionExtensions
     {
-        public static IServiceCollection AddSqlLocalization(this IServiceCollection services)
+        public static IServiceCollection AddSqlLocalization(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            if(config != null)
+            {
+                services.Configure<SqlLocalizationConfiguration>(config.GetSection("Localization"));
+            }
+
             // Register our custom SqlStringLocalizerFactory
-            services.AddSingleton<ICachingStringLocalizerFactory, SqlStringLocalizerFactory>();
-            services.AddSingleton<IStringLocalizerFactory>(e => e.GetRequiredService<ICachingStringLocalizerFactory>());
+            services.AddSingleton<ISqlStringLocalizerFactory, SqlStringLocalizerFactory>();
+            services.AddSingleton<IStringLocalizerFactory>(e => e.GetRequiredService<ISqlStringLocalizerFactory>());
 
 
             // The default IStringLocalizer implementation from Microsoft is a simple wrapper around the IStringLocalizer 

@@ -4,6 +4,7 @@ using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
+using BSharp.Services.SqlLocalization;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,26 +29,24 @@ namespace BSharp.Controllers
     public class TranslationsController : CrudControllerBase<M.Translation, Translation, TranslationForSave, string>
     {
         private readonly AdminContext _db;
+        private readonly ISqlStringLocalizerFactory _localizerFactory;
         private readonly ILogger _logger;
 
-        public TranslationsController(AdminContext db, ILogger<TranslationsController> logger, 
+        public TranslationsController(AdminContext db, ISqlStringLocalizerFactory localizerFactory, ILogger<TranslationsController> logger, 
             IStringLocalizer<TranslationsController> localizer, IMapper mapper) : base(logger, localizer, mapper)
         {
             _db = db;
+            _localizerFactory = localizerFactory;
             _logger = logger;
         }
 
-        [HttpGet("client-translations/{culture}")]
+        [HttpGet("client/{cultureName}")]
         [AllowAnonymous]
-        public async Task<ActionResult<Dictionary<string, string>>> GetClientTranslations(string culture)
+        public ActionResult<Dictionary<string, string>> GetClientTranslations(string cultureName)
         {
             try
             {
-                var query = from e in _db.Translations
-                            where (e.Tier == Constants.Shared || e.Tier == Constants.Client) && e.CultureId == culture
-                            select e;
-
-                var result = await query.AsNoTracking().ToDictionaryAsync(e => e.Name, e => e.Value);
+                var result = _localizerFactory.GetTranslations(cultureName, Constants.Shared, Constants.Client);
                 return Ok(result);
             }
             catch (Exception ex)

@@ -7,8 +7,8 @@ import { CompaniesComponent } from './features/companies/companies.component';
 import { PageNotFoundComponent } from './features/page-not-found/page-not-found.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
+import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
+import { apiTranslateLoaderFactory } from './data/api-translate-loader';
 import { WorkspaceService } from './data/workspace.service';
 import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { StorageService } from './data/storage.service';
@@ -40,8 +40,8 @@ import { SignOutComponent } from './features/sign-out/sign-out.component';
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: ApiTranslateLoaderFactory,
-        deps: [HttpClient]
+        useFactory: apiTranslateLoaderFactory,
+        deps: [ApiService, StorageService]
       }
     })
   ],
@@ -50,7 +50,7 @@ import { SignOutComponent } from './features/sign-out/sign-out.component';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RootHttpInterceptor,
-      deps: [WorkspaceService, ApiService, StorageService, Router, OAuthStorage, CleanerService],
+      deps: [WorkspaceService, ApiService, StorageService, Router, OAuthStorage, CleanerService, TranslateService],
       multi: true
     }
   ],

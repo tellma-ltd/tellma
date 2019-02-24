@@ -31,6 +31,9 @@ namespace BSharp.Data
         public DbSet<Culture> Cultures { get; set; }
         public DbSet<Translation> Translations { get; set; }
 
+        // Settings
+        public DbSet<GlobalSettings> GlobalSettings { get; set; }
+
         // Queries
         public DbQuery<GlobalUsersMatch> GlobalUsersMatches { get; set; }
         public DbQuery<AbstractPermission> AbstractPermissions { get; set; }
@@ -51,6 +54,9 @@ namespace BSharp.Data
             // Localization
             Culture.OnModelCreating(builder);
             Translation.OnModelCreating(builder);
+
+            // Settings
+            Data.Model.GlobalSettings.OnModelCreating(builder);
         }
     }
 }

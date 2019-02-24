@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, RouterStateSnapshot, Router, Resolve, Params } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable, Subject, forkJoin, of } from 'rxjs';
 import { WorkspaceService, TenantWorkspace } from './workspace.service';
 import { StorageService } from './storage.service';
@@ -17,6 +17,7 @@ export const USER_SETTINGS_PREFIX = 'user_settings';
 
 export function storageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}`; }
 export function versionStorageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}_version`; }
+
 export function handleFreshSettings(result: DataWithVersion<SettingsForClient>,
   tenantId: number, tws: TenantWorkspace, storage: StorageService) {
 

@@ -1,52 +1,57 @@
-﻿using BSharp.Data;
-using BSharp.Services.Utilities;
-using Microsoft.AspNetCore.Http;
+﻿using BSharp.Controllers.DTO;
+using BSharp.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace BSharp.Services.SqlLocalization
 {
     /// <summary>
-    /// Relies on the translations stored in a SQL server database, this implementation uses a combination
-    /// of distributed caching and local memory caching to achieve a high degree of performance, while still
-    /// providing up-to-date localization
+    /// Relies on the translations stored in a SQL server database, this implementation uses 
+    /// local memory caching to achieve a high degree of performance
     /// </summary>
-    public class SqlStringLocalizerFactory : ICachingStringLocalizerFactory
+    public class SqlStringLocalizerFactory : ISqlStringLocalizerFactory
     {
-        // private const string HTTP_CONTEXT_FLAG_NAME = "IsCacheUpdated";
-        private const int DISTRIBUTED_CACHE_EXPIRATION_DAYS = 30;
+        /// <summary>
+        /// Every culture (e.g. 'en-US') has its own independent lock to reduce thread starvation
+        /// </summary>
+        private readonly ConcurrentDictionary<string, ReaderWriterLockSlim> _locks
+            = new ConcurrentDictionary<string, ReaderWriterLockSlim>();
 
         /// <summary>
-        /// Local Cache
+        /// The cache storing the translations, we don't rely on <see cref="IMemoryCache"/> since it evicts
+        /// entries under memory pressure or after timeout such that you can't retrieve them again, instead
+        /// what we need to do often is keep the old copy and compare its version with the database instead
+        /// loading the entire translations table again, if the version matches we simply flag the entry as
+        /// fresh again
         /// </summary>
-        private static ConcurrentDictionary<string, LocalCacheItem> _localCache
-            = new ConcurrentDictionary<string, LocalCacheItem>();
+        private readonly Dictionary<string, CacheEntry> _translations =
+            new Dictionary<string, CacheEntry>();
 
-        private readonly IConfiguration _config;
-        private readonly IDistributedCache _distributedCache;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        /// <summary>
+        /// For retrieving the AdminContext, which we cannot resolve from the constructor since this service
+        /// is a singleton and the context is scoped
+        /// </summary>
+        private readonly IServiceProvider _servicsProvider;
 
-        public SqlStringLocalizerFactory(
-            IConfiguration config,
-            IDistributedCache distributedCache,
-            IServiceProvider serviceProvider,
-            IHttpContextAccessor httpContextAccessor
-            )
+        /// <summary>
+        /// The configuration that are relevant to SqlStringLocalizerFactory as per the options pattern
+        /// </summary>
+        private readonly SqlLocalizationConfiguration _config;
+
+        public SqlStringLocalizerFactory(IServiceProvider servicsProvider,
+            IOptions<SqlLocalizationConfiguration> options)
         {
-            _config = config.GetSection("Localization");
-            _distributedCache = distributedCache;
-            _serviceProvider = serviceProvider;
-            _httpContextAccessor = httpContextAccessor;
+            _servicsProvider = servicsProvider;
+            _config = options.Value;
         }
 
         public IStringLocalizer Create(Type resourceSource)
@@ -64,206 +69,233 @@ namespace BSharp.Services.SqlLocalization
             return new SqlStringLocalizer(this);
         }
 
-        public CascadingTranslations GetTranslations(CultureInfo culture = null)
+        public string Localize(string name, CultureInfo culture)
         {
-            culture = culture ?? CultureInfo.CurrentUICulture; // Current UI culture by default
+            // (1) Prepare the list of cultures in their fallback order:
+            // specific culture -> neutral culture -> system default culture.
+            // For example { 'ar-SA', 'ar', 'en' }
+            // Here we add the specific culture
+            List<string> orderedCultureNames = new List<string> { culture.Name };
 
-            string defaultUICulture = _config["DefaultUICulture"];
-            string specificUICulture = culture.Name;
-            string neutralUICulture = culture.IsNeutralCulture ? specificUICulture : culture.Parent.Name;
-
-            // We refresh the cache once per request, and we track this using a flag in the HTTP Context object
-            string flag = specificUICulture;
-            var isUpdated =  (bool?) (_httpContextAccessor.HttpContext == null ? false : _httpContextAccessor.HttpContext.Items[flag]);
-            if (!(isUpdated ?? false))
+            if (!culture.IsNeutralCulture)
             {
-                // The list of cultures to update;
-                List<string> culturesToFreshenUp = new List<string>
-                {
-                    // Update localization cache for the default application culture
-                    defaultUICulture
-                };
-
-                // Update localization cache for the current request culture, if different
-                if (specificUICulture != defaultUICulture)
-                {
-                    culturesToFreshenUp.Add(specificUICulture);
-                }
-
-                // Update localization cache for the neutral request culture, if not already neutral
-                if (neutralUICulture != specificUICulture)
-                {
-                    culturesToFreshenUp.Add(neutralUICulture);
-                }
-
-                // Update the local cache, or distributed cache timestamp if need be
-                EnsureFreshnessOfCaches(culturesToFreshenUp.ToArray());
-
-                // Set the flag, to prevent another cache refresh within the same scope
-                // Note: this is thread safe, since only one thread at a time will get
-                // a copy of the HTTP context, since it is scoped per request
-                if (_httpContextAccessor.HttpContext != null)
-                {
-                    _httpContextAccessor.HttpContext.Items[flag] = true;
-                }
+                // Then the neutral culture (if needed)
+                orderedCultureNames.Add(culture.Parent.Name);
             }
 
-            _localCache.TryGetValue(CacheKey(specificUICulture), out LocalCacheItem specificCache);
-            _localCache.TryGetValue(CacheKey(neutralUICulture), out LocalCacheItem neutralCache);
-            _localCache.TryGetValue(CacheKey(defaultUICulture), out LocalCacheItem defaultCache);
-
-            var result = new CascadingTranslations
+            string defaultCultureName = _config.DefaultUICulture;
+            if (!orderedCultureNames.Contains(defaultCultureName))
             {
-                CultureName = specificUICulture,
-
-                SpecificTranslations = specificCache?.Translations,
-                NeutralTranslations = neutralCache?.Translations,
-                DefaultTranslations = defaultCache?.Translations,
-            };
-
-            // Return the translations
-            return result;
-        }
-
-        /// <summary>
-        /// Checks the local cache timestamp against the distributed cache timestamp if the local timestamp
-        /// is blank or old than the distributed cache's, it updates it with a fresh copy from the database, 
-        /// it also updates it if the timestamp in the distributed cache is blank or invalid
-        /// </summary>
-        private void EnsureFreshnessOfCaches(params string[] cultureNames)
-        {
-            // Determine which caches represent a stale caches and need refreshing
-            List<CacheInfo> staleCaches = new List<CacheInfo>();
-            foreach (var cultureName in cultureNames)
-            {
-                // Retrieve the timestamps from the distributed cache
-                var cacheKey = CacheKey(cultureName);
-                var distVersion = _distributedCache.GetString(cacheKey);
-
-                // If the distributed cache is blank or invalid, set it to a new version
-                if (distVersion == null)
-                {
-                    // Either the cache was flushed, or has been illegally tampered with,
-                    // simply reset the cache to NOW, to invalidate all local caches
-                    distVersion = Guid.NewGuid().ToString();
-                    _distributedCache.SetString(cacheKey, distVersion, GetDistributedCacheOptions());
-
-                    // NOTE: This should work fine with concurrency, the worst that could happen is
-                    // that if multiple nodes independently find that the distributed cache is blank
-                    // then one of the nodes may overwrite the version inserted by the other nodes
-                    // and then for those other nodes, the freshly retrieved translations may end up
-                    // being fetched once more in the next request, since their local cache will have
-                    // a different version
-                }
-
-                _localCache.TryGetValue(cacheKey, out LocalCacheItem localCacheItem);
-
-                // If the local cache is blank or outdated, grab a fresh copy from the DB
-                if (localCacheItem == null || localCacheItem.Version != distVersion)
-                {
-                    // Remember the version from the distributed cache
-                    staleCaches.Add(new CacheInfo
-                    {
-                        LatestVersion = distVersion,
-                        CultureName = cultureName
-                    });
-                }
+                // Then the default system culture (if needed)
+                orderedCultureNames.Add(defaultCultureName);
             }
 
-            ////// Efficiently retrieve a fresh list of translations for all stale caches
-            Dictionary<string, Dictionary<string, string>> freshTranslations = new Dictionary<string, Dictionary<string, string>>();
-
-            // Get translations from AdminContext
-            if (staleCaches.Any())
+            // (2) Go over the cultures in order until you find a translation
+            foreach (var cultureName in orderedCultureNames)
             {
-                var staleCacheKeys = staleCaches.Select(e => e.CultureName);
-                using (var scope = _serviceProvider.CreateScope())
+                var cultureLock = _locks.GetOrAdd(cultureName, new ReaderWriterLockSlim());
+                CacheEntry entry = null;
+                cultureLock.EnterReadLock();
+                try
                 {
-                    using (var ctx = scope.ServiceProvider.GetRequiredService<AdminContext>())
-                    {
-                        var freshTranslationsQuery = from e in ctx.Translations
-                                                     where (e.Tier == Constants.Server || e.Tier == Constants.Shared) && staleCacheKeys.Contains(e.CultureId)
-                                                     group e by e.CultureId into g
-                                                     select g;
+                    _translations.TryGetValue(cultureName, out entry);
+                }
+                finally
+                {
+                    cultureLock.ExitReadLock();
+                }
 
-                        freshTranslations = freshTranslationsQuery.AsNoTracking().ToDictionary(
-                            g => CacheKey(g.Key),
-                            g => g.ToDictionary(e => e.Name, e => e.Value));
+                // In case of a cache miss, do the needful
+                if (entry == null || entry.IsExpired(_config.CacheExpirationMinutes))
+                {
+                    cultureLock.EnterWriteLock();
+                    try
+                    {
+                        // To prevent a race condition we check once again inside the write lock that it's a cache miss
+                        _translations.TryGetValue(cultureName, out entry);
+                        if (entry == null || entry.IsExpired(_config.CacheExpirationMinutes))
+                        {
+                            using (var scope = _servicsProvider.CreateScope())
+                            {
+                                using (var db = scope.ServiceProvider.GetService<AdminContext>())
+                                {
+                                    // At this point it's a definitely a cache miss => refresh the cache from the source database
+                                    if (entry != null)
+                                    {
+                                        // If the entry is already loaded before but simply expired, don't immediately load the entire table
+                                        // again, first compare the version string of the cache with that of the DB, and if they match
+                                        // flag the entry in the cache as fresh
+                                        var dbVersion = LoadTranslationsVersion(cultureName, db);
+
+                                        // If the versions don't match, load the new translations from the DB
+                                        if (entry.Version != dbVersion)
+                                        {
+                                            // Load translations from db
+                                            var freshTranslations = LoadTranslations(cultureName, db);
+
+                                            entry.Translations = freshTranslations;
+                                            entry.Version = dbVersion;
+                                        }
+
+                                        entry.MarkAsFresh();
+                                    }
+                                    else
+                                    {
+                                        // this means the translations for this culture were never loaded before
+
+                                        // Load the version + translations from the DB
+                                        var dbVersion = LoadTranslationsVersion(cultureName, db);
+                                        var freshTranslations = LoadTranslations(cultureName, db);
+
+                                        entry = new CacheEntry
+                                        {
+                                            Version = dbVersion,
+                                            Translations = freshTranslations
+                                        };
+
+                                        _translations.Add(cultureName, entry);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        cultureLock.ExitWriteLock();
                     }
                 }
+
+                // If a translation is found return it
+                if (entry.Translations.ContainsKey(name))
+                {
+                    return entry.Translations[name].Value;
+                }
             }
 
-            // Update the stale caches with the fresh translations
-            foreach (var staleCache in staleCaches)
+            // (3) If no translation is found: Forgiveness is a virtue, return the resource name as is
+            return name;
+        }
+
+        private Dictionary<string, TranslationInfo> LoadTranslations(string cultureName, AdminContext db)
+        {
+            var translations = db.Translations.AsNoTracking()
+                .Where(e => e.CultureId == cultureName)
+                .ToDictionary(e => e.Name, e => new TranslationInfo
+                {
+                    Value = e.Value,
+                    Tier = e.Tier
+                });
+
+            return translations;
+        }
+
+        private string LoadTranslationsVersion(string cultureName, AdminContext db)
+        {
+            var dbCulture = db.Cultures.FirstOrDefault(e => e.Id == cultureName);
+            var version = dbCulture?.TranslationsVersion ?? Guid.Empty;
+
+            return version.ToString();
+        }
+
+        public void InvalidateCache(string cultureName)
+        {
+            var cultureLock = _locks.GetOrAdd(cultureName, new ReaderWriterLockSlim());
+            cultureLock.EnterWriteLock();
+            try
             {
-                // Get the cache key
-                var cacheKey = CacheKey(staleCache.CultureName);
-
-                // Prepare the translations in a dictionary, even an empty one if no list came from SQL
-                Dictionary<string, string> translations = new Dictionary<string, string>();
-                if (freshTranslations.ContainsKey(cacheKey))
+                _translations.TryGetValue(cultureName, out CacheEntry entry);
+                if (entry != null)
                 {
-                    translations = freshTranslations[cacheKey];
+                    // The next call for a localized string will force a database refresh
+                    entry.Version = Guid.NewGuid().ToString();
                 }
+            }
+            finally
+            {
+                cultureLock.ExitWriteLock();
+            }
+        }
 
-                // Set the local cache
-                _localCache[cacheKey] = new LocalCacheItem
+        public DataWithVersion<Dictionary<string, string>> GetTranslations(string cultureName, params string[] tiers)
+        {
+            EnsureFreshnessOfCache(cultureName);
+
+            // Retrieve the translations pertaining to the specified tiers
+            var cultureLock = _locks.GetOrAdd(cultureName, new ReaderWriterLockSlim());
+            cultureLock.EnterReadLock();
+            try
+            {
+                _translations.TryGetValue(cultureName, out CacheEntry entry);
+
+                var version = entry.Version;
+                var data = entry.Translations
+                    .Where(e => tiers == null || tiers.Contains(e.Value.Tier))
+                    .ToDictionary(e => e.Key, e => e.Value.Value);
+
+                return new DataWithVersion<Dictionary<string, string>>
                 {
-                    Version = staleCache.LatestVersion,
-                    Translations = translations
+                    Version = version,
+                    Data = data
                 };
             }
-        }
-
-        /// <summary>
-        /// Marks the entry in the distributed cache 
-        /// </summary>
-        public async Task InvalidateCacheAsync(string cultureName)
-        {
-            var cacheKey = CacheKey(cultureName);
-            var newVersion = Guid.NewGuid().ToString();
-            await _distributedCache.SetStringAsync(cacheKey, newVersion, GetDistributedCacheOptions());
-        }
-
-        /// <summary>
-        /// Creates the distributed cache options, and sets the absolute expiry time
-        /// </summary>
-        /// <returns></returns>
-        private DistributedCacheEntryOptions GetDistributedCacheOptions()
-        {
-            var opt = new DistributedCacheEntryOptions
+            finally
             {
-                AbsoluteExpiration = DateTimeOffset.Now.AddDays(DISTRIBUTED_CACHE_EXPIRATION_DAYS),
-                SlidingExpiration = null
-            };
-
-            return opt;
+                cultureLock.ExitReadLock();
+            }
         }
 
-        /// <summary>
-        /// Generates the keys used in local and distributed caches
-        /// based on the culture
-        /// </summary>
-        /// <returns>The key to be used in the local and distributed cache</returns>
-        private string CacheKey(string cultureName)
-            => $"localization:{cultureName}";
+        public bool IsFresh(string cultureName, string version)
+        {
+            EnsureFreshnessOfCache(cultureName);
 
-        /// <summary>
-        /// Simple DTO to encapsulate an entry in the local cache
-        /// </summary>
-        private class LocalCacheItem
+            // Retrieve the translations pertaining to the specified tiers
+            var cultureLock = _locks.GetOrAdd(cultureName, new ReaderWriterLockSlim());
+            cultureLock.EnterReadLock();
+            try
+            {
+                _translations.TryGetValue(cultureName, out CacheEntry entry);
+                return entry.Version == version;
+            }
+            finally
+            {
+                cultureLock.ExitReadLock();
+            }
+        }
+
+        private void EnsureFreshnessOfCache(string cultureName)
+        {
+            // Ensures a fresh cache (within the expiry timeout)
+            Localize("AppName", new CultureInfo(cultureName));
+        }
+
+        private class CacheEntry
         {
             public string Version { get; set; }
-            public Dictionary<string, string> Translations { get; set; }
+            public DateTimeOffset LastChecked { get; set; } = DateTimeOffset.Now;
+            public Dictionary<string, TranslationInfo> Translations { get; set; } = new Dictionary<string, TranslationInfo>();
+
+            /// <summary>
+            /// Checks if <see cref="LastChecked"/> is more minutes ago than the provider value
+            /// </summary>
+            public bool IsExpired(int expirationMinutes)
+            {
+                var isExpired = (DateTimeOffset.Now - LastChecked).TotalMinutes >= expirationMinutes;
+                return isExpired;
+            }
+
+            /// <summary>
+            /// Updates <see cref="LastChecked"/> to current time
+            /// </summary>
+            public void MarkAsFresh()
+            {
+                LastChecked = DateTimeOffset.Now;
+            }
         }
 
-        /// <summary>
-        /// Simple DTO to temporarily represent a stale cache in the cache refresh logic
-        /// </summary>
-        private class CacheInfo
+        private class TranslationInfo
         {
-            public string LatestVersion { get; set; }
-            public string CultureName { get; set; }
+            public string Value { get; set; }
+            public string Tier { get; set; }
         }
     }
 }

@@ -99,6 +99,23 @@ export class ApiService {
     };
   }
 
+  public tranlationsApi(cancellationToken$: Observable<void>) {
+    return {
+      getForClient: (cultureName: string) => {
+        const url = appconfig.apiAddress + `api/translations/client/${cultureName}`;
+        const obs$ = this.http.get<DataWithVersion<any>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+    };
+  }
+
   public settingsApi(cancellationToken$: Observable<void>) {
     return {
       get: (args: GetByIdArguments) => {
