@@ -115,46 +115,35 @@ namespace BSharp.Services.SqlLocalization
                         _translations.TryGetValue(cultureName, out entry);
                         if (entry == null || entry.IsExpired(_config.CacheExpirationMinutes))
                         {
+                            // At this point it's a definitely a cache miss => refresh the cache from the source database
                             using (var scope = _servicsProvider.CreateScope())
                             {
                                 using (var db = scope.ServiceProvider.GetService<AdminContext>())
                                 {
-                                    // At this point it's a definitely a cache miss => refresh the cache from the source database
-                                    if (entry != null)
+                                    // Load the version from the dB
+                                    var dbVersion = LoadTranslationsVersion(cultureName, db);
+
+                                    // If the entry is already loaded before but simply expired, don't immediately load the entire table
+                                    // again, first compare the version string of the cache with that of the DB, and if they match
+                                    // flag the entry in the cache as fresh
+                                    if (entry == null || entry.Version != dbVersion)
                                     {
-                                        // If the entry is already loaded before but simply expired, don't immediately load the entire table
-                                        // again, first compare the version string of the cache with that of the DB, and if they match
-                                        // flag the entry in the cache as fresh
-                                        var dbVersion = LoadTranslationsVersion(cultureName, db);
-
-                                        // If the versions don't match, load the new translations from the DB
-                                        if (entry.Version != dbVersion)
-                                        {
-                                            // Load translations from db
-                                            var freshTranslations = LoadTranslations(cultureName, db);
-
-                                            entry.Translations = freshTranslations;
-                                            entry.Version = dbVersion;
-                                        }
-
-                                        entry.MarkAsFresh();
-                                    }
-                                    else
-                                    {
-                                        // this means the translations for this culture were never loaded before
+                                        // IF this is the first query of if the versions don't match create new a cache entry
 
                                         // Load the version + translations from the DB
-                                        var dbVersion = LoadTranslationsVersion(cultureName, db);
                                         var freshTranslations = LoadTranslations(cultureName, db);
 
+                                        // Create a new entry
                                         entry = new CacheEntry
                                         {
-                                            Version = dbVersion,
-                                            Translations = freshTranslations
+                                            Translations = freshTranslations,
+                                            Version = dbVersion
                                         };
 
-                                        _translations.Add(cultureName, entry);
+                                        _translations[cultureName] = entry;
                                     }
+
+                                    entry.MarkAsFresh();
                                 }
                             }
                         }

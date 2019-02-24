@@ -122,6 +122,9 @@ namespace BSharp
                         adminContext.Translations.AddRange(Translation.TRANSLATIONS);
                         adminContext.SaveChanges();
 
+                        // To trigger the client to refresh
+                        adminContext.Database.ExecuteSqlCommand("UPDATE [dbo].[Cultures] SET TranslationsVersion = NEWID()");
+
                         foreach (var tenantId in tenantIds.Take(1))
                         {
                             // (2) Application Context requires special handling in development, don't resolve it with DI

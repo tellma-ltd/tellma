@@ -16,8 +16,12 @@ export class ApiTranslateLoader implements TranslateLoader {
     const key = translationStorageKey(cultureName);
     const translationsString = this.storage.getItem(key);
     if (!!translationsString) {
-      const translations = JSON.parse(translationsString);
-      return of(translations);
+      try {
+        const translations = JSON.parse(translationsString);
+        return of(translations);
+      } catch (err) {
+        return of({});
+      }
     } else {
       const obs$ = this.api.tranlationsApi(new Subject()).getForClient(cultureName)
         .pipe(

@@ -4,6 +4,7 @@ using BSharp.Data;
 using BSharp.Services.EmbeddedIdentityServer;
 using BSharp.Services.Migrations;
 using BSharp.Services.ModelMetadata;
+using BSharp.Services.SqlLocalization;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -55,8 +56,8 @@ namespace BSharp
             services.Configure<GlobalConfiguration>(_config);
 
             // Register the admin context
-            services.AddDbContext<AdminContext>(opt =>
-                opt.UseSqlServer(_config.GetConnectionString(Constants.AdminConnection))
+            services.AddDbContext<AdminContext>(builder =>
+                builder.UseSqlServer(_config.GetConnectionString(Constants.AdminConnection))
                 .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
 
 
@@ -71,6 +72,7 @@ namespace BSharp
             services.AddBlobService(_config);
             services.AddSqlLocalization(_config);
             services.AddDynamicModelMetadata();
+            services.AddGlobalSettingsCache(_config);
 
             // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
             services.AddEmbeddedIdentityServerIfEnabled(_config, _env);
@@ -102,22 +104,22 @@ namespace BSharp
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
 
                 // TODO: Only when using embedded identity
-                .AddRazorPagesOptions(options =>
+                .AddRazorPagesOptions(opt =>
                 {
-                    options.AllowAreas = true;
-                    options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
-                    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+                    opt.AllowAreas = true;
+                    opt.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
+                    opt.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
 
                 });
 
             // TODO: Only when using embedded identity
-            services.ConfigureApplicationCookie(options =>
+            services.ConfigureApplicationCookie(opt =>
             {
-                options.ExpireTimeSpan = TimeSpan.FromDays(Constants.TokenExpiryInDays);
-                options.SlidingExpiration = true;
-                options.LoginPath = $"/identity/sign-in";
-                options.LogoutPath = $"/identity/sign-out";
-                options.AccessDeniedPath = $"/identity/access-denied";
+                opt.ExpireTimeSpan = TimeSpan.FromDays(Constants.TokenExpiryInDays);
+                opt.SlidingExpiration = true;
+                opt.LoginPath = $"/identity/sign-in";
+                opt.LogoutPath = $"/identity/sign-out";
+                opt.AccessDeniedPath = $"/identity/access-denied";
             });
 
             // TODO: Only when using embedded identity
@@ -127,23 +129,23 @@ namespace BSharp
             services.AddCors();
 
             // Configure some custom behavior for API controllers
-            services.Configure<ApiBehaviorOptions>(options =>
+            services.Configure<ApiBehaviorOptions>(opt =>
             {
                 // This overrides the default behavior, when there are validation
                 // errors we return a 422 unprocessable entity, instead of the default
                 // 400 bad request, this makes it easier for clients to distinguish 
                 // such kind of errors and handle them in a special way, for example:
                 // by showing them on the fields with a red color
-                options.InvalidModelStateResponseFactory = ctx =>
+                opt.InvalidModelStateResponseFactory = ctx =>
                 {
                     return new UnprocessableEntityObjectResult(ctx.ModelState);
                 };
             });
 
             // In production, the Angular files will be served from this directory
-            services.AddSpaStaticFiles(config =>
+            services.AddSpaStaticFiles(opt =>
             {
-                config.RootPath = "ClientApp/dist";
+                opt.RootPath = "ClientApp/dist";
             });
 
             // AutoMapper https://automapper.org/
@@ -151,8 +153,12 @@ namespace BSharp
 
         }
 
-        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, IOptions<GlobalConfiguration> options)
+        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, IServiceProvider services)
         {
+            var globalConfig = services.GetService<IOptions<GlobalConfiguration>>()?.Value;
+            var localizationConfig = services.GetService<IOptions<SqlLocalizationConfiguration>>()?.Value;
+            var clientStoreConfig = services.GetService<IOptions<ClientStoreConfiguration>>()?.Value;
+
             if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -166,8 +172,8 @@ namespace BSharp
             // Picks out the culture from the request string and sets it in the current thread
             app.UseRequestLocalization(opt =>
             {
-                var defaultUICulture = _config.GetSection("Localization")["DefaultUICulture"] ?? "en";
-                var defaultCulture = _config.GetSection("Localization")["DefaultCulture"] ?? "en-GB";
+                var defaultUICulture = localizationConfig?.DefaultUICulture ?? "en";
+                var defaultCulture = localizationConfig?.DefaultCulture ?? "en-GB";
 
                 opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUICulture);
 
@@ -182,33 +188,26 @@ namespace BSharp
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            if (_env.IsDevelopment())
+            // CORS
+            string webClientUri = clientStoreConfig?.WebClientUri.WithoutTrailingSlash();
+            if (!string.IsNullOrWhiteSpace(webClientUri))
             {
                 app.UseCors(builder =>
                 {
-                    builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .WithExposedHeaders("x-image-id")
-                        .WithExposedHeaders("x-settings-version")
-                        .WithExposedHeaders("x-permissions-version")
-                        .WithExposedHeaders("x-user-settings-version")
-                        .WithExposedHeaders("x-translations-version");
+                    builder.WithOrigins(webClientUri)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithExposedHeaders("x-image-id")
+                    .WithExposedHeaders("x-settings-version")
+                    .WithExposedHeaders("x-permissions-version")
+                    .WithExposedHeaders("x-user-settings-version")
+                    .WithExposedHeaders("x-translations-version")
+                    .WithExposedHeaders("x-global-settings-version");
                 });
-            }
-            else
-            {
-                //if (!string.IsNullOrWhiteSpace(clientOptions.Value?.WebClientUri))
-                //{
-
-                //}
-                
-                // TODO: Read from settings for production
             }
 
             // Serves the identity server
-            if (options.Value.EmbeddedIdentityServerEnabled)
+            if (globalConfig.EmbeddedIdentityServerEnabled)
             {
                 app.UseIdentityServer();
             }

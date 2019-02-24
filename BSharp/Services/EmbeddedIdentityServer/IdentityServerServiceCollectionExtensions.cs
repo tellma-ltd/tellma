@@ -78,7 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             // Add identity server
-            services.Configure<ClientStoreConfiguration>(embeddedIdentitySection.GetSection("ClientStore"));
+            services.Configure<ClientStoreConfiguration>(config.GetSection("ClientStore"));
             var builder = services.AddIdentityServer(opt =>
             {
                 opt.UserInteraction.LoginUrl = "/identity/sign-in";

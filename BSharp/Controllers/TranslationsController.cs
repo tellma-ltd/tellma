@@ -83,6 +83,7 @@ namespace BSharp.Controllers
 
         protected override Task<List<M.Translation>> PersistAsync(List<TranslationForSave> entities, SaveArguments args)
         {
+            // TODO overrite the translations version and bust the localizer factory cache
             throw new NotImplementedException();
         }
 

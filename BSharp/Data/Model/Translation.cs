@@ -187,6 +187,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Error_LoadingCompanySettings", "Error loading company settings"),
             Ar(Constants.Client, "Error_LoadingCompanySettings", "حدث خطأ أثناء تحميل إعدادات الشركة"),
 
+            En(Constants.Client, "Error_LoadingGlobalSettings", "Error loading system settings"),
+            Ar(Constants.Client, "Error_LoadingGlobalSettings", "حدث خطأ أثناء تحميل إعدادات النظام"),
+
             En(Constants.Client, "Error_ImageExceedsTheMaximumSizeOfX", "The file you selected exceeds the maximum allowed size of {{maxSize}} MB"),
             Ar(Constants.Client, "Error_ImageExceedsTheMaximumSizeOfX", "حجم الملف الذي اخترته يتجاوز الحد الأقصى المسموح به وهو {{maxSize}} ميجابايت"),
 

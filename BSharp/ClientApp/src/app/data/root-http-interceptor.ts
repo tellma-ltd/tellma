@@ -15,12 +15,11 @@ import { Router } from '@angular/router';
 import { UserSettingsForClient } from './dto/local-user';
 import { OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './cleaner.service';
-import { apiTranslateLoaderFactory } from './api-translate-loader';
 import { TranslateService } from '@ngx-translate/core';
+import { GlobalSettingsForClient } from './dto/global-settings';
+import { handleFreshGlobalSettings } from './global-resolver.guard';
 
 type VersionStatus = 'Fresh' | 'Stale' | 'Unauthorized';
-
-// Translations stuff
 
 export function translationStorageKey(cultureName: string) { return `translations_${cultureName}`; }
 export function translationVersionStorageKey(cultureName: string) { return `translations_${cultureName}_version`; }
@@ -34,11 +33,13 @@ export function saveTranslationsInStorage(cultureName: string, version: string, 
 
 export class RootHttpInterceptor implements HttpInterceptor {
 
+  private notifyRefreshGlobalSettings$: Subject<void>;
   private notifyRefreshTranslations$: Subject<string>;
   private notifyRefreshSettings$: Subject<void>;
   private notifyRefreshPermissions$: Subject<void>;
   private notifyRefreshUserSettings$: Subject<void>;
   private cancellationToken$: Subject<void>;
+  private globalSettingsApi: () => Observable<DataWithVersion<GlobalSettingsForClient>>;
   private translationsApi: (cultureName: string) => Observable<DataWithVersion<any>>;
   private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
@@ -50,6 +51,11 @@ export class RootHttpInterceptor implements HttpInterceptor {
     private translate: TranslateService) {
     // Note: We use exhaustMap to prevent making another call while a call is in progress
     // https://www.learnrxjs.io/operators/transformation/exhaustmap.html
+
+    this.notifyRefreshGlobalSettings$ = new Subject<void>();
+    this.notifyRefreshGlobalSettings$.pipe(
+      exhaustMap(() => this.doRefreshGlobalSettings())
+    ).subscribe();
 
     this.notifyRefreshTranslations$ = new Subject<string>();
     this.notifyRefreshTranslations$.pipe(
@@ -73,6 +79,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
     this.cancellationToken$ = new Subject<void>();
 
+    this.globalSettingsApi = this.api.globalSettingsApi(this.cancellationToken$).getForClient;
     this.translationsApi = this.api.tranlationsApi(this.cancellationToken$).getForClient;
     this.settingsApi = this.api.settingsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
@@ -119,27 +126,32 @@ export class RootHttpInterceptor implements HttpInterceptor {
     }
 
     // UI culture
-    const culture = this.workspace.ws.culture;
+    const culture = this.workspace.ws.culture || this.translate.currentLang || this.translate.defaultLang;
     if (!!culture) {
       params['ui-culture'] = culture;
     }
 
     // the version refresh APIs should not include the version headers
     const isVersionRefreshRequest = req.url.endsWith('/client') || req.url.indexOf('/client/') !== -1;
+    if (!isVersionRefreshRequest) {
+      // tenant versions
+      const current = this.workspace.current;
+      if (!!current) {
+        headers['X-Settings-Version'] = current.settingsVersion || '???';
+        headers['X-Permissions-Version'] = current.permissionsVersion || '???';
+        headers['X-User-Settings-Version'] = current.userSettingsVersion || '???';
+      }
 
-    // tenant versions
-    const current = this.workspace.current;
-    if (!!current && !isVersionRefreshRequest) {
-      headers['X-Settings-Version'] = current.settingsVersion || '???';
-      headers['X-Permissions-Version'] = current.permissionsVersion || '???';
-      headers['X-User-Settings-Version'] = current.userSettingsVersion || '???';
-    }
+      // global versions
+      const translationsKey = translationVersionStorageKey(culture);
+      const translationsVersion = this.storage.getItem(translationsKey);
+      if (!!translationsVersion) {
+        headers['X-Translations-Version'] = translationsVersion || '???';
+      }
 
-    // global versions
-    const translationsKey = translationVersionStorageKey(culture);
-    const translationsVersion = this.storage.getItem(translationsKey);
-    if (!!translationsVersion) {
-      headers['X-Translations-Version'] = translationsVersion || '???';
+      if (!!this.workspace.globalSettingsVersion) {
+        headers['X-Global-Settings-Version'] = this.workspace.globalSettingsVersion;
+      }
     }
 
     // clone the request and set the headers and parameters
@@ -148,17 +160,15 @@ export class RootHttpInterceptor implements HttpInterceptor {
       setParams: params
     });
 
-    // TODO add authorization header
-    // TODO intercept 401 responses and log the user out
-
     return next.handle(req).pipe(
       tap(e => this.handleServerVersions(e, tenantId, culture)),
       catchError(e => {
         this.handleServerVersions(e, tenantId, culture);
         // If it's a 401 then quickly delete the app state and challenge user
         if (e instanceof HttpErrorResponse && e.status === 401) {
-          this.router.navigateByUrl('/welcome?error=401');
-          this.cleaner.cleanState();
+          this.router.navigateByUrl('/welcome?error=401').then(() => {
+            this.cleaner.cleanState();
+          });
         }
         return throwError(e);
       })
@@ -170,6 +180,14 @@ export class RootHttpInterceptor implements HttpInterceptor {
     if (!!e && !!e.headers) {
 
       // global versions
+      {
+        // global settings
+        const v = <VersionStatus>e.headers.get('x-translations-version');
+        if (v === 'Stale') {
+          this.refreshGlobalSettings();
+        }
+      }
+
       if (!!culture) {
 
         // translations
@@ -226,6 +244,45 @@ export class RootHttpInterceptor implements HttpInterceptor {
     }
   }
 
+  refreshGlobalSettings() {
+    this.notifyRefreshGlobalSettings$.next();
+  }
+
+  private doRefreshGlobalSettings() {
+
+    const ws = this.workspace;
+    const obs$ = this.globalSettingsApi().pipe(
+      tap(result => {
+        // Cache the permissions and set them in the workspace
+        handleFreshGlobalSettings(result, ws, this.storage);
+      }),
+      retry(2)
+    );
+
+    return obs$;
+  }
+
+  refreshTranslations(cultureName: string) {
+    this.notifyRefreshTranslations$.next(cultureName);
+  }
+
+  private doRefreshTranslations = (cultureName: string) => {
+
+    const obs$ = this.translationsApi(cultureName).pipe(
+      tap(dwv => {
+        // cache the translations in local storage
+        saveTranslationsInStorage(cultureName, dwv.Version, dwv.Data, this.storage);
+
+        // notify the translate service in order to update the UI
+        this.translate.setTranslation(cultureName, dwv.Data);
+      }),
+      retry(2)
+    );
+
+    return obs$;
+  }
+
+
   refreshSettings() {
     this.notifyRefreshSettings$.next();
   }
@@ -235,7 +292,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
     const current = this.workspace.current;
     const tenantId = this.workspace.ws.tenantId;
 
-    // using forkJoin is recommended for running HTTP calls in parallel
     const obs$ = this.settingsApi().pipe(
       tap(result => {
         // Cache the settings and set them in the workspace
@@ -245,7 +301,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
         if (err.status === 403) {
           // Delete all cached information
           delete this.workspace.ws.tenants[tenantId];
-          // TODO: Clear tenant workspace and navigate to you cannot access this company page
         } else {
           return throwError(err);
         }
@@ -265,7 +320,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
     const current = this.workspace.current;
     const tenantId = this.workspace.ws.tenantId;
 
-    // using forkJoin is recommended for running HTTP calls in parallel
     const obs$ = this.permissionsApi().pipe(
       tap(result => {
         // Cache the permissions and set them in the workspace
@@ -286,32 +340,10 @@ export class RootHttpInterceptor implements HttpInterceptor {
     const current = this.workspace.current;
     const tenantId = this.workspace.ws.tenantId;
 
-    // using forkJoin is recommended for running HTTP calls in parallel
     const obs$ = this.userSettingsApi().pipe(
       tap(result => {
         // Cache the user settings and set them in the workspace
         handleFreshUserSettings(result, tenantId, current, this.storage);
-      }),
-      retry(2)
-    );
-
-    return obs$;
-  }
-
-  refreshTranslations(cultureName: string) {
-    this.notifyRefreshTranslations$.next(cultureName);
-  }
-
-  private doRefreshTranslations = (cultureName: string) => {
-
-    // using forkJoin is recommended for running HTTP calls in parallel
-    const obs$ = this.translationsApi(cultureName).pipe(
-      tap(dwv => {
-        // cache the translations in local storage
-        saveTranslationsInStorage(cultureName, dwv.Version, dwv.Data, this.storage);
-
-        // notify the translate service in order to update the UI
-        this.translate.setTranslation(cultureName, dwv.Data);
       }),
       retry(2)
     );

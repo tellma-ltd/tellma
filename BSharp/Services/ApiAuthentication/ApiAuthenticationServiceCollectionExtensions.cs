@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddApiAuthentication(this IServiceCollection services, IConfiguration config)
         {
             // Add the authentication schemes
-            var authorityUri = config["ApiAuthentication:AuthorityUri"];
+            var authorityUri = config["ApiAuthentication:AuthorityUri"].WithoutTrailingSlash();
 
             if (string.IsNullOrWhiteSpace(authorityUri))
             {

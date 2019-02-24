@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BSharp.Controllers.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -18,7 +19,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Translations001()
         {
             var lang = "en";
-            var response = await _client.GetAsync($"/api/translations/client-translations/{lang}");
+            var response = await _client.GetAsync($"/api/translations/client/{lang}");
 
             // Call the API
             _output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -27,12 +28,12 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed dictionary
-            var responseData = await response.Content.ReadAsAsync<Dictionary<string, string>>();
+            var responseData = await response.Content.ReadAsAsync<DataWithVersion<Dictionary<string, string>>>();
 
             // Assert the result makes sense
-            Assert.True(responseData.Count > 0, "Result was empty");
-            Assert.True(responseData.ContainsKey("AppName"));
-            Assert.True(responseData.ContainsValue("BSharp"));
+            Assert.True(responseData.Data.Count > 0, "Result was empty");
+            Assert.True(responseData.Data.ContainsKey("AppName"));
+            Assert.True(responseData.Data.ContainsValue("BSharp"));
         }
 
     }

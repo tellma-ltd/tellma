@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
+using BSharp.Data;
 using BSharp.Services.ApiAuthentication;
 using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
@@ -21,15 +22,17 @@ namespace BSharp.Controllers
     [Route("api/[controller]")]
     [AuthorizeAccess]
     [ApiController]
-    public class CulturesController : ReadControllerBase<CultureDefinition, Culture, string>
+    public class CulturesController : ReadControllerBase<M.Culture, Culture, string>
     {
+        private readonly AdminContext _db;
         private readonly ILogger<CulturesController> _logger;
         private readonly IStringLocalizer<CulturesController> _localizer;
         private readonly IMapper _mapper;
 
-        public CulturesController(ILogger<CulturesController> logger, IStringLocalizer<CulturesController> localizer,
+        public CulturesController(AdminContext db, ILogger<CulturesController> logger, IStringLocalizer<CulturesController> localizer,
             IMapper mapper) : base(logger, localizer, mapper)
         {
+            _db = db;
             _logger = logger;
             _localizer = localizer;
             _mapper = mapper;
@@ -40,28 +43,32 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override IQueryable<CultureDefinition> GetBaseQuery()
+        protected override IQueryable<M.Culture> GetBaseQuery()
         {
-            var repo = new CulturesRepository();
-            return repo.GetAllCultures().AsQueryable();
+            return _db.Cultures;
         }
 
-        protected override IQueryable<CultureDefinition> IncludeInactive(IQueryable<CultureDefinition> query, bool inactive)
+        protected override IQueryable<M.Culture> IncludeInactive(IQueryable<M.Culture> query, bool inactive)
         {
-            return query;
-        }
-
-        protected override IQueryable<CultureDefinition> Search(IQueryable<CultureDefinition> query, string search)
-        {
-            if (!string.IsNullOrWhiteSpace(search))
+            if(!inactive)
             {
-                query = query.Where(e => e.Id.ToLower().Contains(search.ToLower()) || e.Name.ToLower().Contains(search.ToLower()) || e.EnglishName.ToLower().Contains(search.ToLower()));
+                query = query.Where(e => e.IsActive);
             }
 
             return query;
         }
 
-        protected override IQueryable<CultureDefinition> SingletonQuery(IQueryable<CultureDefinition> query, string id)
+        protected override IQueryable<M.Culture> Search(IQueryable<M.Culture> query, string search)
+        {
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(e => e.Id.Contains(search) || e.Name.Contains(search) || e.EnglishName.Contains(search));
+            }
+
+            return query;
+        }
+
+        protected override IQueryable<M.Culture> SingletonQuery(IQueryable<M.Culture> query, string id)
         {
             return query.Where(e => e.Id == id);
         }
@@ -76,57 +83,5 @@ namespace BSharp.Controllers
 
             return Task.FromResult(result);
         }
-    }
-
-    public class CulturesRepository
-    {
-        private IEnumerable<CultureDefinition> _cultures;
-
-        public IEnumerable<CultureDefinition> GetAllCultures()
-        {
-            if (_cultures == null)
-            {
-                _cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(Map).OrderBy(e => e.EnglishName);
-            }
-
-            return _cultures;
-        }
-
-        public CultureDefinition GetCulture(string cultureId)
-        {
-            if(cultureId == null)
-            {
-                return null;
-            }
-
-            try
-            {
-                var cultureInfo =  CultureInfo.GetCultureInfo(cultureId);
-                return Map(cultureInfo);
-            }
-            catch (CultureNotFoundException)
-            {
-                return null;
-            }
-        }
-
-        private CultureDefinition Map(CultureInfo cultureInfo)
-        {
-            return new CultureDefinition
-            {
-                Id = cultureInfo.Name,
-                Name = cultureInfo.NativeName,
-                EnglishName = cultureInfo.EnglishName,
-                IsNeutralCulture = cultureInfo.IsNeutralCulture
-            };
-        }
-    }
-
-    public class CultureDefinition : M.ModelBase
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string EnglishName { get; set; }
-        public bool IsNeutralCulture { get; set; }
     }
 }

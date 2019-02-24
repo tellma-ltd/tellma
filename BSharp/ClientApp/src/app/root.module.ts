@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './data/cleaner.service';
 import { SignOutComponent } from './features/sign-out/sign-out.component';
+import { ErrorLoadingSettingsComponent } from './features/error-loading-settings/error-loading-settings.component';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import { SignOutComponent } from './features/sign-out/sign-out.component';
     ErrorLoadingCompanyComponent,
     PlaceholderComponent,
     SignOutComponent,
+    ErrorLoadingSettingsComponent,
   ],
   imports: [
     BrowserModule,

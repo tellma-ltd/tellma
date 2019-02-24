@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using BSharp.Services.SqlLocalization;
+using BSharp.Services.GlobalSettings;
 
 namespace BSharp.Controllers.Misc
 {
@@ -18,23 +19,35 @@ namespace BSharp.Controllers.Misc
     public class CheckGlobalVersionsFilter : IResourceFilter
     {
         private readonly ISqlStringLocalizerFactory _factory;
+        private readonly IGlobalSettingsCache _globalSettings;
 
-        public CheckGlobalVersionsFilter(ISqlStringLocalizerFactory factory)
+        public CheckGlobalVersionsFilter(ISqlStringLocalizerFactory factory, IGlobalSettingsCache globalSettings)
         {
             _factory = factory;
+            _globalSettings = globalSettings;
         }
 
         public void OnResourceExecuting(ResourceExecutingContext context)
         {
             // Confirm their freshness of any global version headers supplied
             var cultureName = CultureInfo.CurrentUICulture.Name;
+            // Translations
             {
-                // Settings
                 var clientVersion = context.HttpContext.Request.Headers["X-Translations-Version"].FirstOrDefault();
                 if (!string.IsNullOrWhiteSpace(clientVersion))
                 {
                     context.HttpContext.Response.Headers.Add("x-translations-version",
                          _factory.IsFresh(cultureName, clientVersion) ? Constants.Fresh : Constants.Stale);
+                }
+            }
+
+            // Global Settings
+            {
+                var clientVersion = context.HttpContext.Request.Headers["X-Global-Settings-Version"].FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(clientVersion))
+                {
+                    context.HttpContext.Response.Headers.Add("x-global-settings-version",
+                         _globalSettings.IsFresh(clientVersion) ? Constants.Fresh : Constants.Stale);
                 }
             }
         }

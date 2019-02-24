@@ -24,6 +24,7 @@ import { DataWithVersion } from './dto/data-with-version';
 import { PermissionsForClient } from './dto/permission';
 import { SaveSettingsResponse } from './dto/save-settings-response';
 import { UserSettingsForClient } from './dto/local-user';
+import { GlobalSettingsForClient } from './dto/global-settings';
 
 @Injectable({
   providedIn: 'root'
@@ -108,6 +109,32 @@ export class ApiService {
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
           }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+    };
+  }
+
+  public globalSettingsApi(cancellationToken$: Observable<void>) {
+    return {
+      getForClient: () => {
+        const url = appconfig.apiAddress + `api/global-settings/client`;
+        const obs$ = this.http.get<DataWithVersion<GlobalSettingsForClient>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      ping: () => {
+        const url = appconfig.apiAddress + `api/global-settings/ping`;
+        const obs$ = this.http.get(url).pipe(
           takeUntil(cancellationToken$)
         );
 

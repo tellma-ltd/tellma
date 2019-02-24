@@ -14,6 +14,7 @@ import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { SaveSettingsResponse } from '~/app/data/dto/save-settings-response';
 import { handleFreshSettings } from '~/app/data/tenant-resolver.guard';
 import { StorageService } from '~/app/data/storage.service';
+import { GlobalSettingsForClient } from '~/app/data/dto/global-settings';
 
 @Component({
   selector: 'b-settings',
@@ -26,7 +27,8 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   public _viewModelJson: string;
   public _editModel: Settings;
 
-  private expand = 'PrimaryLanguage, SecondaryLanguage';
+  private _cultures: { name: string, value: any }[];
+  private expand = '';
   private notifyFetch$: Subject<void>;
   private notifyDestruct$ = new Subject<void>();
   private detailsStatus: DetailsStatus;
@@ -261,6 +263,21 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   get placement() {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
+  }
+
+  public cultureName(culture: string): string {
+    const c = this.workspace.globalSettings.ActiveCultures[culture];
+    return !!c ? c.Name : null;
+  }
+
+  get cultures(): { name: string, value: any }[] {
+
+    if (!this._cultures) {
+      this._cultures = Object.keys(this.workspace.globalSettings.ActiveCultures)
+        .map(key => ({ name: this.workspace.globalSettings.ActiveCultures[key].Name, value: key }));
+    }
+
+    return this._cultures;
   }
 
   onSave(): void {

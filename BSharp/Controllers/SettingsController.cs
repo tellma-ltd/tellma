@@ -3,6 +3,7 @@ using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ApiAuthentication;
+using BSharp.Services.GlobalSettings;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -30,23 +31,23 @@ namespace BSharp.Controllers
 
         private readonly ApplicationContext _db;
         private readonly ILogger<SettingsController> _logger;
+        private readonly IGlobalSettingsCache _globalSettingsCache;
         private readonly IStringLocalizer<SettingsController> _localizer;
         private readonly IMapper _mapper;
         private readonly ITenantUserInfoAccessor _tenantInfo;
-        private readonly CulturesRepository _culturesRepo;
 
 
         // Constructor
 
-        public SettingsController(ApplicationContext db, ILogger<SettingsController> logger,
+        public SettingsController(ApplicationContext db, ILogger<SettingsController> logger, IGlobalSettingsCache globalSettingsCache,
             IStringLocalizer<SettingsController> localizer, IMapper mapper, ITenantUserInfoAccessor tenantInfo)
         {
             _db = db;
             _logger = logger;
+            _globalSettingsCache = globalSettingsCache;
             _localizer = localizer;
             _mapper = mapper;
             _tenantInfo = tenantInfo;
-            _culturesRepo = new CulturesRepository();
         }
 
 
@@ -209,8 +210,10 @@ namespace BSharp.Controllers
 
             // Prepare the settings for client
             var settings = _mapper.Map<SettingsForClient>(mSettings);
-            settings.PrimaryLanguageName = _culturesRepo.GetCulture(settings.PrimaryLanguageId)?.Name;
-            settings.SecondaryLanguageName = _culturesRepo.GetCulture(settings.SecondaryLanguageId)?.Name;
+            var activeCulures = _globalSettingsCache.GetGlobalSettings().Data.ActiveCultures;
+
+            settings.PrimaryLanguageName = GetCultureDisplayName(settings.PrimaryLanguageId);
+            settings.SecondaryLanguageName = GetCultureDisplayName(settings.SecondaryLanguageId);
 
             // Tag the settings for client with their current version
             var result = new DataWithVersion<SettingsForClient>
@@ -222,48 +225,44 @@ namespace BSharp.Controllers
             return result;
         }
 
-        private void Expand(string expand, Settings settings, GetByIdResponse<Settings> result)
+        private string GetCultureDisplayName(string cultureName)
         {
-
-            // Add related entities
-            if (expand != null)
+            if (string.IsNullOrWhiteSpace(cultureName))
             {
-                var cultures = new List<Culture>();
-                if (expand.Contains("PrimaryLanguage"))
-                {
-                    if (!string.IsNullOrWhiteSpace(settings.PrimaryLanguageId))
-                    {
-                        var cultureDef = _culturesRepo.GetCulture(settings.PrimaryLanguageId);
-                        var culture = _mapper.Map<Culture>(cultureDef);
-                        cultures.Add(culture);
-                    }
-                }
+                return null;
+            }
 
-                if (expand.Contains("SecondaryLanguage"))
-                {
-                    if (!string.IsNullOrWhiteSpace(settings.SecondaryLanguageId))
-                    {
-                        var cultureDef = _culturesRepo.GetCulture(settings.SecondaryLanguageId);
-                        var culture = _mapper.Map<Culture>(cultureDef);
-                        cultures.Add(culture);
-                    }
-                }
+            var activeCulures = _globalSettingsCache.GetGlobalSettings().Data.ActiveCultures;
+            activeCulures.TryGetValue(cultureName, out Culture culture);
 
-                if (cultures.Any())
+            if (culture != null)
+            {
+                return culture.Name;
+            }
+            else
+            {
+                try
                 {
-                    result.RelatedEntities = new Dictionary<string, IEnumerable<DtoBase>>
-                    {
-                        ["Cultures"] = cultures
-                    };
+                    var c = new CultureInfo(cultureName);
+                    return c.NativeName;
+                }
+                catch
+                {
+                    return null;
                 }
             }
         }
 
+        private void Expand(string expand, Settings settings, GetByIdResponse<Settings> result)
+        {
+
+        }
+
         private void ValidateAndPreprocessSettings(SettingsForSave entity)
         {
+            var activeCulures = _globalSettingsCache.GetGlobalSettings().Data.ActiveCultures;
             {
-                var culture = _culturesRepo.GetCulture(entity.PrimaryLanguageId);
-                if (culture == null)
+                if (!activeCulures.ContainsKey(entity.PrimaryLanguageId))
                 {
                     ModelState.AddModelError(nameof(entity.PrimaryLanguageId),
                         _localizer["Error_InvalidLanguageId0", entity.PrimaryLanguageId]);
@@ -272,9 +271,7 @@ namespace BSharp.Controllers
 
             if (!string.IsNullOrWhiteSpace(entity.SecondaryLanguageId))
             {
-
-                var culture = _culturesRepo.GetCulture(entity.SecondaryLanguageId);
-                if (culture == null)
+                if (!activeCulures.ContainsKey(entity.SecondaryLanguageId))
                 {
                     ModelState.AddModelError(nameof(entity.PrimaryLanguageId),
                         _localizer["Error_InvalidLanguageId0", entity.SecondaryLanguageId]);

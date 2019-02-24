@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Localization
 @using Microsoft.AspNetCore.Http.Extensions
+@using BSharp.Services.GlobalSettings
 
+@inject IGlobalSettingsCache GlobalSettingsCache
 @inject IViewLocalizer Localizer
 
 @{
@@ -8,14 +10,12 @@
     var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
 
-    // TODO: Load actual available languages IStringLocalizerFactory
-    string[] cultureNames = { "en", "ar" };
-    var cultureInfos = cultureNames.Select(e => new CultureInfo(e));
-    var culturesList = cultureInfos.Select(e => new SelectListItem
+    var cultures = GlobalSettingsCache.GetGlobalSettings().Data.ActiveCultures.Values;
+    var culturesList = cultures.Select(e => new SelectListItem
     {
-        Value = e.Name,
-        Text = e.NativeName,
-        Selected = e.Name == currentCulture.Name
+        Value = e.Id,
+        Text = e.Name,
+        Selected = e.Id == currentCulture.Name
     });
 }
 
@@ -61,13 +61,17 @@
                     </div>
                     <div class="text-center mt-1">
                         <a asp-area="" asp-page="/Privacy">@Localizer["PrivacyPolicy"]</a>
-                        &nbsp;|&nbsp;
+                        <span>&nbsp;|&nbsp;</span>
                         <a asp-area="" asp-page="/TermsOfService">@Localizer["TermsOfService"]</a>
-                        &nbsp;|
 
-                        <form class="d-inline" asp-area="" asp-page="/SetCulture" asp-route-currentUrl="@currentUrl" method="post">
-                            <select asp-items="culturesList" name="culture" class="text-primary bg-white" style="border: 1px solid white" onchange="this.form.submit()"></select>
-                        </form>
+                        @if (cultures.Count > 1)
+                        {
+                            <span>&nbsp;|</span>
+
+                            <form class="d-inline" asp-area="" asp-page="/SetCulture" asp-route-currentUrl="@currentUrl" method="post">
+                                <select asp-items="culturesList" name="culture" class="text-primary bg-white" style="border: 1px solid white" onchange="this.form.submit()"></select>
+                            </form>
+                        }
                     </div>
                 </footer>
             </div>

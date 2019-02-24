@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace BSharp.Data.Model
 {
-    public class Culture
+    public class Culture : ModelBase
     {
         [Required]
         [MaxLength(255)]
@@ -15,6 +15,10 @@ namespace BSharp.Data.Model
         [Required]
         [MaxLength(255)]
         public string Name { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string EnglishName { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -35,6 +39,7 @@ namespace BSharp.Data.Model
                 {
                     Id = e.Name,
                     Name = e.NativeName,
+                    EnglishName = e.EnglishName,
                     NeutralName = e.IsNeutralCulture ? e.NativeName : e.Parent.NativeName,
                     TranslationsVersion = defaultGuid,
                     IsActive = e.Name == "en"

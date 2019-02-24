@@ -2,7 +2,9 @@
 @using Microsoft.AspNetCore.Http.Extensions
 @using Microsoft.Extensions.Options
 @using BSharp.Services.EmbeddedIdentityServer
+@using BSharp.Services.GlobalSettings
 
+@inject IGlobalSettingsCache GlobalSettingsCache
 @inject IViewLocalizer Localizer
 @inject UserManager<User> UserManager
 @inject IOptions<ClientStoreConfiguration> Config
@@ -14,15 +16,7 @@
     var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
 
-    // TODO: Load actual available languages IStringLocalizerFactory
-    string[] cultureNames = { "en", "ar" };
-    var cultureInfos = cultureNames.Select(e => new CultureInfo(e));
-    var culturesList = cultureInfos.Select(e => new SelectListItem
-    {
-        Value = e.Name,
-        Text = e.NativeName,
-        Selected = e.Name == currentCulture.Name
-    });
+    var cultures = GlobalSettingsCache.GetGlobalSettings().Data.ActiveCultures.Values;
 }
 
 <!DOCTYPE html>
@@ -90,13 +84,13 @@
                             </div>
                         </button>
                         <div class="dropdown-menu shadow m-0  @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "": "dropdown-menu-right")" aria-labelledby="dropdownMenuButton">
-                            @if (cultureInfos.Count() > 1)
+                            @if (cultures.Count() > 1)
                             {
                                 <form method="post" asp-area="" asp-page="/SetCulture" asp-route-currentUrl="@currentUrl">
-                                    @foreach (var culture in cultureInfos.Where(e => e.Name != currentCulture.Name))
+                                    @foreach (var culture in cultures.Where(e => e.Id != currentCulture.Name))
                                     {
-                                        <button type="submit" class="dropdown-item btn-light" name="culture" value="@culture.Name">
-                                            @culture.NativeName
+                                        <button type="submit" class="dropdown-item btn-light" name="culture" value="@culture.Id">
+                                            @culture.Name
                                         </button>
                                     }
 

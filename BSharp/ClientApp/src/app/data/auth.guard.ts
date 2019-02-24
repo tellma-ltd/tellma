@@ -49,8 +49,9 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     this.auth.events$.subscribe(e => {
       switch (e) {
         case AuthEvent.SignedOutFromAuthority:
-          this.goToLandingPage();
-          this.cleaner.cleanState();
+          this.goToLandingPage().then(_ => {
+            this.cleaner.cleanState();
+          });
           break;
         case AuthEvent.SignedInAsDifferentUser:
           // if a different user signed in we clean the state (including local storage)
@@ -63,14 +64,15 @@ export class AuthGuard implements CanActivate, CanActivateChild {
           break;
 
         case AuthEvent.StorageIsCleared:
-          this.goToLandingPage();
-          this.cleaner.cleanWorkspace();
+          this.goToLandingPage().then(_ => {
+            this.cleaner.cleanWorkspace();
+          });
           break;
       }
     });
   }
 
-  goToLandingPage(): void {
-    this.router.navigateByUrl('/welcome');
+  goToLandingPage(): Promise<boolean> {
+    return this.router.navigateByUrl('/welcome');
   }
 }

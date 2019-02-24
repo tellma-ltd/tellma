@@ -60,8 +60,14 @@ namespace BSharp.Services.Mapper
             CreateDtoMap<M.Settings, Settings>();
             CreateMap<M.Settings, SettingsForClient>();
 
+            // Global Settings
+            CreateMap<GlobalSettingsForSave, M.GlobalSettings>();
+            CreateDtoMap<M.GlobalSettings, Controllers.DTO.GlobalSettings>();
+            CreateMap<M.GlobalSettings, GlobalSettingsForClient>();
+
             // Cultures
-            CreateDtoMap<Controllers.CultureDefinition, Culture>();
+            CreateMap<CultureForSave, M.Culture>();
+            CreateDtoMap<M.Culture, Culture>();
         }
 
         /// <summary>

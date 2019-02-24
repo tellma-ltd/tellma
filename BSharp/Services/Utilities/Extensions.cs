@@ -261,6 +261,44 @@ namespace BSharp.Services.Utilities
             return t == typeof(DateTimeOffset);
         }
 
+        /// <summary>
+        /// Removes any trailing lashes from the specified string
+        /// </summary>
+        public static string WithoutTrailingSlash(this string str)
+        {
+            if (str == null)
+            {
+                return null;
+            }
+
+            while (str.EndsWith('/'))
+            {
+                str = str.Substring(0, str.Length - 1);
+            }
+
+            return str;
+        }
+
+        /// <summary>
+        /// Adds one trailing slash to the specified string
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string WithTrailingSlash(this string str)
+        {
+            if (str == null)
+            {
+                return null;
+            }
+
+            if(!str.EndsWith("/"))
+            {
+                str = str + "/";
+            }
+
+            return str;
+        }
+
         public static MethodCallExpression Contains(this Expression @this, ConstantExpression constant)
         {
             return Expression.Call(

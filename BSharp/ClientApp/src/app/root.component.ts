@@ -62,7 +62,7 @@ export class RootComponent {
     this.translate.setDefaultLang(defaultCulture);
 
     // TODO load from local storage properly
-    const userCulture = this.storage.getItem('userCulture');
+    const userCulture = this.storage.getItem('userCulture') || defaultCulture;
     if (!!userCulture) {
       this.translate.use(userCulture);
     }

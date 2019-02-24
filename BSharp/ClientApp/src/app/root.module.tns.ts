@@ -15,6 +15,7 @@ import { NativeScriptLocalizeModule } from 'nativescript-localize/angular';
 import { UnauthorizedForCompanyComponent } from './features/unauthorized-for-company/unauthorized-for-company.component';
 import { ErrorLoadingCompanyComponent } from './features/error-loading-company/error-loading-company.component';
 import { SignOutComponent } from './features/sign-out/sign-out.component';
+import { ErrorLoadingSettingsComponent } from './features/error-loading-settings/error-loading-settings.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { SignOutComponent } from './features/sign-out/sign-out.component';
     UnauthorizedForCompanyComponent,
     ErrorLoadingCompanyComponent,
     SignOutComponent,
+    ErrorLoadingSettingsComponent,
   ],
   imports: [
     NativeScriptModule,

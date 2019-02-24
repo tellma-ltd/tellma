@@ -7,6 +7,8 @@ import { ErrorLoadingCompanyComponent } from './features/error-loading-company/e
 import { AuthGuard } from './data/auth.guard';
 import { SignInCallbackGuard } from './data/sign-in-callback.guard';
 import { BaseAddressGuard } from './data/base-address.guard';
+import { ErrorLoadingSettingsComponent } from './features/error-loading-settings/error-loading-settings.component';
+import { GlobalResolverGuard } from './data/global-resolver.guard';
 
 
 /*
@@ -29,12 +31,12 @@ import { BaseAddressGuard } from './data/base-address.guard';
   the root routes for the angular router
 */
 const routes: Routes = [
-  { path: 'companies', component: CompaniesComponent, canActivate: [AuthGuard] },
+  { path: 'companies', component: CompaniesComponent, canActivate: [AuthGuard, GlobalResolverGuard] },
 
   // Lazy loaded modules,
   {
     path: 'app',
-    canActivate: [AuthGuard], // otherwise the tenant resolver can't work
+    canActivate: [AuthGuard, GlobalResolverGuard], // otherwise the tenant resolver can't work
     loadChildren: './features/application.module#ApplicationModule',
     data: { preload: true }
   },
@@ -53,8 +55,9 @@ const routes: Routes = [
     loadChildren: './features/landing.module#LandingModule',
     data: { preload: false }
   },
-  { path: 'unauthorized', component: UnauthorizedForCompanyComponent },
+  { path: 'unauthorized', component: UnauthorizedForCompanyComponent, canActivate: [GlobalResolverGuard] },
   { path: 'error-loading-company', component: ErrorLoadingCompanyComponent },
+  { path: 'error-loading-settings', component: ErrorLoadingSettingsComponent },
   { path: 'sign-in-callback', component: PlaceholderComponent, canActivate: [SignInCallbackGuard] },
   { path: '', component: PlaceholderComponent, canActivate: [BaseAddressGuard] },
 

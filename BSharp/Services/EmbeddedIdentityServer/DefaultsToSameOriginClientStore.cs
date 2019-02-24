@@ -35,7 +35,7 @@ namespace BSharp.Services.EmbeddedIdentityServer
         private IEnumerable<Client> GetClients()
         {
             // Determine the ClientApp's URI from the config file
-            var uri = _config.WebClientUri;
+            var uri = _config.WebClientUri.WithTrailingSlash();
             if (string.IsNullOrWhiteSpace(uri))
             {
                 // IF it is not defined, then use the same origin as IdentityServer by default

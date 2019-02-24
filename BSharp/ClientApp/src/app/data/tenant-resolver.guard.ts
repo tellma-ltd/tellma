@@ -150,33 +150,34 @@ export class TenantResolverGuard implements CanActivate {
         // If the user signs out or signs in from another window
         // we automatically sign out/in in this window in order to
         // achieve a consistent experience
-        if (!!addEventListener) {
-          addEventListener('storage', (e: StorageEvent) => {
-            // settings
-            const settingsKey = versionStorageKey(SETTINGS_PREFIX, tenantId);
-            if (e.key === settingsKey) {
-              if (e.newValue !== current.settingsVersion) {
-                getSettingsFromStorage();
-              }
-            }
 
-            // permissions
-            const permissionsKey = versionStorageKey(PERMISSIONS_PREFIX, tenantId);
-            if (e.key === permissionsKey) {
-              if (e.newValue !== current.permissionsVersion) {
-                getPermissionsFromStorage();
-              }
+        this.storage.changed$.subscribe(e => {
+          // settings
+          const settingsKey = versionStorageKey(SETTINGS_PREFIX, tenantId);
+          if (e.key === settingsKey) {
+            if (e.newValue !== current.settingsVersion) {
+              getSettingsFromStorage();
             }
+          }
 
-            // user settings
-            const userSettingsKey = versionStorageKey(USER_SETTINGS_PREFIX, tenantId);
-            if (e.key === userSettingsKey) {
-              if (e.newValue !== current.userSettingsVersion) {
-                getUserSettingsFromStorage();
-              }
+          // permissions
+          const permissionsKey = versionStorageKey(PERMISSIONS_PREFIX, tenantId);
+          if (e.key === permissionsKey) {
+            if (e.newValue !== current.permissionsVersion) {
+              getPermissionsFromStorage();
             }
-          }, false);
-        }
+          }
+
+          // user settings
+          const userSettingsKey = versionStorageKey(USER_SETTINGS_PREFIX, tenantId);
+          if (e.key === userSettingsKey) {
+            if (e.newValue !== current.userSettingsVersion) {
+              getUserSettingsFromStorage();
+            }
+          }
+
+        });
+
 
         // IF this is a new browser/machine, need to get the globals from the backend
         if (current.settings && current.permissions && current.userSettings) {

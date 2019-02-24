@@ -8,6 +8,7 @@ import { Culture } from './dto/culture';
 import { DtoKeyBase } from './dto/dto-key-base';
 import { SettingsForClient } from './dto/settings';
 import { PermissionsForClient } from './dto/permission';
+import { GlobalSettingsForClient } from './dto/global-settings';
 
 export enum MasterStatus {
 
@@ -200,6 +201,7 @@ export class Workspace {
   culture: string;
   isRtl = false;
   errorLoadingCompanyMessage: string;
+  errorLoadingSettingsMessage: string;
 
   // Current tenantID selected by the user
   tenantId: number;
@@ -259,6 +261,10 @@ export class WorkspaceService {
 
   // This redirection makes it easy to wipe the workspace clean when signing out
   public ws: Workspace;
+
+  // Those are user-independent, company-independent and don't even require a sign-in, so they should never be cleared
+  public globalSettings: GlobalSettingsForClient;
+  public globalSettingsVersion: string;
 
   constructor() {
     this.reset();

@@ -70,6 +70,9 @@ namespace BSharp.IntegrationTests.Scenario_01
                         adminContext.SaveChanges();
                     }
 
+                    // Activate Arabic
+                    adminContext.Database.ExecuteSqlCommand("UPDATE Cultures SET IsActive = 1 WHERE Id = 'ar'");
+
                     // Seed translations
                     adminContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[Translations]");
 
