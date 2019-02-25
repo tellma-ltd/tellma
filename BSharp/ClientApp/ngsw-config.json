@@ -1,0 +1,41 @@
+{
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest.json",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    }, {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**"
+        ]
+      }
+    }
+  ],
+  "navigationUrls" : 
+  [
+    "/**",  
+    "!/**/*.*",  
+    "!/**/*__*",   
+    "!/**/*__*/**",
+    "!/api/**",
+    "!/connect/**",
+    "!/identity/**",
+    "!/privacy",
+    "!/terms-of-service",
+    "!/set-culture",
+    "!/error"
+  ]
+}

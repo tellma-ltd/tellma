@@ -539,6 +539,7 @@ export class ApiService {
 
       switch (res.status) {
         case 0: // Offline
+        case 504: // Service worker reports
           return friendlyStructure(res.status, this.translate.instant(`Error_UnableToReachServer`));
 
         case 400: // Bad Request

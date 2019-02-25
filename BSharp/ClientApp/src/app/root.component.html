@@ -1,4 +1,11 @@
-<router-outlet></router-outlet>
+<div class="h-100 d-flex flex-column">
+  <div class="alert alert-success m-0 p-2 d-flex justify-content-center align-items-center" role="alert" *ngIf="newUpdateIsAvailable">
+     {{ 'NewVersionIsAvailable' | translate }} &nbsp;&nbsp;<button class="btn btn-primary py-0" href="#" (click)="onRefresh()">{{ 'Refresh' | translate }}</button>
+  </div>
+  <div class="b-rest-of-screen">
+    <router-outlet></router-outlet>
+  </div>
+</div>
 
 <div class="b-overlay text-white" *ngIf="showOverlay">
   <fa-icon icon="spinner" [spin]="true"></fa-icon>

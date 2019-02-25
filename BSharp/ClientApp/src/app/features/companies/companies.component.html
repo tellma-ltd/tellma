@@ -6,6 +6,8 @@
     </p>
     <a class="btn btn-primary m-1" routerLink="/app/101">Contoso Inc.</a>
     <a class="btn btn-primary m-1" routerLink="/app/102">Fabrikam & Co.</a>
+    
+    <button class="btn btn-primary m-1" (click)="onRefresh()" *ngIf="false">{{ 'Refresh' | translate }}</button>
   </div>
 </div>
 

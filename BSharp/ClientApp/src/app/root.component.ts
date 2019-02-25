@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, ApplicationRef } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
 import { StorageService } from './data/storage.service';
 import { AuthService } from './data/auth.service';
 import { ActivatedRoute } from '@angular/router';
+import { SwUpdate } from '@angular/service-worker';
+import { interval, concat } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'b-root',
@@ -37,8 +40,21 @@ export class RootComponent {
     'yi'    /* 'ייִדיש', Yiddish */
   ];
 
+  public newUpdateIsAvailable = false;
+
   constructor(private translate: TranslateService, private workspace: WorkspaceService,
-    private api: ApiService, private storage: StorageService, private route: ActivatedRoute) {
+    private api: ApiService, private storage: StorageService, private updates: SwUpdate, appRef: ApplicationRef) {
+
+    // check for a new version every 6 hours, taken from the official docs https://bit.ly/2VfkAgQ
+    const appIsStable$ = appRef.isStable.pipe(first(isStable => isStable === true));
+    const everySixHours$ = interval(6 * 60 * 60 * 1000);
+    const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
+    everySixHoursOnceAppIsStable$.subscribe(() => updates.checkForUpdate());
+
+    // listen for notifications from the service worker that a new version of the client is available
+    this.updates.available.subscribe(_ => {
+      this.newUpdateIsAvailable = true;
+    });
 
     // Callback after the new app culture is loaded
     this.translate.onLangChange.subscribe((_: any) => {
@@ -66,6 +82,10 @@ export class RootComponent {
     if (!!userCulture) {
       this.translate.use(userCulture);
     }
+  }
+
+  public onRefresh() {
+    document.location.reload();
   }
 
   private getUrlUiCulture(): string {

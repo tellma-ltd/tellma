@@ -28,7 +28,9 @@ export class DropdownAppendToBodyDirective implements OnDestroy {
                 if (!this.isInBody()) {
                     this.appendMenuToBody();
                 }
-                positionElements(triggerEl, this.dropdown['_menu']['_elementRef'].nativeElement, placement, true);
+                const targetElem = this.dropdown['_menu']['_elementRef'].nativeElement;
+                positionElements(triggerEl, targetElem, placement, true);
+                targetElem.style.transform = null;
             };
 
             if (open) {

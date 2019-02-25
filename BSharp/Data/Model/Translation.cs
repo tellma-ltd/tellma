@@ -646,6 +646,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "ShortDay7", "Su"),
             Ar(Constants.Client, "ShortDay7", "ح"),
 
+            En(Constants.Client, "NewVersionIsAvailable", "A new version is available!"),
+            Ar(Constants.Client, "NewVersionIsAvailable", "هنالك إصدار جديد!"),
+
             En(Constants.Client, "ImportStep1Instructions", "Download the template file and populate it with your data:"),
             Ar(Constants.Client, "ImportStep1Instructions", "حمل ملف القالب على جهازك واملأه بالبيانات"),
 

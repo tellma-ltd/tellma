@@ -6,7 +6,7 @@ import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
 import { PageNotFoundComponent } from './features/page-not-found/page-not-found.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
 import { apiTranslateLoaderFactory } from './data/api-translate-loader';
 import { WorkspaceService } from './data/workspace.service';
@@ -20,6 +20,8 @@ import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './data/cleaner.service';
 import { SignOutComponent } from './features/sign-out/sign-out.component';
 import { ErrorLoadingSettingsComponent } from './features/error-loading-settings/error-loading-settings.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 
 @NgModule({
@@ -45,7 +47,8 @@ import { ErrorLoadingSettingsComponent } from './features/error-loading-settings
         useFactory: apiTranslateLoaderFactory,
         deps: [ApiService, StorageService]
       }
-    })
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     { provide: OAuthStorage, useValue: localStorage },

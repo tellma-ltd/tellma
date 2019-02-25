@@ -14,4 +14,7 @@ export class CompaniesComponent implements OnInit {
   ngOnInit() {
   }
 
+  onRefresh() {
+    this.auth.refreshSilently().subscribe();
+  }
 }
