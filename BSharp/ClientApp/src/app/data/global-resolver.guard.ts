@@ -88,18 +88,22 @@ export class GlobalResolverGuard implements CanActivate {
       // we can log in to the tenant immediately based on the cached globals, don't wait till they are refreshed
       return true;
     } else {
+      this.api.saveInProgress = true; // To show the rotator
 
       // using forkJoin is recommended for running HTTP calls in parallel
       const obs$ = this.globalSettingsApi().pipe(
+        tap(() => this.api.saveInProgress = false),
         tap(result => handleFreshGlobalSettings(result, wss, this.storage)),
         map(() => true),
         catchError((err: { status: number, error: any }) => {
+          this.api.saveInProgress = false;
           this.workspace.ws.errorLoadingSettingsMessage = err.error;
           this.router.navigate(['error-loading-settings'], { queryParams: { retryUrl: state.url } });
 
           // Prevent navigation
           return of(false);
-        })
+        }),
+        finalize(() => this.api.saveInProgress = false)
       );
 
       return obs$;

@@ -40,7 +40,8 @@ export class RootComponent {
     'yi'    /* 'ייִדיש', Yiddish */
   ];
 
-  public newUpdateIsAvailable = false;
+  public showNewUpdateIsAvailable = false;
+  public showIEWarning = false;
 
   constructor(private translate: TranslateService, private workspace: WorkspaceService,
     private api: ApiService, private storage: StorageService, private updates: SwUpdate, appRef: ApplicationRef) {
@@ -53,8 +54,13 @@ export class RootComponent {
 
     // listen for notifications from the service worker that a new version of the client is available
     this.updates.available.subscribe(_ => {
-      this.newUpdateIsAvailable = true;
+      this.showNewUpdateIsAvailable = true;
     });
+
+    // show a message if the user opens the app for the first time on Internet Explorer
+    const isIE = (/*@cc_on!@*/false) || (document['documentMode']);
+    const dismissedBefore = this.storage.getItem('ie_warning_dismissed');
+    this.showIEWarning = isIE && !dismissedBefore;
 
     // Callback after the new app culture is loaded
     this.translate.onLangChange.subscribe((_: any) => {
@@ -86,6 +92,11 @@ export class RootComponent {
 
   public onRefresh() {
     document.location.reload();
+  }
+
+  public onDismissIEWarning() {
+    this.showIEWarning = false;
+    this.storage.setItem('ie_warning_dismissed', 'true');
   }
 
   private getUrlUiCulture(): string {

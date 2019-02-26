@@ -22,7 +22,11 @@ import { SignOutComponent } from './features/sign-out/sign-out.component';
 import { ErrorLoadingSettingsComponent } from './features/error-loading-settings/error-loading-settings.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
+library.add(faInternetExplorer, faSpinner);
 
 @NgModule({
   declarations: [

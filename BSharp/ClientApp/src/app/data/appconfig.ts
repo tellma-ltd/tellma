@@ -1,8 +1,8 @@
 import { environment } from '~/environments/environment';
 
 export class AppConfig {
-    apiAddress = environment.production ? '' : 'https://localhost:44339/';
-    identityAddress = environment.production ? window.location.origin : 'https://localhost:44339';
+    apiAddress = environment.production ? (window.location.origin.replace('http://', 'https://') + '/') : 'https://localhost:44339/';
+    identityAddress = environment.production ? window.location.origin.replace('http://', 'https://') : 'https://localhost:44339';
 
     // EVERYTHING below is optional/can be loaded from the discovery
     // document but when set here it can lead to lightning-fast startup

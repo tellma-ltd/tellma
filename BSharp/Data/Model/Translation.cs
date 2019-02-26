@@ -193,7 +193,7 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Error_ImageExceedsTheMaximumSizeOfX", "The file you selected exceeds the maximum allowed size of {{maxSize}} MB"),
             Ar(Constants.Client, "Error_ImageExceedsTheMaximumSizeOfX", "حجم الملف الذي اخترته يتجاوز الحد الأقصى المسموح به وهو {{maxSize}} ميجابايت"),
 
-            En(Constants.Client, "Error_UnableToValidateYourCredentials", "Could not validate your credentials, this is likely due to misconfigured system"),
+            En(Constants.Client, "Error_UnableToValidateYourCredentials", "Could not validate your credentials, this is likely due to a misconfigured system"),
             Ar(Constants.Client, "Error_UnableToValidateYourCredentials", "تعذر التأكد من صحة هويتك، السبب غالبا هو أن إعدادات النظام غير سليمة"),
 
             
@@ -667,7 +667,13 @@ namespace BSharp.Data.Model
             En(Constants.Client, "NSelectedItems", "{{count}} selected Items"),
             Ar(Constants.Client, "NSelectedItems", "عدد البيانات المحددة {{count}}"),
 
-            En(Constants.Client, "Actions", "Actions"),
+            En(Constants.Client, "IEDoesNotSupportModernWebStandards", "Internet Explorer does not support the modern web standards used in {{appName}}"),
+            Ar(Constants.Client, "IEDoesNotSupportModernWebStandards", "إنترنت إكسبلورر لا يدعم أحدث تقنيات الويب المستخدمة في {{appName}}"),
+
+            En(Constants.Client, "WeRecommendUpgradingToTheLatesBrowsers", "We recommend upgrading to the latest Chrome, Firefox or Edge"),
+            Ar(Constants.Client, "WeRecommendUpgradingToTheLatesBrowsers", "ينصح باستخدام آخر الإصدارات من كروم أو فايرفوكس أو إيدج"),
+            
+            En(Constants.Client, "WeRecommend", "Actions"),
             Ar(Constants.Client, "Actions", "أوامر"),
 
             En(Constants.Client, "Confirmation", "Confirmation"),

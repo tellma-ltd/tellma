@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ApplicationRef } from '@angular/core';
 import { AuthConfig, OAuthService, JwksValidationHandler, OAuthEvent, OAuthErrorEvent } from 'angular-oauth2-oidc';
 import { appconfig } from './appconfig';
 import { Subject, Observable, timer, of, from, ReplaySubject } from 'rxjs';
-import { catchError, filter, map, flatMap } from 'rxjs/operators';
+import { catchError, filter, map, flatMap, first } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 
 const authConfig: AuthConfig = {
@@ -66,7 +66,7 @@ export class AuthService {
   private nonce: string;
   private discoveryDocumentLoaded$ = new ReplaySubject<boolean>();
 
-  constructor(private oauth: OAuthService, private storage: StorageService) {
+  constructor(private oauth: OAuthService, private storage: StorageService, private appRef: ApplicationRef) {
     this.init();
   }
 
@@ -152,7 +152,10 @@ export class AuthService {
     const basePeriod = (basePeriodInSecondsFromConfig || (60 * 60)) * 1000; // Default is 1 hour
     const rand = (Math.random() * 2) - 1; // between 1 and -1
     const period = basePeriod + (rand * basePeriod / 2); // 1 hour +/-30 minutes
-    timer(0, period)
+
+    // wait for the application to stablize first before you run the timer, as per https://bit.ly/2VfkAgQ
+    this.appRef.isStable.pipe(first(e => e === true)).subscribe(() => {
+      timer(0, period)
       .pipe(
         filter(_ => this.isAuthenticated),
         catchError(_ => of(0))
@@ -180,6 +183,7 @@ export class AuthService {
 
         this.nonce = this.storage.getItem(nonce_key);
       });
+    });
   }
 
   private get isDiscoveryDocumentNeeded(): boolean {

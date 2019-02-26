@@ -1,6 +1,23 @@
 <div class="h-100 d-flex flex-column">
-  <div class="alert alert-success m-0 p-2 d-flex justify-content-center align-items-center" role="alert" *ngIf="newUpdateIsAvailable">
-     {{ 'NewVersionIsAvailable' | translate }} &nbsp;&nbsp;<button class="btn btn-primary py-0" href="#" (click)="onRefresh()">{{ 'Refresh' | translate }}</button>
+  <div class="alert alert-success m-0 p-2 d-flex justify-content-center align-items-center" role="alert"
+    *ngIf="showNewUpdateIsAvailable">
+    {{ 'NewVersionIsAvailable' | translate }} &nbsp;&nbsp;<button class="btn btn-primary py-0"
+      (click)="onRefresh()">{{ 'Refresh' | translate }}</button>
+  </div>
+  <div class="alert alert-warning m-0 p-2 d-flex justify-content-center align-items-center" role="alert"
+    *ngIf="showIEWarning">
+    <div class="d-inline mx-3" style="font-size:1.5rem">
+      <fa-icon [icon]="['fab', 'internet-explorer']"></fa-icon>
+    </div>
+    <div class="d-inline">
+      <p class="m-0">
+        {{ 'IEDoesNotSupportModernWebStandards' | translate: { appName: ('AppName' | translate) } }}
+      </p>
+      <p class="m-0">
+        {{ 'WeRecommendUpgradingToTheLatesBrowsers' | translate }}
+      </p>
+    </div>
+    <button class="btn btn-primary py-1 mx-3" (click)="onDismissIEWarning()">{{ 'Dismiss' | translate }}</button>
   </div>
   <div class="b-rest-of-screen">
     <router-outlet></router-outlet>

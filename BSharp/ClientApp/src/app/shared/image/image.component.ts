@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Subject, of, Observable, timer } from 'rxjs';
-import { switchMap, tap, map, catchError, timeInterval } from 'rxjs/operators';
+import { Subject, of, Observable } from 'rxjs';
+import { switchMap,  map, catchError } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { StorageService } from '~/app/data/storage.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
