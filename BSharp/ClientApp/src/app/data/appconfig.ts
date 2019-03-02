@@ -92,7 +92,7 @@ export class AppConfig {
             sessionCheckIFrameUrl: this.identityAddress + '/connect/checksession',
             logoutUrl: this.identityAddress + '/connect/endsession',
 
-            // Periodicaly refresh the tokens silently every X milliseconds
+            // Periodicaly refresh the tokens silently every 1 hour
             tokenRefreshPeriodInSeconds: 60 * 60
         };
 }

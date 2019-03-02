@@ -85,4 +85,8 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   showRolesError(model: LocalUser) {
     return !!model && !!model.Roles && model.Roles.some(r => !!r.serverErrors);
   }
+
+  public showInvitationInfo(model: LocalUserForSave): boolean {
+    return !!model && (!!model.Email && !model.Id);
+  }
 }

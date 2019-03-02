@@ -1,6 +1,6 @@
 <div class="d-flex flex-column h-100">
  <!-- <b-error-message>The system license has expired. If the license is not renewed the system will become read-only in <b>22 days.</b></b-error-message> -->
-  <div class="navbar navbar-dark b-dark navbar-expand-lg p-0" [style.background-color]="settings?.BrandColor">
+  <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0" [style.background-color]="settings?.BrandColor">
     <a class="b-brand-link b-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
       <b-brand [scale]="1.2"></b-brand>
     </a>
@@ -93,8 +93,8 @@
         </li>
       </ol>
     </div>
-  </div>
-  <div class="b-rest-of-screen container-fluid">
+  </nav>
+  <main class="b-rest-of-screen container-fluid">
     <router-outlet></router-outlet>
-  </div>
+  </main>
 </div>

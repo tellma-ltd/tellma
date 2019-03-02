@@ -3,6 +3,7 @@ import { CanActivate, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthService } from './auth.service';
 import { map, catchError } from 'rxjs/operators';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,13 +17,14 @@ export class BaseAddressGuard implements CanActivate {
   - not authenticated: welcome page
 */
 
-  constructor(private auth: AuthService, private router: Router) { }
+  constructor(private auth: AuthService, private router: Router, private storage: StorageService) { }
 
   canActivate(): Observable<boolean> {
 
     return this.auth.isSignedIn$.pipe(
       map(isAuthenticated => {
-        const url = isAuthenticated ? '/companies' : '/welcome';
+        const lastVisited = this.storage.getItem('last_visited_url');
+        const url = isAuthenticated ? (lastVisited || '/companies') : '/welcome';
         this.router.navigateByUrl(url);
 
         return false;

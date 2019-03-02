@@ -4,10 +4,11 @@ import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
 import { StorageService } from './data/storage.service';
 import { AuthService } from './data/auth.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { interval, concat } from 'rxjs';
 import { first } from 'rxjs/operators';
+import { environment } from '~/environments/environment';
 
 @Component({
   selector: 'b-root',
@@ -43,17 +44,30 @@ export class RootComponent {
   public showNewUpdateIsAvailable = false;
   public showIEWarning = false;
 
-  constructor(private translate: TranslateService, private workspace: WorkspaceService,
-    private api: ApiService, private storage: StorageService, private updates: SwUpdate, appRef: ApplicationRef) {
+  constructor(private translate: TranslateService, private workspace: WorkspaceService, private router: Router,
+    private api: ApiService, private storage: StorageService, private serviceWorker: SwUpdate, appRef: ApplicationRef) {
+
+      // If the user navigates to the base address '/', s/he
+      // gets automatically redirected to the last visited url
+    this.router.events.subscribe(e => {
+      if (e instanceof NavigationEnd) {
+
+        this.storage.setItem('last_visited_url', e.url);
+      }
+    });
 
     // check for a new version every 6 hours, taken from the official docs https://bit.ly/2VfkAgQ
     const appIsStable$ = appRef.isStable.pipe(first(isStable => isStable === true));
     const everySixHours$ = interval(6 * 60 * 60 * 1000);
     const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
-    everySixHoursOnceAppIsStable$.subscribe(() => updates.checkForUpdate());
+    everySixHoursOnceAppIsStable$.subscribe(() => {
+      if (serviceWorker.isEnabled) {
+        serviceWorker.checkForUpdate();
+      }
+    });
 
     // listen for notifications from the service worker that a new version of the client is available
-    this.updates.available.subscribe(_ => {
+    this.serviceWorker.available.subscribe(_ => {
       this.showNewUpdateIsAvailable = true;
     });
 

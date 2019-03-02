@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject, of, Observable } from 'rxjs';
-import { switchMap,  map, catchError } from 'rxjs/operators';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { StorageService } from '~/app/data/storage.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -273,9 +273,15 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
   public onDelete(): void {
     // An empty bytes array indicates to the
     // server that we wish to delete the image
-    this._value = '';
-    this.onChange(this._value);
-    this.update();
+    if (this.canDelete) {
+      this._value = '';
+      this.onChange(this._value);
+      this.update();
+    }
+  }
+
+  public get canDelete(): boolean {
+    return !!this.dataUrl;
   }
 
   public onFileSelected(input: any) {

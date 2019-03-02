@@ -8,28 +8,13 @@ import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { WorkspaceService } from '~/app/data/workspace.service';
-import { addToWorkspace } from '~/app/data/util';
+import { addToWorkspace, Key, toString } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 
 enum SearchStatus {
   showSpinner = 'showSpinner',
   showResults = 'showResults',
   showError = 'showError'
-}
-
-enum Key {
-  Tab = 9,
-  Enter = 13,
-  Escape = 27,
-  Space = 32,
-  PageUp = 33,
-  PageDown = 34,
-  End = 35,
-  Home = 36,
-  ArrowLeft = 37,
-  ArrowUp = 38,
-  ArrowRight = 39,
-  ArrowDown = 40
 }
 
 @Component({
@@ -238,10 +223,6 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     this.input.nativeElement.value = display;
   }
 
-  private toString(value: any): string {
-    return (value !== undefined && value !== null) ? `${value}` : '';
-  }
-
   ///////////////// Implementation of ControlValueAccessor
   private onChange = (e: any) => { };
   private onTouched = () => { };
@@ -335,7 +316,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
       return;
     }
 
-    if (Key[this.toString(event.which)]) {
+    if (Key[toString(event.which)]) {
       let offset = 0;
       // if (this.showEditSelected) {
       //   offset = offset + 1;

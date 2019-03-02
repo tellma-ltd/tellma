@@ -50,7 +50,23 @@ import {
   faSearch,
   faAsterisk,
   faCameraRetro,
-  faUser
+  faUser,
+  faRulerCombined,
+  faUsers,
+  faCog,
+  faTasks,
+  faMale,
+  faBuilding,
+
+  faListUl,
+  faMoneyCheck,
+  faMoneyCheckAlt,
+  faHandHoldingUsd,
+  faLandmark,
+  faFileContract,
+  faFileInvoiceDollar,
+  faMoneyBillWave
+
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
 import { DecimalEditorComponent } from './decimal-editor/decimal-editor.component';
@@ -82,7 +98,16 @@ library.add(
   faAngleLeft, faAngleRight, faThLarge, faList, faPen, faTrash,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
   faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
-  faSearch, faAsterisk, faCameraRetro, faUser
+  faSearch, faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog, faTasks, faMale, faBuilding,
+
+  faListUl,
+  faMoneyCheck,
+  faMoneyCheckAlt,
+  faHandHoldingUsd,
+  faLandmark,
+  faFileContract,
+  faFileInvoiceDollar,
+  faMoneyBillWave
 );
 
 @NgModule({

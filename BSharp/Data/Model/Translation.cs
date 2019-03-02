@@ -721,13 +721,25 @@ namespace BSharp.Data.Model
             En(Constants.Client, "ClearFilter", "Clear Filter"),
             Ar(Constants.Client, "ClearFilter", "إزالة التصفية"),
 
+            En(Constants.Client, "UserInvitationNotice", "Note: An invitation email will be sent to '{{email}}' once you save this document."),
+            Ar(Constants.Client, "UserInvitationNotice", "تنبيه: سيقوم النظام بإرسال دعوة إلى عنوان ({{email}}) فور حفظك لهذا المستند."),
+
             En(Constants.Client, "ResendInvitationEmail", "Re-Send Invitation"),
             Ar(Constants.Client, "ResendInvitationEmail", "إعادة إرسال الدعوة"),
 
             En(Constants.Client, "InvitationEmailSent", "The invitation email was sent again"),
             Ar(Constants.Client, "InvitationEmailSent", "تم إرسال الدعوة مرة أخرى بالبريد الاإلكتروني"),
 
-            
+            En(Constants.Client, "QuickAccess", "Quick Access"),
+            Ar(Constants.Client, "QuickAccess", "الوصول السريع"),
+
+            En(Constants.Client, "Financials", "Financials"),
+            Ar(Constants.Client, "Financials", "المالية"),
+
+            En(Constants.Client, "Administration", "Administration"),
+            Ar(Constants.Client, "Administration", "الإشراف"),
+
+
 
             En(Constants.Server, "ActionDidNotPassValidation", "The action did not pass validation, see the highlighted rows for details"),
             Ar(Constants.Server, "ActionDidNotPassValidation", "الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل"),
@@ -749,13 +761,6 @@ namespace BSharp.Data.Model
 
             En(Constants.Server, "InvitationEmailSignature0", "The {0} team"),
             Ar(Constants.Server, "InvitationEmailSignature0", "فريق {0}"),
-
-
-
-
-
-
-
 
 
 

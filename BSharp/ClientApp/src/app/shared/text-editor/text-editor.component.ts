@@ -24,9 +24,10 @@ export class TextEditorComponent implements ControlValueAccessor, AfterViewInit 
   @ViewChild('input')
   input: ElementRef;
 
+  private triggerTouch = true;
   public isDisabled = false;
-  public onChange: (val: any) => void = _ => { };
-  public onTouched: () => void = () => { };
+  public onChangeFn: (val: any) => void = _ => { };
+  public onTouchedFn: () => void = () => { };
   public onValidatorChange: () => void = () => { };
 
   writeValue(v: any): void {
@@ -36,22 +37,38 @@ export class TextEditorComponent implements ControlValueAccessor, AfterViewInit 
   }
 
   registerOnChange(fn: (val: any) => void): void {
-    this.onChange = fn;
+    this.onChangeFn = fn;
   }
 
   registerOnTouched(fn: any): void {
-    this.onTouched = fn;
+    this.onTouchedFn = fn;
   }
 
   setDisabledState?(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
   }
 
+  onTouched() {
+    if (this.triggerTouch) {
+      this.onTouchedFn();
+    } else {
+      this.triggerTouch = true;
+    }
+  }
+
+  onChange(val: any) {
+    this.triggerTouch = true;
+    this.onChangeFn(val);
+  }
 
   ///////////////// Implementation of AfterViewInit
   ngAfterViewInit() {
     if (this.focusIf && this.input) {
       this.input.nativeElement.focus();
+
+      // when the field is auto-focused, don't trigger touch as
+      // soon as the user moves the focus away the first time
+      this.triggerTouch = false;
     }
   }
 
