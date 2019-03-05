@@ -4,9 +4,8 @@ import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service'
 import { SettingsForClient } from '~/app/data/dto/settings';
 import { AuthService } from '~/app/data/auth.service';
 import { appconfig } from '~/app/data/appconfig';
-import { ApiService } from '~/app/data/api.service';
-import { Location } from '@angular/common';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
+import { NavigationService } from '~/app/data/navigation.service';
 
 @Component({
   selector: 'b-application-shell',
@@ -17,7 +16,7 @@ export class ApplicationShellComponent implements OnInit {
   // For the menu on small screens
   public isCollapsed = true;
 
-  constructor(public workspace: WorkspaceService, private location: Location,
+  constructor(public workspace: WorkspaceService, public nav: NavigationService,
     private translate: TranslateService, private progress: ProgressOverlayService, private auth: AuthService) {
   }
 
@@ -81,31 +80,8 @@ export class ApplicationShellComponent implements OnInit {
     this.auth.signOut();
   }
 
-  public onForward() {
-    this.location.forward();
-  }
-
-  public get canForward(): boolean {
-    return true;
-  }
-
-  public get showForward(): boolean {
-    return this.isStandalone;
-  }
-
-  public onBack() {
-    this.location.back();
-  }
-
-  public get canBack(): boolean {
-    return true;
-  }
-
-  public get showBack(): boolean {
-    return this.isStandalone;
-  }
-
-  private get isStandalone() {
-    return window.navigator['standalone'] || window.matchMedia('(display-mode: standalone)').matches;
+  public get flip() {
+    // this is to flip the UI icons in RTL
+    return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 }

@@ -16,6 +16,7 @@ import { UnauthorizedForCompanyComponent } from './features/unauthorized-for-com
 import { ErrorLoadingCompanyComponent } from './features/error-loading-company/error-loading-company.component';
 import { SignOutComponent } from './features/sign-out/sign-out.component';
 import { ErrorLoadingSettingsComponent } from './features/error-loading-settings/error-loading-settings.component';
+import { RootShellComponent } from './features/root-shell/root-shell.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { ErrorLoadingSettingsComponent } from './features/error-loading-settings
     ErrorLoadingCompanyComponent,
     SignOutComponent,
     ErrorLoadingSettingsComponent,
+    RootShellComponent,
   ],
   imports: [
     NativeScriptModule,

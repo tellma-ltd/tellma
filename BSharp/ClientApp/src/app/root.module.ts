@@ -26,6 +26,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { ProgressOverlayService } from './data/progress-overlay.service';
+import { RootShellComponent } from './features/root-shell/root-shell.component';
 
 library.add(faInternetExplorer, faSpinner);
 
@@ -39,6 +40,7 @@ library.add(faInternetExplorer, faSpinner);
     PlaceholderComponent,
     SignOutComponent,
     ErrorLoadingSettingsComponent,
+    RootShellComponent,
   ],
   imports: [
     BrowserModule,

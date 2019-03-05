@@ -1,6 +1,5 @@
 <div class="d-flex flex-column h-100">
-  <!-- <b-error-message>The system license has expired. If the license is not renewed the system will become read-only in <b>22 days.</b></b-error-message> -->
-  <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-lg-stretch"
+  <nav class="navbar navbar-light navbar-expand-lg p-0 align-items-lg-stretch"
     [style.background-color]="settings?.BrandColor">
     <a class="b-brand-link b-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
       <b-brand [scale]="1.2"></b-brand>
@@ -18,47 +17,6 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
-      <ol class="nav navbar-nav px-4 px-lg-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
-
-
-        <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./main-menu"
-            (click)="onCollapse()">
-            {{ 'Home' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./agents/individuals" (click)="onCollapse()">
-            {{ 'Individuals' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./agents/organizations" (click)="onCollapse()">
-            {{ 'Organizations' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./roles"
-            (click)="onCollapse()">
-            {{ 'Roles' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./local-users"
-            (click)="onCollapse()">
-            {{ 'Users' | translate }}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./settings"
-            (click)="onCollapse()">
-            {{ 'Settings' | translate }}
-          </a>
-        </li>
-      </ol>
-
       <ol class="nav navbar-nav p-0">
         <li class="nav-item" ngbDropdown [placement]="myAccountDropdownPlacement" bDropdownAppendToBody>
           <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
@@ -110,6 +68,6 @@
     </div>
   </nav>
   <main class="b-rest-of-screen container-fluid">
-    <router-outlet></router-outlet>
+    <ng-content></ng-content>
   </main>
 </div>
