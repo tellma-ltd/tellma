@@ -1,9 +1,10 @@
-import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Key, toString } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
+import { DOCUMENT } from '@angular/platform-browser';
 
 interface MenuSectionInfo { label: string; background: string; items: MenuItemInfo[]; }
 interface MenuItemInfo { icon: string; label: string; background?: string; link: string; viewId?: string; }
@@ -76,7 +77,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }];
 
   // constructor
-  constructor(private router: Router, private route: ActivatedRoute,
+  constructor(private router: Router, private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document,
     private translate: TranslateService, private workspace: WorkspaceService) { }
 
   // Angular lifecycle hooks
@@ -84,7 +85,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     const count = this.mainMenu.reduce((sum, obj) => sum + obj.items.length, 0);
 
     // this adds a cool background to the main menu, unaffected by scrolling
-    document.body.classList.add('b-banner');
+    this.document.body.classList.add('b-banner');
 
     // if the main menu is enormous, it causes an uncomfortable lag before navigation
     // we eliminate this lag by not rendering the menu items immediately if  they are too many
@@ -100,7 +101,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     // other screens have a simple grey background
-    document.body.classList.remove('b-banner');
+    this.document.body.classList.remove('b-banner');
   }
 
   initialize() {
@@ -145,11 +146,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
             this.currentItem = -1;
             this.currentSection = -1;
 
-            // Support for this doesn't seem to be good
-            // document.activeElement.blur();
-
-            this.searchInput.nativeElement.focus();
-            this.searchInput.nativeElement.blur();
+            (<any>this.document.activeElement).blur();
 
             break;
           }
@@ -288,11 +285,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private get searchInputIsFocused(): boolean {
-    return this.searchInput.nativeElement === document.activeElement;
+    return this.searchInput.nativeElement === this.document.activeElement;
   }
 
   private focusTile(sectionIndex: number, itemIndex: number, event: KeyboardEvent) {
-    const elem = document.getElementById(this.getId(sectionIndex, itemIndex));
+    const elem = this.document.getElementById(this.getId(sectionIndex, itemIndex));
     elem.focus();
     event.preventDefault();
     event.stopPropagation();

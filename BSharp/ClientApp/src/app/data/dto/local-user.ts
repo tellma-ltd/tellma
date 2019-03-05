@@ -14,6 +14,7 @@ export class LocalUser extends LocalUserForSave<RoleMembership> {
     ExternalId: string;
     ImageId: string;
     IsActive: boolean;
+    LastAccess: string;
     CreatedAt: string;
     CreatedById: number | string;
     ModifiedAt: string;

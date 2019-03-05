@@ -47,6 +47,9 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }
 
+        [Display(Name = "User_LastActivity")]
+        public DateTimeOffset? LastAccess { get; set; }
+
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 

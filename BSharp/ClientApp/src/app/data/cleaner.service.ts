@@ -11,14 +11,35 @@ export class CleanerService {
 
   cleanState(): any {
     this.cleanWorkspace();
-    this.cleanLocalStorage();
+    this.cleanLocalStorage(true);
   }
 
   cleanWorkspace(): any {
     this.workspace.reset();
   }
 
-  cleanLocalStorage(): any {
-    this.storage.clear();
+  cleanLocalStorage(preserveCache?: boolean): any {
+
+    if (!!preserveCache) {
+      const preservedKeys = this.storage.keys.filter(k =>
+        k === 'user_culture' || k.startsWith('translations_') || k.startsWith('global_settings')
+      );
+
+      const preserved: { [key: string ]: string } = {};
+      preservedKeys.forEach(key => {
+        preserved[key] = this.storage.getItem(key);
+      });
+
+      this.storage.clear();
+
+      preservedKeys.forEach(key => {
+        this.storage.setItem(key, preserved[key]);
+      });
+
+    } else {
+
+      this.storage.clear();
+    }
+
   }
 }

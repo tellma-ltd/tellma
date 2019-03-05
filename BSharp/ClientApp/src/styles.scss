@@ -43,15 +43,10 @@ a {
   margin-right: 0;
 }
 
-.nav.navbar-nav {
-  padding-left: 30px;
-  padding-right: 30px;
-}
-
-.nav.nav-tabs {
-  padding-left: 0;
-  padding-right: 0;
-}
+// .nav.nav-tabs {
+//   padding-left: 0;
+//   padding-right: 0;
+// }
 
 .breadcrumb-item {
   font-size: 1.2rem;
@@ -678,10 +673,19 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1100;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+}
+
+.b-overlay .b-overlay-spinner {
   font-size: 2.5rem;
 }
+
+// .b-overlay .b-overlay-message {
+//   font-size: 0.9rem;
+// }
 
 // tiny red circle on the filter when it is not cleared
 .b-indicator {
@@ -856,7 +860,7 @@ tr.b-highlight {
   cursor: pointer;
   border-width: 0;
   color: rgba(255, 255, 255, 0.75) !important;
-  background-color: rgba(0, 0, 0, 0);
+  background-color: transparent;
   padding: 0.5rem;
   text-align: left;
 }
@@ -874,6 +878,12 @@ tr.b-highlight {
 button.b-navbar-button:focus {
   outline: none;
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+.b-navbar-button:disabled {
+  color: #6c757d !important;
+  background-color: transparent;
+  cursor: unset;
 }
 
 .b-brand-link {

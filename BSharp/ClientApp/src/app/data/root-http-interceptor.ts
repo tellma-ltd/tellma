@@ -182,7 +182,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
       // global versions
       {
         // global settings
-        const v = <VersionStatus>e.headers.get('x-translations-version');
+        const v = <VersionStatus>e.headers.get('x-global-settings-version');
         if (v === 'Stale') {
           this.refreshGlobalSettings();
         }

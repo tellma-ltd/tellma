@@ -1,9 +1,11 @@
 import { Injectable, ApplicationRef } from '@angular/core';
 import { AuthConfig, OAuthService, JwksValidationHandler, OAuthEvent, OAuthErrorEvent } from 'angular-oauth2-oidc';
 import { appconfig } from './appconfig';
-import { Subject, Observable, timer, of, from, ReplaySubject } from 'rxjs';
-import { catchError, filter, map, flatMap, first } from 'rxjs/operators';
+import { Subject, Observable, timer, of, from, ReplaySubject, throwError } from 'rxjs';
+import { catchError, filter, map, flatMap, first, tap, finalize } from 'rxjs/operators';
 import { StorageService } from './storage.service';
+import { CleanerService } from './cleaner.service';
+import { ProgressOverlayService } from './progress-overlay.service';
 
 const authConfig: AuthConfig = {
 
@@ -66,7 +68,8 @@ export class AuthService {
   private nonce: string;
   private discoveryDocumentLoaded$ = new ReplaySubject<boolean>();
 
-  constructor(private oauth: OAuthService, private storage: StorageService, private appRef: ApplicationRef) {
+  constructor(private oauth: OAuthService, private storage: StorageService, private progress: ProgressOverlayService,
+    private cleaner: CleanerService, private appRef: ApplicationRef) {
     this.init();
   }
 
@@ -156,33 +159,33 @@ export class AuthService {
     // wait for the application to stablize first before you run the timer, as per https://bit.ly/2VfkAgQ
     this.appRef.isStable.pipe(first(e => e === true)).subscribe(() => {
       timer(0, period)
-      .pipe(
-        filter(_ => this.isAuthenticated),
-        catchError(_ => of(0))
-      )
-      .subscribe(n => {
+        .pipe(
+          filter(_ => this.isAuthenticated),
+          catchError(_ => of(0))
+        )
+        .subscribe(n => {
 
-        // the code below tries to minimize waste if the user opens the system
-        // on many tabs at the same time, by checking if the 'nonce' has changed
-        // it means only one of the tabs will be refreshing the access token
+          // the code below tries to minimize waste if the user opens the system
+          // on many tabs at the same time, by checking if the 'nonce' has changed
+          // it means only one of the tabs will be refreshing the access token
 
-        const nonce_key = 'nonce';
-        const storageNonce = this.storage.getItem(nonce_key);
-        const localNonce = this.nonce;
+          const nonce_key = 'nonce';
+          const storageNonce = this.storage.getItem(nonce_key);
+          const localNonce = this.nonce;
 
-        // always refresh first time you open, then refresh
-        // periodically if none of the other tabs has refreshed already
-        if (n === 0 || storageNonce === localNonce) {
-          this.refreshSilently().subscribe(
-            _ => {
-              this.nonce = this.storage.getItem(nonce_key);
-            }, _ => {
-              this.nonce = this.storage.getItem(nonce_key);
-            });
-        }
+          // always refresh first time you open, then refresh
+          // periodically if none of the other tabs has refreshed already
+          if (n === 0 || storageNonce === localNonce) {
+            this.refreshSilently().subscribe(
+              _ => {
+                this.nonce = this.storage.getItem(nonce_key);
+              }, _ => {
+                this.nonce = this.storage.getItem(nonce_key);
+              });
+          }
 
-        this.nonce = this.storage.getItem(nonce_key);
-      });
+          this.nonce = this.storage.getItem(nonce_key);
+        });
     });
   }
 
@@ -200,6 +203,10 @@ export class AuthService {
       return of(true);
     } else {
 
+      const key = 'silent_refresh';
+      console.log('Silent Refresh');
+      this.progress.startAsyncOperation(key, 'CheckingYourSession');
+
       // (2) Check that the user has an active session with the identity server
       const obs$ =
         this.discoveryDocumentLoaded$.pipe(
@@ -210,7 +217,13 @@ export class AuthService {
               return from(this.oauth.silentRefresh().catch(_ => false))
                 .pipe(map(_ => this.isAuthenticated));
             }
-          })
+          }),
+          tap(() => this.progress.completeAsyncOperation(key)),
+          catchError(err => {
+            this.progress.completeAsyncOperation(key);
+            return throwError(err);
+          }),
+          finalize(() => this.progress.completeAsyncOperation(key))
         );
 
       return obs$;
@@ -250,7 +263,7 @@ export class AuthService {
 
     // clean the app state (keep the id token since it is needed for the subsequent logout)
     const id_token = this.storage.getItem('id_token');
-    this.storage.clear();
+    this.cleaner.cleanLocalStorage(true); // preserve user independent stuff
     this.storage.setItem('id_token', id_token);
 
     // go to identity server and sign out from there

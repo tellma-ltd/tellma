@@ -3,12 +3,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
 import { StorageService } from './data/storage.service';
-import { AuthService } from './data/auth.service';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { interval, concat } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { environment } from '~/environments/environment';
+import { ProgressOverlayService } from './data/progress-overlay.service';
 
 @Component({
   selector: 'b-root',
@@ -45,7 +44,8 @@ export class RootComponent {
   public showIEWarning = false;
 
   constructor(private translate: TranslateService, private workspace: WorkspaceService, private router: Router,
-    private api: ApiService, private storage: StorageService, private serviceWorker: SwUpdate, appRef: ApplicationRef) {
+    private api: ApiService, private storage: StorageService, private progress: ProgressOverlayService,
+    private serviceWorker: SwUpdate, appRef: ApplicationRef) {
 
       // If the user navigates to the base address '/', s/he
       // gets automatically redirected to the last visited url
@@ -89,7 +89,7 @@ export class RootComponent {
       }
 
       // TODO Set in local storage properly
-      this.storage.setItem('userCulture', culture);
+      this.storage.setItem('user_culture', culture);
     });
 
     // TODO load from app configuration
@@ -97,8 +97,7 @@ export class RootComponent {
     const defaultCulture = 'en';
     this.translate.setDefaultLang(defaultCulture);
 
-    // TODO load from local storage properly
-    const userCulture = this.storage.getItem('userCulture') || defaultCulture;
+    const userCulture = this.storage.getItem('user_culture') || defaultCulture;
     if (!!userCulture) {
       this.translate.use(userCulture);
     }
@@ -141,7 +140,10 @@ export class RootComponent {
 
   get showOverlay(): boolean {
     // when there is a save in progress, block the user screen and prevent any navigation.
-    return this.api.saveInProgress;
+    return this.api.showRotator || this.progress.asyncOperationInProgress;
   }
 
+  get labelNames(): string[] {
+    return this.progress.labelNames;
+  }
 }

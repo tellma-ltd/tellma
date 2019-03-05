@@ -27,6 +27,10 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
+              "src/touch-icon-ipad.png",
+              "src/touch-icon-ipad-retina.png",
+              "src/touch-icon-iphone.png",
+              "src/touch-icon-iphone-retina.png",
               "src/assets",
               "src/manifest.webmanifest.json"
             ],
@@ -86,8 +90,12 @@
             "scripts": [],
             "assets": [
               "src/favicon.ico",
+              "src/touch-icon-ipad.png",
+              "src/touch-icon-ipad-retina.png",
+              "src/touch-icon-iphone.png",
+              "src/touch-icon-iphone-retina.png",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest.json"
             ]
           }
         },

@@ -5,7 +5,7 @@
     ViewData["Title"] = Localizer["SignOutConfirmation"];
 }
 
-<div class="text-center pt-3">
+<div class="text-center pt-3 pb-3">
     <div class="alert-success p-2">
         <i class="fas fa-check"></i>&nbsp;
         <span>
@@ -13,3 +13,7 @@
         </span>
     </div>
 </div>
+
+<a class="btn btn-primary w-100" asp-page="./Login">
+    <i class="fas fa-sign-in-alt @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "fa-flip-horizontal": "")"></i>&nbsp;&nbsp;@Localizer["SignIn"]
+</a>

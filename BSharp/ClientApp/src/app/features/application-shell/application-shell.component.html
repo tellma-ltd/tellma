@@ -1,14 +1,26 @@
 <div class="d-flex flex-column h-100">
- <!-- <b-error-message>The system license has expired. If the license is not renewed the system will become read-only in <b>22 days.</b></b-error-message> -->
-  <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0" [style.background-color]="settings?.BrandColor">
+  <!-- <b-error-message>The system license has expired. If the license is not renewed the system will become read-only in <b>22 days.</b></b-error-message> -->
+  <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-lg-stretch"
+    [style.background-color]="settings?.BrandColor">
     <a class="b-brand-link b-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
       <b-brand [scale]="1.2"></b-brand>
     </a>
+    <div class="mx-2 d-flex">
+      <button class="b-navbar-button nav-link" (click)="onCollapse();onBack();" [disabled]="!canBack" *ngIf="showBack">
+        <fa-icon icon="arrow-left"></fa-icon>
+      </button>
+      &nbsp;
+      <button class="b-navbar-button nav-link" (click)="onCollapse();onForward();" [disabled]="!canForward" *ngIf="showForward">
+        <fa-icon icon="arrow-right"></fa-icon>
+      </button>
+    </div>
     <button type="button" class="navbar-toggler mx-2" (click)="onToggleCollapse()">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
       <ol class="nav navbar-nav" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
+
+
         <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./main-menu"
             (click)="onCollapse()">
@@ -16,14 +28,14 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./agents/individuals"
-            (click)="onCollapse()">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+            routerLink="./agents/individuals" (click)="onCollapse()">
             {{ 'Individuals' | translate }}
           </a>
         </li>
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./agents/organizations"
-            (click)="onCollapse()">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+            routerLink="./agents/organizations" (click)="onCollapse()">
             {{ 'Organizations' | translate }}
           </a>
         </li>
@@ -52,7 +64,8 @@
           <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
             <div class="align-self-center">
               <div class="b-dp-wrapper b-dp-dark bg-white mx-1">
-                <b-image [src]="'local-users/' + ws?.userSettings?.UserId + '/image|' + (ws?.userSettings?.ImageId || '')"
+                <b-image
+                  [src]="'local-users/' + ws?.userSettings?.UserId + '/image|' + (ws?.userSettings?.ImageId || '')"
                   shape="circle" [size]="28"></b-image>
               </div>
             </div>
@@ -65,10 +78,12 @@
           </button>
           <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngIf="ws?.settings?.SecondaryLanguageId">
-              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isSecondaryLanguage" (click)="onPrimary();onCollapse()">
+              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isSecondaryLanguage"
+                (click)="onPrimary();onCollapse()">
                 {{ settings?.PrimaryLanguageName }}
               </button>
-              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isPrimaryLanguage" (click)="onSecondary();onCollapse()">
+              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isPrimaryLanguage"
+                (click)="onSecondary();onCollapse()">
                 {{ settings?.SecondaryLanguageName }}
               </button>
               <hr />

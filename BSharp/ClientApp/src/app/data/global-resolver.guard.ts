@@ -7,6 +7,7 @@ import { DataWithVersion } from './dto/data-with-version';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { ApiService } from './api.service';
 import { retry, tap, map, catchError, finalize } from 'rxjs/operators';
+import { ProgressOverlayService } from './progress-overlay.service';
 
 
 export const GLOBAL_SETTINGS_KEY = 'global_settings';
@@ -36,7 +37,7 @@ export class GlobalResolverGuard implements CanActivate {
   private ping: () => Observable<any>;
 
   constructor(private workspace: WorkspaceService, private storage: StorageService,
-    private router: Router, private api: ApiService) {
+    private router: Router, private api: ApiService, private progress: ProgressOverlayService) {
 
     this.cancellationToken$ = new Subject<void>();
     const globalSettingsApi = this.api.globalSettingsApi(this.cancellationToken$);
@@ -88,22 +89,23 @@ export class GlobalResolverGuard implements CanActivate {
       // we can log in to the tenant immediately based on the cached globals, don't wait till they are refreshed
       return true;
     } else {
-      this.api.saveInProgress = true; // To show the rotator
+      const key = 'global_settings';
+      this.progress.startAsyncOperation(key, 'LoadingSystemSettings');
 
       // using forkJoin is recommended for running HTTP calls in parallel
       const obs$ = this.globalSettingsApi().pipe(
-        tap(() => this.api.saveInProgress = false),
+        tap(() => this.progress.completeAsyncOperation(key)),
         tap(result => handleFreshGlobalSettings(result, wss, this.storage)),
         map(() => true),
         catchError((err: { status: number, error: any }) => {
-          this.api.saveInProgress = false;
+          this.progress.completeAsyncOperation(key);
           this.workspace.ws.errorLoadingSettingsMessage = err.error;
           this.router.navigate(['error-loading-settings'], { queryParams: { retryUrl: state.url } });
 
           // Prevent navigation
           return of(false);
         }),
-        finalize(() => this.api.saveInProgress = false)
+        finalize(() => this.progress.completeAsyncOperation(key))
       );
 
       return obs$;

@@ -45,4 +45,8 @@ export class StorageService implements OAuthStorage {
   public clear(): void {
     localStorage.clear();
   }
+
+  public get keys(): string[] {
+    return Object.keys(localStorage);
+  }
 }

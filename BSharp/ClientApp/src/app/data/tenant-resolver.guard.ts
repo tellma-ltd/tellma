@@ -10,6 +10,7 @@ import { PermissionsForClient } from './dto/permission';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
 import { CanActivate } from '@angular/router';
 import { UserSettingsForClient } from './dto/local-user';
+import { ProgressOverlayService } from './progress-overlay.service';
 
 export const SETTINGS_PREFIX = 'settings';
 export const PERMISSIONS_PREFIX = 'permissions';
@@ -72,7 +73,7 @@ export class TenantResolverGuard implements CanActivate {
   private ping: () => Observable<any>;
 
   constructor(private workspace: WorkspaceService, private storage: StorageService,
-    private router: Router, private api: ApiService) {
+    private router: Router, private api: ApiService, private progress: ProgressOverlayService) {
 
     this.cancellationToken$ = new Subject<void>();
     const settingsApi = this.api.settingsApi(this.cancellationToken$);
@@ -187,13 +188,13 @@ export class TenantResolverGuard implements CanActivate {
           // we can log in to the tenant immediately based on the cached globals, don't wait till they are refreshed
           return true;
         } else {
-
-          this.api.saveInProgress = true; // To show the rotator
+          const key = `tenant_${tenantId}`;
+          this.progress.startAsyncOperation(key, 'LoadingCompanySettings'); // To show the rotator
 
           // using forkJoin is recommended for running HTTP calls in parallel
           const obs$ = forkJoin(this.settingsApi(), this.permissionsApi(), this.userSettingsApi()).pipe(
             tap(result => {
-              this.api.saveInProgress = false;
+              this.progress.completeAsyncOperation(key);
               // cache the settings and set it in the workspace
               handleFreshSettings(result[0], tenantId, current, this.storage);
               handleFreshPermissions(result[1], tenantId, current, this.storage);
@@ -201,7 +202,7 @@ export class TenantResolverGuard implements CanActivate {
             }),
             map(() => true),
             catchError((err: { status: number, error: any }) => {
-              this.api.saveInProgress = false;
+              this.progress.completeAsyncOperation(key);
 
               if (err.status === 403) {
                 this.router.navigate(['unauthorized']);
@@ -214,7 +215,7 @@ export class TenantResolverGuard implements CanActivate {
               return of(false);
             }),
             finalize(() => {
-              this.api.saveInProgress = false;
+              this.progress.completeAsyncOperation(key);
             })
           );
 

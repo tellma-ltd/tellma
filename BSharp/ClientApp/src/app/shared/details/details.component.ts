@@ -12,7 +12,7 @@ import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
-import { Subject, Observable, of, Subscription } from 'rxjs';
+import { Subject, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'b-details',

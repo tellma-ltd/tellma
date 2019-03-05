@@ -4,6 +4,9 @@ import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service'
 import { SettingsForClient } from '~/app/data/dto/settings';
 import { AuthService } from '~/app/data/auth.service';
 import { appconfig } from '~/app/data/appconfig';
+import { ApiService } from '~/app/data/api.service';
+import { Location } from '@angular/common';
+import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 
 @Component({
   selector: 'b-application-shell',
@@ -14,7 +17,8 @@ export class ApplicationShellComponent implements OnInit {
   // For the menu on small screens
   public isCollapsed = true;
 
-  constructor(public workspace: WorkspaceService, private translate: TranslateService, private auth: AuthService) {
+  constructor(public workspace: WorkspaceService, private location: Location,
+    private translate: TranslateService, private progress: ProgressOverlayService, private auth: AuthService) {
   }
 
   ngOnInit() {
@@ -41,7 +45,7 @@ export class ApplicationShellComponent implements OnInit {
   }
 
   get settings(): SettingsForClient {
-     return !!this.workspace.current ? this.workspace.current.settings : null;
+    return !!this.workspace.current ? this.workspace.current.settings : null;
   }
 
   get ws(): TenantWorkspace {
@@ -73,10 +77,35 @@ export class ApplicationShellComponent implements OnInit {
   }
 
   public onSignOut(): void {
+    this.progress.startAsyncOperation('sign_out', 'RedirectingToSignOut');
     this.auth.signOut();
   }
 
-  public onSignIn(): void {
-    this.auth.initImplicitFlow();
+  public onForward() {
+    this.location.forward();
+  }
+
+  public get canForward(): boolean {
+    return true;
+  }
+
+  public get showForward(): boolean {
+    return this.isStandalone;
+  }
+
+  public onBack() {
+    this.location.back();
+  }
+
+  public get canBack(): boolean {
+    return true;
+  }
+
+  public get showBack(): boolean {
+    return this.isStandalone;
+  }
+
+  private get isStandalone() {
+    return window.navigator['standalone'] || window.matchMedia('(display-mode: standalone)').matches;
   }
 }

@@ -25,6 +25,7 @@ import { environment } from '../environments/environment';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { ProgressOverlayService } from './data/progress-overlay.service';
 
 library.add(faInternetExplorer, faSpinner);
 
@@ -49,7 +50,7 @@ library.add(faInternetExplorer, faSpinner);
       loader: {
         provide: TranslateLoader,
         useFactory: apiTranslateLoaderFactory,
-        deps: [ApiService, StorageService]
+        deps: [ApiService, ProgressOverlayService, StorageService]
       }
     }),
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })

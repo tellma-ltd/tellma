@@ -31,11 +31,10 @@ import { GlobalSettingsForClient } from './dto/global-settings';
 })
 export class ApiService {
 
-  public saveInProgress = false;
+  public showRotator = false;
 
   // Will abstract away standard API calls for CRUD operations
-  constructor(public http: HttpClient, public translate: TranslateService) {
-  }
+  constructor(public http: HttpClient, public translate: TranslateService) { }
 
   public measurementUnitsApi(cancellationToken$: Observable<void>) {
     return {
@@ -82,17 +81,17 @@ export class ApiService {
         return obs$;
       },
       invite: (id: number | string) => {
-        this.saveInProgress = true;
+        this.showRotator = true;
         const url = appconfig.apiAddress + `api/local-users/invite?id=${id}`;
         const obs$ = this.http.put(url, null).pipe(
-          tap(() => this.saveInProgress = false),
+          tap(() => this.showRotator = false),
           catchError(error => {
-            this.saveInProgress = false;
+            this.showRotator = false;
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
-          finalize(() => this.saveInProgress = false)
+          finalize(() => this.showRotator = false)
         );
 
         return obs$;
@@ -190,7 +189,7 @@ export class ApiService {
       },
 
       save: (entity: Settings, args: SaveArguments) => {
-        this.saveInProgress = true;
+        this.showRotator = true;
         args = args || {};
         const paramsArray: string[] = [];
 
@@ -204,14 +203,14 @@ export class ApiService {
         const obs$ = this.http.post<SaveSettingsResponse>(url, entity, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
-          tap(() => this.saveInProgress = false),
+          tap(() => this.showRotator = false),
           catchError((error) => {
-            this.saveInProgress = false;
+            this.showRotator = false;
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
-          finalize(() => this.saveInProgress = false)
+          finalize(() => this.showRotator = false)
         );
 
         return obs$;
@@ -278,7 +277,7 @@ export class ApiService {
       },
 
       save: (entities: TDtoForSave[], args: SaveArguments) => {
-        this.saveInProgress = true;
+        this.showRotator = true;
         args = args || {};
         const paramsArray: string[] = [];
 
@@ -294,31 +293,31 @@ export class ApiService {
         const obs$ = this.http.post<EntitiesResponse<TDto>>(url, entities, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
-          tap(() => this.saveInProgress = false),
+          tap(() => this.showRotator = false),
           catchError((error) => {
-            this.saveInProgress = false;
+            this.showRotator = false;
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
-          finalize(() => this.saveInProgress = false)
+          finalize(() => this.showRotator = false)
         );
 
         return obs$;
       },
 
       delete: (ids: (number | string)[]) => {
-        this.saveInProgress = true;
+        this.showRotator = true;
         const url = appconfig.apiAddress + `api/${endpoint}`;
         const obs$ = this.http.request('DELETE', url, { body: ids }).pipe(
-          tap(() => this.saveInProgress = false),
+          tap(() => this.showRotator = false),
           catchError((error) => {
-            this.saveInProgress = false;
+            this.showRotator = false;
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
-          finalize(() => this.saveInProgress = false)
+          finalize(() => this.showRotator = false)
         );
 
         return obs$;
@@ -360,18 +359,18 @@ export class ApiService {
           formData.append(file.name, file);
         }
 
-        this.saveInProgress = true;
+        this.showRotator = true;
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}/import?${params}`;
         const obs$ = this.http.post<ImportResult>(url, formData).pipe(
-          tap(() => this.saveInProgress = false),
+          tap(() => this.showRotator = false),
           catchError((error) => {
-            this.saveInProgress = false;
+            this.showRotator = false;
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
-          finalize(() => this.saveInProgress = false)
+          finalize(() => this.showRotator = false)
         );
 
         return obs$;
@@ -434,18 +433,18 @@ export class ApiService {
       const params: string = paramsArray.join('&');
       const url = appconfig.apiAddress + `api/${endpoint}/activate?${params}`;
 
-      this.saveInProgress = true;
+      this.showRotator = true;
       const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }).pipe(
-        tap(() => this.saveInProgress = false),
+        tap(() => this.showRotator = false),
         catchError(error => {
-          this.saveInProgress = false;
+          this.showRotator = false;
           const friendlyError = this.friendly(error);
           return throwError(friendlyError);
         }),
         takeUntil(cancellationToken$),
-        finalize(() => this.saveInProgress = false)
+        finalize(() => this.showRotator = false)
       );
 
       return obs$;
@@ -469,18 +468,18 @@ export class ApiService {
       const params: string = paramsArray.join('&');
       const url = appconfig.apiAddress + `api/${endpoint}/deactivate?${params}`;
 
-      this.saveInProgress = true;
+      this.showRotator = true;
       const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }).pipe(
-        tap(() => this.saveInProgress = false),
+        tap(() => this.showRotator = false),
         catchError(error => {
-          this.saveInProgress = false;
+          this.showRotator = false;
           const friendlyError = this.friendly(error);
           return throwError(friendlyError);
         }),
         takeUntil(cancellationToken$),
-        finalize(() => this.saveInProgress = false)
+        finalize(() => this.showRotator = false)
       );
 
       return obs$;

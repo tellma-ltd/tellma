@@ -354,6 +354,9 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "User_Confirmed", "Confirmed"),
             Ar(Constants.Shared, "User_Confirmed", "مؤكد"),
 
+            En(Constants.Shared, "User_LastActivity", "Last Activity"),
+            Ar(Constants.Shared, "User_LastActivity", "آخر نشاط"),
+
             En(Constants.Shared, "RoleMembership_User", "User"),
             Ar(Constants.Shared, "RoleMembership_User", "المستخدم"),
 
@@ -670,8 +673,8 @@ namespace BSharp.Data.Model
             En(Constants.Client, "IEDoesNotSupportModernWebStandards", "Internet Explorer does not support the modern web standards used in {{appName}}"),
             Ar(Constants.Client, "IEDoesNotSupportModernWebStandards", "إنترنت إكسبلورر لا يدعم أحدث تقنيات الويب المستخدمة في {{appName}}"),
 
-            En(Constants.Client, "WeRecommendUpgradingToTheLatesBrowsers", "We recommend upgrading to the latest Chrome, Firefox or Edge"),
-            Ar(Constants.Client, "WeRecommendUpgradingToTheLatesBrowsers", "ينصح باستخدام آخر الإصدارات من كروم أو فايرفوكس أو إيدج"),
+            En(Constants.Client, "WeRecommendUpgradingToTheLatestBrowsers", "We recommend upgrading to the latest Chrome, Firefox or Edge"),
+            Ar(Constants.Client, "WeRecommendUpgradingToTheLatestBrowsers", "ينصح باستخدام آخر الإصدارات من كروم أو فايرفوكس أو إيدج"),
             
             En(Constants.Client, "WeRecommend", "Actions"),
             Ar(Constants.Client, "Actions", "أوامر"),
@@ -738,6 +741,21 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Administration", "Administration"),
             Ar(Constants.Client, "Administration", "الإشراف"),
+
+            En(Constants.Client, "LoadingCompanySettings", "Loading company settings"),
+            Ar(Constants.Client, "LoadingCompanySettings", "جار تحميل إعدادات الشركة"),
+
+            En(Constants.Client, "LoadingSystemSettings", "Loading system settings"),
+            Ar(Constants.Client, "LoadingSystemSettings", "جار تحميل إعدادات النظام"),
+
+            En(Constants.Client, "CheckingYourSession", "Checking your sign-in session"),
+            Ar(Constants.Client, "CheckingYourSession", "جار التحقق من تسجيل دخولك"),
+
+            En(Constants.Client, "RedirectingToSignOut", "Redirecting to sign-out page"),
+            Ar(Constants.Client, "RedirectingToSignOut", "جار تحويلك إلى صفحة تسجيل الخروج"),
+
+            En(Constants.Client, "RedirectingToSignIn", "Redirecting to sign-in page"),
+            Ar(Constants.Client, "RedirectingToSignIn", "جار تحويلك إلى صفحة تسجيل الدخول"),
 
 
 

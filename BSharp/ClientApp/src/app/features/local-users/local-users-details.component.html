@@ -76,6 +76,11 @@
     </b-form-group>
   </ng-container>
 
+    <!-- Last Activity -->
+    <b-form-group class="b-form-group" [label]="'User_LastActivity' | translate" *ngIf="!isEdit">
+      <div>{{  model?.LastAccess | date:'yyyy-MM-dd h:mm a' }}</div>
+    </b-form-group>
+
   <!-- Agent -->
   <b-form-group class="b-form-group" [label]="'User_Agent' | translate">
     <b-view-link *ngIf="!isEdit" link="../../agents/{{ ws.get('Custodies', model?.AgentId)?.AgentType }}"
@@ -111,6 +116,10 @@
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
   </b-form-group>
 
+
+  <div class="b-wide-form-group alert-primary p-2 px-3 mt-3 mt-sm-4" *ngIf="showInvitationInfo(model)">
+      <span>{{ 'UserInvitationNotice' | translate:{ email: model?.Email } }}</span>
+    </div>
   <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true" *ngIf="showRoles">
 
     <!-- Roles -->
@@ -172,10 +181,6 @@
       </ng-template>
     </ngb-tab>
   </ngb-tabset>
-
-  <div class="b-wide-form-group text-muted" *ngIf="showInvitationInfo(model)">
-    <p>{{ 'UserInvitationNotice' | translate:{ email: model?.Email } }}</p>
-  </div>
 </ng-template>
 
 <!-- Actions -->
