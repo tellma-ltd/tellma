@@ -116,8 +116,7 @@
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
   </b-form-group>
 
-
-  <div class="b-wide-form-group alert-primary p-2 px-3 mt-3 mt-sm-4" *ngIf="showInvitationInfo(model)">
+  <div class="col-12 alert-primary p-2 px-3 mt-3 mt-sm-4" *ngIf="showInvitationInfo(model)">
       <span>{{ 'UserInvitationNotice' | translate:{ email: model?.Email } }}</span>
     </div>
   <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true" *ngIf="showRoles">

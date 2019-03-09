@@ -56,6 +56,7 @@ namespace BSharp.Services.EmbeddedIdentityServer
 
                 RequireConsent = false,
                 AccessTokenLifetime = 60 * 60 * 24 * 3, // 3 days
+                AlwaysIncludeUserClaimsInIdToken = true,
 
                 AllowedScopes =
                     {

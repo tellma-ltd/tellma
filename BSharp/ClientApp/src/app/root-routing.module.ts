@@ -9,6 +9,7 @@ import { SignInCallbackGuard } from './data/sign-in-callback.guard';
 import { BaseAddressGuard } from './data/base-address.guard';
 import { ErrorLoadingSettingsComponent } from './features/error-loading-settings/error-loading-settings.component';
 import { GlobalResolverGuard } from './data/global-resolver.guard';
+import { RootShellComponent } from './features/root-shell/root-shell.component';
 
 
 /*
@@ -25,13 +26,28 @@ import { GlobalResolverGuard } from './data/global-resolver.guard';
   the user to the application module, otherwise to the landing module/welcome screen
 */
 
-@Component({ template: '<p></p>'}) export class PlaceholderComponent { }
+@Component({ template: '<p></p>' }) export class PlaceholderComponent { }
 
 /*
   the root routes for the angular router
 */
 const routes: Routes = [
-  { path: 'companies', component: CompaniesComponent, canActivate: [AuthGuard, GlobalResolverGuard] },
+  {
+    path: 'root',
+    component: RootShellComponent,
+    canActivate: [GlobalResolverGuard],
+    children: [
+      {
+        path: 'welcome',
+        loadChildren: './features/landing.module#LandingModule'
+      },
+      {
+        path: 'companies',
+        component: CompaniesComponent,
+        canActivate: [AuthGuard]
+      },
+    ]
+  },
 
   // Lazy loaded modules,
   {
@@ -50,11 +66,7 @@ const routes: Routes = [
     loadChildren: './features/identity.module#IdentityModule',
     data: { preload: true }
   },
-  {
-    path: 'welcome',
-    loadChildren: './features/landing.module#LandingModule',
-    data: { preload: false }
-  },
+
   { path: 'unauthorized', component: UnauthorizedForCompanyComponent, canActivate: [GlobalResolverGuard] },
   { path: 'error-loading-company', component: ErrorLoadingCompanyComponent },
   { path: 'error-loading-settings', component: ErrorLoadingSettingsComponent },

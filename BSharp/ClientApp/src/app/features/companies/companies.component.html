@@ -1,14 +1,85 @@
+<div class="container p-2 px-sm-5 py-4">
 
-<div class="container">
-  <div class="b-paper p-3">
-    <h1>My Companies</h1>    
-    <p>
-      TODO: This screen should show the companies that the current user is a member of, and allow the user to log into any of them. Also it should allow an admin user to access the admin portal, and allow all users to change the UI language and manage his/her account
-    </p>
-    <a class="btn btn-primary m-1" routerLink="/app/101">Contoso Inc.</a>
-    <a class="btn btn-primary m-1" routerLink="/app/102">Fabrikam & Co.</a>
-    
-    <button class="btn btn-primary m-1" (click)="onRefresh()" *ngIf="false">{{ 'Refresh' | translate }}</button>
+  <div class="row">
+    <div class="b-page-title col-12">
+      {{ 'MyCompanies' | translate }}
+    </div>
+
+    <!-- Search Bar -->
+    <div class="col-12">
+      <div class="b-companies-search-container">
+        &nbsp;&nbsp;&nbsp;
+        <fa-icon id="searchIcon" class="d-inline" icon="search"></fa-icon>
+        <input #input class="form-control b-menu-search" #searchInput placeholder="{{ 'Search' | translate }}..." />
+      </div>
+    </div>
+  </div>
+
+  <div class="w-100 mt-4">
+    <div *ngIf="showCompanies">
+      <table class="table table-striped border-bottom" style="background: rgba(255,255,255,0.2)">
+        <tbody>
+          <tr *ngFor="let company of pagedCompanies; trackBy: trackById">
+            <td class="align-middle">
+              <div class="px-2 ">
+                <span class="m-0">
+                  {{ company.Name }}
+                </span>
+                <span class="my-0 mx-2" *ngIf="company.Name">
+                  {{ company.Name2 }}
+                </span>
+              </div>
+            </td>
+            <td class="align-middle" style="width: 1px">
+              <a class="btn btn-primary btn-sm d-flex" [routerLink]="['/app', company.Id, 'main-menu']">
+                {{ 'Connect' | translate }}&nbsp;&nbsp;<fa-icon icon="chevron-right" [flip]="flip"></fa-icon></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="w-100 text-center mb-3" *ngIf="showProgress">
+      <fa-icon icon="spinner" [spin]="true" style="font-size:200%"></fa-icon>
+    </div>
+
+
+    <div class="w-100 px-3 mb-3" *ngIf="showNoMemberships">
+      You are not currently a member of any company.
+    </div>
+
+
+    <div class="w-100 px-3 mb-3" *ngIf="showNoItemsFound">
+      {{ 'NoItemsFound' | translate }}
+    </div>
+
+    <div class="alert alert-danger p-2 mb-3" *ngIf="showErrorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <nav class="sr-only" aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        <li class="page-item"><a class="page-link" href="#">{{ 'Previous' | translate }}</a></li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">{{ 'Next' | translate }}</a></li>
+      </ul>
+    </nav>
+
+    <div class="py-2 d-flex justify-content-center sr-only2" *ngIf="true">
+      <button class="btn btn-primary btn-sm" (click)="onRefresh()">
+        {{ 'Refresh' | translate }}
+      </button>
+      <div class="d-inline d-flex align-items-center mx-2">
+          {{ from | number }} - {{ to | number }} / {{ total | number }}
+        </div>
+      <button class="btn btn-primary btn-sm" (click)="onPrevPage()"
+        [disabled]="!canPrevPage">{{ 'Previous' | translate }}</button>
+
+      <button class="btn btn-primary btn-sm mx-1" (click)="onNextPage()"
+        [disabled]="!canNextPage">{{ 'Next' | translate }}</button>
+
+    </div>
   </div>
 </div>
-

@@ -712,6 +712,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Error", "Error"),
             Ar(Constants.Client, "Error", "حدث خطأ"),
 
+            En(Constants.Client, "Connect", "Connect"),
+            Ar(Constants.Client, "Connect", "دخول"),
+
             En(Constants.Client, "Success", "Success"),
             Ar(Constants.Client, "Success", "تم بنجاح"),
 
@@ -946,13 +949,15 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_InvalidLoginAttempt", "Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox"),
             Ar(Constants.Server, "Error_InvalidLoginAttempt", "تسجيل الدخول لم يكلل بالنجاح، إذا لم تٌأكّد عنوان بريدك الإلكتروني بعد قم بمراجعة صندوق الوارد"),
 
-            En(Constants.Shared, "GoTo0", "Go to {0}"),
-            Ar(Constants.Shared, "GoTo0", "ذهاب إلى {0}"),
+            En(Constants.Server, "GoTo0", "Go to {0}"),
+            Ar(Constants.Server, "GoTo0", "ذهاب إلى {0}"),
 
+            En(Constants.Client, "BackToApp", "Go to {{appName}}"),
+            Ar(Constants.Client, "BackToApp", "ذهاب إلى {{appName}}"),
 
-
-
-
+            En(Constants.Client, "GetMoreWithApp", "Get More with {{appName}}"),
+            Ar(Constants.Client, "GetMoreWithApp", "حقق الصدارة مع {{appName}}"),
+            
 
 
 

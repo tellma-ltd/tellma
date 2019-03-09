@@ -19,8 +19,6 @@
     </button>
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
       <ol class="nav navbar-nav px-4 px-lg-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
-
-
         <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./main-menu"
             (click)="onCollapse()">
@@ -89,10 +87,10 @@
               <hr />
             </ng-container>
 
-            <button type="button" class="dropdown-item btn-light" routerLink="/companies" (click)="onCollapse()">
+            <button type="button" class="dropdown-item btn-light" routerLink="/root/companies" (click)="onCollapse()">
               {{ 'ChangeCompany' | translate }}
             </button>
-            <button type="button" class="dropdown-item btn-light" routerLink="/welcome" (click)="onCollapse()">
+            <button type="button" class="dropdown-item btn-light" routerLink="/root/welcome" (click)="onCollapse()">
               {{ 'WelcomePage' | translate }}
             </button>
             <button type="button" class="dropdown-item btn-light" (click)="onMySystemAccount();onCollapse()">

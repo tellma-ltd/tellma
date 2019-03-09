@@ -68,6 +68,12 @@ namespace BSharp.Services.Mapper
             // Cultures
             CreateMap<CultureForSave, M.Culture>();
             CreateDtoMap<M.Culture, Culture>();
+
+
+            // Permissions
+            CreateMap<TenantForSave, M.Tenant>();
+            CreateDtoMap<M.Tenant, Tenant>();
+            CreateMap<M.Tenant, TenantForClient>();
         }
 
         /// <summary>

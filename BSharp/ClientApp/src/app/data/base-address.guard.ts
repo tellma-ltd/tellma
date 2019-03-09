@@ -24,13 +24,13 @@ export class BaseAddressGuard implements CanActivate {
     return this.auth.isSignedIn$.pipe(
       map(isAuthenticated => {
         const lastVisited = this.storage.getItem('last_visited_url');
-        const url = isAuthenticated ? (lastVisited || '/companies') : '/welcome';
+        const url = isAuthenticated ? (lastVisited || '/root/companies') : '/root/welcome';
         this.router.navigateByUrl(url);
 
         return false;
       }),
       catchError(_ => {
-        this.router.navigateByUrl('/welcome');
+        this.router.navigateByUrl('/root/welcome');
         return of(false);
       })
     );

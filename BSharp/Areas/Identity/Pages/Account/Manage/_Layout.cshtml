@@ -3,6 +3,7 @@
 @using Microsoft.Extensions.Options
 @using BSharp.Services.EmbeddedIdentityServer
 @using BSharp.Services.GlobalSettings
+@using BSharp.Services.Utilities
 
 @inject IGlobalSettingsCache GlobalSettingsCache
 @inject IViewLocalizer Localizer
@@ -17,6 +18,9 @@
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
 
     var cultures = GlobalSettingsCache.GetGlobalSettings().Data.ActiveCultures.Values;
+
+    // var appUri = Config.Value.WebClientUri.WithTrailingSlash() + "root/companies?ui-culture=" + currentCulture;
+    var appUri = Config.Value.WebClientUri.WithoutTrailingSlash() + "?ui-culture=" + currentCulture;
 }
 
 <!DOCTYPE html>
@@ -32,7 +36,7 @@
 <body class="h-100 bg-light @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "b-rtl": "")">
     <header>
         <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-lg-stretch">
-            <a class="b-brand-link b-navbar-button" href="@(Config.Value.WebClientUri + "companies?ui-culture=" + currentCulture)">
+            <a class="b-brand-link b-navbar-button" href="@appUri">
                 <table class="h-100">
                     <tbody>
                         <tr>
@@ -72,7 +76,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="h-100 b-navbar-button nav-link d-flex flex-column justify-content-center"
-                           href="@(Config.Value.WebClientUri + "companies?ui-culture=" + currentCulture)">@Localizer["GoTo0", Localizer["AppName"]]</a>
+                           href="@appUri">@Localizer["GoTo0", Localizer["AppName"]]</a>
                     </li>
                 </ol>
 

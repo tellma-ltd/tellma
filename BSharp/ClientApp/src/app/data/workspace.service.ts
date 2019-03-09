@@ -9,6 +9,7 @@ import { DtoKeyBase } from './dto/dto-key-base';
 import { SettingsForClient } from './dto/settings';
 import { PermissionsForClient } from './dto/permission';
 import { GlobalSettingsForClient } from './dto/global-settings';
+import { TenantForClient } from './dto/tenant';
 
 export enum MasterStatus {
 
@@ -202,6 +203,10 @@ export class Workspace {
   isRtl = false;
   errorLoadingCompanyMessage: string;
   errorLoadingSettingsMessage: string;
+
+  // The user's companies
+  companiesStatus: MasterStatus;
+  companies: TenantForClient[];
 
   // Current tenantID selected by the user
   tenantId: number;

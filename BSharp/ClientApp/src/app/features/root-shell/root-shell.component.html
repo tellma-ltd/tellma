@@ -1,73 +1,103 @@
-<!-- <div class="d-flex flex-column h-100">
-  <nav class="navbar navbar-light navbar-expand-lg p-0 align-items-lg-stretch"
-    [style.background-color]="settings?.BrandColor">
-    <a class="b-brand-link b-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
-      <b-brand [scale]="1.2"></b-brand>
-    </a>
-    <div class="mx-2 d-flex">
-      <button class="b-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack" *ngIf="nav.showBack">
-        <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
-      </button>
-      &nbsp;
-      <button class="b-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward" *ngIf="nav.showForward">
-        <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
-      </button>
-    </div>
-    <button type="button" class="navbar-toggler mx-2" (click)="onToggleCollapse()">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
-      <ol class="nav navbar-nav p-0">
-        <li class="nav-item" ngbDropdown [placement]="myAccountDropdownPlacement" bDropdownAppendToBody>
-          <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
-            <div class="align-self-center">
-              <div class="b-dp-wrapper b-dp-dark bg-white mx-1">
-                <b-image
-                  [src]="'local-users/' + ws?.userSettings?.UserId + '/image|' + (ws?.userSettings?.ImageId || '')"
-                  shape="circle" [size]="28"></b-image>
-              </div>
-            </div>
-            &nbsp;&nbsp;
-            <div class="d-flex flex-column justify-content-center">
-              <div class="text-truncate" style="line-height:1.1rem">{{ userName }}</div>
-              <div class="small font-weight-bold text-truncate"> {{ companyName }}</div>
-            </div>
-            &nbsp;&nbsp;
-          </button>
-          <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action">
-            <ng-container *ngIf="ws?.settings?.SecondaryLanguageId">
-              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isSecondaryLanguage"
-                (click)="onPrimary();onCollapse()">
-                {{ settings?.PrimaryLanguageName }}
-              </button>
-              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isPrimaryLanguage"
-                (click)="onSecondary();onCollapse()">
-                {{ settings?.SecondaryLanguageName }}
-              </button>
-              <hr />
-            </ng-container>
+<div class="d-flex flex-column h-100">
+  <nav class="navbar navbar-light shadow-sm border-bottom bg-white navbar-expand-sm p-0 align-items-sm-stretch">
+    <div class="container d-flex align-items-sm-stretch">
 
-            <button type="button" class="dropdown-item btn-light" routerLink="/companies" (click)="onCollapse()">
-              {{ 'ChangeCompany' | translate }}
+      <!-- Brand -->
+      <a class="b-brand-link b-navbar-button" routerLink="/root/welcome" [title]="'Home' | translate">
+        <table class="h-100">
+          <tbody>
+            <tr>
+              <th>
+                <img src="/favicon.ico" width="30">
+              </th>
+              <th>
+                <span style="font-size:120%">
+                  <span
+                    class="font-weight-normal2 text-white2 font-weight-bold text-black-50">&nbsp;{{ 'AppName' | translate }}</span><span
+                    class="font-weight-bold b-brand">ERP</span>
+                </span>
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </a>
+
+      <!-- Back and Forward -->
+      <div class="mx-2 d-flex">
+        <button class="b-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
+          *ngIf="nav.showBack">
+          <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>
+        </button>
+        &nbsp;
+        <button class="b-navbar-button nav-link" (click)="onCollapse();nav.onForward();" [disabled]="!nav.canForward"
+          *ngIf="nav.showForward">
+          <fa-icon icon="arrow-right" [flip]="flip"></fa-icon>
+        </button>
+      </div>
+
+      <!-- Collapse button -->
+      <button type="button" class="navbar-toggler mx-2" (click)="onToggleCollapse()">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Collapsible stuff -->
+      <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
+        <ol class="nav navbar-nav px-4 px-sm-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
+
+        </ol>
+        <ol class="nav navbar-nav p-0 px-4 px-sm-0">
+          <li class="nav-item" ngbDropdown [placement]="languageDropdownPlacement" bDropdownAppendToBody
+            *ngIf="activeLanguages.length > 1">
+            <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
+              <span class="px-1">
+                  <span>{{ currentLanguageDisplay }}</span>
+              </span>
             </button>
-            <button type="button" class="dropdown-item btn-light" routerLink="/welcome" (click)="onCollapse()">
-              {{ 'WelcomePage' | translate }}
+            <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action">
+              <ng-container *ngFor="let lang of activeLanguages">
+                <button type="button" class="dropdown-item btn-light" *ngIf="lang.Id !== currentLanguage"
+                  (click)="onSetLanguage(lang.Id)">
+                  {{ lang.Name }}
+                </button>
+              </ng-container>
+
+            </div>
+          </li>
+          <li class="nav-item" *ngIf="!isAuthenticated">
+            <button class="h-100 w-100 b-navbar-button" routerLink="/root/companies">
+              <span class="px-1">
+                {{ 'SignIn' | translate }}
+              </span>
             </button>
-            <button type="button" class="dropdown-item btn-light" (click)="onMySystemAccount();onCollapse()">
-              {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
+          </li>
+          <li class="nav-item" ngbDropdown [placement]="myAccountDropdownPlacement" bDropdownAppendToBody
+            *ngIf="isAuthenticated">
+            <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
+              <span class="px-1">
+                {{ userName }}
+              </span>
             </button>
-            <button type="button" class="dropdown-item btn-light" (click)="onMyCompanyAccount();onCollapse()">
-              {{ 'My0Account' | translate: { placeholder: companyName } }}
-            </button>
-            <button type="button" class="dropdown-item btn-light" (click)="onSignOut();onCollapse()">
-              {{ 'SignOut' | translate }}
-            </button>
-          </div>
-        </li>
-      </ol>
+            <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action">
+              <button type="button" class="dropdown-item btn-light" routerLink="/root/companies" (click)="onCollapse()">
+                {{ 'MyCompanies' | translate }}
+              </button>
+              <button type="button" class="dropdown-item btn-light" routerLink="/root/welcome" (click)="onCollapse()">
+                {{ 'WelcomePage' | translate }}
+              </button>
+              <button type="button" class="dropdown-item btn-light" (click)="onMySystemAccount();onCollapse()">
+                {{ 'My0Account' | translate: { placeholder: ( 'AppName' | translate ) } }}
+              </button>
+              <button type="button" class="dropdown-item btn-light" (click)="onSignOut();onCollapse()">
+                {{ 'SignOut' | translate }}
+              </button>
+            </div>
+          </li>
+        </ol>
+      </div>
     </div>
+
   </nav>
-  <main class="b-rest-of-screen container-fluid">
-    <ng-content></ng-content>
+  <main class="b-rest-of-screen container-fluid bg-white2 b-banner3">
+    <router-outlet></router-outlet>
   </main>
-</div> -->
+</div>

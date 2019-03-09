@@ -204,7 +204,6 @@ export class AuthService {
     } else {
 
       const key = 'silent_refresh';
-      console.log('Silent Refresh');
       this.progress.startAsyncOperation(key, 'CheckingYourSession');
 
       // (2) Check that the user has an active session with the identity server
@@ -280,5 +279,14 @@ export class AuthService {
 
   public get isAuthenticated(): boolean {
     return this.oauth.hasValidAccessToken();
+  }
+
+  public get userName(): string {
+    const claims = this.oauth.getIdentityClaims();
+    if (!claims) {
+      return null;
+    }
+
+    return claims['email'];
   }
 }

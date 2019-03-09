@@ -11,7 +11,7 @@ namespace BSharp.Data.Model
     /// <summary>
     /// A record specifies that tenant X lives in Database Y
     /// </summary>
-    public class Tenant
+    public class Tenant : ModelBase
     {
         public int Id { get; set; }
 

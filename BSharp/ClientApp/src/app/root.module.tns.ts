@@ -8,7 +8,7 @@ import { PageNotFoundComponent } from './features/page-not-found/page-not-found.
 import { CompaniesComponent } from './features/companies/companies.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ApiTranslateLoaderFactory } from './data/api-translate-loader';
+import { apiTranslateLoaderFactory } from './data/api-translate-loader';
 import { WorkspaceService } from './data/workspace.service';
 import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { NativeScriptLocalizeModule } from 'nativescript-localize/angular';
@@ -37,7 +37,7 @@ import { RootShellComponent } from './features/root-shell/root-shell.component';
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: ApiTranslateLoaderFactory,
+        useFactory: apiTranslateLoaderFactory,
         deps: [HttpClient]
       }
     })

@@ -1,6 +1,6 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse, HttpErrorResponse, HttpClient } from '@angular/common/http';
 import { Observable, Subject, of, throwError } from 'rxjs';
-import { WorkspaceService } from './workspace.service';
+import { WorkspaceService, MasterStatus } from './workspace.service';
 import { tap, exhaustMap, retry, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { DataWithVersion } from './dto/data-with-version';
@@ -207,9 +207,12 @@ export class RootHttpInterceptor implements HttpInterceptor {
           }
 
           if (v === 'Unauthorized') {
-            // This means the user is no longer a member of this tenant
+            // this means the user is no longer a member of this tenant
             // (1) Delete the workspace of this tenant
             delete this.workspace.ws.tenants[tenantId];
+
+            // triggers a refresh next time the user navigates to "my companies"
+            this.workspace.ws.companiesStatus = null;
 
             // (2) Delete from local storage everything related
             this.storage.removeItem(storageKey(SETTINGS_PREFIX, tenantId));

@@ -31,13 +31,11 @@ export class ApplicationShellComponent implements OnInit {
     this.isCollapsed = true;
   }
 
-  // TODO Remove
   onPrimary() {
     const lang = this.settings.PrimaryLanguageId;
     this.translate.use(lang);
   }
 
-  // TODO Remove
   onSecondary() {
     const lang = this.settings.SecondaryLanguageId;
     this.translate.use(lang);
@@ -82,6 +80,6 @@ export class ApplicationShellComponent implements OnInit {
 
   public get flip() {
     // this is to flip the UI icons in RTL
-    return this.workspace.ws.isRtl ? 'horizontal' : null;
+    return this.isRtl ? 'horizontal' : null;
   }
 }

@@ -262,7 +262,7 @@ namespace BSharp.Services.Utilities
         }
 
         /// <summary>
-        /// Removes any trailing lashes from the specified string
+        /// Removes any trailing slashes from the specified string
         /// </summary>
         public static string WithoutTrailingSlash(this string str)
         {
@@ -280,7 +280,7 @@ namespace BSharp.Services.Utilities
         }
 
         /// <summary>
-        /// Adds one trailing slash to the specified string
+        /// Adds one trailing slash to the specified string if one is not already there
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>

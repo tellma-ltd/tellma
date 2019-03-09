@@ -50,8 +50,7 @@ export class RootComponent {
       // If the user navigates to the base address '/', s/he
       // gets automatically redirected to the last visited url
     this.router.events.subscribe(e => {
-      if (e instanceof NavigationEnd) {
-
+      if (e instanceof NavigationEnd && e.url.indexOf('/app/') !== -1) {
         this.storage.setItem('last_visited_url', e.url);
       }
     });

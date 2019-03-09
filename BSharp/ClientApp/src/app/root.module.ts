@@ -24,11 +24,14 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {
+  faSpinner, faArrowRight, faArrowLeft, faChevronRight, faSyncAlt, faSearch, faHardHat, faHands, faCube
+} from '@fortawesome/free-solid-svg-icons';
 import { ProgressOverlayService } from './data/progress-overlay.service';
 import { RootShellComponent } from './features/root-shell/root-shell.component';
+import { NgbCollapseModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
-library.add(faInternetExplorer, faSpinner);
+library.add(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronRight, faSyncAlt, faSearch, faCube, faHardHat, faHands);
 
 @NgModule({
   declarations: [
@@ -47,6 +50,8 @@ library.add(faInternetExplorer, faSpinner);
     FontAwesomeModule,
     RootRoutingModule,
     HttpClientModule,
+    NgbCollapseModule,
+    NgbDropdownModule,
     OAuthModule.forRoot(),
     TranslateModule.forRoot({
       loader: {

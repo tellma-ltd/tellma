@@ -25,6 +25,7 @@ import { PermissionsForClient } from './dto/permission';
 import { SaveSettingsResponse } from './dto/save-settings-response';
 import { UserSettingsForClient } from './dto/local-user';
 import { GlobalSettingsForClient } from './dto/global-settings';
+import { TenantForClient } from './dto/tenant';
 
 @Injectable({
   providedIn: 'root'
@@ -113,6 +114,23 @@ export class ApiService {
 
         return obs$;
       },
+    };
+  }
+
+  public companiesApi(cancellationToken$: Observable<void>) {
+    return {
+      getForClient: () => {
+        const url = appconfig.apiAddress + `api/companies/client`;
+        const obs$ = this.http.get<TenantForClient[]>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      }
     };
   }
 

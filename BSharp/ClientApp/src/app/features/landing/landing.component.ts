@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { AuthService } from '~/app/data/auth.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DOCUMENT } from '@angular/platform-browser';
 
 @Component({
   selector: 'b-landing',
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss']
 })
-export class LandingComponent implements OnInit {
+export class LandingComponent implements OnInit, OnDestroy {
 
   public error: string = null;
 
-  constructor(private auth: AuthService, private route: ActivatedRoute) { }
+  constructor(private auth: AuthService, private route: ActivatedRoute, private router: Router,
+    @Inject(DOCUMENT) private document: Document) { }
 
   ngOnInit() {
 
@@ -29,6 +31,16 @@ export class LandingComponent implements OnInit {
           break;
       }
     });
+
+
+    // this adds a cool background to the main menu, unaffected by scrolling
+    this.document.body.classList.add('b-banner');
+  }
+
+  ngOnDestroy() {
+
+    // this adds a cool background to the main menu, unaffected by scrolling
+    this.document.body.classList.remove('b-banner');
   }
 
   get showError(): boolean {
@@ -36,6 +48,22 @@ export class LandingComponent implements OnInit {
   }
 
   get isAuthenticated(): boolean {
+    return this.auth.isAuthenticated;
+  }
+
+  public onSignIn() {
+    this.auth.initImplicitFlow('/root/companies');
+  }
+
+  get showSignIn(): boolean {
+    return !this.auth.isAuthenticated;
+  }
+
+  public onBackToApp() {
+    this.router.navigate(['/']);
+  }
+
+  get showBackToApp(): boolean {
     return this.auth.isAuthenticated;
   }
 }
