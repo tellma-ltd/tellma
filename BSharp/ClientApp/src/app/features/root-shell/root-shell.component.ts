@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { NavigationService } from '~/app/data/navigation.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -7,13 +7,14 @@ import { AuthService } from '~/app/data/auth.service';
 import { appconfig } from '~/app/data/appconfig';
 import { SettingsForClient } from '~/app/data/dto/settings';
 import { Culture } from '~/app/data/dto/culture';
+import { DOCUMENT } from '@angular/platform-browser';
 
 @Component({
   selector: 'b-root-shell',
   templateUrl: './root-shell.component.html',
   styleUrls: ['./root-shell.component.scss']
 })
-export class RootShellComponent implements OnInit {
+export class RootShellComponent implements OnInit, OnDestroy {
 
   // For the menu on small screens
   public isCollapsed = true;
@@ -21,11 +22,20 @@ export class RootShellComponent implements OnInit {
   private _oldActiveLanguages: { [key: string]: Culture };
   private _activeLanguages: Culture[];
 
-  constructor(public workspace: WorkspaceService, public nav: NavigationService,
+  constructor(public workspace: WorkspaceService, public nav: NavigationService, @Inject(DOCUMENT) private document: Document,
     private translate: TranslateService, private progress: ProgressOverlayService, private auth: AuthService) {
   }
 
   ngOnInit() {
+
+    // this adds a cool background to the main menu, unaffected by scrolling
+    this.document.body.classList.add('b-banner');
+  }
+
+  ngOnDestroy() {
+
+    // this adds a cool background to the main menu, unaffected by scrolling
+    this.document.body.classList.remove('b-banner');
   }
 
   onToggleCollapse() {

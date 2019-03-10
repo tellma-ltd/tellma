@@ -99,8 +99,8 @@ export class GlobalResolverGuard implements CanActivate {
         map(() => true),
         catchError((err: { status: number, error: any }) => {
           this.progress.completeAsyncOperation(key);
-          this.workspace.ws.errorLoadingSettingsMessage = err.error;
-          this.router.navigate(['error-loading-settings'], { queryParams: { retryUrl: state.url } });
+          this.workspace.ws.errorMessage = err.error;
+          this.router.navigate(['error', 'loading-global-settings'], { queryParams: { retryUrl: state.url } });
 
           // Prevent navigation
           return of(false);

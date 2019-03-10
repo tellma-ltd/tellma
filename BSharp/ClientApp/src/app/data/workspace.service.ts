@@ -201,8 +201,7 @@ export class Workspace {
   // Current UI culture selected by the user
   culture: string;
   isRtl = false;
-  errorLoadingCompanyMessage: string;
-  errorLoadingSettingsMessage: string;
+  errorMessage: string;
 
   // The user's companies
   companiesStatus: MasterStatus;

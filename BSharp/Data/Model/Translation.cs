@@ -166,29 +166,35 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Error_AccountDoesNotHaveSufficientPermissions", "Your account does not have sufficient permissions"),
             Ar(Constants.Client, "Error_AccountDoesNotHaveSufficientPermissions", "حسابك على النظام لا يتمتع بالأذونات الكافية"),
 
-            En(Constants.Client, "Error_RecordNotFound", "The specified record was not found"),
-            Ar(Constants.Client, "Error_RecordNotFound", "لم يتم العثور على البيان المطلوب"),
+            En(Constants.Client, "Error_RecordNotFound", "The specified record was not found."),
+            Ar(Constants.Client, "Error_RecordNotFound", "لم يتم العثور على البيان المطلوب."),
 
-            En(Constants.Client, "Error_UnhandledServerError", "An unhandled error occurred on the server, please contact your IT department"),
-            Ar(Constants.Client, "Error_UnhandledServerError", "حدث خطأ غير معالج على على الخادم، يرجى مراجعة إدارة المعلومات"),
+            En(Constants.Client, "Error_UnhandledServerError", "An unhandled error occurred on the server, please contact your IT department."),
+            Ar(Constants.Client, "Error_UnhandledServerError", "حدث خطأ غير معالج على على الخادم، يرجى مراجعة إدارة المعلومات."),
 
-            En(Constants.Client, "Error_UnkownServerError", "An unknown error occurred on the server, please contact your IT department"),
-            Ar(Constants.Client, "Error_UnkownServerError", "حدث خطأ غير معروف على على الخادم، يرجى مراجعة إدارة المعلومات"),
+            En(Constants.Client, "Error_UnkownServerError", "An unknown error occurred on the server, please contact your IT department."),
+            Ar(Constants.Client, "Error_UnkownServerError", "حدث خطأ غير معروف على على الخادم، يرجى مراجعة إدارة المعلومات."),
 
-            En(Constants.Client, "Error_UnkownClientError", "An unknown error occurred on the client, please contact your IT department"),
-            Ar(Constants.Client, "Error_UnkownClientError", "حدث خطأ غير معروف على على النظام العميل، يرجى مراجعة إدارة المعلومات"),
+            En(Constants.Client, "Error_UnkownClientError", "An unknown error occurred on the client, please contact your IT department."),
+            Ar(Constants.Client, "Error_UnkownClientError", "حدث خطأ غير معروف على على النظام العميل، يرجى مراجعة إدارة المعلومات."),
 
-            En(Constants.Client, "Error_CannotModifyInactiveItemPleaseActivate", "An inactive item cannot be edited, please activate it first"),
-            Ar(Constants.Client, "Error_CannotModifyInactiveItemPleaseActivate", "لا يمكن تعديل بيان غير منشط، يرجى تنشيط البيان أولا"),
+            En(Constants.Client, "Error_CannotModifyInactiveItemPleaseActivate", "An inactive item cannot be edited, please activate it first."),
+            Ar(Constants.Client, "Error_CannotModifyInactiveItemPleaseActivate", "لا يمكن تعديل بيان غير منشط، يرجى تنشيط البيان أولا."),
 
-            En(Constants.Client, "Error_UnauthorizedForCompany", "Your account is no longer a member of this company"),
-            Ar(Constants.Client, "Error_UnauthorizedForCompany", "حسابك على النظام لم يعد معرفا كعضو في هذه الشركة"),
+            En(Constants.Client, "Error_UnauthorizedForCompany", "Your account is no longer a member of this company."),
+            Ar(Constants.Client, "Error_UnauthorizedForCompany", "حسابك على النظام لم يعد معرفا كعضو في هذه الشركة."),
 
             En(Constants.Client, "Error_LoadingCompanySettings", "Error loading company settings"),
             Ar(Constants.Client, "Error_LoadingCompanySettings", "حدث خطأ أثناء تحميل إعدادات الشركة"),
 
             En(Constants.Client, "Error_LoadingGlobalSettings", "Error loading system settings"),
             Ar(Constants.Client, "Error_LoadingGlobalSettings", "حدث خطأ أثناء تحميل إعدادات النظام"),
+
+            En(Constants.Client, "Error_PageNotFound", "404 Page Not Found"),
+            Ar(Constants.Client, "Error_PageNotFound", "404 الصفحة غير موجودة"),
+
+            En(Constants.Client, "Error_PageNotFoundMessage", "This link is broken and does not point to a valid page."),
+            Ar(Constants.Client, "Error_PageNotFoundMessage", "الوصلة غير سليمة ولا تعبر عن صفحة حقيقية على النظام."),
 
             En(Constants.Client, "Error_ImageExceedsTheMaximumSizeOfX", "The file you selected exceeds the maximum allowed size of {{maxSize}} MB"),
             Ar(Constants.Client, "Error_ImageExceedsTheMaximumSizeOfX", "حجم الملف الذي اخترته يتجاوز الحد الأقصى المسموح به وهو {{maxSize}} ميجابايت"),

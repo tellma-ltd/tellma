@@ -126,6 +126,12 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.searchInput.nativeElement.focus();
     }
 
+    // custom keyboard interactions only occur when the user is not pressing Alt or Ctrl
+    // for example alt-leftArrow and alt-rightArrow are universal keyboard for forward and backward browser navigation
+    if (event.altKey || event.ctrlKey) {
+      return;
+    }
+
     let which = event.which;
     if (Key[toString(which)]) {
 

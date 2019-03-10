@@ -1,0 +1,35 @@
+<div class="w-100 d-flex justify-content-center pt-2 pt-sm-5">
+  <div class="p-5 shadow-sm bg-white border text-center" style="width:800px">
+
+    <!-- Title -->
+    <h2 class="text-danger">
+      {{ title | translate }}
+    </h2>
+
+    <!-- General Error -->
+    <p class="mt-4" *ngIf="generalErrorMessage">
+      {{ generalErrorMessage | translate }}
+    </p>
+
+    <!-- Detailed Error -->
+    <div class="d-flex justify-content-center mt-4" *ngIf="detailedErrorMessage">
+      <div class="alert alert-danger">
+        <fa-icon icon="exclamation-triangle" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ detailedErrorMessage }}
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-5">
+      <button class="btn btn-primary m-1" (click)="onBack()">
+        <fa-icon icon="arrow-left" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ 'GoBack' | translate }}
+      </button>
+      <button class="btn btn-primary m-1" (click)="onHome()">
+        <fa-icon icon="home" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ 'Home' | translate }}
+      </button>
+      <button class="btn btn-primary m-1" (click)="onTryAgain()" *ngIf="showTryAgain">
+        <fa-icon icon="redo-alt" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ 'TryAgain' | translate }}
+      </button>
+    </div>
+    
+  </div>
+</div>

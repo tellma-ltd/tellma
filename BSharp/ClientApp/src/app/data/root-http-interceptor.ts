@@ -223,7 +223,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
             this.storage.removeItem(versionStorageKey(USER_SETTINGS_PREFIX, tenantId));
 
             // (3) Take the user to unauthorized screen
-            this.router.navigate(['unauthorized']);
+            this.router.navigate(['root', 'error', 'unauthorized']);
           }
         }
 

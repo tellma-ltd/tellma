@@ -42,6 +42,6 @@
     "!/privacy",
     "!/terms-of-service",
     "!/set-culture",
-    "!/error"
+    "!/server-error"
   ]
 }

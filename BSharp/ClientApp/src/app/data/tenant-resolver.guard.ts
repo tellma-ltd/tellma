@@ -205,10 +205,10 @@ export class TenantResolverGuard implements CanActivate {
               this.progress.completeAsyncOperation(key);
 
               if (err.status === 403) {
-                this.router.navigate(['unauthorized']);
+                this.router.navigate(['root', 'error', 'unauthorized'], { queryParams: { retryUrl: state.url } });
               } else {
-                this.workspace.ws.errorLoadingCompanyMessage = err.error;
-                this.router.navigate(['error-loading-company'], { queryParams: { retryUrl: state.url } });
+                this.workspace.ws.errorMessage = err.error;
+                this.router.navigate(['root', 'error', 'loading-company-settings'], { queryParams: { retryUrl: state.url } });
               }
 
               // Prevent navigation

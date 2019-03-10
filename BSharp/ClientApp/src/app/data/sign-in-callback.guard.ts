@@ -16,7 +16,7 @@ export class SignInCallbackGuard implements CanActivate {
 
   canActivate(): Observable<boolean> {
 
-    const errorUrl = '/welcome?error=422';
+    const errorUrl = '/root/welcome?error=422';
     return this.auth.parseUrlToken().pipe(
       map(_ => {
         const isAuthenticated = this.auth.isAuthenticated;

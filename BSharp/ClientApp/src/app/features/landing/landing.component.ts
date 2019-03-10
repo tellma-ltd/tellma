@@ -15,7 +15,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   public error: string = null;
 
   constructor(private auth: AuthService, private route: ActivatedRoute, private router: Router,
-    private workspace: WorkspaceService, private progress: ProgressOverlayService, @Inject(DOCUMENT) private document: Document) { }
+    private workspace: WorkspaceService, private progress: ProgressOverlayService) { }
 
   ngOnInit() {
 
@@ -33,16 +33,9 @@ export class LandingComponent implements OnInit, OnDestroy {
           break;
       }
     });
-
-
-    // this adds a cool background to the main menu, unaffected by scrolling
-    this.document.body.classList.add('b-banner');
   }
 
   ngOnDestroy() {
-
-    // this adds a cool background to the main menu, unaffected by scrolling
-    this.document.body.classList.remove('b-banner');
   }
 
   get showError(): boolean {

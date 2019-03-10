@@ -103,12 +103,17 @@ const routes: Routes = [
         component: SettingsComponent,
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
-
       // Misc
       { path: 'main-menu', component: MainMenuComponent },
       { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
       { path: '**', component: ApplicationPageNotFoundComponent },
     ]
+  },
+  {
+    // Otherwise it gets stuck in a blank page
+    path: '',
+    redirectTo: '/root/welcome',
+    pathMatch: 'full'
   }
 ];
 

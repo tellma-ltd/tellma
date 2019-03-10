@@ -1,15 +1,13 @@
 import { NgModule, Component } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
-import { PageNotFoundComponent } from './features/page-not-found/page-not-found.component';
 import { CompaniesComponent } from './features/companies/companies.component';
-import { UnauthorizedForCompanyComponent } from './features/unauthorized-for-company/unauthorized-for-company.component';
-import { ErrorLoadingCompanyComponent } from './features/error-loading-company/error-loading-company.component';
 import { AuthGuard } from './data/auth.guard';
 import { SignInCallbackGuard } from './data/sign-in-callback.guard';
 import { BaseAddressGuard } from './data/base-address.guard';
-import { ErrorLoadingSettingsComponent } from './features/error-loading-settings/error-loading-settings.component';
 import { GlobalResolverGuard } from './data/global-resolver.guard';
 import { RootShellComponent } from './features/root-shell/root-shell.component';
+import { LandingComponent } from './features/landing/landing.component';
+import { ErrorComponent } from './features/error/error.component';
 
 
 /*
@@ -26,7 +24,7 @@ import { RootShellComponent } from './features/root-shell/root-shell.component';
   the user to the application module, otherwise to the landing module/welcome screen
 */
 
-@Component({ template: '<p></p>' }) export class PlaceholderComponent { }
+@Component({ template: '<div></div>' }) export class PlaceholderComponent { }
 
 /*
   the root routes for the angular router
@@ -39,13 +37,27 @@ const routes: Routes = [
     children: [
       {
         path: 'welcome',
-        loadChildren: './features/landing.module#LandingModule'
+        component: LandingComponent,
       },
       {
         path: 'companies',
         component: CompaniesComponent,
         canActivate: [AuthGuard]
       },
+      {
+        path: 'error/:error',
+        component: ErrorComponent
+      },
+      {
+        path: '',
+        redirectTo: 'welcome',
+        pathMatch: 'full'
+      },
+      {
+        path: '**',
+        redirectTo: 'error/page-not-found',
+        // component: PageNotFoundComponent
+      }
     ]
   },
 
@@ -61,24 +73,29 @@ const routes: Routes = [
     loadChildren: './features/admin.module#AdminModule',
     data: { preload: false }
   },
-  {
-    path: 'identity',
-    loadChildren: './features/identity.module#IdentityModule',
-    data: { preload: true }
-  },
+  // {
+  //   path: 'identity',
+  //   loadChildren: './features/identity.module#IdentityModule',
+  //   data: { preload: true }
+  // },
 
-  { path: 'unauthorized', component: UnauthorizedForCompanyComponent, canActivate: [GlobalResolverGuard] },
-  { path: 'error-loading-company', component: ErrorLoadingCompanyComponent },
-  { path: 'error-loading-settings', component: ErrorLoadingSettingsComponent },
+  // global error screen
+  { path: 'error/:error', component: ErrorComponent },
+
+  // those paths always end in a redirect
   { path: 'sign-in-callback', component: PlaceholderComponent, canActivate: [SignInCallbackGuard] },
   { path: '', component: PlaceholderComponent, canActivate: [BaseAddressGuard] },
 
-  { path: '**', component: PageNotFoundComponent }
+  // page not found
+  {
+    path: '**',
+    redirectTo: 'error/page-not-found',
+    // component: PageNotFoundComponent
+  }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes,
-    { enableTracing: false, preloadingStrategy: PreloadAllModules })], // TODO preload only select modules
+  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
   exports: [RouterModule]
 })
 export class RootRoutingModule { }

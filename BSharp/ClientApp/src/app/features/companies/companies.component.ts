@@ -39,7 +39,7 @@ export class CompaniesComponent implements OnInit, OnDestroy {
   @ViewChild('input')
   input: ElementRef;
 
-  constructor(private auth: AuthService, private api: ApiService, private workspace: WorkspaceService,
+  constructor(private api: ApiService, private workspace: WorkspaceService,
     @Inject(DOCUMENT) private document: Document) { }
 
   ngOnInit() {
@@ -58,9 +58,6 @@ export class CompaniesComponent implements OnInit, OnDestroy {
       this.resetPage();
       this._searchTerm = this.input.nativeElement.value;
     });
-
-    // this adds a cool background to the main menu, unaffected by scrolling
-    this.document.body.classList.add('b-banner');
   }
 
   private resetPage() {
@@ -98,9 +95,6 @@ export class CompaniesComponent implements OnInit, OnDestroy {
     if (!!this.userInputSubscription) {
       this.userInputSubscription.unsubscribe();
     }
-
-    // this adds a cool background to the main menu, unaffected by scrolling
-    this.document.body.classList.remove('b-banner');
   }
 
   private get searchInputIsFocused(): boolean {

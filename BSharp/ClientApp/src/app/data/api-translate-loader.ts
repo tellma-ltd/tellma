@@ -21,7 +21,7 @@ export class ApiTranslateLoader implements TranslateLoader {
         const translations = JSON.parse(translationsString);
         return of(translations);
       } catch (err) {
-        return of({});
+        return throwError(err);
       }
     } else {
 

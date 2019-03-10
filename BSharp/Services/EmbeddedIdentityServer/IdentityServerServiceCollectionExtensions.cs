@@ -83,7 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 opt.UserInteraction.LoginUrl = "/identity/sign-in";
                 opt.UserInteraction.LogoutUrl = "/identity/sign-out";
-                opt.UserInteraction.ErrorUrl = "/error";
+                opt.UserInteraction.ErrorUrl = "/server-error";
             })
                 .AddInMemoryIdentityResources(GetIdentityResources())
                 .AddInMemoryApiResources(GetApiResources())

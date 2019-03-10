@@ -1,12 +1,24 @@
 <div class="container py-4 px-3 px-sm-5">
   <div class="row text-center">
-    <div class="col-12  my-5">
+
+    <!-- Error Message -->
+    <div class="col-12 d-flex justify-content-center" *ngIf="showError">
+      <div class="border mt-4 p-2 px-3 alert-danger w-auto">
+        <fa-icon icon="exclamation-triangle"></fa-icon>&nbsp;&nbsp; {{ error | translate }}
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="col-12 my-5">
       <h1 class="text-center display-4 m-02">
         {{ 'LandingPageTitle0' | translate: { appName: ( 'AppName' | translate ) } }}
       </h1>
       <span class="text-muted">{{ 'LandingPageSubtitle' | translate }}</span>
     </div>
-    <div class="col-12 d-flex d-lg-none2 justify-content-center py-4">
+
+
+    <!-- Action Button -->
+    <div class="col-12 d-flex justify-content-center py-4">
       <button class="btn btn-outline-primary" (click)="onSignIn()" *ngIf="showSignIn">
         <fa-icon icon="sign-in-alt" [flip]="flip"></fa-icon>&nbsp;&nbsp;{{ 'SignIn' | translate }}
       </button>
@@ -15,18 +27,14 @@
           icon="chevron-right" [flip]="flip"></fa-icon></button>
     </div>
 
-    <div class="mt-4" *ngIf="showError">
-      <b-error-message> {{ error | translate }} </b-error-message>
-    </div>
+    <!-- Promotion -->
     <div class="col-12 col-lg-4">
-      <div
-        class="col-12 col-md-63 p-2 text-white2 bg-dark2 justify-content-center align-items-center d-flex b-text-primary"
-        style="min-height: 210px">
+      <div class="p-2 justify-content-center align-items-center d-flex b-text-primary" style="min-height: 210px">
         <fa-icon icon="cogs" size="7x"></fa-icon>
       </div>
-      <div class="col-12 col-md-63 p-4 justify-content-center align-items-center d-flex">
+      <div class="p-4 justify-content-center align-items-center d-flex">
         <div>
-          <h3 class="text-muted2">Efficient Business</h3>
+          <h3 class="">Efficient Business</h3>
           <span>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin commodo pulvinar nisl a facilisis. Sed
             finibus
@@ -37,15 +45,13 @@
     </div>
 
     <div class="col-12 col-lg-4">
-      <div
-        class="col-12 col-md-63 p-2 text-white2 bg-dark2 justify-content-center align-items-center d-flex b-text-primary"
-        style="min-height: 210px">
+      <div class="p-2 justify-content-center align-items-center d-flex b-text-primary" style="min-height: 210px">
         <fa-icon icon="cube" size="7x"></fa-icon>
       </div>
 
-      <div class="col-12 col-md-63 p-4 justify-content-center align-items-center d-flex">
+      <div class="p-4 justify-content-center align-items-center d-flex">
         <div>
-          <h3 class="text-muted2">Wholistic Vision</h3>
+          <h3 class="">Wholistic Vision</h3>
           <span>
             Etiam porta a risus in varius. Vestibulum sapien nisl, feugiat ut laoreet in, vestibulum quis massa.
             Suspendisse tincidunt eros in nunc interdum, et maximus nunc efficitur. Donec id dui vel ipsum mollis
@@ -56,14 +62,12 @@
     </div>
 
     <div class="col-12 col-lg-4">
-      <div
-        class="col-12 col-md-63 p-2 text-white2 bg-dark2 justify-content-center align-items-center d-flex b-text-primary"
-        style="min-height: 210px">
+      <div class="p-2 justify-content-center align-items-center d-flex b-text-primary" style="min-height: 210px">
         <fa-icon icon="hands" size="7x"></fa-icon>
       </div>
-      <div class="col-12 col-md-63 p-4 justify-content-center align-items-center d-flex">
+      <div class="p-4 justify-content-center align-items-center d-flex">
         <div>
-          <h3 class="text-muted2">Data Security</h3>
+          <h3 class="">Data Security</h3>
           <span>
             Donec id dui vel ipsum mollis
             scelerisque a ut velit. Curabitur eu hendrerit neque. Aliquam mollis tempor fringilla. Vestibulum vitae

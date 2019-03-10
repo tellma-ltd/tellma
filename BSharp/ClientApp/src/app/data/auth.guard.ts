@@ -77,6 +77,6 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   }
 
   goToLandingPage(): Promise<boolean> {
-    return this.router.navigateByUrl('/welcome');
+    return this.router.navigateByUrl('/root/welcome');
   }
 }
