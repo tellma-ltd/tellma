@@ -48,9 +48,9 @@
         <ol class="nav navbar-nav p-0 px-4 px-sm-0">
           <li class="nav-item" ngbDropdown [placement]="languageDropdownPlacement" bDropdownAppendToBody
             *ngIf="activeLanguages.length > 1">
-            <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
+            <button class="h-100 w-100 b-navbar-button b-no-arrow" ngbDropdownToggle>
               <span class="px-1">
-                  <span>{{ currentLanguageDisplay }}</span>
+                  {{ currentLanguageDisplay }}
               </span>
             </button>
             <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action">
@@ -64,7 +64,7 @@
             </div>
           </li>
           <li class="nav-item" *ngIf="!isAuthenticated">
-            <button class="h-100 w-100 b-navbar-button" routerLink="/root/companies">
+            <button class="h-100 w-100 b-navbar-button" (click)="onSignIn()">
               <span class="px-1">
                 {{ 'SignIn' | translate }}
               </span>

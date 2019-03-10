@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { AuthService } from '~/app/data/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DOCUMENT } from '@angular/platform-browser';
+import { WorkspaceService } from '~/app/data/workspace.service';
+import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 
 @Component({
   selector: 'b-landing',
@@ -13,7 +15,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   public error: string = null;
 
   constructor(private auth: AuthService, private route: ActivatedRoute, private router: Router,
-    @Inject(DOCUMENT) private document: Document) { }
+    private workspace: WorkspaceService, private progress: ProgressOverlayService, @Inject(DOCUMENT) private document: Document) { }
 
   ngOnInit() {
 
@@ -52,6 +54,10 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   public onSignIn() {
+    // show rotator
+    this.progress.startAsyncOperation('sign_in', 'RedirectingToSignIn');
+
+    // start the OIDC dance with identity server
     this.auth.initImplicitFlow('/root/companies');
   }
 
@@ -59,11 +65,19 @@ export class LandingComponent implements OnInit, OnDestroy {
     return !this.auth.isAuthenticated;
   }
 
-  public onBackToApp() {
+  public onGoToApp() {
     this.router.navigate(['/']);
   }
 
-  get showBackToApp(): boolean {
+  get showGoToApp(): boolean {
     return this.auth.isAuthenticated;
+  }
+
+  get flip(): string {
+    return this.workspace.ws.isRtl ? 'horizontal' : null;
+  }
+
+  get year(): number {
+    return new Date().getFullYear();
   }
 }

@@ -83,8 +83,19 @@ export class RootShellComponent implements OnInit {
   }
 
   public onSignOut(): void {
+    // show rotator
     this.progress.startAsyncOperation('sign_out', 'RedirectingToSignOut');
+
+    // clean local state and send the user to identity server
     this.auth.signOut();
+  }
+
+  public onSignIn(): void {
+    // show rotator
+    this.progress.startAsyncOperation('sign_in', 'RedirectingToSignIn');
+
+    // start the OIDC dance with identity server
+    this.auth.initImplicitFlow('/root/companies');
   }
 
   public get flip() {

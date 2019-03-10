@@ -952,13 +952,17 @@ namespace BSharp.Data.Model
             En(Constants.Server, "GoTo0", "Go to {0}"),
             Ar(Constants.Server, "GoTo0", "ذهاب إلى {0}"),
 
-            En(Constants.Client, "BackToApp", "Go to {{appName}}"),
-            Ar(Constants.Client, "BackToApp", "ذهاب إلى {{appName}}"),
+            En(Constants.Client, "GoToApp", "Go to {{appName}}"),
+            Ar(Constants.Client, "GoToApp", "ذهاب إلى {{appName}}"),
 
-            En(Constants.Client, "GetMoreWithApp", "Get More with {{appName}}"),
-            Ar(Constants.Client, "GetMoreWithApp", "حقق الصدارة مع {{appName}}"),
-            
+            En(Constants.Client, "LandingPageTitle0", "Get more with {{appName}}"),
+            Ar(Constants.Client, "LandingPageTitle0", "حقق الصدارة مع {{appName}}"),
 
+            En(Constants.Client, "LandingPageSubtitle", "The next generation ERP software for Enterprises"),
+            Ar(Constants.Client, "LandingPageSubtitle", "المستقبل في عالم الأنظمة المالية والإدارية الذكية"),
+
+            En(Constants.Client, "CopyrightNoticeClient", "Copyright © {{year}} Banan IT, Ltd. All rights reserved."),
+            Ar(Constants.Client, "CopyrightNoticeClient", "بنان لتقنية المعلومات © {{year}} جميع الحقوق محفوظة"),
 
 
 

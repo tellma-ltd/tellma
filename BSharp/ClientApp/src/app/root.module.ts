@@ -25,13 +25,14 @@ import { environment } from '../environments/environment';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons';
 import {
-  faSpinner, faArrowRight, faArrowLeft, faChevronRight, faSyncAlt, faSearch, faHardHat, faHands, faCube
+  faSpinner, faArrowRight, faArrowLeft, faChevronRight, faSyncAlt, faSearch, faHands, faCube, faCogs, faHardHat, faSignInAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { ProgressOverlayService } from './data/progress-overlay.service';
 import { RootShellComponent } from './features/root-shell/root-shell.component';
 import { NgbCollapseModule, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
-library.add(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronRight, faSyncAlt, faSearch, faCube, faHardHat, faHands);
+library.add(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronRight,
+   faSyncAlt, faSearch, faCube, faCogs, faHands, faHardHat, faSignInAlt);
 
 @NgModule({
   declarations: [
