@@ -33,7 +33,7 @@ namespace BSharp.Controllers.DTO
         public bool Desc { get; set; } = false;
 
         /// <summary>
-        /// A search string that is interpreted in a customized way by every entity type
+        /// A search string that is interpreted in a customized way by every controller
         /// </summary>
         public string Search { get; set; }
 

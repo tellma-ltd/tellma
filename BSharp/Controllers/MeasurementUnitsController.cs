@@ -791,7 +791,7 @@ SET NOCOUNT ON;
                 SqlDbType = SqlDbType.Structured
             };
 
-            string saveSql = $@"
+            string sql = $@"
 	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
@@ -802,7 +802,7 @@ SET NOCOUNT ON;
     FROM @Entities E
 ";
             var countBeforeFilter = newItems.Count();
-            var countAfterFilter = await _db.MeasurementUnits.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
+            var countAfterFilter = await _db.MeasurementUnits.FromSql(sql, entitiesTvp).Where(lambda).CountAsync();
 
             if (countBeforeFilter > countAfterFilter)
             {

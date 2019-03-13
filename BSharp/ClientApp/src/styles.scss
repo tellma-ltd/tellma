@@ -143,9 +143,9 @@ ngb-datepicker {
   }
 
   // otherwise the browser adds a default right padding of 40px
-  // .nav {
-  //   padding-right: 0;
-  // }
+  .nav.nav-tabs {
+    padding-right: 0;
+  }
 }
 
 .ngb-dp-weekday {

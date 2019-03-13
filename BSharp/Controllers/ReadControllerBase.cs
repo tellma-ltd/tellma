@@ -168,8 +168,6 @@ namespace BSharp.Controllers
         /// </summary>
         protected virtual async Task<GetResponse<TDto>> GetImplAsync(GetArguments args)
         {
-            // TODO Authorize for GET
-
             // Get a readonly query
             IQueryable<TModel> query = GetBaseQuery().AsNoTracking();
 
@@ -751,6 +749,11 @@ namespace BSharp.Controllers
             return query;
         }
 
+        /// <summary>
+        /// Applies the default order which is over "Id" property descending
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
         protected virtual IQueryable<TModel> DefaultOrder(IQueryable<TModel> query)
         {
             var id = typeof(TModel).GetProperty("Id");
