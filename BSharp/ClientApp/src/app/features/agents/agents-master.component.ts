@@ -59,8 +59,6 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   public birthDateTimeName: string;
   public filterDefinition: any;
   public expand = '';
-  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
-  };
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute, private router: Router) {
     super();
@@ -109,7 +107,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.agentsApi.activate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+      tap(res => addToWorkspace(res, this.workspace))
     );
 
     // The master template handles any errors
@@ -118,7 +116,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.agentsApi.deactivate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+      tap(res => addToWorkspace(res, this.workspace))
     );
 
     // The master template handles any errors

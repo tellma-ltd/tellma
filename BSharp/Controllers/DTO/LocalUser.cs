@@ -3,19 +3,20 @@ using BSharp.Services.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using S = System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.Controllers.DTO
 {
-    [CollectionName("LocalUsers")]
+    [StrongDto("LocalUsers")]
     public class LocalUserForSave<TRoleMembership> : DtoForSaveKeyBase<int?>, IMultilingualName
     {
+        [BasicField]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         public string Name { get; set; }
 
+        [BasicField]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
         public string Name2 { get; set; }
@@ -26,24 +27,27 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "User_Email")]
         public string Email { get; set; }
 
-        [Display(Name = "Permissions")]
-        public List<TRoleMembership> Roles { get; set; }
+        [Display(Name = "User_Roles")]
+        public List<TRoleMembership> Roles { get; set; } = new List<TRoleMembership>();
 
+        [ForeignKey]
         [Display(Name = "User_Agent")]
         public int? AgentId { get; set; }
 
+        [S.NotMapped]
         [Display(Name = "Image")]
         public byte[] Image { get; set; }
     }
 
     public class LocalUserForSave : LocalUserForSave<RoleMembershipForSave> { }
 
-    public class LocalUser : LocalUserForSave<RoleMembership>, IAuditedDto
+    public class LocalUser<TRoleMembership> : LocalUserForSave<TRoleMembership>
     {
         public string ExternalId { get; set; }
 
         public string ImageId { get; set; }
 
+        [BasicField]
         [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }
 
@@ -53,15 +57,35 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 
+        [ForeignKey]
         [Display(Name = "CreatedBy")]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset? ModifiedAt { get; set; }
 
+        [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
     }
+
+
+    public class LocalUser : LocalUser<RoleMembership> { }
+
+    public class LocalUserForQuery : LocalUser<RoleMembershipForQuery>, IAuditedDto
+    {
+        [NavigationProperty(ForeignKey = nameof(AgentId))]
+        public AgentForQuery Agent { get; set; }
+
+        [NavigationProperty(ForeignKey = nameof(CreatedById))]
+        public LocalUserForQuery CreatedBy { get; set; }
+
+        [NavigationProperty(ForeignKey = nameof(ModifiedById))]
+        public LocalUserForQuery ModifiedBy { get; set; }
+    }
+
+
+    //////////////////// For Client
 
     /// <summary>
     /// Represents all user settings that a user can save: TODO

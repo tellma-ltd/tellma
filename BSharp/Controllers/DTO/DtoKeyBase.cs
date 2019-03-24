@@ -1,5 +1,7 @@
-﻿using System;
+﻿using BSharp.Controllers.Misc;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,9 +15,7 @@ namespace BSharp.Controllers.DTO
         /// it is important to have a single Id property for tracking HTTP resources as it simplifies
         /// so much shared logic for tracking resources and caching them
         /// </summary>
+        [IgnoreInMetadata]
         public TKey Id { get; set; }
-
-        //[NotMapped]
-        //public EntityMetadata EntityMetadata { get; set; } = new EntityMetadata();
     }
 }

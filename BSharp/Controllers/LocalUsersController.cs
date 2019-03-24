@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.BlobStorage;
@@ -29,14 +28,14 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using M = BSharp.Data.DbModel;
+using M = BSharp.Data.Model;
 
 
 namespace BSharp.Controllers
 {
     [Route("api/local-users")]
     [LoadTenantInfo]
-    public class LocalUsersController : CrudControllerBase<M.LocalUser, LocalUser, LocalUserForSave, int?>
+    public class LocalUsersController : CrudControllerBase<LocalUserForSave, LocalUser, LocalUserForQuery, int?>
     {
         private readonly ApplicationContext _db;
         private readonly AdminContext _adminDb;
@@ -47,7 +46,6 @@ namespace BSharp.Controllers
         private readonly EmailTemplatesProvider _emailTemplates;
         private readonly GlobalConfiguration _config;
         private readonly IStringLocalizer<LocalUsersController> _localizer;
-        private readonly IMapper _mapper;
         private readonly ITenantUserInfoAccessor _tenantInfo;
         private readonly IBlobService _blobService;
         private readonly UserManager<M.User> _userManager;
@@ -62,10 +60,9 @@ namespace BSharp.Controllers
             IEmailSender emailSender,
             EmailTemplatesProvider emailTemplates,
             IStringLocalizer<LocalUsersController> localizer,
-            IMapper mapper,
             ITenantIdProvider tenantIdProvider,
             ITenantUserInfoAccessor tenantInfo,
-            IBlobService blobService) : base(logger, localizer, mapper)
+            IBlobService blobService) : base(logger, localizer, serviceProvider)
         {
             _db = db;
             _adminDb = adminDb;
@@ -76,7 +73,6 @@ namespace BSharp.Controllers
             _emailTemplates = emailTemplates;
             _config = options.Value;
             _localizer = localizer;
-            _mapper = mapper;
             _tenantInfo = tenantInfo;
             _blobService = blobService;
 
@@ -88,7 +84,7 @@ namespace BSharp.Controllers
         [HttpGet("{id}/image")]
         public async Task<ActionResult> GetImage(int id)
         {
-            return await CallAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 // Retrieve the user whose image we're about to return (This also checks the read permissions of the caller)
                 var dbUserResponse = await GetByIdImplAsync(id, new GetByIdArguments { Expand = null });
@@ -108,21 +104,21 @@ namespace BSharp.Controllers
                 {
                     return NotFound("This user does not have a picture");
                 }
-            });
+            }, _logger);
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<LocalUser>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
-            return await CallAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
-            );
+            , _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<LocalUser>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
-            return await CallAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
                 {
                     var currentUserId = _tenantInfo.GetCurrentInfo().UserId.Value;
                     if (ids.Any(id => id == currentUserId))
@@ -132,13 +128,13 @@ namespace BSharp.Controllers
 
                     return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
                 }
-            );
+            , _logger);
         }
 
         [HttpGet("client")]
         public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> UserSettingsForClient()
         {
-            try
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 int userId = _tenantInfo.UserId();
                 var user = await _db.LocalUsers.FirstOrDefaultAsync(e => e.Id == userId);
@@ -159,30 +155,25 @@ namespace BSharp.Controllers
                 };
 
                 return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
+            }, _logger);
         }
 
         [HttpPut("invite")]
         public async Task<ActionResult> ResendInvitationEmail(int id)
         {
-            return await CallAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 await CheckActionPermissions(new List<int?> { id });
 
-                var localUser = await _db.LocalUsers.FirstOrDefaultAsync(e => e.Id == id);
-                if(localUser == null)
+                var localUser = await _db.VW_LocalUsers.FirstOrDefaultAsync(e => e.Id == id);
+                if (localUser == null)
                 {
                     return NotFound(id);
                 }
 
                 string toEmail = localUser.Email;
                 var identityUser = await _userManager.FindByEmailAsync(toEmail);
-                if(identityUser == null)
+                if (identityUser == null)
                 {
                     return NotFound(toEmail);
                 }
@@ -190,9 +181,9 @@ namespace BSharp.Controllers
                 var (subject, htmlMessage) = await MakeInvitationEmailAsync(identityUser, localUser);
                 await _emailSender.SendEmailAsync(toEmail, subject, htmlMessage);
                 return Ok();
-            });
+            }, _logger);
         }
-        
+
         private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(M.User recipient, IMultilingualName recipientName)
         {
             // Load the info
@@ -234,7 +225,7 @@ namespace BSharp.Controllers
 
             var isActiveParam = new SqlParameter("@IsActive", isActive);
 
-            DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
+            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: false);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -279,7 +270,7 @@ namespace BSharp.Controllers
                     List<string> emails = await _db.Strings.FromSql(sql, idsTvp, isActiveParam).Select(e => e.Value).ToListAsync();
 
                     // Prepare the TVP of emails to update from the manager
-                    DataTable emailsTable = DataTable(emails.Select(e => new { Code = e }), addIndex: false);
+                    DataTable emailsTable = ControllerUtilities.DataTable(emails.Select(e => new { Code = e }), addIndex: false);
                     var emailsTvp = new SqlParameter("Emails", emailsTable)
                     {
                         TypeName = $"dbo.CodeList",
@@ -338,12 +329,15 @@ namespace BSharp.Controllers
             else
             {
                 // Load the entities using their Ids
-                var affectedDbEntitiesQ = _db.LocalUsers.Where(e => ids.Contains(e.Id)); // _db.LocalUsers.FromSql("SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var affectedDbEntitiesQ = _db.VW_LocalUsers.Where(e => ids.Contains(e.Id.Value)); // _db.VW_LocalUsers.FromSql("SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
                 var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
                 var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-                var affectedEntities = _mapper.Map<List<LocalUser>>(affectedDbEntities);
+
+                // Add the metadata
+                ApplySelectAndAddMetadata(affectedDbEntities, expand, null);
 
                 // sort the entities the way their Ids came, as a good practice
+                var affectedEntities = Mapper.Map<List<LocalUser>>(affectedDbEntities);
                 LocalUser[] sortedAffectedEntities = new LocalUser[ids.Count];
                 Dictionary<int, LocalUser> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
                 for (int i = 0; i < ids.Count; i++)
@@ -358,11 +352,18 @@ namespace BSharp.Controllers
                     sortedAffectedEntities[i] = entity;
                 }
 
+                // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+                await ApplyReadPermissionsMask(affectedDbEntities, affectedDbEntitiesExpandedQ, await UserPermissions(PermissionLevel.Read), GetDefaultMask());
+
+                // Flatten related entities and map each to its respective DTO 
+                var relatedEntities = FlattenRelatedEntitiesAndTrim(affectedDbEntities, expand);
+
                 // Prepare a proper response
                 var response = new EntitiesResponse<LocalUser>
                 {
                     Data = sortedAffectedEntities,
-                    CollectionName = GetCollectionName(typeof(LocalUser))
+                    CollectionName = GetCollectionName(typeof(LocalUser)),
+                    RelatedEntities = relatedEntities
                 };
 
                 // Commit and return
@@ -370,9 +371,26 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
         {
-            return GetPermissions(_db.AbstractPermissions, level, "local-users");
+            var result = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "local-users");
+
+            // This gives every user the ability to view their Local-User object
+            if(level == PermissionLevel.Read)
+            {
+                var readMyUser = new AbstractPermission
+                {
+                    Level = "Read",
+                    Criteria = "Id eq me",
+                    ViewId = "local-users"
+                };
+
+                return Enumerable.Repeat(readMyUser, 1).Union(result);
+            }
+            else
+            {
+                return result;
+            }
         }
 
         protected override async Task<IDbContextTransaction> BeginSaveTransaction()
@@ -380,14 +398,9 @@ namespace BSharp.Controllers
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
-        protected override IQueryable<M.LocalUser> GetBaseQuery() => _db.LocalUsers;
+        protected override IQueryable<LocalUserForQuery> GetBaseQuery() => _db.VW_LocalUsers;
 
-        protected override IQueryable<M.LocalUser> SingletonQuery(IQueryable<M.LocalUser> query, int? id)
-        {
-            return query.Where(e => e.Id == id);
-        }
-
-        protected override IQueryable<M.LocalUser> Search(IQueryable<M.LocalUser> query, string search)
+        protected override IQueryable<LocalUserForQuery> Search(IQueryable<LocalUserForQuery> query, string search, IEnumerable<AbstractPermission> permissions)
         {
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -397,11 +410,11 @@ namespace BSharp.Controllers
             return query;
         }
 
-        protected override IQueryable<M.LocalUser> IncludeInactive(IQueryable<M.LocalUser> query, bool inactive)
+        protected override IQueryable<LocalUserForQuery> IncludeInactive(IQueryable<LocalUserForQuery> query, bool inactive)
         {
             if (!inactive)
             {
-                query = query.Where(e => e.IsActive);
+                query = query.Where(e => e.IsActive == true);
             }
 
             return query;
@@ -487,7 +500,7 @@ namespace BSharp.Controllers
             var LocalUsersTvp = new SqlParameter("LocalUsers", LocalUsersTable) { TypeName = $"dbo.{nameof(LocalUserForSave)}List", SqlDbType = SqlDbType.Structured };
 
             var rolesHeaderIndices = indices.Keys.Select(LocalUser => (LocalUser.Roles, indices[LocalUser]));
-            DataTable rolesTable = DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
+            DataTable rolesTable = ControllerUtilities.DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
             var rolesTvp = new SqlParameter("Roles", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
 
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
@@ -600,7 +613,7 @@ namespace BSharp.Controllers
             return table;
         }
 
-        protected override async Task<List<M.LocalUser>> PersistAsync(List<LocalUserForSave> entities, SaveArguments args)
+        protected override async Task<(List<LocalUserForQuery>, IQueryable<LocalUserForQuery>)> PersistAsync(List<LocalUserForSave> entities, SaveArguments args)
         {
             // Make all the emails small case
             entities.ForEach(e => e.Email = e.Email.ToLower());
@@ -615,7 +628,7 @@ namespace BSharp.Controllers
                     // Query the manager DB for matching emails, here I use the CodeList user-defined table type 
                     // of the manager DB, since I only want to pass a list of strings, no need to defined a new type
                     var insertedEmails = insertedEntities.Select(e => new { Code = e.Email });
-                    var emailsTable = DataTable(insertedEmails);
+                    var emailsTable = ControllerUtilities.DataTable(insertedEmails);
                     var emailsTvp = new SqlParameter("Emails", emailsTable)
                     {
                         TypeName = $"dbo.MCodeList",
@@ -663,7 +676,7 @@ namespace BSharp.Controllers
 
                     // Filter out roles that haven't changed for performance
                     var rolesHeaderIndices = localUsersIndices.Keys.Select(localUser => (localUser.Roles, HeaderIndex: localUsersIndices[localUser]));
-                    DataTable rolesTable = DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
+                    DataTable rolesTable = ControllerUtilities.DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
                     var rolesTvp = new SqlParameter("RoleMemberships", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
 
                     string saveSql = $@"
@@ -738,7 +751,7 @@ namespace BSharp.Controllers
                     {
                         // IF no returned items are expected, simply execute a non-Query and return an empty list;
                         await _db.Database.ExecuteSqlCommandAsync(saveSql, localUsersTvp, rolesTvp);
-                        return new List<M.LocalUser>();
+                        return (new List<LocalUserForQuery>(), null);
                     }
                     else
                     {
@@ -748,19 +761,18 @@ namespace BSharp.Controllers
                         // Retrieve the map from Indexes to Ids
                         var indexedIds = await _db.Saving.FromSql(saveSql, localUsersTvp, rolesTvp).ToListAsync();
                         var idsString = string.Join(",", indexedIds.Select(e => e.Id));
-                        var q = _db.LocalUsers.FromSql($"SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT CONVERT(INT, VALUE) AS Id FROM STRING_SPLIT({idsString}, ','))");
+                        var q = _db.VW_LocalUsers.FromSql($"SELECT * FROM [dbo].[VW_LocalUsers] WHERE Id IN (SELECT CONVERT(INT, VALUE) AS Id FROM STRING_SPLIT({idsString}, ','))");
                         q = Expand(q, args.Expand); // includes
                         var savedEntities = await q.AsNoTracking().ToListAsync();
 
                         // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
                         Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                        var sortedSavedEntities = new M.LocalUser[savedEntities.Count];
+                        var sortedSavedEntities = new LocalUserForQuery[savedEntities.Count];
                         foreach (var item in savedEntities)
                         {
-                            int index = indices[item.Id];
+                            int index = indices[item.Id.Value];
                             sortedSavedEntities[index] = item;
                         }
-
 
                         // The code inside here is not optimized for bulk, we assume for now
                         // that users will be entering images one at a time
@@ -778,7 +790,7 @@ namespace BSharp.Controllers
                                 // Get the Id of the user
                                 int index = entitiesDic[user];
                                 var savedEntity = sortedSavedEntities[entitiesDic[user]];
-                                int id = savedEntity.Id;
+                                int id = savedEntity.Id.Value;
                                 if (user.Image.Length == 0)
                                 {
                                     // We simply NULL image Id
@@ -913,12 +925,12 @@ namespace BSharp.Controllers
                         // Return the saved entities if requested
                         if (!returnEntities)
                         {
-                            return new List<M.LocalUser>();
+                            return (new List<LocalUserForQuery>(), null);
                         }
                         else
                         {
                             // Return the sorted collection
-                            return sortedSavedEntities.ToList();
+                            return (sortedSavedEntities.ToList(), q);
                         }
                     }
                 }
@@ -949,7 +961,7 @@ namespace BSharp.Controllers
             // guarantee that deletes to both the shard and the manager will run one without the other
 
             // Prepare a list of Ids to delete
-            DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
+            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(e => new { Id = e }), addIndex: false);
             var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -981,7 +993,7 @@ namespace BSharp.Controllers
 ", idsTvp).Select(e => e.Value).ToListAsync();
 
                     // Prepare the TVP of emails to delete from the manager
-                    DataTable emailsTable = DataTable(deletedEmails.Select(e => new { Code = e }), addIndex: false);
+                    DataTable emailsTable = ControllerUtilities.DataTable(deletedEmails.Select(e => new { Code = e }), addIndex: false);
                     var emailsTvp = new SqlParameter("Emails", emailsTable)
                     {
                         TypeName = $"dbo.CodeList",
@@ -1042,7 +1054,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override async Task CheckPermissionsForNew(IEnumerable<LocalUserForSave> newItems, Expression<Func<M.LocalUser, bool>> lambda)
+        protected override async Task CheckPermissionsForNew(IEnumerable<LocalUserForSave> newItems, Expression<Func<LocalUserForQuery, bool>> lambda)
         {
             // Add created entities
             DataTable entitiesTable = LocalUsersDataTable(newItems.ToList());
@@ -1063,7 +1075,7 @@ namespace BSharp.Controllers
     FROM @Entities E
 ";
             var countBeforeFilter = newItems.Count();
-            var countAfterFilter = await _db.LocalUsers.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
+            var countAfterFilter = await _db.VW_LocalUsers.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
 
             if (countBeforeFilter > countAfterFilter)
             {
@@ -1071,10 +1083,10 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<M.LocalUser, bool>> lambda)
+        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<LocalUserForQuery, bool>> lambda)
         {
             // Load the entities using their Ids
-            DataTable idsTable = DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
+            DataTable idsTable = ControllerUtilities.DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
             var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -1082,7 +1094,7 @@ namespace BSharp.Controllers
             };
 
             // apply the lambda
-            var q = _db.LocalUsers.FromSql("SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            var q = _db.VW_LocalUsers.FromSql("SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             int countBeforeFilter = await q.CountAsync();
             int countAfterFilter = await q.Where(lambda).CountAsync();
 
@@ -1090,11 +1102,6 @@ namespace BSharp.Controllers
             {
                 throw new ForbiddenException();
             }
-        }
-
-        protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
-        {
-            return ControllerUtilities.CreatedByMeFilter<M.LocalUser>(keyword, param, _tenantInfo.GetCurrentInfo().UserId.Value);
         }
     }
 }

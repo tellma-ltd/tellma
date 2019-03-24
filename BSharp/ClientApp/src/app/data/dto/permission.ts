@@ -3,8 +3,9 @@ import { DtoForSaveKeyBase } from './dto-for-save-key-base';
 export class PermissionForSave extends DtoForSaveKeyBase {
   ViewId: string;
   RoleId: number;
-  Level: 'Read' | 'Update' | 'Create' | 'ReadAndCreate' | 'Sign';
+  Level: 'Read' | 'Update' | 'Create' | 'ReadAndCreate';
   Criteria: string;
+  Mask: string;
   Memo: string;
 }
 
@@ -21,7 +22,6 @@ export const Permission_Level = {
   'Update': 'Permission_Update',
   'Create': 'Permission_Create',
   'ReadCreate': 'Permission_ReadAndCreate',
-  'Sign': 'Permission_Sign',
 };
 
 export class PermissionsForClient {

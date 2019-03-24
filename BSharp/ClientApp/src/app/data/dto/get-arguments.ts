@@ -6,5 +6,6 @@ export class GetArguments {
   search?: string;
   filter?: string;
   expand?: string;
+  select?: string;
   inactive?: boolean;
 }

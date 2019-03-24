@@ -1,5 +1,5 @@
 ﻿using BSharp.Data;
-using BSharp.Data.DbModel;
+using BSharp.Data.Model;
 using BSharp.Services.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using System;

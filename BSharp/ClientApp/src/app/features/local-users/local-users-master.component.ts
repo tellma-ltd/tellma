@@ -5,8 +5,6 @@ import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
-import { LocalUsers_DoNotApplyRoles } from '~/app/data/dto/local-user';
 
 @Component({
   selector: 'b-local-users-master',
@@ -17,11 +15,7 @@ export class LocalUsersMasterComponent extends MasterBaseComponent {
 
   private localUsersApi = this.api.localUsersApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Agent';
-  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
-    // This ensures that roles won't get wiped out when the local users are loaded
-    LocalUsers: LocalUsers_DoNotApplyRoles
-  };
+  public expand = '';
 
   constructor(private workspace: WorkspaceService, private api: ApiService) {
     super();
@@ -38,7 +32,7 @@ export class LocalUsersMasterComponent extends MasterBaseComponent {
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.localUsersApi.activate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+      tap(res => addToWorkspace(res, this.workspace))
     );
 
     // The master template handles any errors
@@ -47,7 +41,7 @@ export class LocalUsersMasterComponent extends MasterBaseComponent {
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.localUsersApi.deactivate(ids, { returnEntities: true }).pipe(
-      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+      tap(res => addToWorkspace(res, this.workspace))
     );
 
     // The master template handles any errors

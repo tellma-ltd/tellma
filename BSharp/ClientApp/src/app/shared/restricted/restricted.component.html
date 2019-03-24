@@ -1,0 +1,8 @@
+<!-- A restricted field -->
+<span *ngIf="metadata === 1" class="text-muted font-weight-bold" title="{{ 'Restricted' | translate }}">*******</span>
+
+<!-- This one denotes a developer mistake of showing a field without loading it-->
+<!-- <span *ngIf="!metadata">** Not Loaded **</span> -->
+
+<!-- If the content is loaded then everyone is happy -->
+<ng-content *ngIf="metadata !== 1"></ng-content>

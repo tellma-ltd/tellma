@@ -2,17 +2,20 @@
 using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.Controllers.DTO
 {
     /// <summary>
     /// The base class for all DTOs of HTTP resources that can be modified
     /// </summary>
-    public abstract class DtoForSaveKeyBase<TKey> : DtoKeyBase<TKey>, IValidatableObject
+    public class DtoForSaveKeyBase<TKey> : DtoKeyBase<TKey>, IValidatableObject
     {
         /// <summary>
         /// Either 'Inserted' or 'Updated' or 'Deleted'
         /// </summary>
+        [NotMapped]
+        [IgnoreInMetadata]
         [ChoiceList(choices: new object[] { EntityStates.Inserted, EntityStates.Updated, EntityStates.Deleted })]
         public string EntityState { get; set; }
 

@@ -88,7 +88,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<RoleForSave> { dtoForSave };
-            var response = await _client.PostAsJsonAsync($"{rolesURL}?expand=Permissions,Members", dtosForSave);
+            var response = await _client.PostAsJsonAsync($"{rolesURL}?expand=Permissions/View,Members/User", dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             _output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -141,7 +141,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var entity = _shared.GetItem<Role>("Role_SalesManager");
             var id = entity.Id;
-            var response = await _client.GetAsync($"{rolesURL}/{id}?expand=Permissions,Members");
+            var response = await _client.GetAsync($"{rolesURL}/{id}?expand=Permissions/View,Members/User");
 
             _output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -231,7 +231,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the entity we just saved
             var id = _shared.GetItem<Role>("Role_SalesManager").Id;
-            var response1 = await _client.GetAsync($"{rolesURL}/{id}?expand=Permissions, Members");
+            var response1 = await _client.GetAsync($"{rolesURL}/{id}?expand=Permissions/View,Members/User");
             var dto = (await response1.Content.ReadAsAsync<GetByIdResponse<Role>>()).Entity;
 
             // Modify it slightly
@@ -244,7 +244,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it and get the result back
             var dtosForSave = new List<Role> { dto };
-            var response2 = await _client.PostAsJsonAsync($"{rolesURL}?expand=Permissions,Members", dtosForSave);
+            var response2 = await _client.PostAsJsonAsync($"{rolesURL}?expand=Permissions/View,Members/User", dtosForSave);
             _output.WriteLine(await response2.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
             var dto2 = (await response2.Content.ReadAsAsync<EntitiesResponse<Role>>()).Data.FirstOrDefault();

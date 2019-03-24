@@ -285,6 +285,34 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.True(responseDto.IsActive, "The Measurement Unit was not activated");
         }
 
+        [Trait(Testing, MeasurementUnits)]
+        [Fact(DisplayName = "011 - Using Select argument works as expected")]
+        public async Task Test0010()
+        {
+            // Get the Id
+            var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_kg");
+            var id = entity.Id.Value;
+
+            var response = await _client.GetAsync($"/api/measurement-units/{id}?select=Name");
+
+            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            // Confirm that the response is a well formed GetByIdResponse of measurement unit
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<MeasurementUnit>>();
+            Assert.Equal("MeasurementUnits", getByIdResponse.CollectionName);
+
+            var responseDto = getByIdResponse.Entity;
+            Assert.Equal(id, responseDto.Id);
+            Assert.Equal(entity.Name, responseDto.Name);
+            Assert.Equal(entity.Name2, responseDto.Name2);
+            Assert.Equal(entity.Code, responseDto.Code);
+            Assert.Null(responseDto.UnitType);
+            Assert.Null(responseDto.BaseAmount);
+            Assert.Null(responseDto.UnitAmount);
+        }
+
+
         // TODO add Import/Export tests
     }
 }

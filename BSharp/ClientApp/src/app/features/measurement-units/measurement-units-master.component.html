@@ -1,7 +1,6 @@
 <b-master apiEndpoint="measurement-units"
           viewId="measurement-units"
           [expand]="expand" 
-          [workspaceApplyFns]="workspaceApplyFns"
           [mode]="mode"
           [masterCrumb]="'MeasurementUnits' | translate"
           [tileTemplate]="tile"
@@ -22,7 +21,7 @@
           [includeInactiveLabel]="'IncludeInactive' | translate"
           [filterDefinition]="{
             'CreatedBy' : [
-              { template: createdByMe, expression: 'CreatedByMe'}
+              { template: createdByMe, expression: 'CreatedById eq me'}
             ],
             'UnitType' : [
               { template: pure, expression: 'UnitType eq \'Pure\''},
@@ -60,13 +59,13 @@
 <ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
 
 <ng-template #header_UnitType>{{ 'MU_UnitType' | translate }}</ng-template>
-<ng-template #row_UnitType let-id="id"> {{ unitTypeLookup(c[id].UnitType) | translate }} </ng-template>
+<ng-template #row_UnitType let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.UnitType">{{ unitTypeLookup(c[id].UnitType) | translate }} </b-restricted></ng-template>
 
 <ng-template #header_UnitAmount>{{ 'MU_UnitAmount' | translate }}</ng-template>
-<ng-template #row_UnitAmount let-id="id"> {{ c[id].UnitAmount | number }} </ng-template>
+<ng-template #row_UnitAmount let-id="id"><b-restricted [metadata]="c[id].EntityMetadata?.UnitAmount"> {{ c[id].UnitAmount | number }}</b-restricted> </ng-template>
 
 <ng-template #header_BaseAmount>{{ 'MU_BaseAmount' | translate }}</ng-template>
-<ng-template #row_BaseAmount let-id="id"> {{ c[id].BaseAmount | number }} </ng-template>
+<ng-template #row_BaseAmount let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.BaseAmount">{{ c[id].BaseAmount | number }}</b-restricted> </ng-template>
 
 
 <!-- Multiselect Actions -->

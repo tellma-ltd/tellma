@@ -16,10 +16,12 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "Agent_TaxIdentificationNumber")]
         public string TaxIdentificationNumber { get; set; }
 
+        [BasicField]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [MultilingualDisplay(Name = "Agent_Title", Language = Language.Primary)]
         public string Title { get; set; }
 
+        [BasicField]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [MultilingualDisplay(Name = "Agent_Title", Language = Language.Secondary)]
         public string Title2 { get; set; }
@@ -37,24 +39,38 @@ namespace BSharp.Controllers.DTO
 
         ////// The properties below come from  Custody, since the 
         ////// same class cannot inherit from 2 base classes
-        
+
         // Individual/Organization
+        [BasicField]
         [Display(Name = "Agent_AgentType")]
         public string AgentType { get; set; }
 
+        [BasicField]
         [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 
+        [ForeignKey]
         [Display(Name = "CreatedBy")]
-        public string CreatedBy { get; set; }
+        public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset? ModifiedAt { get; set; }
 
+        [ForeignKey]
         [Display(Name = "ModifiedBy")]
-        public string ModifiedBy { get; set; }
+        public int? ModifiedById { get; set; }
+    }
+
+    public class AgentForQuery : Agent, IAuditedDto
+    {
+        [NavigationProperty(ForeignKey = nameof(CreatedById))]
+        public LocalUserForQuery CreatedBy { get; set; }
+
+        [NavigationProperty(ForeignKey = nameof(ModifiedById))]
+        public LocalUserForQuery ModifiedBy { get; set; }
     }
 }
+

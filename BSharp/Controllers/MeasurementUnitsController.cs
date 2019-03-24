@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
-using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
@@ -10,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,46 +20,44 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using M = BSharp.Data.DbModel;
 
 namespace BSharp.Controllers
 {
     [Route("api/measurement-units")]
     [LoadTenantInfo]
-    public class MeasurementUnitsController : CrudControllerBase<M.MeasurementUnit, MeasurementUnit, MeasurementUnitForSave, int?>
+    public class MeasurementUnitsController : CrudControllerBase<MeasurementUnitForSave, MeasurementUnit, MeasurementUnitForQuery, int?>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger<MeasurementUnitsController> _logger;
         private readonly IStringLocalizer<MeasurementUnitsController> _localizer;
-        private readonly IMapper _mapper;
         private readonly ITenantUserInfoAccessor _tenantInfo;
 
-        public MeasurementUnitsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<MeasurementUnitsController> logger,
-            IStringLocalizer<MeasurementUnitsController> localizer, IMapper mapper,ITenantUserInfoAccessor tenantInfo) : base(logger, localizer, mapper)
+        public MeasurementUnitsController(ILogger<MeasurementUnitsController> logger, IStringLocalizer<MeasurementUnitsController> localizer,
+            IServiceProvider serviceProvider) : base(logger, localizer, serviceProvider)
         {
-            _db = db;
-            _metadataProvider = metadataProvider;
             _logger = logger;
             _localizer = localizer;
-            _mapper = mapper;
-            _tenantInfo = tenantInfo;
+
+            _db = serviceProvider.GetRequiredService<ApplicationContext>();
+            _metadataProvider = serviceProvider.GetRequiredService<IModelMetadataProvider>();
+            _tenantInfo = serviceProvider.GetRequiredService<ITenantUserInfoAccessor>();
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
-            return await CallAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
-            );
+            , _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
-            return await CallAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
-            );
+            , _logger);
         }
 
         private async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
@@ -73,7 +70,7 @@ namespace BSharp.Controllers
                 {
                     var isActiveParam = new SqlParameter("@IsActive", isActive);
 
-                    DataTable idsTable = DataTable(ids.Select(id => new { Id = id }));
+                    DataTable idsTable = ControllerUtilities.DataTable(ids.Select(id => new { Id = id }));
                     var idsTvp = new SqlParameter("@Ids", idsTable)
                     {
                         TypeName = $"dbo.IdList",
@@ -117,12 +114,15 @@ MERGE INTO [dbo].MeasurementUnits AS t
             else
             {
                 // Load the entities using their Ids
-                var affectedDbEntitiesQ = _db.MeasurementUnits.Where(e => ids.Contains(e.Id)); //.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var affectedDbEntitiesQ = _db.VW_MeasurementUnits.Where(e => ids.Contains(e.Id.Value)); //.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
                 var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
                 var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-                var affectedEntities = _mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
+
+                // Add the metadata
+                ApplySelectAndAddMetadata(affectedDbEntities, expand, null);
 
                 // sort the entities the way their Ids came, as a good practice
+                var affectedEntities = Mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
                 MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
                 Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
                 for (int i = 0; i < ids.Count; i++)
@@ -137,11 +137,18 @@ MERGE INTO [dbo].MeasurementUnits AS t
                     sortedAffectedEntities[i] = entity;
                 }
 
+                // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+                await ApplyReadPermissionsMask(affectedDbEntities, affectedDbEntitiesExpandedQ, await UserPermissions(PermissionLevel.Read), GetDefaultMask());
+
+                // Flatten related entities and map each to its respective DTO 
+                var relatedEntities = FlattenRelatedEntitiesAndTrim(affectedDbEntities, expand);
+
                 // Prepare a proper response
                 var response = new EntitiesResponse<MeasurementUnit>
                 {
                     Data = sortedAffectedEntities,
-                    CollectionName = GetCollectionName(typeof(MeasurementUnit))
+                    CollectionName = GetCollectionName(typeof(MeasurementUnit)),
+                    RelatedEntities = relatedEntities
                 };
 
                 // Commit and return
@@ -149,9 +156,9 @@ MERGE INTO [dbo].MeasurementUnits AS t
             }
         }
 
-        protected override async Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
         {
-            return await GetPermissions(_db.AbstractPermissions, level, "measurement-units");
+            return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "measurement-units");
         }
 
         protected override async Task<IDbContextTransaction> BeginSaveTransaction()
@@ -159,12 +166,12 @@ MERGE INTO [dbo].MeasurementUnits AS t
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
-        protected override IQueryable<M.MeasurementUnit> GetBaseQuery()
+        protected override IQueryable<MeasurementUnitForQuery> GetBaseQuery()
         {
-            return _db.MeasurementUnits.Where(e => e.UnitType != "Money");
+            return _db.VW_MeasurementUnits.Where(e => e.UnitType != "Money");
         }
 
-        protected override IQueryable<M.MeasurementUnit> Search(IQueryable<M.MeasurementUnit> query, string search)
+        protected override IQueryable<MeasurementUnitForQuery> Search(IQueryable<MeasurementUnitForQuery> query, string search, IEnumerable<AbstractPermission> filteredPermissions)
         {
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -174,16 +181,11 @@ MERGE INTO [dbo].MeasurementUnits AS t
             return query;
         }
 
-        protected override IQueryable<M.MeasurementUnit> SingletonQuery(IQueryable<M.MeasurementUnit> query, int? id)
-        {
-            return query.Where(e => e.Id == id);
-        }
-
-        protected override IQueryable<M.MeasurementUnit> IncludeInactive(IQueryable<M.MeasurementUnit> query, bool inactive)
+        protected override IQueryable<MeasurementUnitForQuery> IncludeInactive(IQueryable<MeasurementUnitForQuery> query, bool inactive)
         {
             if (!inactive)
             {
-                query = query.Where(e => e.IsActive);
+                query = query.Where(e => e.IsActive == true);
             }
 
             return query;
@@ -225,7 +227,7 @@ MERGE INTO [dbo].MeasurementUnits AS t
             }
 
             // Perform SQL-side validation
-            DataTable entitiesTable = DataTable(entities, addIndex: true);
+            DataTable entitiesTable = ControllerUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("Entities", entitiesTable) { TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List", SqlDbType = SqlDbType.Structured };
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
 
@@ -318,10 +320,10 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             }
         }
 
-        protected override async Task<List<M.MeasurementUnit>> PersistAsync(List<MeasurementUnitForSave> entities, SaveArguments args)
+        protected override async Task<(List<MeasurementUnitForQuery>, IQueryable<MeasurementUnitForQuery>)> PersistAsync(List<MeasurementUnitForSave> entities, SaveArguments args)
         {
             // Add created entities
-            DataTable entitiesTable = DataTable(entities, addIndex: true);
+            DataTable entitiesTable = ControllerUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("Entities", entitiesTable)
             {
                 TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List",
@@ -369,7 +371,7 @@ SET NOCOUNT ON;
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
                 await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp);
-                return new List<M.MeasurementUnit>();
+                return (new List<MeasurementUnitForQuery>(), null);
             }
             else
             {
@@ -380,36 +382,36 @@ SET NOCOUNT ON;
                 var indexedIds = await _db.Saving.FromSql(saveSql, entitiesTvp).ToListAsync();
 
                 // Load the entities using their Ids
-                DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
+                DataTable idsTable = ControllerUtilities.DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
                 var idsTvp = new SqlParameter("Ids", idsTable)
                 {
                     TypeName = $"dbo.IdList",
                     SqlDbType = SqlDbType.Structured
                 };
 
-                var q = _db.MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var q = _db.VW_MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
                 q = Expand(q, args.Expand);
                 var savedEntities = await q.ToListAsync();
 
 
                 // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
                 Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                var sortedSavedEntities = new M.MeasurementUnit[savedEntities.Count];
+                var sortedSavedEntities = new MeasurementUnitForQuery[savedEntities.Count];
                 foreach (var item in savedEntities)
                 {
-                    int index = indices[item.Id];
+                    int index = indices[item.Id.Value];
                     sortedSavedEntities[index] = item;
                 }
 
                 // Return the sorted collection
-                return sortedSavedEntities.ToList();
+                return (sortedSavedEntities.ToList(), q);
             }
         }
 
         protected override async Task DeleteAsync(List<int?> ids)
         {
             // Prepare a list of Ids to delete
-            DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
+            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(e => new { Id = e }), addIndex: false);
             var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -451,10 +453,10 @@ SET NOCOUNT ON;
             // Add the header
             var header = result[result.AddRow()];
             int i = 0;
-            foreach(var prop in props)
+            foreach (var prop in props)
             {
                 var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
-                if(display != Constants.Hidden)
+                if (display != Constants.Hidden)
                 {
                     header[i++] = AbstractDataCell.Cell(display);
                 }
@@ -503,31 +505,45 @@ SET NOCOUNT ON;
             // Add the rows
             foreach (var entity in response.Data)
             {
+                var metadata = entity.EntityMetadata;
                 var row = result[result.AddRow()];
                 int i = 0;
                 foreach (var prop in addedProps)
-                { 
-                    var content = prop.GetValue(entity);
-
-                    // Special handling for choice lists
-                    var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
-                    if (choiceListAttr != null)
+                {
+                    metadata.TryGetValue(prop.Name, out FieldMetadata meta);
+                    if (meta == FieldMetadata.Loaded)
                     {
-                        var choiceIndex = Array.FindIndex(choiceListAttr.Choices, e => e.Equals(content));
-                        if (choiceIndex != -1)
+                        var content = prop.GetValue(entity);
+
+                        // Special handling for choice lists
+                        var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
+                        if (choiceListAttr != null)
                         {
-                            string displayName = choiceListAttr.DisplayNames[choiceIndex];
-                            content = _localizer[displayName];
+                            var choiceIndex = Array.FindIndex(choiceListAttr.Choices, e => e.Equals(content));
+                            if (choiceIndex != -1)
+                            {
+                                string displayName = choiceListAttr.DisplayNames[choiceIndex];
+                                content = _localizer[displayName];
+                            }
                         }
-                    }
 
-                    // Special handling for DateTimeOffset
-                    if (prop.PropertyType.IsDateTimeOffset() && content != null)
+                        // Special handling for DateTimeOffset
+                        if (prop.PropertyType.IsDateTimeOffset() && content != null)
+                        {
+                            content = ToExportDateTime((DateTimeOffset)content);
+                        }
+
+                        row[i] = AbstractDataCell.Cell(content);
+                    }
+                    else if (meta == FieldMetadata.Restricted)
                     {
-                        content = ToExportDateTime((DateTimeOffset)content);
+                        row[i] = AbstractDataCell.Cell(Constants.Restricted);
+                    }
+                    else
+                    {
+                        row[i] = AbstractDataCell.Cell("-");
                     }
 
-                    row[i] = AbstractDataCell.Cell(content);
                     i++;
                 }
             }
@@ -678,7 +694,7 @@ SET NOCOUNT ON;
                 // For all other modes besides Insert, we need to match the entity codes to Ids by querying the DB
                 // Load the code Ids from the database
                 var nonNullCodes = result.Where(e => !string.IsNullOrWhiteSpace(e.Code));
-                var codesDataTable = DataTable(nonNullCodes.Select(e => new { e.Code }));
+                var codesDataTable = ControllerUtilities.DataTable(nonNullCodes.Select(e => new { e.Code }));
                 var entitiesTvp = new SqlParameter("@Codes", codesDataTable)
                 {
                     TypeName = $"dbo.CodeList",
@@ -781,10 +797,10 @@ SET NOCOUNT ON;
             return (result, errorKeyMap);
         }
 
-        protected override async Task CheckPermissionsForNew(IEnumerable<MeasurementUnitForSave> newItems, Expression<Func<M.MeasurementUnit, bool>> lambda)
+        protected override async Task CheckPermissionsForNew(IEnumerable<MeasurementUnitForSave> newItems, Expression<Func<MeasurementUnitForQuery, bool>> lambda)
         {
             // Add created entities
-            DataTable entitiesTable = DataTable(newItems, addIndex: true);
+            DataTable entitiesTable = ControllerUtilities.DataTable(newItems, addIndex: true);
             var entitiesTvp = new SqlParameter("Entities", entitiesTable)
             {
                 TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List",
@@ -802,7 +818,7 @@ SET NOCOUNT ON;
     FROM @Entities E
 ";
             var countBeforeFilter = newItems.Count();
-            var countAfterFilter = await _db.MeasurementUnits.FromSql(sql, entitiesTvp).Where(lambda).CountAsync();
+            var countAfterFilter = await _db.VW_MeasurementUnits.FromSql(sql, entitiesTvp).Where(lambda).CountAsync();
 
             if (countBeforeFilter > countAfterFilter)
             {
@@ -810,10 +826,10 @@ SET NOCOUNT ON;
             }
         }
 
-        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<M.MeasurementUnit, bool>> lambda)
+        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<MeasurementUnitForQuery, bool>> lambda)
         {
             // Load the entities using their Ids
-            DataTable idsTable = DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
+            DataTable idsTable = ControllerUtilities.DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
             var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -821,7 +837,7 @@ SET NOCOUNT ON;
             };
 
             // apply the lambda
-            var q = _db.MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            var q = _db.VW_MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             int countBeforeFilter = await q.CountAsync();
             int countAfterFilter = await q.Where(lambda).CountAsync();
 
@@ -829,11 +845,6 @@ SET NOCOUNT ON;
             {
                 throw new ForbiddenException();
             }
-        }
-
-        protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
-        {
-            return ControllerUtilities.CreatedByMeFilter<M.MeasurementUnit>(keyword, param, _tenantInfo.GetCurrentInfo().UserId.Value);
         }
     }
 }

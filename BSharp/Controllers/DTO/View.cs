@@ -4,33 +4,58 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
-    [CollectionName("Views")]
-    public class ViewForSave<TPermission> : DtoForSaveKeyBase<string>
+    [StrongDto("Views")]
+    public class ViewForSave<TPermission, TRequiredSignature> : DtoForSaveKeyBase<string>
     {
+        [Display(Name = "Signatures")]
+        public List<TRequiredSignature> Signatures { get; set; } = new List<TRequiredSignature>();
+
         [Display(Name = "Permissions")]
-        public List<Permission> Permissions { get; set; }
+        public List<TPermission> Permissions { get; set; } = new List<TPermission>();
     }
 
-    public class ViewForSave : ViewForSave<PermissionForSave>
+    public class ViewForSave : ViewForSave<PermissionForSave, RequiredSignatureForSave>
     {
-
     }
 
-    public class View : ViewForSave<Permission>
+    public class View<TPermission, TRequiredSignature> : ViewForSave<TPermission, TRequiredSignature>
     {
+        [BasicField]
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         public string Name { get; set; }
 
-        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
+        [BasicField]
+        [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
         public string Name2 { get; set; }
 
+        [BasicField]
+        [Display(Name = "Name")]
+        public string ResourceName { get; set; }
+
+        [BasicField]
         [Display(Name = "Code")]
         public string Code { get; set; }
 
+        [BasicField]
         [Display(Name = "IsActive")]
         public bool? IsActive { get; set; }
 
         // Never displayed
+        [BasicField]
         public string AllowedPermissionLevels { get; set; }
+
+        [BasicField]
+        public bool? SupportsCriteria { get; set; }
+
+        [BasicField]
+        public bool? SupportsMask { get; set; }
+    }
+
+    public class View : View<Permission, RequiredSignature>
+    {
+    }
+
+    public class ViewForQuery : View<PermissionForQuery, RequiredSignatureForQuery>
+    {
     }
 }

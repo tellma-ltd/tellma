@@ -1,4 +1,4 @@
-﻿using BSharp.Data.DbModel;
+﻿using BSharp.Data.Model;
 using BSharp.Services.Email;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

@@ -7,6 +7,7 @@ using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,7 +15,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using M = BSharp.Data.DbModel;
+using M = BSharp.Data.Model;
 
 
 namespace BSharp.Controllers
@@ -22,20 +23,19 @@ namespace BSharp.Controllers
     [Route("api/[controller]")]
     [AuthorizeAccess]
     [ApiController]
-    public class CulturesController : ReadControllerBase<M.Culture, Culture, string>
+    public class CulturesController : ReadControllerBase<Culture, CultureForQuery, string>
     {
         private readonly AdminContext _db;
         private readonly ILogger<CulturesController> _logger;
         private readonly IStringLocalizer<CulturesController> _localizer;
         private readonly IMapper _mapper;
 
-        public CulturesController(AdminContext db, ILogger<CulturesController> logger, IStringLocalizer<CulturesController> localizer,
-            IMapper mapper) : base(logger, localizer, mapper)
+        public CulturesController(ILogger<CulturesController> logger, IStringLocalizer<CulturesController> localizer,
+            IServiceProvider serviceProvider) : base(logger, localizer, serviceProvider)
         {
-            _db = db;
+            _db = serviceProvider.GetRequiredService<AdminContext>();
             _logger = logger;
             _localizer = localizer;
-            _mapper = mapper;
         }
 
         protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<Culture> response, ExportArguments args)
@@ -43,22 +43,22 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override IQueryable<M.Culture> GetBaseQuery()
+        protected override IQueryable<CultureForQuery> GetBaseQuery()
         {
-            return _db.Cultures;
+            return _db.VW_Cultures;
         }
 
-        protected override IQueryable<M.Culture> IncludeInactive(IQueryable<M.Culture> query, bool inactive)
+        protected override IQueryable<CultureForQuery> IncludeInactive(IQueryable<CultureForQuery> query, bool inactive)
         {
             if(!inactive)
             {
-                query = query.Where(e => e.IsActive);
+                query = query.Where(e => e.IsActive == true);
             }
 
             return query;
         }
 
-        protected override IQueryable<M.Culture> Search(IQueryable<M.Culture> query, string search)
+        protected override IQueryable<CultureForQuery> Search(IQueryable<CultureForQuery> query, string search, IEnumerable<AbstractPermission> permissions)
         {
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -68,17 +68,12 @@ namespace BSharp.Controllers
             return query;
         }
 
-        protected override IQueryable<M.Culture> SingletonQuery(IQueryable<M.Culture> query, string id)
-        {
-            return query.Where(e => e.Id == id);
-        }
-
-        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
         {
             // Cultures are always readable for all
-            IEnumerable<M.AbstractPermission> result = new List<M.AbstractPermission>
+            IEnumerable<AbstractPermission> result = new List<AbstractPermission>
             {
-                new M.AbstractPermission { ViewId = "cultures", Level = Constants.Update }
+                new AbstractPermission { ViewId = "cultures", Level = Constants.Update }
             };
 
             return Task.FromResult(result);

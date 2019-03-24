@@ -1,5 +1,5 @@
 <b-details [apiEndpoint]="'agents/' + agentType" [viewId]="agentType" collection="Custodies" [createFunc]="create" [expand]="expand"
-  [workspaceApplyFns]="workspaceApplyFns" [mode]="mode" [idString]="idString" [masterCrumb]="masterCrumb | translate"
+  [mode]="mode" [idString]="idString" [masterCrumb]="masterCrumb | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
               { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
               { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -71,33 +71,33 @@
 
   <!-- Address -->
   <b-form-group class="b-form-group" [label]="'Custody_Address' | translate" [serverErrors]="model?.serverErrors?.Address">
-    <div *ngIf="!isEdit">{{ model?.Address }}</div>
+    <div *ngIf="!isEdit"><b-restricted [metadata]="model?.EntityMetadata?.Address"> {{ model?.Address }} </b-restricted></div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Address" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
   <!-- BirthDateTime -->
   <b-form-group class="b-form-group" [label]="birthDateTimeName | translate" [serverErrors]="model?.serverErrors?.BirthDateTime">
-    <div *ngIf="!isEdit">{{ model?.BirthDateTime | date:'yyyy-MM-dd' }}</div>
+    <div *ngIf="!isEdit"><b-restricted [metadata]="model?.EntityMetadata?.BirthDateTime"> {{ model?.BirthDateTime | date:'yyyy-MM-dd' }}</b-restricted></div>
     <b-date-picker *ngIf="isEdit" [(ngModel)]="model.BirthDateTime" [ngModelOptions]="{ updateOn: 'change' }"></b-date-picker>
   </b-form-group>
 
   <!-- TaxIdentificationNumber -->
   <b-form-group class="b-form-group" [label]="'Agent_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
-    <div *ngIf="!isEdit">{{ model?.TaxIdentificationNumber }}</div>
+    <div *ngIf="!isEdit"><b-restricted [metadata]="model?.EntityMetadata?.TaxIdentificationNumber"> {{ model?.TaxIdentificationNumber }}</b-restricted></div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
   <!-- Gender -->
   <ng-container *ngIf="isIndividual">
     <b-form-group class="b-form-group" [label]="'Agent_Gender' | translate" [serverErrors]="model?.serverErrors?.Gender">
-      <div *ngIf="!isEdit">{{ genderLookup(model?.Gender) | translate }}</div>
+      <div *ngIf="!isEdit"><b-restricted [metadata]="model?.EntityMetadata?.Gender"> {{ genderLookup(model?.Gender) | translate }}</b-restricted></div>
       <b-selector *ngIf="isEdit" [(ngModel)]="model.Gender" [choices]="genderChoices" required></b-selector>
     </b-form-group>
   </ng-container>
 
   <!-- IsRelated -->
   <b-form-group class="b-form-group" [label]="'Agent_IsRelated' | translate" [serverErrors]="model?.serverErrors?.IsRelated">
-    <div *ngIf="!isEdit">{{ (model?.IsRelated ? 'Yes' : 'No') | translate }}</div>
+    <div *ngIf="!isEdit"><b-restricted [metadata]="model?.EntityMetadata?.IsRelated"> {{ (model?.IsRelated ? 'Yes' : 'No') | translate }}</b-restricted></div>
     <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
       <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsRelated" id="isRelated">
       <label class="custom-control-label b-pointer" for="isRelated">&zwnj;</label>

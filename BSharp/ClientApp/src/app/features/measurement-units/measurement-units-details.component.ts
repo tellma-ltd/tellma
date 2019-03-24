@@ -21,8 +21,6 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
-  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
-  };
 
   create = () => {
     const result = new MeasurementUnitForSave();
@@ -63,7 +61,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   public onActivate = (model: MeasurementUnit): void => {
     if (!!model && !!model.Id) {
       this.measurementUnitsApi.activate([model.Id], { returnEntities: true }).pipe(
-        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+        tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
   }
@@ -71,7 +69,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   public onDeactivate = (model: MeasurementUnit): void => {
     if (!!model && !!model.Id) {
       this.measurementUnitsApi.deactivate([model.Id], { returnEntities: true }).pipe(
-        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+        tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
   }

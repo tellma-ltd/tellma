@@ -21,22 +21,6 @@ export class LocalUser extends LocalUserForSave<RoleMembership> {
     ModifiedById: number | string;
 }
 
-export function LocalUsers_DoNotApplyAgentOrRoles(s: LocalUser, f: LocalUser): LocalUser {
-    // Set all except for Permissions
-    Object.keys(s).concat(Object.keys(f))
-        .filter(p => ['Roles', 'AgentId'].indexOf(p) < 0)
-        .forEach(p => s[p] = f[p]);
-    return s;
-}
-
-export function LocalUsers_DoNotApplyRoles(s: LocalUser, f: LocalUser): LocalUser {
-    // Set all except for Permissions
-    Object.keys(s).concat(Object.keys(f))
-        .filter(p => ['Roles'].indexOf(p) < 0)
-        .forEach(p => s[p] = f[p]);
-    return s;
-}
-
 export class UserSettingsForClientForSave {
 }
 

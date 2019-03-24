@@ -13,5 +13,12 @@ namespace BSharp.Controllers.DTO
         /// the result, if left empty it means retrieve all properties
         /// </summary>
         public string Expand { get; set; }
+
+        /// <summary>
+        /// Equivalent to linq's "Select", determines which properties of the principle entities
+        /// or of the included related entities to return the result. If left empty then all
+        /// properties of the principle entity and included entities are returned
+        /// </summary>
+        public string Select { get; set; }
     }
 }

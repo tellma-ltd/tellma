@@ -60,14 +60,14 @@ namespace BSharp.Controllers
                 var allPermissions = await _db.AbstractPermissions.FromSql($@"
     DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-    SELECT ViewId, Criteria, Level 
+    SELECT ViewId, Criteria, Level, Mask 
     FROM [dbo].[Permissions] P
     JOIN [dbo].[Roles] R ON P.RoleId = R.Id
     JOIN [dbo].[RoleMemberships] RM ON R.Id = RM.RoleId
     WHERE R.IsActive = 1 
     AND RM.UserId = @UserId
     UNION
-    SELECT ViewId, Criteria, Level 
+    SELECT ViewId, Criteria, Level, Mask 
     FROM [dbo].[Permissions] P
     JOIN [dbo].[Roles] R ON P.RoleId = R.Id
     WHERE R.IsPublic = 1 

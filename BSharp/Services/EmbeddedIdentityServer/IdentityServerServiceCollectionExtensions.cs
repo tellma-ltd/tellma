@@ -1,5 +1,5 @@
 ﻿using BSharp.Data;
-using BSharp.Data.DbModel;
+using BSharp.Data.Model;
 using BSharp.Services.EmbeddedIdentityServer;
 using BSharp.Services.Utilities;
 using IdentityModel;

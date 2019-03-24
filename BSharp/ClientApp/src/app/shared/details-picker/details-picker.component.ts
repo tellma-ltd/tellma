@@ -51,6 +51,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   expand: string;
 
   @Input()
+  select = 'BasicFields';
+
+  @Input()
   collection: string;
 
   @Input()
@@ -67,9 +70,6 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   @Input()
   focusIf = false;
-
-  @Input()
-  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase };
 
   private MIN_CHARS_TO_SEARCH = 2;
   private SEARCH_PAGE_SIZE = 15;
@@ -139,7 +139,8 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
             top: this.SEARCH_PAGE_SIZE,
             skip: 0,
             expand: this.expand,
-            filter: this.filter
+            filter: this.filter,
+            select: this.select
           }).pipe(
             tap(() => this.status = SearchStatus.showResults),
             catchError(friendlyError => {
@@ -153,7 +154,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     ).subscribe((results: GetResponse<DtoKeyBase>) => {
       // Populate the dropdown with the results
       if (!!results) {
-        this._searchResults = addToWorkspace(results, this.workspace, this.workspaceApplyFns);
+        this._searchResults = addToWorkspace(results, this.workspace);
       }
 
       // Auto select the first result

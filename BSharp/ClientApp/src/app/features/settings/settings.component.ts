@@ -3,18 +3,15 @@ import { Settings } from '~/app/data/dto/settings';
 import { Subject, Observable, of } from 'rxjs';
 import { WorkspaceService, DetailsStatus } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, catchError, tap } from 'rxjs/operators';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 import { addRelatedEntitiesToWorkspace } from '~/app/data/util';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { SaveSettingsResponse } from '~/app/data/dto/save-settings-response';
 import { handleFreshSettings } from '~/app/data/tenant-resolver.guard';
 import { StorageService } from '~/app/data/storage.service';
-import { GlobalSettingsForClient } from '~/app/data/dto/global-settings';
 
 @Component({
   selector: 'b-settings',
@@ -36,8 +33,6 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   private _modalErrorMessage: string; // in the modal
   private _validationErrors: { [id: string]: string[] } = {}; // on the fields
   private crud = this.api.settingsApi(this.notifyDestruct$); // Just for intellisense
-
-  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase };
 
   @ViewChild('errorModal')
   public errorModal: TemplateRef<any>;
@@ -73,7 +68,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
         this._viewModel = response.Entity;
 
         // Add related items to the workspace
-        addRelatedEntitiesToWorkspace(response.RelatedEntities, this.workspace, this.workspaceApplyFns);
+        addRelatedEntitiesToWorkspace(response.RelatedEntities, this.workspace);
 
         // display the settings
         this.detailsStatus = DetailsStatus.loaded;
@@ -299,7 +294,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
           // update the workspace with the DTO from the server
           this._viewModel = response.Entity;
-          addRelatedEntitiesToWorkspace(response.RelatedEntities, this.workspace, this.workspaceApplyFns);
+          addRelatedEntitiesToWorkspace(response.RelatedEntities, this.workspace);
 
           // Update the cache with fresh versions
           if (!!response.SettingsForClient) {

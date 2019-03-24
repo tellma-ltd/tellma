@@ -89,9 +89,6 @@ export class MasterComponent implements OnInit, OnDestroy {
   allowMultiselect = true;
 
   @Input()
-  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase };
-
-  @Input()
   multiselectActions: {
     template: TemplateRef<any>,
     action: (p: (string | number)[]) => Observable<any>,
@@ -243,7 +240,7 @@ export class MasterComponent implements OnInit, OnDestroy {
         s.desc = response.Desc;
         s.total = response.TotalCount;
         s.bag = response.Bag;
-        s.masterIds = addToWorkspace(response, this.workspace, this.workspaceApplyFns);
+        s.masterIds = addToWorkspace(response, this.workspace);
       }),
       catchError((friendlyError) => {
         s = this.state; // get the source

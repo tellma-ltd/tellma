@@ -2,166 +2,89 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Services.ApiAuthentication;
+using BSharp.Services.FilterParser;
 using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using M = BSharp.Data.DbModel;
 
 namespace BSharp.Controllers
 {
     [ApiController]
     [AuthorizeAccess]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public abstract class ReadControllerBase<TModel, TDto, TKey> : ControllerBase
-        where TModel : M.DbModelBase
+    public abstract class ReadControllerBase<TDto, TDtoForQuery, TKey> : ControllerBase
         where TDto : DtoKeyBase<TKey>
+        where TDtoForQuery : DtoKeyBase<TKey>
     {
         // Constants
-
         private const int DEFAULT_MAX_PAGE_SIZE = 10000;
         public const string ALL = ControllerUtilities.ALL;
 
-        // Private Fields
 
+        // Private Fields
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
-        private readonly IMapper _mapper;
+        private readonly IFilterParser _filterParser;
         protected static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never expires
 
-        // Constructor
+        protected IMapper Mapper { get; }
 
-        public ReadControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper)
+        // Constructor
+        public ReadControllerBase(ILogger logger, IStringLocalizer localizer, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _localizer = localizer;
-            _mapper = mapper;
+            _filterParser = serviceProvider.GetRequiredService<IFilterParser>();
+            Mapper = serviceProvider.GetRequiredService<IMapper>();
         }
 
-        // HTTP Methods
 
+        // HTTP Methods
         [HttpGet]
         public virtual async Task<ActionResult<GetResponse<TDto>>> Get([FromQuery] GetArguments args)
         {
-            return await CallAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 var result = await GetImplAsync(args);
                 return Ok(result);
-            });
+            }, _logger);
         }
 
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<GetByIdResponse<TDto>>> GetById(TKey id, [FromQuery] GetByIdArguments args)
         {
-            return await CallAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 var result = await GetByIdImplAsync(id, args);
                 return Ok(result);
-            });
+            }, _logger);
         }
 
         [HttpGet("export")]
         public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args)
         {
-            return await CallAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 // Get abstract grid
                 var response = await GetImplAsync(args);
                 var abstractFile = DtosToAbstractGrid(response, args);
                 return AbstractGridToFileResult(abstractFile, args.Format);
-            });
+            }, _logger);
         }
 
-        // Abstract and virtual members
 
-        /// <summary>
-        /// Returns the query from which the GET endpoint retrieves the results
-        /// </summary>
-        protected abstract IQueryable<TModel> GetBaseQuery();
-
-        protected virtual async Task<IQueryable<TModel>> ApplyReadPermissions(IQueryable<TModel> query)
-        {
-            // Check if the user has any permissions on ViewId at all, else throw forbidden exception
-            // If the user has some permissions on ViewId, OR all their criteria together and apply the where clause
-
-            var readPermissions = await UserPermissions(PermissionLevel.Read);
-            if (!readPermissions.Any())
-            {
-                // Not even authorized to call this API
-                throw new ForbiddenException();
-            }
-            else if (readPermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
-            {
-                // The user can read the entire data set
-                return query;
-            }
-            else
-            {
-                // The user has access to part of the data set based on a list of filters that will 
-                // be ORed together in a dynamic linq query
-                IEnumerable<string> criteriaList = readPermissions.Select(e => e.Criteria);
-
-                // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(TModel));
-                var whereClause = ToORedWhereClause<TModel>(criteriaList, eParam);
-                var lambda = Expression.Lambda<Func<TModel, bool>>(whereClause, eParam);
-
-                query = query.Where(lambda);
-            }
-
-            return query;
-        }
-
-        protected Expression ToORedWhereClause<T>(IEnumerable<string> criteriaList, ParameterExpression eParam)
-        {
-
-            // First criteria
-            Expression fullExpression = ParseFilterExpression<T>(criteriaList.First(), eParam);
-
-            // The remaining criteria
-            foreach (var criteria in criteriaList.Skip(1))
-            {
-                var criteriaExpression = ParseFilterExpression<T>(criteria, eParam);
-                fullExpression = Expression.OrElse(fullExpression, criteriaExpression);
-            }
-
-            return fullExpression;
-        }
-
-        protected abstract Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level);
-
-        /// <summary>
-        /// Returns the query from which the GET by Id endpoint retrieves the result
-        /// </summary>
-        protected abstract IQueryable<TModel> SingletonQuery(IQueryable<TModel> query, TKey id);
-
-        /// <summary>
-        /// Applies the search argument, which is handled differently in every controller
-        /// </summary>
-        protected abstract IQueryable<TModel> Search(IQueryable<TModel> query, string search);
-
-        /// <summary>
-        /// Includes or excludes inactive items from the query depending on the boolean switch supplied
-        /// </summary>
-        protected abstract IQueryable<TModel> IncludeInactive(IQueryable<TModel> query, bool inactive);
-
-        /// <summary>
-        /// Transforms a DTO response into an abstract grid that can be transformed into an file
-        /// </summary>
-        protected abstract AbstractDataGrid DtosToAbstractGrid(GetResponse<TDto> response, ExportArguments args);
+        // Endpoint implementations
 
         /// <summary>
         /// Returns the entities as per the specifications in the get request
@@ -169,22 +92,29 @@ namespace BSharp.Controllers
         protected virtual async Task<GetResponse<TDto>> GetImplAsync(GetArguments args)
         {
             // Get a readonly query
-            IQueryable<TModel> query = GetBaseQuery().AsNoTracking();
+            IQueryable<TDtoForQuery> query = GetBaseQuery().AsNoTracking();
+
+            // Retrieve the user permissions for the current view
+            var permissions = await UserPermissions(PermissionLevel.Read);
+
+            // Filter out permissions with masks that would be violated by the filter or order by arguments
+            var defaultMask = GetDefaultMask() ?? new MaskTree();
+            permissions = FilterViolatedPermissions(permissions, defaultMask, args.Filter, args.OrderBy);
 
             // Apply read permissions
-            query = await ApplyReadPermissions(query);
+            query = await ApplyReadPermissionsCriteria(query, permissions);
 
             // Include inactive
             query = IncludeInactive(query, inactive: args.Inactive);
 
             // Search
-            query = Search(query, args.Search);
+            query = Search(query, args.Search, permissions);
 
             // Filter
             query = Filter(query, args.Filter);
 
             // Before ordering or paging, retrieve the total count
-            bool supportsAsync = query is IAsyncEnumerable<TModel>;
+            bool supportsAsync = query is IAsyncEnumerable<TDtoForQuery>;
             int totalCount = supportsAsync ? await query.CountAsync() : query.Count();
 
             // OrderBy
@@ -197,26 +127,33 @@ namespace BSharp.Controllers
             query = query.Skip(skip).Take(top);
 
             // Apply the expand, which has the general format 'Expand=A,B/C,D'
-            query = Expand(query, args.Expand);
+            var expandedQuery = Expand(query, args.Expand);
 
-            // Load the data, transform it and wrap it in some metadata
-            var memoryList = supportsAsync ? await query.ToListAsync() : query.ToList();
+            // Load the data in memory
+            var memoryList = supportsAsync ? await expandedQuery.ToListAsync() : expandedQuery.ToList();
 
-            // Flatten related entities and map each to its respective DTO 
-            var relatedEntities = FlattenRelatedEntities(memoryList, args.Expand);
+            // Apply the select argument and set the metadata (regardless of permissions)
+            ApplySelectAndAddMetadata(memoryList, args.Expand, args.Select);
 
-            // Map the primary result to DTOs as well
-            var resultData = Map(memoryList);
+            // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+            await ApplyReadPermissionsMask(memoryList, query, permissions, defaultMask);
+
+            // Flatten related DTOs
+            var relatedEntities = FlattenRelatedEntitiesAndTrim(memoryList, args.Expand);
+
+            // Set to null all Dto ForQuery properties
+            var responseData = Mapper.Map<List<TDto>>(memoryList);
 
             // Prepare the result in a response object
             var result = new GetResponse<TDto>
             {
                 Skip = skip,
-                Top = resultData.Count(),
+                Top = memoryList.Count(),
                 OrderBy = args.OrderBy,
                 Desc = args.Desc,
                 TotalCount = totalCount,
-                Data = resultData,
+
+                Data = responseData,
                 RelatedEntities = relatedEntities,
                 CollectionName = GetCollectionName(typeof(TDto))
             };
@@ -226,16 +163,15 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// Returns a singel entity as per the ID and specifications in the get request
+        /// Returns a single entity as per the ID and specifications in the get request
         /// </summary>
         protected virtual async Task<GetByIdResponse<TDto>> GetByIdImplAsync(TKey id, [FromQuery] GetByIdArguments args)
         {
             // Single by Id
-            var query = GetBaseQuery().AsNoTracking();
-            query = SingletonQuery(query, id);
+            var query = GetBaseQuery().Where(e => e.Id.Equals(id)).AsNoTracking();
 
             // Check that the entity exists
-            bool supportsAsync = query is IAsyncEnumerable<TModel>;
+            bool supportsAsync = query is IAsyncEnumerable<TDtoForQuery>;
             int count = supportsAsync ? await query.CountAsync() : query.Count();
             if (count == 0)
             {
@@ -243,30 +179,38 @@ namespace BSharp.Controllers
             }
 
             // Apply read permissions
-            query = await ApplyReadPermissions(query);
+            var permissions = await UserPermissions(PermissionLevel.Read);
+            query = await ApplyReadPermissionsCriteria(query, permissions);
 
             // Expand
-            query = Expand(query, args.Expand);
+            var expandedQuery = Expand(query, args.Expand);
 
             // Load
-            var dbEntity = supportsAsync ? await query.FirstOrDefaultAsync() : query.FirstOrDefault();
-            if (dbEntity == null)
+            var dtoForQuery = supportsAsync ? await expandedQuery.FirstOrDefaultAsync() : expandedQuery.FirstOrDefault();
+            if (dtoForQuery == null)
             {
                 // We already checked for not found earlier,
                 // This can only mean lack of permissions
                 throw new ForbiddenException();
             }
 
+            // Apply the select argument and set the metadata (regardless of permissions)
+            var singleton = new List<TDtoForQuery> { dtoForQuery };
+            ApplySelectAndAddMetadata(singleton, args.Expand, args.Select);
+
+            // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+            await ApplyReadPermissionsMask(singleton, query, permissions, GetDefaultMask());
+
             // Flatten Related Entities
-            var relatedEntities = FlattenRelatedEntities(dbEntity, args.Expand);
+            var relatedEntities = FlattenRelatedEntitiesAndTrim(singleton, args.Expand);
 
             // Map the primary result to DTO too
-            var entity = Map(dbEntity);
+            var dto = Mapper.Map<TDto>(dtoForQuery);
 
             // Return
             var result = new GetByIdResponse<TDto>
             {
-                Entity = entity,
+                Entity = dto,
                 CollectionName = GetCollectionName(typeof(TDto)),
                 RelatedEntities = relatedEntities
             };
@@ -275,406 +219,135 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// Maps a list of the controller models to a list of concrete controller DTOs
+        /// Get the IQueryable source on which the controller is based
         /// </summary>
-        protected virtual List<TDto> Map(List<TModel> models)
+        /// <returns></returns>
+        protected abstract IQueryable<TDtoForQuery> GetBaseQuery();
+
+        /// <summary>
+        /// Retrieves the user permissions for the current view and the specified level
+        /// </summary>
+        protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level);
+
+        /// <summary>
+        /// If the user has no permission masks defined (can see all), this mask is used.
+        /// This makes it easier to setup permissions such that a user cannot see employee
+        /// salaries for example, since without this, the user can "expand" the DTO tree 
+        /// all the way to the salaries if s/he has access to any DTO from which the employee entity is reachable
+        /// </summary>
+        /// <returns></returns>
+        protected virtual MaskTree GetDefaultMask()
         {
-            return _mapper.Map<List<TDto>>(models);
+            // TODO implement
+            return new MaskTree();
         }
 
         /// <summary>
-        /// Maps a list of any models to their corresponding DTO types, the default implementation
-        /// assumes that the default DTO has been mapped to every model type in AutoMapper by mapping 
-        /// it to type <see cref="DtoBase"/>
+        /// Removes from the permissions all permissions that would be violated by the filter or order by, the behavior
+        /// of the system here is that when a user orders by a field that she has no full access too, she only sees the
+        /// rows where she can see that field, sometimes resulting in a shorter list, this is to prevent the user gaining
+        /// any insight over fields she has no access to by filter or order the data
         /// </summary>
-        protected virtual IEnumerable<DtoBase> MapRelatedEntities(IEnumerable<M.DbModelBase> relatedEntities)
+        protected IEnumerable<AbstractPermission> FilterViolatedPermissions(IEnumerable<AbstractPermission> permissions, MaskTree defaultMask, string filter, string orderBy)
         {
-            return relatedEntities.Select(e => _mapper.Map<DtoBase>(e));
+            MaskTree Normalize(MaskTree tree)
+            {
+                tree.Validate(typeof(TDtoForQuery), _localizer);
+                tree.Normalize(typeof(TDtoForQuery));
+
+                return tree;
+            }
+
+            defaultMask = Normalize(defaultMask);
+            var userMask = MaskTree.BasicFieldsMaskTree();
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                var filterPaths = _filterParser.ExtractPaths(filter);
+                var filterMask = MaskTree.GetMaskTree(filterPaths);
+                var filterAccess = Normalize(filterMask);
+
+                userMask = userMask.UnionWith(filterAccess);
+            }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                var orderbyPaths = MaskTree.Split(orderBy);
+                var orderbyMask = MaskTree.GetMaskTree(orderbyPaths);
+                var orderbyAccess = Normalize(orderbyMask);
+
+                userMask = userMask.UnionWith(orderbyAccess);
+            }
+
+            return permissions.Where(e =>
+            {
+                var permissionMask = string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : Normalize(MaskTree.GetMaskTree(MaskTree.Split(e.Mask)));
+                return permissionMask.Covers(userMask);
+            });
         }
 
         /// <summary>
-        /// Specifies the maximum page size to be returned by GET, defaults to <see cref="DEFAULT_MAX_PAGE_SIZE"/>
+        /// If the user has no permissions, throw a forbidden Exception.
+        /// Else if the user is subject to row-level access, apply it as a filter to the query
+        /// Else if the user has full access let execution pass unhindred
         /// </summary>
-        protected virtual int MaximumPageSize()
+        protected virtual Task<IQueryable<TDtoForQuery>> ApplyReadPermissionsCriteria(IQueryable<TDtoForQuery> query, IEnumerable<AbstractPermission> permissions)
         {
-            return DEFAULT_MAX_PAGE_SIZE;
+            // Check if the user has any permissions on ViewId at all, else throw forbidden exception
+            // If the user has some permissions on ViewId, OR all their criteria together and apply the where clause
+
+            if (!permissions.Any())
+            {
+                // Not even authorized to call this API
+                throw new ForbiddenException();
+            }
+            else if (permissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+            {
+                // The user can read the entire data set
+                return Task.FromResult(query);
+            }
+            else
+            {
+                // The user has access to part of the data set based on a list of filters that will 
+                // be ORed together in a dynamic linq query
+                IEnumerable<string> criteriaList = permissions.Select(e => e.Criteria);
+
+                // The parameter on which the expression is based
+                var eParam = Expression.Parameter(typeof(TDtoForQuery));
+                var whereClause = ToORedWhereClause<TDtoForQuery>(criteriaList, eParam);
+                var lambda = Expression.Lambda<Func<TDtoForQuery, bool>>(whereClause, eParam);
+
+                query = query.Where(lambda);
+            }
+
+            return Task.FromResult(query);
         }
+
+        /// <summary>
+        /// Includes or excludes inactive items from the query depending on the boolean switch supplied
+        /// </summary>
+        protected abstract IQueryable<TDtoForQuery> IncludeInactive(IQueryable<TDtoForQuery> query, bool inactive);
+
+        /// <summary>
+        /// Applies the search argument, which is handled differently in every controller
+        /// </summary>
+        protected abstract IQueryable<TDtoForQuery> Search(IQueryable<TDtoForQuery> query, string search, IEnumerable<AbstractPermission> filteredPermissions);
 
         /// <summary>
         /// Filters the query based on the filter argument, the default implementation 
         /// assumes OData-like syntax
         /// </summary>
-        protected virtual IQueryable<TModel> Filter(IQueryable<TModel> query, string filter)
+        protected virtual IQueryable<TDtoForQuery> Filter(IQueryable<TDtoForQuery> query, string filter)
         {
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(TModel));
-                var expression = ParseFilterExpression<TModel>(filter, eParam);
-                var lambda = Expression.Lambda<Func<TModel, bool>>(expression, eParam);
+                var eParam = Expression.Parameter(typeof(TDtoForQuery));
+                var expression = _filterParser.ParseFilterExpression<TDtoForQuery>(filter, eParam);
+                var lambda = Expression.Lambda<Func<TDtoForQuery, bool>>(expression, eParam);
                 query = query.Where(lambda);
             }
 
             return query;
-        }
-
-        /// <summary>
-        /// Parses the OData like filter expression into a linq lambda expression
-        /// </summary>
-        protected virtual Expression ParseFilterExpression<T>(string filter, ParameterExpression eParam, Func<string, ParameterExpression, Expression> parseSpecial = null)
-        {
-            if (string.IsNullOrWhiteSpace(filter))
-            {
-                throw new ArgumentNullException(nameof(filter));
-            }
-
-            if (eParam == null)
-            {
-                throw new ArgumentNullException(nameof(eParam));
-            }
-
-            // This function is a hook to override the default parsing behavior of atomic expressions
-            parseSpecial = parseSpecial ?? ParseSpecialFilterKeyword;
-
-            // Below are the standard steps of any compiler
-
-            //////// (1) Preprocessing
-
-            // Ensure no spaces are repeated
-            Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-            filter = regex.Replace(filter, " ");
-
-            // Trim
-            filter = filter.Trim();
-
-
-            //////// (2) Lexical Analysis of string into token stream
-
-            List<string> symbols = new List<string>(new string[] {
-
-                    // Logical Operators
-                    " and ", " or ",
-
-                    // Brackets
-                    "(", ")",
-                });
-
-            List<string> tokens = new List<string>();
-            bool insideQuotes = false;
-            string acc = "";
-            int index = 0;
-            while (index < filter.Length)
-            {
-                // Lexical anaysis ignores what's inside single quotes
-                if (filter[index] == '\'' && (index == 0 || filter[index - 1] != '\'') && (index == filter.Length - 1 || filter[index + 1] != '\''))
-                {
-                    insideQuotes = !insideQuotes;
-                    acc += filter[index];
-                    index++;
-                }
-                else if (insideQuotes)
-                {
-                    acc += filter[index];
-                    index++;
-                }
-                else
-                {
-                    // Everything that is not inside single quotes is ripe for lexical analysis      
-                    var matchingSymbol = symbols.FirstOrDefault(filter.Substring(index).StartsWith);
-                    if (matchingSymbol != null)
-                    {
-                        // Add all that has been accumulating before the symbol
-                        if (!string.IsNullOrWhiteSpace(acc))
-                        {
-                            tokens.Add(acc.Trim());
-                            acc = "";
-                        }
-
-                        // And add the symbol
-                        tokens.Add(matchingSymbol.Trim());
-                        index = index + matchingSymbol.Length;
-                    }
-                    else
-                    {
-                        acc += filter[index];
-                        index++;
-                    }
-                }
-            }
-
-            if (insideQuotes)
-            {
-                // Programmer mistake
-                throw new BadRequestException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
-            }
-
-            if (!string.IsNullOrWhiteSpace(acc))
-            {
-                tokens.Add(acc.Trim());
-            }
-
-
-            //////// (3) Parse token stream to Abstract Syntax Tree (AST)
-
-            Ast ParseToAst(IEnumerable<string> tokenStream)
-            {
-                if (tokenStream.IsEnclosedInPairBrackets())
-                {
-                    return ParseBrackets(tokenStream);
-                }
-                else if (tokenStream.OutsideBrackets().Any(e => e == "or"))
-                {
-                    // OR has lower precedence than AND
-                    return ParseDisjunction(tokenStream);
-                }
-                else if (tokenStream.OutsideBrackets().Any(e => e == "and"))
-                {
-                    return ParseConjunction(tokenStream);
-                }
-                else if (tokenStream.Count() <= 1)
-                {
-                    return ParseAtom(tokenStream);
-                }
-                else
-                {
-                    // Programmer mistake
-                    throw new BadRequestException("Badly formatted filter parameter");
-                }
-            }
-
-            AstBrackets ParseBrackets(IEnumerable<string> tokenStream)
-            {
-                return new AstBrackets
-                {
-                    Inner = ParseToAst(tokenStream.Skip(1).Take(tokenStream.Count() - 2))
-                };
-            }
-
-            AstConjunction ParseConjunction(IEnumerable<string> tokenStream)
-            {
-                // find first occurrence of AND outside the brackets, and then parse both sides
-                int i = tokenStream.OutsideBrackets().ToList().IndexOf("and");
-                var left = tokenStream.Take(i);
-                var right = tokenStream.Skip(i + 1);
-
-                return new AstConjunction
-                {
-                    Left = ParseToAst(left),
-                    Right = ParseToAst(right),
-                };
-            }
-
-            AstDisjunction ParseDisjunction(IEnumerable<string> tokenStream)
-            {
-                // find first occurrence of AND outside the brackets, and then parse both sides
-                int i = tokenStream.OutsideBrackets().ToList().IndexOf("or");
-                var left = tokenStream.Take(i);
-                var right = tokenStream.Skip(i + 1);
-
-                return new AstDisjunction
-                {
-                    Left = ParseToAst(left),
-                    Right = ParseToAst(right),
-                };
-            }
-
-            AstAtom ParseAtom(IEnumerable<string> tokenStream)
-            {
-                return new AstAtom { Value = tokenStream.SingleOrDefault() ?? "" };
-            }
-
-            Ast ast = ParseToAst(tokens);
-
-
-            //////// (4) Compile the AST to Linq lambda
-
-            // Recursive function to turn the AST to linq
-            Expression ToExpression(Ast tree)
-            {
-                if (tree is AstBrackets bracketsAst)
-                {
-                    return ToExpression(bracketsAst.Inner);
-                }
-
-                if (tree is AstConjunction conAst)
-                {
-                    return Expression.AndAlso(ToExpression(conAst.Left), ToExpression(conAst.Right));
-                }
-
-                if (tree is AstDisjunction disAst)
-                {
-                    return Expression.OrElse(ToExpression(disAst.Left), ToExpression(disAst.Right));
-                }
-
-                if (tree is AstAtom atom)
-                {
-                    var modelType = typeof(T);
-                    var v = atom.Value;
-
-                    // Indicates a programmer mistake
-                    if (string.IsNullOrWhiteSpace(v))
-                    {
-                        throw new InvalidOperationException("An atomic expression cannot be empty");
-                    }
-                    // Some controllers may define their own set of keywords which 
-                    // take precedence over the default parsing of expression atoms
-                    Expression result = parseSpecial(v, eParam);
-
-                    // If the controller does not handle this atom, we use the default parser
-                    if (result == null)
-                    {
-                        // The default parser assumes the following syntax: Path Op Value, for example: Address/Street eq 'Huntington Rd.'
-                        var pieces = v.Split(" ");
-                        if (pieces.Count() < 3)
-                        {
-                            // Programmer mistake
-                            throw new InvalidOperationException("An atomic expression must either be a reserved word or come in the form of 'Property Op Value'");
-                        }
-                        else
-                        {
-                            // (A) Parse the member access path (e.g. "Address/Street")
-                            var path = pieces[0];
-
-                            var steps = path.Split('/');
-                            PropertyInfo prop = null;
-                            Type propType = modelType;
-                            Expression memberAccess = eParam;
-                            foreach (var step in steps)
-                            {
-                                prop = propType.GetProperty(step);
-                                if (prop == null)
-                                {
-                                    throw new InvalidOperationException(
-                                        $"The property '{step}' from the filter argument is not a navigation property of entity type '{propType.Name}'.");
-                                }
-
-                                var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
-                                if (isCollection)
-                                {
-                                    // Programmer mistake
-                                    throw new InvalidOperationException("Filter parameters cannot access collection properties");
-                                }
-
-                                propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                                memberAccess = Expression.Property(memberAccess, prop);
-                            }
-
-                            // (B) Parse the value (e.g. "'Huntington Rd.'")
-                            var valueString = string.Join(" ", pieces.Skip(2));
-                            object value;
-                            if (valueString == "null")
-                            {
-                                value = null;
-                            }
-                            else
-                            {
-                                if (propType == typeof(string) || propType == typeof(char) || propType == typeof(DateTimeOffset) || propType == typeof(DateTime))
-                                {
-                                    if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
-                                    {
-                                        // Programmer mistake
-                                        throw new InvalidOperationException($"Property {prop.Name} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
-                                    }
-
-                                    valueString = valueString.Substring(1, valueString.Length - 2);
-                                }
-
-                                try
-                                {
-                                    // The default Convert.ChangeType cannot handle converting types to
-                                    // nullable types also it cannot handle DateTimeOffset
-                                    // this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
-                                    object ChangeType(object val, Type conversion)
-                                    {
-                                        var t = conversion;
-                                        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-                                        {
-                                            if (val == null)
-                                            {
-                                                return null;
-                                            }
-
-                                            t = Nullable.GetUnderlyingType(t);
-                                        }
-
-                                        if (t.IsDateOrTime())
-                                        {
-                                            var date = ParseImportedDateTime(val);
-                                            if (t.IsDateTimeOffset())
-                                            {
-                                                return AddUserTimeZone(date);
-                                            }
-
-                                            return date;
-                                        }
-
-                                        return Convert.ChangeType(val, t);
-                                    }
-
-                                    value = ChangeType(valueString, prop.PropertyType);
-                                }
-                                catch (ArgumentException)
-                                {
-                                    // Programmer mistake
-                                    throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
-                                }
-                            }
-
-                            var constant = Expression.Constant(value, prop.PropertyType);
-
-                            // (C) parse the operator (e.g. "eq")
-                            var op = pieces[1];
-                            op = op?.ToLower() ?? "";
-                            switch (op)
-                            {
-                                case "gt":
-                                    return Expression.GreaterThan(memberAccess, constant);
-
-                                case "ge":
-                                    return Expression.GreaterThanOrEqual(memberAccess, constant);
-
-                                case "lt":
-                                    return Expression.LessThan(memberAccess, constant);
-
-                                case "le":
-                                    return Expression.LessThanOrEqual(memberAccess, constant);
-
-                                case "eq":
-                                    return Expression.Equal(memberAccess, constant);
-
-                                case "ne":
-                                    return Expression.NotEqual(memberAccess, constant);
-
-                                case "contains":
-                                    return memberAccess.Contains(constant);
-
-                                case "ncontains":
-                                    return Expression.Not(memberAccess.Contains(constant));
-
-                                default:
-                                    throw new InvalidOperationException($"The filter operator '{op}' is not recognized");
-                            }
-                        }
-                    }
-
-                    return result;
-                }
-
-                // Programmer mistake
-                throw new Exception("Unknown AST type");
-            }
-
-            var expression = ToExpression(ast);
-            return expression;
-        }
-
-        /// <summary>
-        /// Some controllers may wish to define their own way of handling atomic filter 
-        /// query parameter expressions, overriding this virtual method is the way to do it
-        /// </summary>
-        protected virtual Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
-        {
-            return null;
         }
 
         /// <summary>
@@ -685,9 +358,9 @@ namespace BSharp.Controllers
         /// <param name="orderby">The orderby parameter which has the format 'A/B/C'</param>
         /// <param name="desc">True for a descending order</param>
         /// <returns>Ordered query</returns>
-        protected virtual IQueryable<TModel> OrderBy(IQueryable<TModel> query, string orderby, bool desc)
+        protected virtual IQueryable<TDtoForQuery> OrderBy(IQueryable<TDtoForQuery> query, string orderby, bool desc)
         {
-            Type modelType = typeof(TModel);
+            Type modelType = typeof(TDtoForQuery);
             if (!string.IsNullOrWhiteSpace(orderby))
             {
                 var steps = orderby.Split('/');
@@ -701,14 +374,16 @@ namespace BSharp.Controllers
                         prop = propType.GetProperty(step);
                         if (prop == null)
                         {
+                            // Programmer mistake
                             throw new InvalidOperationException(
                                 $"The property '{step}' is not a navigation property of entity type '{propType.Name}'. " +
                                 $"The orderby parameter should have the general format: 'orderby=A/B'");
                         }
 
-                        var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
-                        if (isCollection)
+                        var isList = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>);
+                        if (isList)
                         {
+                            // Programmer mistake
                             throw new InvalidOperationException(
                                 $"The property '{step}' is a collection navigation property of type '{propType.Name}'. " +
                                 $"Collection properties cannot be used in the orderby argument");
@@ -735,7 +410,7 @@ namespace BSharp.Controllers
                         }
                     }
 
-                    var keySelector = Expression.Lambda<Func<TModel, object>>(exp, param);
+                    var keySelector = Expression.Lambda<Func<TDtoForQuery, object>>(exp, param);
 
                     // Order the query taking into account the "isDescending" parameter
                     query = desc ? query.OrderByDescending(keySelector) : query.OrderBy(keySelector);
@@ -754,18 +429,17 @@ namespace BSharp.Controllers
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        protected virtual IQueryable<TModel> DefaultOrder(IQueryable<TModel> query)
+        protected virtual IQueryable<TDtoForQuery> DefaultOrder(IQueryable<TDtoForQuery> query)
         {
-            var id = typeof(TModel).GetProperty("Id");
-            if (id != null && id.PropertyType == typeof(int))
-            {
-                var p = Expression.Parameter(typeof(TModel), "e");
-                var access = Expression.Property(p, id);
-                var lambda = Expression.Lambda<Func<TModel, int>>(access, p);
-                return query.OrderByDescending(lambda);
-            }
+            return query.OrderByDescending(e => e.Id);
+        }
 
-            return query;
+        /// <summary>
+        /// Specifies the maximum page size to be returned by GET, defaults to <see cref="DEFAULT_MAX_PAGE_SIZE"/>
+        /// </summary>
+        protected virtual int MaximumPageSize()
+        {
+            return DEFAULT_MAX_PAGE_SIZE;
         }
 
         /// <summary>
@@ -774,13 +448,13 @@ namespace BSharp.Controllers
         /// <param name="query">The base query on which to include related properties</param>
         /// <param name="expand">The expand parameter which has the format 'A,B/C,D''</param>
         /// <returns>Expanded query</returns>
-        protected virtual IQueryable<TModel> Expand(IQueryable<TModel> query, string expand)
+        protected virtual IQueryable<TDtoForQuery> Expand(IQueryable<TDtoForQuery> query, string expand)
         {
             // Apply the expand, which has the general format 'Expand=A,B/C,D'
             if (!string.IsNullOrWhiteSpace(expand))
             {
                 var paths = expand.Split(',').Select(e => e.Trim()).Where(e => !string.IsNullOrWhiteSpace(e));
-                Type modelType = typeof(TModel);
+                Type modelType = typeof(TDtoForQuery);
                 foreach (var path in paths)
                 {
                     // Validate each step in the path
@@ -798,8 +472,8 @@ namespace BSharp.Controllers
                                     $"The expand argument should have the general format: 'Expand=A,B/C,D'");
                             }
 
-                            var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
-                            propType = isCollection ? prop.PropertyType.GenericTypeArguments[0] : prop.PropertyType;
+                            var isList = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>);
+                            propType = isList ? prop.PropertyType.GenericTypeArguments[0] : prop.PropertyType;
                         }
                     }
 
@@ -815,63 +489,717 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// For every model in the list, the method will traverse the object graph and group all related
-        /// models it can find (navigation properties) into a dictionary, after mapping them to their DTOs
+        /// Applies the select argument and sets the fields of the dtos in the memory 
+        /// list according to the user request without regard to field-level user permissions,
+        /// those are applied in a later step
         /// </summary>
-        /// <param name="models"></param>
-        /// <returns></returns>
-        protected virtual Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(List<TModel> models, string expand)
+        protected virtual void ApplySelectAndAddMetadata(List<TDtoForQuery> memoryList, string expand, string select)
         {
-            var mainCollection = models.ToHashSet();
+            /* 
+             * The DTO Metadata is a small dictionary attached to every DTO in the response, this dictionary 
+             * specifies for every field on the DTO whether the field is 
+             * - Loaded: Requested by the API call and user permissions allow access to it
+             * - Restricted: Requested by the API call but the user permissions do not allow access to it
+             * - Not Loaded: Not requested at all, such fields are not mentioned in the metadata
+             * 
+             * The method implementation below traverses the DTO tree 3 times:
+             * (1) First time sets the metadata of every DTO in the tree according to the expand argument alone
+             * (2) Second time adjusts the metadata of every DTO in the tree according to the select argument
+             * (3) Third time examines the metadata in every DTO so far and every property that is not in the metadata is set to null
+             * 
+             * This method produces a result as if the user has unrestricted access to all data s/he is requesting
+             * A later method goes over the DTOs again and removes all restricted fields and adjusts the metadata accordingly
+             * 
+             */
 
-            // An inline function that recursively traverses the model tree and adds all entities
-            // that have a base type of Model.ModelForSaveBase to the provided HashSet
-            void Flatten(M.DbModelBase model, HashSet<M.DbModelBase> accRelatedModels)
+            var dtoForQueryType = typeof(TDtoForQuery);
+            HashSet<DtoBase> allAreLoaded = new HashSet<DtoBase>();
+            void ApplyExpandMetadata(DtoBase dto, Type dtoType, IEnumerable<string> path)
             {
-                foreach (var prop in model.GetType().GetProperties())
+                if (dto == null)
                 {
-                    // Navigation property
-
-                    if (prop.GetValue(model) is M.DbModelBase relatedModel && !accRelatedModels.Contains(relatedModel) && !mainCollection.Contains(relatedModel))
+                    return;
+                }
+                else
+                {
+                    // Any property touched by an Expand path, will have all its properties loaded by default
+                    // unless it was later touched by a Select path
+                    if (!allAreLoaded.Contains(dto))
                     {
-                        accRelatedModels.Add(relatedModel);
-                        Flatten(relatedModel, accRelatedModels);
+                        // Mark it, and later we set all the properties
+                        allAreLoaded.Add(dto);
                     }
 
-
-                    // Navigation collection
-                    var isCollection = prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>);
-                    if (isCollection && prop.PropertyType.GetGenericArguments()[0].IsSubclassOf(typeof(M.DbModelBase)))
+                    if (path.Count() > 0)
                     {
-                        var collection = prop.GetValue(model);
-                        if (collection != null)
+                        // Note: the expand argument at this point has already been validated in the expand step
+                        // so we can safely use the steps without another round of validation
+                        var step = path.First();
+                        var remainingPath = path.Skip(1);
+                        dto.EntityMetadata[step] = FieldMetadata.Loaded;
+                        var prop = dtoType.GetProperty(step);
+
+                        if (prop == null)
                         {
-                            var enumerator = collection.GetType().GetMethod("GetEnumerator").Invoke(collection, new object[0]);
-                            // while(e.MoveNext())
-                            var moveNextMethod = enumerator.GetType().GetMethod("MoveNext");
-                            var currentProp = enumerator.GetType().GetProperty("Current");
-                            while ((bool)moveNextMethod.Invoke(enumerator, new object[0]))
+                            // Programmer mistake
+                            throw new BadRequestException($"Property {step} does not exist on type {dtoType.Name}");
+                        }
+                        else if (prop.PropertyType.IsList())
+                        {
+                            // This is a navigation collection, iterate over the rows
+                            var collection = prop.GetValue(dto);
+                            if (collection != null)
                             {
-                                var line = (M.DbModelBase)currentProp.GetValue(enumerator);
-                                Flatten(line, accRelatedModels);
+                                var collectionType = prop.PropertyType.CollectionType();
+                                foreach (var row in collection.Enumerate<DtoBase>())
+                                {
+                                    ApplyExpandMetadata(row, collectionType, remainingPath);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var foreignKeyNameAtt = prop.GetCustomAttribute<NavigationPropertyAttribute>();
+                            if (foreignKeyNameAtt == null)
+                            {
+                                // Programmer mishap
+                                throw new InvalidOperationException($"Navigation property '{prop.Name}' on type '{dtoType.Name}' should be adorned with a NavigationProperty attribute");
+                            }
+                            else
+                            {
+                                string foreignKeyName = foreignKeyNameAtt.ForeignKey;
+                                if (!string.IsNullOrWhiteSpace(foreignKeyName))
+                                {
+                                    var foreignKeyProp = dtoType.GetProperty(foreignKeyName);
+                                    if (foreignKeyProp == null)
+                                    {
+                                        // Programmer mistake
+                                        throw new InvalidOperationException($"Navigation property '{prop.Name}' on type '{dtoType.Name}' is adorned with a foreign key property name '{foreignKeyName}' that doesn't exist");
+                                    }
+                                    else if (foreignKeyProp.GetCustomAttribute<ForeignKeyAttribute>() == null)
+                                    {
+                                        // Programmer mistake
+                                        throw new InvalidOperationException($"Foreign key property '{foreignKeyProp.Name}' on type '{dtoType.Name}' should be adorned with a ForeignKey attribute");
+                                    }
+                                    else
+                                    {
+                                        // Whenever a navigation property is loaded we make its corresponding foreign key loaded as well
+                                        dto.EntityMetadata[foreignKeyName] = FieldMetadata.Loaded;
+                                    }
+                                }
+                            }
+
+                            // This is a normal navigation property
+                            var propValue = prop.GetValue(dto) as DtoBase;
+                            var propType = prop.PropertyType;
+                            ApplyExpandMetadata(propValue, propType, remainingPath);
+                        }
+                    }
+                }
+            }
+
+            expand = expand ?? "";
+            {
+                var paths = expand
+                    .Split(',')
+                    .Select(e => e?.Trim())
+                    .Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Distinct()
+                    .Select(path => path.Split('/').Select(e => e?.Trim())).ToList();
+
+                // The empty path representing the principle entities is always present
+                paths.Add(new string[] { });
+
+                foreach (var dto in memoryList)
+                {
+                    foreach (var path in paths)
+                    {
+                        ApplyExpandMetadata(dto, dtoForQueryType, path);
+                    }
+                }
+            }
+
+            HashSet<DtoBase> dtosWithSetBasicFields = new HashSet<DtoBase>();
+            void SetBasicField(DtoBase dto, Type dtoType)
+            {
+                // A select path specifies certain fields on this DTO, therefore not all the fields will be included anymore
+                if (allAreLoaded.Contains(dto))
+                {
+                    allAreLoaded.Remove(dto);
+                }
+
+                // Always add the basic fields to the DTO metadata
+                if (!dtosWithSetBasicFields.Contains(dto))
+                {
+                    // Add basic fields if they are not already added
+                    foreach (var basicField in dtoType.BasicFields())
+                    {
+                        dto.EntityMetadata[basicField.Name] = FieldMetadata.Loaded;
+                    }
+
+                    // Mark the DTO as an optimization
+                    dtosWithSetBasicFields.Add(dto);
+                }
+            }
+
+            void ApplySelectMetadata(DtoBase dto, Type dtoType, IEnumerable<string> path)
+            {
+                if (dto == null || path.Count() == 0)
+                {
+                    return;
+                }
+
+                var step = path.First();
+                var remainingSteps = path.Skip(1);
+                if (step == MaskTree.BASIC_FIELDS_KEYWORD)
+                {
+                    if (remainingSteps.Count() > 0)
+                    {
+                        string message = _localizer["Error_BasicFieldsKeyword0ShouldComeEndOfPath", MaskTree.BASIC_FIELDS_KEYWORD];
+                        throw new BadRequestException(message);
+                    }
+
+                    SetBasicField(dto, dtoType);
+                }
+                else
+                {
+                    var prop = dtoType.GetProperty(step);
+                    if (prop == null)
+                    {
+                        throw new BadRequestException(_localizer["Error_Property0DoesNotExistOnType1", step, dtoType.Name]);
+                    }
+                    else if (prop.IsNavigationField())
+                    {
+                        if (!dto.EntityMetadata.ContainsKey(step))
+                        {
+                            string message = _localizer["Error_NavigationField0InSelectMustAlsoBeInExpand", prop.Name];
+                            throw new BadRequestException(message);
+                        }
+
+                        // If there are more steps: keep going
+                        else if (remainingSteps.Count() > 0) // Just an optimization
+                        {
+                            if (prop.PropertyType.IsList())
+                            {
+                                // This is a navigation collection, iterate over the rows
+                                var collection = prop.GetValue(dto);
+                                if (collection != null)
+                                {
+                                    var collectionType = prop.PropertyType.CollectionType();
+                                    foreach (var row in collection.Enumerate<DtoBase>())
+                                    {
+                                        ApplySelectMetadata(row, collectionType, remainingSteps);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // This is a normal navigation property
+                                var propValue = prop.GetValue(dto) as DtoBase;
+                                var propType = prop.PropertyType;
+                                ApplySelectMetadata(propValue, propType, remainingSteps);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (remainingSteps.Count() > 0)
+                        {
+                            string message = _localizer["Error_Field0OnType1IsNotANavigationField", prop.Name, dtoType.Name];
+                            throw new BadRequestException(message);
+                        }
+                        else if (prop.IsForeignKey())
+                        {
+                            string message = _localizer["Error_ForeignKeys1eCannotBeUsedInSelectArgument", prop.Name];
+                            throw new BadRequestException(message);
+                        }
+                        else
+                        {
+                            SetBasicField(dto, dtoType);
+
+                            // Add the field to metadata if it is not the basic fields keyword
+                            if (step != MaskTree.BASIC_FIELDS_KEYWORD)
+                            {
+                                dto.EntityMetadata[step] = FieldMetadata.Loaded;
                             }
                         }
                     }
                 }
             }
 
-            var relatedModels = new HashSet<M.DbModelBase>();
-            foreach (var model in models)
+            if (select != null)
             {
-                Flatten(model, relatedModels);
+                var paths = select
+                    .Split(',')
+                    .Select(e => e?.Trim())
+                    .Where(e => !string.IsNullOrWhiteSpace(e))
+                    .Select(path => path.Split('/').Select(e => e?.Trim()));
+
+                foreach (var dto in memoryList)
+                {
+                    foreach (var path in paths)
+                    {
+                        ApplySelectMetadata(dto, dtoForQueryType, path);
+                    }
+                }
             }
 
-            var relatedDtos = relatedModels.Select(e => _mapper.Map<DtoBase>(e));
+            // DTOs with all their properties added will have their metadata specified here
+            foreach (var dto in allAreLoaded)
+            {
+                // Add non navigation properties
+                foreach (var prop in dto.GetType().GetProperties())
+                {
+                    if (!prop.IsNavigationField() && !prop.IsForeignKey() && !prop.PropertyType.IsList() && !prop.IsIgnored())
+                    {
+                        dto.EntityMetadata[prop.Name] = FieldMetadata.Loaded;
+                    }
+                }
+            }
+
+
+            void ApplySelect(DtoBase dto, Type dtoType)
+            {
+                if (dto == null)
+                {
+                    return;
+                }
+
+                foreach (var prop in dtoType.GetProperties())
+                {
+                    if (prop.IsIgnored())
+                    {
+                        continue;
+                    }
+                    else if (!dto.EntityMetadata.ContainsKey(prop.Name))
+                    {
+                        // This means the property was not selected by the API caller, so set it to null
+                        try
+                        {
+                            prop.SetValue(dto, null);
+                        }
+                        catch (Exception ex)
+                        {
+                            if (prop.PropertyType.IsValueType && Nullable.GetUnderlyingType(prop.PropertyType) == null)
+                            {
+                                // Programmer mistake
+                                throw new InvalidOperationException($"DTO field {prop.Name} has a non nullable type, all non-basic DTO fields must have a nullable type");
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (prop.PropertyType.IsList())
+                        {
+                            // This is a navigation collection, iterate over the rows
+                            var collection = prop.GetValue(dto);
+                            if (collection != null)
+                            {
+                                var collectionType = prop.PropertyType.CollectionType();
+                                foreach (var row in collection.Enumerate<DtoBase>())
+                                {
+                                    ApplySelect(row, collectionType);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (prop.IsNavigationField())
+                            {
+                                // This is a normal navigation property
+                                var propValue = prop.GetValue(dto) as DtoBase;
+                                var propType = prop.PropertyType;
+                                ApplySelect(propValue, propType);
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (var dto in memoryList)
+            {
+                ApplySelect(dto, dtoForQueryType);
+            }
+        }
+
+        /// <summary>
+        /// If the user is subject to field-level access control, this method hides all the fields
+        /// that the user has no access to and modifies the metadata of the DTOs accordingly
+        /// </summary>
+        protected virtual async Task ApplyReadPermissionsMask(List<TDtoForQuery> memoryList, IQueryable<TDtoForQuery> query, IEnumerable<AbstractPermission> permissions, MaskTree defaultMask)
+        {
+            if (permissions.All(e => string.IsNullOrWhiteSpace(e.Mask)) && (defaultMask == null || defaultMask.IsUnrestricted))
+            {
+                // Optimization: if all masks are unrestricted, then we can skip this whole ordeal
+                return;
+            }
+            else
+            {
+
+                // Maps every DTO to its list of masked
+                Dictionary<DtoBase, HashSet<string>> maskedDtos = new Dictionary<DtoBase, HashSet<string>>();
+                HashSet<DtoBase> unrestrictedDtos = new HashSet<DtoBase>();
+
+                // Marks the DTO and all DTOs reachable from it as unrestricted
+                void MarkUnrestricted(DtoBase dto, Type dtoType)
+                {
+                    if (dto == null)
+                    {
+                        return;
+                    }
+
+                    if (maskedDtos.ContainsKey(dto))
+                    {
+                        maskedDtos.Remove(dto);
+                    }
+
+                    if (!unrestrictedDtos.Contains(dto))
+                    {
+                        unrestrictedDtos.Add(dto);
+                        foreach (var key in dto.EntityMetadata.Keys)
+                        {
+                            var prop = dtoType.GetProperty(key);
+                            if (prop.PropertyType.IsList())
+                            {
+                                // This is a navigation collection, iterate over the rows
+                                var collection = prop.GetValue(dto);
+                                if (collection != null)
+                                {
+                                    var collectionType = prop.PropertyType.CollectionType();
+                                    foreach (var row in collection.Enumerate<DtoBase>())
+                                    {
+                                        MarkUnrestricted(row, collectionType);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // This is a normal navigation property
+                                var propValue = prop.GetValue(dto) as DtoBase;
+                                var propType = prop.PropertyType;
+                                MarkUnrestricted(propValue, propType);
+                            }
+                        }
+                    }
+                }
+
+                // Goes over this DTO and every dto reachable from it and marks each one with the accessible fields
+                void MarkMask(DtoBase dto, Type dtoType, MaskTree mask)
+                {
+                    if (dto == null)
+                    {
+                        return;
+                    }
+
+                    if (mask.IsUnrestricted)
+                    {
+                        MarkUnrestricted(dto, dtoType);
+                    }
+                    else
+                    {
+                        if (unrestrictedDtos.Contains(dto))
+                        {
+                            // Nothing to mask in an unrestricted DTO
+                            return;
+                        }
+                        else
+                        {
+                            if (!maskedDtos.ContainsKey(dto))
+                            {
+                                // All DTOs will have their basic fields accessible
+                                var accessibleFields = new HashSet<string>();
+                                foreach (var basicField in dtoType.BasicFields())
+                                {
+                                    accessibleFields.Add(basicField.Name);
+                                }
+
+                                maskedDtos[dto] = accessibleFields;
+                            }
+
+                            {
+                                var accessibleFields = maskedDtos[dto];
+                                foreach (var requestedField in dto.EntityMetadata.Keys)
+                                {
+                                    var prop = dtoType.GetProperty(requestedField);
+                                    if (mask.ContainsKey(requestedField))
+                                    {
+                                        // If the field is included in the mask, make it accessible
+                                        if (!accessibleFields.Contains(requestedField))
+                                        {
+                                            accessibleFields.Add(requestedField);
+                                        }
+
+                                        if (prop.PropertyType.IsList())
+                                        {
+                                            // This is a navigation collection, iterate over the rows and apply the mask subtree
+                                            var collection = prop.GetValue(dto);
+                                            if (collection != null)
+                                            {
+                                                var collectionType = prop.PropertyType.CollectionType();
+                                                foreach (var row in collection.Enumerate<DtoBase>())
+                                                {
+                                                    MarkMask(row, collectionType, mask[requestedField]);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (prop.IsNavigationField())
+                                            {
+                                                // Make sure if the navigation property is included that its foreign key is included as well
+                                                var foreignKeyNameAtt = prop.GetCustomAttribute<NavigationPropertyAttribute>();
+                                                var foreignKeyName = foreignKeyNameAtt.ForeignKey;
+                                                if (!string.IsNullOrWhiteSpace(foreignKeyName) && !accessibleFields.Contains(foreignKeyName))
+                                                {
+                                                    accessibleFields.Add(foreignKeyName);
+                                                }
+
+                                                // Use recursion to update the rest of the tree
+                                                var propValue = prop.GetValue(dto) as DtoBase;
+                                                var propType = prop.PropertyType;
+                                                MarkMask(propValue, propType, mask[requestedField]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (permissions.All(e => string.IsNullOrWhiteSpace(e.Criteria)))
+                {
+                    // Having no criteria is a very common case that can be optimized by skipping the database call
+                    var addDefault = permissions.Any(p => string.IsNullOrWhiteSpace(p.Mask));
+                    var masks = permissions.Select(e => e.Mask).Where(e => !string.IsNullOrWhiteSpace(e));
+                    var maskTrees = masks.Select(mask => MaskTree.GetMaskTree(MaskTree.Split(mask))).ToList();
+                    if (addDefault)
+                    {
+                        maskTrees.Add(defaultMask);
+                    }
+
+                    // Calculate the union of all the mask fields
+                    var maskUnion = maskTrees.Aggregate(MaskTree.BasicFieldsMaskTree(), (t1, t2) => t1.UnionWith(t2));
+
+                    // Mark all the DTOs
+                    var dtoForQueryType = typeof(TDtoForQuery);
+                    foreach (var item in memoryList)
+                    {
+                        MarkMask(item, dtoForQueryType, maskUnion);
+                    }
+                }
+                else
+                {
+                    var maskAndCriteriaArray = permissions
+                        .Where(e => !string.IsNullOrWhiteSpace(e.Criteria)) // Optimization: a null criteria is satisfied by the entire list of DTOs
+                        .GroupBy(e => e.Criteria)
+                        .Select(g => new
+                        {
+                            Criteria = g.Key,
+                            Mask = g.Select(e => string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : MaskTree.GetMaskTree(MaskTree.Split(e.Mask)))
+                            .Aggregate((t1, t2) => t1.UnionWith(t2)) // takes the union of all the mask trees
+                        }).ToArray();
+
+                    // This mask applies to every single DTO since the criteria is null
+                    var universalMask = permissions
+                        .Where(e => string.IsNullOrWhiteSpace(e.Criteria))
+                        .Distinct()
+                        .Select(e => string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : MaskTree.GetMaskTree(MaskTree.Split(e.Mask)))
+                        .Aggregate(MaskTree.BasicFieldsMaskTree(), (t1, t2) => t1.UnionWith(t2)); // we use a seed here since if the collection is empty this will throw an error
+
+                    // For every criteria create a query q.Where(criteria). And select the Dto Id and the criteria Index. And put all the queries in a list
+                    var criteriaQueryList = maskAndCriteriaArray
+                        .Select((maskAndCriteria, index) =>
+                        {
+                            var eParam = Expression.Parameter(typeof(TDtoForQuery));
+                            var criteriaExpression = _filterParser.ParseFilterExpression<TDtoForQuery>(maskAndCriteria.Criteria, eParam);
+                            var whereClause = Expression.Lambda<Func<TDtoForQuery, bool>>(criteriaExpression, eParam);
+                            return query.Where(whereClause).Select(e => new CriteriaMap { Id = e.Id, Index = index });
+                        });
+
+                    // Union all the queries together and load the result in memory
+                    var criteriaMapList = await criteriaQueryList
+                        .Aggregate((q1, q2) => q1.Union(q2)) // Unions all the queries together
+                        .ToListAsync();
+
+                    // Go over the Ids in the result and apply all relevant masks to said DTO
+                    var dtoForQueryType = typeof(TDtoForQuery);
+                    var criteriaMapDictionary = criteriaMapList
+                        .GroupBy(e => e.Id)
+                        .ToDictionary(e => e.Key, e => e.ToList());
+
+                    foreach (var dto in memoryList)
+                    {
+                        var id = dto.Id;
+                        MaskTree mask;
+
+                        if (criteriaMapDictionary.ContainsKey(id))
+                        {
+                            // Those are DTOs that satisfy one or more non-null Criteria
+                            mask = criteriaMapDictionary[id]
+                                .Select(e => maskAndCriteriaArray[e.Index].Mask)
+                                .Aggregate((t1, t2) => t1.UnionWith(t2))
+                                .UnionWith(universalMask);
+                        }
+                        else
+                        {
+                            // Those are DTOs that belong to the universal mask of null criteria
+                            mask = universalMask;
+                        }
+
+                        MarkMask(dto, dtoForQueryType, mask);
+                    }
+                }
+
+                // This where field-level security is applied, we read all masked DTOs and apply the
+                // masks on them by setting the field to null and adjusting the metadata accordingly
+                foreach (var pair in maskedDtos)
+                {
+                    var dto = pair.Key;
+                    var accessibleFields = pair.Value;
+
+                    List<Action> updates = new List<Action>(dto.EntityMetadata.Keys.Count);
+                    foreach (var requestedField in dto.EntityMetadata.Keys)
+                    {
+                        if (!accessibleFields.Contains(requestedField))
+                        {
+                            // Mark the field as restricted (we delay the call to avoid the dreadful "collection-was-modified" Exception)
+                            updates.Add(() => dto.EntityMetadata[requestedField] = FieldMetadata.Restricted);
+
+                            // Set the field to null
+                            var prop = dto.GetType().GetProperty(requestedField);
+                            try
+                            {
+                                prop.SetValue(dto, null);
+                            }
+                            catch (Exception ex)
+                            {
+                                if (prop.PropertyType.IsValueType && Nullable.GetUnderlyingType(prop.PropertyType) == null)
+                                {
+                                    // Programmer mistake
+                                    throw new InvalidOperationException($"DTO field {prop.Name} has a non nullable type, all non-basic DTO fields must have a nullable type");
+                                }
+                                else
+                                {
+                                    throw ex;
+                                }
+                            }
+                        }
+                    }
+
+                    updates.ForEach(a => a());
+                }
+            }
+        }
+
+        /// <summary>
+        /// For every model in the list, the method will traverse the object graph and group all related
+        /// models it can find (navigation properties) into a dictionary, after mapping them to their DTOs
+        /// </summary>
+        protected virtual Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntitiesAndTrim(List<TDtoForQuery> models, string expand)
+        {
+            if(models == null || !models.Any())
+            {
+                return new Dictionary<string, IEnumerable<DtoBase>>();
+            }
+
+            var mainCollection = models.ToHashSet();
+
+            // EF ensures that source DTOs for query are not duplicated, this dictionary ensures the same for mapped DTOs for read
+            Dictionary<DtoBase, DtoBase> map = new Dictionary<DtoBase, DtoBase>();
+            DtoBase Map(DtoBase dto)
+            {
+                if (!map.ContainsKey(dto))
+                {
+                    map[dto] = Mapper.Map<DtoBase>(dto);
+                }
+
+                return map[dto];
+            }
+
+            // An inline function that recursively traverses the dto tree, takes all navigation properties
+            // that only exist in the ForQuery part and moves them to a flat collection
+            void Flatten(DtoBase dto, DtoBase mappedDto, Type forQueryType, Type forReadType, HashSet<DtoBase> accRelatedModels)
+            {
+                if (dto == null)
+                {
+                    return;
+                }
+
+                var propertiesForRead = forReadType.GetProperties().ToDictionary(e => e.Name);
+                foreach (var prop in forQueryType.GetProperties())
+                {
+                    if (!propertiesForRead.ContainsKey(prop.Name))
+                    {
+                        if (prop.GetValue(dto) is DtoBase relatedDto  /* This checks for null */
+                            && !accRelatedModels.Contains(relatedDto) && !mainCollection.Contains(relatedDto))
+                        {
+                            // This property is only on the ForQuery side, make sure it is added to accRelatedModels
+                            accRelatedModels.Add(relatedDto);
+
+                            var mappedRelatedDto = Map(relatedDto);
+                            Flatten(relatedDto, mappedRelatedDto, prop.PropertyType, mappedRelatedDto.GetType(), accRelatedModels);
+                        }
+                    }
+                    else
+                    {
+                        // The corresponding property in ForRead
+                        var mappedProp = propertiesForRead[prop.Name];
+
+                        // Navigation property
+                        if (prop.GetValue(dto) is DtoBase relatedDto)
+                        {
+                            var mappedRelatedDto = mappedProp.GetValue(mappedDto) as DtoBase;
+                            Flatten(relatedDto, mappedRelatedDto, prop.PropertyType, mappedProp.PropertyType, accRelatedModels);
+                        }
+
+                        // Navigation collection
+                        else if (prop.PropertyType.IsList())
+                        {
+                            var collection = prop.GetValue(dto);
+                            if (collection != null)
+                            {
+                                var list = collection.Enumerate<DtoBase>().ToList();
+                                var listType = prop.PropertyType.CollectionType();
+
+                                var mappedList = mappedProp.GetValue(mappedDto).Enumerate<DtoBase>().ToList();
+                                var mappedListType = mappedProp.PropertyType.CollectionType();
+
+                                for (var i = 0; i < list.Count; i++)
+                                {
+                                    var line = list[i];
+                                    var mappedLine = mappedList[i];
+
+                                    Flatten(line, mappedLine, listType, mappedListType, accRelatedModels);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            var relatedDtos = new HashSet<DtoBase>();
+            var dtoForQueryType = typeof(TDtoForQuery);
+            var dtoForReadType = typeof(TDto);
+            List<DtoBase> mappedModels = Mapper.Map<List<DtoBase>>(models);
+            for (var i = 0; i < models.Count; i++)
+            {
+                var model = models[i];
+                var mappedModel = mappedModels[i];
+                Flatten(model, mappedModel, dtoForQueryType, dtoForReadType, relatedDtos);
+            }
+
+            var mappedRelatedDtos = relatedDtos.Select(e => Map(e));
+
             // This groups the related entities by collection name
-            var relatedEntities = relatedDtos.GroupBy(e => GetCollectionName(e.GetType()))
+            var result = mappedRelatedDtos.GroupBy(e => GetCollectionName(e.GetType()))
                 .ToDictionary(g => g.Key, g => g.AsEnumerable());
 
-            return relatedEntities;
+            return result;
         }
 
         /// <summary>
@@ -882,10 +1210,10 @@ namespace BSharp.Controllers
             if (!_getCollectionNameCache.ContainsKey(dtoType))
             {
                 string collectionName;
-                var attribute = dtoType.GetCustomAttributes<CollectionNameAttribute>(inherit: true).FirstOrDefault();
+                var attribute = dtoType.GetCustomAttributes<StrongDtoAttribute>(inherit: true).FirstOrDefault();
                 if (attribute != null)
                 {
-                    collectionName = attribute.Name;
+                    collectionName = attribute.CollectionName;
                 }
                 else
                 {
@@ -899,20 +1227,45 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// Syntactic sugar that maps a collection based on the implementation of its 'list' overload
+        /// Transforms a DTO response into an abstract grid that can be transformed into an file
         /// </summary>
-        protected TDto Map(TModel model)
+        protected abstract AbstractDataGrid DtosToAbstractGrid(GetResponse<TDto> response, ExportArguments args);
+
+        // Maybe we should move these to ControllerUtilities
+
+        protected FileResult AbstractGridToFileResult(AbstractDataGrid abstractFile, string format)
         {
-            return Map(new List<TModel>() { model }).Single();
+            // Get abstract grid
+
+            FileHandlerBase handler;
+            string contentType;
+            if (format == FileFormats.Xlsx)
+            {
+                handler = new ExcelHandler(_localizer);
+                contentType = MimeTypes.Xlsx;
+            }
+            else if (format == FileFormats.Csv)
+            {
+                handler = new CsvHandler(_localizer);
+                contentType = MimeTypes.Csv;
+            }
+            else
+            {
+                throw new FormatException(_localizer["Error_UnknownFileFormat"]);
+            }
+
+            var fileStream = handler.ToFileStream(abstractFile);
+            fileStream.Seek(0, System.IO.SeekOrigin.Begin);
+            return File(fileStream, contentType);
         }
 
-        /// <summary>
-        /// Syntactic sugar that flattens a single model, based on the implementation of its 'list' overload
-        /// </summary>
-        protected Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(TModel model, string expand)
+        protected Expression ToORedWhereClause<T>(IEnumerable<string> criteriaList, ParameterExpression eParam)
         {
-            return FlattenRelatedEntities(new List<TModel> { model }, expand);
+            return criteriaList.Select(criteria => _filterParser.ParseFilterExpression<T>(criteria, eParam))
+                .Aggregate((exp1, exp2) => Expression.OrElse(exp1, exp2));
         }
+
+        // DateTime utilities
 
         /// <summary>
         /// Changes the DateTimeOffset into a DateTime in the local time of the user suitable for exporting
@@ -985,289 +1338,12 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// Constructs a SQL data table containing all the public properties of the 
-        /// entities' type and populates the data table with the provided entities
+        /// Usefull for determining which dtos satisfy the criteria of which permissions in order to apply the masks of those permissions on the DTOs
         /// </summary>
-        protected DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
+        protected class CriteriaMap
         {
-            return ControllerUtilities.DataTable<T>(entities, addIndex);
-        }
-
-        /// <summary>
-        /// This is alternative for <see cref="Type.GetProperties"/>
-        /// that returns base class properties before inherited class properties
-        /// Credit: https://bit.ly/2UGAkKj
-        /// </summary>
-        protected PropertyInfo[] GetPropertiesBaseFirst(Type type)
-        {
-            return ControllerUtilities.GetPropertiesBaseFirst(type);
-        }
-
-        // Helper methods
-
-        protected async Task<IEnumerable<M.AbstractPermission>> GetPermissions(DbQuery<M.AbstractPermission> q, PermissionLevel level, params string[] viewIds)
-        {
-            return await ControllerUtilities.GetPermissions(q, level, viewIds);
-        }
-
-        private FileResult AbstractGridToFileResult(AbstractDataGrid abstractFile, string format)
-        {
-            // Get abstract grid
-
-            FileHandlerBase handler;
-            string contentType;
-            if (format == FileFormats.Xlsx)
-            {
-                handler = new ExcelHandler(_localizer);
-                contentType = MimeTypes.Xlsx;
-            }
-            else if (format == FileFormats.Csv)
-            {
-                handler = new CsvHandler(_localizer);
-                contentType = MimeTypes.Csv;
-            }
-            else
-            {
-                throw new FormatException(_localizer["Error_UnknownFileFormat"]);
-            }
-
-            var fileStream = handler.ToFileStream(abstractFile);
-            fileStream.Seek(0, System.IO.SeekOrigin.Begin);
-            return File(fileStream, contentType);
-        }
-
-        protected async Task<ActionResult<T>> CallAndHandleErrorsAsync<T>(Func<Task<ActionResult<T>>> func)
-        {
-            try
-            {
-                return await func();
-            }
-            catch (ForbiddenException)
-            {
-                return StatusCode(403);
-            }
-            catch (NotFoundException<int?> ex)
-            {
-                return NotFound(ex.Ids);
-            }
-            catch (UnprocessableEntityException ex)
-            {
-                return UnprocessableEntity(ex.ModelState);
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
-        }
-
-        protected async Task<ActionResult> CallAndHandleErrorsAsync(Func<Task<ActionResult>> func)
-        {
-            try
-            {
-                return await func();
-            }
-            catch (ForbiddenException)
-            {
-                return StatusCode(403);
-            }
-            catch (NotFoundException<int?> ex)
-            {
-                return NotFound(ex.Ids);
-            }
-            catch (UnprocessableEntityException ex)
-            {
-                return UnprocessableEntity(ex.ModelState);
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
-                return BadRequest(ex.Message);
-            }
-        }
-    }
-
-    public static class ControllerUtilities
-    {
-        public const string ALL = "all";
-
-        /// <summary>
-        /// Constructs a SQL data table containing all the public properties of the 
-        /// entities' type and populates the data table with the provided entities
-        /// </summary>
-        public static DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
-        {
-            DataTable table = new DataTable();
-            if (addIndex)
-            {
-                // The column order MUST match the column order in the user-defined table type
-                table.Columns.Add(new DataColumn("Index", typeof(int)));
-            }
-
-            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList());
-            foreach (var prop in props)
-            {
-                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                var column = new DataColumn(prop.Name, propType);
-                if (propType == typeof(string))
-                {
-                    // For string columns, it is more performant to explicitly specify the maximum column size
-                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
-                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
-                    if (stringLengthAttribute != null)
-                    {
-                        column.MaxLength = stringLengthAttribute.MaximumLength;
-                    }
-                }
-
-                table.Columns.Add(column);
-            }
-
-            int index = 0;
-            foreach (var entity in entities)
-            {
-                DataRow row = table.NewRow();
-
-                // We add an index property since SQL works with un-ordered sets
-                if (addIndex)
-                {
-                    row["Index"] = index++;
-                }
-
-                // Add the remaining properties
-                foreach (var prop in props)
-                {
-                    var propValue = prop.GetValue(entity);
-                    row[prop.Name] = propValue ?? DBNull.Value;
-                }
-
-                table.Rows.Add(row);
-            }
-
-            return table;
-        }
-
-        /// <summary>
-        /// This is alternative for <see cref="Type.GetProperties"/>
-        /// that returns base class properties before inherited class properties
-        /// Credit: https://bit.ly/2UGAkKj
-        /// </summary>
-        public static PropertyInfo[] GetPropertiesBaseFirst(Type type)
-        {
-            var orderList = new List<Type>();
-            var iteratingType = type;
-            do
-            {
-                orderList.Insert(0, iteratingType);
-                iteratingType = iteratingType.BaseType;
-            } while (iteratingType != null);
-
-            var props = type.GetProperties()
-                .OrderBy(x => orderList.IndexOf(x.DeclaringType))
-                .ToArray();
-
-            return props;
-        }
-
-        public static async Task<IEnumerable<M.AbstractPermission>> GetPermissions(DbQuery<M.AbstractPermission> q, PermissionLevel level, params string[] viewIds)
-        {
-            // Validate parameters
-            if (q == null)
-            {
-                // Programmer mistake
-                throw new ArgumentNullException(nameof(q));
-            }
-
-            if (viewIds == null)
-            {
-                // Programmer mistake
-                throw new ArgumentNullException(nameof(viewIds));
-            }
-
-            if (viewIds.Any(e => e == ALL))
-            {
-                // Programmer mistake
-                throw new BadRequestException("'GetPermissions' cannot handle the 'all' case");
-            }
-
-            // Add all and prepare the TVP
-            viewIds = viewIds.Union(new[] { ALL }).ToArray();
-            var viewIdsTable = DataTable(viewIds.Select(e => new { Code = e }));
-            var viewIdsTvp = new SqlParameter("@ViewIds", viewIdsTable)
-            {
-                TypeName = $"dbo.CodeList",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Prepare the WHERE clause that corresponds to the permission level
-            string levelWhereClause;
-            switch (level)
-            {
-                case PermissionLevel.Read:
-                    levelWhereClause = $"E.Level LIKE '{Constants.Read}%' OR E.Level = '{Constants.Update}' OR E.Level = '{Constants.Sign}'";
-                    break;
-                case PermissionLevel.Update:
-                    levelWhereClause = $"E.Level = '{Constants.Update}' OR E.Level = '{Constants.Sign}'";
-                    break;
-                case PermissionLevel.Create:
-                    levelWhereClause = $"E.Level LIKE '%{Constants.Read}'";
-                    break;
-                case PermissionLevel.Sign:
-                    levelWhereClause = $"E.Level = '{Constants.Sign}'";
-                    break;
-                default:
-                    throw new Exception("Unhandled PermissionLevel enum value"); // Programmer mistake
-            }
-
-            // Retrieve the permissions
-            // Note: There is another query similiar to this one in PermissionsController
-            var result = await q.FromSql($@"
-SELECT * FROM (
-    SELECT ViewId, Criteria, Level 
-    FROM [dbo].[Permissions] P
-    JOIN [dbo].[Roles] R ON P.RoleId = R.Id
-    JOIN [dbo].[RoleMemberships] RM ON R.Id = RM.RoleId
-    WHERE R.IsActive = 1 
-    AND RM.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')) 
-    AND P.ViewId IN (SELECT Code FROM @ViewIds)
-    UNION
-    SELECT ViewId, Criteria, Level 
-    FROM [dbo].[Permissions] P
-    JOIN [dbo].[Roles] R ON P.RoleId = R.Id
-    WHERE R.IsPublic = 1 
-    AND R.IsActive = 1
-    AND P.ViewId IN (SELECT Code FROM @ViewIds)
-) AS E WHERE {levelWhereClause}
-", viewIdsTvp).ToListAsync();
-
-            return result;
-        }
-
-        public static Expression CreatedByMeFilter<TModel>(string keyword, ParameterExpression param, int userId) where TModel : M.DbModelBase
-        {
-            // This method is overridden by controllers to provide special keywords that represent certain
-            // complicated linq expressions that cannot be expressed with normal ODATA filter
-
-            // Any type that contains a CreatedBy property defines a keyword "CreatedByMe"
-            if (keyword == "CreatedByMe")
-            {
-                var createdByProperty = typeof(TModel).GetProperty("CreatedById");
-                if (createdByProperty != null)
-                {
-                    var me = Expression.Constant(userId, typeof(int));
-                    return Expression.Equal(Expression.Property(param, createdByProperty), me);
-                }
-            }
-
-            return null;
+            public int Index { get; set; }
+            public TKey Id { get; set; }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using BSharp.Data.DbModel;
+﻿using BSharp.Data.Model;
+using Dto = BSharp.Controllers.DTO;
 using BSharp.Services.Identity;
 using BSharp.Services.Migrations;
 using BSharp.Services.MultiTenancy;
@@ -20,30 +21,47 @@ namespace BSharp.Data
 {
     /// <summary>
     /// The context containing all tables with TenantId, this context can be sharded across multiple databases
-    /// and it automatically routes itself to the correct database using the registered IShardResolver service,
+    /// and it automatically routes itself to the correct database using the registered <see cref="IShardResolver"/> service,
     /// Application tables such as Agents and Events all live here
     /// </summary>
     public class ApplicationContext : DbContext
     {
-        #region Tables
+        #region Database Model
 
         // The database tables are listed below
         public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
+        public DbSet<Dto.MeasurementUnitForQuery> VW_MeasurementUnits { get; set; }
+
         public DbSet<Custody> Custodies { get; set; }
+        public DbSet<Dto.CustodyForQuery> VW_Custodies { get; set; }
+
         public DbSet<Agent> Agents { get; set; }
+        public DbSet<Dto.AgentForQuery> VW_Agents { get; set; }
+
         public DbSet<Blob> Blobs { get; set; }
 
         // Security
         public DbSet<LocalUser> LocalUsers { get; set; }
+        public DbSet<Dto.LocalUserForQuery> VW_LocalUsers { get; set; }
+
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Dto.RoleForQuery> VW_Roles { get; set; }
+
         public DbSet<View> Views { get; set; }
+        public DbSet<Dto.ViewForQuery> VW_Views { get; set; }
+
         public DbSet<Permission> Permissions { get; set; }
+        public DbSet<Dto.PermissionForQuery> VW_Permissions { get; set; }
+        public DbSet<Dto.RequiredSignatureForQuery> VW_RequiredSignatures { get; set; }
+
         public DbSet<RoleMembership> RoleMemberships { get; set; }
+        public DbSet<Dto.RoleMembershipForQuery> VW_RoleMemberships { get; set; }
 
         // Settings
         public DbSet<Settings> Settings { get; set; }
 
         #endregion
+
 
         #region Modelling
 
@@ -89,11 +107,19 @@ namespace BSharp.Data
 
             // Settings
             AddTenantId<Settings>(builder, tenantId);
-            Data.DbModel.Settings.OnModelCreating(builder);
+            Data.Model.Settings.OnModelCreating(builder);
 
             // Blobs
             AddTenantId<Blob>(builder, nameof(Blob.Id), tenantId);
             Blob.OnModelCreating(builder);
+
+            // EF migratios was confused about these for some reason, had to set them manually
+            builder.Entity<Dto.AgentForQuery>().HasOne(e => e.CreatedBy).WithMany().HasForeignKey(e => e.CreatedById);
+            builder.Entity<Dto.AgentForQuery>().HasOne(e => e.ModifiedBy).WithMany().HasForeignKey(e => e.ModifiedById);
+            builder.Entity<Dto.LocalUserForQuery>().HasOne(e => e.Agent).WithMany().HasForeignKey(e => e.AgentId);
+            builder.Entity<Dto.RoleMembershipForQuery>().HasOne(e => e.User).WithMany(e => e.Roles).HasForeignKey(e => e.UserId);
+            builder.Entity<Dto.RoleMembershipForQuery>().HasOne(e => e.CreatedBy).WithMany().HasForeignKey(e => e.CreatedById);
+            builder.Entity<Dto.RoleMembershipForQuery>().HasOne(e => e.ModifiedBy).WithMany().HasForeignKey(e => e.ModifiedById);
         }
 
         /// <summary>
@@ -156,7 +182,7 @@ namespace BSharp.Data
         /// <summary>
         /// Unified model for both application and admin contexts for querying user permissions
         /// </summary>
-        public DbQuery<AbstractPermission> AbstractPermissions { get; set; }
+        public DbQuery<Controllers.Misc.AbstractPermission> AbstractPermissions { get; set; }
 
         /// <summary>
         /// A query for returning a list of GUIDs

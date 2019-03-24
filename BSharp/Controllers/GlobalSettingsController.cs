@@ -10,7 +10,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using M = BSharp.Data.DbModel;
+using M = BSharp.Data.Model;
 
 namespace BSharp.Controllers
 {

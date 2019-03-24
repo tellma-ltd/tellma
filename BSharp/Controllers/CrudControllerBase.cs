@@ -21,12 +21,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using M = BSharp.Data.DbModel;
+using M = BSharp.Data.Model;
 
 namespace BSharp.Controllers
 {
-    public abstract class CrudControllerBase<TModel, TDto, TDtoForSave, TKey> : ReadControllerBase<TModel, TDto, TKey>
-        where TModel : M.DbModelBase
+    public abstract class CrudControllerBase<TDtoForSave, TDto, TDtoForQuery, TKey> : ReadControllerBase<TDto, TDtoForQuery, TKey>
+        where TDtoForQuery : DtoForSaveKeyBase<TKey>
         where TDtoForSave : DtoForSaveKeyBase<TKey>
         where TDto : DtoForSaveKeyBase<TKey>
     {
@@ -34,15 +34,13 @@ namespace BSharp.Controllers
 
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
-        private readonly IMapper _mapper;
 
         // Constructor
 
-        public CrudControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper) : base(logger, localizer, mapper)
+        public CrudControllerBase(ILogger logger, IStringLocalizer localizer, IServiceProvider serviceProvider) : base(logger, localizer, serviceProvider)
         {
             _logger = logger;
             _localizer = localizer;
-            _mapper = mapper;
         }
 
         // HTTP Methods
@@ -53,21 +51,21 @@ namespace BSharp.Controllers
             // Note here we use lists https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=netcore-2.1
             // since the order is symantically relevant for reporting validation errors on the entities
 
-            return await CallAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 var result = await SaveImplAsync(entities, args);
                 return Ok(result);
-            });
+            }, _logger);
         }
 
         [HttpDelete]
         public virtual async Task<ActionResult> Delete([FromBody] List<TKey> ids)
         {
-            return await CallAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 await DeleteAsync(ids);
                 return Ok();
-            });
+            }, _logger);
         }
 
         [HttpGet("template")]
@@ -77,7 +75,6 @@ namespace BSharp.Controllers
             {
                 var abstractFile = GetImportTemplate();
                 return ToFileResult(abstractFile, args.Format);
-                // return Ok(abstractFile);
             }
             catch (Exception ex)
             {
@@ -98,7 +95,7 @@ namespace BSharp.Controllers
             decimal attributeValidationInCSharp = 0;
             decimal validatingAndSaving = 0;
 
-            return await CallAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 // Parse the file into DTOs + map back to row numbers (The way source code is compiled into machine code + symbols file)
                 var (dtos, rowNumberFromErrorKeyMap) = await ParseImplAsync(args); // This should check for primary code consistency!
@@ -144,7 +141,7 @@ namespace BSharp.Controllers
                 result.ValidatingAndSaving = validatingAndSaving;
 
                 return Ok(result);
-            });
+            }, _logger);
         }
 
         [HttpPost("parse"), RequestSizeLimit(5 * 1024 * 1024)] // 5MB
@@ -251,11 +248,11 @@ namespace BSharp.Controllers
                 IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
 
                 // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(TModel));
+                var eParam = Expression.Parameter(typeof(TDtoForQuery));
 
                 // Prepare the lambda
-                Expression whereClause = ToORedWhereClause<TModel>(criteriaList, eParam);
-                var lambda = Expression.Lambda<Func<TModel, bool>>(whereClause, eParam);
+                Expression whereClause = ToORedWhereClause<TDtoForQuery>(criteriaList, eParam);
+                var lambda = Expression.Lambda<Func<TDtoForQuery, bool>>(whereClause, eParam);
 
 
                 /////// Part (1) Permissions must allow manipulating the original data before the update
@@ -304,11 +301,11 @@ namespace BSharp.Controllers
                 IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
 
                 // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(TModel));
+                var eParam = Expression.Parameter(typeof(TDtoForQuery));
 
                 // Prepare the lambda
-                Expression whereClause = ToORedWhereClause<TModel>(criteriaList, eParam);
-                var lambda = Expression.Lambda<Func<TModel, bool>>(whereClause, eParam);
+                Expression whereClause = ToORedWhereClause<TDtoForQuery>(criteriaList, eParam);
+                var lambda = Expression.Lambda<Func<TDtoForQuery, bool>>(whereClause, eParam);
 
                 await CheckPermissionsForOld(entityIds, lambda);
             }
@@ -320,7 +317,7 @@ namespace BSharp.Controllers
         /// and <see cref="CheckActionPermissions(IEnumerable{TKey})"/> instead
         /// and <see cref="CheckActionPermissions"/>
         /// </summary>
-        protected abstract Task CheckPermissionsForNew(IEnumerable<TDtoForSave> newItems, Expression<Func<TModel, bool>> lambda);
+        protected abstract Task CheckPermissionsForNew(IEnumerable<TDtoForSave> newItems, Expression<Func<TDtoForQuery, bool>> lambda);
 
         /// <summary>
         /// Check that all modified/deleted Ids are covered by the user permissions, throws a <see cref="ForbiddenException"/> otherwise,
@@ -328,7 +325,7 @@ namespace BSharp.Controllers
         /// and <see cref="CheckActionPermissions(IEnumerable{TKey})"/> instead
         /// and <see cref="CheckActionPermissions"/>
         /// </summary>
-        protected abstract Task CheckPermissionsForOld(IEnumerable<TKey> entityIds, Expression<Func<TModel, bool>> lambda);
+        protected abstract Task CheckPermissionsForOld(IEnumerable<TKey> entityIds, Expression<Func<TDtoForQuery, bool>> lambda);
 
         /// <summary>
         /// Saves the entities (Insert or Update) into the database after authorization and validation
@@ -336,7 +333,6 @@ namespace BSharp.Controllers
         /// <returns>Optionally returns the same entities in their persisted READ form</returns>
         protected virtual async Task<EntitiesResponse<TDto>> SaveImplAsync(List<TDtoForSave> entities, SaveArguments args)
         {
-            // TODO Authorize POST
             await CheckUpdatePermissions(entities, args);
 
             // Trim all strings as a preprocessing step
@@ -354,13 +350,24 @@ namespace BSharp.Controllers
                     }
 
                     // Save
-                    var memoryList = await PersistAsync(entities, args);
+                    var (memoryList, query) = await PersistAsync(entities, args);
+
+                    // Add the metadata
+                    ApplySelectAndAddMetadata(memoryList, args.Expand, null);
+
+                    // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+                    if(memoryList != null && memoryList.Any())
+                    {
+                        var permissions = await UserPermissions(PermissionLevel.Read);
+                        var defaultMask = GetDefaultMask();
+                        await ApplyReadPermissionsMask(memoryList, query, permissions, defaultMask);
+                    }
 
                     // Flatten related entities and map each to its respective DTO 
-                    var relatedEntities = FlattenRelatedEntities(memoryList, args.Expand);
+                    var relatedEntities = FlattenRelatedEntitiesAndTrim(memoryList, args.Expand);
 
                     // Map the primary result to DTOs as well
-                    var resultData = Map(memoryList);
+                    var resultData = Mapper.Map<List<TDto>>(memoryList);
 
                     // Prepare the result in a response object
                     var result = new EntitiesResponse<TDto>
@@ -393,7 +400,7 @@ namespace BSharp.Controllers
         /// <summary>
         /// Persists the entities in the database, either creating them or updating them depending on the EntityState
         /// </summary>
-        protected abstract Task<List<TModel>> PersistAsync(List<TDtoForSave> entities, SaveArguments args);
+        protected abstract Task<(List<TDtoForQuery>, IQueryable<TDtoForQuery>)> PersistAsync(List<TDtoForSave> entities, SaveArguments args);
 
         /// <summary>
         /// Begins the transaction that wraps validation and persistence of data inside the save API 
@@ -441,7 +448,7 @@ namespace BSharp.Controllers
             table.Columns.Add(new DataColumn("Index", typeof(int)));
             table.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
 
-            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList());
+            var props = ControllerUtilities.GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList());
             foreach (var prop in props)
             {
                 var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;

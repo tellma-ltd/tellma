@@ -92,6 +92,7 @@ import { DetailsPickerComponent } from './details-picker/details-picker.componen
 import { DropdownAppendToBodyDirective } from './details-picker/dropdown-append-to-body.directive';
 import { ViewLinkComponent } from './view-link/view-link.component';
 import { ImageComponent } from './image/image.component';
+import { RestrictedComponent } from './restricted/restricted.component';
 
 // Icons to be used in the web app
 library.add(
@@ -133,7 +134,8 @@ library.add(
     DetailsPickerComponent,
     DropdownAppendToBodyDirective,
     ViewLinkComponent,
-    ImageComponent
+    ImageComponent,
+    RestrictedComponent
   ],
   imports: [
     CommonModule,
@@ -186,7 +188,8 @@ library.add(
     DetailsPickerComponent,
     ViewLinkComponent,
     ImageComponent,
-    DropdownAppendToBodyDirective
+    DropdownAppendToBodyDirective,
+    RestrictedComponent
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },

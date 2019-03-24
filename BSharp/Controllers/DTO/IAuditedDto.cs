@@ -14,5 +14,9 @@ namespace BSharp.Controllers.DTO
         DateTimeOffset? ModifiedAt { get; set; }
 
         int? ModifiedById { get; set; }
+
+        LocalUserForQuery CreatedBy { get; set; }
+
+        LocalUserForQuery ModifiedBy { get; set; }
     }
 }

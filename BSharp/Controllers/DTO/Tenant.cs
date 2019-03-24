@@ -11,6 +11,11 @@
 
     }
 
+    public class TenantForQuery : Tenant
+    {
+
+    }
+
     public class TenantForClient : DtoBase
     {
         public int Id { get; set; }

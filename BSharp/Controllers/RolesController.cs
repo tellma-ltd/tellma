@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -18,46 +18,44 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using M = BSharp.Data.DbModel;
 
 namespace BSharp.Controllers
 {
     [Route("api/roles")]
     [LoadTenantInfo]
-    public class RolesController : CrudControllerBase<M.Role, Role, RoleForSave, int?>
+    public class RolesController : CrudControllerBase<RoleForSave, Role, RoleForQuery, int?>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger<RolesController> _logger;
         private readonly IStringLocalizer<RolesController> _localizer;
-        private readonly IMapper _mapper;
         private readonly ITenantUserInfoAccessor _tenantInfoAccessor;
 
-        public RolesController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<RolesController> logger,
-            IStringLocalizer<RolesController> localizer, IMapper mapper, ITenantUserInfoAccessor tenantInfoAccessor) : base(logger, localizer, mapper)
+        public RolesController(ILogger<RolesController> logger,
+            IStringLocalizer<RolesController> localizer, IServiceProvider serviceProvider, ITenantUserInfoAccessor tenantInfoAccessor) : base(logger, localizer, serviceProvider)
         {
-            _db = db;
-            _metadataProvider = metadataProvider;
+            _db = serviceProvider.GetRequiredService<ApplicationContext>();
+            _metadataProvider = serviceProvider.GetRequiredService<IModelMetadataProvider>();
+            _tenantInfoAccessor = serviceProvider.GetRequiredService<ITenantUserInfoAccessor>();
+
             _logger = logger;
             _localizer = localizer;
-            _mapper = mapper;
-            _tenantInfoAccessor = tenantInfoAccessor;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Role>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
-            return await CallAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
-            );
+            , _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Role>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
-            return await CallAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
-            );
+            , _logger);
         }
 
         private async Task<ActionResult<EntitiesResponse<Role>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
@@ -74,7 +72,7 @@ namespace BSharp.Controllers
 
                     var isActiveParam = new SqlParameter("@IsActive", isActive);
 
-                    DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
+                    DataTable idsTable = ControllerUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: false);
                     var idsTvp = new SqlParameter("@Ids", idsTable)
                     {
                         TypeName = $"dbo.IdList",
@@ -122,12 +120,15 @@ MERGE INTO [dbo].[Roles] AS t
             else
             {
                 // Load the entities using their Ids
-                var affectedDbEntitiesQ = _db.Roles.Where(e => ids.Contains(e.Id)); // _db.Roles.FromSql("SELECT * FROM [dbo].[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var affectedDbEntitiesQ = _db.VW_Roles.Where(e => ids.Contains(e.Id.Value)); // _db.VW_Roles.FromSql("SELECT * FROM [dbo].[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
                 var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
                 var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-                var affectedEntities = _mapper.Map<List<Role>>(affectedDbEntities);
+
+                // Add the metadata
+                ApplySelectAndAddMetadata(affectedDbEntities, expand, null);
 
                 // sort the entities the way their Ids came, as a good practice
+                var affectedEntities = Mapper.Map<List<Role>>(affectedDbEntities);
                 Role[] sortedAffectedEntities = new Role[ids.Count];
                 Dictionary<int, Role> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
                 for (int i = 0; i < ids.Count; i++)
@@ -142,11 +143,18 @@ MERGE INTO [dbo].[Roles] AS t
                     sortedAffectedEntities[i] = entity;
                 }
 
+                // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+                await ApplyReadPermissionsMask(affectedDbEntities, affectedDbEntitiesExpandedQ, await UserPermissions(PermissionLevel.Read), GetDefaultMask());
+
+                // Flatten related entities and map each to its respective DTO 
+                var relatedEntities = FlattenRelatedEntitiesAndTrim(affectedDbEntities, expand);
+
                 // Prepare a proper response
                 var response = new EntitiesResponse<Role>
                 {
                     Data = sortedAffectedEntities,
-                    CollectionName = GetCollectionName(typeof(Role))
+                    CollectionName = GetCollectionName(typeof(Role)),
+                    RelatedEntities = relatedEntities
                 };
 
                 // Commit and return
@@ -159,19 +167,14 @@ MERGE INTO [dbo].[Roles] AS t
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
-        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
         {
-            return GetPermissions(_db.AbstractPermissions, level, "roles");
+            return ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "roles");
         }
 
-        protected override IQueryable<M.Role> GetBaseQuery() => _db.Roles;
+        protected override IQueryable<RoleForQuery> GetBaseQuery() => _db.VW_Roles;
 
-        protected override IQueryable<M.Role> SingletonQuery(IQueryable<M.Role> query, int? id)
-        {
-            return query.Where(e => e.Id == id);
-        }
-
-        protected override IQueryable<M.Role> Search(IQueryable<M.Role> query, string search)
+        protected override IQueryable<RoleForQuery> Search(IQueryable<RoleForQuery> query, string search, IEnumerable<AbstractPermission> permissions)
         {
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -181,72 +184,14 @@ MERGE INTO [dbo].[Roles] AS t
             return query;
         }
 
-        protected override IQueryable<M.Role> IncludeInactive(IQueryable<M.Role> query, bool inactive)
+        protected override IQueryable<RoleForQuery> IncludeInactive(IQueryable<RoleForQuery> query, bool inactive)
         {
             if (!inactive)
             {
-                query = query.Where(e => e.IsActive);
+                query = query.Where(e => e.IsActive == true);
             }
 
             return query;
-        }
-
-        protected override IQueryable<M.Role> Expand(IQueryable<M.Role> query, string expand)
-        {
-            // TODO: Move it to a place where it can be universally applied
-
-            // Here we make sure that a valid 'Permissions/View' expand term does not make it to the default implementation
-            // since it would throw an error, 'View' is not a navigation property in the DB and has to be manually included
-            // in FlattenRelatedEntities
-            string nonDbExpand = "Permissions/View";
-            if (expand != null && expand.Contains(nonDbExpand))
-            {
-                // Take out the non DB Expand term and call the default implementation on the rest
-                var dbExpands = expand.Split(',').Select(e => e.Trim()).Where(e => e != nonDbExpand).ToList();
-                dbExpands.Add("Permissions");
-                expand = string.Join(",", dbExpands);
-            }
-
-            return base.Expand(query, expand);
-        }
-
-        protected override Dictionary<string, IEnumerable<DtoBase>> FlattenRelatedEntities(List<M.Role> models, string expand)
-        {
-            // TODO: Move it to a place where it can be universally applied
-
-            // Here we artificially include Permissions/Views since it is not a navigation
-            // property in the DB and therefore will throw an error in the default implementation
-            string nonDbExpand = "Permissions/View";
-            if (expand != null && expand.Contains(nonDbExpand))
-            {
-                // Take out the non DB Expand term and call the default implementation on the rest
-                var dbExpands = expand.Split(',').Select(e => e.Trim()).Where(e => e != nonDbExpand).ToList();
-                dbExpands.Add("Permissions");
-                Dictionary<string, IEnumerable<DtoBase>> result = base.FlattenRelatedEntities(models, string.Join(",", dbExpands));
-
-                // Manually include the views by invoking the Views repository
-                var viewIds = models.SelectMany(e => e.Permissions).Select(e => e.ViewId).Where(e => e != null).Distinct();
-                var repo = new ViewsRepository(_db, _localizer, _tenantInfoAccessor);
-                var allViews = repo.GetAllViews().ToDictionary(e => e.Id);
-
-                var viewList = new List<View>(viewIds.Count());
-
-                foreach (var viewId in viewIds)
-                {
-                    if (allViews.ContainsKey(viewId))
-                    {
-                        var viewDef = allViews[viewId];
-                        viewList.Add(_mapper.Map<View>(viewDef));
-                    }
-                }
-
-                result["Views"] = viewList;
-                return result;
-            }
-            else
-            {
-                return base.FlattenRelatedEntities(models, expand);
-            }
         }
 
         protected override async Task ValidateAsync(List<RoleForSave> entities)
@@ -338,15 +283,19 @@ MERGE INTO [dbo].[Roles] AS t
             }
 
             // Perform SQL-side validation
-            DataTable rolesTable = DataTable(entities, addIndex: true);
+            DataTable rolesTable = ControllerUtilities.DataTable(entities, addIndex: true);
             var rolesTvp = new SqlParameter("Roles", rolesTable) { TypeName = $"dbo.{nameof(RoleForSave)}List", SqlDbType = SqlDbType.Structured };
 
             var permissionHeaderIndices = indices.Keys.Select(role => (role.Permissions, indices[role]));
-            DataTable permissionsTable = DataTableWithHeaderIndex(permissionHeaderIndices, e => e.EntityState != null);
+            DataTable permissionsTable = ControllerUtilities.DataTableWithHeaderIndex(permissionHeaderIndices, e => e.EntityState != null);
             var permissionsTvp = new SqlParameter("Permissions", permissionsTable) { TypeName = $"dbo.{nameof(PermissionForSave)}List", SqlDbType = SqlDbType.Structured };
 
+            var signatureHeaderIndices = indices.Keys.Select(role => (role.Signatures, indices[role]));
+            DataTable signaturesTable = ControllerUtilities.DataTableWithHeaderIndex(signatureHeaderIndices, e => e.EntityState != null);
+            var signaturesTvp = new SqlParameter("Signatures", signaturesTable) { TypeName = $"dbo.{nameof(RequiredSignatureForSave)}List", SqlDbType = SqlDbType.Structured  };
+
             var memberHeaderIndices = indices.Keys.Select(role => (role.Members, indices[role]));
-            DataTable membersTable = DataTableWithHeaderIndex(memberHeaderIndices, e => e.EntityState != null);
+            DataTable membersTable = ControllerUtilities.DataTableWithHeaderIndex(memberHeaderIndices, e => e.EntityState != null);
             var membersTvp = new SqlParameter("Members", membersTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
 
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
@@ -458,8 +407,20 @@ SET NOCOUNT ON;
 		SELECT [Id] FROM dbo.[Views] WHERE IsActive = 1
 		) AND P.ViewId <> 'all'
 	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
+
+	-- No inactive view
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
+	SELECT '[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Signatures[' + 
+				CAST(P.[Index] AS NVARCHAR(255)) + '].ViewId' As [Key], N'Error_TheView0IsInactive' As [ErrorName],
+				P.[ViewId] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
+	FROM @Signatures P
+	WHERE P.ViewId NOT IN (
+		SELECT [Id] FROM dbo.[Views] WHERE IsActive = 1
+		) AND P.ViewId <> 'all'
+	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
+
 SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
-", rolesTvp, permissionsTvp, membersTvp).ToListAsync();
+", rolesTvp, permissionsTvp, signaturesTvp, membersTvp).ToListAsync();
 
             // Loop over the errors returned from SQL and add them to ModelState
             foreach (var sqlError in sqlErrors)
@@ -473,11 +434,11 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             }
         }
 
-        protected override async Task<List<M.Role>> PersistAsync(List<RoleForSave> entities, SaveArguments args)
+        protected override async Task<(List<RoleForQuery>, IQueryable<RoleForQuery>)> PersistAsync(List<RoleForSave> entities, SaveArguments args)
         {
             // Add created entities
             var roleIndices = entities.ToIndexDictionary();
-            DataTable rolesTable = DataTable(entities, addIndex: true);
+            DataTable rolesTable = ControllerUtilities.DataTable(entities, addIndex: true);
             var rolesTvp = new SqlParameter("Roles", rolesTable)
             {
                 TypeName = $"dbo.{nameof(RoleForSave)}List",
@@ -486,20 +447,29 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 
             // Filter out permissions that haven't changed for performance
             var permissionHeaderIndices = roleIndices.Keys.Select(role => (role.Permissions.Where(e => e.EntityState != null).ToList(), roleIndices[role]));
-            DataTable permissionsTable = DataTableWithHeaderIndex(permissionHeaderIndices, e => e.EntityState != null);
+            DataTable permissionsTable = ControllerUtilities.DataTableWithHeaderIndex(permissionHeaderIndices, e => e.EntityState != null);
             var permissionsTvp = new SqlParameter("Permissions", permissionsTable)
             {
                 TypeName = $"dbo.{nameof(PermissionForSave)}List",
                 SqlDbType = SqlDbType.Structured
             };
 
+            var signatureHeaderIndices = roleIndices.Keys.Select(role => (role.Signatures.Where(e => e.EntityState != null).ToList(), roleIndices[role]));
+            DataTable signaturesTable = ControllerUtilities.DataTableWithHeaderIndex(signatureHeaderIndices, e => e.EntityState != null);
+            var signaturesTvp = new SqlParameter("Signatures", signaturesTable)
+            {
+                TypeName = $"dbo.{nameof(RequiredSignatureForSave)}List",
+                SqlDbType = SqlDbType.Structured
+            };
+
             var memberHeaderIndices = roleIndices.Keys.Select(role => (role.Members, roleIndices[role]));
-            DataTable membersTable = DataTableWithHeaderIndex(memberHeaderIndices, e => e.EntityState != null);
+            DataTable membersTable = ControllerUtilities.DataTableWithHeaderIndex(memberHeaderIndices, e => e.EntityState != null);
             var membersTvp = new SqlParameter("Members", membersTable)
             {
                 TypeName = $"dbo.{nameof(RoleMembershipForSave)}List",
                 SqlDbType = SqlDbType.Structured
             };
+
 
             string saveSql = $@"
 -- TODO: PermissionsVersion
@@ -514,6 +484,9 @@ UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
 
 	DELETE FROM [dbo].[Permissions]
 	WHERE [Id] IN (SELECT [Id] FROM @Permissions WHERE [EntityState] = N'Deleted');
+
+	DELETE FROM [dbo].[Permissions]
+	WHERE [Id] IN (SELECT [Id] FROM @Signatures WHERE [EntityState] = N'Deleted');
 
 	DELETE FROM [dbo].[RoleMemberships]
 	WHERE [Id] IN (SELECT [Id] FROM @Members WHERE [EntityState] = N'Deleted');
@@ -548,24 +521,32 @@ UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 
+
     MERGE INTO [dbo].[Permissions] AS t
 		USING (
-			SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [ViewId], [Level], [Criteria], [Memo]
-			FROM @Permissions L
+			SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [ViewId], [Level], L.[Criteria], L.[Mask], L.[Memo]
+			FROM @Permissions L 
+			JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
+			WHERE L.[EntityState] IN (N'Inserted', N'Updated')
+            UNION
+			SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [ViewId], 'Sign' AS [Level], L.[Criteria], NULL as [Mask], L.[Memo]
+			FROM @Signatures L 
 			JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
 			WHERE L.[EntityState] IN (N'Inserted', N'Updated')
 		) AS s ON t.Id = s.Id
 		WHEN MATCHED THEN
 			UPDATE SET 
-				t.[ViewId]		= s.[ViewId], 
-				t.[Level]		= s.[Level],
-				t.[Criteria]	= s.[Criteria],
-				t.[Memo]		= s.[Memo],
-				t.[ModifiedAt]	= @Now,
+				t.[ViewId]		    = s.[ViewId], 
+				t.[Level]		    = s.[Level],
+				t.[Criteria]	    = s.[Criteria],
+				t.[Mask]	        = s.[Mask],
+				t.[Memo]		    = s.[Memo],
+				t.[ModifiedAt]	    = @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([TenantId], [RoleId],	[ViewId],	[Level],	[Criteria], [Memo], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
-			VALUES (@TenantId, s.[RoleId], s.[ViewId], s.[Level], s.[Criteria], s.[Memo], @Now,		@UserId,		@Now,		@UserId);
+			INSERT ([TenantId], [RoleId],	[ViewId],	[Level],	[Criteria], [Mask], [Memo], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
+			VALUES (@TenantId, s.[RoleId], s.[ViewId], s.[Level], s.[Criteria], s.[Mask], s.[Memo], @Now,		@UserId,		@Now,		@UserId);
+
 
     MERGE INTO [dbo].[RoleMemberships] AS t
 		USING (
@@ -589,8 +570,8 @@ UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
             if (!(args.ReturnEntities ?? false))
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
-                await _db.Database.ExecuteSqlCommandAsync(saveSql, rolesTvp, permissionsTvp, membersTvp);
-                return new List<M.Role>();
+                await _db.Database.ExecuteSqlCommandAsync(saveSql, rolesTvp, permissionsTvp, signaturesTvp, membersTvp);
+                return (new List<RoleForQuery>(), null);
             }
             else
             {
@@ -598,40 +579,30 @@ UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
                 saveSql = saveSql += "SELECT * FROM @IndexedIds;";
 
                 // Retrieve the map from Indexes to Ids
-                var indexedIds = await _db.Saving.FromSql(saveSql, rolesTvp, permissionsTvp, membersTvp).ToListAsync();
-
-                //// Load the entities using their Ids
-                //DataTable idsTable = DataTable(indexedIds.Select(e => new { e.Id }));
-                //var idsTvp = new SqlParameter("@Ids", idsTable)
-                //{
-                //    TypeName = $"dbo.IdList",
-                //    SqlDbType = SqlDbType.Structured
-                //};
-
-                //var q = _db.Roles.FromSql("SELECT * FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-                var ids = indexedIds.Select(e => e.Id);
-                var q = _db.Roles.Where(e => ids.Contains(e.Id));
+                var indexedIds = await _db.Saving.FromSql(saveSql, rolesTvp, permissionsTvp, signaturesTvp, membersTvp).ToListAsync();
+                var idsString = string.Join(",", indexedIds.Select(e => e.Id));
+                var q = _db.VW_Roles.FromSql($"SELECT * FROM [dbo].[VW_Roles] WHERE Id IN (SELECT CONVERT(INT, VALUE) AS Id FROM STRING_SPLIT({idsString}, ','))");
                 q = Expand(q, args.Expand); // Includes
                 var savedEntities = await q.ToListAsync();
 
                 // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
                 Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                var sortedSavedEntities = new M.Role[savedEntities.Count];
+                var sortedSavedEntities = new RoleForQuery[savedEntities.Count];
                 foreach (var item in savedEntities)
                 {
-                    int index = indices[item.Id];
+                    int index = indices[item.Id.Value];
                     sortedSavedEntities[index] = item;
                 }
 
                 // Return the sorted collection
-                return sortedSavedEntities.ToList();
+                return (sortedSavedEntities.ToList(), q);
             }
         }
 
         protected override async Task DeleteAsync(List<int?> ids)
         {
             // Prepare a list of Ids to delete
-            DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
+            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(e => new { Id = e }), addIndex: false);
             var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -681,10 +652,10 @@ DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             throw new NotImplementedException();
         }
 
-        protected override async Task CheckPermissionsForNew(IEnumerable<RoleForSave> newItems, Expression<Func<M.Role, bool>> lambda)
+        protected override async Task CheckPermissionsForNew(IEnumerable<RoleForSave> newItems, Expression<Func<RoleForQuery, bool>> lambda)
         {
             // Add created entities
-            DataTable entitiesTable = DataTable(newItems.ToList(), addIndex: true);
+            DataTable entitiesTable = ControllerUtilities.DataTable(newItems.ToList(), addIndex: true);
             var entitiesTvp = new SqlParameter("Entities", entitiesTable)
             {
                 TypeName = $"dbo.{nameof(RoleForSave)}List",
@@ -702,7 +673,7 @@ DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
     FROM @Entities E
 ";
             var countBeforeFilter = newItems.Count();
-            var countAfterFilter = await _db.Roles.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
+            var countAfterFilter = await _db.VW_Roles.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
 
             if (countBeforeFilter > countAfterFilter)
             {
@@ -710,10 +681,10 @@ DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             }
         }
 
-        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<M.Role, bool>> lambda)
+        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<RoleForQuery, bool>> lambda)
         {
             // Load the entities using their Ids
-            DataTable idsTable = DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
+            DataTable idsTable = ControllerUtilities.DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
             var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -721,7 +692,7 @@ DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             };
 
             // apply the lambda
-            var q = _db.Roles.FromSql("SELECT * FROM [dbo].[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            var q = _db.VW_Roles.FromSql("SELECT * FROM [dbo].[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             int countBeforeFilter = await q.CountAsync();
             int countAfterFilter = await q.Where(lambda).CountAsync();
 
@@ -731,9 +702,5 @@ DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             }
         }
 
-        protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
-        {
-            return ControllerUtilities.CreatedByMeFilter<M.Role>(keyword, param, _tenantInfoAccessor.GetCurrentInfo().UserId.Value);
-        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BSharp.Controllers.DTO;
-using BSharp.Data.DbModel;
+using BSharp.Controllers.Misc;
+using BSharp.Data.Model;
 using BSharp.Services.MultiTenancy;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace BSharp.Services.Utilities
@@ -113,10 +115,10 @@ namespace BSharp.Services.Utilities
 
                     if (isDtoList)
                     {
-                        var dtoList = (IEnumerable<DtoBase>)prop.GetValue(entity);
-                        if(dtoList != null)
+                        var dtoList = prop.GetValue(entity);
+                        if (dtoList != null)
                         {
-                            foreach (var dto in dtoList)
+                            foreach (var dto in dtoList.Enumerate<DtoBase>())
                             {
                                 dto.TrimStringProperties();
                             }
@@ -291,7 +293,7 @@ namespace BSharp.Services.Utilities
                 return null;
             }
 
-            if(!str.EndsWith("/"))
+            if (!str.EndsWith("/"))
             {
                 str = str + "/";
             }
@@ -307,6 +309,173 @@ namespace BSharp.Services.Utilities
                 typeArguments: null,
                 arguments: new[] { constant }
                 );
+        }
+
+        /// <summary>
+        /// Attempts to intelligently parse an object (that comes from an imported file) to a DateTime
+        /// </summary>
+        public static DateTime? ParseToDateTime(this object @this)
+        {
+            if (@this == null)
+            {
+                return null;
+            }
+
+            DateTime dateTime;
+
+            if (@this.GetType() == typeof(double))
+            {
+                // Double indicates the OLE Automation date typically represented in excel
+                dateTime = DateTime.FromOADate((double)@this);
+            }
+            else
+            {
+                // Parse the import value into a DateTime
+                var valueString = @this.ToString();
+                dateTime = DateTime.Parse(valueString);
+            }
+
+            return dateTime;
+        }
+
+        public static DateTimeOffset? AddTimeZone(this DateTime? dateTime, TimeZoneInfo timeZone)
+        {
+            if (dateTime == null)
+            {
+                return null;
+            }
+
+            // The date time supplied in the import does not contain time zone offset
+            // The code below adds the current user time zone to the date time supplied
+            var offset = timeZone.GetUtcOffset(DateTimeOffset.Now);
+            var dtOffset = new DateTimeOffset(dateTime.Value, offset);
+
+            return dtOffset;
+        }
+
+        /// <summary>
+        /// The default Convert.ChangeType cannot handle converting types to
+        /// nullable types also it cannot handle DateTimeOffset
+        /// this method overcomes these limitations, credit: https://bit.ly/2DgqJmL
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="conversion"></param>
+        /// <param name="sourceTimeZone"></param>
+        /// <returns></returns>
+        public static object ChangeType(this object obj, Type conversion, TimeZoneInfo sourceTimeZone = null)
+        {
+            var t = conversion;
+            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (obj == null)
+                {
+                    return null;
+                }
+
+                t = Nullable.GetUnderlyingType(t);
+            }
+
+            if (t.IsDateOrTime())
+            {
+                var date = obj.ParseToDateTime();
+                if (t.IsDateTimeOffset())
+                {
+                    if(sourceTimeZone != null)
+                    {
+                        return date.AddTimeZone(sourceTimeZone);
+                    }
+                    else
+                    {
+                        return date.AddTimeZone(TimeZoneInfo.Utc);
+                    }
+                }
+
+                return date;
+            }
+
+            return Convert.ChangeType(obj, t);
+        }
+
+        /// <summary>
+        /// Determines whether this type is a List
+        /// </summary>
+        public static bool IsCollection(this Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ICollection<>);
+        }
+
+        /// <summary>
+        /// Determines whether this type is a collection
+        /// </summary>
+        public static Type CollectionType(this Type type)
+        {
+            return type.GenericTypeArguments.Length > 0 ? type.GenericTypeArguments[0] : null;
+        }
+
+        /// <summary>
+        /// Retrieves all the properties that are adorned with <see cref="BasicFieldAttribute"/>s
+        /// </summary>
+        public static IEnumerable<PropertyInfo> BasicFields(this Type dtoType)
+        {
+            foreach (var prop in dtoType.GetProperties())
+            {
+                if (prop.GetCustomAttribute<BasicFieldAttribute>() != null)
+                {
+                    yield return prop;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines whether this property is adorned with <see cref="NavigationPropertyAttribute"/> which indicates
+        /// that this is a navigation property to another collection
+        /// </summary>
+        public static bool IsNavigationField(this PropertyInfo prop)
+        {
+            return prop.GetCustomAttribute<NavigationPropertyAttribute>() != null;
+        }
+
+        /// <summary>
+        /// Indicates whether the property is adorned with the <see cref="ForeignKeyAttribute"/> which means that
+        /// this is a foreign key and it has an associated navigation property
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static bool IsForeignKey(this PropertyInfo prop)
+        {
+            return prop.GetCustomAttribute<ForeignKeyAttribute>() != null;
+        }
+
+        /// <summary>
+        /// Determines if the property is adorned with the <see cref="IgnoreInMetadataAttribute"/> which indicates that 
+        /// the property should not be included in the DTO metadata
+        /// </summary>
+        public static bool IsIgnored(this PropertyInfo prop)
+        {
+            return prop.GetCustomAttribute<IgnoreInMetadataAttribute>() != null;
+        }
+
+        /// <summary>
+        /// Useful for reflection, allows you to iterate over a collection that is typed as an object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> Enumerate<T>(this object collection)
+        {
+            if (collection == null)
+            {
+                throw new ArgumentNullException(nameof(collection));
+            }
+
+            var enumerator = collection.GetType().GetMethod("GetEnumerator").Invoke(collection, new object[0]);
+            var moveNextMethod = enumerator.GetType().GetMethod("MoveNext");
+            var currentProp = enumerator.GetType().GetProperty("Current");
+            while ((bool)moveNextMethod.Invoke(enumerator, new object[0]))
+            {
+                var item = (T)currentProp.GetValue(enumerator);
+                yield return item;
+            }
         }
     }
 }

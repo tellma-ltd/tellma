@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Globalization;
@@ -73,6 +74,7 @@ namespace BSharp
             services.AddSqlLocalization(_config);
             services.AddDynamicModelMetadata();
             services.AddGlobalSettingsCache(_config);
+            services.AddFilterParser();
 
             // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
             services.AddEmbeddedIdentityServerIfEnabled(_config, _env);
@@ -96,7 +98,7 @@ namespace BSharp
                     // sides get to see and communicate identical property names, for example 'api/customers?orderby='Name'
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
-                        NamingStrategy = new DefaultNamingStrategy()
+                        NamingStrategy = new DefaultNamingStrategy(),
                     };
                     // To reduce response size, some of the DTOs we use are humongously wide
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;

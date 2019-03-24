@@ -1,5 +1,5 @@
 ﻿using BSharp.Data;
-using BSharp.Data.DbModel;
+using BSharp.Data.Model;
 using BSharp.Services.Sharding;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;

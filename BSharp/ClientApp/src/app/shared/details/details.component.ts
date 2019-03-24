@@ -49,9 +49,6 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   savePreprocessing: (mode: DtoForSaveKeyBase) => void;
 
   @Input()
-  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase };
-
-  @Input()
   actions: {
     template: TemplateRef<any>,
     action: (model: DtoForSaveKeyBase) => void,
@@ -162,6 +159,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
       return clone;
     } else {
+      // programmer mistake
       console.error('Cloning a non existing item');
       return null;
     }
@@ -283,7 +281,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
           tap((response: GetByIdResponse) => {
 
             // add the server item to the workspace
-            this.state.detailsId = addSingleToWorkspace(response, this.workspace, this.workspaceApplyFns);
+            this.state.detailsId = addSingleToWorkspace(response, this.workspace);
 
             if (isCloning) {
               // call the same method again but this time the cloned
@@ -608,7 +606,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
           // update the workspace with the DTO from the server
           const s = this.state;
-          s.detailsId = addToWorkspace(response, this.workspace, this.workspaceApplyFns)[0];
+          s.detailsId = addToWorkspace(response, this.workspace)[0];
 
           // IF it's a new entity add it to the global state, (not the local one one even if inside a popup)
           if (isNew) {

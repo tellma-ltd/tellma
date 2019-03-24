@@ -31,5 +31,8 @@ namespace BSharp.Services.Utilities
 
         // Indicates a hidden field when exporting to Excel
         public const string Hidden = "<HIDDEN-FIELD>";
+
+        // Indicates a restricted
+        public const string Restricted = "*******";
     }
 }

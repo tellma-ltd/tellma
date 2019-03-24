@@ -13,44 +13,73 @@ namespace BSharp.Controllers.DTO
 
     public class PermissionForSave : DtoForSaveKeyBase<int?>
     {
+        [BasicField]
+        [ForeignKey]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "Permission_View")]
         public string ViewId { get; set; }
 
+        [BasicField]
+        [ForeignKey]
         [Display(Name = "Permission_Role")]
         public int? RoleId { get; set; }
 
-        [ChoiceList(new object[] 
-            { Constants.Read, Constants.Update, Constants.Create, Constants.ReadCreate, Constants.Sign },  new string[] {
-            "Permission_Read", "Permission_Update", "Permission_Create", "Permission_ReadAndCreate", "Permission_Sign" })]
+        [BasicField]
+        [ChoiceList(new object[]
+            { Constants.Read, Constants.Update, Constants.Create, Constants.ReadCreate }, new string[] {
+            "Permission_Read", "Permission_Update", "Permission_Create", "Permission_ReadAndCreate" })]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "Permission_Level")]
         public string Level { get; set; }
 
+        [BasicField]
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "Permission_Criteria")]
         public string Criteria { get; set; }
+
+        [BasicField]
+        [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
+        [Display(Name = "Permission_Mask")]
+        public string Mask { get; set; }
 
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "Memo")]
         public string Memo { get; set; }
     }
 
-    public class Permission : PermissionForSave, IAuditedDto
+    public class Permission : PermissionForSave
     {
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 
+        [ForeignKey]
         [Display(Name = "CreatedBy")]
         public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset? ModifiedAt { get; set; }
-
+        
+        [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
+    }
+
+    public class PermissionForQuery : Permission, IAuditedDto
+    {
+        [BasicField]
+        [NavigationProperty(ForeignKey = nameof(ViewId))]
+        public ViewForQuery View { get; set; }
+
+        [BasicField]
+        [NavigationProperty(ForeignKey = nameof(RoleId))]
+        public RoleForQuery Role { get; set; }
+
+        [NavigationProperty(ForeignKey = nameof(CreatedById))]
+        public LocalUserForQuery CreatedBy { get; set; }
+
+        [NavigationProperty(ForeignKey = nameof(ModifiedById))]
+        public LocalUserForQuery ModifiedBy { get; set; }
     }
 
     // The two DTOs below carry permission information to the client so

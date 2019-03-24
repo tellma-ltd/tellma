@@ -1,7 +1,7 @@
-﻿using BSharp.Data.DbModel;
+﻿using BSharp.Data.Model;
+using Dto = BSharp.Controllers.DTO;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using BSharp.Controllers.Misc;
 
 // dotnet ef migrations add Initial -c=AdminContext -o=Data/Migrations/Admin
 // dotnet ef database update LastGoodMigration --context=AdminContext
@@ -25,13 +25,19 @@ namespace BSharp.Data
 
         // Shard Manager
         public DbSet<Shard> Shards { get; set; }
+
         public DbSet<Tenant> Tenants { get; set; }
+        public DbSet<Dto.TenantForQuery> VW_Tenants { get; set; }
+
         public DbSet<GlobalUser> GlobalUsers { get; set; }
         public DbSet<TenantMembership> TenantMemberships { get; set; }
 
         // Localization
         public DbSet<Culture> Cultures { get; set; }
+        public DbSet<Dto.CultureForQuery> VW_Cultures { get; set; }
+
         public DbSet<Translation> Translations { get; set; }
+        // public DbSet<Dto.TranslationForQuery> VW_Translations { get; set; }
 
         // Settings
         public DbSet<GlobalSettings> GlobalSettings { get; set; }
@@ -59,7 +65,7 @@ namespace BSharp.Data
             Translation.OnModelCreating(builder);
 
             // Settings
-            Data.DbModel.GlobalSettings.OnModelCreating(builder);
+            Data.Model.GlobalSettings.OnModelCreating(builder);
         }
     }
 }

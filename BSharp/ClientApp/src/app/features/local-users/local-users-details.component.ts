@@ -6,8 +6,6 @@ import { LocalUser, LocalUserForSave } from '~/app/data/dto/local-user';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { Roles_DoNotApplyPermissionsOrMembers } from '~/app/data/dto/role';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -24,11 +22,6 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   private localUsersApi = this.api.localUsersApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Agent,Roles/Role';
-  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
-    // Roles/Role This ensures that permissions won't get wiped out when the Role navigation properties are loaded
-    Roles: Roles_DoNotApplyPermissionsOrMembers
-    // Agent
-  };
 
   create = () => {
     const result = new LocalUserForSave();
@@ -41,6 +34,27 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
+  clone: (item: LocalUser) => LocalUser = (item: LocalUser) => {
+    if (!!item) {
+      const clone = <LocalUser>JSON.parse(JSON.stringify(item));
+      clone.Id = null;
+      clone.EntityState = 'Inserted';
+
+      if (!!clone.Roles) {
+        clone.Roles.forEach(e => {
+          e.Id = null;
+          e.EntityState = 'Inserted';
+        });
+      }
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
+  }
+
   constructor(public workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
@@ -50,7 +64,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   public onActivate = (model: LocalUser): void => {
     if (!!model && !!model.Id) {
       this.localUsersApi.activate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
-        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+        tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
   }
@@ -58,7 +72,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   public onDeactivate = (model: LocalUser): void => {
     if (!!model && !!model.Id) {
       this.localUsersApi.deactivate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
-        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+        tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
   }

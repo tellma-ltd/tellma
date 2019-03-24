@@ -3,13 +3,10 @@ import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Role, RoleForSave } from '~/app/data/dto/role';
-import { Permission, PermissionForSave, Permission_Level } from '~/app/data/dto/permission';
+import { Permission, Permission_Level } from '~/app/data/dto/permission';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { Views_DoNotApplyPermissions } from '~/app/data/dto/view';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
-import { LocalUsers_DoNotApplyAgentOrRoles } from '~/app/data/dto/local-user';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -32,12 +29,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   private notifyDestruct$ = new Subject<void>();
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Permissions/View,Members/User';
-  workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
-    // This ensures that any existing permissions won't get wiped out
-    Views: Views_DoNotApplyPermissions,
-    LocalUsers: LocalUsers_DoNotApplyAgentOrRoles
-  };
+  public expand = 'Permissions/View,Signatures/View,Members/User';
 
   create = () => {
     const result = new RoleForSave();
@@ -48,7 +40,42 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     }
     result.IsPublic = false;
     result.Permissions = [];
+    result.Signatures = [];
+    result.Members = [];
     return result;
+  }
+
+  clone: (item: Role) => Role = (item: Role) => {
+    if (!!item) {
+      const clone = <Role>JSON.parse(JSON.stringify(item));
+      clone.Id = null;
+      clone.EntityState = 'Inserted';
+
+      if (!!clone.Permissions) {
+        clone.Permissions.forEach(e => {
+          e.Id = null;
+          e.EntityState = 'Inserted';
+        });
+      }
+      if (!!clone.Signatures) {
+        clone.Signatures.forEach(e => {
+          e.Id = null;
+          e.EntityState = 'Inserted';
+        });
+      }
+      if (!!clone.Members) {
+        clone.Members.forEach(e => {
+          e.Id = null;
+          e.EntityState = 'Inserted';
+        });
+      }
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
   }
 
   constructor(public workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -81,7 +108,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   public onActivate = (model: Role): void => {
     if (!!model && !!model.Id) {
       this.rolesApi.activate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
-        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+        tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
   }
@@ -89,7 +116,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   public onDeactivate = (model: Role): void => {
     if (!!model && !!model.Id) {
       this.rolesApi.deactivate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
-        tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+        tap(res => addToWorkspace(res, this.workspace))
       ).subscribe(null, this.details.handleActionError);
     }
   }
@@ -106,33 +133,20 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     return this.workspace.current;
   }
 
-  onNewSignature(permission: PermissionForSave) {
-    permission.Level = 'Sign';
-    return permission;
+  permissionsCount(model: Role): number | string {
+    return !!model && !!model.Permissions ? model.Permissions.length : 0;
   }
 
-  isPermission(item: Permission) {
-    return item.Level !== 'Sign';
+  signaturesCount(model: Role): number | string {
+    return !!model && !!model.Signatures ? model.Signatures.length : 0;
   }
 
-  permissionsCount(model: Role): number {
-    return !!model && !!model.Permissions ? model.Permissions.filter(this.isPermission).filter(e => e.EntityState !== 'Deleted').length : 0;
-  }
-
-  isSignature(item: Permission) {
-    return item.Level === 'Sign';
-  }
-
-  signaturesCount(model: Role): number {
-    return !!model && !!model.Permissions ? model.Permissions.filter(this.isSignature).filter(e => e.EntityState !== 'Deleted').length : 0;
+  membersCount(model: Role): number | string {
+    return !!model && !!model.Members ? model.Members.filter(e => e.EntityState !== 'Deleted').length : 0;
   }
 
   showMembersTab(model: Role) {
     return this.showMembers && (!model || !model.IsPublic);
-  }
-
-  membersCount(model: Role): number {
-    return !!model && !!model.Members ? model.Members.filter(e => e.EntityState !== 'Deleted').length : 0;
   }
 
   showPublicRoleWarning(model: Role) {
@@ -140,18 +154,19 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   showPermissionsError(model: Role) {
-    return this.showTabError(model, this.isPermission);
+    return !!model && !!model.Permissions && model.Permissions.some(e => !!e.serverErrors);
   }
 
   showSignaturesError(model: Role) {
-    return this.showTabError(model, this.isSignature);
-  }
-
-  private showTabError(model: Role, pred: (item: Permission) => boolean): boolean {
-    return !!model && !!model.Permissions && model.Permissions.some(e => pred(e) && !!e.serverErrors);
+    return !!model && !!model.Signatures && model.Signatures.some(e => !!e.serverErrors);
   }
 
   showMembersError(model: Role) {
     return !!model && !!model.Members && model.Members.some(e => !!e.serverErrors);
   }
+
+  viewFormatter: (id: number | string) => string = (id: number | string) =>
+    !!this.ws.get('Views', id) && !!this.ws.get('Views', id).ResourceName ?
+      (this.translate.instant(this.ws.get('Views', id).ResourceName)) :
+      this.ws.getMultilingualValue('Views', id, 'Name')
 }

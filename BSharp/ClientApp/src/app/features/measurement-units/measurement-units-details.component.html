@@ -1,5 +1,5 @@
 <b-details apiEndpoint="measurement-units" viewId="measurement-units" collection="MeasurementUnits" [createFunc]="create"
-  [expand]="expand" [workspaceApplyFns]="workspaceApplyFns" [mode]="mode" [masterCrumb]="'MeasurementUnits' | translate"
+  [expand]="expand" [mode]="mode" [masterCrumb]="'MeasurementUnits' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -53,19 +53,19 @@
 
   <!-- Unit Type -->
   <b-form-group class="b-form-group" [label]="'MU_UnitType' | translate" [serverErrors]="model?.serverErrors?.UnitType">
-    <div *ngIf="!isEdit">{{ unitTypeLookup(model?.UnitType) | translate }}</div>
+    <div *ngIf="!isEdit"><b-restricted [metadata]="model?.EntityMetadata?.UnitType"> {{ unitTypeLookup(model?.UnitType) | translate }}</b-restricted></div>
     <b-selector *ngIf="isEdit" [(ngModel)]="model.UnitType" [choices]="unitTypeChoices" required></b-selector>
   </b-form-group>
 
   <!-- Unit Amount -->
   <b-form-group class="b-form-group" [label]="'MU_UnitAmount' | translate" [serverErrors]="model?.serverErrors?.UnitAmount">
-    <div *ngIf="!isEdit">{{model?.UnitAmount | number}}</div>
+    <div *ngIf="!isEdit"><b-restricted [metadata]="model?.EntityMetadata?.UnitAmount"> {{model?.UnitAmount | number}}</b-restricted></div>
     <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.UnitAmount" [ngModelOptions]="{ updateOn: 'blur' }" required></b-decimal-editor>
   </b-form-group>
 
   <!-- Base Amount -->
   <b-form-group class="b-form-group" [label]="'MU_BaseAmount' | translate" [serverErrors]="model?.serverErrors?.BaseAmount">
-    <div *ngIf="!isEdit">{{model?.BaseAmount | number}}</div>
+    <div *ngIf="!isEdit"><b-restricted [metadata]="model?.EntityMetadata?.BaseAmount"> {{model?.BaseAmount | number}}</b-restricted></div>
     <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BaseAmount" [ngModelOptions]="{ updateOn: 'blur' }" required></b-decimal-editor>
   </b-form-group>
 

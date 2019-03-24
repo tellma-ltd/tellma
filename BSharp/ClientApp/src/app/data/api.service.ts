@@ -535,6 +535,10 @@ export class ApiService {
       paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
     }
 
+    if (!!args.select) {
+      paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+    }
+
     return paramsArray;
   }
 

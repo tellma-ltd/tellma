@@ -18,8 +18,6 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
-  public workspaceApplyFns: { [collection: string]: (stale: DtoKeyBase, fresh: DtoKeyBase) => DtoKeyBase } = {
-  };
 
   constructor(private workspace: WorkspaceService, private api: ApiService) {
     super();
@@ -40,7 +38,7 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.measurementUnitsApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
-      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+      tap(res => addToWorkspace(res, this.workspace))
     );
 
     // The master template handles any errors
@@ -49,7 +47,7 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.measurementUnitsApi.deactivate(ids, { returnEntities: true, expand: this.expand }).pipe(
-      tap(res => addToWorkspace(res, this.workspace, this.workspaceApplyFns))
+      tap(res => addToWorkspace(res, this.workspace))
     );
 
     // The master template handles any errors

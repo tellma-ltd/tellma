@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
-using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
 using Microsoft.AspNetCore.Mvc;
@@ -18,29 +16,29 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using M = BSharp.Data.DbModel;
+using M = BSharp.Data.Model;
 
 namespace BSharp.Controllers
 {
     [Route("api/views")]
     [LoadTenantInfo]
-    public class ViewsController : CrudControllerBase<ViewDefinition, View, ViewForSave, string>
+    public class ViewsController : CrudControllerBase<ViewForSave, View, ViewForQuery, string>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger<ViewsController> _logger;
         private readonly IStringLocalizer<ViewsController> _localizer;
-        private readonly IMapper _mapper;
+
         private readonly ITenantUserInfoAccessor _accessor;
 
         public ViewsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<ViewsController> logger,
-            IStringLocalizer<ViewsController> localizer, IMapper mapper, ITenantUserInfoAccessor accessor) : base(logger, localizer, mapper)
+            IStringLocalizer<ViewsController> localizer, IServiceProvider serviceProvider, ITenantUserInfoAccessor accessor) : base(logger, localizer, serviceProvider)
         {
             _db = db;
             _metadataProvider = metadataProvider;
             _logger = logger;
             _localizer = localizer;
-            _mapper = mapper;
+
             _accessor = accessor;
         }
 
@@ -49,43 +47,47 @@ namespace BSharp.Controllers
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
-        protected override IQueryable<ViewDefinition> GetBaseQuery()
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
         {
-            var repo = new ViewsRepository(_db, _localizer, _accessor);
-            return repo.GetAllViews().AsQueryable();
+            return ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "views");
         }
 
-        protected override IQueryable<ViewDefinition> SingletonQuery(IQueryable<ViewDefinition> query, string id)
+        protected override Task CheckPermissionsForNew(IEnumerable<ViewForSave> newItems, Expression<Func<ViewForQuery, bool>> lambda)
         {
-            return query.Where(e => e.Id == id);
+            // TODO
+            throw new NotImplementedException();
         }
 
-        protected override IQueryable<ViewDefinition> Search(IQueryable<ViewDefinition> query, string search)
+        protected override Task CheckPermissionsForOld(IEnumerable<string> entityIds, Expression<Func<ViewForQuery, bool>> lambda)
         {
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(e => e.Name.ToLower().Contains(search.ToLower()) || (e.Name != null && e.Name2.ToLower().Contains(search.ToLower())));
-            }
-
-            return query;
+            // TODO
+            throw new NotImplementedException();
         }
 
-        protected override IQueryable<ViewDefinition> Expand(IQueryable<ViewDefinition> query, string expand)
+        protected override IQueryable<ViewForQuery> GetBaseQuery()
         {
-            if (expand != null)
-            {
-                // var expands = expand.Split(',');
-                // TODO
-            }
-
-            return query;
+            return _db.VW_Views;
         }
 
-        protected override IQueryable<ViewDefinition> IncludeInactive(IQueryable<ViewDefinition> query, bool inactive)
+        protected override IQueryable<ViewForQuery> IncludeInactive(IQueryable<ViewForQuery> query, bool inactive)
         {
             if (!inactive)
             {
-                query = query.Where(e => e.IsActive);
+                query = query.Where(e => e.IsActive == true);
+            }
+
+            return query;
+        }
+
+        protected override IQueryable<ViewForQuery> Search(IQueryable<ViewForQuery> query, string search, IEnumerable<AbstractPermission> filteredPermissions)
+        {
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(e => 
+                    (e.Name != null && e.Name.ToLower().Contains(search.ToLower()) == true) ||
+                    (e.Name2 != null && e.Name2.ToLower().Contains(search.ToLower()) == true) ||
+                    (e.ResourceName != null && _localizer[e.ResourceName].Value.ToLower().Contains(search.ToLower()))
+                );
             }
 
             return query;
@@ -93,21 +95,25 @@ namespace BSharp.Controllers
 
         protected override Task ValidateAsync(List<ViewForSave> entities)
         {
+            // TODO
             throw new NotImplementedException();
         }
 
-        protected override Task<List<ViewDefinition>> PersistAsync(List<ViewForSave> entities, SaveArguments args)
+        protected override Task<(List<ViewForQuery>, IQueryable<ViewForQuery>)> PersistAsync(List<ViewForSave> entities, SaveArguments args)
         {
+            // TODO
             throw new NotImplementedException();
         }
 
         protected override Task DeleteAsync(List<string> ids)
         {
+            // TODO
             throw new NotImplementedException();
         }
 
         protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<View> response, ExportArguments args)
         {
+            // TODO
             throw new NotImplementedException();
         }
 
@@ -119,21 +125,7 @@ namespace BSharp.Controllers
 
         protected override Task<(List<ViewForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
-        {
-            return GetPermissions(_db.AbstractPermissions, level, "views");
-        }
-
-        protected override Task CheckPermissionsForNew(IEnumerable<ViewForSave> newItems, Expression<Func<ViewDefinition, bool>> lambda)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task CheckPermissionsForOld(IEnumerable<string> entityIds, Expression<Func<ViewDefinition, bool>> lambda)
-        {
+            // TODO
             throw new NotImplementedException();
         }
     }
@@ -153,7 +145,7 @@ namespace BSharp.Controllers
             // Initialize localizer 1 and localizer 2 based on the company languages
             var tenantInfo = accessor.GetCurrentInfo();
             _localizer = localizer.WithCulture(new CultureInfo(tenantInfo.PrimaryLanguageId));
-            if(tenantInfo.SecondaryLanguageId != null)
+            if (tenantInfo.SecondaryLanguageId != null)
             {
                 _localizer2 = localizer.WithCulture(new CultureInfo(tenantInfo.SecondaryLanguageId)); // TODO
             }
@@ -241,7 +233,7 @@ namespace BSharp.Controllers
         public string AllowedPermissionLevels { get; set; } = "";
     }
 
-    public class ViewDefinition : M.DbModelBase
+    public class ViewDefinition : M.ModelBase
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -250,5 +242,4 @@ namespace BSharp.Controllers
         public bool IsActive { get; set; }
         public string AllowedPermissionLevels { get; set; } = "";
     }
-
 }

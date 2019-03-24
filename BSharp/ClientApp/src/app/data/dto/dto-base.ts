@@ -1,3 +1,3 @@
 export class DtoBase {
-    // Only for type safety
+    EntityMetadata?: { [field: string]:  0 | 1 | 2 }; // 1 == Restricted, 2 == Loaded
 }

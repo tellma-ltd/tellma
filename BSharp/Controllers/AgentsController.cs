@@ -2,6 +2,7 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Services.FilterParser;
 using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,50 +23,53 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using M = BSharp.Data.DbModel;
 
 namespace BSharp.Controllers
 {
     [Route("api/agents/{agentType}")]
     [LoadTenantInfo]
-    public class AgentsController : CrudControllerBase<M.Agent, Agent, AgentForSave, int?>
+    public class AgentsController : CrudControllerBase<AgentForSave, Agent, AgentForQuery, int?>
     {
         // Hard-coded agent types
         private const string ORGANIZATION = "organizations";
         private const string INDIVIDUAL = "individuals";
 
+        // Prepare agent types
+        private readonly string[] _agentTypes = { INDIVIDUAL, ORGANIZATION };
+
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger<AgentsController> _logger;
         private readonly IStringLocalizer<AgentsController> _localizer;
-        private readonly IMapper _mapper;
         private readonly ITenantUserInfoAccessor _tenantInfo;
+        private readonly IFilterParser _filterParser;
 
-        public AgentsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<AgentsController> logger,
-            IStringLocalizer<AgentsController> localizer, IMapper mapper, ITenantUserInfoAccessor tenantInfo) : base(logger, localizer, mapper)
+        public AgentsController(ILogger<AgentsController> logger, IStringLocalizer<AgentsController> localizer,
+            IServiceProvider serviceProvider) : base(logger, localizer, serviceProvider)
         {
-            _db = db;
-            _metadataProvider = metadataProvider;
+            _db = serviceProvider.GetRequiredService<ApplicationContext>();
+            _metadataProvider = serviceProvider.GetRequiredService<IModelMetadataProvider>();
+            _tenantInfo = serviceProvider.GetRequiredService<ITenantUserInfoAccessor>();
+            _filterParser = serviceProvider.GetRequiredService<IFilterParser>();
+
             _logger = logger;
             _localizer = localizer;
-            _mapper = mapper;
-            _tenantInfo = tenantInfo;
         }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Agent>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
         {
-            return await CallAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
-            );
+            , _logger);
         }
 
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Agent>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
         {
-            return await CallAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
-            );
+            , _logger);
         }
 
         private async Task<ActionResult<EntitiesResponse<Agent>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
@@ -73,7 +78,7 @@ namespace BSharp.Controllers
 
             var isActiveParam = new SqlParameter("@IsActive", isActive);
 
-            DataTable idsTable = DataTable(ids.Select(id => new { Id = id }), addIndex: false);
+            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: false);
             var idsTvp = new SqlParameter("@Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -121,12 +126,16 @@ MERGE INTO [dbo].[Custodies] AS t
             else
             {
                 // Load the entities using their Ids
-                var affectedDbEntitiesQ = _db.Agents.Where(e => ids.Contains(e.Id)); //.FromSql("SELECT * FROM [dbo].[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+                var affectedDbEntitiesQ = _db.VW_Agents.Where(e => ids.Contains(e.Id.Value)); //.FromSql("SELECT * FROM [dbo].[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
                 var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
                 var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-                var affectedEntities = _mapper.Map<List<Agent>>(affectedDbEntities);
+
+                // Add the metadata
+                ApplySelectAndAddMetadata(affectedDbEntities, expand, null);
 
                 // sort the entities the way their Ids came, as a good practice
+                var affectedEntities = Mapper.Map<List<Agent>>(affectedDbEntities);
+
                 Agent[] sortedAffectedEntities = new Agent[ids.Count];
                 Dictionary<int, Agent> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
                 for (int i = 0; i < ids.Count; i++)
@@ -141,11 +150,18 @@ MERGE INTO [dbo].[Custodies] AS t
                     sortedAffectedEntities[i] = entity;
                 }
 
+                // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
+                await ApplyReadPermissionsMask(affectedDbEntities, affectedDbEntitiesExpandedQ, await UserPermissions(PermissionLevel.Read), GetDefaultMask());
+
+                // Flatten related entities and map each to its respective DTO 
+                var relatedEntities = FlattenRelatedEntitiesAndTrim(affectedDbEntities, expand);
+
                 // Prepare a proper response
                 var response = new EntitiesResponse<Agent>
                 {
                     Data = sortedAffectedEntities,
-                    CollectionName = GetCollectionName(typeof(Agent))
+                    CollectionName = GetCollectionName(typeof(Agent)),
+                    RelatedEntities = relatedEntities
                 };
 
                 // Commit and return
@@ -156,7 +172,7 @@ MERGE INTO [dbo].[Custodies] AS t
         protected string ViewId()
         {
             string agentType = RouteData.Values["agentType"]?.ToString();
-            var allowedAgentTypes = new string[] { ORGANIZATION, INDIVIDUAL, ALL };
+            var allowedViewIds = _agentTypes.Union(Enumerable.Repeat(ALL, 1));
 
             // Make sure the agentType is supported
             if (agentType == ALL && (HttpContext.Request.Method != HttpMethods.Get || HttpContext.Request.Path.Value.EndsWith("/template")))
@@ -164,29 +180,25 @@ MERGE INTO [dbo].[Custodies] AS t
                 // Programmer mistake
                 throw new BadRequestException("The type 'all' is only supported for HTTP GET requests other than /template");
             }
-            else if (!allowedAgentTypes.Contains(agentType))
+            else if (!allowedViewIds.Contains(agentType))
             {
                 // Programmer mistake
-                throw new BadRequestException("Only the following agent types are supported: " + string.Join(", ", allowedAgentTypes));
+                throw new BadRequestException("Only the following agent types are supported: " + string.Join(", ", allowedViewIds));
             }
 
             return agentType;
         }
 
-        protected override async Task<IQueryable<M.Agent>> ApplyReadPermissions(IQueryable<M.Agent> query)
+        protected override async Task<IQueryable<AgentForQuery>> ApplyReadPermissionsCriteria(IQueryable<AgentForQuery> query, IEnumerable<AbstractPermission> permissions)
         {
-            if (ViewId() != ALL)
+            if(ViewId() != ALL)
             {
-                // More efficient
-                return await base.ApplyReadPermissions(query);
+                return await base.ApplyReadPermissionsCriteria(query, permissions);
             }
             else
             {
-                // Prepare agent types
-                string[] agentTypes = { INDIVIDUAL, ORGANIZATION };
-
                 // Get all permissions related to agents
-                var allPermissions = await GetPermissions(_db.AbstractPermissions, PermissionLevel.Read, agentTypes);
+                var allPermissions = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, PermissionLevel.Read, _agentTypes);
                 if (!allPermissions.Any())
                 {
                     // User doesn't have access to any type of agent
@@ -197,7 +209,7 @@ MERGE INTO [dbo].[Custodies] AS t
                     // Optimization
                     return query;
                 }
-                else if (agentTypes.All(t => allPermissions.Any(e => e.ViewId == t && string.IsNullOrWhiteSpace(e.Criteria))))
+                else if (_agentTypes.All(t => allPermissions.Any(e => e.ViewId == t && string.IsNullOrWhiteSpace(e.Criteria))))
                 {
                     // this might be risky if the developer forgets to add an agent type in 'agentTypes' array
                     return query;
@@ -214,14 +226,14 @@ MERGE INTO [dbo].[Custodies] AS t
                      */
 
                     // The parameter on which the dynamic LINQ expression is based
-                    var eParam = Expression.Parameter(typeof(M.Agent));
+                    var eParam = Expression.Parameter(typeof(AgentForQuery));
 
                     Expression fullExpression = null;
                     foreach (var g in allPermissions.GroupBy(e => e.ViewId))
                     {
                         string viewId = g.Key;
 
-                        Expression typePropAccess = Expression.Property(eParam, nameof(M.Agent.AgentType));
+                        Expression typePropAccess = Expression.Property(eParam, nameof(AgentForQuery.AgentType));
                         Expression viewIdConstant = Expression.Constant(viewId);
                         Expression typePropEquality = Expression.Equal(typePropAccess, viewIdConstant);
                         Expression viewIdExpression;
@@ -238,12 +250,12 @@ MERGE INTO [dbo].[Custodies] AS t
                             IEnumerable<string> criteriaList = g.Select(e => e.Criteria);
 
                             // First criteria
-                            viewIdExpression = ParseFilterExpression<M.Agent>(criteriaList.First(), eParam);
+                            viewIdExpression = _filterParser.ParseFilterExpression<AgentForQuery>(criteriaList.First(), eParam);
 
                             // The remaining criteria
                             foreach (var criteria in criteriaList.Skip(1))
                             {
-                                var criteriaExpression = ParseFilterExpression<M.Agent>(criteria, eParam);
+                                var criteriaExpression = _filterParser.ParseFilterExpression<AgentForQuery>(criteria, eParam);
                                 viewIdExpression = Expression.OrElse(viewIdExpression, criteriaExpression);
                             }
 
@@ -254,15 +266,23 @@ MERGE INTO [dbo].[Custodies] AS t
                         fullExpression = fullExpression == null ? viewIdExpression : Expression.OrElse(fullExpression, viewIdExpression);
                     }
 
-                    var lambda = Expression.Lambda<Func<M.Agent, bool>>(fullExpression, eParam);
+                    var lambda = Expression.Lambda<Func<AgentForQuery, bool>>(fullExpression, eParam);
                     return query.Where(lambda);
                 }
             }
         }
 
-        protected override Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
         {
-            return GetPermissions(_db.AbstractPermissions, level, ViewId());
+            var viewId = ViewId();
+            if(viewId == ALL)
+            {
+                return ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, _agentTypes);
+            }
+            else
+            {
+                return ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, viewId);
+            }
         }
 
         private string SingularName()
@@ -280,13 +300,13 @@ MERGE INTO [dbo].[Custodies] AS t
             return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
         }
 
-        protected override IQueryable<M.Agent> GetBaseQuery()
+        protected override IQueryable<AgentForQuery> GetBaseQuery()
         {
             string agentType = ViewId();
-            return agentType == ALL ? _db.Agents : _db.Agents.Where(e => e.AgentType == agentType);
+            return agentType == ALL ? _db.VW_Agents : _db.VW_Agents.Where(e => e.AgentType == agentType);
         }
 
-        protected override IQueryable<M.Agent> Search(IQueryable<M.Agent> query, string search)
+        protected override IQueryable<AgentForQuery> Search(IQueryable<AgentForQuery> query, string search, IEnumerable<AbstractPermission> permissions)
         {
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -296,16 +316,11 @@ MERGE INTO [dbo].[Custodies] AS t
             return query;
         }
 
-        protected override IQueryable<M.Agent> SingletonQuery(IQueryable<M.Agent> query, int? id)
-        {
-            return query.Where(e => e.Id == id);
-        }
-
-        protected override IQueryable<M.Agent> IncludeInactive(IQueryable<M.Agent> query, bool inactive)
+        protected override IQueryable<AgentForQuery> IncludeInactive(IQueryable<AgentForQuery> query, bool inactive)
         {
             if (!inactive)
             {
-                query = query.Where(e => e.IsActive);
+                query = query.Where(e => e.IsActive == true);
             }
 
             return query;
@@ -350,7 +365,7 @@ MERGE INTO [dbo].[Custodies] AS t
             }
 
             // Perform SQL-side validation
-            DataTable entitiesTable = DataTable(entities, addIndex: true);
+            DataTable entitiesTable = ControllerUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("Entities", entitiesTable) { TypeName = $"dbo.{nameof(AgentForSave)}List", SqlDbType = SqlDbType.Structured };
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
 
@@ -394,7 +409,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             }
         }
 
-        protected override async Task<List<M.Agent>> PersistAsync(List<AgentForSave> entities, SaveArguments args)
+        protected override async Task<(List<AgentForQuery>, IQueryable<AgentForQuery>)> PersistAsync(List<AgentForSave> entities, SaveArguments args)
         {
             // Some properties are always set to null for organizations
             string agentType = ViewId();
@@ -409,7 +424,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             }
 
             // Add created entities
-            DataTable entitiesTable = DataTable(entities, addIndex: true);
+            DataTable entitiesTable = ControllerUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("Entities", entitiesTable)
             {
                 TypeName = $"dbo.{nameof(AgentForSave)}List",
@@ -467,7 +482,7 @@ SET NOCOUNT ON;
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
                 await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp, agentTypeParameter);
-                return new List<M.Agent>();
+                return (new List<AgentForQuery>(), null);
             }
             else
             {
@@ -487,29 +502,29 @@ SET NOCOUNT ON;
 
                 // var q = _db.Agents.FromSql("SELECT * FROM dbo.[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
                 var ids = indexedIds.Select(e => e.Id);
-                var q = _db.Agents.Where(e => ids.Contains(e.Id));
+                var q = _db.VW_Agents.Where(e => ids.Contains(e.Id.Value));
                 q = Expand(q, args.Expand);
                 var savedEntities = await q.ToListAsync();
 
 
                 // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
                 Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                var sortedSavedEntities = new M.Agent[savedEntities.Count];
+                var sortedSavedEntities = new AgentForQuery[savedEntities.Count];
                 foreach (var item in savedEntities)
                 {
-                    int index = indices[item.Id];
+                    int index = indices[item.Id.Value];
                     sortedSavedEntities[index] = item;
                 }
 
                 // Return the sorted collection
-                return sortedSavedEntities.ToList();
+                return (sortedSavedEntities.ToList(), q);
             }
         }
 
         protected override async Task DeleteAsync(List<int?> ids)
         {
             // Prepare a list of Ids to delete
-            DataTable idsTable = DataTable(ids.Select(e => new { Id = e }), addIndex: false);
+            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(e => new { Id = e }), addIndex: false);
             var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -632,31 +647,45 @@ SET NOCOUNT ON;
             // Add the rows
             foreach (var entity in response.Data)
             {
+                var metadata = entity.EntityMetadata;
                 var row = result[result.AddRow()];
                 int i = 0;
                 foreach (var prop in addedProps)
                 {
-                    var content = prop.GetValue(entity);
-
-                    // Special handling for choice lists
-                    var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
-                    if (choiceListAttr != null)
+                    metadata.TryGetValue(prop.Name, out FieldMetadata meta);
+                    if (meta == FieldMetadata.Loaded)
                     {
-                        var choiceIndex = Array.FindIndex(choiceListAttr.Choices, e => e.Equals(content));
-                        if (choiceIndex != -1)
+                        var content = prop.GetValue(entity);
+
+                        // Special handling for choice lists
+                        var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
+                        if (choiceListAttr != null)
                         {
-                            string displayName = choiceListAttr.DisplayNames[choiceIndex];
-                            content = _localizer[displayName];
+                            var choiceIndex = Array.FindIndex(choiceListAttr.Choices, e => e.Equals(content));
+                            if (choiceIndex != -1)
+                            {
+                                string displayName = choiceListAttr.DisplayNames[choiceIndex];
+                                content = _localizer[displayName];
+                            }
                         }
-                    }
 
-                    // Special handling for DateTimeOffset
-                    if (prop.PropertyType.IsDateTimeOffset() && content != null)
+                        // Special handling for DateTimeOffset
+                        if (prop.PropertyType.IsDateTimeOffset() && content != null)
+                        {
+                            content = ToExportDateTime((DateTimeOffset)content);
+                        }
+
+                        row[i] = AbstractDataCell.Cell(content);
+                    }
+                    else if (meta == FieldMetadata.Restricted)
                     {
-                        content = ToExportDateTime((DateTimeOffset)content);
+                        row[i] = AbstractDataCell.Cell(Constants.Restricted);
+                    }
+                    else
+                    {
+                        row[i] = AbstractDataCell.Cell("-");
                     }
 
-                    row[i] = AbstractDataCell.Cell(content);
                     i++;
                 }
             }
@@ -813,7 +842,7 @@ SET NOCOUNT ON;
                 // For all other modes besides Insert, we need to match the entity codes to Ids by querying the DB
                 // Load the code Ids from the database
                 var nonNullCodes = result.Where(e => !string.IsNullOrWhiteSpace(e.Code));
-                var codesDataTable = DataTable(nonNullCodes.Select(e => new { e.Code }));
+                var codesDataTable = ControllerUtilities.DataTable(nonNullCodes.Select(e => new { e.Code }));
                 var entitiesTvp = new SqlParameter("@Codes", codesDataTable)
                 {
                     TypeName = $"dbo.CodeList",
@@ -919,10 +948,10 @@ SET NOCOUNT ON;
             return (result, errorKeyMap);
         }
 
-        protected override async Task CheckPermissionsForNew(IEnumerable<AgentForSave> newItems, Expression<Func<M.Agent, bool>> lambda)
+        protected override async Task CheckPermissionsForNew(IEnumerable<AgentForSave> newItems, Expression<Func<AgentForQuery, bool>> lambda)
         {
             // Add created entities
-            DataTable entitiesTable = DataTable(newItems.ToList(), addIndex: true);
+            DataTable entitiesTable = ControllerUtilities.DataTable(newItems.ToList(), addIndex: true);
             var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
                 TypeName = $"dbo.{nameof(AgentForSave)}List",
@@ -945,7 +974,7 @@ SET NOCOUNT ON;
     FROM @Entities E
 ";
             var countBeforeFilter = newItems.Count();
-            var countAfterFilter = await _db.Agents.FromSql(saveSql, entitiesTvp, custodyType, agentType).Where(lambda).CountAsync();
+            var countAfterFilter = await _db.VW_Agents.FromSql(saveSql, entitiesTvp, custodyType, agentType).Where(lambda).CountAsync();
 
             if (countBeforeFilter > countAfterFilter)
             {
@@ -953,10 +982,10 @@ SET NOCOUNT ON;
             }
         }
 
-        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<M.Agent, bool>> lambda)
+        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<AgentForQuery, bool>> lambda)
         {
             // Load the entities using their Ids
-            DataTable idsTable = DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
+            DataTable idsTable = ControllerUtilities.DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
             var idsTvp = new SqlParameter("Ids", idsTable)
             {
                 TypeName = $"dbo.IdList",
@@ -964,7 +993,7 @@ SET NOCOUNT ON;
             };
 
             // apply the lambda
-            var q = _db.Agents.FromSql("SELECT * FROM [dbo].[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
+            var q = _db.VW_Agents.FromSql("SELECT * FROM [dbo].[Custodies] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             int countBeforeFilter = await q.CountAsync();
             int countAfterFilter = await q.Where(lambda).CountAsync();
 
@@ -972,11 +1001,6 @@ SET NOCOUNT ON;
             {
                 throw new ForbiddenException();
             }
-        }
-
-        protected override Expression ParseSpecialFilterKeyword(string keyword, ParameterExpression param)
-        {
-            return ControllerUtilities.CreatedByMeFilter<M.Agent>(keyword, param, _tenantInfo.GetCurrentInfo().UserId.Value);
         }
     }
 }
