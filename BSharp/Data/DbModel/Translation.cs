@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
     /// <summary>
     /// Represents a core translation, shared across all tenants
     /// </summary>
-    public class Translation : ModelBase
+    public class Translation : DbModelBase
     {
         [Required]
         [MaxLength(255)]

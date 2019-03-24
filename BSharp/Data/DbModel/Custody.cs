@@ -2,28 +2,32 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
-    public class Permission : ModelBase, IAuditedModel
+    public class Custody : DbModelBase, IAuditedModel
     {
         public int Id { get; set; }
 
-        public int RoleId { get; set; }
-        public Role Role { get; set; }
+        [Required]
+        [MaxLength(255)]
+        public string CustodyType { get; set; }
 
         [Required]
         [MaxLength(255)]
-        public string ViewId { get; set; }
+        public string Name { get; set; }
 
-        [Required]
         [MaxLength(255)]
-        public string Level { get; set; }
+        public string Name2 { get; set; }
+
+        [MaxLength(255)]
+        public string Code { get; set; }
 
         [MaxLength(1024)]
-        public string Criteria { get; set; }
+        public string Address { get; set; }
 
-        [MaxLength(255)]
-        public string Memo { get; set; }
+        public DateTimeOffset? BirthDateTime { get; set; }
+
+        public bool IsActive { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
 
@@ -37,21 +41,23 @@ namespace BSharp.Data.Model
 
         internal static void OnModelCreating(ModelBuilder builder)
         {
-            // Role foreign key
-            builder.Entity<Permission>()
-                .HasOne(e => e.Role)
-                .WithMany(e => e.Permissions)
-                .HasForeignKey(TenantId, nameof(RoleId))
-                .OnDelete(DeleteBehavior.Cascade);
+            // Map the discriminator column to the concrete column
+            builder.Entity<Custody>().HasDiscriminator<string>(nameof(CustodyType));
+
+            // IsActive defaults to TRUE
+            builder.Entity<Custody>().Property(e => e.IsActive).HasDefaultValue(true);
+
+            // Code is unique
+            builder.Entity<Custody>().HasIndex(TenantId, nameof(Code)).IsUnique();
 
             // Audit foreign keys
-            builder.Entity<Permission>()
+            builder.Entity<Custody>()
                 .HasOne(e => e.CreatedBy)
                 .WithMany()
                 .HasForeignKey(TenantId, nameof(CreatedById))
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Permission>()
+            builder.Entity<Custody>()
                 .HasOne(e => e.ModifiedBy)
                 .WithMany()
                 .HasForeignKey(TenantId, nameof(ModifiedById))

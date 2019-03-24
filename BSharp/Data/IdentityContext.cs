@@ -1,4 +1,4 @@
-﻿using BSharp.Data.Model;
+﻿using BSharp.Data.DbModel;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

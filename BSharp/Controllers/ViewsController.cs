@@ -18,7 +18,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using M = BSharp.Data.Model;
+using M = BSharp.Data.DbModel;
 
 namespace BSharp.Controllers
 {
@@ -241,7 +241,7 @@ namespace BSharp.Controllers
         public string AllowedPermissionLevels { get; set; } = "";
     }
 
-    public class ViewDefinition : M.ModelBase
+    public class ViewDefinition : M.DbModelBase
     {
         public string Id { get; set; }
         public string Name { get; set; }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
     /// <summary>
     /// A Query type https://docs.microsoft.com/en-us/ef/core/modeling/query-types

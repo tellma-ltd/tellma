@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
     public class Agent : Custody
     {

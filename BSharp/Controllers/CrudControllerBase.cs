@@ -21,12 +21,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using M = BSharp.Data.Model;
+using M = BSharp.Data.DbModel;
 
 namespace BSharp.Controllers
 {
     public abstract class CrudControllerBase<TModel, TDto, TDtoForSave, TKey> : ReadControllerBase<TModel, TDto, TKey>
-        where TModel : M.ModelBase
+        where TModel : M.DbModelBase
         where TDtoForSave : DtoForSaveKeyBase<TKey>
         where TDto : DtoForSaveKeyBase<TKey>
     {

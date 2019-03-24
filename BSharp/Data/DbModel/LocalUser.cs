@@ -6,9 +6,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
-    public class LocalUser : ModelBase, IMultilingualName
+    public class LocalUser : DbModelBase, IMultilingualName
     {
         public int Id { get; set; }
         

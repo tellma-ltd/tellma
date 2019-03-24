@@ -26,7 +26,7 @@ namespace BSharp.Controllers
     [ApiController]
     [AuthorizeAccess]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public abstract class ReadControllerBase<TModel, TDto, TKey> : ControllerBase
+    public abstract class ReadControllerBase2<TModel, TDto, TKey> : ControllerBase
         where TModel : M.DbModelBase
         where TDto : DtoKeyBase<TKey>
     {
@@ -44,7 +44,7 @@ namespace BSharp.Controllers
 
         // Constructor
 
-        public ReadControllerBase(ILogger logger, IStringLocalizer localizer, IMapper mapper)
+        public ReadControllerBase2(ILogger logger, IStringLocalizer localizer, IMapper mapper)
         {
             _logger = logger;
             _localizer = localizer;
@@ -85,83 +85,8 @@ namespace BSharp.Controllers
             });
         }
 
-        // Abstract and virtual members
 
-        /// <summary>
-        /// Returns the query from which the GET endpoint retrieves the results
-        /// </summary>
-        protected abstract IQueryable<TModel> GetBaseQuery();
-
-        protected virtual async Task<IQueryable<TModel>> ApplyReadPermissions(IQueryable<TModel> query)
-        {
-            // Check if the user has any permissions on ViewId at all, else throw forbidden exception
-            // If the user has some permissions on ViewId, OR all their criteria together and apply the where clause
-
-            var readPermissions = await UserPermissions(PermissionLevel.Read);
-            if (!readPermissions.Any())
-            {
-                // Not even authorized to call this API
-                throw new ForbiddenException();
-            }
-            else if (readPermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
-            {
-                // The user can read the entire data set
-                return query;
-            }
-            else
-            {
-                // The user has access to part of the data set based on a list of filters that will 
-                // be ORed together in a dynamic linq query
-                IEnumerable<string> criteriaList = readPermissions.Select(e => e.Criteria);
-
-                // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(TModel));
-                var whereClause = ToORedWhereClause<TModel>(criteriaList, eParam);
-                var lambda = Expression.Lambda<Func<TModel, bool>>(whereClause, eParam);
-
-                query = query.Where(lambda);
-            }
-
-            return query;
-        }
-
-        protected Expression ToORedWhereClause<T>(IEnumerable<string> criteriaList, ParameterExpression eParam)
-        {
-
-            // First criteria
-            Expression fullExpression = ParseFilterExpression<T>(criteriaList.First(), eParam);
-
-            // The remaining criteria
-            foreach (var criteria in criteriaList.Skip(1))
-            {
-                var criteriaExpression = ParseFilterExpression<T>(criteria, eParam);
-                fullExpression = Expression.OrElse(fullExpression, criteriaExpression);
-            }
-
-            return fullExpression;
-        }
-
-        protected abstract Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level);
-
-        /// <summary>
-        /// Returns the query from which the GET by Id endpoint retrieves the result
-        /// </summary>
-        protected abstract IQueryable<TModel> SingletonQuery(IQueryable<TModel> query, TKey id);
-
-        /// <summary>
-        /// Applies the search argument, which is handled differently in every controller
-        /// </summary>
-        protected abstract IQueryable<TModel> Search(IQueryable<TModel> query, string search);
-
-        /// <summary>
-        /// Includes or excludes inactive items from the query depending on the boolean switch supplied
-        /// </summary>
-        protected abstract IQueryable<TModel> IncludeInactive(IQueryable<TModel> query, bool inactive);
-
-        /// <summary>
-        /// Transforms a DTO response into an abstract grid that can be transformed into an file
-        /// </summary>
-        protected abstract AbstractDataGrid DtosToAbstractGrid(GetResponse<TDto> response, ExportArguments args);
+        // Endpoint implementations
 
         /// <summary>
         /// Returns the entities as per the specifications in the get request
@@ -273,6 +198,86 @@ namespace BSharp.Controllers
 
             return result;
         }
+
+
+
+        // Abstract and virtual members
+
+        /// <summary>
+        /// Returns the query from which the GET endpoint retrieves the results
+        /// </summary>
+        protected abstract IQueryable<TModel> GetBaseQuery();
+
+        protected virtual async Task<IQueryable<TModel>> ApplyReadPermissions(IQueryable<TModel> query)
+        {
+            // Check if the user has any permissions on ViewId at all, else throw forbidden exception
+            // If the user has some permissions on ViewId, OR all their criteria together and apply the where clause
+
+            var readPermissions = await UserPermissions(PermissionLevel.Read);
+            if (!readPermissions.Any())
+            {
+                // Not even authorized to call this API
+                throw new ForbiddenException();
+            }
+            else if (readPermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+            {
+                // The user can read the entire data set
+                return query;
+            }
+            else
+            {
+                // The user has access to part of the data set based on a list of filters that will 
+                // be ORed together in a dynamic linq query
+                IEnumerable<string> criteriaList = readPermissions.Select(e => e.Criteria);
+
+                // The parameter on which the expression is based
+                var eParam = Expression.Parameter(typeof(TModel));
+                var whereClause = ToORedWhereClause<TModel>(criteriaList, eParam);
+                var lambda = Expression.Lambda<Func<TModel, bool>>(whereClause, eParam);
+
+                query = query.Where(lambda);
+            }
+
+            return query;
+        }
+
+        protected Expression ToORedWhereClause<T>(IEnumerable<string> criteriaList, ParameterExpression eParam)
+        {
+
+            // First criteria
+            Expression fullExpression = ParseFilterExpression<T>(criteriaList.First(), eParam);
+
+            // The remaining criteria
+            foreach (var criteria in criteriaList.Skip(1))
+            {
+                var criteriaExpression = ParseFilterExpression<T>(criteria, eParam);
+                fullExpression = Expression.OrElse(fullExpression, criteriaExpression);
+            }
+
+            return fullExpression;
+        }
+
+        protected abstract Task<IEnumerable<M.AbstractPermission>> UserPermissions(PermissionLevel level);
+
+        /// <summary>
+        /// Returns the query from which the GET by Id endpoint retrieves the result
+        /// </summary>
+        protected abstract IQueryable<TModel> SingletonQuery(IQueryable<TModel> query, TKey id);
+
+        /// <summary>
+        /// Applies the search argument, which is handled differently in every controller
+        /// </summary>
+        protected abstract IQueryable<TModel> Search(IQueryable<TModel> query, string search);
+
+        /// <summary>
+        /// Includes or excludes inactive items from the query depending on the boolean switch supplied
+        /// </summary>
+        protected abstract IQueryable<TModel> IncludeInactive(IQueryable<TModel> query, bool inactive);
+
+        /// <summary>
+        /// Transforms a DTO response into an abstract grid that can be transformed into an file
+        /// </summary>
+        protected abstract AbstractDataGrid DtosToAbstractGrid(GetResponse<TDto> response, ExportArguments args);
 
         /// <summary>
         /// Maps a list of the controller models to a list of concrete controller DTOs
@@ -1092,182 +1097,6 @@ namespace BSharp.Controllers
                 _logger.LogError($"Error: {ex.Message} {ex.StackTrace}");
                 return BadRequest(ex.Message);
             }
-        }
-    }
-
-    public static class ControllerUtilities
-    {
-        public const string ALL = "all";
-
-        /// <summary>
-        /// Constructs a SQL data table containing all the public properties of the 
-        /// entities' type and populates the data table with the provided entities
-        /// </summary>
-        public static DataTable DataTable<T>(IEnumerable<T> entities, bool addIndex = false)
-        {
-            DataTable table = new DataTable();
-            if (addIndex)
-            {
-                // The column order MUST match the column order in the user-defined table type
-                table.Columns.Add(new DataColumn("Index", typeof(int)));
-            }
-
-            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList());
-            foreach (var prop in props)
-            {
-                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                var column = new DataColumn(prop.Name, propType);
-                if (propType == typeof(string))
-                {
-                    // For string columns, it is more performant to explicitly specify the maximum column size
-                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
-                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
-                    if (stringLengthAttribute != null)
-                    {
-                        column.MaxLength = stringLengthAttribute.MaximumLength;
-                    }
-                }
-
-                table.Columns.Add(column);
-            }
-
-            int index = 0;
-            foreach (var entity in entities)
-            {
-                DataRow row = table.NewRow();
-
-                // We add an index property since SQL works with un-ordered sets
-                if (addIndex)
-                {
-                    row["Index"] = index++;
-                }
-
-                // Add the remaining properties
-                foreach (var prop in props)
-                {
-                    var propValue = prop.GetValue(entity);
-                    row[prop.Name] = propValue ?? DBNull.Value;
-                }
-
-                table.Rows.Add(row);
-            }
-
-            return table;
-        }
-
-        /// <summary>
-        /// This is alternative for <see cref="Type.GetProperties"/>
-        /// that returns base class properties before inherited class properties
-        /// Credit: https://bit.ly/2UGAkKj
-        /// </summary>
-        public static PropertyInfo[] GetPropertiesBaseFirst(Type type)
-        {
-            var orderList = new List<Type>();
-            var iteratingType = type;
-            do
-            {
-                orderList.Insert(0, iteratingType);
-                iteratingType = iteratingType.BaseType;
-            } while (iteratingType != null);
-
-            var props = type.GetProperties()
-                .OrderBy(x => orderList.IndexOf(x.DeclaringType))
-                .ToArray();
-
-            return props;
-        }
-
-        public static async Task<IEnumerable<M.AbstractPermission>> GetPermissions(DbQuery<M.AbstractPermission> q, PermissionLevel level, params string[] viewIds)
-        {
-            // Validate parameters
-            if (q == null)
-            {
-                // Programmer mistake
-                throw new ArgumentNullException(nameof(q));
-            }
-
-            if (viewIds == null)
-            {
-                // Programmer mistake
-                throw new ArgumentNullException(nameof(viewIds));
-            }
-
-            if (viewIds.Any(e => e == ALL))
-            {
-                // Programmer mistake
-                throw new BadRequestException("'GetPermissions' cannot handle the 'all' case");
-            }
-
-            // Add all and prepare the TVP
-            viewIds = viewIds.Union(new[] { ALL }).ToArray();
-            var viewIdsTable = DataTable(viewIds.Select(e => new { Code = e }));
-            var viewIdsTvp = new SqlParameter("@ViewIds", viewIdsTable)
-            {
-                TypeName = $"dbo.CodeList",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // Prepare the WHERE clause that corresponds to the permission level
-            string levelWhereClause;
-            switch (level)
-            {
-                case PermissionLevel.Read:
-                    levelWhereClause = $"E.Level LIKE '{Constants.Read}%' OR E.Level = '{Constants.Update}' OR E.Level = '{Constants.Sign}'";
-                    break;
-                case PermissionLevel.Update:
-                    levelWhereClause = $"E.Level = '{Constants.Update}' OR E.Level = '{Constants.Sign}'";
-                    break;
-                case PermissionLevel.Create:
-                    levelWhereClause = $"E.Level LIKE '%{Constants.Read}'";
-                    break;
-                case PermissionLevel.Sign:
-                    levelWhereClause = $"E.Level = '{Constants.Sign}'";
-                    break;
-                default:
-                    throw new Exception("Unhandled PermissionLevel enum value"); // Programmer mistake
-            }
-
-            // Retrieve the permissions
-            // Note: There is another query similiar to this one in PermissionsController
-            var result = await q.FromSql($@"
-SELECT * FROM (
-    SELECT ViewId, Criteria, Level 
-    FROM [dbo].[Permissions] P
-    JOIN [dbo].[Roles] R ON P.RoleId = R.Id
-    JOIN [dbo].[RoleMemberships] RM ON R.Id = RM.RoleId
-    WHERE R.IsActive = 1 
-    AND RM.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')) 
-    AND P.ViewId IN (SELECT Code FROM @ViewIds)
-    UNION
-    SELECT ViewId, Criteria, Level 
-    FROM [dbo].[Permissions] P
-    JOIN [dbo].[Roles] R ON P.RoleId = R.Id
-    WHERE R.IsPublic = 1 
-    AND R.IsActive = 1
-    AND P.ViewId IN (SELECT Code FROM @ViewIds)
-) AS E WHERE {levelWhereClause}
-", viewIdsTvp).ToListAsync();
-
-            return result;
-        }
-
-        public static Expression CreatedByMeFilter<TModel>(string keyword, ParameterExpression param, int userId) where TModel : M.DbModelBase
-        {
-            // This method is overridden by controllers to provide special keywords that represent certain
-            // complicated linq expressions that cannot be expressed with normal ODATA filter
-
-            // Any type that contains a CreatedBy property defines a keyword "CreatedByMe"
-            if (keyword == "CreatedByMe")
-            {
-                var createdByProperty = typeof(TModel).GetProperty("CreatedById");
-                if (createdByProperty != null)
-                {
-                    var me = Expression.Constant(userId, typeof(int));
-                    return Expression.Equal(Expression.Property(param, createdByProperty), me);
-                }
-            }
-
-            return null;
         }
     }
 }

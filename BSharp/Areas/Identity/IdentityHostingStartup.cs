@@ -1,6 +1,6 @@
 ﻿using System;
 using BSharp.Data;
-using BSharp.Data.Model;
+using BSharp.Data.DbModel;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;

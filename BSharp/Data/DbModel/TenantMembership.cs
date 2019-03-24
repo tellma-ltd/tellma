@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
     /// <summary>
     /// MANAGER DB

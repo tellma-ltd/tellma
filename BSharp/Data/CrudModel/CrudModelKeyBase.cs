@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Data.CrudModel
 {
-    public class DtoKeyBase<TKey> : DtoBase
+    public class CrudModelKeyBase<TKey>
     {
         /// <summary>
         /// This is an integer for entities that have a simple integer key in the SQL database,
@@ -15,7 +16,7 @@ namespace BSharp.Controllers.DTO
         /// </summary>
         public TKey Id { get; set; }
 
-        //[NotMapped]
-        //public EntityMetadata EntityMetadata { get; set; } = new EntityMetadata();
+        [NotMapped]
+        public EntityMetadata EntityMetadata { get; set; } = new EntityMetadata();
     }
 }

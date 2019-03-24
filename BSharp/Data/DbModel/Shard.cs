@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using BSharp.Services.Sharding;
 using Microsoft.EntityFrameworkCore;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
     public class Shard
     {

@@ -6,12 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
     /// <summary>
     /// A record specifies that tenant X lives in Database Y
     /// </summary>
-    public class Tenant : ModelBase
+    public class Tenant : DbModelBase
     {
         public int Id { get; set; }
 

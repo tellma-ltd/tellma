@@ -1,5 +1,5 @@
 ﻿using BSharp.Controllers.DTO;
-using BSharp.Data.Model;
+using BSharp.Data.DbModel;
 using BSharp.Services.MultiTenancy;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;

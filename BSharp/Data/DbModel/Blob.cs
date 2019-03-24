@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
     public class Blob
     {

@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
     /// <summary>
     /// These settings live in the manager DB and are global for the entire instance
     /// </summary>
-    public class GlobalSettings : ModelBase
+    public class GlobalSettings : DbModelBase
     {
         /// <summary>
         /// Just to keep EF happy

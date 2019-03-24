@@ -5,13 +5,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
     /// <summary>
     /// MANAGER DB
     /// This is the table of users that resides in the manager DB, it contains all users of the application
     /// </summary>
-    public class GlobalUser : ModelBase
+    public class GlobalUser : DbModelBase
     {
         public int Id { get; set; }
 

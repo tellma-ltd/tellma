@@ -2,7 +2,7 @@
 using BSharp.Controllers.DTO;
 using System.Linq;
 using System.Linq.Expressions;
-using M = BSharp.Data.Model;
+using M = BSharp.Data.DbModel;
 
 namespace BSharp.Services.Mapper
 {
@@ -80,7 +80,7 @@ namespace BSharp.Services.Mapper
         /// Syntactic sugar, maps the model type to both the DTO and <see cref="DtoBase"/>
         /// </summary>
         private IMappingExpression<TModel, TDto> CreateDtoMap<TModel, TDto>()
-            where TDto : DtoBase where TModel : M.ModelBase
+            where TDto : DtoBase where TModel : M.DbModelBase
         {
             CreateMap<TModel, DtoBase>()
                 .ConstructUsing((model, ctx) => ctx.Mapper.Map<TDto>(model));

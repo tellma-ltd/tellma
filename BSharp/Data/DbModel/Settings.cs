@@ -2,9 +2,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
-    public class Settings : ModelBase
+    public class Settings : DbModelBase
     {
         // The tenant Id will be the ID
 

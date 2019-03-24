@@ -1,4 +1,4 @@
-﻿using BSharp.Data.Model;
+﻿using BSharp.Data.DbModel;
 using BSharp.Services.Identity;
 using BSharp.Services.Migrations;
 using BSharp.Services.MultiTenancy;
@@ -89,7 +89,7 @@ namespace BSharp.Data
 
             // Settings
             AddTenantId<Settings>(builder, tenantId);
-            Data.Model.Settings.OnModelCreating(builder);
+            Data.DbModel.Settings.OnModelCreating(builder);
 
             // Blobs
             AddTenantId<Blob>(builder, nameof(Blob.Id), tenantId);

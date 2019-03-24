@@ -1,5 +1,7 @@
-﻿using BSharp.Data.Model;
+﻿using BSharp.Data.DbModel;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 // dotnet ef migrations add Initial -c=AdminContext -o=Data/Migrations/Admin
 // dotnet ef database update LastGoodMigration --context=AdminContext
@@ -38,6 +40,7 @@ namespace BSharp.Data
         public DbQuery<GlobalUsersMatch> GlobalUsersMatches { get; set; }
         public DbQuery<AbstractPermission> AbstractPermissions { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -56,7 +59,7 @@ namespace BSharp.Data
             Translation.OnModelCreating(builder);
 
             // Settings
-            Data.Model.GlobalSettings.OnModelCreating(builder);
+            Data.DbModel.GlobalSettings.OnModelCreating(builder);
         }
     }
 }

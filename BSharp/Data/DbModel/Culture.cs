@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
-    public class Culture : ModelBase
+    public class Culture : DbModelBase
     {
         [Required]
         [MaxLength(255)]

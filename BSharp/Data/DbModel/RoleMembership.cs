@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace BSharp.Data.Model
+namespace BSharp.Data.DbModel
 {
-    public class RoleMembership : ModelBase, IAuditedModel
+    public class RoleMembership : DbModelBase, IAuditedModel
     {
         public int Id { get; set; }
 
