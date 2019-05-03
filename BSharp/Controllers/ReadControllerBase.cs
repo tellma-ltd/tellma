@@ -1338,7 +1338,7 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// Usefull for determining which dtos satisfy the criteria of which permissions in order to apply the masks of those permissions on the DTOs
+        /// Useful for determining which dtos satisfy the criteria of which permissions in order to apply the masks of those permissions on the DTOs
         /// </summary>
         protected class CriteriaMap
         {
