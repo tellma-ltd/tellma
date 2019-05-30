@@ -11,7 +11,6 @@ import { EntitiesResponse } from '~/app/data/dto/get-response';
 import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { Subject, Observable, of } from 'rxjs';
 
 @Component({
@@ -643,39 +642,37 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
       this.cancel.emit();
     } else {
 
-      const canCancel = this.canDeactivate();
-      if (canCancel instanceof Observable) {
-        canCancel.subscribe(can => {
-          if (can) {
-            this.doCancel();
-          }
-        });
-      } else if (canCancel) {
-        this.doCancel();
+      // in screen mode...
+      if (this.isNew) {
+
+        // navigate back to the last screen, this automatically
+        // prompts the user for any unsaved changes
+        this.location.back();
+
+      } else {
+        // prompt the user manually, since the Angular Router isn't involved
+        const canCancel = this.canDeactivate();
+        if (canCancel instanceof Observable) {
+          canCancel.subscribe(can => {
+            if (can) {
+              this.doCancel();
+            }
+          });
+        } else if (canCancel) {
+          this.doCancel();
+        }
       }
     }
   }
 
   doCancel(): void {
 
-      // in screen mode...
-      // remove the edit model
-      if (this.isNew) {
+    // clear the edit model and error messages
+    this._editModel = null;
+    this.clearErrors();
 
-        // this step in order to avoid the unsaved changes modal
-        this.state.detailsStatus = DetailsStatus.loaded;
-
-        // navigate back to the last screen
-        this.location.back();
-
-      } else {
-        // clear the edit model and error messages
-        this._editModel = null;
-        this.clearErrors();
-
-        // ... and then close the edit form
-        this.state.detailsStatus = DetailsStatus.loaded;
-      }
+    // ... and then close the edit form
+    this.state.detailsStatus = DetailsStatus.loaded;
   }
 
   onDelete(): void {

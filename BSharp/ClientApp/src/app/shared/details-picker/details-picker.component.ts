@@ -51,7 +51,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   expand: string;
 
   @Input()
-  select = 'BasicFields';
+  select = null;
 
   @Input()
   collection: string;

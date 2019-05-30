@@ -7,7 +7,7 @@ using System.Linq;
 namespace BSharp.Controllers.Misc
 {
     /// <summary>
-    /// Represents a mask in an efficient-to-manipulate data structure, and provides utilties for common operations on mask trees
+    /// Represents a permission mask in an efficient-to-manipulate data structure, and provides utilties for common operations on mask trees
     /// </summary>
     public class MaskTree : Dictionary<string, MaskTree>
     {
@@ -22,6 +22,14 @@ namespace BSharp.Controllers.Misc
         /// Keyword that represnts all the basic fields of a DTO, i.e those fields that are always accessible if you have access to the DTO as a whole
         /// </summary>
         public const string BASIC_FIELDS_KEYWORD = "BasicFields";
+
+        /// <summary>
+        /// Returns the fields of the level represented by this <see cref="MaskTree"/>
+        /// </summary>
+        public ICollection<string> Fields
+        {
+            get { return Keys; }
+        }
 
         /// <summary>
         /// Function that splits the mask into a list of paths

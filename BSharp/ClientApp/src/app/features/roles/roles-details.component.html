@@ -98,11 +98,10 @@
         <ng-template #row_ViewId let-item="item" let-index="originalIndex" let-update="update">
           <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.ViewId">
             <div *ngIf="!isEdit">
-              {{ ws.get('Views', item.ViewId)?.ResourceName ? (ws.get('Views', item.ViewId).ResourceName | translate) : ws.getMultilingualValue('Views', item.ViewId, 'Name') }}
+              {{ ws.getMultilingualValue('Views', item.ViewId, 'Name') }}
             </div>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId"
-              (ngModelChange)="update(item); item.Level = null;" apiEndpoint="views" collection="Views"
-              [formatter]="viewFormatter">
+              (ngModelChange)="update(item); item.Level = null;" apiEndpoint="views" collection="Views">
             </b-details-picker>
           </b-form-group>
         </ng-template>

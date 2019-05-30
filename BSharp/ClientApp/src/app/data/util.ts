@@ -112,7 +112,7 @@ function merge(freshItem: DtoKeyBase, staleItem: DtoKeyBase): DtoKeyBase {
 
     // if the property is a navigation property or an array, and both values
     // are not null then it's not one or the other, we have to merge them
-    if (!!freshValue && !!staleValue) {
+    if (!!freshValue && !!staleValue && freshPropMetadata === 2 && stalePropMetadata === 2) {
       if (!!freshValue.EntityMetadata || !!staleValue.EntityMetadata) {
         // a navigation property, call merge recursively
         result[prop] = merge(freshValue, staleValue);

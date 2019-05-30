@@ -463,6 +463,14 @@ namespace BSharp.Services.Utilities
         /// <returns></returns>
         public static IEnumerable<T> Enumerate<T>(this object collection)
         {
+            foreach(var item in collection.Enumerate())
+            {
+                yield return (T)item;
+            }
+        }
+
+        public static IEnumerable<object> Enumerate(this object collection)
+        {
             if (collection == null)
             {
                 throw new ArgumentNullException(nameof(collection));
@@ -473,7 +481,7 @@ namespace BSharp.Services.Utilities
             var currentProp = enumerator.GetType().GetProperty("Current");
             while ((bool)moveNextMethod.Invoke(enumerator, new object[0]))
             {
-                var item = (T)currentProp.GetValue(enumerator);
+                var item = currentProp.GetValue(enumerator);
                 yield return item;
             }
         }

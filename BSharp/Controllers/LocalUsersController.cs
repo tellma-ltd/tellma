@@ -5,6 +5,7 @@ using BSharp.Services.BlobStorage;
 using BSharp.Services.Email;
 using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
+using BSharp.Services.OData;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -221,7 +222,8 @@ namespace BSharp.Controllers
 
         private async Task<ActionResult<EntitiesResponse<LocalUser>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
-            await CheckActionPermissions(ids.Cast<int?>());
+            var nullableIds = ids.Cast<int?>().ToArray();
+            await CheckActionPermissions(nullableIds);
 
             var isActiveParam = new SqlParameter("@IsActive", isActive);
 
@@ -329,12 +331,9 @@ namespace BSharp.Controllers
             else
             {
                 // Load the entities using their Ids
-                var affectedDbEntitiesQ = _db.VW_LocalUsers.Where(e => ids.Contains(e.Id.Value)); // _db.VW_LocalUsers.FromSql("SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-                var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
+                var affectedDbEntitiesQ = CreateODataQuery().FilterByIds(nullableIds);
+                var affectedDbEntitiesExpandedQ = affectedDbEntitiesQ.Clone().Expand(expand);
                 var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-
-                // Add the metadata
-                ApplySelectAndAddMetadata(affectedDbEntities, expand, null);
 
                 // sort the entities the way their Ids came, as a good practice
                 var affectedEntities = Mapper.Map<List<LocalUser>>(affectedDbEntities);
@@ -393,28 +392,40 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override async Task<IDbContextTransaction> BeginSaveTransaction()
+        protected override DbContext GetDbContext()
         {
-            return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+            return _db;
         }
 
-        protected override IQueryable<LocalUserForQuery> GetBaseQuery() => _db.VW_LocalUsers;
-
-        protected override IQueryable<LocalUserForQuery> Search(IQueryable<LocalUserForQuery> query, string search, IEnumerable<AbstractPermission> permissions)
+        protected override Func<Type, string> GetSources()
         {
+            var info = _tenantInfo.GetCurrentInfo();
+            return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
+        }
+
+        protected override ODataQuery<LocalUserForQuery, int?> Search(ODataQuery<LocalUserForQuery, int?> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        {
+            string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(e => e.Name.Contains(search) || e.Name2.Contains(search) || e.Email.Contains(search));
+                search = search.Replace("'", "''"); // escape quotes by repeating them
+
+                var name = nameof(LocalUserForQuery.Name);
+                var name2 = nameof(LocalUserForQuery.Name2);
+                // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
+                var email = nameof(LocalUserForQuery.Email);
+
+                query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {email} contains '{search}'");
             }
 
             return query;
         }
 
-        protected override IQueryable<LocalUserForQuery> IncludeInactive(IQueryable<LocalUserForQuery> query, bool inactive)
+        protected override ODataQuery<LocalUserForQuery, int?> IncludeInactive(ODataQuery<LocalUserForQuery, int?> query, bool inactive)
         {
             if (!inactive)
             {
-                query = query.Where(e => e.IsActive == true);
+                query.Filter("IsActive eq true");
             }
 
             return query;
@@ -613,334 +624,346 @@ namespace BSharp.Controllers
             return table;
         }
 
-        protected override async Task<(List<LocalUserForQuery>, IQueryable<LocalUserForQuery>)> PersistAsync(List<LocalUserForSave> entities, SaveArguments args)
+        protected override Task<List<int?>> PersistAsync(List<LocalUserForSave> entitiesAndMasks, SaveArguments args)
         {
-            // Make all the emails small case
-            entities.ForEach(e => e.Email = e.Email.ToLower());
-
-            // Get the inserted users
-            var insertedEntities = entities.Where(e => e.EntityState == EntityStates.Inserted);
-
-            using (var trx = await _adminDb.Database.BeginTransactionAsync())
-            {
-                try
-                {
-                    // Query the manager DB for matching emails, here I use the CodeList user-defined table type 
-                    // of the manager DB, since I only want to pass a list of strings, no need to defined a new type
-                    var insertedEmails = insertedEntities.Select(e => new { Code = e.Email });
-                    var emailsTable = ControllerUtilities.DataTable(insertedEmails);
-                    var emailsTvp = new SqlParameter("Emails", emailsTable)
-                    {
-                        TypeName = $"dbo.MCodeList",
-                        SqlDbType = SqlDbType.Structured
-                    };
-
-                    var tenantId = new SqlParameter("TenantId", _tenantIdProvider.GetTenantId());
-
-                    var globalMatches = await _adminDb.GlobalUsersMatches.FromSql($@"
-    DECLARE @IndexedIds [dbo].[IdList];
-
-    -- Insert new users
-    INSERT INTO @IndexedIds([Id])
-    SELECT x.[Id]
-    FROM
-    (
-	    MERGE INTO [dbo].[GlobalUsers] AS t
-	    USING (
-		    SELECT [Code] as [Email] FROM @Emails 
-	    ) AS s ON (t.Email = s.Email)
-	    WHEN NOT MATCHED THEN
-		    INSERT ([Email]) VALUES (s.[Email])
-		    OUTPUT inserted.[Id] 
-    ) As x;
-
-    -- Insert memberships
-    INSERT INTO [dbo].[TenantMemberships] (UserId, TenantId)
-    SELECT Id, @TenantId FROM @IndexedIds;
-
-    -- Return existing users
-    SELECT E.[Code] AS [Email], 
-           GU.[ExternalId] AS [ExternalId] 
-    FROM [dbo].[GlobalUsers] GU JOIN @Emails E ON GU.Email = E.Code
-    WHERE GU.ExternalId IS NOT NULL",
-                    emailsTvp, tenantId).ToDictionaryAsync(e => e.Email);
-
-                    // Add created entities
-                    var localUsersIndices = entities.ToIndexDictionary();
-                    var localUsersTable = LocalUsersDataTable(entities, globalMatches);
-                    var localUsersTvp = new SqlParameter("LocalUsers", localUsersTable)
-                    {
-                        TypeName = $"dbo.{nameof(LocalUserForSave)}List",
-                        SqlDbType = SqlDbType.Structured
-                    };
-
-                    // Filter out roles that haven't changed for performance
-                    var rolesHeaderIndices = localUsersIndices.Keys.Select(localUser => (localUser.Roles, HeaderIndex: localUsersIndices[localUser]));
-                    DataTable rolesTable = ControllerUtilities.DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
-                    var rolesTvp = new SqlParameter("RoleMemberships", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
-
-                    string saveSql = $@"
--- Procedure: LocalUsers__Save
-    DECLARE @IndexedIds [dbo].[IndexedIdList];
-	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-
-	DELETE FROM [dbo].[RoleMemberships]
-	WHERE [Id] IN (SELECT [Id] FROM @RoleMemberships WHERE [EntityState] = N'Deleted');
-
-	INSERT INTO @IndexedIds([Index], [Id])
-	SELECT x.[Index], x.[Id]
-	FROM
-	(
-		MERGE INTO [dbo].[LocalUsers] AS t
-		USING (
-			SELECT 
-				[Index], [Id], [Name], [Name2], [Email], [ExternalId], [AgentId]
-			FROM @LocalUsers 
-			WHERE [EntityState] IN (N'Inserted', N'Updated')
-		) AS s ON (t.Id = s.Id)
-		WHEN MATCHED 
-		THEN
-			UPDATE SET
-				t.[Name]		    = s.[Name],
-				t.[Name2]		    = s.[Name2],
-				-- t.[Email]		    = s.[Email],
-				-- t.[ExternalId]		= s.[ExternalId],
-				t.[AgentId]	        = s.[AgentId],
-				t.[ModifiedAt]	    = @Now,
-				t.[ModifiedById]    = @UserId,
-                t.[PermissionsVersion] = NEWID(), -- in case the permissions have changed
-                t.[UserSettingsVersion] = NEWID() -- in case the permissions have changed
-		WHEN NOT MATCHED THEN
-			INSERT (
-				[TenantId], [Name], [Name2],	[Email],	[ExternalId],    [AgentId], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById]
-			)
-			VALUES (
-				@TenantId, s.[Name], s.[Name2], s.[Email], s.[ExternalId], s.[AgentId], @Now,		@UserId,		@Now,		@UserId
-			)
-			OUTPUT s.[Index], inserted.[Id] 
-	) As x;
-
-    MERGE INTO [dbo].[RoleMemberships] AS t
-		USING (
-			SELECT L.[Index], L.[Id], II.[Id] AS [UserId], [RoleId], [Memo]
-			FROM @RoleMemberships L
-			JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
-			WHERE L.[EntityState] IN (N'Inserted', N'Updated')
-		) AS s ON t.Id = s.Id
-		WHEN MATCHED THEN
-			UPDATE SET 
-				t.[UserId]		    = s.[UserId], 
-				t.[RoleId]		    = s.[RoleId],
-				t.[Memo]		    = s.[Memo],
-				t.[ModifiedAt]	    = @Now,
-				t.[ModifiedById]	= @UserId
-		WHEN NOT MATCHED THEN
-			INSERT ([TenantId], [UserId],	[RoleId],	 [Memo], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
-			VALUES (@TenantId, s.[UserId], s.[RoleId], s.[Memo], @Now,		@UserId,		@Now,		@UserId);
-";
-
-                    // Prepare the list of users whose profile picture has changed:
-                    var usersWithModifiedImgs = entities.Where(e => e.Image != null);
-                    bool newPictures = usersWithModifiedImgs.Any();
-                    bool returnEntities = (args.ReturnEntities ?? false);
-
-                    // Optimization
-                    if (!returnEntities && !newPictures)
-                    {
-                        // IF no returned items are expected, simply execute a non-Query and return an empty list;
-                        await _db.Database.ExecuteSqlCommandAsync(saveSql, localUsersTvp, rolesTvp);
-                        return (new List<LocalUserForQuery>(), null);
-                    }
-                    else
-                    {
-                        // If returned items are expected, append a select statement to the SQL command
-                        saveSql = saveSql += "SELECT * FROM @IndexedIds;";
-
-                        // Retrieve the map from Indexes to Ids
-                        var indexedIds = await _db.Saving.FromSql(saveSql, localUsersTvp, rolesTvp).ToListAsync();
-                        var idsString = string.Join(",", indexedIds.Select(e => e.Id));
-                        var q = _db.VW_LocalUsers.FromSql($"SELECT * FROM [dbo].[VW_LocalUsers] WHERE Id IN (SELECT CONVERT(INT, VALUE) AS Id FROM STRING_SPLIT({idsString}, ','))");
-                        q = Expand(q, args.Expand); // includes
-                        var savedEntities = await q.AsNoTracking().ToListAsync();
-
-                        // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
-                        Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                        var sortedSavedEntities = new LocalUserForQuery[savedEntities.Count];
-                        foreach (var item in savedEntities)
-                        {
-                            int index = indices[item.Id.Value];
-                            sortedSavedEntities[index] = item;
-                        }
-
-                        // The code inside here is not optimized for bulk, we assume for now
-                        // that users will be entering images one at a time
-                        if (newPictures)
-                        {
-                            var entitiesDic = entities.ToIndexDictionary();
-                            // Retrieve blobs to delete
-                            var blobsToDelete = usersWithModifiedImgs.Where(e => e.EntityState == EntityStates.Updated)
-                                .Select(u => sortedSavedEntities[entitiesDic[u]].ImageId).Where(e => e != null).Select(e => BlobName(e)).ToList();
-
-
-                            var blobsToSave = new List<(string name, byte[] content)>();
-                            foreach (var user in usersWithModifiedImgs)
-                            {
-                                // Get the Id of the user
-                                int index = entitiesDic[user];
-                                var savedEntity = sortedSavedEntities[entitiesDic[user]];
-                                int id = savedEntity.Id.Value;
-                                if (user.Image.Length == 0)
-                                {
-                                    // We simply NULL image Id
-                                    await _db.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[LocalUsers] SET ImageId = NULL WHERE [Id] = {id}");
-                                    savedEntity.ImageId = null;
-                                }
-                                else
-                                {
-                                    // We create a new Image Id
-                                    string imageId = Guid.NewGuid().ToString();
-                                    await _db.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[LocalUsers] SET ImageId = {imageId} WHERE [Id] = {id}");
-                                    savedEntity.ImageId = imageId;
-
-                                    // We make the image smaller and turn it into JPEG
-                                    var imageBytes = user.Image;
-                                    using (var image = Image.Load(imageBytes))
-                                    {
-                                        // Resize to 128x128px
-                                        image.Mutate(c => c.Resize(new ResizeOptions
-                                        {
-                                            // 'Max' mode maintains the aspect ratio and keeps the entire image
-                                            Mode = ResizeMode.Max,
-                                            Size = new Size(128),
-                                            Position = AnchorPositionMode.Center
-                                        }));
-
-                                        // some image formats that support transparent regions
-                                        // these regions will turn black in JPEG format unless we do this
-                                        image.Mutate(c => c.BackgroundColor(Rgba32.White)); ;
-
-                                        // Save as JPEG
-                                        var memoryStream = new MemoryStream();
-                                        image.SaveAsJpeg(memoryStream);
-                                        imageBytes = memoryStream.ToArray();
-
-                                        // Note: JPEG is the format of choice for photography
-                                        // for such pictures it provides better quality at a lower size
-                                        // Since these pictures are expected to be mostly photographs
-                                        // we save them as JPEGs
-                                    }
-
-                                    // Add it to blobs to save
-                                    blobsToSave.Add((BlobName(imageId), imageBytes));
-                                }
-                            }
-
-                            // Delete the blobs retrieved earlier
-                            if (blobsToDelete.Any())
-                            {
-                                await _blobService.DeleteBlobs(blobsToDelete);
-                            }
-
-                            // Save new blobs if any
-                            if (blobsToSave.Any())
-                            {
-                                await _blobService.SaveBlobs(blobsToSave);
-                            }
-
-                            // Note: Since the blob service is not a transactional resource it is good to do the blob calls
-                            // near the end to minimize the chance of modifying blobs first only to have the transaction roll back later
-                        }
-
-                        // Send invitation emails, sending emails is also a non transactional resource, so we keep it till the end
-                        var newUsers = insertedEntities.Where(e => !globalMatches.ContainsKey(e.Email)).ToList();
-                        int count = newUsers.Count;
-                        if (count > 0 && _config.EmbeddedIdentityServerEnabled)
-                        {
-                            // NOTE: the section below is not optimized for massive bulk (e.g. 1,000+ users), but it should be 
-                            // acceptable with the usual workloads, customers with more than 200 users are rare anyways
-
-                            // The email sender parameters
-                            var tos = new string[count];
-                            var subjects = new string[count];
-                            var substitutions = new Dictionary<string, string>[count];
-
-                            // this loop adds the users to the identity database and prepares the invitation email parameters
-                            for (int i = 0; i < count; i++)
-                            {
-                                var localUser = newUsers[i];
-                                var email = localUser.Email;
-
-                                // in case the user was added in a previous failed transaction, we try to load the email from the DB first
-                                var identityUser = await _userManager.FindByNameAsync(email) ??
-                                     await _userManager.FindByNameAsync(email);
-
-                                // this is truly a new user, create it
-                                if (identityUser == null)
-                                {
-                                    // create the identity user
-                                    identityUser = new M.User
-                                    {
-                                        UserName = email,
-                                        Email = email,
-
-                                        // if the system is offline, emails are automatically confirmed
-                                        EmailConfirmed = !_config.Online
-                                    };
-
-                                    var result = await _userManager.CreateAsync(identityUser);
-                                    if (!result.Succeeded)
-                                    {
-                                        string msg = string.Join(", ", result.Errors.Select(e => e.Description));
-                                        throw new BadRequestException($"An unexpected error occurred while creating an account for '{localUser.Name}': {msg}");
-                                    }
-                                }
-
-                                // if the system is online: prepare an invitation email that contains an email confirmation link
-                                if (_config.Online)
-                                {
-                                    // Add the email sender parameters
-                                    var (subject, body) = await MakeInvitationEmailAsync(identityUser, localUser);
-                                    tos[i] = email;
-                                    subjects[i] = subject;
-                                    substitutions[i] = new Dictionary<string, string> { { "-message-", body } };
-                                }
-                            }
-
-                            // send all the inviation emails en masse
-                            if (_config.Online)
-                            {
-                                await _emailSender.SendEmailBulkAsync(
-                                    tos: tos.ToList(),
-                                    subjects: subjects.ToList(),
-                                    htmlMessage: $"-message-",
-                                    substitutions: substitutions.ToList()
-                                    );
-                            }
-                        }
-
-                        trx.Commit();
-
-                        // Return the saved entities if requested
-                        if (!returnEntities)
-                        {
-                            return (new List<LocalUserForQuery>(), null);
-                        }
-                        else
-                        {
-                            // Return the sorted collection
-                            return (sortedSavedEntities.ToList(), q);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    trx.Rollback();
-                    throw ex;
-                }
-            }
+            throw new NotImplementedException();
         }
+
+        //        protected override async Task<List<int?>> PersistAsync(List<LocalUserForSave> entities, SaveArguments args)
+        //        {
+        //            // Make all the emails small case
+        //            entities.ForEach(e => e.Email = e.Email.ToLower());
+
+        //            // Get the inserted users
+        //            var insertedEntities = entities.Where(e => e.EntityState == EntityStates.Inserted);
+
+        //            using (var trx = await _adminDb.Database.BeginTransactionAsync())
+        //            {
+        //                try
+        //                {
+        //                    // Query the manager DB for matching emails, here I use the CodeList user-defined table type 
+        //                    // of the manager DB, since I only want to pass a list of strings, no need to defined a new type
+        //                    var insertedEmails = insertedEntities.Select(e => new { Code = e.Email });
+        //                    var emailsTable = ControllerUtilities.DataTable(insertedEmails);
+        //                    var emailsTvp = new SqlParameter("Emails", emailsTable)
+        //                    {
+        //                        TypeName = $"dbo.MCodeList",
+        //                        SqlDbType = SqlDbType.Structured
+        //                    };
+
+        //                    var tenantId = new SqlParameter("TenantId", _tenantIdProvider.GetTenantId());
+
+        //                    var globalMatches = await _adminDb.GlobalUsersMatches.FromSql($@"
+        //    DECLARE @IndexedIds [dbo].[IdList];
+
+        //    -- Insert new users
+        //    INSERT INTO @IndexedIds([Id])
+        //    SELECT x.[Id]
+        //    FROM
+        //    (
+        //	    MERGE INTO [dbo].[GlobalUsers] AS t
+        //	    USING (
+        //		    SELECT [Code] as [Email] FROM @Emails 
+        //	    ) AS s ON (t.Email = s.Email)
+        //	    WHEN NOT MATCHED THEN
+        //		    INSERT ([Email]) VALUES (s.[Email])
+        //		    OUTPUT inserted.[Id] 
+        //    ) As x;
+
+        //    -- Insert memberships
+        //    INSERT INTO [dbo].[TenantMemberships] (UserId, TenantId)
+        //    SELECT Id, @TenantId FROM @IndexedIds;
+
+        //    -- Return existing users
+        //    SELECT E.[Code] AS [Email], 
+        //           GU.[ExternalId] AS [ExternalId] 
+        //    FROM [dbo].[GlobalUsers] GU JOIN @Emails E ON GU.Email = E.Code
+        //    WHERE GU.ExternalId IS NOT NULL",
+        //                    emailsTvp, tenantId).ToDictionaryAsync(e => e.Email);
+
+        //                    // Add created entities
+        //                    var localUsersIndices = entities.ToIndexDictionary();
+        //                    var localUsersTable = LocalUsersDataTable(entities, globalMatches);
+        //                    var localUsersTvp = new SqlParameter("LocalUsers", localUsersTable)
+        //                    {
+        //                        TypeName = $"dbo.{nameof(LocalUserForSave)}List",
+        //                        SqlDbType = SqlDbType.Structured
+        //                    };
+
+        //                    // Filter out roles that haven't changed for performance
+        //                    var rolesHeaderIndices = localUsersIndices.Keys.Select(localUser => (localUser.Roles, HeaderIndex: localUsersIndices[localUser]));
+        //                    DataTable rolesTable = ControllerUtilities.DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
+        //                    var rolesTvp = new SqlParameter("RoleMemberships", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
+
+        //                    string saveSql = $@"
+        //-- Procedure: LocalUsers__Save
+        //    DECLARE @IndexedIds [dbo].[IndexedIdList];
+        //	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+        //	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+        //	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+
+        //	DELETE FROM [dbo].[RoleMemberships]
+        //	WHERE [Id] IN (SELECT [Id] FROM @RoleMemberships WHERE [EntityState] = N'Deleted');
+
+        //	INSERT INTO @IndexedIds([Index], [Id])
+        //	SELECT x.[Index], x.[Id]
+        //	FROM
+        //	(
+        //		MERGE INTO [dbo].[LocalUsers] AS t
+        //		USING (
+        //			SELECT 
+        //				[Index], [Id], [Name], [Name2], [Email], [ExternalId], [AgentId]
+        //			FROM @LocalUsers 
+        //			WHERE [EntityState] IN (N'Inserted', N'Updated')
+        //		) AS s ON (t.Id = s.Id)
+        //		WHEN MATCHED 
+        //		THEN
+        //			UPDATE SET
+        //				t.[Name]		    = s.[Name],
+        //				t.[Name2]		    = s.[Name2],
+        //				-- t.[Email]		    = s.[Email],
+        //				-- t.[ExternalId]		= s.[ExternalId],
+        //				t.[AgentId]	        = s.[AgentId],
+        //				t.[ModifiedAt]	    = @Now,
+        //				t.[ModifiedById]    = @UserId,
+        //                t.[PermissionsVersion] = NEWID(), -- in case the permissions have changed
+        //                t.[UserSettingsVersion] = NEWID() -- in case the permissions have changed
+        //		WHEN NOT MATCHED THEN
+        //			INSERT (
+        //				[TenantId], [Name], [Name2],	[Email],	[ExternalId],    [AgentId], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById]
+        //			)
+        //			VALUES (
+        //				@TenantId, s.[Name], s.[Name2], s.[Email], s.[ExternalId], s.[AgentId], @Now,		@UserId,		@Now,		@UserId
+        //			)
+        //			OUTPUT s.[Index], inserted.[Id] 
+        //	) As x;
+
+        //    MERGE INTO [dbo].[RoleMemberships] AS t
+        //		USING (
+        //			SELECT L.[Index], L.[Id], II.[Id] AS [UserId], [RoleId], [Memo]
+        //			FROM @RoleMemberships L
+        //			JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
+        //			WHERE L.[EntityState] IN (N'Inserted', N'Updated')
+        //		) AS s ON t.Id = s.Id
+        //		WHEN MATCHED THEN
+        //			UPDATE SET 
+        //				t.[UserId]		    = s.[UserId], 
+        //				t.[RoleId]		    = s.[RoleId],
+        //				t.[Memo]		    = s.[Memo],
+        //				t.[ModifiedAt]	    = @Now,
+        //				t.[ModifiedById]	= @UserId
+        //		WHEN NOT MATCHED THEN
+        //			INSERT ([TenantId], [UserId],	[RoleId],	 [Memo], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
+        //			VALUES (@TenantId, s.[UserId], s.[RoleId], s.[Memo], @Now,		@UserId,		@Now,		@UserId);
+        //";
+
+        //                    // Prepare the list of users whose profile picture has changed:
+        //                    var usersWithModifiedImgs = entities.Where(e => e.Image != null);
+        //                    bool newPictures = usersWithModifiedImgs.Any();
+        //                    bool returnEntities = (args.ReturnEntities ?? false);
+
+        //                    // Optimization
+        //                    if (!returnEntities && !newPictures)
+        //                    {
+        //                        // IF no returned items are expected, simply execute a non-Query and return an empty list;
+        //                        await _db.Database.ExecuteSqlCommandAsync(saveSql, localUsersTvp, rolesTvp);
+        //                        return null;
+        //                    }
+        //                    else
+        //                    {
+        //                        // If returned items are expected, append a select statement to the SQL command
+        //                        saveSql = saveSql += "SELECT * FROM @IndexedIds;";
+
+        //                        // Retrieve the map from Indexes to Ids
+        //                        var indexedIds = await _db.Saving.FromSql(saveSql, localUsersTvp, rolesTvp).ToListAsync();
+
+        //                        // return the Ids in the same order they came
+        //                        var result = indexedIds.OrderBy(e => e.Index).Select(e => (int?)e.Id).ToList();
+
+
+        //                        // Hmmmmmmmmmmmmmmmmmmmmmmm
+
+        //                        var idsString = string.Join(",", indexedIds.Select(e => e.Id));
+        //                        var q = _db.VW_LocalUsers.FromSql($"SELECT * FROM [dbo].[VW_LocalUsers] WHERE Id IN (SELECT CONVERT(INT, VALUE) AS Id FROM STRING_SPLIT({idsString}, ','))");
+        //                        q = Expand(q, args.Expand); // includes
+        //                        var savedEntities = await q.AsNoTracking().ToListAsync();
+
+        //                        // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
+        //                        Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
+        //                        var sortedSavedEntities = new LocalUserForQuery[savedEntities.Count];
+        //                        foreach (var item in savedEntities)
+        //                        {
+        //                            int index = indices[item.Id.Value];
+        //                            sortedSavedEntities[index] = item;
+        //                        }
+
+        //                        // The code inside here is not optimized for bulk, we assume for now
+        //                        // that users will be entering images one at a time
+        //                        if (newPictures)
+        //                        {
+        //                            var entitiesDic = entities.ToIndexDictionary();
+        //                            // Retrieve blobs to delete
+        //                            var blobsToDelete = usersWithModifiedImgs.Where(e => e.EntityState == EntityStates.Updated)
+        //                                .Select(u => sortedSavedEntities[entitiesDic[u]].ImageId).Where(e => e != null).Select(e => BlobName(e)).ToList();
+
+
+        //                            var blobsToSave = new List<(string name, byte[] content)>();
+        //                            foreach (var user in usersWithModifiedImgs)
+        //                            {
+        //                                // Get the Id of the user
+        //                                int index = entitiesDic[user];
+        //                                var savedEntity = sortedSavedEntities[entitiesDic[user]];
+        //                                int id = savedEntity.Id.Value;
+        //                                if (user.Image.Length == 0)
+        //                                {
+        //                                    // We simply NULL image Id
+        //                                    await _db.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[LocalUsers] SET ImageId = NULL WHERE [Id] = {id}");
+        //                                    savedEntity.ImageId = null;
+        //                                }
+        //                                else
+        //                                {
+        //                                    // We create a new Image Id
+        //                                    string imageId = Guid.NewGuid().ToString();
+        //                                    await _db.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[LocalUsers] SET ImageId = {imageId} WHERE [Id] = {id}");
+        //                                    savedEntity.ImageId = imageId;
+
+        //                                    // We make the image smaller and turn it into JPEG
+        //                                    var imageBytes = user.Image;
+        //                                    using (var image = Image.Load(imageBytes))
+        //                                    {
+        //                                        // Resize to 128x128px
+        //                                        image.Mutate(c => c.Resize(new ResizeOptions
+        //                                        {
+        //                                            // 'Max' mode maintains the aspect ratio and keeps the entire image
+        //                                            Mode = ResizeMode.Max,
+        //                                            Size = new Size(128),
+        //                                            Position = AnchorPositionMode.Center
+        //                                        }));
+
+        //                                        // some image formats that support transparent regions
+        //                                        // these regions will turn black in JPEG format unless we do this
+        //                                        image.Mutate(c => c.BackgroundColor(Rgba32.White)); ;
+
+        //                                        // Save as JPEG
+        //                                        var memoryStream = new MemoryStream();
+        //                                        image.SaveAsJpeg(memoryStream);
+        //                                        imageBytes = memoryStream.ToArray();
+
+        //                                        // Note: JPEG is the format of choice for photography
+        //                                        // for such pictures it provides better quality at a lower size
+        //                                        // Since these pictures are expected to be mostly photographs
+        //                                        // we save them as JPEGs
+        //                                    }
+
+        //                                    // Add it to blobs to save
+        //                                    blobsToSave.Add((BlobName(imageId), imageBytes));
+        //                                }
+        //                            }
+
+        //                            // Delete the blobs retrieved earlier
+        //                            if (blobsToDelete.Any())
+        //                            {
+        //                                await _blobService.DeleteBlobs(blobsToDelete);
+        //                            }
+
+        //                            // Save new blobs if any
+        //                            if (blobsToSave.Any())
+        //                            {
+        //                                await _blobService.SaveBlobs(blobsToSave);
+        //                            }
+
+        //                            // Note: Since the blob service is not a transactional resource it is good to do the blob calls
+        //                            // near the end to minimize the chance of modifying blobs first only to have the transaction roll back later
+        //                        }
+
+        //                        // Send invitation emails, sending emails is also a non transactional resource, so we keep it till the end
+        //                        var newUsers = insertedEntities.Where(e => !globalMatches.ContainsKey(e.Email)).ToList();
+        //                        int count = newUsers.Count;
+        //                        if (count > 0 && _config.EmbeddedIdentityServerEnabled)
+        //                        {
+        //                            // NOTE: the section below is not optimized for massive bulk (e.g. 1,000+ users), but it should be 
+        //                            // acceptable with the usual workloads, customers with more than 200 users are rare anyways
+
+        //                            // The email sender parameters
+        //                            var tos = new string[count];
+        //                            var subjects = new string[count];
+        //                            var substitutions = new Dictionary<string, string>[count];
+
+        //                            // this loop adds the users to the identity database and prepares the invitation email parameters
+        //                            for (int i = 0; i < count; i++)
+        //                            {
+        //                                var localUser = newUsers[i];
+        //                                var email = localUser.Email;
+
+        //                                // in case the user was added in a previous failed transaction, we try to load the email from the DB first
+        //                                var identityUser = await _userManager.FindByNameAsync(email) ??
+        //                                     await _userManager.FindByNameAsync(email);
+
+        //                                // this is truly a new user, create it
+        //                                if (identityUser == null)
+        //                                {
+        //                                    // create the identity user
+        //                                    identityUser = new M.User
+        //                                    {
+        //                                        UserName = email,
+        //                                        Email = email,
+
+        //                                        // if the system is offline, emails are automatically confirmed
+        //                                        EmailConfirmed = !_config.Online
+        //                                    };
+
+        //                                    var result = await _userManager.CreateAsync(identityUser);
+        //                                    if (!result.Succeeded)
+        //                                    {
+        //                                        string msg = string.Join(", ", result.Errors.Select(e => e.Description));
+        //                                        throw new BadRequestException($"An unexpected error occurred while creating an account for '{localUser.Name}': {msg}");
+        //                                    }
+        //                                }
+
+        //                                // if the system is online: prepare an invitation email that contains an email confirmation link
+        //                                if (_config.Online)
+        //                                {
+        //                                    // Add the email sender parameters
+        //                                    var (subject, body) = await MakeInvitationEmailAsync(identityUser, localUser);
+        //                                    tos[i] = email;
+        //                                    subjects[i] = subject;
+        //                                    substitutions[i] = new Dictionary<string, string> { { "-message-", body } };
+        //                                }
+        //                            }
+
+        //                            // send all the inviation emails en masse
+        //                            if (_config.Online)
+        //                            {
+        //                                await _emailSender.SendEmailBulkAsync(
+        //                                    tos: tos.ToList(),
+        //                                    subjects: subjects.ToList(),
+        //                                    htmlMessage: $"-message-",
+        //                                    substitutions: substitutions.ToList()
+        //                                    );
+        //                            }
+        //                        }
+
+        //                        trx.Commit();
+
+        //                        // Return the saved entities if requested
+        //                        if (!returnEntities)
+        //                        {
+        //                            return null;
+        //                        }
+        //                        else
+        //                        {
+        //                            // Return the sorted collection
+        //                            return (sortedSavedEntities.ToList(), q);
+        //                        }
+        //                    }
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    trx.Rollback();
+        //                    throw ex;
+        //                }
+        //            }
+        //        }
 
         private string BlobName(string guid)
         {
@@ -1054,54 +1077,31 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override async Task CheckPermissionsForNew(IEnumerable<LocalUserForSave> newItems, Expression<Func<LocalUserForQuery, bool>> lambda)
+        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsSql(IEnumerable<LocalUserForSave> entities)
         {
+            var preambleSql =
+@"DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @True BIT = 1;";
+
+            var sql =
+@"SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Email, E.ExternalId, E.AgentId, NULL AS LastAccess, NEWID() AS PermissionsVersion, NEWID() AS UserSettingsVersion, NULL AS ImageId,
+@True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @UserId AS CreatedById1, @TenantId AS CreatedByTenantId , @Now AS ModifiedAt, @UserId AS ModifiedById 
+FROM @Entities E";
+
             // Add created entities
-            DataTable entitiesTable = LocalUsersDataTable(newItems.ToList());
+            DataTable entitiesTable = LocalUsersDataTable(entities.ToList());
             var entitiesTvp = new SqlParameter("Entities", entitiesTable)
             {
                 TypeName = $"dbo.{nameof(LocalUserForSave)}List",
                 SqlDbType = SqlDbType.Structured
             };
 
-            string saveSql = $@"
-	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @True BIT = 1;
+            var ps = new List<SqlParameter>() { entitiesTvp };
 
-    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Email, E.ExternalId, E.AgentId, NULL AS LastAccess, NEWID() AS PermissionsVersion, NEWID() AS UserSettingsVersion, NULL AS ImageId,
-    @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @UserId AS CreatedById1, @TenantId AS CreatedByTenantId , @Now AS ModifiedAt, @UserId AS ModifiedById 
-    FROM @Entities E
-";
-            var countBeforeFilter = newItems.Count();
-            var countAfterFilter = await _db.VW_LocalUsers.FromSql(saveSql, entitiesTvp).Where(lambda).CountAsync();
-
-            if (countBeforeFilter > countAfterFilter)
-            {
-                throw new ForbiddenException();
-            }
-        }
-
-        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<LocalUserForQuery, bool>> lambda)
-        {
-            // Load the entities using their Ids
-            DataTable idsTable = ControllerUtilities.DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
-            var idsTvp = new SqlParameter("Ids", idsTable)
-            {
-                TypeName = $"dbo.IdList",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // apply the lambda
-            var q = _db.VW_LocalUsers.FromSql("SELECT * FROM [dbo].[LocalUsers] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-            int countBeforeFilter = await q.CountAsync();
-            int countAfterFilter = await q.Where(lambda).CountAsync();
-
-            if (countBeforeFilter > countAfterFilter)
-            {
-                throw new ForbiddenException();
-            }
+            // Return the result
+            return (preambleSql, sql, ps);
         }
     }
 }

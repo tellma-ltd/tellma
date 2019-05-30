@@ -2,12 +2,14 @@
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -298,14 +300,75 @@ SELECT * FROM (
             }
         }
 
-        //public static IQueryable<T> GetQueryFromIds<T, TKey>(IQueryable<T> baseQuery, string tableName, IEnumerable<TKey> ids) where T : DtoKeyBase<TKey>
-        //{
-        //    var idsString = string.Join(",", ids);
-        //    var idType = Nullable.GetUnderlyingType(typeof(TKey)) ?? typeof(TKey);
-        //    var select = idType == typeof(int) ? "CONVERT(INT, VALUE)" : "VALUE";
-        //    var q = baseQuery.FromSql($"SELECT * FROM {tableName} WHERE Id IN (SELECT {select} AS Id FROM STRING_SPLIT({idsString}, ','))");
+        public static Func<Type, string> GetApplicationSources(IStringLocalizer localizer, string lang1, string lang2, string lang3)
+        {
+            var loc1 = lang1 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang1));
+            var loc2 = lang2 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang2));
+            var loc3 = lang3 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang3));
 
-        //    return q;
-        //}
+            string localize1(string s) => loc1 == null ? "NULL" : $"N'{loc1[s]}'";
+            string localize2(string s) => loc2 == null ? "NULL" : $"N'{loc2[s]}'";
+            string localize3(string s) => loc3 == null ? "NULL" : $"N'{loc3[s]}'";
+
+            string localize(string s) => $"{localize1(s)},  {localize2(s)},  {localize3(s)}";
+
+            return (t) =>
+            {
+                switch (t.Name)
+                {
+                    case nameof(AgentForQuery):
+                        return "(SELECT * FROM [dbo].[Custodies] WHERE [CustodyType] = 'Agent')";
+
+                    case nameof(CustodyForQuery):
+                        return "[dbo].[Custodies]";
+
+                    case nameof(LocalUserForQuery):
+                        return "[dbo].[LocalUsers]";
+
+                    case nameof(MeasurementUnitForQuery):
+                        return "(SELECT * FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')";
+
+                    case nameof(PermissionForQuery):
+                        return "(SELECT * FROM [dbo].[Permissions] WHERE Level <> 'Sign')";
+
+                    case nameof(RequiredSignatureForQuery):
+                        return "(SELECT * FROM [dbo].[Permissions] WHERE Level = 'Sign')";
+
+                    case nameof(RoleMembershipForQuery):
+                        return "[dbo].[RoleMemberships]";
+
+                    case nameof(RoleForQuery):
+                        return "[dbo].[Roles]";
+
+                    case nameof(ViewForQuery):
+                        return $@"(SELECT
+ V.[Id], 
+ V.Name AS [Name], 
+ V.Name2 AS [Name2], 
+ -- V.Name3 AS [Name3], 
+ V.[Id] AS [Code], 
+ CASE WHEN V.[Id] = 'all' THEN CAST(1 AS BIT) ELSE IsNULL(T.[IsActive], CAST(0 AS BIT)) END AS [IsActive], 
+ V.[AllowedPermissionLevels], 
+ CAST(V.[SupportsCriteria] AS BIT) AS [SupportsCriteria], 
+ CAST(V.[SupportsMask] AS BIT) AS [SupportsMask]
+FROM 
+  (
+  VALUES
+    ('all', {localize("View_All")}, 'ReadUpdate', 0, 0),
+    ('measurement-units', {localize("MeasurementUnits")}, 'ReadUpdate', 1, 1),
+    ('roles', {localize("Roles")}, 'ReadUpdate',  1, 1),
+    ('local-users', {localize("Users")}, 'ReadUpdate',  1, 1),
+    ('views', {localize("Views")}, 'ReadUpdate',  1, 1),
+    ('individuals', {localize("Individuals")}, 'ReadUpdate', 1, 1),
+    ('organizations', {localize("Organizations")}, 'ReadUpdate', 1, 1),
+	('settings', {localize("Settings")}, 'ReadUpdate', 0, 0)
+  ) 
+AS V ([Id], [Name], [Name2], [Name3], [AllowedPermissionLevels], [SupportsCriteria], [SupportsMask])
+LEFT JOIN [dbo].[Views] AS T ON V.Id = T.Id)";
+                }
+
+                return null;
+            };
+        }
     }
 }

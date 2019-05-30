@@ -28,12 +28,15 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "Role_IsPublic")]
         public bool IsPublic { get; set; }
 
+        [NavigationProperty(ForeignKey = nameof(PermissionForQuery.RoleId))]
         [Display(Name = "Permissions")]
         public List<TPermission> Permissions { get; set; } = new List<TPermission>();
 
+        [NavigationProperty(ForeignKey = nameof(RequiredSignatureForQuery.RoleId))]
         [Display(Name = "Signatures")]
         public List<TRequiredSignature> Signatures { get; set; } = new List<TRequiredSignature>();
 
+        [NavigationProperty(ForeignKey = nameof(RoleMembershipForQuery.RoleId))]
         [Display(Name = "Members")]
         public List<TRoleMembership> Members { get; set; } = new List<TRoleMembership>();
     }

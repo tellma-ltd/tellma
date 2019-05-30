@@ -14,6 +14,6 @@ namespace BSharp.Controllers.Misc
 
     public enum Language
     {
-        Primary, Secondary
+        Primary, Secondary, Ternary
     }
 }

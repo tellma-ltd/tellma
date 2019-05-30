@@ -3,6 +3,7 @@ using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
+using BSharp.Services.OData;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -62,7 +63,8 @@ namespace BSharp.Controllers
 
         private async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
-            await CheckActionPermissions(ids.Cast<int?>());
+            var nullableIds = ids.Cast<int?>().ToArray();
+            await CheckActionPermissions(nullableIds);
 
             using (var trx = await _db.Database.BeginTransactionAsync())
             {
@@ -114,12 +116,9 @@ MERGE INTO [dbo].MeasurementUnits AS t
             else
             {
                 // Load the entities using their Ids
-                var affectedDbEntitiesQ = _db.VW_MeasurementUnits.Where(e => ids.Contains(e.Id.Value)); //.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-                var affectedDbEntitiesExpandedQ = Expand(affectedDbEntitiesQ, expand);
+                var affectedDbEntitiesQ = CreateODataQuery().FilterByIds(nullableIds);
+                var affectedDbEntitiesExpandedQ = affectedDbEntitiesQ.Clone().Expand(expand);
                 var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-
-                // Add the metadata
-                ApplySelectAndAddMetadata(affectedDbEntities, expand, null);
 
                 // sort the entities the way their Ids came, as a good practice
                 var affectedEntities = Mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
@@ -160,32 +159,41 @@ MERGE INTO [dbo].MeasurementUnits AS t
         {
             return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "measurement-units");
         }
-
-        protected override async Task<IDbContextTransaction> BeginSaveTransaction()
+        
+        protected override DbContext GetDbContext()
         {
-            return await _db.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+            return _db;
         }
 
-        protected override IQueryable<MeasurementUnitForQuery> GetBaseQuery()
+        protected override Func<Type, string> GetSources()
         {
-            return _db.VW_MeasurementUnits.Where(e => e.UnitType != "Money");
+            var info = _tenantInfo.GetCurrentInfo();
+            return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
         }
 
-        protected override IQueryable<MeasurementUnitForQuery> Search(IQueryable<MeasurementUnitForQuery> query, string search, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override ODataQuery<MeasurementUnitForQuery, int?> Search(ODataQuery<MeasurementUnitForQuery, int?> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
+            string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(e => e.Name.Contains(search) || e.Name2.Contains(search) || e.Code.Contains(search));
+                search = search.Replace("'", "''"); // escape quotes by repeating them
+
+                var name = nameof(MeasurementUnitForQuery.Name);
+                var name2 = nameof(MeasurementUnitForQuery.Name2);
+                // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
+                var code = nameof(MeasurementUnitForQuery.Code);
+
+                query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {code} contains '{search}'");
             }
 
             return query;
         }
 
-        protected override IQueryable<MeasurementUnitForQuery> IncludeInactive(IQueryable<MeasurementUnitForQuery> query, bool inactive)
+        protected override ODataQuery<MeasurementUnitForQuery, int?> IncludeInactive(ODataQuery<MeasurementUnitForQuery, int?> query, bool inactive)
         {
             if (!inactive)
             {
-                query = query.Where(e => e.IsActive == true);
+                query.Filter("IsActive eq true");
             }
 
             return query;
@@ -320,7 +328,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             }
         }
 
-        protected override async Task<(List<MeasurementUnitForQuery>, IQueryable<MeasurementUnitForQuery>)> PersistAsync(List<MeasurementUnitForSave> entities, SaveArguments args)
+        protected override async Task<List<int?>> PersistAsync(List<MeasurementUnitForSave> entities, SaveArguments args)
         {
             // Add created entities
             DataTable entitiesTable = ControllerUtilities.DataTable(entities, addIndex: true);
@@ -338,7 +346,7 @@ SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	INSERT INTO @IndexedIds([Index], [Id])
+ 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
@@ -350,28 +358,44 @@ SET NOCOUNT ON;
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
 		THEN
-			UPDATE SET 
-				t.[UnitType]	= s.[UnitType],
-				t.[Name]		= s.[Name],
-				t.[Name2]		= s.[Name2],
-				t.[UnitAmount]	= s.[UnitAmount],
-				t.[BaseAmount]	= s.[BaseAmount],
-				t.[Code]		= s.[Code],
-				t.[ModifiedAt]	= @Now,
+			UPDATE SET
+				t.[UnitType]	    = s.[UnitType],
+                t.[Name] = s.[Name],
+	            t.[Name2]		    = s.[Name2],
+				t.[UnitAmount]	    = s.[UnitAmount],
+				t.[BaseAmount]	    = s.[BaseAmount],
+				t.[Code]		    = s.[Code],
+				t.[ModifiedAt]	    = @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-				INSERT ([TenantId], [UnitType], [Name], [Name2], [UnitAmount], [BaseAmount], [Code], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
-				VALUES (@TenantId, s.[UnitType], s.[Name], s.[Name2], s.[UnitAmount], s.[BaseAmount], s.[Code], @Now, @UserId, @Now, @UserId)
+				INSERT (
+                    [UnitType],
+                    [Name]
+                    [Name2],
+                    [UnitAmount],
+                    [BaseAmount],
+                    [Code]
+                )
+				VALUES (
+                    s.[UnitType],
+                    s.[Name],
+                    s.[Name2],
+                    s.[UnitAmount],
+                    s.[BaseAmount],
+                    s.[Code]
+                )
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x
     OPTION(RECOMPILE)
 ";
+
             // Optimization
-            if (!(args.ReturnEntities ?? false))
+            bool returnEntities = args.ReturnEntities ?? false;
+            if (!returnEntities)
             {
                 // IF no returned items are expected, simply execute a non-Query and return an empty list;
                 await _db.Database.ExecuteSqlCommandAsync(saveSql, entitiesTvp);
-                return (new List<MeasurementUnitForQuery>(), null);
+                return null;
             }
             else
             {
@@ -381,30 +405,8 @@ SET NOCOUNT ON;
                 // Retrieve the map from Indexes to Ids
                 var indexedIds = await _db.Saving.FromSql(saveSql, entitiesTvp).ToListAsync();
 
-                // Load the entities using their Ids
-                DataTable idsTable = ControllerUtilities.DataTable(indexedIds.Select(e => new { e.Id }), addIndex: false);
-                var idsTvp = new SqlParameter("Ids", idsTable)
-                {
-                    TypeName = $"dbo.IdList",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                var q = _db.VW_MeasurementUnits.FromSql("SELECT * FROM dbo.[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-                q = Expand(q, args.Expand);
-                var savedEntities = await q.ToListAsync();
-
-
-                // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
-                Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                var sortedSavedEntities = new MeasurementUnitForQuery[savedEntities.Count];
-                foreach (var item in savedEntities)
-                {
-                    int index = indices[item.Id.Value];
-                    sortedSavedEntities[index] = item;
-                }
-
-                // Return the sorted collection
-                return (sortedSavedEntities.ToList(), q);
+                // return the Ids in the same order they came
+                return indexedIds.OrderBy(e => e.Index).Select(e => (int?)e.Id).ToList();
             }
         }
 
@@ -797,54 +799,33 @@ SET NOCOUNT ON;
             return (result, errorKeyMap);
         }
 
-        protected override async Task CheckPermissionsForNew(IEnumerable<MeasurementUnitForSave> newItems, Expression<Func<MeasurementUnitForQuery, bool>> lambda)
+        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsSql(IEnumerable<MeasurementUnitForSave> entities)
         {
-            // Add created entities
-            DataTable entitiesTable = ControllerUtilities.DataTable(newItems, addIndex: true);
+            // Preamble SQL
+            string preambleSql = 
+                $@"DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
+            	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+            	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+            	DECLARE @True BIT = 1;";
+
+            // Composable SQL
+            string sql = 
+                $@"SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Code, E.UnitType, E.UnitAmount, E.BaseAmount,
+                @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @Now AS ModifiedAt, @UserId AS ModifiedById 
+                FROM @Entities E";
+
+            // Entities TVP put in a singleton
+            DataTable entitiesTable = ControllerUtilities.DataTable(entities, addIndex: true);
             var entitiesTvp = new SqlParameter("Entities", entitiesTable)
             {
                 TypeName = $"dbo.{nameof(MeasurementUnitForSave)}List",
                 SqlDbType = SqlDbType.Structured
             };
 
-            string sql = $@"
-	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @True BIT = 1;
+            var ps = new List<SqlParameter>() { entitiesTvp };
 
-    SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Code, E.UnitType, E.UnitAmount, E.BaseAmount,
-    @True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @Now AS ModifiedAt, @UserId AS ModifiedById 
-    FROM @Entities E
-";
-            var countBeforeFilter = newItems.Count();
-            var countAfterFilter = await _db.VW_MeasurementUnits.FromSql(sql, entitiesTvp).Where(lambda).CountAsync();
-
-            if (countBeforeFilter > countAfterFilter)
-            {
-                throw new ForbiddenException();
-            }
-        }
-
-        protected override async Task CheckPermissionsForOld(IEnumerable<int?> entityIds, Expression<Func<MeasurementUnitForQuery, bool>> lambda)
-        {
-            // Load the entities using their Ids
-            DataTable idsTable = ControllerUtilities.DataTable(entityIds.Where(e => e != null).Select(id => new { Id = id.Value }));
-            var idsTvp = new SqlParameter("Ids", idsTable)
-            {
-                TypeName = $"dbo.IdList",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            // apply the lambda
-            var q = _db.VW_MeasurementUnits.FromSql("SELECT * FROM [dbo].[MeasurementUnits] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
-            int countBeforeFilter = await q.CountAsync();
-            int countAfterFilter = await q.Where(lambda).CountAsync();
-
-            if (countBeforeFilter > countAfterFilter)
-            {
-                throw new ForbiddenException();
-            }
+            // Return the result
+            return (preambleSql, sql, ps);
         }
     }
 }

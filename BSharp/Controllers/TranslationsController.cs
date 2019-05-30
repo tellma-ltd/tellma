@@ -2,15 +2,18 @@
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
+using BSharp.Services.OData;
 using BSharp.Services.SqlLocalization;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -48,21 +51,6 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override Task<IDbContextTransaction> BeginSaveTransaction()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task CheckPermissionsForNew(IEnumerable<TranslationForSave> newItems, Expression<Func<TranslationForQuery, bool>> lambda)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task CheckPermissionsForOld(IEnumerable<string> entityIds, Expression<Func<TranslationForQuery, bool>> lambda)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override Task DeleteAsync(List<string> ids)
         {
             throw new NotImplementedException();
@@ -73,7 +61,12 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override IQueryable<TranslationForQuery> GetBaseQuery()
+        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsSql(IEnumerable<TranslationForSave> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override DbContext GetDbContext()
         {
             throw new NotImplementedException();
         }
@@ -83,17 +76,22 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override IQueryable<TranslationForQuery> IncludeInactive(IQueryable<TranslationForQuery> query, bool inactive)
+        protected override Func<Type, string> GetSources()
         {
             throw new NotImplementedException();
         }
 
-        protected override Task<(List<TranslationForQuery>, IQueryable<TranslationForQuery>)> PersistAsync(List<TranslationForSave> entities, SaveArguments args)
+        protected override ODataQuery<TranslationForQuery, string> IncludeInactive(ODataQuery<TranslationForQuery, string> query, bool inactive)
         {
             throw new NotImplementedException();
         }
 
-        protected override IQueryable<TranslationForQuery> Search(IQueryable<TranslationForQuery> query, string search, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Task<List<string>> PersistAsync(List<TranslationForSave> entitiesAndMasks, SaveArguments args)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override ODataQuery<TranslationForQuery, string> Search(ODataQuery<TranslationForQuery, string> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             throw new NotImplementedException();
         }

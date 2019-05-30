@@ -1,12 +1,12 @@
-﻿using AutoMapper;
-using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
-using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
+using BSharp.Services.OData;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -21,14 +21,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using M = BSharp.Data.Model;
 
 namespace BSharp.Controllers
 {
     public abstract class CrudControllerBase<TDtoForSave, TDto, TDtoForQuery, TKey> : ReadControllerBase<TDto, TDtoForQuery, TKey>
-        where TDtoForQuery : DtoForSaveKeyBase<TKey>
-        where TDtoForSave : DtoForSaveKeyBase<TKey>
-        where TDto : DtoForSaveKeyBase<TKey>
+        where TDtoForQuery : DtoForSaveKeyBase<TKey>, new()
+        where TDtoForSave : DtoForSaveKeyBase<TKey>, new()
+        where TDto : DtoForSaveKeyBase<TKey>, new()
     {
         // Private Fields
 
@@ -224,59 +223,215 @@ namespace BSharp.Controllers
 
         protected abstract AbstractDataGrid GetImportTemplate();
 
+        private async Task<List<TDtoForSave>> ApplyUpdatePermissionsMask(List<TDtoForSave> entities)
+        {
+            var permissions = await UserPermissions(PermissionLevel.Update);
+            /* 
+             * Step 1: Get complete mask for TDtoForSave
+             * 
+             * 
+If there are no permissions: throw forbidden exception
+else if ((1) at least one permission is criteria free and mask free, AND (2) all update entities (including nav entities) have a full mask in EntityMetadata) return safely
+else {
+  Do the magic to determine the mask that each entity is based on 
+
+we need to do 2 things:
+
+for each updated DTO (including nav DTOs), construct the flat Mask in Entity Metadata (only relevant if (2) is false)
+for each DTO (including nav DTO), determine the flat permission Mask applicable, (only relevant if (1) is false) <- throw forbidden exception if any permission has no mask
+
+For every DTO intersect the two masks into a MegaMask
+
+Load entities by Ids from the DB,  <- need to know the DtoForSave for every Dto ---> or do I??
+  For every Update DTO, any property that is missing from its MegaMask, copy that property value from the corresponding DB entity
+  For every Insert DTO, any property that is missing from its MegaMask, set that property to NULL
+}
+
+return the entities
+             * 
+             * 
+             */
+
+            return await Task.FromResult(entities);
+        }
+
+        ///// <summary>
+        ///// For each saved entity, determines the applicable mask
+        ///// Verifies that the user has sufficient permissions to update he list of entities provided, this implementation 
+        ///// assumes that the view has permission levels Read and Update only, which most entities do
+        ///// </summary>
+        //protected virtual async Task<List<(TDtoForSave Entity, MaskTree Mask)>> GetMasksForSavedEntities(List<TDtoForSave> entities, SaveArguments args)
+        //{
+        //    var unrestrictedMask = new MaskTree();
+        //    var permissions = await UserPermissions(PermissionLevel.Update);
+        //    if (!permissions.Any())
+        //    {
+        //        // User has no permissions on this table whatsoever, forbid
+        //        throw new ForbiddenException();
+        //    }
+        //    else if (permissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria) && string.IsNullOrWhiteSpace(e.Mask)))
+        //    {
+        //        // User has unfiltered update permission on the table => proceed
+        //        return entities.Select(e => (e, unrestrictedMask)).ToList();
+        //    }
+        //    else
+        //    {
+        //        if(entities.Any(e => e.EntityState != EntityStates.Inserted && e.EntityState != EntityStates.Updated && e.EntityState != EntityStates.Deleted))
+        //        {
+        //            // Developer mistake
+        //            throw new BadRequestException($"Some saved entities do not have the one of the 3 allowed states: {EntityStates.Inserted}, {EntityStates.Updated} or {EntityStates.Deleted}");
+        //        }
+
+        //        var resultDic = new Dictionary<TDtoForSave, MaskTree>();
+
+        //        // an array of every criteria and every mask
+        //        var maskAndCriteriaArray = permissions
+        //            .Where(e => !string.IsNullOrWhiteSpace(e.Criteria)) // Optimization: a null criteria is satisfied by the entire list of DTOs
+        //            .GroupBy(e => e.Criteria)
+        //            .Select(g => new
+        //            {
+        //                Criteria = g.Key,
+        //                Mask = g.Select(e => string.IsNullOrWhiteSpace(e.Mask) ? unrestrictedMask : MaskTree.GetMaskTree(MaskTree.Split(e.Mask)))
+        //                .Aggregate((t1, t2) => t1.UnionWith(t2)) // takes the union of all the mask trees
+        //            }).ToArray();
+
+        //        var universalPermissions = permissions
+        //            .Where(e => string.IsNullOrWhiteSpace(e.Criteria));
+
+        //        bool hasUniversalPermissions = universalPermissions.Count() > 0;
+
+        //        // This mask (if exists) applies to every single DTO since the criteria is null
+        //        var universalMask = hasUniversalPermissions ? universalPermissions
+        //            .Distinct()
+        //            .Select(e => string.IsNullOrWhiteSpace(e.Mask) ? unrestrictedMask : MaskTree.GetMaskTree(MaskTree.Split(e.Mask)))
+        //            .Aggregate((t1, t2) => t1.UnionWith(t2)) : null; // we use a seed here since if the collection is empty this will throw an error
+
+        //        // Every criteria to every index of maskAndCriteriaArray
+        //        var criteriaWithIndexes = maskAndCriteriaArray
+        //            .Select((e, index) => new IndexAndCriteria { Criteria = e.Criteria, Index = index });
+
+        //        /////// Part (1) Permissions must allow manipulating the original data before the update
+
+        //        var existingEntities = entities.Where(e => e.EntityState == EntityStates.Updated ||
+        //            e.EntityState == EntityStates.Deleted);
+        //        var existingIds = existingEntities.Select(e => e.Id);
+
+        //        if (existingIds.Any())
+        //        {
+        //            var query = CreateODataQuery()
+        //                .FilterByIds(existingIds.ToArray());
+
+        //            // id => index in maskAndCriteriaArray
+        //            var criteriaMapList = await query
+        //                .GetIndexToIdMap(criteriaWithIndexes);
+
+        //            var criteriaMapDictionary = criteriaMapList
+        //                .GroupBy(e => e.Id)
+        //                .ToDictionary(e => e.Key, e => e.Select(r => r.Index));
+
+        //            foreach (var dto in existingEntities)
+        //            {
+        //                var id = dto.Id;
+        //                MaskTree mask;
+
+        //                if (criteriaMapDictionary.ContainsKey(id))
+        //                {
+        //                    // Those are DTOs that satisfy one or more non-null Criteria
+        //                    mask = criteriaMapDictionary[id]
+        //                        .Select(i => maskAndCriteriaArray[i].Mask)
+        //                        .Aggregate((t1, t2) => t1.UnionWith(t2))
+        //                        .UnionWith(universalMask);
+        //                }
+        //                else
+        //                {
+        //                    if (hasUniversalPermissions)
+        //                    {
+        //                        // Those are DTOs that belong to the universal mask of null criteria
+        //                        mask = universalMask;
+        //                    }
+        //                    else
+        //                    {
+        //                        // Cannot update or delete this record, it doesn't satisfy any criteria
+        //                        throw new ForbiddenException();
+        //                    }
+        //                }
+
+        //                resultDic.Add(dto, mask);
+        //            }
+        //        }
+
+
+        //        /////// Part (2) Permissions must work for the new data after the update, only for the modified properties
+
+        //        var newEntities = entities.Where(e => e.EntityState == EntityStates.Inserted ||
+        //            e.EntityState == EntityStates.Updated).ToList();
+
+        //        if (newEntities.Any())
+        //        {
+        //            var (preamble, sql, ps) = GetAsSql(newEntities);
+
+        //            var query = CreateODataQuery()
+        //                .FromSql(sql, preamble, ps.ToArray());
+
+        //            // index in newItems => index in maskAndCriteriaArray
+        //            var criteriaMapList = await query
+        //                .GetIndexToIndexMap(criteriaWithIndexes);
+
+        //            var criteriaMapDictionary = criteriaMapList
+        //                .GroupBy(e => e.Id)
+        //                .ToDictionary(e => e.Key, e => e.Select(r => r.Index));
+
+        //            foreach (var (dto, index) in newEntities.Select((dto, i) => (dto, i)))
+        //            {
+        //                MaskTree mask;
+
+        //                if (criteriaMapDictionary.ContainsKey(index))
+        //                {
+        //                    // Those are DTOs that satisfy one or more non-null Criteria
+        //                    mask = criteriaMapDictionary[index]
+        //                        .Select(i => maskAndCriteriaArray[i].Mask)
+        //                        .Aggregate((t1, t2) => t1.UnionWith(t2))
+        //                        .UnionWith(universalMask);
+        //                }
+        //                else
+        //                {
+        //                    if (hasUniversalPermissions)
+        //                    {
+        //                        // Those are DTOs that belong to the universal mask of null criteria
+        //                        mask = universalMask;
+        //                    }
+        //                    else
+        //                    {
+        //                        // Cannot insert or update this record, it doesn't satisfy any criteria
+        //                        throw new ForbiddenException();
+        //                    }
+        //                }
+
+        //                if (resultDic.ContainsKey(dto))
+        //                {
+        //                    var dtoMask = resultDic[dto];
+        //                    resultDic[dto] = resultDic[dto].IntersectionWith(mask);
+
+        //                }
+        //                else
+        //                {
+        //                    resultDic.Add(dto, mask);
+        //                }
+        //            }
+        //        }
+
+        //        return entities.Select(e => (e, resultDic[e])).ToList(); // preserve the original order
+        //    }
+        //}
 
         /// <summary>
-        /// Verifies that the user has sufficient permissions to update he list of entities provided, this implementation 
-        /// assumes that the view has permission levels Read and Update only, which most entities
+        /// Implementation should prepare a select statement that returns the provided entities 
+        /// as an SQL result from a user-defined table type variable or a temporary table, using
+        /// the index of the entities as the Id (even if the Id of the entity is not integer).
+        /// This SQL result will be used to determine which of these entities earn which permission
+        /// masks
         /// </summary>
-        protected virtual async Task CheckUpdatePermissions(List<TDtoForSave> entities, SaveArguments args)
-        {
-            var updatePermissions = await UserPermissions(PermissionLevel.Update);
-            if (!updatePermissions.Any())
-            {
-                // User has no permissions on this table whatsoever, forbid
-                throw new ForbiddenException();
-            }
-            else if (updatePermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
-            {
-                // User has unfiltered update permission on the table => proceed
-                return;
-            }
-            else
-            {
-                // User can update items under certain conditions, so we check those conditions here
-                IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
-
-                // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(TDtoForQuery));
-
-                // Prepare the lambda
-                Expression whereClause = ToORedWhereClause<TDtoForQuery>(criteriaList, eParam);
-                var lambda = Expression.Lambda<Func<TDtoForQuery, bool>>(whereClause, eParam);
-
-
-                /////// Part (1) Permissions must allow manipulating the original data before the update
-
-                var existingItems = entities.Where(e => e.EntityState == EntityStates.Updated ||
-                    e.EntityState == EntityStates.Deleted);
-
-                if (existingItems.Any())
-                {
-                    await CheckPermissionsForOld(existingItems.Select(e => e.Id), lambda);
-                }
-
-
-                /////// Part (2) Permissions must work for the new data after the update, only for the modified properties
-
-                var newItems = entities.Where(e => e.EntityState == EntityStates.Inserted ||
-                    e.EntityState == EntityStates.Updated);
-
-                if (newItems.Any())
-                {
-                    await CheckPermissionsForNew(newItems, lambda);
-                }
-            }
-        }
+        protected abstract (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsSql(IEnumerable<TDtoForSave> entities);
 
         /// <summary>
         /// Verifies that the user has sufficient permissions to update he list of entities provided, this implementation 
@@ -284,48 +439,34 @@ namespace BSharp.Controllers
         /// </summary>
         protected virtual async Task CheckActionPermissions(IEnumerable<TKey> entityIds)
         {
-            var updatePermissions = await UserPermissions(PermissionLevel.Update);
-            if (!updatePermissions.Any())
-            {
-                // User has no permissions on this table whatsoever, forbid
-                throw new ForbiddenException();
-            }
-            else if (updatePermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
-            {
-                // User has unfiltered update permission on the table => proceed
-                return;
-            }
-            else
-            {
-                // User can update items under certain conditions, so we check those conditions here
-                IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
+            // TODO
 
-                // The parameter on which the expression is based
-                var eParam = Expression.Parameter(typeof(TDtoForQuery));
+            //var updatePermissions = await UserPermissions(PermissionLevel.Update);
+            //if (!updatePermissions.Any())
+            //{
+            //    // User has no permissions on this table whatsoever, forbid
+            //    throw new ForbiddenException();
+            //}
+            //else if (updatePermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+            //{
+            //    // User has unfiltered update permission on the table => proceed
+            //    return;
+            //}
+            //else
+            //{
+            //    // User can update items under certain conditions, so we check those conditions here
+            //    IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
 
-                // Prepare the lambda
-                Expression whereClause = ToORedWhereClause<TDtoForQuery>(criteriaList, eParam);
-                var lambda = Expression.Lambda<Func<TDtoForQuery, bool>>(whereClause, eParam);
+            //    // The parameter on which the expression is based
+            //    var eParam = Expression.Parameter(typeof(TDtoForQuery));
 
-                await CheckPermissionsForOld(entityIds, lambda);
-            }
+            //    // Prepare the lambda
+            //    Expression whereClause = ToORedWhereClause<TDtoForQuery>(criteriaList, eParam);
+            //    var lambda = Expression.Lambda<Func<TDtoForQuery, bool>>(whereClause, eParam);
+
+            //    await CheckPermissionsForOld(entityIds, lambda);
+            //}
         }
-
-        /// <summary>
-        /// Check that all saved newItems are covered by the user permissions, throws a <see cref="ForbiddenException"/> otherwise,
-        /// if the view allows for the 'Create' permission level, the developer should ignore this method and override <see cref="CheckUpdatePermissions(List{TDtoForSave}, SaveArguments)"/>
-        /// and <see cref="CheckActionPermissions(IEnumerable{TKey})"/> instead
-        /// and <see cref="CheckActionPermissions"/>
-        /// </summary>
-        protected abstract Task CheckPermissionsForNew(IEnumerable<TDtoForSave> newItems, Expression<Func<TDtoForQuery, bool>> lambda);
-
-        /// <summary>
-        /// Check that all modified/deleted Ids are covered by the user permissions, throws a <see cref="ForbiddenException"/> otherwise,
-        /// if the view allows for the 'Create' permission level, the developer should ignore this method and override <see cref="CheckUpdatePermissions(List{TDtoForSave}, SaveArguments)"/>
-        /// and <see cref="CheckActionPermissions(IEnumerable{TKey})"/> instead
-        /// and <see cref="CheckActionPermissions"/>
-        /// </summary>
-        protected abstract Task CheckPermissionsForOld(IEnumerable<TKey> entityIds, Expression<Func<TDtoForQuery, bool>> lambda);
 
         /// <summary>
         /// Saves the entities (Insert or Update) into the database after authorization and validation
@@ -333,15 +474,20 @@ namespace BSharp.Controllers
         /// <returns>Optionally returns the same entities in their persisted READ form</returns>
         protected virtual async Task<EntitiesResponse<TDto>> SaveImplAsync(List<TDtoForSave> entities, SaveArguments args)
         {
-            await CheckUpdatePermissions(entities, args);
-
             // Trim all strings as a preprocessing step
             entities.ForEach(e => TrimStringProperties(e));
 
-            using (var trx = await BeginSaveTransaction())
+            // This implements field level security
+            entities = await ApplyUpdatePermissionsMask(entities);
+            
+            var dbFacade = GetDbContext().Database;
+            using (var trx = dbFacade.GetDbConnection().BeginTransaction())
             {
                 try
                 {
+                    // Enlist the current
+                    dbFacade.UseTransaction(trx);
+
                     // Validate
                     await ValidateAsync(entities);
                     if (!ModelState.IsValid)
@@ -350,32 +496,40 @@ namespace BSharp.Controllers
                     }
 
                     // Save
-                    var (memoryList, query) = await PersistAsync(entities, args);
+                    var ids = await PersistAsync(entities, args);
 
-                    // Add the metadata
-                    ApplySelectAndAddMetadata(memoryList, args.Expand, null);
-
-                    // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-                    if(memoryList != null && memoryList.Any())
+                    EntitiesResponse<TDto> result = null;
+                    if((args.ReturnEntities ?? false) && ids != null)
                     {
+                        // Prepare a query of the resultm, and clone it
+                        var query = CreateODataQuery();
+                        query.UseTransaction(trx);
+                        query.FilterByIds(ids.ToArray());
+                        var qClone = query.Clone();
+
+                        // Expand the result as specified in the OData agruments and load into memory
+                        query.Expand(args.Expand);
+                        var memoryList = await query.ToListAsync(); // this is potentially unordered, should that be a concern?
+
+                        // Apply the permissions on the result
                         var permissions = await UserPermissions(PermissionLevel.Read);
                         var defaultMask = GetDefaultMask();
-                        await ApplyReadPermissionsMask(memoryList, query, permissions, defaultMask);
+                        await ApplyReadPermissionsMask(memoryList, qClone, permissions, defaultMask);
+
+                        // Flatten related entities and map each to its respective DTO 
+                        var relatedEntities = FlattenRelatedEntitiesAndTrim(memoryList, args.Expand);
+
+                        // Map the primary result to DTOs as well
+                        var resultData = Mapper.Map<List<TDto>>(memoryList);
+
+                        // Prepare the result in a response object
+                        result = new EntitiesResponse<TDto>
+                        {
+                            Data = resultData,
+                            RelatedEntities = relatedEntities,
+                            CollectionName = GetCollectionName(typeof(TDto))
+                        };
                     }
-
-                    // Flatten related entities and map each to its respective DTO 
-                    var relatedEntities = FlattenRelatedEntitiesAndTrim(memoryList, args.Expand);
-
-                    // Map the primary result to DTOs as well
-                    var resultData = Mapper.Map<List<TDto>>(memoryList);
-
-                    // Prepare the result in a response object
-                    var result = new EntitiesResponse<TDto>
-                    {
-                        Data = resultData,
-                        RelatedEntities = relatedEntities,
-                        CollectionName = GetCollectionName(typeof(TDto))
-                    };
 
                     // Commit and return
                     trx.Commit();
@@ -400,13 +554,16 @@ namespace BSharp.Controllers
         /// <summary>
         /// Persists the entities in the database, either creating them or updating them depending on the EntityState
         /// </summary>
-        protected abstract Task<(List<TDtoForQuery>, IQueryable<TDtoForQuery>)> PersistAsync(List<TDtoForSave> entities, SaveArguments args);
+        protected abstract Task<List<TKey>> PersistAsync(List<TDtoForSave> entitiesAndMasks, SaveArguments args);
 
         /// <summary>
         /// Begins the transaction that wraps validation and persistence of data inside the save API 
         /// implementation, each controller determines its suitable transaction isolation level
         /// </summary>
-        protected abstract Task<IDbContextTransaction> BeginSaveTransaction();
+        protected virtual IsolationLevel GetSaveTransactionIsolationLevel()
+        {
+            return IsolationLevel.ReadCommitted;
+        }
 
         /// <summary>
         /// Assumes that the view does not allow 'Create' permission level, if it does
@@ -571,4 +728,6 @@ namespace BSharp.Controllers
             return File(((MemoryStream)fileStream).ToArray(), contentType);
         }
     }
+
+    // public class 
 }

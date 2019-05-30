@@ -23,7 +23,7 @@ namespace BSharp.Controllers
     [Route("api/[controller]")]
     [AuthorizeAccess]
     [ApiController]
-    public class CulturesController : ReadControllerBase<Culture, CultureForQuery, string>
+    public class CulturesController : ReadControllerBaseOld<Culture, CultureForQuery, string>
     {
         private readonly AdminContext _db;
         private readonly ILogger<CulturesController> _logger;

@@ -66,7 +66,14 @@ namespace BSharp.Services.SqlLocalization
         /// </summary>
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
-            return new SqlStringLocalizer(_factory, culture);
+            if(culture == _culture)
+            {
+                return this;
+            }
+            else
+            {
+                return new SqlStringLocalizer(_factory, culture);
+            }
         }
 
         /// <summary>

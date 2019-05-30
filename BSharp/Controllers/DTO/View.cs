@@ -28,9 +28,9 @@ namespace BSharp.Controllers.DTO
         [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
         public string Name2 { get; set; }
 
-        [BasicField]
-        [Display(Name = "Name")]
-        public string ResourceName { get; set; }
+        //[BasicField]
+        //[MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
+        //public string Name3 { get; set; }
 
         [BasicField]
         [Display(Name = "Code")]

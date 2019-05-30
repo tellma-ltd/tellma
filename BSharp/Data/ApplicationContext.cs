@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Data.Common;
 
 // [CLI Commands]
 // dotnet ef migrations add Initial -c=ApplicationContext -o=Data/Migrations/Application
@@ -229,8 +230,9 @@ namespace BSharp.Data
                 // Unless this is a fake design time resolver, apply row level security and pass context info
                 SqlConnection sqlConnection = new SqlConnection(connectionString);
 
-                SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = @"
+                using (SqlCommand cmd = sqlConnection.CreateCommand())
+                {
+                    cmd.CommandText = @"
     -- Set the global values of the session context
     EXEC sp_set_session_context @key=N'TenantId', @value=@TenantId;
     EXEC sp_set_session_context @key=N'Culture', @value=@Culture;
@@ -297,46 +299,47 @@ namespace BSharp.Data
         @SecondaryLanguageId AS SecondaryLanguageId,
         @SecondaryLanguageSymbol AS SecondaryLanguageSymbol;
 ";
-                cmd.Parameters.AddWithValue("@TenantId", tenantId);
-                cmd.Parameters.AddWithValue("@ExternalUserId", userService.GetUserId());
-                cmd.Parameters.AddWithValue("@UserEmail", userService.GetUserEmail());
-                cmd.Parameters.AddWithValue("@Culture", CultureInfo.CurrentUICulture.Name);
-                cmd.Parameters.AddWithValue("@NeutralCulture", CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name);
+                    cmd.Parameters.AddWithValue("@TenantId", tenantId);
+                    cmd.Parameters.AddWithValue("@ExternalUserId", userService.GetUserId());
+                    cmd.Parameters.AddWithValue("@UserEmail", userService.GetUserEmail());
+                    cmd.Parameters.AddWithValue("@Culture", CultureInfo.CurrentUICulture.Name);
+                    cmd.Parameters.AddWithValue("@NeutralCulture", CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name);
 
-                sqlConnection.Open();
-                using (var reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
+                    sqlConnection.Open();
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        int i = 0;
-                        var info = new TenantUserInfo
+                        if (reader.Read())
                         {
-                            UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++),
-                            Name = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            Name2 = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            Email = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            SettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
-                            PermissionsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
-                            UserSettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
-                            ViewsAndSpecsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
-                            PrimaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            PrimaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            SecondaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            SecondaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                        };
+                            int i = 0;
+                            var info = new TenantUserInfo
+                            {
+                                UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++),
+                                Name = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                                Name2 = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                                ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                                Email = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                                SettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                                PermissionsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                                UserSettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                                ViewsAndSpecsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                                PrimaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                                PrimaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                                SecondaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                                SecondaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            };
 
-                        // Provide the user throughout the current session
-                        accessor.SetInfo(tenantId, info);
+                            // Provide the user throughout the current session
+                            accessor.SetInfo(tenantId, info);
+                        }
+                        else
+                        {
+                            throw new Controllers.Misc.BadRequestException("Something went wrong while querying the user ID from the Database");
+                        }
                     }
-                    else
-                    {
-                        throw new Controllers.Misc.BadRequestException("Something went wrong while querying the user ID from the Database");
-                    }
+
+                    // Prepare the options based on the connection created with the shard manager
+                    optionsBuilder = optionsBuilder.UseSqlServer(sqlConnection);
                 }
-
-                // Prepare the options based on the connection created with the shard manager
-                optionsBuilder = optionsBuilder.UseSqlServer(sqlConnection);
             }
 
             return optionsBuilder
@@ -353,8 +356,8 @@ namespace BSharp.Data
             // Since we passed an open connection to UseSqlServer, the underlying framework does 
             // not own the connection and therefore does not automatically close it, so we do it 
             // ourselves here
-            var sqlConnection = Database.GetDbConnection();
-            sqlConnection.Dispose();
+            DbConnection dbConnection = Database.GetDbConnection();
+            dbConnection.Dispose();
 
             base.Dispose();
         }

@@ -27,6 +27,7 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "User_Email")]
         public string Email { get; set; }
 
+        [NavigationProperty(ForeignKey = nameof(RoleMembershipForQuery.UserId))]
         [Display(Name = "User_Roles")]
         public List<TRoleMembership> Roles { get; set; } = new List<TRoleMembership>();
 

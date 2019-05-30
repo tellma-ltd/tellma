@@ -21,6 +21,8 @@ namespace BSharp.Services.MultiTenancy
         public string PrimaryLanguageSymbol { get; set; }
         public string SecondaryLanguageId { get; set; }
         public string SecondaryLanguageSymbol { get; set; }
+        public string TernaryLanguageId { get; set; }
+        public string TernaryLanguageSymbol { get; set; }
         public string SettingsVersion { get; set; }
         public string PermissionsVersion { get; set; }
         public string UserSettingsVersion { get; set; }

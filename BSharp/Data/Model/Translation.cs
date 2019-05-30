@@ -158,9 +158,26 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_Property0DoesNotExistOnType1", "Property {0} does not exist on type {1}"),
             Ar(Constants.Server, "Error_Property0DoesNotExistOnType1", "الحقل {0} غير موجود على النوع {1}"),
 
+            En(Constants.Server, "Error_Property0OnType1IsACollection2", "Property {0} on type {1} is a collection, and therefore not allowed in a {2} path"),
+            Ar(Constants.Server, "Error_Property0OnType1IsACollection2", "الحقل {0} على النوع {1} طبيعته مجموعة، وبالتالي غير مسموح به في مسار {2}"),
+
+            En(Constants.Server, "Error_A0PathCannotTerminateWithANavigationField1", "A {0} path cannot terminate with a navigation field {1}"),
+            Ar(Constants.Server, "Error_A0PathCannotTerminateWithANavigationField1", "مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}"),
+
+            En(Constants.Server, "Error_A0PathCannotTerminateWithASimpleField1", "A {0} path cannot terminate with a navigation field {1}"),
+            Ar(Constants.Server, "Error_A0PathCannotTerminateWithASimpleField1", "مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}"),
+
+            //En(Constants.Server, "Error_Property0IsOfTypeStringValueMustBeInQuotations", "Property {0} is of type String, therefore the value it is compared to must be enclosed in single quotation marks"),
+            //Ar(Constants.Server, "Error_Property0IsOfTypeStringValueMustBeInQuotations", "الحقل {0} نوعه نص، وبالتالي يتبغي إحاطة القيمة بعلامات اقتباس"),
+
+
+            
+
+            // TODO Remove this
             En(Constants.Server, "Error_BasicFieldsKeyword0ShouldComeEndOfPath", "The keyword '{0}' represent all basic fields, and should come at the end of a select path"),
             Ar(Constants.Server, "Error_BasicFieldsKeyword0ShouldComeEndOfPath", "النص المفتاحي ({0}) يعبر عن كل الحقول الأساسية، وينبغي أن يذكر فقط في آخر مسار المعامل select"),
 
+            // TODO Remove this
             En(Constants.Server, "Error_NavigationField0InSelectMustAlsoBeInExpand", "Cannot specify the navigation field '{0}' in the select argument without including it in the expand argument too"),
             Ar(Constants.Server, "Error_NavigationField0InSelectMustAlsoBeInExpand", "لا يمكن استخدام الحقل ({0}) في مسار معامل select دون استخدامه أيضا في مسار معامل expand"),
 

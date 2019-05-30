@@ -10,7 +10,6 @@ import { GetResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
 import { addToWorkspace, downloadBlob } from '~/app/data/util';
 import { MasterDetailsStore, MasterStatus, WorkspaceService } from '~/app/data/workspace.service';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 
 enum SearchView {
   tiles = 'tiles',

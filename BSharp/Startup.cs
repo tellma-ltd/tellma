@@ -74,7 +74,7 @@ namespace BSharp
             services.AddSqlLocalization(_config);
             services.AddDynamicModelMetadata();
             services.AddGlobalSettingsCache(_config);
-            services.AddFilterParser();
+            services.AddOData();
 
             // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
             services.AddEmbeddedIdentityServerIfEnabled(_config, _env);
