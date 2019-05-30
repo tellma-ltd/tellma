@@ -2,7 +2,6 @@
 using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Services.ApiAuthentication;
-using BSharp.Services.FilterParser;
 using BSharp.Services.ImportExport;
 using BSharp.Services.OData;
 using BSharp.Services.Utilities;
@@ -37,7 +36,6 @@ namespace BSharp.Controllers
         // Private Fields
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
-        private readonly IFilterParser _filterParser;
         protected readonly IODataQueryFactory _odataFactory;
         protected static ConcurrentDictionary<Type, string> _getCollectionNameCache = new ConcurrentDictionary<Type, string>(); // This cache never expires
 
@@ -48,7 +46,6 @@ namespace BSharp.Controllers
         {
             _logger = logger;
             _localizer = localizer;
-            _filterParser = serviceProvider.GetRequiredService<IFilterParser>();
             _odataFactory = serviceProvider.GetRequiredService<IODataQueryFactory>();
             Mapper = serviceProvider.GetRequiredService<IMapper>();
         }

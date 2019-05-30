@@ -770,7 +770,7 @@ namespace BSharp.Services.OData
             {
                 ResultType = typeof(T),
                 KeyType = typeof(TId),
-                Select = SelectExpression.Parse("Id"),
+                // Select = SelectExpression.Parse("Id"),
                 Filter = filterExp,
                 Ids = _ids == null ? null : string.Join(",", _ids.Select(e => e)),
                 OrderBy = orderByExp,
@@ -887,15 +887,19 @@ UNION
                     var result = new List<IdIndex<TId>>();
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        var dbId = reader["Id"];
-                        var dbIndex = reader["Index"];
-
-                        result.Add(new IdIndex<TId>
+                        // Loop over the result from the database
+                        while (await reader.ReadAsync())
                         {
+                            var dbId = reader["Id"];
+                            var dbIndex = reader["Index"];
 
-                            Id = (TId)dbId,
-                            Index = (int)dbIndex
-                        });
+                            result.Add(new IdIndex<TId>
+                            {
+
+                                Id = (TId)dbId,
+                                Index = (int)dbIndex
+                            });
+                        }
                     }
 
                     return result;

@@ -3,19 +3,19 @@ using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ApiAuthentication;
-using BSharp.Services.Identity;
 using BSharp.Services.ImportExport;
+using BSharp.Services.MultiTenancy;
+using BSharp.Services.OData;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using M = BSharp.Data.Model;
 
 
 namespace BSharp.Controllers
@@ -23,11 +23,12 @@ namespace BSharp.Controllers
     [Route("api/[controller]")]
     [AuthorizeAccess]
     [ApiController]
-    public class CulturesController : ReadControllerBaseOld<Culture, CultureForQuery, string>
+    public class CulturesController : ReadControllerBase<Culture, CultureForQuery, string>
     {
         private readonly AdminContext _db;
         private readonly ILogger<CulturesController> _logger;
         private readonly IStringLocalizer<CulturesController> _localizer;
+        private readonly ITenantUserInfoAccessor _tenantInfo;
         private readonly IMapper _mapper;
 
         public CulturesController(ILogger<CulturesController> logger, IStringLocalizer<CulturesController> localizer,
@@ -36,6 +37,8 @@ namespace BSharp.Controllers
             _db = serviceProvider.GetRequiredService<AdminContext>();
             _logger = logger;
             _localizer = localizer;
+
+            _tenantInfo = serviceProvider.GetRequiredService<ITenantUserInfoAccessor>();
         }
 
         protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<Culture> response, ExportArguments args)
@@ -43,26 +46,38 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override IQueryable<CultureForQuery> GetBaseQuery()
+        protected override DbContext GetDbContext()
         {
-            return _db.VW_Cultures;
+            return _db;
         }
 
-        protected override IQueryable<CultureForQuery> IncludeInactive(IQueryable<CultureForQuery> query, bool inactive)
+        protected override Func<Type, string> GetSources()
         {
-            if(!inactive)
+            var info = _tenantInfo.GetCurrentInfo();
+            return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
+        }
+
+        protected override ODataQuery<CultureForQuery, string> IncludeInactive(ODataQuery<CultureForQuery, string> query, bool inactive)
+        {
+            if (!inactive)
             {
-                query = query.Where(e => e.IsActive == true);
+                query.Filter("IsActive eq true");
             }
 
             return query;
         }
 
-        protected override IQueryable<CultureForQuery> Search(IQueryable<CultureForQuery> query, string search, IEnumerable<AbstractPermission> permissions)
+        protected override ODataQuery<CultureForQuery, string> Search(ODataQuery<CultureForQuery, string> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
+            string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(e => e.Id.Contains(search) || e.Name.Contains(search) || e.EnglishName.Contains(search));
+                search = search.Replace("'", "''"); // escape quotes by repeating them
+
+                var name = nameof(CultureForQuery.Name);
+                var englishName = nameof(CultureForQuery.EnglishName);
+
+                query.Filter($"{name} contains '{search}' or {englishName} contains '{search}'");
             }
 
             return query;

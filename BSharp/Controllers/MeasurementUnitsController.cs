@@ -360,7 +360,7 @@ SET NOCOUNT ON;
 		THEN
 			UPDATE SET
 				t.[UnitType]	    = s.[UnitType],
-                t.[Name] = s.[Name],
+                t.[Name]            = s.[Name],
 	            t.[Name2]		    = s.[Name2],
 				t.[UnitAmount]	    = s.[UnitAmount],
 				t.[BaseAmount]	    = s.[BaseAmount],
@@ -370,7 +370,7 @@ SET NOCOUNT ON;
 		WHEN NOT MATCHED THEN
 				INSERT (
                     [UnitType],
-                    [Name]
+                    [Name],
                     [Name2],
                     [UnitAmount],
                     [BaseAmount],
