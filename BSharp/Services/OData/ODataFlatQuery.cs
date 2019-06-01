@@ -67,7 +67,7 @@ namespace BSharp.Services.OData
             string principalQuerySql = PreparePrincipalQuery(sources, ps, currentUserId, currentUserTimeZone);
 
             // (4) Prepare the WHERE clause
-            string whereSql = PrepareWhere(joinTree, ps, currentUserId, currentUserTimeZone);
+            string whereSql = PrepareWhere(sources, joinTree, ps, currentUserId, currentUserTimeZone);
 
             // (5) Prepare the ORDERBY clause
             string orderbySql = PrepareOrderBy(joinTree);
@@ -96,12 +96,13 @@ namespace BSharp.Services.OData
         }
 
         public string WhereSql(
+            Func<Type, string> sources,
             JoinTree joins,
             SqlStatementParameters ps,
             int currentUserId,
             TimeZoneInfo currentUserTimeZone)
         {
-            return PrepareWhere(joins, ps, currentUserId, currentUserTimeZone);
+            return PrepareWhere(sources, joins, ps, currentUserId, currentUserTimeZone);
         }
 
         public SqlJoinClause JoinSql()
@@ -134,7 +135,7 @@ namespace BSharp.Services.OData
             string principalQuerySql = PreparePrincipalQuery(sources, ps, currentUserId, currentUserTimeZone);
 
             // (4) Prepare the WHERE clause
-            string whereSql = PrepareWhere(joinTree, ps, currentUserId, currentUserTimeZone);
+            string whereSql = PrepareWhere(sources, joinTree, ps, currentUserId, currentUserTimeZone);
 
             // (5) Prepare the ORDERBY clause
             string orderbySql = PrepareOrderBy(joinTree);
@@ -391,7 +392,7 @@ namespace BSharp.Services.OData
             return principalQuerySql;
         }
 
-        private string PrepareWhere(JoinTree joinTree, SqlStatementParameters ps, int currentUserId, TimeZoneInfo currentUserTimeZone)
+        private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int currentUserId, TimeZoneInfo currentUserTimeZone)
         {
             // Where is cached 
             if (_cachedWhere == null)
@@ -450,7 +451,7 @@ namespace BSharp.Services.OData
                         }
                         else
                         {
-                            if (propType == typeof(string) || propType == typeof(char))
+                            if (propType == typeof(string) || propType == typeof(char) || propType == typeof(HierarchyId))
                             {
                                 if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
                                 {
@@ -516,6 +517,48 @@ namespace BSharp.Services.OData
 
                                 return $"{propSQL} NOT LIKE N'%' + {paramSymbol} + N'%'";
 
+                            case "childofh": // Must be hierarchy Id
+                                if (propType != typeof(HierarchyId))
+                                {
+                                    // Developer mistake
+                                    throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
+                                }
+
+                                return $"{propSQL}.GetAncestor(1) = {paramSymbol}";
+
+                            case "childof": // Must be hierarchy Id
+                                {
+                                    if (propType != typeof(HierarchyId))
+                                    {
+                                        // Developer mistake
+                                        throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
+                                    }
+
+                                    var treeSource = sources(join.Type);
+                                    return $"{propSQL}.GetAncestor(1) = (SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
+                                }
+
+                            case "descendantofh": // Must be hierarchy Id
+                                
+                                if (propType != typeof(HierarchyId))
+                                {
+                                    // Developer mistake
+                                    throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
+                                }
+
+                                return $"{propSQL}.IsDescendantOf({paramSymbol}) = 1";
+
+                            case "descendantof": // Must be hierarchy Id
+                                {
+                                    if (propType != typeof(HierarchyId))
+                                    {
+                                        // Developer mistake
+                                        throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
+                                    }
+
+                                    var treeSource = sources(join.Type);
+                                    return $"{propSQL}.IsDescendantOf((SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})) = 1";
+                                }
                             default:
                                 // Developer mistake
                                 throw new InvalidOperationException($"The filter operator '{atom.Op}' is not recognized");

@@ -10,6 +10,7 @@ import { SettingsForClient } from './dto/settings';
 import { PermissionsForClient } from './dto/permission';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { TenantForClient } from './dto/tenant';
+import { IfrsNote } from './dto/ifrs-note';
 
 export enum MasterStatus {
 
@@ -66,6 +67,7 @@ export class TenantWorkspace {
   Views: EntityWorkspace<View>;
   LocalUsers: EntityWorkspace<LocalUser>;
   Cultures: EntityWorkspace<Culture>;
+  IfrsNote: EntityWorkspace<IfrsNote>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -81,6 +83,7 @@ export class TenantWorkspace {
     this.Views = new EntityWorkspace<View>();
     this.LocalUsers = new EntityWorkspace<LocalUser>();
     this.Cultures = new EntityWorkspace<Culture>();
+    this.IfrsNote = new EntityWorkspace<IfrsNote>();
   }
 
   ////// the methods below provide easy access to the global tenant values
@@ -110,8 +113,17 @@ export class TenantWorkspace {
     return '';
   }
 
+  // don't change signature, a lot of HTML binds to this
+  get ternaryPostfix(): string {
+    if (this.settings && this.settings.TernaryLanguageId) {
+      return ` (${this.settings.TernaryLanguageSymbol})`;
+    }
+
+    return '';
+  }
+
   get isPrimaryLanguage(): boolean {
-    return !this.isSecondaryLanguage;
+    return !this.isSecondaryLanguage && !this.isTernaryLanguage;
   }
 
   get isSecondaryLanguage(): boolean {
@@ -122,6 +134,19 @@ export class TenantWorkspace {
       return secondLang === currentUserLang ||
         secondLang.startsWith(currentUserLang) ||
         currentUserLang.startsWith(secondLang);
+    }
+
+    return false;
+  }
+
+  get isTernaryLanguage(): boolean {
+    if (!!this.settings) {
+      const ternaryLang = this.settings.TernaryLanguageId || '??';
+      const currentUserLang = this.workspaceService.ws.culture || 'en';
+
+      return ternaryLang === currentUserLang ||
+      ternaryLang.startsWith(currentUserLang) ||
+        currentUserLang.startsWith(ternaryLang);
     }
 
     return false;

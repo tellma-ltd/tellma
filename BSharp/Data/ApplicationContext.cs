@@ -1,5 +1,4 @@
 ﻿using BSharp.Data.Model;
-using Dto = BSharp.Controllers.DTO;
 using BSharp.Services.Identity;
 using BSharp.Services.Migrations;
 using BSharp.Services.MultiTenancy;
@@ -29,37 +28,29 @@ namespace BSharp.Data
     {
         #region Database Model
 
-        // The database tables are listed below
         public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
-        public DbSet<Dto.MeasurementUnitForQuery> VW_MeasurementUnits { get; set; }
 
         public DbSet<Custody> Custodies { get; set; }
-        public DbSet<Dto.CustodyForQuery> VW_Custodies { get; set; }
 
         public DbSet<Agent> Agents { get; set; }
-        public DbSet<Dto.AgentForQuery> VW_Agents { get; set; }
 
         public DbSet<Blob> Blobs { get; set; }
 
-        // Security
         public DbSet<LocalUser> LocalUsers { get; set; }
-        public DbSet<Dto.LocalUserForQuery> VW_LocalUsers { get; set; }
 
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Dto.RoleForQuery> VW_Roles { get; set; }
 
         public DbSet<View> Views { get; set; }
-        public DbSet<Dto.ViewForQuery> VW_Views { get; set; }
 
         public DbSet<Permission> Permissions { get; set; }
-        public DbSet<Dto.PermissionForQuery> VW_Permissions { get; set; }
-        public DbSet<Dto.RequiredSignatureForQuery> VW_RequiredSignatures { get; set; }
 
         public DbSet<RoleMembership> RoleMemberships { get; set; }
-        public DbSet<Dto.RoleMembershipForQuery> VW_RoleMemberships { get; set; }
 
-        // Settings
         public DbSet<Settings> Settings { get; set; }
+
+        public DbSet<IfrsConcept> IfrsConcepts { get; set; }
+
+        public DbSet<IfrsNote> IfrsNotes { get; set; }
 
         #endregion
 
@@ -114,13 +105,13 @@ namespace BSharp.Data
             AddTenantId<Blob>(builder, nameof(Blob.Id), tenantId);
             Blob.OnModelCreating(builder);
 
-            // EF migratios was confused about these for some reason, had to set them manually
-            builder.Entity<Dto.AgentForQuery>().HasOne(e => e.CreatedBy).WithMany().HasForeignKey(e => e.CreatedById);
-            builder.Entity<Dto.AgentForQuery>().HasOne(e => e.ModifiedBy).WithMany().HasForeignKey(e => e.ModifiedById);
-            builder.Entity<Dto.LocalUserForQuery>().HasOne(e => e.Agent).WithMany().HasForeignKey(e => e.AgentId);
-            builder.Entity<Dto.RoleMembershipForQuery>().HasOne(e => e.User).WithMany(e => e.Roles).HasForeignKey(e => e.UserId);
-            builder.Entity<Dto.RoleMembershipForQuery>().HasOne(e => e.CreatedBy).WithMany().HasForeignKey(e => e.CreatedById);
-            builder.Entity<Dto.RoleMembershipForQuery>().HasOne(e => e.ModifiedBy).WithMany().HasForeignKey(e => e.ModifiedById);
+            // IFSR Concepts
+            AddTenantId<IfrsConcept>(builder);
+            IfrsConcept.OnModelCreating(builder);
+
+            // IFSR Notes
+            AddTenantId<IfrsNote>(builder);
+            IfrsNote.OnModelCreating(builder);
         }
 
         /// <summary>

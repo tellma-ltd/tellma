@@ -49,6 +49,14 @@ namespace BSharp.Data.Model
             // Code is unique
             builder.Entity<MeasurementUnit>().HasIndex(TenantId, nameof(Code)).IsUnique();
 
+
+            // Tenant Id and Audit defaults
+            builder.Entity<MeasurementUnit>().Property(TenantId).HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'TenantId'))");
+            builder.Entity<MeasurementUnit>().Property(e => e.CreatedAt).HasDefaultValueSql("SYSDATETIMEOFFSET()");
+            builder.Entity<MeasurementUnit>().Property(e => e.CreatedById).HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
+            builder.Entity<MeasurementUnit>().Property(e => e.ModifiedAt).HasDefaultValueSql("SYSDATETIMEOFFSET()");
+            builder.Entity<MeasurementUnit>().Property(e => e.ModifiedById).HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
+
             // Audit foreign keys
             builder.Entity<MeasurementUnit>()
                 .HasOne(e => e.CreatedBy)

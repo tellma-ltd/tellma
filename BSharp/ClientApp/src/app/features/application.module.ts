@@ -21,6 +21,8 @@ import { LocalUsersImportComponent } from './local-users/local-users-import.comp
 import { SettingsComponent } from './settings/settings.component';
 import { TenantResolverGuard } from '../data/tenant-resolver.guard';
 import { AuthGuard } from '../data/auth.guard';
+import { IfrsNotesMasterComponent } from './ifrs-notes/ifrs-notes-master.component';
+import { IfrsNotesDetailsComponent } from './ifrs-notes/ifrs-notes-details.component';
 
 const routes: Routes = [
   {
@@ -97,6 +99,18 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
+      // IFRS Notes
+      {
+        path: 'ifrs-notes',
+        component: IfrsNotesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'ifrs-notes/:id',
+        component: IfrsNotesDetailsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -135,7 +149,9 @@ const routes: Routes = [
     LocalUsersDetailsComponent,
     LocalUsersMasterComponent,
     LocalUsersImportComponent,
-    SettingsComponent],
+    SettingsComponent,
+    IfrsNotesMasterComponent,
+    IfrsNotesDetailsComponent],
   imports: [
     SharedModule,
     RouterModule.forChild(routes)

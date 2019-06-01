@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BSharp.Data.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20190320094025_Overhaul")]
-    partial class Overhaul
+    [Migration("20190530112526_Custom3")]
+    partial class Custom3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,47 +20,6 @@ namespace BSharp.Data.Migrations.Application
                 .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.MeasurementUnitForQuery", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double?>("BaseAmount")
-                        .IsRequired();
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<int?>("CreatedById");
-
-                    b.Property<bool?>("IsActive");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt");
-
-                    b.Property<int?>("ModifiedById");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Name2")
-                        .HasMaxLength(255);
-
-                    b.Property<double?>("UnitAmount")
-                        .IsRequired();
-
-                    b.Property<string>("UnitType")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("VW_MeasurementUnits");
-                });
 
             modelBuilder.Entity("BSharp.Data.Model.Blob", b =>
                 {

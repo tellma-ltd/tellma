@@ -31,7 +31,7 @@
       <!-- View Toolbar -->
       <div *ngIf="showViewToolbar">
         <!-- Edit -->
-        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="editTooltip" container="body">
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="editTooltip" container="body" *ngIf="showEdit">
           <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onEdit()" [disabled]="!canEdit">
             <fa-icon icon="pen"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Edit' | translate }}</span>
@@ -39,7 +39,7 @@
         </div>
 
         <!-- Create -->
-        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip"
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" *ngIf="showCreate"
           container="body">
           <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCreate()"
             [disabled]="!canCreate">
@@ -64,7 +64,7 @@
               </div>
             </ng-container>
 
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body">
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body" *ngIf="showDelete">
               <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)"
                 [disabled]="!canDelete" *ngIf="showDelete">
                 {{ 'Delete' | translate }}

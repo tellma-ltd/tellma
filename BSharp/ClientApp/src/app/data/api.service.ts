@@ -26,6 +26,7 @@ import { SaveSettingsResponse } from './dto/save-settings-response';
 import { UserSettingsForClient } from './dto/local-user';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { TenantForClient } from './dto/tenant';
+import { IfrsNote } from './dto/ifrs-note';
 
 @Injectable({
   providedIn: 'root'
@@ -62,6 +63,13 @@ export class ApiService {
     return {
       activate: this.activateFactory<View>('views', cancellationToken$),
       deactivate: this.deactivateFactory<View>('views', cancellationToken$)
+    };
+  }
+
+  public ifrsNotesApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<IfrsNote>('ifrs-notes', cancellationToken$),
+      deactivate: this.deactivateFactory<IfrsNote>('ifrs-notes', cancellationToken$)
     };
   }
 

@@ -256,6 +256,10 @@ SELECT * FROM (
             {
                 return new NotFoundObjectResult(ex.Ids);
             }
+            catch (NotFoundException<string> ex)
+            {
+                return new NotFoundObjectResult(ex.Ids);
+            }
             catch (UnprocessableEntityException ex)
             {
                 return new UnprocessableEntityObjectResult(ex.ModelState);
@@ -285,6 +289,10 @@ SELECT * FROM (
             {
                 return new NotFoundObjectResult(ex.Ids);
             }
+            catch (NotFoundException<string> ex)
+            {
+                return new NotFoundObjectResult(ex.Ids);
+            }
             catch (UnprocessableEntityException ex)
             {
                 return new UnprocessableEntityObjectResult(ex.ModelState);
@@ -306,9 +314,10 @@ SELECT * FROM (
             var loc2 = lang2 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang2));
             var loc3 = lang3 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang3));
 
-            string localize1(string s) => loc1 == null ? "NULL" : $"N'{loc1[s]}'";
-            string localize2(string s) => loc2 == null ? "NULL" : $"N'{loc2[s]}'";
-            string localize3(string s) => loc3 == null ? "NULL" : $"N'{loc3[s]}'";
+            // TODO Do something about SQL injection risk
+            string localize1(string s) => loc1 == null ? "NULL" : $"N'{loc1[s]?.ToString().Replace("'", "''")}'";
+            string localize2(string s) => loc2 == null ? "NULL" : $"N'{loc2[s]?.ToString().Replace("'", "''")}'";
+            string localize3(string s) => loc3 == null ? "NULL" : $"N'{loc3[s]?.ToString().Replace("'", "''")}'";
 
             string localize(string s) => $"{localize1(s)},  {localize2(s)},  {localize3(s)}";
 
@@ -340,6 +349,19 @@ SELECT * FROM (
                     case nameof(RoleForQuery):
                         return "[dbo].[Roles]";
 
+                    case nameof(IfrsNoteForQuery):
+                        return @"(SELECT 
+	[C].*, 
+	[N].[Node] As [Node],
+	[N].[Level],
+	[N].[ParentNode] As [ParentNode],
+	[N].[IsAggregate],
+	[N].[ForDebit],
+	[N].[ForCredit],
+	(SELECT COUNT(*) FROM [dbo].[IfrsNotes] WHERE [Node].GetAncestor(1) = [N].[Node]) As [ChildCount],
+	(SELECT [Id] FROM [dbo].[IfrsNotes] WHERE [N].[Node].GetAncestor(1) = [Node]) As [ParentId]
+FROM [dbo].[IfrsConcepts] As [C] JOIN [dbo].[IfrsNotes] As [N] ON [C].[Id] = [N].[Id])";
+
                     case nameof(ViewForQuery):
                         return $@"(SELECT
  V.[Id], 
@@ -361,6 +383,7 @@ FROM
     ('views', {localize("Views")}, 'ReadUpdate',  1, 1),
     ('individuals', {localize("Individuals")}, 'ReadUpdate', 1, 1),
     ('organizations', {localize("Organizations")}, 'ReadUpdate', 1, 1),
+    ('ifrs-notes', {localize("IfrsNotes")}, 'Read', 1, 1),
 	('settings', {localize("Settings")}, 'ReadUpdate', 0, 0)
   ) 
 AS V ([Id], [Name], [Name2], [Name3], [AllowedPermissionLevels], [SupportsCriteria], [SupportsMask])

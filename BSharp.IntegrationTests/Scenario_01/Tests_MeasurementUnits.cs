@@ -305,8 +305,8 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseDto = getByIdResponse.Entity;
             Assert.Equal(id, responseDto.Id);
             Assert.Equal(entity.Name, responseDto.Name);
-            Assert.Equal(entity.Name2, responseDto.Name2);
-            Assert.Equal(entity.Code, responseDto.Code);
+            Assert.Null(responseDto.Name2);
+            Assert.Null(responseDto.Code);
             Assert.Null(responseDto.UnitType);
             Assert.Null(responseDto.BaseAmount);
             Assert.Null(responseDto.UnitAmount);

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BSharp.Data.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20190323193151_Overhaul2")]
-    partial class Overhaul2
+    [Migration("20190530194506_Custom4")]
+    partial class Custom4
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,378 +20,6 @@ namespace BSharp.Data.Migrations.Application
                 .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.AgentForQuery", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(1024);
-
-                    b.Property<string>("AgentType");
-
-                    b.Property<DateTimeOffset?>("BirthDateTime");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<int?>("CreatedById");
-
-                    b.Property<string>("CustodyType");
-
-                    b.Property<string>("Gender")
-                        .HasConversion(new ValueConverter<string, string>(v => default(string), v => default(string), new ConverterMappingHints(size: 1)));
-
-                    b.Property<bool?>("IsActive");
-
-                    b.Property<bool?>("IsRelated");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt");
-
-                    b.Property<int?>("ModifiedById");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Name2")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("TaxIdentificationNumber")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Title2")
-                        .HasMaxLength(255);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.ToTable("VW_Agents");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.CustodyForQuery", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(1024);
-
-                    b.Property<DateTimeOffset?>("BirthDateTime");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<int?>("CreatedById");
-
-                    b.Property<string>("CustodyType");
-
-                    b.Property<bool?>("IsActive");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt");
-
-                    b.Property<int?>("ModifiedById");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Name2")
-                        .HasMaxLength(255);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.ToTable("VW_Custodies");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.LocalUserForQuery", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int?>("AgentId");
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<int?>("CreatedById");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("ExternalId");
-
-                    b.Property<string>("ImageId");
-
-                    b.Property<bool?>("IsActive");
-
-                    b.Property<DateTimeOffset?>("LastAccess");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt");
-
-                    b.Property<int?>("ModifiedById");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Name2")
-                        .HasMaxLength(255);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AgentId");
-
-                    b.HasIndex("CreatedById")
-                        .IsUnique()
-                        .HasFilter("[CreatedById] IS NOT NULL");
-
-                    b.ToTable("VW_LocalUsers");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.MeasurementUnitForQuery", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double?>("BaseAmount")
-                        .IsRequired();
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<int?>("CreatedById");
-
-                    b.Property<bool?>("IsActive");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt");
-
-                    b.Property<int?>("ModifiedById");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Name2")
-                        .HasMaxLength(255);
-
-                    b.Property<double?>("UnitAmount")
-                        .IsRequired();
-
-                    b.Property<string>("UnitType")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.ToTable("VW_MeasurementUnits");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.PermissionForQuery", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<int?>("CreatedById");
-
-                    b.Property<string>("Criteria")
-                        .HasMaxLength(1024);
-
-                    b.Property<string>("Level")
-                        .IsRequired();
-
-                    b.Property<string>("Mask")
-                        .HasMaxLength(2048);
-
-                    b.Property<string>("Memo")
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset?>("ModifiedAt");
-
-                    b.Property<int?>("ModifiedById");
-
-                    b.Property<int?>("RoleId");
-
-                    b.Property<string>("ViewId")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("ViewId");
-
-                    b.ToTable("VW_Permissions");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.RequiredSignatureForQuery", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<int?>("CreatedById");
-
-                    b.Property<string>("Criteria")
-                        .HasMaxLength(1024);
-
-                    b.Property<string>("Memo")
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset?>("ModifiedAt");
-
-                    b.Property<int?>("ModifiedById");
-
-                    b.Property<int?>("RoleId");
-
-                    b.Property<string>("ViewId")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("ViewId");
-
-                    b.ToTable("VW_RequiredSignatures");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.RoleForQuery", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<int?>("CreatedById");
-
-                    b.Property<bool?>("IsActive");
-
-                    b.Property<bool>("IsPublic");
-
-                    b.Property<DateTimeOffset?>("ModifiedAt");
-
-                    b.Property<int?>("ModifiedById");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Name2")
-                        .HasMaxLength(255);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.ToTable("VW_Roles");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.RoleMembershipForQuery", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<int?>("CreatedById");
-
-                    b.Property<string>("Memo")
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset?>("ModifiedAt");
-
-                    b.Property<int?>("ModifiedById");
-
-                    b.Property<int?>("RoleId");
-
-                    b.Property<int?>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ModifiedById");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("VW_RoleMemberships");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.ViewForQuery", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AllowedPermissionLevels");
-
-                    b.Property<string>("Code");
-
-                    b.Property<bool?>("IsActive");
-
-                    b.Property<string>("Name");
-
-                    b.Property<string>("Name2");
-
-                    b.Property<string>("ResourceName");
-
-                    b.Property<bool?>("SupportsCriteria");
-
-                    b.Property<bool?>("SupportsMask");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("VW_Views");
-                });
 
             modelBuilder.Entity("BSharp.Data.Model.Blob", b =>
                 {
@@ -462,6 +90,108 @@ namespace BSharp.Data.Migrations.Application
                     b.ToTable("Custodies");
 
                     b.HasDiscriminator<string>("CustodyType").HasValue("Custody");
+                });
+
+            modelBuilder.Entity("BSharp.Data.Model.IfrsConcept", b =>
+                {
+                    b.Property<int>("TenantId")
+                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'TenantId'))");
+
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(255);
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+
+                    b.Property<int>("CreatedById")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
+
+                    b.Property<string>("Documentation")
+                        .IsRequired();
+
+                    b.Property<string>("Documentation2");
+
+                    b.Property<string>("Documentation3");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'0001-01-01 00:00:00'");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("'9999-12-31 23:59:59'");
+
+                    b.Property<string>("IfrsType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(255)
+                        .HasDefaultValue("Regulatory");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(1024);
+
+                    b.Property<string>("Label2")
+                        .HasMaxLength(1024);
+
+                    b.Property<string>("Label3")
+                        .HasMaxLength(1024);
+
+                    b.Property<DateTimeOffset>("ModifiedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+
+                    b.Property<int>("ModifiedById")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
+
+                    b.HasKey("TenantId", "Id");
+
+                    b.HasIndex("TenantId", "CreatedById");
+
+                    b.HasIndex("TenantId", "ModifiedById");
+
+                    b.ToTable("IfrsConcepts");
+                });
+
+            modelBuilder.Entity("BSharp.Data.Model.IfrsNote", b =>
+                {
+                    b.Property<int>("TenantId")
+                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'TenantId'))");
+
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(255);
+
+                    b.Property<bool>("ForCredit")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("ForDebit")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsAggregate")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(true);
+
+                    b.Property<short>("Level")
+                        .HasMaxLength(255);
+
+                    b.Property<string>("Node");
+
+                    b.Property<string>("ParentNode");
+
+                    b.HasKey("TenantId", "Id");
+
+                    b.ToTable("IfrsNotes");
                 });
 
             modelBuilder.Entity("BSharp.Data.Model.LocalUser", b =>
@@ -536,7 +266,8 @@ namespace BSharp.Data.Migrations.Application
 
             modelBuilder.Entity("BSharp.Data.Model.MeasurementUnit", b =>
                 {
-                    b.Property<int>("TenantId");
+                    b.Property<int>("TenantId")
+                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'TenantId'))");
 
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -547,17 +278,25 @@ namespace BSharp.Data.Migrations.Application
                     b.Property<string>("Code")
                         .HasMaxLength(255);
 
-                    b.Property<DateTimeOffset>("CreatedAt");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
-                    b.Property<int>("CreatedById");
+                    b.Property<int>("CreatedById")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(true);
 
-                    b.Property<DateTimeOffset>("ModifiedAt");
+                    b.Property<DateTimeOffset>("ModifiedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
 
-                    b.Property<int>("ModifiedById");
+                    b.Property<int>("ModifiedById")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -811,120 +550,6 @@ namespace BSharp.Data.Migrations.Application
                     b.HasDiscriminator().HasValue("Agent");
                 });
 
-            modelBuilder.Entity("BSharp.Controllers.DTO.AgentForQuery", b =>
-                {
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.CustodyForQuery", b =>
-                {
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.LocalUserForQuery", b =>
-                {
-                    b.HasOne("BSharp.Controllers.DTO.AgentForQuery", "Agent")
-                        .WithMany()
-                        .HasForeignKey("AgentId");
-
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "CreatedBy")
-                        .WithOne("ModifiedBy")
-                        .HasForeignKey("BSharp.Controllers.DTO.LocalUserForQuery", "CreatedById");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.MeasurementUnitForQuery", b =>
-                {
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.PermissionForQuery", b =>
-                {
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.RoleForQuery", "Role")
-                        .WithMany("Permissions")
-                        .HasForeignKey("RoleId");
-
-                    b.HasOne("BSharp.Controllers.DTO.ViewForQuery", "View")
-                        .WithMany("Permissions")
-                        .HasForeignKey("ViewId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.RequiredSignatureForQuery", b =>
-                {
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.RoleForQuery", "Role")
-                        .WithMany("Signatures")
-                        .HasForeignKey("RoleId");
-
-                    b.HasOne("BSharp.Controllers.DTO.ViewForQuery", "View")
-                        .WithMany("Signatures")
-                        .HasForeignKey("ViewId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.RoleForQuery", b =>
-                {
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById");
-                });
-
-            modelBuilder.Entity("BSharp.Controllers.DTO.RoleMembershipForQuery", b =>
-                {
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("ModifiedById");
-
-                    b.HasOne("BSharp.Controllers.DTO.RoleForQuery", "Role")
-                        .WithMany("Members")
-                        .HasForeignKey("RoleId");
-
-                    b.HasOne("BSharp.Controllers.DTO.LocalUserForQuery", "User")
-                        .WithMany("Roles")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("BSharp.Data.Model.Custody", b =>
                 {
                     b.HasOne("BSharp.Data.Model.LocalUser", "CreatedBy")
@@ -936,6 +561,27 @@ namespace BSharp.Data.Migrations.Application
                         .WithMany()
                         .HasForeignKey("TenantId", "ModifiedById")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("BSharp.Data.Model.IfrsConcept", b =>
+                {
+                    b.HasOne("BSharp.Data.Model.LocalUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("TenantId", "CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("BSharp.Data.Model.LocalUser", "ModifiedBy")
+                        .WithMany()
+                        .HasForeignKey("TenantId", "ModifiedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("BSharp.Data.Model.IfrsNote", b =>
+                {
+                    b.HasOne("BSharp.Data.Model.IfrsConcept", "Concept")
+                        .WithOne("Note")
+                        .HasForeignKey("BSharp.Data.Model.IfrsNote", "TenantId", "Id")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("BSharp.Data.Model.LocalUser", b =>

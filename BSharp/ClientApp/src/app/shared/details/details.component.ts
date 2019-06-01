@@ -36,6 +36,15 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   detailsCrumb: string;
 
   @Input()
+  showCreateButton = true;
+
+  @Input()
+  showEditButton = true;
+
+  @Input()
+  showDeleteButton = true;
+
+  @Input()
   documentHeaderTemplate: TemplateRef<any>;
 
   @Input()
@@ -478,12 +487,20 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return this.state.detailsStatus === DetailsStatus.error;
   }
 
+  get showCreate(): boolean {
+    return this.showCreateButton;
+  }
+
+  get showEdit(): boolean {
+    return this.showEditButton;
+  }
+
   get showDelete(): boolean {
-    return true; // TODO !!this.data[this.controller].delete;
+    return this.showDeleteButton;
   }
 
   get showClone(): boolean {
-    return true; // TODO !!this.data[this.controller].delete;
+    return this.showCreate;
   }
 
   onRefresh(): void {
@@ -559,7 +576,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   get canEdit(): boolean {
-    return this.showDocument && !this.isInactive(this.viewModel) && this.canEditPermissions;
+    return this.showEdit && this.showDocument && !this.isInactive(this.viewModel) && this.canEditPermissions;
   }
 
   get editTooltip(): string {

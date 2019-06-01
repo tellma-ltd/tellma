@@ -81,8 +81,8 @@
       <!-- Left Buttons -->
       <div>
         <!-- Create -->
-        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body">
-          <button type="button" class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()" *ngIf="showCreate"
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body" *ngIf="showCreate">
+          <button type="button" class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()"
             [disabled]="!canCreate">
             <fa-icon icon="plus"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>

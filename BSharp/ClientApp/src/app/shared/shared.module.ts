@@ -67,7 +67,8 @@ import {
   faFileInvoiceDollar,
   faMoneyBillWave,
   faArrowLeft,
-  faArrowRight
+  faArrowRight,
+  faClipboard
 
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
@@ -101,7 +102,8 @@ library.add(
   faAngleLeft, faAngleRight, faThLarge, faList, faPen, faTrash,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
   faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
-  faSearch, faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog, faTasks, faMale, faBuilding, faArrowLeft, faArrowRight,
+  faSearch, faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
+  faTasks, faMale, faBuilding, faArrowLeft, faArrowRight,
 
   faListUl,
   faMoneyCheck,
@@ -110,7 +112,8 @@ library.add(
   faLandmark,
   faFileContract,
   faFileInvoiceDollar,
-  faMoneyBillWave
+  faMoneyBillWave,
+  faClipboard
 );
 
 @NgModule({

@@ -109,7 +109,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<LocalUser>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
+        public async Task<ActionResult<EntitiesResponse<LocalUser>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
@@ -117,7 +117,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<LocalUser>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
+        public async Task<ActionResult<EntitiesResponse<LocalUser>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
                 {
@@ -166,7 +166,7 @@ namespace BSharp.Controllers
             {
                 await CheckActionPermissions(new List<int?> { id });
 
-                var localUser = await _db.VW_LocalUsers.FirstOrDefaultAsync(e => e.Id == id);
+                var localUser = await _db.LocalUsers.FirstOrDefaultAsync(e => e.Id == id);
                 if (localUser == null)
                 {
                     return NotFound(id);

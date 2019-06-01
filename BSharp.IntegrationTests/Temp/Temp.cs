@@ -12,7 +12,7 @@ namespace BSharp.IntegrationTests.Temp
 {
     public class Temp
     {
-        [Fact]
+     //   [Fact]
         public async Task Test()
         {
             Func<Type, string> sources = (t) =>

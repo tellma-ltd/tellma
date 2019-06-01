@@ -6,7 +6,6 @@ import { MeasurementUnit, MeasurementUnitForSave, MeasurementUnit_UnitType } fro
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({

@@ -27,6 +27,9 @@ export class SettingsForClient extends DtoBase {
     SecondaryLanguageId: string;
     SecondaryLanguageName: string;
     SecondaryLanguageSymbol: string;
+    TernaryLanguageId: string;
+    TernaryLanguageName: string;
+    TernaryLanguageSymbol: string;
     BrandColor: string;
     ProvisionedAt: string;
 }

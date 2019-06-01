@@ -4,14 +4,16 @@ using BSharp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BSharp.Data.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20190530112511_AddMask")]
+    partial class AddMask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,108 +92,6 @@ namespace BSharp.Data.Migrations.Application
                     b.HasDiscriminator<string>("CustodyType").HasValue("Custody");
                 });
 
-            modelBuilder.Entity("BSharp.Data.Model.IfrsConcept", b =>
-                {
-                    b.Property<int>("TenantId")
-                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'TenantId'))");
-
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(255);
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
-
-                    b.Property<int>("CreatedById")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
-
-                    b.Property<string>("Documentation")
-                        .IsRequired();
-
-                    b.Property<string>("Documentation2");
-
-                    b.Property<string>("Documentation3");
-
-                    b.Property<DateTime>("EffectiveDate")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("'0001-01-01 00:00:00'");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("'9999-12-31 23:59:59'");
-
-                    b.Property<string>("IfrsType")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(255)
-                        .HasDefaultValue("Regulatory");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasMaxLength(1024);
-
-                    b.Property<string>("Label2")
-                        .HasMaxLength(1024);
-
-                    b.Property<string>("Label3")
-                        .HasMaxLength(1024);
-
-                    b.Property<DateTimeOffset>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
-
-                    b.Property<int>("ModifiedById")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
-
-                    b.HasKey("TenantId", "Id");
-
-                    b.HasIndex("TenantId", "CreatedById");
-
-                    b.HasIndex("TenantId", "ModifiedById");
-
-                    b.ToTable("IfrsConcepts");
-                });
-
-            modelBuilder.Entity("BSharp.Data.Model.IfrsNote", b =>
-                {
-                    b.Property<int>("TenantId")
-                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'TenantId'))");
-
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(255);
-
-                    b.Property<bool>("ForCredit")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("ForDebit")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsAggregate")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(true);
-
-                    b.Property<short>("Level")
-                        .HasMaxLength(255);
-
-                    b.Property<string>("Node");
-
-                    b.Property<string>("ParentNode");
-
-                    b.HasKey("TenantId", "Id");
-
-                    b.ToTable("IfrsNotes");
-                });
-
             modelBuilder.Entity("BSharp.Data.Model.LocalUser", b =>
                 {
                     b.Property<int>("TenantId");
@@ -264,8 +164,7 @@ namespace BSharp.Data.Migrations.Application
 
             modelBuilder.Entity("BSharp.Data.Model.MeasurementUnit", b =>
                 {
-                    b.Property<int>("TenantId")
-                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'TenantId'))");
+                    b.Property<int>("TenantId");
 
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -276,25 +175,17 @@ namespace BSharp.Data.Migrations.Application
                     b.Property<string>("Code")
                         .HasMaxLength(255);
 
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+                    b.Property<DateTimeOffset>("CreatedAt");
 
-                    b.Property<int>("CreatedById")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
+                    b.Property<int>("CreatedById");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasDefaultValue(true);
 
-                    b.Property<DateTimeOffset>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+                    b.Property<DateTimeOffset>("ModifiedAt");
 
-                    b.Property<int>("ModifiedById")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValueSql("CONVERT(INT, SESSION_CONTEXT(N'UserId'))");
+                    b.Property<int>("ModifiedById");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -559,27 +450,6 @@ namespace BSharp.Data.Migrations.Application
                         .WithMany()
                         .HasForeignKey("TenantId", "ModifiedById")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("BSharp.Data.Model.IfrsConcept", b =>
-                {
-                    b.HasOne("BSharp.Data.Model.LocalUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("TenantId", "CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("BSharp.Data.Model.LocalUser", "ModifiedBy")
-                        .WithMany()
-                        .HasForeignKey("TenantId", "ModifiedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("BSharp.Data.Model.IfrsNote", b =>
-                {
-                    b.HasOne("BSharp.Data.Model.IfrsConcept", "Concept")
-                        .WithOne("Note")
-                        .HasForeignKey("BSharp.Data.Model.IfrsNote", "TenantId", "Id")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("BSharp.Data.Model.LocalUser", b =>

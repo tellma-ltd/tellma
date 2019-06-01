@@ -46,7 +46,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments<int> args)
+        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
@@ -54,7 +54,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments<int> args)
+        public async Task<ActionResult<EntitiesResponse<MeasurementUnit>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)

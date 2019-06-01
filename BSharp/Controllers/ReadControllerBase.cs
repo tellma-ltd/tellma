@@ -240,6 +240,41 @@ namespace BSharp.Controllers
         protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level);
 
         /// <summary>
+        /// Verifies that the user has sufficient permissions to update he list of entities provided, this implementation 
+        /// assumes that the view has permission levels Read and Update only, which most entities
+        /// </summary>
+        protected virtual async Task CheckActionPermissions(IEnumerable<TKey> entityIds)
+        {
+            // TODO
+
+            //var updatePermissions = await UserPermissions(PermissionLevel.Update);
+            //if (!updatePermissions.Any())
+            //{
+            //    // User has no permissions on this table whatsoever, forbid
+            //    throw new ForbiddenException();
+            //}
+            //else if (updatePermissions.Any(e => string.IsNullOrWhiteSpace(e.Criteria)))
+            //{
+            //    // User has unfiltered update permission on the table => proceed
+            //    return;
+            //}
+            //else
+            //{
+            //    // User can update items under certain conditions, so we check those conditions here
+            //    IEnumerable<string> criteriaList = updatePermissions.Select(e => e.Criteria);
+
+            //    // The parameter on which the expression is based
+            //    var eParam = Expression.Parameter(typeof(TDtoForQuery));
+
+            //    // Prepare the lambda
+            //    Expression whereClause = ToORedWhereClause<TDtoForQuery>(criteriaList, eParam);
+            //    var lambda = Expression.Lambda<Func<TDtoForQuery, bool>>(whereClause, eParam);
+
+            //    await CheckPermissionsForOld(entityIds, lambda);
+            //}
+        }
+
+        /// <summary>
         /// If the user has no permission masks defined (can see all), this mask is used.
         /// This makes it easier to setup permissions such that a user cannot see employee
         /// salaries for example, since without this, the user can "expand" the DTO tree 

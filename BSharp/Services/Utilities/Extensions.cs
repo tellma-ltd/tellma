@@ -2,6 +2,7 @@
 using BSharp.Controllers.Misc;
 using BSharp.Data.Model;
 using BSharp.Services.MultiTenancy;
+using BSharp.Services.OData;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -391,6 +392,11 @@ namespace BSharp.Services.Utilities
                 }
 
                 return date;
+            }
+
+            if (t == typeof(HierarchyId))
+            {
+                return obj.ToString();
             }
 
             return Convert.ChangeType(obj, t);

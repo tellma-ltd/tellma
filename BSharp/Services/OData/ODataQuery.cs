@@ -526,11 +526,16 @@ namespace BSharp.Services.OData
                     {
                         foreach (var (propInfo, index) in entityDef.Properties)
                         {
+                            if(propInfo.PropertyType == typeof(HierarchyId))
+                            {
+                                continue;
+                            }
+
                             var dbValue = reader[index];
                             if (dbValue != DBNull.Value)
                             {
                                 // chars still comes from the DB as a string
-                                if(propInfo.PropertyType == typeof(char?))
+                                if (propInfo.PropertyType == typeof(char?))
                                 {
                                     dbValue = dbValue.ToString()[0]; // gets the char
                                 }
@@ -671,15 +676,20 @@ namespace BSharp.Services.OData
                         {
                             // need to go down the path
                             var currentEntity = principalEntity;
+                            bool nullStep = false;
                             foreach (var step in pathToCollectionEntity)
                             {
                                 var nextObject = currentEntity.GetType().GetProperty(step).GetValue(currentEntity);
                                 if (nextObject == null)
                                 {
+                                    nullStep = true;
                                     break;
                                 }
 
-                                currentEntity = nextObject as DtoBase;
+                                if (!nullStep)
+                                {
+                                    currentEntity = nextObject as DtoBase;
+                                }
                             }
 
                             collectionEntities.Add(currentEntity);
@@ -838,7 +848,7 @@ namespace BSharp.Services.OData
 
                 SqlJoinClause joinClause = criteriaQuery.JoinSql();
                 string joinSql = joinClause.ToSql(SourceOverride);
-                string whereSql = criteriaQuery.WhereSql(joinClause.JoinTree, ps, _userId, _userTimeZone);
+                string whereSql = criteriaQuery.WhereSql(sources, joinClause.JoinTree, ps, _userId, _userTimeZone);
 
 
                 var sqlBuilder = new StringBuilder();

@@ -406,6 +406,46 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "RoleMembership_Role", "Role"),
             Ar(Constants.Shared, "RoleMembership_Role", "الدور"),
 
+            En(Constants.Shared, "IfrsNotes", "IFRS Notes"),
+            Ar(Constants.Shared, "IfrsNotes", "إيضاحات (IFRS)"),
+
+            En(Constants.Shared, "IfrsConcepts_IfrsType", "IFRS Type"),
+            Ar(Constants.Shared, "IfrsConcepts_IfrsType", "الطبيعة"),
+
+            En(Constants.Shared, "IfrsConcept_Amendment", "Amendment"),
+            Ar(Constants.Shared, "IfrsConcept_Amendment", "تعديل"),
+
+            En(Constants.Shared, "IfrsConcept_Extension", "Extension"),
+            Ar(Constants.Shared, "IfrsConcept_Extension", "إضافة"),
+
+            En(Constants.Shared, "IfrsConcept_Regulatory", "Regulatory"),
+            Ar(Constants.Shared, "IfrsConcept_Regulatory", "نظامي"),
+
+            En(Constants.Shared, "IfrsConcepts_Label", "Label"),
+            Ar(Constants.Shared, "IfrsConcepts_Label", "الاسم"),
+
+            En(Constants.Shared, "IfrsConcepts_Documentation", "Documentation"),
+            Ar(Constants.Shared, "IfrsConcepts_Documentation", "التوثيق"),
+
+            En(Constants.Shared, "IfrsConcepts_EffectiveDate", "Effective Date"),
+            Ar(Constants.Shared, "IfrsConcepts_EffectiveDate", "تاريخ النفاذ"),
+
+            En(Constants.Shared, "IfrsConcepts_ExpiryDate", "Expiry Date"),
+            Ar(Constants.Shared, "IfrsConcepts_ExpiryDate", "تاريخ الانتهاء"),
+
+            En(Constants.Shared, "IfrsNotes_IsAggregate", "Is Aggregate"),
+            Ar(Constants.Shared, "IfrsNotes_IsAggregate", "للتجميع"),
+
+            En(Constants.Shared, "IfrsNotes_ForDebit", "For Debit"),
+            Ar(Constants.Shared, "IfrsNotes_ForDebit", "للمدين"),
+
+            En(Constants.Shared, "IfrsNotes_ForCredit", "For Credit"),
+            Ar(Constants.Shared, "IfrsNotes_ForCredit", "للدائن"),
+
+            En(Constants.Shared, "IfrsNotes_Parent", "Parent"),
+            Ar(Constants.Shared, "IfrsNotes_Parent", "الأصل"),
+            
+
             En(Constants.Shared, "Settings", "Settings"),
             Ar(Constants.Shared, "Settings", "إعدادات"),
 
