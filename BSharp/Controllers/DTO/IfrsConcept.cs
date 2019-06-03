@@ -1,10 +1,6 @@
 ﻿using BSharp.Controllers.Misc;
-using BSharp.Services.OData;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BSharp.Controllers.DTO
 {
@@ -57,54 +53,5 @@ namespace BSharp.Controllers.DTO
         [BasicField]
         public bool? IsActive { get; set; }
 
-    }
-
-    public class IfrsNote  : IfrsConcept
-    {
-        public HierarchyId Node { get; set; }
-
-        public short? Level { get; set; }
-
-        public HierarchyId ParentNode { get; set; }
-
-        public string ParentId { get; set; }
-
-        public int? ChildCount { get; set; }
-
-        [Display(Name = "IfrsNotes_IsAggregate")]
-        public bool? IsAggregate { get; set; }
-
-        [Display(Name = "IfrsNotes_ForDebit")]
-        public bool? ForDebit { get; set; }
-
-        [Display(Name = "IfrsNotes_ForCredit")]
-        public bool? ForCredit { get; set; }
-
-        [Display(Name = "CreatedAt")]
-        public DateTimeOffset? CreatedAt { get; set; }
-
-        [ForeignKey]
-        [Display(Name = "CreatedBy")]
-        public int? CreatedById { get; set; }
-
-        [Display(Name = "ModifiedAt")]
-        public DateTimeOffset? ModifiedAt { get; set; }
-
-        [ForeignKey]
-        [Display(Name = "ModifiedBy")]
-        public int? ModifiedById { get; set; }
-    }
-
-    public class IfrsNoteForQuery : IfrsNote
-    {
-        [NavigationProperty(ForeignKey = nameof(ParentId))]
-        [Display(Name = "IfrsNotes_Parent")]
-        public IfrsNoteForQuery Parent { get; set; }
-
-        [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
-
-        [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
     }
 }

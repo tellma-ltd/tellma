@@ -6,6 +6,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { CdkTableModule } from '@angular/cdk/table';
+import { CdkTreeModule } from '@angular/cdk/tree';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   NgbCollapseModule,
@@ -68,7 +69,8 @@ import {
   faMoneyBillWave,
   faArrowLeft,
   faArrowRight,
-  faClipboard
+  faClipboard,
+  faCodeBranch
 
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
@@ -103,7 +105,7 @@ library.add(
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
   faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
   faSearch, faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
-  faTasks, faMale, faBuilding, faArrowLeft, faArrowRight,
+  faTasks, faMale, faBuilding, faArrowLeft, faArrowRight, faCodeBranch,
 
   faListUl,
   faMoneyCheck,
@@ -148,6 +150,7 @@ library.add(
     RouterModule.forChild([]),
     HttpClientModule,
     CdkTableModule,
+    CdkTreeModule,
     ScrollingModule,
     NgbDropdownModule,
     NgbModalModule,
@@ -170,6 +173,7 @@ library.add(
     FormsModule,
     FontAwesomeModule,
     CdkTableModule,
+    CdkTreeModule,
 
     // Components & others
     SpinnerComponent,

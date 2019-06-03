@@ -517,14 +517,14 @@ namespace BSharp.Services.OData
 
                                 return $"{propSQL} NOT LIKE N'%' + {paramSymbol} + N'%'";
 
-                            case "childofh": // Must be hierarchy Id
-                                if (propType != typeof(HierarchyId))
-                                {
-                                    // Developer mistake
-                                    throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
-                                }
+                            //case "childofh": // Must be hierarchy Id
+                            //    if (propType != typeof(HierarchyId))
+                            //    {
+                            //        // Developer mistake
+                            //        throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
+                            //    }
 
-                                return $"{propSQL}.GetAncestor(1) = {paramSymbol}";
+                            //    return $"{propSQL}.GetAncestor(1) = {paramSymbol}";
 
                             case "childof": // Must be hierarchy Id
                                 {
@@ -535,18 +535,21 @@ namespace BSharp.Services.OData
                                     }
 
                                     var treeSource = sources(join.Type);
-                                    return $"{propSQL}.GetAncestor(1) = (SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
+                                    string parentNode = isNull ? "HierarchyId::GetRoot()" : 
+                                        $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
+
+                                    return $"{propSQL}.GetAncestor(1) = {parentNode}";
                                 }
 
-                            case "descendantofh": // Must be hierarchy Id
+                            //case "descendantofh": // Must be hierarchy Id
                                 
-                                if (propType != typeof(HierarchyId))
-                                {
-                                    // Developer mistake
-                                    throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
-                                }
+                            //    if (propType != typeof(HierarchyId))
+                            //    {
+                            //        // Developer mistake
+                            //        throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
+                            //    }
 
-                                return $"{propSQL}.IsDescendantOf({paramSymbol}) = 1";
+                            //    return $"{propSQL}.IsDescendantOf({paramSymbol}) = 1";
 
                             case "descendantof": // Must be hierarchy Id
                                 {
@@ -557,8 +560,12 @@ namespace BSharp.Services.OData
                                     }
 
                                     var treeSource = sources(join.Type);
-                                    return $"{propSQL}.IsDescendantOf((SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})) = 1";
+                                    string parentNode = isNull ? "HierarchyId::GetRoot()" :
+                                        $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
+
+                                    return $"{propSQL}.IsDescendantOf({parentNode}) = 1";
                                 }
+
                             default:
                                 // Developer mistake
                                 throw new InvalidOperationException($"The filter operator '{atom.Op}' is not recognized");

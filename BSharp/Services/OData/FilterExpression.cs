@@ -82,10 +82,10 @@ namespace BSharp.Services.OData
                 }
                 else
                 {
-                    // Everything that is not inside single quotes is ripe for lexical analysis      
-                    var matchingSymbol = symbols.FirstOrDefault(preprocessedFilter.Substring(index).StartsWith);
-                    if (matchingSymbol != null)
-                    {
+                    // Everything that is not inside single quotes is ripe for lexical analysis   
+                    string matchingSymbol;
+                    if(!insideQuotes && (matchingSymbol = symbols.FirstOrDefault(preprocessedFilter.Substring(index).StartsWith)) != null)
+                    { 
                         // Add all that has been accumulating before the symbol
                         if (!string.IsNullOrWhiteSpace(acc))
                         {

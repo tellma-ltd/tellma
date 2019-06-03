@@ -603,6 +603,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "InvalidEmail", "Invalid Email"),
             Ar(Constants.Client, "InvalidEmail", "عنوان بريد غير سليم"),
 
+            En(Constants.Client, "Tree", "Tree"),
+            Ar(Constants.Client, "Tree", "شجرة"),
+
             En(Constants.Client, "Tiles", "Tiles"),
             Ar(Constants.Client, "Tiles", "مستطيلات"),
 

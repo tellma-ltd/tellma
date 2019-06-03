@@ -263,6 +263,10 @@ export class MasterDetailsStore {
   masterStatus: MasterStatus;
   errorMessage: string;
 
+  treeIds: NodeInfo[] = [];
+  treeStatus: MasterStatus;
+  treeErrorMessage: string;
+
   detailsId: string | number;
   detailsStatus: DetailsStatus;
 
@@ -278,6 +282,15 @@ export class MasterDetailsStore {
     this.total = this.total + ids.length;
     this.masterIds = ids.concat(this.masterIds);
   }
+}
+
+export class NodeInfo {
+  id: (string | number);
+  level: number;
+  isExpanded: boolean;
+  hasChildren: boolean;
+  parent: NodeInfo;
+  status: MasterStatus;
 }
 
 // The Workspace of the application stores ALL application wide in-memory state that survives

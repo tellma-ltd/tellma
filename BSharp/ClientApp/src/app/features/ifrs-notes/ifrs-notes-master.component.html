@@ -1,14 +1,8 @@
-<b-master apiEndpoint="ifrs-notes"
-          viewId="ifrs-notes"
-          [expand]="expand" 
-          [mode]="mode"
-          [showCreateButton]="false"
-          [showImportButton]="false"
-          [showDeleteButton]="false"
-          [masterCrumb]="'IfrsNotes' | translate"
-          [tileTemplate]="tile"
-          [tableColumnPaths]="adjustForMultilingual(['Label', 'Label2', 'IfrsType', 'EffectiveDate', 'ExpiryDate', 'IsAggregate', 'ForDebit', 'ForCredit', 'IsActive'], ['Label'], ws)"
-          [tableColumnTemplates]="{
+<b-master apiEndpoint="ifrs-notes" viewId="ifrs-notes" [expand]="expand" [mode]="mode" [enableTreeView]="true"
+  [showCreateButton]="false" [showImportButton]="false" [showDeleteButton]="false"
+  [masterCrumb]="'IfrsNotes' | translate" [tileTemplate]="tile" [treeNodeTemplate]="node"
+  [tableColumnPaths]="adjustForMultilingual(['Label', 'Label2', 'IfrsType', 'EffectiveDate', 'ExpiryDate', 'IsAggregate', 'ForDebit', 'ForCredit', 'IsActive'], ['Label'], ws)"
+  [tableColumnTemplates]="{
             'Label' : { headerTemplate : header_Label, rowTemplate : row_Label, weight : 2 },
             'Label2' : { headerTemplate : header_Label2, rowTemplate : row_Label2, weight : 2 },
             'Id' : { headerTemplate : header_Id, rowTemplate : row_Id, weight : 1 },
@@ -19,13 +13,10 @@
             'ForDebit' : { headerTemplate : header_ForDebit, rowTemplate : row_ForDebit, weight : 1 },
             'ForCredit' : { headerTemplate : header_ForCredit, rowTemplate : row_ForCredit, weight : 1 },
             'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
-          }"
-          [multiselectActions]="[
+          }" [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
-          ]"
-          [includeInactiveLabel]="'IncludeInactive' | translate"
-          [filterDefinition]="{
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
@@ -47,6 +38,15 @@
   </div>
 </ng-template>
 
+<ng-template #node let-node="node">
+  <span class="text-truncate">{{ ws.getMultilingualValue('IfrsNote', node.id, 'Label') }}
+    <ng-container *ngIf="c[node.id]?.ChildCount">&nbsp;&nbsp;<span
+        class="badge bg-white border">{{ c[node.id]?.ChildCount }}</span></ng-container></span>
+
+  <!-- &nbsp;&nbsp;<span *ngIf="c[node.id]?.ChildCount">({{ c[node.id]?.ChildCount }})</span> -->
+
+</ng-template>
+
 
 <!-- Table Templates -->
 <ng-template #header_Label>{{ ('IfrsConcepts_Label' | translate) + ws.primaryPostfix }}</ng-template>
@@ -59,13 +59,21 @@
 <ng-template #row_Id let-id="id"> {{ c[id].Id }} </ng-template>
 
 <ng-template #header_IfrsType>{{ 'IfrsConcepts_IfrsType' | translate }}</ng-template>
-<ng-template #row_IfrsType let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.IfrsType">{{ ifrsTypeLookup(c[id].IfrsType) | translate }} </b-restricted></ng-template>
+<ng-template #row_IfrsType let-id="id">
+  <b-restricted [metadata]="c[id].EntityMetadata?.IfrsType">{{ ifrsTypeLookup(c[id].IfrsType) | translate }}
+  </b-restricted>
+</ng-template>
 
 <ng-template #header_EffectiveDate>{{ 'IfrsConcepts_EffectiveDate' | translate }}</ng-template>
-<ng-template #row_EffectiveDate let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.EffectiveDate">{{ c[id].EffectiveDate | date:'yyyy-MM-dd' }} </b-restricted></ng-template>
+<ng-template #row_EffectiveDate let-id="id">
+  <b-restricted [metadata]="c[id].EntityMetadata?.EffectiveDate">{{ c[id].EffectiveDate | date:'yyyy-MM-dd' }}
+  </b-restricted>
+</ng-template>
 
 <ng-template #header_ExpiryDate>{{ 'IfrsConcepts_ExpiryDate' | translate }}</ng-template>
-<ng-template #row_ExpiryDate let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.ExpiryDate">{{ c[id].ExpiryDate | date:'yyyy-MM-dd' }} </b-restricted></ng-template>
+<ng-template #row_ExpiryDate let-id="id">
+  <b-restricted [metadata]="c[id].EntityMetadata?.ExpiryDate">{{ c[id].ExpiryDate | date:'yyyy-MM-dd' }} </b-restricted>
+</ng-template>
 
 <ng-template #header_IsAggregate>{{ 'IfrsNotes_IsAggregate' | translate }}</ng-template>
 <ng-template #row_IsAggregate let-id="id"> {{ (c[id].IsAggregate ? 'Yes' : 'No') | translate }} </ng-template>

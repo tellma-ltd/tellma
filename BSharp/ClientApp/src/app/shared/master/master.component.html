@@ -31,12 +31,13 @@
     <div class="p-1" [class.col-6]="isScreenMode" [class.col-12]="isPopupMode">
       <div class="d-flex b-search">
         <!-- Search Box -->
-        <b-text-editor [placeholder]="('Search' | translate) + '...'" [(ngModel)]="search" [focusIf]="isPopupMode"></b-text-editor>
+        <b-text-editor [placeholder]="('Search' | translate) + '...'" [(ngModel)]="search" [focusIf]="isPopupMode">
+        </b-text-editor>
 
         <!-- Filter -->
         <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement" bDropdownAppendToBody>
-          <button class="btn btn-light btn-sm b-white-button d-flex b-no-arrow b-filter-button" ngbDropdownToggle type="button"
-            title="{{ 'Filter' | translate }}">
+          <button class="btn btn-light btn-sm b-white-button d-flex b-no-arrow b-filter-button" ngbDropdownToggle
+            type="button" title="{{ 'Filter' | translate }}">
             <fa-icon icon="filter"></fa-icon>
             <div class="bg-danger b-indicator" *ngIf="isAnyFilterChecked"></div>
           </button>
@@ -53,7 +54,8 @@
                 <hr />
               </li>
               <ng-container *ngFor="let e of filterTemplates(groupName)">
-                <li class="dropdown-item" [class.selected]="isFilterChecked(groupName, e.expression)" (click)="onFilterCheck(groupName, e.expression)">
+                <li class="dropdown-item" [class.selected]="isFilterChecked(groupName, e.expression)"
+                  (click)="onFilterCheck(groupName, e.expression)">
                   <div>
                     <ng-container *ngTemplateOutlet="e.template"></ng-container>
 
@@ -67,8 +69,9 @@
             <li>
               <hr />
             </li>
-            <li class="dropdown-item d-flex justify-content-between" [class.disabled]="!isAnyFilterChecked" (click)="onClearFilter()"><span
-                class="d-block">{{ 'ClearFilter' | translate }}</span><span class="text-danger">&#x2718;</span></li>
+            <li class="dropdown-item d-flex justify-content-between" [class.disabled]="!isAnyFilterChecked"
+              (click)="onClearFilter()"><span class="d-block">{{ 'ClearFilter' | translate }}</span><span
+                class="text-danger">&#x2718;</span></li>
           </ul>
         </div>
 
@@ -81,7 +84,8 @@
       <!-- Left Buttons -->
       <div>
         <!-- Create -->
-        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body" *ngIf="showCreate">
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body"
+          *ngIf="showCreate">
           <button type="button" class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()"
             [disabled]="!canCreate">
             <fa-icon icon="plus"></fa-icon>
@@ -90,20 +94,22 @@
         </div>
 
         <!-- Data dropdown -->
-        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement" *ngIf="showDataDropdown" bDropdownAppendToBody>
-          <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle"
-            ngbDropdownToggle>
+        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement"
+          *ngIf="showDataDropdown" bDropdownAppendToBody>
+          <button type="button"
+            class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle" ngbDropdownToggle>
             {{ 'Data' | translate }}
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" *ngIf="showExport" (click)="exportErrorMessage = null; modalService.open(exportModal);"
-                [disabled]="!canExport">
+              <button type="button" class="dropdown-item btn-light" *ngIf="showExport"
+                (click)="exportErrorMessage = null; modalService.open(exportModal);" [disabled]="!canExport">
                 {{ 'Export' | translate }}
               </button>
             </div>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="importTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" (click)="onImport()" [disabled]="!canImport" *ngIf="showImport">
+              <button type="button" class="dropdown-item btn-light" (click)="onImport()" [disabled]="!canImport"
+                *ngIf="showImport">
                 {{ 'Import' | translate }}
               </button>
             </div>
@@ -115,33 +121,43 @@
       <div>
 
         <!-- Refresh -->
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button" title="{{ 'Refresh' | translate }}"
-          (click)="onRefresh()">
+        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+          title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
           <fa-icon icon="sync-alt"></fa-icon>
         </button>
 
         <!-- Paging -->
-        <div class="d-inline small mr-2 ml-2">
-          <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span>
-          </span>
-          <span class="b-vertical-align-middle"> / {{ total | number }}</span>
-        </div>
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button" title="{{ 'Previous' | translate }}"
-          (click)="onPreviousPage()" [disabled]="!canPreviousPage">
-          <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
-        </button>
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button" title="{{ 'Next' | translate }}"
-          (click)="onNextPage()" [disabled]="!canNextPage">
-          <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
-        </button>
+        <ng-container *ngIf="!showTreeView">
+          <div class="d-inline small mr-2 ml-2">
+            <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span>
+            </span>
+            <span class="b-vertical-align-middle"> / {{ total | number }}</span>
+          </div>
+          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+            title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+            <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+          </button>
+          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+            title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+            <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+          </button>
+        </ng-container>
+
 
         <!-- Tiles/Table Toggle -->
         <div class="btn-group btn-group-toggle b-toolbar-button">
-          <label class="btn btn-sm btn-light" [class.active]="showTilesView" title="{{ 'Tiles' | translate }}" (click)="onTilesView()">
+          <label class="btn btn-sm btn-light b-pointer" [class.active]="showTreeView" title="{{ 'Tree' | translate }}"
+            (click)="onTreeView()" *ngIf="enableTree && !searchOrFilter">
+            <input type="radio" name="searchView">
+            <fa-icon icon="code-branch" rotate="90"></fa-icon>
+          </label>
+          <label class="btn btn-sm btn-light b-pointer" [class.active]="showTilesView" title="{{ 'Tiles' | translate }}"
+            (click)="onTilesView()">
             <input type="radio" name="searchView">
             <fa-icon icon="th-large"></fa-icon>
           </label>
-          <label class="btn btn-sm btn-light" [class.active]="showTableView" title="{{ 'Table' | translate }}" (click)="onTableView()">
+          <label class="btn btn-sm btn-light b-pointer" [class.active]="showTableView" title="{{ 'Table' | translate }}"
+            (click)="onTableView()">
             <input type="radio" name="searchView">
             <fa-icon icon="list" [flip]="flip"></fa-icon>
           </label>
@@ -165,13 +181,15 @@
             <ng-container *ngFor="let action of multiselectActions">
               <div [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action.requiresUpdatePermission)"
                 container="body">
-                <button type="button" class="dropdown-item btn-light" (click)="onAction(action.action)" [disabled]="!canAction(action.requiresUpdatePermission)">
+                <button type="button" class="dropdown-item btn-light" (click)="onAction(action.action)"
+                  [disabled]="!canAction(action.requiresUpdatePermission)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
               </div>
             </ng-container>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)" [disabled]="!canDelete">
+              <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)"
+                [disabled]="!canDelete">
                 {{ 'Delete' | translate }}
               </button>
             </div>
@@ -179,7 +197,8 @@
         </div>
 
         <!-- Cancel -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" type="button" (click)="onCancelMultiselect()">
+        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" type="button"
+          (click)="onCancelMultiselect()">
           <fa-icon icon="times"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
         </button>
@@ -193,107 +212,157 @@
   <div class="row b-rest-of-screen bg-light">
     <div class="w-100">
 
-      <!-- Tiles -->
-      <div class="col-12" *ngIf="showTilesView">
-        <div class="row mb-3">
-          <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode" *ngFor="let id of masterIds; trackBy: trackById">
-            <div class="p-2 bg-white b-tile" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
-              <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
-              </ng-container>
+        <!-- Tree View -->
+      <ng-container *ngIf="showTreeView">
+        <div class="bg-white p-2 pb-3 border-bottom" *ngIf="showTreeContainer">
+          <cdk-tree [dataSource]="treeIds" [treeControl]="treeControl">
+            <cdk-tree-node *cdkTreeNodeDef="let node" [class.d-flex]="showTreeNode(node)"
+              [class.d-none]="!showTreeNode(node)">
+              <div class="border-bottom2 w-100 py-12 d-flex" [style.padding-left]="paddingLeft(node)"
+                [style.padding-right]="paddingRight(node)">
+
+                <!-- Expand button -->
+                <button class="border-0 px-2 mx-2" style="background-color: transparent" [style.opacity]="!hasChildren(node) ? 0 : 1"
+                  [disabled]="!hasChildren(node)" cdkTreeNodeToggle (click)="onExpand(node)">
+                  <fa-icon *ngIf="!showNodeSpinner(node)" icon="angle-right" [flip]="flipNode(node)"
+                    [rotate]="rotateNode(node)"></fa-icon>
+                  <b-spinner *ngIf="showNodeSpinner(node)"></b-spinner>
+                </button>
+
+                <!-- Node template -->
+                <div class="b-tree-node p-1" [class.b-highlight]="isRecentlyViewed(node.id)" (click)="onSelect(node.id)">
+                  <ng-container *ngTemplateOutlet="treeNodeTemplate;context: { node : node }">
+                  </ng-container>
+                </div>
+              </div>
+            </cdk-tree-node>
+          </cdk-tree>
+        </div>
+
+
+        <!-- Spinner -->
+        <div class="w-100 p-2 d-flex justify-content-center mt-3" *ngIf="showTreeSpinner">
+          <b-spinner [scale]="2"></b-spinner>
+        </div>
+
+        <!-- No items found -->
+        <div class="w-100 pl-3 pr-3" *ngIf="showTreeNoItemsFound">
+          {{ 'NoItemsFound' | translate }}
+        </div>
+
+        <!-- Error message -->
+        <b-error-message *ngIf="showTreeErrorMessage">
+          {{ treeErrorMessage }}
+        </b-error-message>
+      </ng-container>
+
+      <ng-container *ngIf="!showTreeView">
+        
+        <!-- Tiles -->
+        <div class="col-12" *ngIf="showTilesView">
+          <div class="row mb-3">
+            <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode"
+              *ngFor="let id of masterIds; trackBy: trackById">
+              <div class="p-2 bg-white b-tile" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
+                <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
+                </ng-container>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Table: using the Angular CDK -->
-      <div class="w-100 table-responsive" *ngIf="showTableView">
-        <table class="table table-hover table-sm table-striped bg-white border-bottom b-master-table text-nowrap" cdk-table
-          [dataSource]="masterIds" [trackBy]="trackById">
+        <!-- Table: using the Angular CDK -->
+        <div class="w-100 table-responsive" *ngIf="showTableView">
+          <table class="table table-hover table-sm table-striped bg-white border-bottom b-master-table text-nowrap"
+            cdk-table [dataSource]="masterIds" [trackBy]="trackById">
 
-          <!-- The only purpose of this invisible TR element is to suppress VS warnings -->
-          <tr style="display:none!important">
+            <!-- The only purpose of this invisible TR element is to suppress VS warnings -->
+            <tr style="display:none!important">
 
 
-            <!-- Column definitions -->
-            <ng-container cdkColumnDef="multiselect">
+              <!-- Column definitions -->
+              <ng-container cdkColumnDef="multiselect">
 
-              <!-- Checkboxes column -->
-              <th class="b-multiselect-th" cdk-header-cell *cdkHeaderCellDef>
-                <div class="ml-2 mr-2">
-                  <div class="custom-control custom-checkbox b-labelless-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
-                      (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
-                    <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
+                <!-- Checkboxes column -->
+                <th class="b-multiselect-th" cdk-header-cell *cdkHeaderCellDef>
+                  <div class="ml-2 mr-2">
+                    <div class="custom-control custom-checkbox b-labelless-checkbox">
+                      <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
+                        (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
+                      <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
+                    </div>
                   </div>
-                </div>
-              </th>
-              <td cdk-cell *cdkCellDef="let id">
-                <div class="ml-2 mr-2">
-
-                  <!-- checkbox -->
-                  <div class="custom-control custom-checkbox b-labelless-checkbox d-inline">
-                    <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
-                    <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
-                  </div>
-                </div>
-              </td>
-            </ng-container>
-
-            <ng-container cdkColumnDef="errors">
-              <!-- Errors -->
-              <th class="b-multiselect-th pl-0 pr-0" cdk-header-cell *cdkHeaderCellDef>
-              </th>
-              <td class="pl-0 pr-0" cdk-cell *cdkCellDef="let id">
-
-                <!-- Validation errors -->
-                <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">
-                  <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}"
-                    triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement"></fa-icon>
-                </div>
-              </td>
-            </ng-container>
-
-            <!-- Custom feature columns -->
-            <ng-container *ngFor="let colPath of tableColumnPaths">
-              <ng-container cdkColumnDef="{{colPath}}">
-
-                <!-- Column header -->
-                <th class="b-pointer" [style.width]="colWidth(colPath)" [class.dropdown-toggle]="orderBy === colPath"
-                  cdk-header-cell *cdkHeaderCellDef (click)="onOrderBy(colPath)">
-                  <ng-content *ngTemplateOutlet="tableColumnTemplates[colPath].headerTemplate">
-                  </ng-content>
                 </th>
+                <td cdk-cell *cdkCellDef="let id">
+                  <div class="ml-2 mr-2">
 
-                <!-- Column rows -->
-                <td class="b-pointer" cdk-cell *cdkCellDef="let id" (click)="onSelect(id)">
-                  <ng-container *ngTemplateOutlet="tableColumnTemplates[colPath].rowTemplate;context: { id: id }">
-                  </ng-container>
+                    <!-- checkbox -->
+                    <div class="custom-control custom-checkbox b-labelless-checkbox d-inline">
+                      <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
+                      <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
+                    </div>
+                  </div>
                 </td>
               </ng-container>
-            </ng-container>
-          </tr>
 
-          <!-- Row definitions -->
-          <tr cdk-header-row *cdkHeaderRowDef="tableColumnPathsAndExtras" [class.dropup]="desc"></tr>
-          <tr cdk-row *cdkRowDef="let id; columns: tableColumnPathsAndExtras" [class.b-highlight]="isRecentlyViewed(id)"></tr>
+              <ng-container cdkColumnDef="errors">
+                <!-- Errors -->
+                <th class="b-multiselect-th pl-0 pr-0" cdk-header-cell *cdkHeaderCellDef>
+                </th>
+                <td class="pl-0 pr-0" cdk-cell *cdkCellDef="let id">
 
-        </table>
-      </div>
+                  <!-- Validation errors -->
+                  <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">
+                    <fa-icon class="text-danger" icon="exclamation-triangle"
+                      ngbPopover="{{ actionValidationErrors[id] }}" triggers="mouseenter:mouseleave"
+                      [placement]="errorPopoverPlacement"></fa-icon>
+                  </div>
+                </td>
+              </ng-container>
 
-      <!-- Spinner -->
-      <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner">
-        <b-spinner [scale]="2"></b-spinner>
-      </div>
+              <!-- Custom feature columns -->
+              <ng-container *ngFor="let colPath of tableColumnPaths">
+                <ng-container cdkColumnDef="{{colPath}}">
 
-      <!-- No items found -->
-      <div class="w-100 pl-3 pr-3" *ngIf="showNoItemsFound">
-        {{ 'NoItemsFound' | translate }}
-      </div>
+                  <!-- Column header -->
+                  <th class="b-pointer" [style.width]="colWidth(colPath)" [class.dropdown-toggle]="orderBy === colPath"
+                    cdk-header-cell *cdkHeaderCellDef (click)="onOrderBy(colPath)">
+                    <ng-content *ngTemplateOutlet="tableColumnTemplates[colPath].headerTemplate">
+                    </ng-content>
+                  </th>
 
-      <!-- Error message -->
-      <b-error-message *ngIf="showErrorMessage">
-        {{ errorMessage }}
-      </b-error-message>
+                  <!-- Column rows -->
+                  <td class="b-pointer" cdk-cell *cdkCellDef="let id" (click)="onSelect(id)">
+                    <ng-container *ngTemplateOutlet="tableColumnTemplates[colPath].rowTemplate;context: { id: id }">
+                    </ng-container>
+                  </td>
+                </ng-container>
+              </ng-container>
+            </tr>
+
+            <!-- Row definitions -->
+            <tr cdk-header-row *cdkHeaderRowDef="tableColumnPathsAndExtras" [class.dropup]="desc"></tr>
+            <tr cdk-row *cdkRowDef="let id; columns: tableColumnPathsAndExtras"
+              [class.b-highlight]="isRecentlyViewed(id)"></tr>
+
+          </table>
+        </div>
+
+        <!-- Spinner -->
+        <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner">
+          <b-spinner [scale]="2"></b-spinner>
+        </div>
+
+        <!-- No items found -->
+        <div class="w-100 pl-3 pr-3" *ngIf="showNoItemsFound">
+          {{ 'NoItemsFound' | translate }}
+        </div>
+
+        <!-- Error message -->
+        <b-error-message *ngIf="showErrorMessage">
+          {{ errorMessage }}
+        </b-error-message>
+      </ng-container>
     </div>
   </div>
 </div>
