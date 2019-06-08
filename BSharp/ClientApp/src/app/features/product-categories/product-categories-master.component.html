@@ -1,0 +1,71 @@
+<b-master apiEndpoint="product-categories" viewId="product-categories" [expand]="expand" [mode]="mode"
+  [enableTreeView]="true" [masterCrumb]="'ProductCategories' | translate" [treeNodeTemplate]="node"
+  [tileTemplate]="tile"
+  [tableColumnPaths]="adjustForMultilingual(['Name', 'Name2', 'Name3', 'Code', 'Parent', 'IsActive'], ['Name'], ws)"
+  [tableColumnTemplates]="{
+            'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
+            'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
+            'Name3' : { headerTemplate : header_Name3, rowTemplate : row_Name3, weight : 1.5 },
+            'Code' : { headerTemplate : header_Code, rowTemplate : row_Code, weight : 1 },
+            'Parent' : { headerTemplate : header_Parent, rowTemplate : row_Parent, weight : 1.5 },
+            'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
+          }" [multiselectActions]="[
+            { template : activate, action: onActivate, requiresUpdatePermission: true },
+            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedById eq me'}
+            ]
+          }">
+</b-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <div class="d-flex justify-content-between">
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('ProductCategory', id, 'Name') }}</span>
+  </div>
+  <div class="d-flex justify-content-between mt-1 small">
+    <span>{{ c[id].Code }}</span>
+  </div>
+</ng-template>
+
+<!-- Tree Node Template -->
+<ng-template #node let-node="node">
+  <span class="text-truncate">{{ ws.getMultilingualValue('ProductCategory', node.id, 'Name') }}
+    <ng-container *ngIf="c[node.id]?.ChildCount">&nbsp;&nbsp;<span
+        class="badge bg-white border">{{ c[node.id]?.ChildCount }}</span></ng-container></span>
+
+  <!-- &nbsp;&nbsp;<span *ngIf="c[node.id]?.ChildCount">({{ c[node.id]?.ChildCount }})</span> -->
+
+</ng-template>
+
+<!-- Table Templates -->
+<ng-template #header_Name>{{ ('Name' | translate) + ws.primaryPostfix }}</ng-template>
+<ng-template #row_Name let-id="id"> {{ c[id].Name }} </ng-template>
+
+<ng-template #header_Name2>{{ ('Name' | translate) + ws.secondaryPostfix }}</ng-template>
+<ng-template #row_Name2 let-id="id"> {{ c[id].Name2 }} </ng-template>
+
+<ng-template #header_Name3>{{ ('Name' | translate) + ws.ternaryPostfix }}</ng-template>
+<ng-template #row_Name3 let-id="id"> {{ c[id].Name3 }} </ng-template>
+
+<ng-template #header_Code>{{ 'Code' | translate }}</ng-template>
+<ng-template #row_Code let-id="id"> {{ c[id].Code }} </ng-template>
+
+<ng-template #header_Parent>{{ 'TreeParent' | translate }}</ng-template>
+<ng-template #row_Parent let-id="id">
+  <b-restricted [metadata]="c[id].EntityMetadata?.ParentId">
+    {{ ws.getMultilingualValue('ProductCategory', c[id]?.ParentId, 'Name') }} </b-restricted>
+</ng-template>
+
+<ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
+<ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
+
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>

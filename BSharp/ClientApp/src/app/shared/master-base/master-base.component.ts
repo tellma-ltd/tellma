@@ -84,20 +84,26 @@ export class MasterBaseComponent implements OnDestroy {
 
   public adjustForMultilingual(columns: string[], multilingualColumns: string[], workspace: TenantWorkspace): string[] {
 
-      // IF there is only one language, remove the second one
+    // Remove columns of a second language if a second language is not defined
+    // Remove columns of a third language if a third language is not defined
+
+    if (this._columns !== columns) {
+      this._columns = columns;
+      this._adjustedColumns = columns;
+
       if (!workspace.settings.SecondaryLanguageId) {
-        if (this._columns !== columns) {
-          this._columns = columns;
 
-          const toRemove = multilingualColumns.map(e => e + '2');
-          this._adjustedColumns = columns.filter(e => toRemove.indexOf(e) === -1);
-        }
-
-        return this._adjustedColumns;
+        const toRemove = multilingualColumns.map(e => e + '2');
+        this._adjustedColumns = columns.filter(e => toRemove.indexOf(e) === -1);
       }
 
-      return columns;
+      if (!workspace.settings.TernaryLanguageId) {
 
-      // Note: this would have to change if we add a 3rd column;
+        const toRemove = multilingualColumns.map(e => e + '3');
+        this._adjustedColumns = columns.filter(e => toRemove.indexOf(e) === -1);
+      }
+    }
+
+    return this._adjustedColumns;
   }
 }

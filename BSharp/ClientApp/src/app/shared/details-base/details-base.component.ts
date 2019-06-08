@@ -79,10 +79,13 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   getMultilingualValue(item: any, propName: string, ws: TenantWorkspace) {
     if (!!propName) {
       const propName2 = propName + '2';
+      const propName3 = propName + '3';
 
       if (!!item) {
         if (ws.isSecondaryLanguage && !!item[propName2]) {
           return item[propName2];
+        } else if (ws.isTernaryLanguage && !!item[propName3]) {
+          return item[propName3];
         } else {
           return item[propName];
         }

@@ -536,7 +536,18 @@ return the entities
         /// </summary>
         protected virtual async Task DeleteImplAsync(List<TKey> ids)
         {
+            if(ids == null || !ids.Any())
+            {
+                return;
+            }
+
             await CheckActionPermissions(ids);
+            await ValidateDeleteAsync(ids);
+            if (!ModelState.IsValid)
+            {
+                throw new UnprocessableEntityException(ModelState);
+            }
+
             await DeleteAsync(ids);
         }
 
@@ -546,6 +557,11 @@ return the entities
         /// ignore this method and override <see cref="DeleteImplAsync(List{TKey})"/> instead
         /// </summary>
         protected abstract Task DeleteAsync(List<TKey> ids);
+
+        protected virtual Task ValidateDeleteAsync(List<TKey> ids)
+        {
+            return Task.CompletedTask;
+        }
 
         /// <summary>
         /// Trims all string properties of the entity

@@ -50,6 +50,9 @@ namespace BSharp.Services.Mapper
             // IFRS Notes
             CreateDtoMap2<IfrsNoteForQuery, IfrsNote>();
 
+            // IFRS Notes
+            CreateDtoMap2<ProductCategoryForQuery, ProductCategory>();
+
             //CreateMap<TranslationForSave, M.Translation>()
             //    .ForMember(e => e.Culture, opt => opt.MapFrom(e => e.Id == null ? null : e.Id.Split(SEPARATOR)[0]))
             //    .ForMember(e => e.Name, opt => opt.MapFrom(e => e.Id == null ? null : string.Join("|", e.Id.Split(SEPARATOR).Skip(1)) ));

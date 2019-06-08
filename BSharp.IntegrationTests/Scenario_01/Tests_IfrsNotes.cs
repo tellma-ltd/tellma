@@ -13,7 +13,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 {
     public partial class Scenario_01
     {
-        public const string IfrsNotes = "01 - IFRS notes";
+        public const string IfrsNotes = "07 - IFRS notes";
 
         [Trait(Testing, IfrsNotes)]
         [Fact(DisplayName = "000 - Getting all IFRS notes before granting permissions returns a 403 Forbidden response")]

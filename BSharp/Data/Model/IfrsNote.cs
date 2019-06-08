@@ -13,7 +13,6 @@ namespace BSharp.Data.Model
 
         public string Node { get; set; }
 
-        [MaxLength(255)]
         public short Level { get; set; }
 
         public string ParentNode { get; set; }

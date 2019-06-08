@@ -187,7 +187,10 @@ namespace BSharp.Data.Model
             En(Constants.Server, "Error_ForeignKeys1CannotBeUsedInSelectArgument", "Foreign keys like '{0}' cannot be specified in the select argument"),
             Ar(Constants.Server, "Error_ForeignKeys1CannotBeUsedInSelectArgument", "المفاتيح الأجنبية مثل ({0}) لا يمكن استخدامها في مسارات select"),
 
-            
+            En(Constants.Server, "Error_CannotDeleteNodeWithChildren", "Cannot delete a tree node with children"),
+            Ar(Constants.Server, "Error_CannotDeleteNodeWithChildren", "لا يمكن حذف بيان شجري تنحدر منه بيانات أخرى"),
+
+
             
             
             // Client Errors
@@ -442,9 +445,14 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "IfrsNotes_ForCredit", "For Credit"),
             Ar(Constants.Shared, "IfrsNotes_ForCredit", "للدائن"),
 
-            En(Constants.Shared, "IfrsNotes_Parent", "Parent"),
-            Ar(Constants.Shared, "IfrsNotes_Parent", "الأصل"),
-            
+            En(Constants.Shared, "TreeParent", "Parent"),
+            Ar(Constants.Shared, "TreeParent", "الأصل"),
+
+            En(Constants.Shared, "ProductCategory", "Product Category"),
+            Ar(Constants.Shared, "ProductCategory", "صنف المنتج"),
+
+            En(Constants.Shared, "ProductCategories", "Product Categories"),
+            Ar(Constants.Shared, "ProductCategories", "أصناف المنتجات"),
 
             En(Constants.Shared, "Settings", "Settings"),
             Ar(Constants.Shared, "Settings", "إعدادات"),

@@ -149,7 +149,7 @@
           <label class="btn btn-sm btn-light b-pointer" [class.active]="showTreeView" title="{{ 'Tree' | translate }}"
             (click)="onTreeView()" *ngIf="enableTree && !searchOrFilter">
             <input type="radio" name="searchView">
-            <fa-icon icon="code-branch" rotate="90"></fa-icon>
+            <fa-icon icon="project-diagram"></fa-icon>
           </label>
           <label class="btn btn-sm btn-light b-pointer" [class.active]="showTilesView" title="{{ 'Tiles' | translate }}"
             (click)="onTilesView()">
@@ -212,36 +212,41 @@
   <div class="row b-rest-of-screen bg-light">
     <div class="w-100">
 
-        <!-- Tree View -->
+      <!-- Tree View -->
       <ng-container *ngIf="showTreeView">
-        <div class="bg-white p-2 pb-3 border-bottom" *ngIf="showTreeContainer">
-          <cdk-tree [dataSource]="treeIds" [treeControl]="treeControl">
-            <cdk-tree-node *cdkTreeNodeDef="let node" [class.d-flex]="showTreeNode(node)"
-              [class.d-none]="!showTreeNode(node)">
-              <div class="border-bottom2 w-100 py-12 d-flex" [style.padding-left]="paddingLeft(node)"
-                [style.padding-right]="paddingRight(node)">
-
-                <!-- Expand button -->
-                <button class="border-0 px-2 mx-2" style="background-color: transparent" [style.opacity]="!hasChildren(node) ? 0 : 1"
-                  [disabled]="!hasChildren(node)" cdkTreeNodeToggle (click)="onExpand(node)">
-                  <fa-icon *ngIf="!showNodeSpinner(node)" icon="angle-right" [flip]="flipNode(node)"
-                    [rotate]="rotateNode(node)"></fa-icon>
-                  <b-spinner *ngIf="showNodeSpinner(node)"></b-spinner>
-                </button>
-
-                <!-- Node template -->
-                <div class="b-tree-node p-1" [class.b-highlight]="isRecentlyViewed(node.id)" (click)="onSelect(node.id)">
-                  <ng-container *ngTemplateOutlet="treeNodeTemplate;context: { node : node }">
-                  </ng-container>
-                </div>
-              </div>
-            </cdk-tree-node>
-          </cdk-tree>
+        <div class="mb-3">
+          <table class="table table-hover3 table-sm bg-white border-bottom text-nowrap" *ngIf="showTreeContainer">
+             <tbody>
+              <tr [class.d-none]="!showTreeNode(node)" [class.b-highlight]="isRecentlyViewed(node.id)"
+                *ngFor="let node of treeIds">
+                <td class="text-truncate">
+                  <div class="d-flex" [style.padding-left]="paddingLeft(node)"
+                    [style.padding-right]="paddingRight(node)">
+                    <!-- Expand button -->
+                    <button class="border-0 px-2 mx-2" style="background-color: transparent"
+                      [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
+                      (click)="onExpand(node)">
+                      <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)"></fa-icon>
+                    </button>
+                    <!-- Expand button -->
+                    <div class="b-pointer" (click)="onSelect(node.id)">
+                      <ng-container *ngTemplateOutlet="treeNodeTemplate;context: { node : node }">
+                      </ng-container>
+                    </div>
+                    <b-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></b-spinner>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
+        <div class="w-100 mb-3" *ngIf="!showTreeContainer">
+          <!-- Only for margin -->
+        </div>
 
         <!-- Spinner -->
-        <div class="w-100 p-2 d-flex justify-content-center mt-3" *ngIf="showTreeSpinner">
+        <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showTreeSpinner">
           <b-spinner [scale]="2"></b-spinner>
         </div>
 
@@ -257,7 +262,7 @@
       </ng-container>
 
       <ng-container *ngIf="!showTreeView">
-        
+
         <!-- Tiles -->
         <div class="col-12" *ngIf="showTilesView">
           <div class="row mb-3">

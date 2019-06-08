@@ -62,7 +62,7 @@
   </b-form-group>
 
   <!-- Parent -->
-  <b-form-group class="b-form-group" [label]="'IfrsNotes_Parent' | translate">
+  <b-form-group class="b-form-group" [label]="'TreeParent' | translate">
     <b-restricted [metadata]="model?.EntityMetadata?.Parent"> 
         <b-view-link *ngIf="!isEdit" link="../"
         [itemId]="model?.ParentId">

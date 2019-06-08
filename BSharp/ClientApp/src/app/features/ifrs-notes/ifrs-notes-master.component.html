@@ -38,9 +38,11 @@
   </div>
 </ng-template>
 
+<!-- Tree Node Template -->
 <ng-template #node let-node="node">
   <span class="text-truncate">{{ ws.getMultilingualValue('IfrsNote', node.id, 'Label') }}
-    <ng-container *ngIf="c[node.id]?.ChildCount">&nbsp;&nbsp;<span
+    <ng-container *ngIf="node.hasChildren">
+      &nbsp;&nbsp;<span
         class="badge bg-white border">{{ c[node.id]?.ChildCount }}</span></ng-container></span>
 
   <!-- &nbsp;&nbsp;<span *ngIf="c[node.id]?.ChildCount">({{ c[node.id]?.ChildCount }})</span> -->

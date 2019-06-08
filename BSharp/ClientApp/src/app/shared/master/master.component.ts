@@ -272,13 +272,6 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.notifyTreeFetch$.pipe(
       switchMap(node => this.doTreeFetch(node))
     ).subscribe();
-
-    // this will only work in screen mode
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      if (params.has('view')) {
-        this.searchView = SearchView[params.get('view')];
-      }
-    });
   }
 
   ngOnInit() {
@@ -286,6 +279,15 @@ export class MasterComponent implements OnInit, OnDestroy {
     // Default search view
     this.searchView = this.enableTreeView ? SearchView.tree :
       (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
+
+    if (!this.alreadyInit) { // called once
+      // this will only work in screen mode
+      this.route.paramMap.subscribe((params: ParamMap) => {
+        if (params.has('view')) {
+          this.searchView = SearchView[params.get('view')];
+        }
+      });
+    }
 
     // Reset the state of the master component state
     this.localState = new MasterDetailsStore();
@@ -408,6 +410,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     // Retrieve the entities
     return this.crud.get({
       top: 10000,
+      orderBy: 'Node',
       filter: `Node childof ${parentId}`,
       expand: this.expand
     }).pipe(
@@ -426,7 +429,7 @@ export class MasterComponent implements OnInit, OnDestroy {
           n.id = id;
           n.level = item.Level;
           n.isExpanded = false;
-          n.hasChildren = item.ChildCount;
+          n.hasChildren = item.ChildCount - (item.IsActive ? 1 : 0) > 0;
           n.parent = node;
           n.status = null;
 
@@ -585,7 +588,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   get showTreeContainer(): boolean {
-    return this.state.treeStatus === MasterStatus.loaded;
+    return this.state.treeStatus === MasterStatus.loaded && !!this.state.treeIds && this.state.treeIds.length > 0;
   }
 
   get showTreeView(): boolean {

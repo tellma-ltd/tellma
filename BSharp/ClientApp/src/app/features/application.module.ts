@@ -23,6 +23,9 @@ import { TenantResolverGuard } from '../data/tenant-resolver.guard';
 import { AuthGuard } from '../data/auth.guard';
 import { IfrsNotesMasterComponent } from './ifrs-notes/ifrs-notes-master.component';
 import { IfrsNotesDetailsComponent } from './ifrs-notes/ifrs-notes-details.component';
+import { ProductCategoriesMasterComponent } from './product-categories/product-categories-master.component';
+import { ProductCategoriesImportComponent } from './product-categories/product-categories-import.component';
+import { ProductCategoriesDetailsComponent } from './product-categories/product-categories-details.component';
 
 const routes: Routes = [
   {
@@ -111,6 +114,23 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
+      // Product Categories
+      {
+        path: 'product-categories',
+        component: ProductCategoriesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'product-categories/import',
+        component: ProductCategoriesImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'product-categories/:id',
+        component: ProductCategoriesDetailsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -151,7 +171,10 @@ const routes: Routes = [
     LocalUsersImportComponent,
     SettingsComponent,
     IfrsNotesMasterComponent,
-    IfrsNotesDetailsComponent],
+    IfrsNotesDetailsComponent,
+    ProductCategoriesMasterComponent,
+    ProductCategoriesImportComponent,
+    ProductCategoriesDetailsComponent],
   imports: [
     SharedModule,
     RouterModule.forChild(routes)

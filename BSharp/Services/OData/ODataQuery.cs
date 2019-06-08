@@ -361,7 +361,6 @@ namespace BSharp.Services.OData
                         if (!segments.ContainsKey(fullPath))
                         {
                             ODataFlatQuery flatQuery = MakeFlatQuery(previousFullPath, subPath, type);
-
                             segments[fullPath] = flatQuery;
                         }
 

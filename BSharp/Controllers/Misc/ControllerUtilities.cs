@@ -349,6 +349,11 @@ SELECT * FROM (
                     case nameof(RoleForQuery):
                         return "[dbo].[Roles]";
 
+                    case nameof(ProductCategoryForQuery):
+                        return @"(SELECT [Q].*,
+    (SELECT COUNT(*) FROM [dbo].[ProductCategories] WHERE [Node].GetAncestor(1) = [Q].[Node]) As [ChildCount]
+FROM [dbo].[ProductCategories] As [Q])";
+
                     case nameof(IfrsNoteForQuery):
                         return @"(SELECT 
 	[C].*, 
@@ -358,7 +363,7 @@ SELECT * FROM (
 	[N].[IsAggregate],
 	[N].[ForDebit],
 	[N].[ForCredit],
-	(SELECT COUNT(*) FROM [dbo].[IfrsNotes] WHERE [Node].GetAncestor(1) = [N].[Node]) As [ChildCount],
+	(SELECT COUNT(*) FROM [dbo].[IfrsNotes] As [NI] JOIN [dbo].[IfrsConcepts] As [CI] ON [CI].[Id] = [NI].[Id] WHERE [CI].[IsActive] = 1 AND [NI].[Node].IsDescendantOf([N].[Node]) = 1) As [ChildCount],
 	(SELECT [Id] FROM [dbo].[IfrsNotes] WHERE [N].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsConcepts] As [C] JOIN [dbo].[IfrsNotes] As [N] ON [C].[Id] = [N].[Id])";
 
@@ -384,6 +389,7 @@ FROM
     ('individuals', {localize("Individuals")}, 'ReadUpdate', 1, 1),
     ('organizations', {localize("Organizations")}, 'ReadUpdate', 1, 1),
     ('ifrs-notes', {localize("IfrsNotes")}, 'Read', 1, 1),
+    ('product-categories', {localize("ProductCategories")}, 'ReadUpdate', 1, 1),
 	('settings', {localize("Settings")}, 'ReadUpdate', 0, 0)
   ) 
 AS V ([Id], [Name], [Name2], [Name3], [AllowedPermissionLevels], [SupportsCriteria], [SupportsMask])

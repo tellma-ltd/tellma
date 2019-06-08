@@ -5,12 +5,17 @@ using BSharp.Services.MultiTenancy;
 using BSharp.Services.OData;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace BSharp.Services.Utilities
 {
@@ -490,6 +495,47 @@ namespace BSharp.Services.Utilities
                 var item = currentProp.GetValue(enumerator);
                 yield return item;
             }
+        }
+
+        public static async Task<T> ExecuteScalarSqlCommandAsync<T>(this DatabaseFacade db, string sql, params SqlParameter[] ps)
+        {
+            DbConnection connection = db.GetDbConnection();
+            bool ownsConnection = false;
+            T result;
+
+            using (DbCommand cmd = connection.CreateCommand())
+            {
+                cmd.CommandText = sql;
+
+                foreach(var p in ps)
+                {
+                    cmd.Parameters.Add(p);
+                }
+
+                if(connection.State != System.Data.ConnectionState.Open)
+                {
+                    ownsConnection = true;
+                    connection.Open();
+                }
+
+                var dbValue = await cmd.ExecuteScalarAsync();
+
+                if(dbValue == DBNull.Value)
+                {
+                    result = default(T);
+                }
+                else
+                {
+                    result = (T)dbValue;
+                }
+            }
+
+            if(ownsConnection)
+            {
+                connection.Close();
+            }
+
+            return result;
         }
     }
 }

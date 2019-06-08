@@ -11,6 +11,7 @@ import { PermissionsForClient } from './dto/permission';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { TenantForClient } from './dto/tenant';
 import { IfrsNote } from './dto/ifrs-note';
+import { ProductCategory } from './dto/product-category';
 
 export enum MasterStatus {
 
@@ -68,6 +69,7 @@ export class TenantWorkspace {
   LocalUsers: EntityWorkspace<LocalUser>;
   Cultures: EntityWorkspace<Culture>;
   IfrsNote: EntityWorkspace<IfrsNote>;
+  ProductCategory: EntityWorkspace<ProductCategory>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -84,6 +86,7 @@ export class TenantWorkspace {
     this.LocalUsers = new EntityWorkspace<LocalUser>();
     this.Cultures = new EntityWorkspace<Culture>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
+    this.ProductCategory = new EntityWorkspace<ProductCategory>();
   }
 
   ////// the methods below provide easy access to the global tenant values

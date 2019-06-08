@@ -183,6 +183,7 @@ INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, 
                         appContext.Views.Add(new View { Id = "views", IsActive = true });
                         appContext.Views.Add(new View { Id = "settings", IsActive = true });
                         appContext.Views.Add(new View { Id = "ifrs-notes", IsActive = true });
+                        appContext.Views.Add(new View { Id = "product-categories", IsActive = true });
 
                         // Add the settings
                         var settings = new Settings

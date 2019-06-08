@@ -240,7 +240,7 @@ namespace BSharp.Controllers
         protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level);
 
         /// <summary>
-        /// Verifies that the user has sufficient permissions to update he list of entities provided, this implementation 
+        /// Verifies that the user has sufficient permissions to update the list of entities provided, this implementation 
         /// assumes that the view has permission levels Read and Update only, which most entities
         /// </summary>
         protected virtual async Task CheckActionPermissions(IEnumerable<TKey> entityIds)

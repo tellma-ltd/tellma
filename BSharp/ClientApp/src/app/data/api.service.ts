@@ -27,6 +27,7 @@ import { UserSettingsForClient } from './dto/local-user';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { TenantForClient } from './dto/tenant';
 import { IfrsNote } from './dto/ifrs-note';
+import { ProductCategory } from './dto/product-category';
 
 @Injectable({
   providedIn: 'root'
@@ -70,6 +71,13 @@ export class ApiService {
     return {
       activate: this.activateFactory<IfrsNote>('ifrs-notes', cancellationToken$),
       deactivate: this.deactivateFactory<IfrsNote>('ifrs-notes', cancellationToken$)
+    };
+  }
+
+  public productCategoriesApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<ProductCategory>('product-categories', cancellationToken$),
+      deactivate: this.deactivateFactory<ProductCategory>('product-categories', cancellationToken$)
     };
   }
 

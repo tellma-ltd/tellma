@@ -52,6 +52,8 @@ namespace BSharp.Data
 
         public DbSet<IfrsNote> IfrsNotes { get; set; }
 
+        public DbSet<ProductCategory> ProductCategories { get; set; }
+
         #endregion
 
 
@@ -112,6 +114,10 @@ namespace BSharp.Data
             // IFSR Notes
             AddTenantId<IfrsNote>(builder);
             IfrsNote.OnModelCreating(builder);
+
+            // Product Category
+            AddTenantId<ProductCategory>(builder);
+            ProductCategory.OnModelCreating(builder);
         }
 
         /// <summary>

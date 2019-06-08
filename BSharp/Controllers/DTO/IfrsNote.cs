@@ -8,13 +8,7 @@ namespace BSharp.Controllers.DTO
     public class IfrsNote : IfrsConcept
     {
         [BasicField]
-        public HierarchyId Node { get; set; }
-
-        [BasicField]
         public short? Level { get; set; }
-
-        [BasicField]
-        public HierarchyId ParentNode { get; set; }
 
         [BasicField]
         public string ParentId { get; set; }
@@ -48,8 +42,14 @@ namespace BSharp.Controllers.DTO
 
     public class IfrsNoteForQuery : IfrsNote
     {
+        [BasicField]
+        public HierarchyId Node { get; set; }
+
+        [BasicField]
+        public HierarchyId ParentNode { get; set; }
+
         [NavigationProperty(ForeignKey = nameof(ParentId))]
-        [Display(Name = "IfrsNotes_Parent")]
+        [Display(Name = "TreeParent")]
         public IfrsNoteForQuery Parent { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
