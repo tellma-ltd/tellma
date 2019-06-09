@@ -494,6 +494,9 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "Memo", "Memo"),
             Ar(Constants.Shared, "Memo", "ملاحظات"),
 
+            En(Constants.Shared, "Description", "Description"),
+            Ar(Constants.Shared, "Description", "البيان"),
+
             En(Constants.Shared, "Name", "Name"),
             Ar(Constants.Shared, "Name", "الاسم"),
 
@@ -613,6 +616,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "Tree", "Tree"),
             Ar(Constants.Client, "Tree", "شجرة"),
+
+            En(Constants.Client, "List", "List"),
+            Ar(Constants.Client, "List", "قائمة"),
 
             En(Constants.Client, "Tiles", "Tiles"),
             Ar(Constants.Client, "Tiles", "مستطيلات"),

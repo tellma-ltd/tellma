@@ -1,10 +1,9 @@
 <b-master apiEndpoint="ifrs-notes" viewId="ifrs-notes" [expand]="expand" [mode]="mode" [enableTreeView]="true"
   [showCreateButton]="false" [showImportButton]="false" [showDeleteButton]="false"
-  [masterCrumb]="'IfrsNotes' | translate" [tileTemplate]="tile" [treeNodeTemplate]="node"
-  [tableColumnPaths]="adjustForMultilingual(['Label', 'Label2', 'IfrsType', 'EffectiveDate', 'ExpiryDate', 'IsAggregate', 'ForDebit', 'ForCredit', 'IsActive'], ['Label'], ws)"
+  [masterCrumb]="'IfrsNotes' | translate" [tileTemplate]="tile"
+  [tableDescriptionColumnTemplate]="descriptionColumn" 
+  [tableColumnPaths]="['IfrsType', 'EffectiveDate', 'ExpiryDate', 'IsAggregate', 'ForDebit', 'ForCredit', 'IsActive']"
   [tableColumnTemplates]="{
-            'Label' : { headerTemplate : header_Label, rowTemplate : row_Label, weight : 2 },
-            'Label2' : { headerTemplate : header_Label2, rowTemplate : row_Label2, weight : 2 },
             'Id' : { headerTemplate : header_Id, rowTemplate : row_Id, weight : 1 },
             'IfrsType' : { headerTemplate : header_IfrsType, rowTemplate : row_IfrsType, weight : 1 },
             'EffectiveDate' : { headerTemplate : header_EffectiveDate, rowTemplate : row_EffectiveDate, weight : 1 },
@@ -38,25 +37,11 @@
   </div>
 </ng-template>
 
-<!-- Tree Node Template -->
-<ng-template #node let-node="node">
-  <span class="text-truncate">{{ ws.getMultilingualValue('IfrsNote', node.id, 'Label') }}
-    <ng-container *ngIf="node.hasChildren">
-      &nbsp;&nbsp;<span
-        class="badge bg-white border">{{ c[node.id]?.ChildCount }}</span></ng-container></span>
-
-  <!-- &nbsp;&nbsp;<span *ngIf="c[node.id]?.ChildCount">({{ c[node.id]?.ChildCount }})</span> -->
-
+<ng-template #descriptionColumn let-id="id">
+    <span class="text-truncate">{{ ws.getMultilingualValue('IfrsNote', id, 'Label') }}</span>
 </ng-template>
 
-
 <!-- Table Templates -->
-<ng-template #header_Label>{{ ('IfrsConcepts_Label' | translate) + ws.primaryPostfix }}</ng-template>
-<ng-template #row_Label let-id="id"> {{ c[id].Label }} </ng-template>
-
-<ng-template #header_Label2>{{ ('IfrsConcepts_Label' | translate) + ws.secondaryPostfix }}</ng-template>
-<ng-template #row_Label2 let-id="id"> {{ c[id].Label2 }} </ng-template>
-
 <ng-template #header_Id>{{ 'Code' | translate }}</ng-template>
 <ng-template #row_Id let-id="id"> {{ c[id].Id }} </ng-template>
 

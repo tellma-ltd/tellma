@@ -5,7 +5,7 @@
     <!-- Breadcrumb -->
     <div class="col-12 p-1">
       <ul class="breadcrumb mb-0">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item" style="z-index: 1">
           <a class="text-primary" [routerLink]="['..']">
             {{ masterCrumb }}
           </a>
@@ -31,7 +31,8 @@
       <!-- View Toolbar -->
       <div *ngIf="showViewToolbar">
         <!-- Edit -->
-        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="editTooltip" container="body" *ngIf="showEdit">
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="editTooltip" container="body"
+          *ngIf="showEdit">
           <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onEdit()" [disabled]="!canEdit">
             <fa-icon icon="pen"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Edit' | translate }}</span>
@@ -39,8 +40,8 @@
         </div>
 
         <!-- Create -->
-        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" *ngIf="showCreate"
-          container="body">
+        <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip"
+          *ngIf="showCreate" container="body">
           <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCreate()"
             [disabled]="!canCreate">
             <fa-icon icon="plus"></fa-icon>
@@ -64,7 +65,8 @@
               </div>
             </ng-container>
 
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body" *ngIf="showDelete">
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
+              *ngIf="showDelete">
               <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)"
                 [disabled]="!canDelete" *ngIf="showDelete">
                 {{ 'Delete' | translate }}
@@ -131,7 +133,7 @@
     <!-- Modal Breadcrumb -->
     <div class="p-2">
       <ul class="breadcrumb mb-0">
-        <li class="breadcrumb-item">
+        <li class="breadcrumb-item" style="z-index: 1">
           {{ masterCrumb }}
         </li>
         <li class="breadcrumb-item">

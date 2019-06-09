@@ -33,7 +33,6 @@ import {
   faAngleLeft,
   faAngleRight,
   faThLarge,
-  faList,
   faTrash,
   faSave,
   faTimes,
@@ -70,7 +69,10 @@ import {
   faArrowLeft,
   faArrowRight,
   faClipboard,
-  faProjectDiagram
+  faBars,
+  faTable,
+  faList,
+  faCodeBranch
 
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
@@ -101,12 +103,14 @@ import { RestrictedComponent } from './restricted/restricted.component';
 library.add(
   faExclamationTriangle, faSpinner, faSignInAlt, faSignOutAlt,
   faCheck, faPlus, faSyncAlt, faAngleDoubleLeft,
-  faAngleLeft, faAngleRight, faThLarge, faList, faPen, faTrash,
+  faAngleLeft, faAngleRight, faThLarge, faTable, faPen, faTrash,
   faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
   faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
   faSearch, faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
-  faTasks, faMale, faBuilding, faArrowLeft, faArrowRight, faProjectDiagram,
+  faTasks, faMale, faBuilding, faArrowLeft, faArrowRight, faBars,
 
+  faCodeBranch,
+  faList,
   faListUl,
   faMoneyCheck,
   faMoneyCheckAlt,

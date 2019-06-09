@@ -534,8 +534,8 @@ export class ApiService {
       paramsArray.push(`search=${encodeURIComponent(args.search)}`);
     }
 
-    if (!!args.orderBy) {
-      paramsArray.push(`orderBy=${args.orderBy}`);
+    if (!!args.orderby) {
+      paramsArray.push(`orderBy=${args.orderby}`);
       paramsArray.push(`desc=${!!args.desc}`);
     }
 

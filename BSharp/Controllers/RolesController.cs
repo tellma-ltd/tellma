@@ -191,16 +191,6 @@ MERGE INTO [dbo].[Roles] AS t
             return query;
         }
 
-        protected override ODataQuery<RoleForQuery, int?> IncludeInactive(ODataQuery<RoleForQuery, int?> query, bool inactive)
-        {
-            if (!inactive)
-            {
-                query.Filter("IsActive eq true");
-            }
-
-            return query;
-        }
-
         protected override async Task ValidateAsync(List<RoleForSave> entities)
         {
             // Hash the indices for performance

@@ -21,6 +21,18 @@ namespace BSharp.Services.OData
 
         public Type KeyType { get; set; }
 
+        // Dealing with expanding tree ancestors
+
+        /// <summary>
+        /// Set to true if this query is expanding the ancestors of nodes in the principal query
+        /// </summary>
+        public bool IsAncestorExpand { get; set; }
+
+        /// <summary>
+        /// If the query contains any tree entities with expanded parents, this collection will contain them
+        /// </summary>
+        public List<ArraySegment<string>> PathsToParentEntitiesWithExpandedAncestors { get; set; } = new List<ArraySegment<string>>();
+
         // The OData arguments
 
         public SelectExpression Select { get; set; } // Should NOT contain collection nav properties
@@ -118,6 +130,7 @@ namespace BSharp.Services.OData
         private string PrepareStatementAsPrincipal(
             Func<Type, string> sources,
             SqlStatementParameters ps,
+            bool isAncestorExpand,
             ArraySegment<string> pathToCollectionProperty,
             int currentUserId,
             TimeZoneInfo currentUserTimeZone)
@@ -128,7 +141,7 @@ namespace BSharp.Services.OData
             var joinSql = joinClause.ToSql(sources);
 
             // (2) Prepare the SELECT clause
-            SqlSelectClause selectClause = PreparePrincipalSelect(joinTree, pathToCollectionProperty);
+            SqlSelectClause selectClause = PrepareSelectAsPrincipal(joinTree, pathToCollectionProperty, isAncestorExpand);
             var selectSql = selectClause.ToSql();
 
             // (3) Prepare the inner join with the principal query (if any)
@@ -305,15 +318,27 @@ namespace BSharp.Services.OData
             if (!string.IsNullOrWhiteSpace(ForeignKeyToPrincipalQuery))
             {
                 var path = new string[0];
-                var join = joinTree[path];
                 AddSelect(joinTree.Symbol, path, ForeignKeyToPrincipalQuery);
+            }
+
+            // Deals with trees
+            foreach(var path in PathsToParentEntitiesWithExpandedAncestors)
+            {
+                var join = joinTree[path];
+                AddSelect(join.Symbol, path, "ParentId");
+            }
+
+            if(IsAncestorExpand)
+            {
+                var path = new string[0];
+                AddSelect(joinTree.Symbol, path, "ParentId");
             }
 
             // Change the hash set to a list so that the order is well defined
             return new SqlSelectClause(columns);
         }
 
-        private SqlSelectClause PreparePrincipalSelect(JoinTree joinTree, ArraySegment<string> pathToCollection)
+        private SqlSelectClause PrepareSelectAsPrincipal(JoinTree joinTree, ArraySegment<string> pathToCollection, bool isAncestorExpand)
         {
             // Take the segment without the last item
             var pathToCollectionEntity = new ArraySegment<string>(
@@ -330,7 +355,7 @@ namespace BSharp.Services.OData
 
             var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName)>
             {
-                (symbol, pathToCollectionEntity, "Id")
+                (symbol, pathToCollectionEntity, isAncestorExpand ? "Node" : "Id")
             };
 
             return new SqlSelectClause(columns);
@@ -381,12 +406,21 @@ namespace BSharp.Services.OData
             if (PrincipalQuery != null)
             {
                 // Get the inner sql and append 4 spaces before each line for aesthetics
-                string innerSql = PrincipalQuery.PrepareStatementAsPrincipal(sources, ps, PathToCollectionPropertyInPrincipal, currentUserId, currentUserTimeZone);
+                string innerSql = PrincipalQuery.PrepareStatementAsPrincipal(sources, ps, IsAncestorExpand, PathToCollectionPropertyInPrincipal, currentUserId, currentUserTimeZone);
                 innerSql = ODataTools.IndentLines(innerSql);
 
-                principalQuerySql = $@"INNER JOIN (
+                if(IsAncestorExpand)
+                {
+                    principalQuerySql = $@"INNER JOIN (
 {innerSql}
-) As S ON [S].[Id] = [P].[{ForeignKeyToPrincipalQuery}]";
+) As [S] ON [S].[Node].IsDescendantOf([P].[Node]) = 1 AND [S].[Node] <> [P].[Node]";
+                }
+                else
+                {
+                    principalQuerySql = $@"INNER JOIN (
+{innerSql}
+) As [S] ON [S].[Id] = [P].[{ForeignKeyToPrincipalQuery}]";
+                }
             }
 
             return principalQuerySql;

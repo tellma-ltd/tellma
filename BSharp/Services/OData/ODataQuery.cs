@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -276,10 +277,11 @@ namespace BSharp.Services.OData
                 ArraySegment<string> pathToCollectionPropertyInPrincipal = previousFullPath == null ? null : subPath;
                 Type keyType = type.GetProperty("Id").PropertyType;
 
-                // This loop retrieves the collection property
                 string foreignKeyToPrincipalQuery = null;
+                bool isAncestorExpand = false;
                 if (principalQuery != null)
                 {
+                    // This loop retrieves the collection property
                     var collectionProperty = principalQuery.ResultType.GetProperty(pathToCollectionPropertyInPrincipal[0]);
                     for (int i = 1; i < pathToCollectionPropertyInPrincipal.Count; i++)
                     {
@@ -287,17 +289,39 @@ namespace BSharp.Services.OData
                         collectionProperty = collectionProperty.PropertyType.GetProperty(step);
                     }
 
-                    foreignKeyToPrincipalQuery = collectionProperty.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
-                    if (string.IsNullOrWhiteSpace(foreignKeyToPrincipalQuery))
+                    if(collectionProperty.IsParent())
                     {
-                        // Programmer mistake
-                        throw new InvalidOperationException($"Navigation collection {collectionProperty.Name} on type {collectionProperty.DeclaringType} is not adorned with the associated foreign key");
+                        foreignKeyToPrincipalQuery = "ParentId";
+                        isAncestorExpand = true;
                     }
+                    else
+                    {
+                        // Must be a collection then
+                        foreignKeyToPrincipalQuery = collectionProperty.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
+                        if (string.IsNullOrWhiteSpace(foreignKeyToPrincipalQuery))
+                        {
+                            // Programmer mistake
+                            throw new InvalidOperationException($"Navigation collection {collectionProperty.Name} on type {collectionProperty.DeclaringType} is not adorned with the associated foreign key");
+                        }
+                    }                    
+                }
+
+                if(isAncestorExpand)
+                {
+                    // the path to parent entity is the path above minus the "Parent"
+                    var pathToParentEntity = new ArraySegment<string>(
+                        array: pathToCollectionPropertyInPrincipal.Array, 
+                        offset: 0, 
+                        count: pathToCollectionPropertyInPrincipal.Count - 1);
+
+                    // Adding this causes the principal query to always include ParentId in the select clause
+                    principalQuery.PathsToParentEntitiesWithExpandedAncestors.Add(pathToParentEntity);
                 }
 
                 var flatQuery = new ODataFlatQuery
                 {
                     PrincipalQuery = principalQuery,
+                    IsAncestorExpand = isAncestorExpand,
                     PathToCollectionPropertyInPrincipal = pathToCollectionPropertyInPrincipal,
                     ForeignKeyToPrincipalQuery = foreignKeyToPrincipalQuery,
                     ResultType = type,
@@ -313,7 +337,7 @@ namespace BSharp.Services.OData
                 var selectTree = PathTree.Build(typeof(T), selectExp.Select(e => e.Path));
                 foreach (var selectAtom in selectExp)
                 {
-                    // This breaks up the path into multiple segments along the one-to-many relationship boundaries
+                    // This breaks up the path into multiple segments along the one-to-many and child-parent relationship boundaries
                     var pathSegments = selectTree.GetSegments(selectAtom.Path);
                     ArraySegment<string> previousFullPath = null;
                     foreach (var (fullPath, subPath, type) in pathSegments.SkipLast(1))
@@ -557,8 +581,12 @@ namespace BSharp.Services.OData
                 // The result that will be returned at the end
                 try
                 {
+                    Stopwatch w1 = new Stopwatch();
+                    Stopwatch w2 = new Stopwatch();
+
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
+                        w1.Start();
                         foreach (var statement in statements)
                         {
                             var list = results[statement.Query];
@@ -569,12 +597,15 @@ namespace BSharp.Services.OData
                             // Loop over the result from the database
                             while (await reader.ReadAsync())
                             {
+                                w2.Start();
                                 var record = AddEntity(reader, entityDefs);
+                                w2.Stop();
                                 list.Add(record);
                             }
 
                             await reader.NextResultAsync();
                         }
+                        w1.Stop();
                     }
                 }
                 finally
@@ -658,7 +689,13 @@ namespace BSharp.Services.OData
                 // Here we populate the collection navigation properties after the simple properties have been populated
                 foreach (var (query, list) in results)
                 {
-                    if (query.PrincipalQuery == null)
+                    if(query.IsAncestorExpand)
+                    {
+                        // Nothing to do here since this isn't a collection navigation property
+                        // This is the Parent property which was already populated in the previous step
+                        continue;
+                    }
+                    else if (query.PrincipalQuery == null)
                     {
                         result = list.Cast<T>().ToList();
                     }
@@ -1004,13 +1041,24 @@ UNION
         /// </summary>
         private class PathTree : Dictionary<string, PathTree>
         {
+            /// <summary>
+            /// The type of the current step
+            /// </summary>
             public Type Type { get; set; }
 
+            /// <summary>
+            /// Indicates that the current step represents a list navigation property
+            /// </summary>
             public bool IsList { get; set; }
+
+            /// <summary>
+            /// Indicates that the current step represents a parent property in a tree data structure
+            /// </summary>
+            public bool IsParent { get; set; }
 
             public static PathTree Build(Type type, IEnumerable<string[]> paths)
             {
-                var root = new PathTree { Type = type, IsList = true };
+                var root = new PathTree { Type = type, IsList = true, IsParent = false };
 
                 foreach (var path in paths)
                 {
@@ -1025,13 +1073,15 @@ UNION
                                 throw new InvalidOperationException($"Property {prop.Name} does not exist on type {currentTree.Type}");
                             }
 
+                            var isParent = prop.Name == "Parent" && currentTree.Type.GetProperty("Node")?.PropertyType == typeof(HierarchyId);
                             var isList = prop.PropertyType.IsList();
                             var propType = isList ? prop.PropertyType.GenericTypeArguments[0] : prop.PropertyType;
 
                             currentTree[step] = new PathTree
                             {
                                 Type = propType,
-                                IsList = isList
+                                IsList = isList,
+                                IsParent = isParent
                             };
                         }
 
@@ -1062,7 +1112,7 @@ UNION
                     currentTree = currentTree[step];
                     count++;
 
-                    if (currentTree.IsList)
+                    if (currentTree.IsList || currentTree.IsParent)
                     {
                         var fullPath = new ArraySegment<string>(path, 0, offset + count);
                         var subPath = new ArraySegment<string>(path, offset, count);

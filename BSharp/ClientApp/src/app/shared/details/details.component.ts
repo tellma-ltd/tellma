@@ -626,7 +626,8 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
           // IF it's a new entity add it to the global state, (not the local one one even if inside a popup)
           if (isNew) {
-            this.globalState.insert([s.detailsId]);
+            const item = this.workspace.current[response.CollectionName][s.detailsId];
+            this.globalState.insert([item]);
           }
 
           if (this.mode === 'popup') {
@@ -769,7 +770,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   get total(): number {
-    return this.state.total;
+    return this.state.masterIds ? this.state.masterIds.length : this.state.total;
   }
 
   get order(): number {

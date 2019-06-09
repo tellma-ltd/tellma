@@ -9,11 +9,10 @@ import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
 import { addToWorkspace, downloadBlob } from '~/app/data/util';
-import { MasterDetailsStore, MasterStatus, WorkspaceService, NodeInfo } from '~/app/data/workspace.service';
+import { MasterDetailsStore, MasterStatus, WorkspaceService, NodeInfo, MasterDisplayMode } from '~/app/data/workspace.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
 
 enum SearchView {
-  tree = 'tree',
   tiles = 'tiles',
   table = 'table'
 }
@@ -64,7 +63,10 @@ export class MasterComponent implements OnInit, OnDestroy {
   tileTemplate: TemplateRef<any>;
 
   @Input()
-  treeNodeTemplate: TemplateRef<any>;
+  tableDescriptionColumnTemplate: TemplateRef<any>;
+
+  // @Input()
+  // treeNodeTemplate: TemplateRef<any>;
 
   @Input()
   tableColumnTemplates: {
@@ -94,6 +96,9 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   @Input()
   enableTreeView = false;
+
+  @Input()
+  inactiveFilter = 'IsActive eq true';
 
   @Input()
   multiselectActions: {
@@ -144,14 +149,13 @@ export class MasterComponent implements OnInit, OnDestroy {
   private localState = new MasterDetailsStore();  // Used in popup mode
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
-  private notifyTreeFetch$ = new Subject<NodeInfo>();
   private notifyDestruct$ = new Subject<void>();
   private _formatChoices: { name: string, value: any }[];
   private originalTableColumnPaths: string[];
   private _tableColumnPathsAndExtras: string[];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
-  public _searchView: SearchView;
+  public searchView: SearchView;
   public checked = {};
   public exportFormat: 'csv' | 'xlsx';
   public exportSkip = 0;
@@ -159,28 +163,6 @@ export class MasterComponent implements OnInit, OnDestroy {
   public exportErrorMessage: string;
   public actionErrorMessage: string;
   public actionValidationErrors: { [id: string]: string[] } = {};
-
-
-  public get searchView(): SearchView {
-    return this._searchView;
-  }
-
-  public set searchView(view: SearchView) {
-
-    if (this._searchView !== view) {
-      this._searchView = view;
-    }
-
-    if (this.alreadyInit && (this.showTableView || this.showTilesView) && !this.state.masterStatus) {
-      this.fetch();
-    }
-
-    if (this.alreadyInit && this.showTreeView && !this.state.treeStatus) {
-      this.treeFetch();
-    }
-  }
-
-
 
 
   ////////////////// TREE EXPERIMENT
@@ -192,14 +174,15 @@ export class MasterComponent implements OnInit, OnDestroy {
     return !parent || (parent.isExpanded && this.showTreeNode(parent));
   }
 
-  public get treeIds(): NodeInfo[] {
-    return this.state.treeIds;
+  public get treeNodes(): NodeInfo[] {
+    return this.state.treeNodes;
   }
 
   public onExpand(node: NodeInfo): void {
     node.isExpanded = !node.isExpanded;
-    if (node.isExpanded && node.status !== MasterStatus.loaded) {
-      this.treeFetch(node);
+    if (node.isExpanded && node.status !== MasterStatus.loaded &&
+      node.status !== MasterStatus.loading && !this.searchOrFilter) {
+      this.fetchNodeChildren(node);
     }
   }
 
@@ -227,23 +210,6 @@ export class MasterComponent implements OnInit, OnDestroy {
     return node.hasChildren;
   }
 
-  public get showTreeErrorMessage(): boolean {
-    return this.state.treeStatus === MasterStatus.error;
-  }
-
-  public get showTreeNoItemsFound(): boolean {
-    return this.state.treeStatus === MasterStatus.loaded &&
-      (!this.treeIds || this.treeIds.length === 0);
-  }
-
-  public get showTreeSpinner(): boolean {
-    return this.state.treeStatus === MasterStatus.loading;
-  }
-
-  public get treeErrorMessage(): string {
-    return this.state.treeErrorMessage;
-  }
-
   ////////////////// END - TREE EXPERIMENT
 
 
@@ -267,18 +233,12 @@ export class MasterComponent implements OnInit, OnDestroy {
     allSignals.pipe(
       switchMap(() => this.doFetch())
     ).subscribe();
-
-    // For refreshing the tree
-    this.notifyTreeFetch$.pipe(
-      switchMap(node => this.doTreeFetch(node))
-    ).subscribe();
   }
 
   ngOnInit() {
 
     // Default search view
-    this.searchView = this.enableTreeView ? SearchView.tree :
-      (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
+    this.searchView = (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
 
     if (!this.alreadyInit) { // called once
       // this will only work in screen mode
@@ -302,13 +262,13 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.actionValidationErrors = {};
     this.originalTableColumnPaths = null;
 
-    // Unless the data is already loaded, start loading
-    if (!this.showTreeView && this.state.masterStatus !== MasterStatus.loaded) {
-      this.fetch();
+    if (!this.state.displayMode) {
+      this.state.displayMode = this.enableTreeView ? MasterDisplayMode.tree : MasterDisplayMode.flat;
     }
 
-    if (this.showTreeView && this.state.treeStatus !== MasterStatus.loaded) {
-      this.treeFetch();
+    // Unless the data is already loaded, start loading
+    if (this.state.masterStatus !== MasterStatus.loaded) {
+      this.fetch();
     }
 
     this.alreadyInit = true;
@@ -317,15 +277,22 @@ export class MasterComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // This cancels any asynchronous backend calls
     this.notifyDestruct$.next();
+    this.cancelAllTreeQueries();
+  }
 
-    // All table nodes that are loading or error, are reset to null so
-    // they appear collapsed next time the screen is opened
-    if (!!this.state.treeIds) {
-      this.state.treeIds.forEach(node => {
+  private cancelAllTreeQueries(): void {
+    if (!!this.state.treeNodes) {
+      this.state.treeNodes.forEach(node => {
+
+        // All table nodes that are loading or error, are reset to null so
+        // they appear collapsed next time the screen is opened
         if (node.status !== MasterStatus.loaded) {
           node.status = null;
           node.isExpanded = false;
         }
+
+        // cancel any pending queries
+        node.notifyCancel$.next();
       });
     }
   }
@@ -336,35 +303,73 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   private doFetch(): Observable<void> {
 
+    // any currently running queries that are loading children of nodes need to be canceled
+    this.cancelAllTreeQueries();
+
     // Remove previous Ids from the store
     let s = this.state;
     s.masterIds = [];
+    s.treeNodes = [];
     s.detailsId = null; // clear the cached details item
     this.checked = {}; // clear all selection
     this.actionValidationErrors = {}; // clear validation errors
     s.masterStatus = MasterStatus.loading;
 
+    // compute the parameters
+    const isTree = this.isTreeMode;
+
+    const top = (isTree && !this.searchOrFilter) ? 2500 : this.PAGE_SIZE;
+    const skip = (isTree && !this.searchOrFilter) ? 0 : s.skip;
+    const orderby = isTree ? 'Node' : (!!s.orderBy ? (s.orderBy + (s.desc ? ' desc' : '')) : null);
+    const search = s.search;
+    const expand = isTree ? (!!this.expand ? this.expand + ',Parent' : 'Parent') : this.expand; // TODO include Parents properly
+
+    // compute the filter
+    let filter = this.filter();
+    if (isTree && !this.searchOrFilter) {
+      filter = 'Node childof null';
+    }
+
+    if (!s.inactive) {
+      const activeOnlyFilter = isTree ? `${this.inactiveFilter} or ActiveChildCount gt 0` : this.inactiveFilter;
+      if (!!filter) {
+        filter = `(${filter}) and (${activeOnlyFilter})`;
+      } else {
+        filter = activeOnlyFilter;
+      }
+    }
+
     // Retrieve the entities
     return this.crud.get({
-      top: this.PAGE_SIZE,
-      skip: s.skip,
-      orderBy: s.orderBy,
-      desc: s.desc,
-      search: s.search,
-      filter: this.filter(),
-      expand: this.expand,
-      inactive: s.inactive
+      top: top,
+      skip: skip,
+      orderby: orderby,
+      search: search,
+      filter: filter,
+      expand: expand
     }).pipe(
       tap((response: GetResponse<DtoForSaveKeyBase>) => {
         s = this.state; // get the source
         s.masterStatus = MasterStatus.loaded;
         s.top = response.Top;
         s.skip = response.Skip;
-        s.orderBy = response.OrderBy;
-        s.desc = response.Desc;
+        s.desc = !!response.OrderBy && response.OrderBy.endsWith(' desc');
+        s.orderBy = s.desc ? response.OrderBy.substring(0, response.OrderBy.length - ' desc'.length) : response.OrderBy;
         s.total = response.TotalCount;
         s.bag = response.Bag;
         s.masterIds = addToWorkspace(response, this.workspace);
+
+        if (this.isTreeMode) {
+          const collectionName = response.CollectionName;
+          const nodesDic: { [key: string]: NodeInfo } = {};
+          const list: NodeInfo[] = [];
+
+          // two recursive functions will efficiently do the deed
+          s.masterIds.forEach(id => this.addNodeToDictionary(id, collectionName, nodesDic));
+          s.masterIds.forEach(id => this.addNodeToList(id, nodesDic, list));
+
+          s.treeNodes = list;
+        }
       }),
       catchError((friendlyError) => {
         s = this.state; // get the source
@@ -375,83 +380,111 @@ export class MasterComponent implements OnInit, OnDestroy {
     );
   }
 
-  public treeFetch(node?: NodeInfo) {
-    this.notifyTreeFetch$.next(node);
+  private addNodeToList(id: string | number, nodesDic: { [key: string]: NodeInfo }, list: NodeInfo[]): NodeInfo {
+    const node = nodesDic[id];
+    if (!node.isAdded) {
+      if (!!node.parent) {
+        // Add all ancestors recursively
+        const parent = this.addNodeToList(node.parent.id, nodesDic, list);
+        parent.isExpanded = true;
+        parent.status = MasterStatus.loaded; // otherwise leaving the screen causes the node to collapse
+      }
+
+      list.push(node);
+      node.isAdded = true;
+    }
+
+    return node;
   }
 
-  private doTreeFetch(node?: NodeInfo): Observable<void> {
+  private addNodeToDictionary(id: string | number, collectionName: string, nodesDic: { [key: string]: NodeInfo }): NodeInfo {
+    const existing = nodesDic[id];
+    if (!!existing) {
+      return existing;
+    } else {
+      const item = this.workspace.current[collectionName][id];
+      const parent = !!item.ParentId ? this.addNodeToDictionary(item.ParentId, collectionName, nodesDic) : null;
 
-    const parentId = !!node ? `'${node.id}'` : 'null';
-    // Remove previous Ids from the store
+      const n = new NodeInfo();
+      n.id = id;
+      n.level = item.Level;
+      n.isExpanded = false;
+      n.hasChildren = this.state.inactive ? (item.ChildCount > 1) : (item.ActiveChildCount - (item.IsActive ? 1 : 0) > 0);
+      n.parent = parent;
+      n.status = null;
+
+      nodesDic[id] = n;
+      return n;
+    }
+  }
+
+  private fetchNodeChildren(node: NodeInfo): void {
+
+    node.notifyCancel$.next(); // cancel previous call
+    const parentId = node.id;
+
+    // capture the state object
     let s = this.state;
 
-    // Remove all the children, or the entire list if node == null
-    if (!node) {
-      s.treeIds = [];
-    } else {
-      // TODO: remove children of node
-    }
-    s.detailsId = null; // clear the cached details item
+    // Remove all the children
+    // TODO: remove children of node
 
-    // if there is another node loading, cancel that one
-    s.treeIds.forEach(n => {
-      if (n.status === MasterStatus.loading) {
-        n.status = null;
-        n.isExpanded = false;
-      }
-    });
+    // clear the cached details item
+    s.detailsId = null;
+    node.status = MasterStatus.loading;
 
-    if (!!node) {
-      node.status = MasterStatus.loading;
-    } else {
-      s.treeStatus = MasterStatus.loading;
+    let filter = `Node childof '${parentId}'`;
+    if (!s.inactive) {
+      const activeOnlyFilter = `${this.inactiveFilter} or ActiveChildCount gt 0`;
+      filter = `(${filter}) and (${activeOnlyFilter})`;
     }
 
     // Retrieve the entities
-    return this.crud.get({
-      top: 10000,
-      orderBy: 'Node',
-      filter: `Node childof ${parentId}`,
+    const crud = this.api.crudFactory(this.apiEndpoint, node.notifyCancel$);
+    crud.get({
+      top: 2500,
+      orderby: 'Node',
+      filter: filter,
       expand: this.expand
     }).pipe(
       tap((response: GetResponse<DtoForSaveKeyBase>) => {
         s = this.state; // get the source
-        if (!!node) {
-          node.status = MasterStatus.loaded;
-        } else {
-          s.treeStatus = MasterStatus.loaded;
-        }
-        const parentIndex = !!node ? s.treeIds.indexOf(node) + 1 : 0;
+
+        node.status = MasterStatus.loaded;
         const coll = this.workspace.current[response.CollectionName];
-        const children = addToWorkspace(response, this.workspace).map(id => {
+        const childrenIds = addToWorkspace(response, this.workspace);
+        const children = childrenIds.map(id => {
           const item = coll[id];
           const n = new NodeInfo();
           n.id = id;
           n.level = item.Level;
           n.isExpanded = false;
-          n.hasChildren = item.ChildCount - (item.IsActive ? 1 : 0) > 0;
+          n.hasChildren = this.state.inactive ? (item.ChildCount > 1) : (item.ActiveChildCount - (item.IsActive ? 1 : 0) > 0);
           n.parent = node;
           n.status = null;
 
           return n;
         });
 
-        const copy = s.treeIds.splice(0);
-        copy.splice(parentIndex, 0, ...children);
-        s.treeIds = copy;
+        // add the ids to to the tree nodes
+        const nodeParentIndex = s.treeNodes.indexOf(node) + 1;
+        const nodesCopy = s.treeNodes.splice(0);
+        nodesCopy.splice(nodeParentIndex, 0, ...children);
+        s.treeNodes = nodesCopy;
+
+        // add the ids to masterIds (for paging in details)
+        const masterParentIndex = s.masterIds.indexOf(node.id) + 1;
+        const masterIdsCopy = s.masterIds.splice(0);
+        masterIdsCopy.splice(masterParentIndex, 0, ...childrenIds);
+        s.masterIds = masterIdsCopy;
       }),
       catchError((friendlyError) => {
         s = this.state; // get the source
-        if (!!node) {
-          node.status = MasterStatus.error;
-          this.displayErrorModal(friendlyError.error);
-        } else {
-          s.treeStatus = MasterStatus.error;
-          s.treeErrorMessage = friendlyError.error;
-        }
+        node.status = MasterStatus.error;
+        this.displayErrorModal(friendlyError.error);
         return of(null);
       })
-    );
+    ).subscribe();
   }
 
 
@@ -584,15 +617,19 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   get searchOrFilter(): boolean {
-    return !!this.state.masterStatus && !!this.search || !!this.isAnyFilterChecked;
+    return !!this.search || !!this.isAnyFilterCheckedOtherThanInactive;
   }
 
-  get showTreeContainer(): boolean {
-    return this.state.treeStatus === MasterStatus.loaded && !!this.state.treeIds && this.state.treeIds.length > 0;
+  get showPagingControls(): boolean {
+    return this.isFlatMode || this.searchOrFilter;
   }
 
-  get showTreeView(): boolean {
-    return this.searchView === SearchView.tree && !this.searchOrFilter;
+  get isTreeMode(): boolean {
+    return this.state.displayMode === MasterDisplayMode.tree && (!this.state.orderBy || this.state.orderBy === 'Node');
+  }
+
+  get isFlatMode(): boolean {
+    return !this.isTreeMode; // this.state.displayMode === MasterDisplayMode.flat;
   }
 
   get showTilesView(): boolean {
@@ -600,7 +637,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   get showTableView(): boolean {
-    return this.searchView === SearchView.table || (!this.showTreeView && !this.showTilesView);
+    return this.searchView === SearchView.table;
   }
 
   get showErrorMessage(): boolean {
@@ -636,12 +673,18 @@ export class MasterComponent implements OnInit, OnDestroy {
     return this.mode === 'popup';
   }
 
-  onTreeView() {
-    if (this.searchView !== SearchView.tree) {
-      this.searchView = SearchView.tree;
-      if (this.isScreenMode) {
-        this.urlStateChange();
-      }
+  onTreeMode() {
+    if (this.state.displayMode !== MasterDisplayMode.tree) {
+      this.state.displayMode = MasterDisplayMode.tree;
+      this.state.orderBy = null;
+      this.fetch();
+    }
+  }
+
+  onFlatMode() {
+    if (this.state.displayMode !== MasterDisplayMode.flat) {
+      this.state.displayMode = MasterDisplayMode.flat;
+      this.fetch();
     }
   }
 
@@ -673,12 +716,8 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   onRefresh() {
     // The if statement to deal with incessant button clickers (Users who hit refresh repeatedly)
-    if ((this.showTilesView || this.showTableView) && this.state.masterStatus !== MasterStatus.loading) {
+    if (this.state.masterStatus !== MasterStatus.loading) {
       this.fetch();
-    }
-
-    if (this.showTreeView && this.state.treeStatus !== MasterStatus.loading) {
-      this.treeFetch();
     }
   }
 
@@ -761,10 +800,10 @@ export class MasterComponent implements OnInit, OnDestroy {
     // This returns an html percentage width based on the weights assigned to this column and all the other columns
 
     // Get the weight of this column
-    const weight = this.tableColumnTemplates[colPath].weight || 1;
+    const weight = colPath === '(Description)' ? 2 : this.tableColumnTemplates[colPath].weight || 1;
 
     // Get the total weight of the other columns
-    let totalWeight = 0;
+    let totalWeight = 2; // to account for the description column
     for (let i = 0; i < this.tableColumnPaths.length; i++) {
       const path = this.tableColumnPaths[i];
       if (this.tableColumnTemplates[path]) {
@@ -895,7 +934,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.crud.export({
       top: this.exportPageSize,
       skip: this.exportSkip,
-      orderBy: s.orderBy,
+      orderby: s.orderBy,
       desc: s.desc,
       search: s.search,
       filter: this.filter(),
@@ -924,15 +963,15 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   // Multiselect-related stuff
   public get canCheckAll(): boolean {
-    return this.masterIds.length > 0;
+    return this.sourceIds.length > 0;
   }
 
   public get areAllChecked(): boolean {
-    return this.masterIds.length > 0 && this.masterIds.every(id => !!this.checked[id]);
+    return this.sourceIds.length > 0 && this.sourceIds.every(id => !!this.checked[id]);
   }
 
   public get areAnyChecked(): boolean {
-    return this.masterIds.some(id => !!this.checked[id]);
+    return this.sourceIds.some(id => !!this.checked[id]);
   }
 
   public get checkedCount(): number {
@@ -941,7 +980,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   public get checkedIds(): (number | string)[] {
-    return this.masterIds.filter(id => !!this.checked[id]);
+    return this.sourceIds.filter(id => !!this.checked[id]);
   }
 
   onCheckAll() {
@@ -951,7 +990,15 @@ export class MasterComponent implements OnInit, OnDestroy {
 
     } else {
       // Check all
-      this.masterIds.forEach(id => this.checked[id] = true);
+      this.sourceIds.forEach(id => this.checked[id] = true);
+    }
+  }
+
+  get sourceIds(): (string | number)[] {
+    if (this.isTreeMode) {
+      return this.treeNodes.filter(node => this.showTreeNode(node)).map(node => node.id);
+    } else {
+      return this.masterIds;
     }
   }
 
@@ -993,7 +1040,7 @@ export class MasterComponent implements OnInit, OnDestroy {
         // Update the UI to reflect deletion of items
         this.state.delete(ids);
         this.checked = {};
-        if (this.masterIds.length === 0 && this.total > 0) {
+        if (this.sourceIds.length === 0 && this.total > 0) {
           // auto refresh if the user deleted the entire page
           this.fetch();
         }
@@ -1116,8 +1163,14 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   get isAnyFilterChecked(): boolean {
+    // when this is true the UI shows the red circle
     // This code checks whether any expression in any group is checked, also if include inactive is checked
-    return this.state.inactive || Object.keys(this.filterDefinition).some(groupName => {
+    return this.state.inactive || this.isAnyFilterCheckedOtherThanInactive;
+  }
+
+  get isAnyFilterCheckedOtherThanInactive(): boolean {
+    // when this is true, the way data is queried in tree view changes from paged to not paged
+    return Object.keys(this.filterDefinition).some(groupName => {
       const group = this.filterDefinition[groupName];
       return group.some(e => this.isFilterChecked(groupName, e.expression));
     });

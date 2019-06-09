@@ -57,16 +57,6 @@ namespace BSharp.Controllers
             return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
         }
 
-        protected override ODataQuery<CultureForQuery, string> IncludeInactive(ODataQuery<CultureForQuery, string> query, bool inactive)
-        {
-            if (!inactive)
-            {
-                query.Filter("IsActive eq true");
-            }
-
-            return query;
-        }
-
         protected override ODataQuery<CultureForQuery, string> Search(ODataQuery<CultureForQuery, string> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;

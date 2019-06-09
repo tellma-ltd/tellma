@@ -12,6 +12,8 @@ import { GlobalSettingsForClient } from './dto/global-settings';
 import { TenantForClient } from './dto/tenant';
 import { IfrsNote } from './dto/ifrs-note';
 import { ProductCategory } from './dto/product-category';
+import { Subject } from 'rxjs';
+import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
 
 export enum MasterStatus {
 
@@ -23,6 +25,15 @@ export enum MasterStatus {
 
   // The last fetch of data from the server completed with an error
   error = 3,
+}
+
+export enum MasterDisplayMode {
+
+  // shows a flat table in table view, and plain tiles in tiles view
+  flat = 1,
+
+  // shows a tree table in table view, and a tiles tree in tiles view
+  tree = 2,
 }
 
 export enum DetailsStatus {
@@ -247,6 +258,7 @@ export class Workspace {
 
 export class MasterDetailsStore {
 
+  displayMode: MasterDisplayMode;
   top = 40;
   skip = 0;
   search: string = null;
@@ -266,9 +278,7 @@ export class MasterDetailsStore {
   masterStatus: MasterStatus;
   errorMessage: string;
 
-  treeIds: NodeInfo[] = [];
-  treeStatus: MasterStatus;
-  treeErrorMessage: string;
+  treeNodes: NodeInfo[] = [];
 
   detailsId: string | number;
   detailsStatus: DetailsStatus;
@@ -278,12 +288,41 @@ export class MasterDetailsStore {
 
     this.total = Math.max(this.total - ids.length, 0);
     this.masterIds = this.masterIds.filter(e => ids.indexOf(e) === -1);
+    this.treeNodes = this.treeNodes.filter(node => ids.indexOf(node.id) === -1);
   }
 
-  public insert(ids: (string | number)[]) {
+  public update(ids: (string | number)[]) {
+    // TODO update tree locations if ParentId has changed
+  }
+
+  public insert(items: any[]) {
     // adds a newly created item in memory and updates the stats
+    const ids = items.map(e => e.Id);
     this.total = this.total + ids.length;
     this.masterIds = ids.concat(this.masterIds);
+
+    //// add it to tree nodes just in case
+    // items.forEach(item => {
+
+    //   const parent =
+    //   const parentIndex = !!item.ParentId ? this.treeNodes.findIndex(e => e.id === item.ParentId) : -1;
+    //   const parentNode = parentIndex >= 0 ? this.treeNodes[parentIndex] : null;
+
+    //   const n = new NodeInfo();
+    //   n.id = item.id;
+    //   n.level = item.Level;
+    //   n.isExpanded = false;
+    //   n.hasChildren = false;
+    //   n.parent = parentNode;
+    //   n.status = null;
+
+    //   if (!!parentNode && (!parentNode.hasChildren || parentNode.status === MasterStatus.loaded)) {
+    //     parentNode.hasChildren = true;
+
+    //   } else {
+    //     this.treeNodes.push(n); // with trees add at the end
+    //   }
+    // });
   }
 }
 
@@ -293,7 +332,9 @@ export class NodeInfo {
   isExpanded: boolean;
   hasChildren: boolean;
   parent: NodeInfo;
+  isAdded = false;
   status: MasterStatus;
+  notifyCancel$ = new Subject<void>(); // cancels calls on this node's children
 }
 
 // The Workspace of the application stores ALL application wide in-memory state that survives

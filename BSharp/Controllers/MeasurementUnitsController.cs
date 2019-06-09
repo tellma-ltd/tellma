@@ -189,16 +189,6 @@ MERGE INTO [dbo].MeasurementUnits AS t
             return query;
         }
 
-        protected override ODataQuery<MeasurementUnitForQuery, int?> IncludeInactive(ODataQuery<MeasurementUnitForQuery, int?> query, bool inactive)
-        {
-            if (!inactive)
-            {
-                query.Filter("IsActive eq true");
-            }
-
-            return query;
-        }
-
         protected override async Task ValidateAsync(List<MeasurementUnitForSave> entities)
         {
             // Hash the indices for performance

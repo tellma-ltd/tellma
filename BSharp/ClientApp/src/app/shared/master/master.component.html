@@ -127,7 +127,7 @@
         </button>
 
         <!-- Paging -->
-        <ng-container *ngIf="!showTreeView">
+        <ng-container *ngIf="showPagingControls">
           <div class="d-inline small mr-2 ml-2">
             <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span>
             </span>
@@ -143,14 +143,24 @@
           </button>
         </ng-container>
 
+        <!-- Flat/Tree Toggle -->
+        <div class="btn-group btn-group-toggle b-toolbar-button" *ngIf="enableTree">
+          <label class="btn btn-sm btn-light b-pointer" [class.active]="isTreeMode" title="{{ 'Tree' | translate }}"
+            (click)="onTreeMode()">
+            <input type="radio" name="displayMode">
+            <fa-icon icon="code-branch" rotate="90"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Tree' | translate }}</span>
+          </label>
+          <label class="btn btn-sm btn-light b-pointer" [class.active]="isFlatMode" title="{{ 'Flat' | translate }}"
+            (click)="onFlatMode()">
+            <input type="radio" name="displayMode">
+            <fa-icon icon="bars"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'List' | translate }}</span>
+          </label>
+        </div>
 
         <!-- Tiles/Table Toggle -->
         <div class="btn-group btn-group-toggle b-toolbar-button">
-          <label class="btn btn-sm btn-light b-pointer" [class.active]="showTreeView" title="{{ 'Tree' | translate }}"
-            (click)="onTreeView()" *ngIf="enableTree && !searchOrFilter">
-            <input type="radio" name="searchView">
-            <fa-icon icon="project-diagram"></fa-icon>
-          </label>
           <label class="btn btn-sm btn-light b-pointer" [class.active]="showTilesView" title="{{ 'Tiles' | translate }}"
             (click)="onTilesView()">
             <input type="radio" name="searchView">
@@ -159,7 +169,7 @@
           <label class="btn btn-sm btn-light b-pointer" [class.active]="showTableView" title="{{ 'Table' | translate }}"
             (click)="onTableView()">
             <input type="radio" name="searchView">
-            <fa-icon icon="list" [flip]="flip"></fa-icon>
+            <fa-icon icon="table" [flip]="flip"></fa-icon>
           </label>
         </div>
       </div>
@@ -212,162 +222,167 @@
   <div class="row b-rest-of-screen bg-light">
     <div class="w-100">
 
-      <!-- Tree View -->
-      <ng-container *ngIf="showTreeView">
-        <div class="mb-3">
-          <table class="table table-hover3 table-sm bg-white border-bottom text-nowrap" *ngIf="showTreeContainer">
-             <tbody>
-              <tr [class.d-none]="!showTreeNode(node)" [class.b-highlight]="isRecentlyViewed(node.id)"
-                *ngFor="let node of treeIds">
-                <td class="text-truncate">
-                  <div class="d-flex" [style.padding-left]="paddingLeft(node)"
-                    [style.padding-right]="paddingRight(node)">
-                    <!-- Expand button -->
-                    <button class="border-0 px-2 mx-2" style="background-color: transparent"
-                      [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
-                      (click)="onExpand(node)">
-                      <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)"></fa-icon>
-                    </button>
-                    <!-- Expand button -->
-                    <div class="b-pointer" (click)="onSelect(node.id)">
-                      <ng-container *ngTemplateOutlet="treeNodeTemplate;context: { node : node }">
-                      </ng-container>
-                    </div>
-                    <b-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></b-spinner>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="w-100 mb-3" *ngIf="!showTreeContainer">
-          <!-- Only for margin -->
-        </div>
-
-        <!-- Spinner -->
-        <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showTreeSpinner">
-          <b-spinner [scale]="2"></b-spinner>
-        </div>
-
-        <!-- No items found -->
-        <div class="w-100 pl-3 pr-3" *ngIf="showTreeNoItemsFound">
-          {{ 'NoItemsFound' | translate }}
-        </div>
-
-        <!-- Error message -->
-        <b-error-message *ngIf="showTreeErrorMessage">
-          {{ treeErrorMessage }}
-        </b-error-message>
-      </ng-container>
-
-      <ng-container *ngIf="!showTreeView">
-
-        <!-- Tiles -->
-        <div class="col-12" *ngIf="showTilesView">
-          <div class="row mb-3">
-            <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode"
-              *ngFor="let id of masterIds; trackBy: trackById">
-              <div class="p-2 bg-white b-tile" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
-                <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
-                </ng-container>
-              </div>
+      <!-- Tiles -->
+      <div class="col-12" *ngIf="showTilesView">
+        <div class="row mb-3">
+          <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode"
+            *ngFor="let id of masterIds; trackBy: trackById">
+            <div class="p-2 bg-white b-tile" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
+              <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
+              </ng-container>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Table: using the Angular CDK -->
-        <div class="w-100 table-responsive" *ngIf="showTableView">
-          <table class="table table-hover table-sm table-striped bg-white border-bottom b-master-table text-nowrap"
-            cdk-table [dataSource]="masterIds" [trackBy]="trackById">
+      <!-- Table -->
+      <div class="w-100 table-responsive" *ngIf="showTableView">
+        <table class="table table-hover table-sm bg-white border-bottom b-master-table text-nowrap" [class.table-striped]="isFlatMode">
+          <thead>
+            <tr [class.dropup]="desc">
 
-            <!-- The only purpose of this invisible TR element is to suppress VS warnings -->
-            <tr style="display:none!important">
-
-
-              <!-- Column definitions -->
-              <ng-container cdkColumnDef="multiselect">
-
-                <!-- Checkboxes column -->
-                <th class="b-multiselect-th" cdk-header-cell *cdkHeaderCellDef>
-                  <div class="ml-2 mr-2">
-                    <div class="custom-control custom-checkbox b-labelless-checkbox">
-                      <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
-                        (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
-                      <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
-                    </div>
+              <!-- Checkboxes -->
+              <th class="b-multiselect-th">
+                <div class="ml-2 mr-2">
+                  <div class="custom-control custom-checkbox b-labelless-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
+                      (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
+                    <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
                   </div>
-                </th>
-                <td cdk-cell *cdkCellDef="let id">
-                  <div class="ml-2 mr-2">
+                </div>
+              </th>
 
-                    <!-- checkbox -->
-                    <div class="custom-control custom-checkbox b-labelless-checkbox d-inline">
-                      <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
-                      <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
-                    </div>
-                  </div>
-                </td>
-              </ng-container>
+              <!-- Errors -->
+              <th class="b-multiselect-th px-0">
+              </th>
 
-              <ng-container cdkColumnDef="errors">
-                <!-- Errors -->
-                <th class="b-multiselect-th pl-0 pr-0" cdk-header-cell *cdkHeaderCellDef>
-                </th>
-                <td class="pl-0 pr-0" cdk-cell *cdkCellDef="let id">
-
-                  <!-- Validation errors -->
-                  <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">
-                    <fa-icon class="text-danger" icon="exclamation-triangle"
-                      ngbPopover="{{ actionValidationErrors[id] }}" triggers="mouseenter:mouseleave"
-                      [placement]="errorPopoverPlacement"></fa-icon>
-                  </div>
-                </td>
-              </ng-container>
+              <!-- Description -->
+              <th class="b-pointer" [style.width]="colWidth('(Description)')">
+                {{ 'Description' | translate }}
+              </th>
 
               <!-- Custom feature columns -->
-              <ng-container *ngFor="let colPath of tableColumnPaths">
-                <ng-container cdkColumnDef="{{colPath}}">
-
-                  <!-- Column header -->
-                  <th class="b-pointer" [style.width]="colWidth(colPath)" [class.dropdown-toggle]="orderBy === colPath"
-                    cdk-header-cell *cdkHeaderCellDef (click)="onOrderBy(colPath)">
-                    <ng-content *ngTemplateOutlet="tableColumnTemplates[colPath].headerTemplate">
-                    </ng-content>
-                  </th>
-
-                  <!-- Column rows -->
-                  <td class="b-pointer" cdk-cell *cdkCellDef="let id" (click)="onSelect(id)">
-                    <ng-container *ngTemplateOutlet="tableColumnTemplates[colPath].rowTemplate;context: { id: id }">
-                    </ng-container>
-                  </td>
-                </ng-container>
-              </ng-container>
+              <th class="b-pointer" *ngFor="let colPath of tableColumnPaths" [style.width]="colWidth(colPath)"
+                [class.dropdown-toggle]="orderBy === colPath" (click)="onOrderBy(colPath)">
+                <ng-content *ngTemplateOutlet="tableColumnTemplates[colPath].headerTemplate">
+                </ng-content>
+              </th>
             </tr>
+          </thead>
+          <tbody>
 
-            <!-- Row definitions -->
-            <tr cdk-header-row *cdkHeaderRowDef="tableColumnPathsAndExtras" [class.dropup]="desc"></tr>
-            <tr cdk-row *cdkRowDef="let id; columns: tableColumnPathsAndExtras"
-              [class.b-highlight]="isRecentlyViewed(id)"></tr>
+            <!-- Flat -->
+            <ng-container *ngIf="isFlatMode">
+              <tr *ngFor="let id of masterIds" [class.b-highlight]="isRecentlyViewed(id)">
 
-          </table>
-        </div>
+                <!-- Checkboxes -->
+                <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: id }">
+                </ng-content>
 
-        <!-- Spinner -->
-        <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner">
-          <b-spinner [scale]="2"></b-spinner>
-        </div>
+                <!-- Errors -->
+                <ng-content *ngTemplateOutlet="errorsColumn;context: { id: id }">
+                </ng-content>
 
-        <!-- No items found -->
-        <div class="w-100 pl-3 pr-3" *ngIf="showNoItemsFound">
-          {{ 'NoItemsFound' | translate }}
-        </div>
+                <!-- Description -->
+                <td class="b-pointer" (click)="onSelect(id)">
+                  <ng-content *ngTemplateOutlet="tableDescriptionColumnTemplate;context: { id: id }">
+                  </ng-content>
+                </td>
 
-        <!-- Error message -->
-        <b-error-message *ngIf="showErrorMessage">
-          {{ errorMessage }}
-        </b-error-message>
-      </ng-container>
+                <!-- Column rows -->
+                <ng-content *ngTemplateOutlet="selectColumns;context: { id: id }">
+                </ng-content>
+
+              </tr>
+            </ng-container>
+
+            <!-- Tree -->
+            <ng-container *ngIf="isTreeMode">
+              <tr *ngFor="let node of treeNodes" [class.d-none]="!showTreeNode(node)" [class.b-highlight]="isRecentlyViewed(node.id)">
+
+                <!-- Checkboxes -->
+                <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: node.id }">
+                </ng-content>
+
+                <!-- Errors -->
+                <ng-content *ngTemplateOutlet="errorsColumn;context: { id: node.id }">
+                </ng-content>
+
+                <!-- Description -->
+                <td class="px-0">
+                  <div class="d-flex" [style.padding-left]="paddingLeft(node)" [style.padding-right]="paddingRight(node)">
+                    <!-- Expand button -->
+                    <button class="border-0 px-2 mx-2" style="background-color: transparent; margin: -2px 0" [style.opacity]="!hasChildren(node) ? 0 : 1"
+                     [disabled]="!hasChildren(node)" (click)="onExpand(node)">
+                      <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)"></fa-icon>
+                    </button>
+                    <!-- Expand button -->
+                    <div class="b-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"  (click)="onSelect(node.id)">
+                      <ng-content *ngTemplateOutlet="tableDescriptionColumnTemplate;context: { id: node.id }">
+                      </ng-content>
+                      <b-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></b-spinner>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Column rows -->
+                <ng-content *ngTemplateOutlet="selectColumns;context: { id: node.id }">
+                </ng-content>
+
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Template reused in both tree and flat tables -->
+      <ng-template #checkboxesColumn let-id="id">
+        <td>
+          <div class="ml-2 mr-2">
+
+            <!-- checkbox -->
+            <div class="custom-control custom-checkbox b-labelless-checkbox d-inline">
+              <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
+              <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
+            </div>
+          </div>
+        </td>
+      </ng-template>
+
+      <!-- Template reused in both tree and flat tables -->
+      <ng-template #errorsColumn let-id="id">
+        <td class="pl-0 pr-0">
+
+          <!-- Validation errors -->
+          <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">
+            <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}"
+              triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement"></fa-icon>
+          </div>
+        </td>
+      </ng-template>
+
+      <!-- Template reused in both tree and flat tables -->
+      <ng-template #selectColumns let-id="id">
+        <td class="b-pointer" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
+          <ng-container *ngTemplateOutlet="tableColumnTemplates[colPath].rowTemplate;context: { id: id }">
+          </ng-container>
+        </td>
+      </ng-template>
+
+      <!-- Spinner -->
+      <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner">
+        <b-spinner [scale]="2"></b-spinner>
+      </div>
+
+      <!-- No items found -->
+      <div class="w-100 pl-3 pr-3" *ngIf="showNoItemsFound">
+        {{ 'NoItemsFound' | translate }}
+      </div>
+
+      <!-- Error message -->
+      <b-error-message *ngIf="showErrorMessage">
+        {{ errorMessage }}
+      </b-error-message>
     </div>
   </div>
 </div>

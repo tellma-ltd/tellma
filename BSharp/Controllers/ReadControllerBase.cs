@@ -103,9 +103,6 @@ namespace BSharp.Controllers
             // Apply read permissions
             query = await ApplyReadPermissionsCriteria(query, permissions);
 
-            // Include inactive
-            query = IncludeInactive(query, inactive: args.Inactive);
-
             // Search
             query = Search(query, args, permissions);
 
@@ -363,11 +360,6 @@ namespace BSharp.Controllers
 
             return Task.FromResult(query);
         }
-
-        /// <summary>
-        /// Includes or excludes inactive items from the query depending on the boolean switch supplied
-        /// </summary>
-        protected abstract ODataQuery<TDtoForQuery, TKey> IncludeInactive(ODataQuery<TDtoForQuery, TKey> query, bool inactive);
 
         /// <summary>
         /// Applies the search argument, which is handled differently in every controller

@@ -181,16 +181,6 @@ MERGE INTO [dbo].[IfrsConcepts] AS t
             return query;
         }
 
-        protected override ODataQuery<IfrsNoteForQuery, string> IncludeInactive(ODataQuery<IfrsNoteForQuery, string> query, bool inactive)
-        {
-            if (!inactive)
-            {
-                query.Filter("IsActive eq true");
-            }
-
-            return query;
-        }
-
         protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<IfrsNote> response, ExportArguments args)
         {
             throw new NotImplementedException();

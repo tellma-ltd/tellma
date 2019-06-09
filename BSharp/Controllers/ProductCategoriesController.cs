@@ -192,16 +192,6 @@ MERGE INTO [dbo].[ProductCategories] AS t
             return query;
         }
 
-        protected override ODataQuery<ProductCategoryForQuery, int?> IncludeInactive(ODataQuery<ProductCategoryForQuery, int?> query, bool inactive)
-        {
-            if (!inactive)
-            {
-                query.Filter("IsActive eq true");
-            }
-
-            return query;
-        }
-
         protected override async Task ValidateAsync(List<ProductCategoryForSave> entities)
         {
             // Hash the indices for performance

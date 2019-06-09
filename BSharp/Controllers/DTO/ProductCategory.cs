@@ -43,6 +43,9 @@ namespace BSharp.Controllers.DTO
         public short? Level { get; set; }
 
         [BasicField]
+        public int? ActiveChildCount { get; set; }
+
+        [BasicField]
         public int? ChildCount { get; set; }
 
         [BasicField]

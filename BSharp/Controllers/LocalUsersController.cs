@@ -421,16 +421,6 @@ namespace BSharp.Controllers
             return query;
         }
 
-        protected override ODataQuery<LocalUserForQuery, int?> IncludeInactive(ODataQuery<LocalUserForQuery, int?> query, bool inactive)
-        {
-            if (!inactive)
-            {
-                query.Filter("IsActive eq true");
-            }
-
-            return query;
-        }
-
         protected override async Task ValidateAsync(List<LocalUserForSave> entities)
         {
             // For changing pictures, only one user at a time is allowed

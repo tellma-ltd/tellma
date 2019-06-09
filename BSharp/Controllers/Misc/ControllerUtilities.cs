@@ -351,7 +351,8 @@ SELECT * FROM (
 
                     case nameof(ProductCategoryForQuery):
                         return @"(SELECT [Q].*,
-    (SELECT COUNT(*) FROM [dbo].[ProductCategories] WHERE [Node].GetAncestor(1) = [Q].[Node]) As [ChildCount]
+    (SELECT COUNT(*) FROM [dbo].[ProductCategories] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([Q].[Node]) = 1) As [ActiveChildCount],
+    (SELECT COUNT(*) FROM [dbo].[ProductCategories] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount]
 FROM [dbo].[ProductCategories] As [Q])";
 
                     case nameof(IfrsNoteForQuery):
@@ -363,7 +364,8 @@ FROM [dbo].[ProductCategories] As [Q])";
 	[N].[IsAggregate],
 	[N].[ForDebit],
 	[N].[ForCredit],
-	(SELECT COUNT(*) FROM [dbo].[IfrsNotes] As [NI] JOIN [dbo].[IfrsConcepts] As [CI] ON [CI].[Id] = [NI].[Id] WHERE [CI].[IsActive] = 1 AND [NI].[Node].IsDescendantOf([N].[Node]) = 1) As [ChildCount],
+	(SELECT COUNT(*) FROM [dbo].[IfrsNotes] As [NI] JOIN [dbo].[IfrsConcepts] As [CI] ON [CI].[Id] = [NI].[Id] WHERE [CI].[IsActive] = 1 AND [NI].[Node].IsDescendantOf([N].[Node]) = 1) As [ActiveChildCount],
+	(SELECT COUNT(*) FROM [dbo].[IfrsNotes] As [NI] JOIN [dbo].[IfrsConcepts] As [CI] ON [CI].[Id] = [NI].[Id] WHERE [NI].[Node].IsDescendantOf([N].[Node]) = 1) As [ChildCount],
 	(SELECT [Id] FROM [dbo].[IfrsNotes] WHERE [N].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsConcepts] As [C] JOIN [dbo].[IfrsNotes] As [N] ON [C].[Id] = [N].[Id])";
 

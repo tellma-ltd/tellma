@@ -1,7 +1,7 @@
 export class GetArguments {
   top?: number;
   skip?: number;
-  orderBy?: string;
+  orderby?: string;
   desc?: boolean;
   search?: string;
   filter?: string;

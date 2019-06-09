@@ -14,6 +14,9 @@ namespace BSharp.Controllers.DTO
         public string ParentId { get; set; }
 
         [BasicField]
+        public int? ActiveChildCount { get; set; }
+
+        [BasicField]
         public int? ChildCount { get; set; }
 
         [Display(Name = "IfrsNotes_IsAggregate")]

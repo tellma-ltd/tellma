@@ -78,11 +78,6 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override ODataQuery<TranslationForQuery, string> IncludeInactive(ODataQuery<TranslationForQuery, string> query, bool inactive)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override Task<List<string>> PersistAsync(List<TranslationForSave> entitiesAndMasks, SaveArguments args)
         {
             throw new NotImplementedException();

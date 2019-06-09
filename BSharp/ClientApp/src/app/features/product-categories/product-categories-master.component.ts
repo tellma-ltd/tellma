@@ -15,7 +15,7 @@ export class ProductCategoriesMasterComponent extends MasterBaseComponent {
 
   private productCategoriesApi = this.api.productCategoriesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Parent';
+  public expand = '';
 
   constructor(private workspace: WorkspaceService, private api: ApiService) {
     super();
