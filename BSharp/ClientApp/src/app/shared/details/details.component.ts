@@ -624,10 +624,13 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
           const s = this.state;
           s.detailsId = addToWorkspace(response, this.workspace)[0];
 
-          // IF it's a new entity add it to the global state, (not the local one one even if inside a popup)
+          // IF it's a new entity add it to the global state, (not the local one even if inside a popup)
+          const entityWs = this.workspace.current[response.CollectionName];
           if (isNew) {
-            const item = this.workspace.current[response.CollectionName][s.detailsId];
-            this.globalState.insert([item]);
+            this.globalState.insert([s.detailsId], entityWs);
+          } else {
+            const oldEntity = JSON.parse(this._viewModelJson);
+            this.globalState.update(oldEntity, entityWs);
           }
 
           if (this.mode === 'popup') {
@@ -699,7 +702,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.crud.delete([id]).subscribe(
       () => {
         // remove from master and total of the global state
-        this.globalState.delete([id]);
+        this.globalState.delete([id], this.workspace.current[this.globalState.collectionName]);
 
         // after a successful delete navigate back to the master
         this.router.navigate(['..'], { relativeTo: this.route });
@@ -770,7 +773,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   get total(): number {
-    return this.state.masterIds ? this.state.masterIds.length : this.state.total;
+    return this.state.total;
   }
 
   get order(): number {

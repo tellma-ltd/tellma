@@ -9,13 +9,21 @@ import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
 import { addToWorkspace, downloadBlob } from '~/app/data/util';
-import { MasterDetailsStore, MasterStatus, WorkspaceService, NodeInfo, MasterDisplayMode } from '~/app/data/workspace.service';
+import {
+  MasterDetailsStore,
+  MasterStatus,
+  WorkspaceService,
+  NodeInfo,
+  MasterDisplayMode,
+  TreeRefreshMode
+} from '~/app/data/workspace.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
 
 enum SearchView {
   tiles = 'tiles',
   table = 'table'
 }
+
 
 @Component({
   selector: 'b-master',
@@ -145,7 +153,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   @ViewChild('errorModal')
   public errorModal: TemplateRef<any>;
 
-  private PAGE_SIZE = 40;
+  private PAGE_SIZE = 25;
   private localState = new MasterDetailsStore();  // Used in popup mode
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
@@ -292,7 +300,9 @@ export class MasterComponent implements OnInit, OnDestroy {
         }
 
         // cancel any pending queries
-        node.notifyCancel$.next();
+        if (!!node.notifyCancel$) {
+          node.notifyCancel$.next();
+        }
       });
     }
   }
@@ -308,7 +318,7 @@ export class MasterComponent implements OnInit, OnDestroy {
 
     // Remove previous Ids from the store
     let s = this.state;
-    s.masterIds = [];
+    s.flatIds = [];
     s.treeNodes = [];
     s.detailsId = null; // clear the cached details item
     this.checked = {}; // clear all selection
@@ -320,7 +330,7 @@ export class MasterComponent implements OnInit, OnDestroy {
 
     const top = (isTree && !this.searchOrFilter) ? 2500 : this.PAGE_SIZE;
     const skip = (isTree && !this.searchOrFilter) ? 0 : s.skip;
-    const orderby = isTree ? 'Node' : (!!s.orderBy ? (s.orderBy + (s.desc ? ' desc' : '')) : null);
+    const orderby = isTree ? 'Node' : (!!s.orderBy && s.orderBy !== 'Node' ? (s.orderBy + (s.desc ? ' desc' : '')) : null);
     const search = s.search;
     const expand = isTree ? (!!this.expand ? this.expand + ',Parent' : 'Parent') : this.expand; // TODO include Parents properly
 
@@ -353,22 +363,19 @@ export class MasterComponent implements OnInit, OnDestroy {
         s.masterStatus = MasterStatus.loaded;
         s.top = response.Top;
         s.skip = response.Skip;
-        s.desc = !!response.OrderBy && response.OrderBy.endsWith(' desc');
+        s.desc = !!response.OrderBy && response.OrderBy.toLowerCase().endsWith(' desc');
         s.orderBy = s.desc ? response.OrderBy.substring(0, response.OrderBy.length - ' desc'.length) : response.OrderBy;
         s.total = response.TotalCount;
         s.bag = response.Bag;
-        s.masterIds = addToWorkspace(response, this.workspace);
+        s.collectionName = response.CollectionName;
 
+        // add to the relevant collection depending on mode
         if (this.isTreeMode) {
-          const collectionName = response.CollectionName;
-          const nodesDic: { [key: string]: NodeInfo } = {};
-          const list: NodeInfo[] = [];
-
-          // two recursive functions will efficiently do the deed
-          s.masterIds.forEach(id => this.addNodeToDictionary(id, collectionName, nodesDic));
-          s.masterIds.forEach(id => this.addNodeToList(id, nodesDic, list));
-
-          s.treeNodes = list;
+          const ids = addToWorkspace(response, this.workspace);
+          const entityWs = this.workspace.current[response.CollectionName];
+          s.updateTreeNodes(ids, entityWs, TreeRefreshMode.cleanSlate, this.searchOrFilter);
+        } else {
+          s.flatIds = addToWorkspace(response, this.workspace);
         }
       }),
       catchError((friendlyError) => {
@@ -380,58 +387,22 @@ export class MasterComponent implements OnInit, OnDestroy {
     );
   }
 
-  private addNodeToList(id: string | number, nodesDic: { [key: string]: NodeInfo }, list: NodeInfo[]): NodeInfo {
-    const node = nodesDic[id];
-    if (!node.isAdded) {
-      if (!!node.parent) {
-        // Add all ancestors recursively
-        const parent = this.addNodeToList(node.parent.id, nodesDic, list);
-        parent.isExpanded = true;
-        parent.status = MasterStatus.loaded; // otherwise leaving the screen causes the node to collapse
-      }
+  private fetchNodeChildren(parentNode: NodeInfo): void {
 
-      list.push(node);
-      node.isAdded = true;
-    }
-
-    return node;
-  }
-
-  private addNodeToDictionary(id: string | number, collectionName: string, nodesDic: { [key: string]: NodeInfo }): NodeInfo {
-    const existing = nodesDic[id];
-    if (!!existing) {
-      return existing;
+    if (!parentNode.notifyCancel$) {
+      parentNode.notifyCancel$ = new Subject<void>();
     } else {
-      const item = this.workspace.current[collectionName][id];
-      const parent = !!item.ParentId ? this.addNodeToDictionary(item.ParentId, collectionName, nodesDic) : null;
-
-      const n = new NodeInfo();
-      n.id = id;
-      n.level = item.Level;
-      n.isExpanded = false;
-      n.hasChildren = this.state.inactive ? (item.ChildCount > 1) : (item.ActiveChildCount - (item.IsActive ? 1 : 0) > 0);
-      n.parent = parent;
-      n.status = null;
-
-      nodesDic[id] = n;
-      return n;
+      parentNode.notifyCancel$.next(); // cancel previous call
     }
-  }
 
-  private fetchNodeChildren(node: NodeInfo): void {
+    const parentId = parentNode.id;
 
-    node.notifyCancel$.next(); // cancel previous call
-    const parentId = node.id;
-
-    // capture the state object
+    // capture the state object and clear the details object
     let s = this.state;
-
-    // Remove all the children
-    // TODO: remove children of node
-
-    // clear the cached details item
     s.detailsId = null;
-    node.status = MasterStatus.loading;
+
+    // show rotator next to the expanded item
+    parentNode.status = MasterStatus.loading;
 
     let filter = `Node childof '${parentId}'`;
     if (!s.inactive) {
@@ -440,7 +411,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     }
 
     // Retrieve the entities
-    const crud = this.api.crudFactory(this.apiEndpoint, node.notifyCancel$);
+    const crud = this.api.crudFactory(this.apiEndpoint, parentNode.notifyCancel$);
     crud.get({
       top: 2500,
       orderby: 'Node',
@@ -449,38 +420,18 @@ export class MasterComponent implements OnInit, OnDestroy {
     }).pipe(
       tap((response: GetResponse<DtoForSaveKeyBase>) => {
         s = this.state; // get the source
+        s.collectionName = response.CollectionName;
 
-        node.status = MasterStatus.loaded;
-        const coll = this.workspace.current[response.CollectionName];
-        const childrenIds = addToWorkspace(response, this.workspace);
-        const children = childrenIds.map(id => {
-          const item = coll[id];
-          const n = new NodeInfo();
-          n.id = id;
-          n.level = item.Level;
-          n.isExpanded = false;
-          n.hasChildren = this.state.inactive ? (item.ChildCount > 1) : (item.ActiveChildCount - (item.IsActive ? 1 : 0) > 0);
-          n.parent = node;
-          n.status = null;
-
-          return n;
-        });
-
-        // add the ids to to the tree nodes
-        const nodeParentIndex = s.treeNodes.indexOf(node) + 1;
-        const nodesCopy = s.treeNodes.splice(0);
-        nodesCopy.splice(nodeParentIndex, 0, ...children);
-        s.treeNodes = nodesCopy;
-
-        // add the ids to masterIds (for paging in details)
-        const masterParentIndex = s.masterIds.indexOf(node.id) + 1;
-        const masterIdsCopy = s.masterIds.splice(0);
-        masterIdsCopy.splice(masterParentIndex, 0, ...childrenIds);
-        s.masterIds = masterIdsCopy;
+        // Hide the rotator in the parent
+        parentNode.status = MasterStatus.loaded;
+        const ids = addToWorkspace(response, this.workspace);
+        const entityWs = this.workspace.current[response.CollectionName];
+        s.updateTreeNodes(ids, entityWs, TreeRefreshMode.preserveExpansions);
+        s.total = s.total + ids.length;
       }),
       catchError((friendlyError) => {
         s = this.state; // get the source
-        node.status = MasterStatus.error;
+        parentNode.status = MasterStatus.error;
         this.displayErrorModal(friendlyError.error);
         return of(null);
       })
@@ -528,8 +479,8 @@ export class MasterComponent implements OnInit, OnDestroy {
     return this.state.errorMessage;
   }
 
-  get masterIds() {
-    return this.state.masterIds;
+  get flatIds() {
+    return this.state.flatIds;
   }
 
   get orderBy() {
@@ -625,7 +576,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   get isTreeMode(): boolean {
-    return this.state.displayMode === MasterDisplayMode.tree && (!this.state.orderBy || this.state.orderBy === 'Node');
+    return this.state.isTreeMode;
   }
 
   get isFlatMode(): boolean {
@@ -650,7 +601,7 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   get showNoItemsFound(): boolean {
     return this.state.masterStatus === MasterStatus.loaded &&
-      (!this.masterIds || this.masterIds.length === 0);
+      (!this.state.masterIds || this.state.masterIds.length === 0);
   }
 
   get showImport(): boolean {
@@ -794,6 +745,10 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   trackById(_: any, id: number | string) {
     return id;
+  }
+
+  trackByNodeId(_: any, node: NodeInfo) {
+    return node.id;
   }
 
   colWidth(colPath: string) {
@@ -963,15 +918,15 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   // Multiselect-related stuff
   public get canCheckAll(): boolean {
-    return this.sourceIds.length > 0;
+    return this.displayedIds.length > 0;
   }
 
   public get areAllChecked(): boolean {
-    return this.sourceIds.length > 0 && this.sourceIds.every(id => !!this.checked[id]);
+    return this.displayedIds.length > 0 && this.displayedIds.every(id => !!this.checked[id]);
   }
 
   public get areAnyChecked(): boolean {
-    return this.sourceIds.some(id => !!this.checked[id]);
+    return this.displayedIds.some(id => !!this.checked[id]);
   }
 
   public get checkedCount(): number {
@@ -980,7 +935,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   public get checkedIds(): (number | string)[] {
-    return this.sourceIds.filter(id => !!this.checked[id]);
+    return this.displayedIds.filter(id => !!this.checked[id]);
   }
 
   onCheckAll() {
@@ -990,15 +945,15 @@ export class MasterComponent implements OnInit, OnDestroy {
 
     } else {
       // Check all
-      this.sourceIds.forEach(id => this.checked[id] = true);
+      this.displayedIds.forEach(id => this.checked[id] = true);
     }
   }
 
-  get sourceIds(): (string | number)[] {
+  get displayedIds(): (string | number)[] {
     if (this.isTreeMode) {
       return this.treeNodes.filter(node => this.showTreeNode(node)).map(node => node.id);
     } else {
-      return this.masterIds;
+      return this.flatIds;
     }
   }
 
@@ -1038,9 +993,9 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.crud.delete(ids).subscribe(
       () => {
         // Update the UI to reflect deletion of items
-        this.state.delete(ids);
+        this.state.delete(ids, this.workspace.current[this.state.collectionName]);
         this.checked = {};
-        if (this.sourceIds.length === 0 && this.total > 0) {
+        if (this.displayedIds.length === 0 && this.total > 0) {
           // auto refresh if the user deleted the entire page
           this.fetch();
         }

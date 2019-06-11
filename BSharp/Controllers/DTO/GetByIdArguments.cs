@@ -15,9 +15,9 @@ namespace BSharp.Controllers.DTO
         public string Expand { get; set; }
 
         /// <summary>
-        /// Equivalent to linq's "Select", determines which properties of the principle entities
+        /// Equivalent to linq's "Select", determines which properties of the principal entities
         /// or of the included related entities to return the result. If left empty then all
-        /// properties of the principle entity and included entities are returned
+        /// properties of the principalentity and included entities are returned
         /// </summary>
         public string Select { get; set; }
     }

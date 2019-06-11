@@ -50,16 +50,10 @@ namespace BSharp.Controllers.DTO
         public string Expand { get; set; }
 
         /// <summary>
-        /// Equivalent to linq's "Select", determines which properties of the principle entities
+        /// Equivalent to linq's "Select", determines which properties of the principal entities
         /// or of the included related entities to return the result. If left empty then all
-        /// properties of the principle entity and included entities are returned
+        /// properties of the principalentity and included entities are returned
         /// </summary>
         public string Select { get; set; }
-
-        /// <summary>
-        /// Specifies whether to include inactive records too (defaults to false), this is a 
-        /// common filter type so it is moved to a separate property from "Filter"
-        /// </summary>
-        public bool Inactive { get; set; } = false;
     }
 }

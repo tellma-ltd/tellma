@@ -1,8 +1,8 @@
 <b-master apiEndpoint="roles" viewId="roles" [mode]="mode" [expand]="expand"
-  [masterCrumb]="'Roles' | translate" [tileTemplate]="tile" [tableColumnPaths]="adjustForMultilingual(['Name', 'Name2' , 'Code', 'IsPublic', 'IsActive'], ['Name'], ws)"
+  [masterCrumb]="'Roles' | translate" [tileTemplate]="tile"
+  [tableDescriptionColumnTemplate]="descriptionColumn"
+  [tableColumnPaths]="['Code', 'IsPublic', 'IsActive']"
   [tableColumnTemplates]="{
-            'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
-            'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
             'Code' : { headerTemplate : header_Code, rowTemplate : row_Code, weight : 1 },
             'IsPublic' : { headerTemplate : header_IsPublic, rowTemplate : row_IsPublic, weight : 1 },
             'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
@@ -32,14 +32,12 @@
   </div>
 </ng-template>
 
+<!-- Description Column -->
+<ng-template #descriptionColumn let-id="id">
+    <span class="text-truncate">{{ ws.getMultilingualValue('Roles', id, 'Name') }}</span>
+</ng-template>
 
 <!-- Table Templates -->
-<ng-template #header_Name>{{ ('Name' | translate) + ws.primaryPostfix }}</ng-template>
-<ng-template #row_Name let-id="id"> {{ c[id].Name }} </ng-template>
-
-<ng-template #header_Name2>{{ ('Name' | translate) + ws.secondaryPostfix }}</ng-template>
-<ng-template #row_Name2 let-id="id"> {{ c[id].Name2 }} </ng-template>
-
 <ng-template #header_Code>{{ 'Code' | translate }}</ng-template>
 <ng-template #row_Code let-id="id"> {{ c[id].Code }} </ng-template>
 

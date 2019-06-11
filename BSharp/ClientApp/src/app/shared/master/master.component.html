@@ -226,7 +226,7 @@
       <div class="col-12" *ngIf="showTilesView">
         <div class="row mb-3">
           <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode"
-            *ngFor="let id of masterIds; trackBy: trackById">
+            *ngFor="let id of flatIds; trackBy: trackById">
             <div class="p-2 bg-white b-tile" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
               <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
               </ng-container>
@@ -273,7 +273,7 @@
 
             <!-- Flat -->
             <ng-container *ngIf="isFlatMode">
-              <tr *ngFor="let id of masterIds" [class.b-highlight]="isRecentlyViewed(id)">
+              <tr *ngFor="let id of flatIds" [class.b-highlight]="isRecentlyViewed(id)">
 
                 <!-- Checkboxes -->
                 <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: id }">
@@ -298,7 +298,7 @@
 
             <!-- Tree -->
             <ng-container *ngIf="isTreeMode">
-              <tr *ngFor="let node of treeNodes" [class.d-none]="!showTreeNode(node)" [class.b-highlight]="isRecentlyViewed(node.id)">
+              <tr *ngFor="let node of treeNodes;trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)" [class.b-highlight]="isRecentlyViewed(node.id)">
 
                 <!-- Checkboxes -->
                 <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: node.id }">
@@ -317,7 +317,7 @@
                       <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)"></fa-icon>
                     </button>
                     <!-- Expand button -->
-                    <div class="b-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"  (click)="onSelect(node.id)">
+                    <div class="b-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"  (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight && node.fromResult">
                       <ng-content *ngTemplateOutlet="tableDescriptionColumnTemplate;context: { id: node.id }">
                       </ng-content>
                       <b-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></b-spinner>

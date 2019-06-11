@@ -65,34 +65,66 @@
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
+  <!-- Parent -->
+  <b-form-group class="b-form-group" [label]="'Parent' | translate" [serverErrors]="model?.serverErrors?.ParentId">
+    <b-restricted [metadata]="model?.EntityMetadata?.Parent">
+      <b-view-link *ngIf="!isEdit" link="../../product-categories" [itemId]="model?.ParentId">{{
+        ws.getMultilingualValue('ProductCategory',
+        model?.ParentId, 'Name') }}</b-view-link>
+    </b-restricted>
+    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ParentId" apiEndpoint="product-categories"
+      collection="ProductCategory" [masterTemplate]="productCategoriesMaster" [detailsTemplate]="productCategoriesDetail"
+      [detailsOptions]="[{ id: 'product-categories', name: 'not important' }]">
+    </b-details-picker>
+
+    <!-- The Product Categories Details Modal -->
+    <ng-template #productCategoriesDetail let-modal="modal" let-update="update" let-initialText="initialText"
+      let-viewId="viewId">
+      <div class="modal-body">
+        <b-product-categories-details mode="popup" idString="new" [initialText]="initialText"
+          (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
+        </b-product-categories-details>
+      </div>
+    </ng-template>
+  </b-form-group>
+
+  <!-- The Product Categories Master Modal -->
+  <ng-template #productCategoriesMaster let-modal="modal" let-update="update" let-create="create">
+    <div class="modal-body">
+      <b-product-categories-master mode="popup" (cancel)="modal.close(false);"
+        (select)="modal.close(true); update($event); " (create)="modal.close(false); create()">
+      </b-product-categories-master>
+    </div>
+  </ng-template>
+
   <!-- Unit Type -->
-  <b-form-group class="b-form-group" [label]="'MU_UnitType' | translate" [serverErrors]="model?.serverErrors?.UnitType">
+  <!-- <b-form-group class="b-form-group" [label]="'MU_UnitType' | translate" [serverErrors]="model?.serverErrors?.UnitType">
     <div *ngIf="!isEdit">
       <b-restricted [metadata]="model?.EntityMetadata?.UnitType"> {{ model?.UnitType }}
       </b-restricted>
     </div>
     <b-selector *ngIf="isEdit" [(ngModel)]="model.UnitType" [choices]="unitTypeChoices" required></b-selector>
-  </b-form-group>
+  </b-form-group> -->
 
   <!-- Unit Amount -->
-  <b-form-group class="b-form-group" [label]="'MU_UnitAmount' | translate"
+  <!-- <b-form-group class="b-form-group" [label]="'MU_UnitAmount' | translate"
     [serverErrors]="model?.serverErrors?.UnitAmount">
     <div *ngIf="!isEdit">
       <b-restricted [metadata]="model?.EntityMetadata?.UnitAmount"> {{model?.UnitAmount | number}}</b-restricted>
     </div>
     <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.UnitAmount" [ngModelOptions]="{ updateOn: 'blur' }" required>
     </b-decimal-editor>
-  </b-form-group>
+  </b-form-group> -->
 
   <!-- Base Amount -->
-  <b-form-group class="b-form-group" [label]="'MU_BaseAmount' | translate"
+  <!-- <b-form-group class="b-form-group" [label]="'MU_BaseAmount' | translate"
     [serverErrors]="model?.serverErrors?.BaseAmount">
     <div *ngIf="!isEdit">
       <b-restricted [metadata]="model?.EntityMetadata?.BaseAmount"> {{model?.BaseAmount | number}}</b-restricted>
     </div>
     <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BaseAmount" [ngModelOptions]="{ updateOn: 'blur' }" required>
     </b-decimal-editor>
-  </b-form-group>
+  </b-form-group> -->
 
   <!-- Is Active -->
   <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">

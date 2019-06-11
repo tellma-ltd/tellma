@@ -159,7 +159,7 @@ export class TenantWorkspace {
       const currentUserLang = this.workspaceService.ws.culture || 'en';
 
       return ternaryLang === currentUserLang ||
-      ternaryLang.startsWith(currentUserLang) ||
+        ternaryLang.startsWith(currentUserLang) ||
         currentUserLang.startsWith(ternaryLang);
     }
 
@@ -273,68 +273,287 @@ export class MasterDetailsStore {
     }
   } = {};
 
+  collectionName: string;
   bag: { [key: string]: any; };
-  masterIds: (string | number)[] = [];
+  flatIds: (string | number)[] = []; // in flat mode
+  treeNodes: NodeInfo[] = []; // in tree mode
   masterStatus: MasterStatus;
   errorMessage: string;
-
-  treeNodes: NodeInfo[] = [];
 
   detailsId: string | number;
   detailsStatus: DetailsStatus;
 
-  public delete(ids: (string | number)[]) {
+  public get isTreeMode(): boolean {
+    return this.displayMode === MasterDisplayMode.tree && (!this.orderBy || this.orderBy === 'Node');
+  }
+
+  private _oldTreeNodes: NodeInfo[];
+  private _masterIds: (string | number)[];
+  public get masterIds(): (string | number)[] {
+
+    if (this.isTreeMode) {
+      if (this._oldTreeNodes !== this.treeNodes) {
+        this._oldTreeNodes = this.treeNodes;
+        this._masterIds = this.treeNodes
+          .filter(node => node.fromResult)
+          .map(node => node.id);
+      }
+      return this._masterIds;
+    } else {
+      return this.flatIds;
+    }
+  }
+
+  public delete(ids: (string | number)[], entityWs: any) {
+
     // removes a deleted item in memory and updates the stats
-
     this.total = Math.max(this.total - ids.length, 0);
-    this.masterIds = this.masterIds.filter(e => ids.indexOf(e) === -1);
-    this.treeNodes = this.treeNodes.filter(node => ids.indexOf(node.id) === -1);
+    if (this.isTreeMode) {
+
+      // for each deleted item
+      ids.forEach(id => {
+        const item = entityWs[id];
+
+        // go over old ancestors and reduce their ChildCount by 1
+        let ancestor = item;
+        while (!!ancestor.ParentId) {
+          ancestor = entityWs[ancestor.ParentId];
+          ancestor.ChildCount = ancestor.ChildCount - 1;
+          if (ancestor.ActiveChildCount) {
+            ancestor.ActiveChildCount = ancestor.ActiveChildCount - (item.IsActive ? 1 : 0);
+          }
+        }
+      });
+
+      this.treeNodes = this.treeNodes.filter(node => ids.indexOf(node.id) === -1);
+      this.updateTreeNodes([], entityWs, TreeRefreshMode.includeIfParentIsLoaded);
+    } else {
+      this.flatIds = this.flatIds.filter(e => ids.indexOf(e) === -1);
+    }
   }
 
-  public update(ids: (string | number)[]) {
-    // TODO update tree locations if ParentId has changed
+  public update(oldEntity: any, entityWs: any) {
+    if (this.isTreeMode) {
+
+      // if parent Id changes then we go over the previous ancestors and reduce their
+      // ChildCount, keeping in mind that the new ancestors (which some may be common
+      // with the old ancestors) have had their counts updated already from the server
+
+      const newEntity = entityWs[oldEntity.Id];
+      if (oldEntity.ParentId === newEntity.ParentId) {
+        return; // nothing to do
+      } else {
+
+        // go over old ancestors and reduce their ChildCount by 1
+        let oldAncestor = oldEntity;
+        outer_loop: while (!!oldAncestor.ParentId) {
+          oldAncestor = entityWs[oldAncestor.ParentId];
+
+          let newAncestor = newEntity;
+          while (!!newAncestor.ParentId) {
+            newAncestor = entityWs[newAncestor.ParentId];
+            if (newAncestor === oldAncestor) {
+              break outer_loop;
+            }
+          }
+
+          oldAncestor.ChildCount = oldAncestor.ChildCount - 1;
+          if (oldAncestor.ActiveChildCount) {
+            oldAncestor.ActiveChildCount = oldAncestor.ActiveChildCount - (oldEntity.IsActive ? 1 : 0);
+          }
+        }
+
+        this.updateTreeNodes([], entityWs, TreeRefreshMode.includeIfParentIsLoaded);
+      }
+    }
   }
 
-  public insert(items: any[]) {
-    // adds a newly created item in memory and updates the stats
-    const ids = items.map(e => e.Id);
-    this.total = this.total + ids.length;
-    this.masterIds = ids.concat(this.masterIds);
+  public insert(ids: (number | string)[], entityWs: any) {
 
-    //// add it to tree nodes just in case
-    // items.forEach(item => {
+    // here we try to be intelligent on where to add the item
+    if (this.isTreeMode) {
 
-    //   const parent =
-    //   const parentIndex = !!item.ParentId ? this.treeNodes.findIndex(e => e.id === item.ParentId) : -1;
-    //   const parentNode = parentIndex >= 0 ? this.treeNodes[parentIndex] : null;
+      const beforeCount = this.treeNodes.length;
+      this.updateTreeNodes(ids, entityWs, TreeRefreshMode.includeIfParentIsLoaded);
 
-    //   const n = new NodeInfo();
-    //   n.id = item.id;
-    //   n.level = item.Level;
-    //   n.isExpanded = false;
-    //   n.hasChildren = false;
-    //   n.parent = parentNode;
-    //   n.status = null;
+      const afterCount = this.treeNodes.length;
+      this.total = this.total + afterCount - beforeCount;
+    } else {
 
-    //   if (!!parentNode && (!parentNode.hasChildren || parentNode.status === MasterStatus.loaded)) {
-    //     parentNode.hasChildren = true;
-
-    //   } else {
-    //     this.treeNodes.push(n); // with trees add at the end
-    //   }
-    // });
+      // adds a newly created item in memory and updates the stats
+      this.total = this.total + ids.length;
+      this.flatIds = ids.concat(this.flatIds); // add all ids in the beginning
+    }
   }
+
+  public updateTreeNodes(ids: (string | number)[], entityWs: any, mode: TreeRefreshMode, highlightSuppliedIds?: boolean): void {
+
+    // for brevity
+    const s = this;
+
+    if (mode === TreeRefreshMode.cleanSlate) {
+      this.treeNodes = [];
+    }
+
+    // put the current nodes (if any) in a dictionary for fast retrieval
+    const currentNodesDic: { [key: string]: NodeInfo } = {};
+    s.treeNodes.forEach(node => {
+      currentNodesDic[node.id] = node;
+    });
+
+    // prepare collections
+    const nodesDic: { [key: string]: NodeInfo } = {};
+    const rootsInfo = { lastIndex: 0 };
+
+    // prepares a nodes dictionary using recursive method
+    s.masterIds.concat(ids).forEach(id => this.addNodeToDictionary(id, rootsInfo, entityWs, nodesDic, currentNodesDic, mode));
+    const listOfNodes = Object.keys(nodesDic).map(key => nodesDic[key]);
+
+    // when instructed, mark the supplied ids as fromResult and highlight it
+    if (highlightSuppliedIds) {
+      ids.forEach(id => {
+        const node = nodesDic[id];
+        if (!!node) {
+          // To highlight search results
+          node.highlight = true;
+          node.fromResult = true;
+        }
+      });
+    } else {
+      listOfNodes.forEach(node => {
+        node.fromResult = true;
+      });
+    }
+
+    // old values always preserved
+    this.treeNodes.forEach(oldNode => {
+      const newNode = nodesDic[oldNode.id];
+      if (!!newNode) {
+        newNode.highlight = oldNode.highlight;
+        newNode.fromResult = oldNode.fromResult;
+      }
+    });
+
+    // assign the list of nodes to the state object ordered by Path
+    s.treeNodes = listOfNodes.sort(nodeCompare);
+  }
+
+  private addNodeToDictionary(id: string | number, rootsInfo: { lastIndex: number }, entityWs: any, nodesDic: { [key: string]: NodeInfo },
+    currentNodesDic: { [key: string]: NodeInfo }, mode: TreeRefreshMode): NodeInfo {
+
+    const existing = nodesDic[id];
+    if (!!existing) {
+      return existing;
+    } else {
+      const item = entityWs[id];
+
+      // get (or create) the parent and set its status and isExpand according to refreshMode
+      let newParentNode: NodeInfo = null;
+      if (!!item.ParentId) {
+        const oldParentNode = currentNodesDic[item.ParentId];
+
+        // When instructed, ensure the parent is present and loaded, return otherwise
+        if (mode === TreeRefreshMode.includeIfParentIsLoaded) {
+          if (!oldParentNode || oldParentNode.status !== MasterStatus.loaded) {
+            return null;
+          }
+        }
+
+        newParentNode = this.addNodeToDictionary(item.ParentId, rootsInfo, entityWs, nodesDic, currentNodesDic, mode);
+        if (!!newParentNode) {
+          newParentNode.status = MasterStatus.loaded;
+          newParentNode.isExpanded = true;
+
+          // keep the expansion state from before the refresh
+          if (!!oldParentNode) {
+            newParentNode.isExpanded = oldParentNode.isExpanded;
+          }
+        }
+      }
+
+      // create the current node and add it to the dictionary
+      const n = new NodeInfo();
+      n.id = id;
+      n.level = item.Level;
+      n.isExpanded = false;
+      n.hasChildren = this.inactive ? (item.ChildCount > 1) : (item.ActiveChildCount - (item.IsActive ? 1 : 0) > 0);
+      n.parent = newParentNode;
+      n.status = null;
+
+      // set the index among the children (later used for sorting)
+      if (!!newParentNode) {
+        n.index = ++newParentNode.lastChildIndex;
+      } else {
+        n.index = ++rootsInfo.lastIndex;
+      }
+
+      nodesDic[id] = n;
+      return n;
+    }
+  }
+}
+
+// this method compares two nodes based on the paths from the root
+const nodeCompare = (n1: NodeInfo, n2: NodeInfo) => {
+
+  let p1 = n1;
+  let p2 = n2;
+
+  // goes up the chain until we are at the same level
+  if (n1.level < n2.level) {
+    for (let i = n2.level - n1.level; i--;) {
+      p2 = p2.parent;
+    }
+  } else {
+    for (let i = n1.level - n2.level; i--;) {
+      p1 = p1.parent;
+    }
+  }
+
+  if (p1 === p2) {
+    // this means one of the nodes is a child of the other
+    // compare levels to make the child larger than the parent
+    return n1.level - n2.level;
+
+  } else {
+
+    // go up the chain until you find siblings of a common parent
+    while (!!p1.parent && p1.parent !== p2.parent) {
+      p1 = p1.parent;
+      p2 = p2.parent;
+    }
+
+    // compare the indices of the siblings
+    return p1.index - p2.index;
+  }
+};
+
+// different preservation modes when refrshing the tree
+export enum TreeRefreshMode {
+
+  // when refreshing the tree, preserve the expansions and master states and only include
+  includeIfParentIsLoaded,
+
+  // when refreshing the tree, preserve the expansions but update parent statuses to loaded
+  preserveExpansions,
+
+  // when refreshing the tree, ignore the old one entirely and start anew
+  cleanSlate
 }
 
 export class NodeInfo {
   id: (string | number);
   level: number;
+  index: number;
+  lastChildIndex = 0;
   isExpanded: boolean;
   hasChildren: boolean;
   parent: NodeInfo;
   isAdded = false;
+  highlight = false;
+  fromResult = false;
   status: MasterStatus;
-  notifyCancel$ = new Subject<void>(); // cancels calls on this node's children
+  notifyCancel$: Subject<void>; // cancels calls on this node's children
 }
 
 // The Workspace of the application stores ALL application wide in-memory state that survives

@@ -1,9 +1,8 @@
 <b-master apiEndpoint="local-users" viewId="local-users" [expand]="expand"
   [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
-  [tableColumnPaths]="adjustForMultilingual(['Name', 'Name2', 'Email', 'ExternalId', 'LastAccess', 'IsActive'], ['Name'], ws)"
+  [tableDescriptionColumnTemplate]="descriptionColumn"
+  [tableColumnPaths]="['Email', 'ExternalId', 'LastAccess', 'IsActive']"
   [tableColumnTemplates]="{
-            'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
-            'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
             'ExternalId' : { headerTemplate : header_ExternalId, rowTemplate : stateTemplate, weight : 1.5 },
             'Email' : { headerTemplate : header_Email, rowTemplate : row_Email, weight : 1.5 },
             'Agent/Name' : { headerTemplate : header_AgentId, rowTemplate : row_AgentId, weight : 1.5 },
@@ -51,13 +50,12 @@
 </ng-template>
 
 
+<!-- Description Column -->
+<ng-template #descriptionColumn let-id="id">
+    <span class="text-truncate">{{ ws.getMultilingualValue('LocalUsers', id, 'Name') }}</span>
+</ng-template>
+
 <!-- Table Templates -->
-<ng-template #header_Name>{{ ('Name' | translate) + ws.primaryPostfix }}</ng-template>
-<ng-template #row_Name let-id="id"> {{ c[id].Name }} </ng-template>
-
-<ng-template #header_Name2>{{ ('Name' | translate) + ws.secondaryPostfix }}</ng-template>
-<ng-template #row_Name2 let-id="id"> {{ c[id].Name2 }} </ng-template>
-
 <ng-template #header_Email>{{ 'User_Email' | translate }}</ng-template>
 <ng-template #row_Email let-id="id">
   <b-restricted [metadata]="c[id].EntityMetadata?.Email">{{ c[id].Email }}</b-restricted>
