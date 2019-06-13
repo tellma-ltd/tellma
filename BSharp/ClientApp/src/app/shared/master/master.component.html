@@ -197,12 +197,18 @@
                 </button>
               </div>
             </ng-container>
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body">
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"  *ngIf="showDelete">
               <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)"
                 [disabled]="!canDelete">
                 {{ 'Delete' | translate }}
               </button>
             </div>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"  *ngIf="showDeleteWithDescendants">
+                <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteWithDescendantsModal)"
+                  [disabled]="!canDelete">
+                  {{ 'DeleteWithDescendants' | translate }}
+                </button>
+              </div>
           </div>
         </div>
 
@@ -249,7 +255,7 @@
                   </button>
                 </div>
                 &nbsp;
-                <div class="p-2 b-pointer flex-grow-1" (click)="onSelect(node.id)">
+                <div class="p-2 b-pointer flex-grow-1" (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight">
                   <ng-container *ngTemplateOutlet="tileTemplate;context: { id : node.id }">
                   </ng-container>
                 </div>
@@ -349,7 +355,7 @@
                     </button>
                     <!-- Expand button -->
                     <div class="b-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"
-                      (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight && node.fromResult">
+                      (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight">
                       <ng-content *ngTemplateOutlet="tableDescriptionColumnTemplate;context: { id: node.id }">
                       </ng-content>
                       <b-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></b-spinner>
@@ -519,6 +525,35 @@
     </button>
   </div>
 </ng-template>
+
+<!-- Delete Modal -->
+<ng-template #deleteWithDescendantsModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+      <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  
+    <!-- body -->
+    <div class="modal-body">
+      {{ 'DeleteWithDescendantsConfirmationMessage' | translate: { count: checkedCount } }}
+    </div>
+  
+    <!-- footer -->
+    <div class="modal-footer">
+      <button class="btn btn-danger" (click)="modal.dismiss(); onDeleteWithDescendants();">
+        <fa-icon icon="trash"></fa-icon>
+        &nbsp;{{ 'Delete' | translate }}
+      </button>
+      <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()" ngbAutofocus>
+        <fa-icon icon="times"></fa-icon>
+        &nbsp;{{ 'Cancel' | translate }}
+      </button>
+    </div>
+  </ng-template>
 
 <!-- Error Modal -->
 <ng-template #errorModal let-modal>

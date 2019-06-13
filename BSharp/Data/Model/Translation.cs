@@ -548,6 +548,11 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Delete", "Delete"),
             Ar(Constants.Client, "Delete", "حذف"),
 
+            En(Constants.Client, "DeleteWithDescendants", "Delete with descendants"),
+            Ar(Constants.Client, "DeleteWithDescendants", "حذف مع الفروع"),
+
+            
+
             En(Constants.Client, "Import", "Import"),
             Ar(Constants.Client, "Import", "استيراد"),
 
@@ -794,6 +799,10 @@ namespace BSharp.Data.Model
             En(Constants.Client, "DeleteConfirmationMessage", "Are you sure you want to delete {{count}} items? This action is irreversible."),
             Ar(Constants.Client, "DeleteConfirmationMessage", "هل تود حذف عدد {{count}} من البيانات؟ هذا الفعل لا يمكن التراجع عنه."),
 
+            En(Constants.Client, "DeleteWithDescendantsConfirmationMessage", "Are you sure you want to delete {{count}} items with all their descendants? This action is irreversible."),
+            Ar(Constants.Client, "DeleteWithDescendantsConfirmationMessage", "هل تود حذف عدد {{count}} من البيانات مع جميع الفروع المنحدرة منها؟ هذا الفعل لا يمكن التراجع عنه."),
+
+            
             En(Constants.Client, "DetailsDeleteConfirmationMessage", "Are you sure you want to delete this item? This action is irreversible."),
             Ar(Constants.Client, "DetailsDeleteConfirmationMessage", "هل تود حذف هذا البيان؟ هذا الفعل لا يمكن التراجع عنه."),
 

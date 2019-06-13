@@ -62,7 +62,7 @@ namespace BSharp.Data.Model
             builder.Entity<ProductCategory>()
                 .HasMany(e => e.Children)
                 .WithOne(e => e.Parent)
-                .HasForeignKey(TenantId, nameof(ParentId));
+                .HasForeignKey(TenantId, nameof(ParentId)).OnDelete(DeleteBehavior.SetNull);
 
             // Audit foreign keys
             builder.Entity<ProductCategory>()

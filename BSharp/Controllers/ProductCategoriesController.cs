@@ -26,7 +26,7 @@ namespace BSharp.Controllers
 {
     [Route("api/product-categories")]
     [ApiController]
-    public class ProductCategoriesController : CrudControllerBase<ProductCategoryForSave, ProductCategory, ProductCategoryForQuery, int?>
+    public class ProductCategoriesController : CrudTreeControllerBase<ProductCategoryForSave, ProductCategory, ProductCategoryForQuery, int?>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
@@ -451,46 +451,46 @@ SET NOCOUNT ON;
         protected override Task ValidateDeleteAsync(List<int?> ids)
         {
             return Task.CompletedTask;
-//            // Perform SQL-side validation
-//            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
-//            var indexedIdsTvp = new SqlParameter("@Entities", idsTable)
-//            {
-//                TypeName = $"dbo.IndexedIdList",
-//                SqlDbType = SqlDbType.Structured
-//            };
+            //// Perform SQL-side validation
+            //DataTable idsTable = ControllerUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            //var indexedIdsTvp = new SqlParameter("@Entities", idsTable)
+            //{
+            //    TypeName = $"dbo.IndexedIdList",
+            //    SqlDbType = SqlDbType.Structured
+            //};
 
-//            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            //int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
 
-//            // Code, Name and Name2 must be unique
-//            var sqlErrors = await _db.Validation.FromSql($@"
-//SET NOCOUNT ON;
-//	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-//	WITH DeletedSet AS
-//	(
-//		SELECT E.[Index], T.[Node], T.[ParentNode]
-//		FROM dbo.ProductCategories T 
-//		JOIN @Entities E ON T.[Id] = E.[Id]
-//	)
-//	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])
-//    SELECT DISTINCT '[' + CAST(S.[Index] AS NVARCHAR (255)) + '].Id' As [Key], N'Error_CannotDeleteNodeWithChildren' As [ErrorName], NULL As [Argument1]
-//	FROM [dbo].[ProductCategories] T -- get me every node in the table
-//	JOIN DeletedSet S ON T.[ParentNode] = S.[Node] -- whose parent is to be deleted
-//	WHERE T.[Node] NOT IN (SELECT [Node] FROM DeletedSet) -- but it is not going to be deleted
-//	OPTION(HASH JOIN);
+            //// Code, Name and Name2 must be unique
+            //var sqlErrors = await _db.Validation.FromSql($@"
+            //    SET NOCOUNT ON;
+	           //     DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	           //     WITH DeletedSet AS
+	           //     (
+		          //      SELECT E.[Index], T.[Node], T.[ParentNode]
+		          //      FROM dbo.ProductCategories T 
+		          //      JOIN @Entities E ON T.[Id] = E.[Id]
+	           //     )
+	           //     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])
+            //        SELECT DISTINCT '[' + CAST(S.[Index] AS NVARCHAR (255)) + ']' As [Key], N'Error_CannotDeleteNodeWithChildren' As [ErrorName], NULL As [Argument1]
+	           //     FROM [dbo].[ProductCategories] T -- get me every node in the table
+	           //     JOIN DeletedSet S ON T.[ParentNode] = S.[Node] -- whose parent is to be deleted
+	           //     WHERE T.[Node] NOT IN (SELECT [Node] FROM DeletedSet) -- but it is not going to be deleted
+            //        -- OPTION(HASH JOIN);
 
-//SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
-//", indexedIdsTvp).ToListAsync();
+            //SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
+            //", indexedIdsTvp).ToListAsync();
 
-//            // Loop over the errors returned from SQL and add them to ModelState
-//            foreach (var sqlError in sqlErrors)
-//            {
-//                var formatArguments = sqlError.ToFormatArguments();
+            //// Loop over the errors returned from SQL and add them to ModelState
+            //foreach (var sqlError in sqlErrors)
+            //{
+            //    var formatArguments = sqlError.ToFormatArguments();
 
-//                string key = sqlError.Key;
-//                string errorMessage = _localizer[sqlError.ErrorName, formatArguments];
+            //    string key = sqlError.Key;
+            //    string errorMessage = _localizer[sqlError.ErrorName, formatArguments];
 
-//                ModelState.AddModelError(key: key, errorMessage: errorMessage);
-//            }
+            //    ModelState.AddModelError(key: key, errorMessage: errorMessage);
+            //}
         }
 
         protected override async Task DeleteAsync(List<int?> ids)
@@ -509,16 +509,122 @@ SET NOCOUNT ON;
                 {
                     // Delete efficiently with a SQL query
                     await _db.Database.ExecuteSqlCommandAsync(@"
-    IF NOT EXISTS(SELECT * FROM @Entities) RETURN;
+	    -- Delete the entites, children Parent Id will be set to NULL
+	    DELETE FROM [dbo].[ProductCategories]
+	    WHERE [Id] IN (SELECT [Id] FROM @Entities);
 
-	-- Given the Ids of deleted entities, make their children orphaned
-	UPDATE dbo.[ProductCategories]
-	SET ParentId = NULL
-	WHERE ParentId IN (SELECT [Id] FROM @Entities)
+	    -- reorganize the nodes
+	    WITH Children ([Id], [ParentId], [Num]) AS (
+		    SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
+		    FROM [dbo].[ProductCategories] E
+		    LEFT JOIN [dbo].[ProductCategories] E2 ON E.[ParentId] = E2.[Id]
+	    ),
+	    Paths ([Node], [Id]) AS (  
+		    -- This section provides the value for the roots of the hierarchy  
+		    SELECT CAST(('/'  + CAST(C.Num AS VARCHAR(30)) + '/') AS HIERARCHYID) AS [Node], [Id]
+		    FROM Children AS C   
+		    WHERE [ParentId] IS NULL
+		    UNION ALL   
+		    -- This section provides values for all nodes except the root  
+		    SELECT CAST(P.[Node].ToString() + CAST(C.Num AS VARCHAR(30)) + '/' AS HIERARCHYID), C.[Id]
+		    FROM Children C
+		    JOIN Paths P ON C.[ParentId] = P.[Id]
+	    )
+	    MERGE INTO [dbo].[ProductCategories] As t
+	    USING Paths As s ON (t.[Id] = s.[Id] AND t.[Node] <> s.[Node])
+	    WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
+", idsTvp);
 
-	-- Delete the entites
+                    // Commit and return
+                    trx.Commit();
+                    return;
+                }
+                catch (SqlException ex) when (IsForeignKeyViolation(ex))
+                {
+                    throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ProductCategory"]]);
+                }
+                catch (Exception ex)
+                {
+                    trx.Rollback();
+                    throw ex;
+                }
+            }
+        }
+
+        protected override Task ValidateDeleteWithDescendantsAsync(List<int?> ids)
+        {
+            return Task.CompletedTask;
+            //            // Perform SQL-side validation
+            //            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+            //            var indexedIdsTvp = new SqlParameter("@Entities", idsTable)
+            //            {
+            //                TypeName = $"dbo.IndexedIdList",
+            //                SqlDbType = SqlDbType.Structured
+            //            };
+
+            //            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+
+            //            // Code, Name and Name2 must be unique
+            //            var sqlErrors = await _db.Validation.FromSql($@"
+            //SET NOCOUNT ON;
+            //	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+            //	WITH DeletedSet AS
+            //	(
+            //		SELECT E.[Index], T.[Node], T.[ParentNode]
+            //		FROM dbo.ProductCategories T 
+            //		JOIN @Entities E ON T.[Id] = E.[Id]
+            //	)
+            //	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])
+            //    SELECT DISTINCT '[' + CAST(S.[Index] AS NVARCHAR (255)) + '].Id' As [Key], N'Error_CannotDeleteNodeWithChildren' As [ErrorName], NULL As [Argument1]
+            //	FROM [dbo].[ProductCategories] T -- get me every node in the table
+            //	JOIN DeletedSet S ON T.[ParentNode] = S.[Node] -- whose parent is to be deleted
+            //	WHERE T.[Node] NOT IN (SELECT [Node] FROM DeletedSet) -- but it is not going to be deleted
+            //	OPTION(HASH JOIN);
+
+            //SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
+            //", indexedIdsTvp).ToListAsync();
+
+            //            // Loop over the errors returned from SQL and add them to ModelState
+            //            foreach (var sqlError in sqlErrors)
+            //            {
+            //                var formatArguments = sqlError.ToFormatArguments();
+
+            //                string key = sqlError.Key;
+            //                string errorMessage = _localizer[sqlError.ErrorName, formatArguments];
+
+            //                ModelState.AddModelError(key: key, errorMessage: errorMessage);
+            //            }
+        }
+
+        protected override async Task DeleteWithDescendantsAsync(List<int?> ids)
+        {
+            // Prepare a list of Ids to delete
+            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(e => new { Id = e }), addIndex: false);
+            var idsTvp = new SqlParameter("Entities", idsTable)
+            {
+                TypeName = $"dbo.IdList",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            using (var trx = await _db.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Delete efficiently with a SQL query
+                    await _db.Database.ExecuteSqlCommandAsync(@"
+	IF NOT EXISTS(SELECT * FROM @Entities) RETURN;
+
+	-- Delete the entites, children Parent Id will be set to NULL
+	WITH EntitiesWithDescendants
+	AS (
+		SELECT T2.[Id]
+		FROM [dbo].[ProductCategories] T1
+		JOIN [dbo].[ProductCategories] T2
+		ON T2.[Node].IsDescendantOf(T1.[Node]) = 1
+		WHERE T1.[Id] IN (SELECT [Id] FROM @Entities)
+	)
 	DELETE FROM [dbo].[ProductCategories]
-	WHERE [Id] IN (SELECT [Id] FROM @Entities);
+	WHERE [Id] IN (SELECT [Id] FROM EntitiesWithDescendants);
 
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (

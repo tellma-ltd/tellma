@@ -1097,3 +1097,7 @@ $container-margin: 15px;
 .b-tree-tile:hover {
   background-color: $hover-highlight-color;
 }
+
+.b-tree-tile span:empty:before {
+  content: "\200b";
+}

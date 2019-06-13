@@ -749,6 +749,10 @@ export class MasterComponent implements OnInit, OnDestroy {
     return this.showDeleteButton;
   }
 
+  get showDeleteWithDescendants() {
+    return this.showDelete && this.isTreeMode;
+  }
+
   get canDeletePermissions(): boolean {
     return this.workspace.current.canUpdate(this.viewId, null);
   }
@@ -1009,6 +1013,28 @@ export class MasterComponent implements OnInit, OnDestroy {
 
     const ids = this.checkedIds;
     this.crud.delete(ids).subscribe(
+      () => {
+        // Update the UI to reflect deletion of items
+        this.state.delete(ids, this.workspace.current[this.state.collectionName]);
+        this.checked = {};
+        if (this.displayedIds.length === 0 && this.total > 0) {
+          // auto refresh if the user deleted the entire page
+          this.fetch();
+        }
+      },
+      (friendlyError: any) => {
+        this.handleActionError(ids, friendlyError);
+      }
+    );
+  }
+
+  onDeleteWithDescendants() {
+    // clear any previous errors
+    this.actionErrorMessage = null;
+    this.actionValidationErrors = {};
+
+    const ids = this.checkedIds;
+    this.crud.deleteWithDescendants(ids).subscribe(
       () => {
         // Update the UI to reflect deletion of items
         this.state.delete(ids, this.workspace.current[this.state.collectionName]);

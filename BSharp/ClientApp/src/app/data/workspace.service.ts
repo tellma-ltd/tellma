@@ -309,24 +309,27 @@ export class MasterDetailsStore {
     // removes a deleted item in memory and updates the stats
     if (this.isTreeMode) {
 
-      // for each deleted item
+      // for a performant lookup
+      const deletedIdsDic = {};
+      ids.forEach(id => deletedIdsDic[id] = true);
+
+      // for each deleted item reduce all its ancestors (that are not also being deleted) by its child count
       ids.forEach(id => {
         const item = entityWs[id];
+        let parent = item;
+        while (!!parent.ParentId && !deletedIdsDic[parent.ParentId]) {
+          parent = entityWs[parent.ParentId];
 
-        // go over old ancestors and reduce their ChildCount by 1
-        let ancestor = item;
-        while (!!ancestor.ParentId) {
-          ancestor = entityWs[ancestor.ParentId];
-          ancestor.ChildCount = ancestor.ChildCount - 1;
-          if (ancestor.ActiveChildCount) {
-            ancestor.ActiveChildCount = ancestor.ActiveChildCount - (item.IsActive ? 1 : 0);
+          parent.ChildCount -= item.ChildCount;
+          if (item.ActiveChildCount) {
+            parent.ActiveChildCount -= item.ActiveChildCount;
           }
         }
       });
 
       const beforeCount = this.treeNodes.length;
       this.treeNodes = this.treeNodes.filter(node => ids.indexOf(node.id) === -1);
-      this.updateTreeNodes([], entityWs, TreeRefreshMode.includeIfParentIsLoaded);
+      this.updateTreeNodes([], entityWs, TreeRefreshMode.includeIfAncestorsLoaded);
       const afterCount = this.treeNodes.length;
 
       // in tree mode the total is never the entire table count, just the number of items displayed
@@ -349,6 +352,10 @@ export class MasterDetailsStore {
         return; // nothing to do
       } else {
 
+        // if (!!oldEntity.ParentId) {
+        //   const oldParent =
+        // }
+
         // go over old ancestors and reduce their ChildCount by 1
         let oldAncestor = oldEntity;
         outer_loop: while (!!oldAncestor.ParentId) {
@@ -362,14 +369,14 @@ export class MasterDetailsStore {
             }
           }
 
-          oldAncestor.ChildCount = oldAncestor.ChildCount - 1;
+          oldAncestor.ChildCount -= oldEntity.ChildCount;
           if (oldAncestor.ActiveChildCount) {
-            oldAncestor.ActiveChildCount = oldAncestor.ActiveChildCount - (oldEntity.IsActive ? 1 : 0);
+            oldAncestor.ActiveChildCount -= oldEntity.ActiveChildCount;
           }
         }
 
         const beforeCount = this.treeNodes.length;
-        this.updateTreeNodes([], entityWs, TreeRefreshMode.includeIfParentIsLoaded);
+        this.updateTreeNodes([oldEntity.Id], entityWs, TreeRefreshMode.includeIfAncestorsLoaded);
         const afterCount = this.treeNodes.length;
 
         // in tree mode the total is never the entire table count, just the number of items displayed
@@ -385,7 +392,7 @@ export class MasterDetailsStore {
     if (this.isTreeMode) {
 
       const beforeCount = this.treeNodes.length;
-      this.updateTreeNodes(ids, entityWs, TreeRefreshMode.includeIfParentIsLoaded);
+      this.updateTreeNodes(ids, entityWs, TreeRefreshMode.includeIfAncestorsLoaded);
       const afterCount = this.treeNodes.length;
 
       // in tree mode the total is never the entire table count, just the number of items displayed
@@ -459,17 +466,26 @@ export class MasterDetailsStore {
     } else {
       const item = entityWs[id];
 
+      // When instructed, ensure the ancestors are all present and loaded, return otherwise
+
+      if (mode === TreeRefreshMode.includeIfAncestorsLoaded) {
+        let ancestor = item;
+
+        while (!!ancestor.ParentId) {
+          const ancestorNode = currentNodesDic[ancestor.ParentId];
+          if (!ancestorNode || ancestorNode.status !== MasterStatus.loaded) {
+            return null;
+          }
+
+          // Go up one level
+          ancestor = entityWs[ancestor.ParentId];
+        }
+      }
+
       // get (or create) the parent and set its status and isExpand according to refreshMode
       let newParentNode: NodeInfo = null;
       if (!!item.ParentId) {
-        const oldParentNode = currentNodesDic[item.ParentId];
 
-        // When instructed, ensure the parent is present and loaded, return otherwise
-        if (mode === TreeRefreshMode.includeIfParentIsLoaded) {
-          if (!oldParentNode || oldParentNode.status !== MasterStatus.loaded) {
-            return null;
-          }
-        }
 
         newParentNode = this.addNodeToDictionary(item.ParentId, rootsInfo, entityWs, nodesDic, currentNodesDic, mode);
         if (!!newParentNode) {
@@ -477,6 +493,7 @@ export class MasterDetailsStore {
           newParentNode.isExpanded = true;
 
           // keep the expansion state from before the refresh
+          const oldParentNode = currentNodesDic[item.ParentId];
           if (!!oldParentNode) {
             newParentNode.isExpanded = oldParentNode.isExpanded;
           }
@@ -544,7 +561,7 @@ const nodeCompare = (n1: NodeInfo, n2: NodeInfo) => {
 export enum TreeRefreshMode {
 
   // when refreshing the tree, preserve the expansions and master states and only include
-  includeIfParentIsLoaded,
+  includeIfAncestorsLoaded,
 
   // when refreshing the tree, preserve the expansions but update parent statuses to loaded
   preserveExpansions,

@@ -357,6 +357,23 @@ export class ApiService {
         return obs$;
       },
 
+      deleteWithDescendants: (ids: (number | string)[]) => {
+        this.showRotator = true;
+        const url = appconfig.apiAddress + `api/${endpoint}/with-descendants`;
+        const obs$ = this.http.request('DELETE', url, { body: ids }).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
       template: (args: TemplateArguments) => {
         args = args || {};
 

@@ -59,7 +59,7 @@ namespace BSharp.Controllers
         {
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
-                await DeleteAsync(ids);
+                await DeleteImplAsync(ids);
                 return Ok();
             }, _logger);
         }
@@ -555,6 +555,9 @@ return the entities
         /// </summary>
         protected abstract Task DeleteAsync(List<TKey> ids);
 
+        /// <summary>
+        /// Validates the delete operation before it happens
+        /// </summary>
         protected virtual Task ValidateDeleteAsync(List<TKey> ids)
         {
             return Task.CompletedTask;
