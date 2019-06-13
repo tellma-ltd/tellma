@@ -332,7 +332,25 @@ export class MasterComponent implements OnInit, OnDestroy {
     const skip = (isTree && !this.searchOrFilter) ? 0 : s.skip;
     const orderby = isTree ? 'Node' : (!!s.orderBy && s.orderBy !== 'Node' ? (s.orderBy + (s.desc ? ' desc' : '')) : null);
     const search = s.search;
-    const expand = isTree ? (!!this.expand ? this.expand + ',Parent' : 'Parent') : this.expand; // TODO include Parents properly
+    const expandOld = isTree ? (!!this.expand ? this.expand + ',Parent' : 'Parent') : this.expand; // TODO include Parents properly
+
+    let expand = this.expand;
+    if (isTree) {
+      // in tree mode must always expand the Parents
+      expand = !!expand ? expand + ',Parent' : 'Parent';
+
+      // all other expanded properties should be applied to the parent too
+      // e.g expand=Category, becomes expand=Category,Parent/Category
+      const expandWithParents = expand.split(',')
+      .map(atom => atom.trim())
+      .filter(atom => !!atom && !atom.startsWith('Parent'))
+      .map(atom => `Parent/${atom}`)
+      .join(',');
+
+      if (!!expandWithParents) {
+        expand = expand + ',' + '' + expandWithParents;
+      }
+    }
 
     // compute the filter
     let filter = this.filter();

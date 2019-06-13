@@ -307,7 +307,6 @@ export class MasterDetailsStore {
   public delete(ids: (string | number)[], entityWs: any) {
 
     // removes a deleted item in memory and updates the stats
-    this.total = Math.max(this.total - ids.length, 0);
     if (this.isTreeMode) {
 
       // for each deleted item
@@ -325,10 +324,16 @@ export class MasterDetailsStore {
         }
       });
 
+      const beforeCount = this.treeNodes.length;
       this.treeNodes = this.treeNodes.filter(node => ids.indexOf(node.id) === -1);
       this.updateTreeNodes([], entityWs, TreeRefreshMode.includeIfParentIsLoaded);
+      const afterCount = this.treeNodes.length;
+
+      // in tree mode the total is never the entire table count, just the number of items displayed
+      this.total = this.total + afterCount - beforeCount;
     } else {
       this.flatIds = this.flatIds.filter(e => ids.indexOf(e) === -1);
+      this.total = Math.max(this.total - ids.length, 0);
     }
   }
 
@@ -363,26 +368,33 @@ export class MasterDetailsStore {
           }
         }
 
+        const beforeCount = this.treeNodes.length;
         this.updateTreeNodes([], entityWs, TreeRefreshMode.includeIfParentIsLoaded);
+        const afterCount = this.treeNodes.length;
+
+        // in tree mode the total is never the entire table count, just the number of items displayed
+        this.total = this.total + afterCount - beforeCount;
       }
     }
   }
 
   public insert(ids: (number | string)[], entityWs: any) {
 
+
     // here we try to be intelligent on where to add the item
     if (this.isTreeMode) {
 
       const beforeCount = this.treeNodes.length;
       this.updateTreeNodes(ids, entityWs, TreeRefreshMode.includeIfParentIsLoaded);
-
       const afterCount = this.treeNodes.length;
+
+      // in tree mode the total is never the entire table count, just the number of items displayed
       this.total = this.total + afterCount - beforeCount;
     } else {
 
       // adds a newly created item in memory and updates the stats
-      this.total = this.total + ids.length;
       this.flatIds = ids.concat(this.flatIds); // add all ids in the beginning
+      this.total = this.total + ids.length;
     }
   }
 

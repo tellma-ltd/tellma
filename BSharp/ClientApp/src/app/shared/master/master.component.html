@@ -225,26 +225,54 @@
       <!-- Tiles -->
       <div class="col-12" *ngIf="showTilesView">
         <div class="row mb-3">
-          <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode"
-            *ngFor="let id of flatIds; trackBy: trackById">
-            <div class="p-2 bg-white b-tile" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
-              <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
-              </ng-container>
+
+          <ng-container *ngIf="isFlatMode">
+            <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode"
+              *ngFor="let id of flatIds; trackBy: trackById">
+              <div class="p-2 bg-white b-tile" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
+                <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
+                </ng-container>
+              </div>
             </div>
-          </div>
+          </ng-container>
+
+          <ng-container *ngIf="isTreeMode">
+            <div class="w-100 border bg-white" style="border-top-width: 0!important"
+              *ngFor="let node of treeNodes; trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)">
+              <div class="b-tree-tile" [class.b-highlight]="isRecentlyViewed(node.id)">
+                <div [style.padding-left]="paddingLeft(node)"
+                  [style.padding-right]="paddingRight(node)">
+                  <button class="border-0 px-4 w-100 h-100" style="background-color: transparent"
+                    [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
+                    (click)="onExpand(node)">
+                    <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)"></fa-icon>
+                  </button>
+                </div>
+                &nbsp;
+                <div class="p-2 b-pointer flex-grow-1" (click)="onSelect(node.id)">
+                  <ng-container *ngTemplateOutlet="tileTemplate;context: { id : node.id }">
+                  </ng-container>
+                </div>
+                <div class="px-2 py-1" *ngIf="showNodeSpinner(node)">
+                    <b-spinner></b-spinner>
+                </div>
+              </div>
+            </div>
+          </ng-container>
         </div>
       </div>
 
       <!-- Table -->
       <div class="w-100 table-responsive" *ngIf="showTableView">
-        <table class="table table-hover table-sm bg-white border-bottom b-master-table text-nowrap" [class.table-striped]="isFlatMode">
+        <table class="table table-hover table-sm bg-white border-bottom b-master-table text-nowrap"
+          [class.table-striped]="isFlatMode">
           <thead>
             <tr [class.dropup]="desc">
 
               <!-- Checkboxes -->
               <th class="b-multiselect-th">
                 <div class="ml-2 mr-2">
-                  <div class="custom-control custom-checkbox b-labelless-checkbox">
+                  <div class="custom-control custom-checkbox b-labelless-checkbox" *ngIf="isScreenMode">
                     <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
                       (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
                     <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
@@ -253,11 +281,11 @@
               </th>
 
               <!-- Errors -->
-              <th class="b-multiselect-th px-0">
+              <th class="b-multiselect-th px-0" *ngIf="isScreenMode">
               </th>
 
               <!-- Description -->
-              <th class="b-pointer" [style.width]="colWidth('(Description)')">
+              <th class="b-pointer2" [style.width]="colWidth('(Description)')">
                 {{ 'Description' | translate }}
               </th>
 
@@ -298,7 +326,8 @@
 
             <!-- Tree -->
             <ng-container *ngIf="isTreeMode">
-              <tr *ngFor="let node of treeNodes;trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)" [class.b-highlight]="isRecentlyViewed(node.id)">
+              <tr *ngFor="let node of treeNodes;trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)"
+                [class.b-highlight]="isRecentlyViewed(node.id)">
 
                 <!-- Checkboxes -->
                 <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: node.id }">
@@ -310,14 +339,17 @@
 
                 <!-- Description -->
                 <td class="px-0">
-                  <div class="d-flex" [style.padding-left]="paddingLeft(node)" [style.padding-right]="paddingRight(node)">
+                  <div class="d-flex" [style.padding-left]="paddingLeft(node)"
+                    [style.padding-right]="paddingRight(node)">
                     <!-- Expand button -->
-                    <button class="border-0 px-2 mx-2" style="background-color: transparent; margin: -2px 0" [style.opacity]="!hasChildren(node) ? 0 : 1"
-                     [disabled]="!hasChildren(node)" (click)="onExpand(node)">
+                    <button class="border-0 px-2 mx-2" style="background-color: transparent; margin: -2px 0"
+                      [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
+                      (click)="onExpand(node)">
                       <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)"></fa-icon>
                     </button>
                     <!-- Expand button -->
-                    <div class="b-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"  (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight && node.fromResult">
+                    <div class="b-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"
+                      (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight && node.fromResult">
                       <ng-content *ngTemplateOutlet="tableDescriptionColumnTemplate;context: { id: node.id }">
                       </ng-content>
                       <b-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></b-spinner>
@@ -337,7 +369,9 @@
 
       <!-- Template reused in both tree and flat tables -->
       <ng-template #checkboxesColumn let-id="id">
-        <td>
+
+        <!-- In screen mode, this column contains the multiselect checkboxes -->
+        <td *ngIf="isScreenMode">
           <div class="ml-2 mr-2">
 
             <!-- checkbox -->
@@ -347,11 +381,16 @@
             </div>
           </div>
         </td>
+
+        <!-- In popup mode, this column is merely a clickable margin -->
+        <td class="b-pointer" (click)="onSelect(id)" *ngIf="!isScreenMode">
+
+        </td>
       </ng-template>
 
       <!-- Template reused in both tree and flat tables -->
       <ng-template #errorsColumn let-id="id">
-        <td class="pl-0 pr-0">
+        <td class="pl-0 pr-0" *ngIf="isScreenMode">
 
           <!-- Validation errors -->
           <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">

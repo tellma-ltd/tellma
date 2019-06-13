@@ -187,6 +187,9 @@ ngb-tabset li.nav-item .small {
 }
 
 ///////////////////////////////// BSharp /////////////////////////////////
+
+$hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
+
 .b-rtl {
   direction: rtl;
   text-align: right;
@@ -433,7 +436,7 @@ input::-ms-clear {
 
 // the below code styles the state flow chart, credit goes to
 // this gentleman: https://css-tricks.com/triangle-breadcrumbs/
-$flow-state-active: #f1f2f3; // #eaebec; // #f8f9fa;
+$flow-state-active: #f1f2f3; // #eaebec; // $hover-highlight-color;
 $flow-border: $gray-300;
 $flow-state: white;
 $flow-text: #6c757d;
@@ -629,16 +632,16 @@ table.b-master-table th {
 }
 
 .custom-control-label::before {
-  background-color: #f8f9fa; // light background
+  background-color: $hover-highlight-color; // light background
   border: 1px solid #6c757d; // border color
 }
 
 .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
-  background-color: #f8f9fa; // light background
+  background-color: $hover-highlight-color; // light background
 }
 
 .custom-control-input:checked ~ .custom-control-label::before {
-  background-color: #f8f9fa; // light background
+  background-color: $hover-highlight-color; // light background
 }
 
 // Override the color of the checkbox indicator
@@ -1077,6 +1080,20 @@ $container-margin: 15px;
 }
 
 .b-tree-node:hover {
-  background-color: #f8f9fa;
+  background-color: $hover-highlight-color;
   cursor: pointer;
+}
+
+.modal-dialog {
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.375) !important;
+}
+
+.b-tree-tile {
+  display: flex!important;
+  align-items: stretch !important;
+
+}
+
+.b-tree-tile:hover {
+  background-color: $hover-highlight-color;
 }
