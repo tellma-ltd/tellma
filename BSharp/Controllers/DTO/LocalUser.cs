@@ -7,7 +7,6 @@ using S = System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.Controllers.DTO
 {
-    [StrongDto("LocalUsers")]
     public class LocalUserForSave<TRoleMembership> : DtoForSaveKeyBase<int?>, IMultilingualName
     {
         [BasicField]
@@ -45,6 +44,8 @@ namespace BSharp.Controllers.DTO
     public class LocalUser<TRoleMembership> : LocalUserForSave<TRoleMembership>
     {
         public string ExternalId { get; set; }
+
+        public string State { get; set; }
 
         public string ImageId { get; set; }
 

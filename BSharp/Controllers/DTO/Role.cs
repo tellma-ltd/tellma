@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
-    [StrongDto("Roles")]
     public class RoleForSave<TPermission, TRequiredSignature, TRoleMembership> : DtoForSaveKeyBase<int?>
     {
         [BasicField]

@@ -23,7 +23,7 @@ export class LocalUsersMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.LocalUsers;
+    return this.workspace.current.LocalUser;
   }
 
   public get ws() {

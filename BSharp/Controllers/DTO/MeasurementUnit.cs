@@ -9,7 +9,6 @@ namespace BSharp.Controllers.DTO
     /// <summary>
     /// All savable DTOs must inherit from <see cref="DtoForSaveKeyBase{TKey}"/>
     /// </summary>
-    [StrongDto("MeasurementUnits")]
     public class MeasurementUnitForSave : DtoForSaveKeyBase<int?>
     {
         [BasicField]

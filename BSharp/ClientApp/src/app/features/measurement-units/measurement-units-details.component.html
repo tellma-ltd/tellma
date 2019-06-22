@@ -1,4 +1,4 @@
-<b-details apiEndpoint="measurement-units" viewId="measurement-units" collection="MeasurementUnits" [createFunc]="create"
+<b-details apiEndpoint="measurement-units" viewId="measurement-units" collection="MeasurementUnit" [createFunc]="create"
   [expand]="expand" [mode]="mode" [masterCrumb]="'MeasurementUnits' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -47,7 +47,7 @@
 
   <!-- Code -->
   <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
-    <div *ngIf="!isEdit">{{model?.Code}}</div>
+    <div *ngIf="!isEdit">{{ model?.Code }}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 

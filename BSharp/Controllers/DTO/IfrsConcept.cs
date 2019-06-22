@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
-    public class IfrsConcept : DtoForSaveKeyBase<string> // There is no DTO for save
+    public class IfrsConcept : DtoKeyBase<string> // There is no DTO for save
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -53,5 +53,18 @@ namespace BSharp.Controllers.DTO
         [BasicField]
         public bool? IsActive { get; set; }
 
+        [Display(Name = "CreatedAt")]
+        public DateTimeOffset? CreatedAt { get; set; }
+
+        [ForeignKey]
+        [Display(Name = "CreatedBy")]
+        public int? CreatedById { get; set; }
+
+        [Display(Name = "ModifiedAt")]
+        public DateTimeOffset? ModifiedAt { get; set; }
+
+        [ForeignKey]
+        [Display(Name = "ModifiedBy")]
+        public int? ModifiedById { get; set; }
     }
 }

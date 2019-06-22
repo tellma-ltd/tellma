@@ -1,0 +1,26 @@
+<ng-container [ngSwitch]="metavalue">
+  <!-- Loaded Value -->
+  <ng-container *ngSwitchCase="2" [ngSwitch]="control">
+    <span *ngSwitchCase="'error'" class="text-danger"> Error </span>
+    <span *ngSwitchCase="'text'">{{ textValue }}</span>
+    <span *ngSwitchCase="'choice'"> {{ choiceValue }} </span>
+    <div *ngSwitchCase="'state'" [style.text-align]="alignment" [style.background-color]="stateColor">
+        <span class="text-white px-1"> {{ stateValue }} </span>      
+    </div>
+    <span *ngSwitchCase="'boolean'">{{ booleanValue }}</span>
+    <span *ngSwitchCase="'number'" class="d-block" [style.text-align]="alignment">{{ value | number:digitsInfo }}</span>
+    <span *ngSwitchCase="'date'">{{ value  | date:'yyyy-MM-dd' }}</span>
+    <span *ngSwitchCase="'datetime'">{{ value | date:'yyyy-MM-dd HH:mm' }}</span>
+    <span *ngSwitchCase="'navigation'">{{ navigationValue }}</span>
+    <span *ngSwitchDefault>{{ value }}</span>
+  </ng-container>
+
+  <!-- Restricted Value -->
+  <span *ngSwitchCase="1" class="text-muted font-weight-bold" title="{{ 'Restricted' | translate }}">*******</span>
+
+  <!-- Value Not Loaded -->
+  <span *ngSwitchCase="0" class="text-muted font-italic">(Not Loaded)</span>
+
+  <!-- Invalid Path -->
+  <span *ngSwitchCase="-1" class="text-danger font-italic">({{ 'Error' | translate }})</span>
+</ng-container>

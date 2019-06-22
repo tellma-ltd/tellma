@@ -38,7 +38,7 @@
   </ng-container>
     <div class="flex-grow-1 d-inline-block b-mw-0">
       <div class="d-flex justify-content-between">
-        <span class="d-block text-truncate">{{ ws.getMultilingualValue('LocalUsers', id, 'Name') }}</span>
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('LocalUser', id, 'Name') }}</span>
       </div>
       <div class="d-flex justify-content-between mt-1 small">
         <b-restricted [metadata]="c[id].EntityMetadata?.Email"><span class="text-truncate">{{ c[id].Email }}</span></b-restricted>
@@ -52,7 +52,7 @@
 
 <!-- Description Column -->
 <ng-template #descriptionColumn let-id="id">
-    <span class="text-truncate">{{ ws.getMultilingualValue('LocalUsers', id, 'Name') }}</span>
+    <span class="text-truncate">{{ ws.getMultilingualValue('LocalUser', id, 'Name') }}</span>
 </ng-template>
 
 <!-- Table Templates -->
@@ -68,8 +68,9 @@
 
 <ng-template #header_LastAccess>{{ 'User_LastActivity' | translate }}</ng-template>
 <ng-template #row_LastAccess let-id="id">
-  <b-restricted [metadata]="c[id].EntityMetadata?.LastAccess">{{ c[id].LastAccess | date:'yyyy-MM-dd h:mm a' }}
-  </b-restricted>
+  <!-- <b-restricted [metadata]="c[id].EntityMetadata?.LastAccess">{{ c[id].LastAccess | date:'yyyy-MM-dd - HH:mm' }}
+  </b-restricted> -->
+  <b-switch baseCollection="LocalUser" path="LastAccess" [entityId]="id"></b-switch>
 </ng-template>
 
 <ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
@@ -93,9 +94,10 @@
 
 <!-- Templeate for a colorful state -->
 <ng-template #stateTemplate let-id="id">
-  <b-restricted [metadata]="c[id].EntityMetadata?.ExternalId"><span
+  <b-switch baseCollection="LocalUser" path="State" [entityId]="id"></b-switch>
+  <!-- <b-restricted [metadata]="c[id].EntityMetadata?.ExternalId"><span
       class="text-white pl-1 pr-1 b-slightly-bold text-truncate" [class.bg-secondary]="!c[id]?.ExternalId"
       [class.bg-success]="!!c[id]?.ExternalId">{{
-    (!!c[id]?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span></b-restricted>
+    (!!c[id]?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span></b-restricted> -->
 
 </ng-template>

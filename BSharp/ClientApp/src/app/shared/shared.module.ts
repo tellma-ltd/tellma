@@ -5,8 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { CdkTableModule } from '@angular/cdk/table';
-import { CdkTreeModule } from '@angular/cdk/tree';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import {
   NgbCollapseModule,
@@ -98,6 +96,8 @@ import { DropdownAppendToBodyDirective } from './details-picker/dropdown-append-
 import { ViewLinkComponent } from './view-link/view-link.component';
 import { ImageComponent } from './image/image.component';
 import { RestrictedComponent } from './restricted/restricted.component';
+import { SwitchComponent } from './switch/switch.component';
+import { AutoLabelComponent } from './auto-label/auto-label.component';
 
 // Icons to be used in the web app
 library.add(
@@ -144,7 +144,9 @@ library.add(
     DropdownAppendToBodyDirective,
     ViewLinkComponent,
     ImageComponent,
-    RestrictedComponent
+    RestrictedComponent,
+    SwitchComponent,
+    AutoLabelComponent
   ],
   imports: [
     CommonModule,
@@ -153,8 +155,6 @@ library.add(
     FontAwesomeModule,
     RouterModule.forChild([]),
     HttpClientModule,
-    CdkTableModule,
-    CdkTreeModule,
     ScrollingModule,
     NgbDropdownModule,
     NgbModalModule,
@@ -176,8 +176,6 @@ library.add(
     TranslateModule,
     FormsModule,
     FontAwesomeModule,
-    CdkTableModule,
-    CdkTreeModule,
 
     // Components & others
     SpinnerComponent,
@@ -200,7 +198,9 @@ library.add(
     ViewLinkComponent,
     ImageComponent,
     DropdownAppendToBodyDirective,
-    RestrictedComponent
+    RestrictedComponent,
+    SwitchComponent,
+    AutoLabelComponent
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },

@@ -25,7 +25,7 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.MeasurementUnits;
+    return this.workspace.current.MeasurementUnit;
   }
 
   public get ws() {

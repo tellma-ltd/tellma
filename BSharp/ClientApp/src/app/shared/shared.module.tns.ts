@@ -21,6 +21,8 @@ import { DatePickerComponent } from './date-picker/date-picker.component';
 import { TableComponent } from './table/table.component';
 import { DetailsPickerComponent } from './details-picker/details-picker.component';
 import { ViewLinkComponent } from './view-link/view-link.component';
+import { SwitchComponent } from './switch/switch.component';
+import { AutoLabelComponent } from './auto-label/auto-label.component';
 // import { NativeScriptLocalizeModule } from 'nativescript-localize/angular';
 
 @NgModule({
@@ -41,7 +43,9 @@ import { ViewLinkComponent } from './view-link/view-link.component';
     DatePickerComponent,
     TableComponent,
     DetailsPickerComponent,
-    ViewLinkComponent],
+    ViewLinkComponent,
+    SwitchComponent,
+    AutoLabelComponent],
   imports: [
     NativeScriptCommonModule
   ],

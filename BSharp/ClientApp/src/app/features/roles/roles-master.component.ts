@@ -23,7 +23,7 @@ export class RolesMasterComponent extends MasterBaseComponent {
   }
 
   public get c() {
-    return this.workspace.current.Roles;
+    return this.workspace.current.Role;
   }
 
   public get ws() {

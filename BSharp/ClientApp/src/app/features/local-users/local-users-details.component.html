@@ -1,5 +1,5 @@
 <b-details apiEndpoint="local-users" viewId="local-users" [expand]="expand" [idString]="idString"
-  collection="LocalUsers" [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [masterCrumb]="'Users' | translate"
+  collection="LocalUser" [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [masterCrumb]="'Users' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
   [documentHeaderTemplate]="documentHeader" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canAction, actionTooltip: actionTooltip },
@@ -155,12 +155,12 @@
           <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.RoleId">
             <b-restricted [metadata]="item.EntityMetadata?.Role">
               <b-view-link *ngIf="!isEdit" link="../../roles" [itemId]="item?.RoleId">{{
-              ws.getMultilingualValue('Roles',
+              ws.getMultilingualValue('Role',
               item.RoleId, 'Name') }}</b-view-link>
             </b-restricted>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)"
               apiEndpoint="roles" [detailsOptions]="[{ id: 'roles', name: '- not important -' }]"
-              [masterTemplate]="roleMaster" [detailsTemplate]="roleDetails" collection="Roles">
+              [masterTemplate]="roleMaster" [detailsTemplate]="roleDetails" collection="Role">
             </b-details-picker>
 
             <!-- The Role Details Modal -->

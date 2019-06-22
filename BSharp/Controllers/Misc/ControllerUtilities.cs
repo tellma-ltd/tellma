@@ -332,7 +332,7 @@ SELECT * FROM (
                         return "[dbo].[Custodies]";
 
                     case nameof(LocalUserForQuery):
-                        return "[dbo].[LocalUsers]";
+                        return "(SELECT *, IIF(ExternalId IS NULL, 'New', 'Confirmed') As [State] FROM [dbo].[LocalUsers])";
 
                     case nameof(MeasurementUnitForQuery):
                         return "(SELECT * FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')";

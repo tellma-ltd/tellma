@@ -333,7 +333,7 @@
             <!-- Tree -->
             <ng-container *ngIf="isTreeMode">
               <tr *ngFor="let node of treeNodes;trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)"
-                [class.b-highlight]="isRecentlyViewed(node.id)">
+                [class.b-highlight]="isRecentlyViewed(node.id)" [style.opacity]="node.fromResult ? 1 : 1">
 
                 <!-- Checkboxes -->
                 <ng-content *ngTemplateOutlet="checkboxesColumn;context: { id: node.id }">

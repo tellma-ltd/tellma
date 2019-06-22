@@ -28,19 +28,6 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "IfrsNotes_ForCredit")]
         public bool? ForCredit { get; set; }
 
-        [Display(Name = "CreatedAt")]
-        public DateTimeOffset? CreatedAt { get; set; }
-
-        [ForeignKey]
-        [Display(Name = "CreatedBy")]
-        public int? CreatedById { get; set; }
-
-        [Display(Name = "ModifiedAt")]
-        public DateTimeOffset? ModifiedAt { get; set; }
-
-        [ForeignKey]
-        [Display(Name = "ModifiedBy")]
-        public int? ModifiedById { get; set; }
     }
 
     public class IfrsNoteForQuery : IfrsNote

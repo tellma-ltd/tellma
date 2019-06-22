@@ -73,11 +73,11 @@ export class TenantWorkspace {
   // Keeps the state of every master-details pair in screen mode
   mdState: { [key: string]: MasterDetailsStore };
 
-  MeasurementUnits: EntityWorkspace<MeasurementUnit>;
+  MeasurementUnit: EntityWorkspace<MeasurementUnit>;
   Custodies: EntityWorkspace<Custody>;
-  Roles: EntityWorkspace<Role>;
+  Role: EntityWorkspace<Role>;
   Views: EntityWorkspace<View>;
-  LocalUsers: EntityWorkspace<LocalUser>;
+  LocalUser: EntityWorkspace<LocalUser>;
   Cultures: EntityWorkspace<Culture>;
   IfrsNote: EntityWorkspace<IfrsNote>;
   ProductCategory: EntityWorkspace<ProductCategory>;
@@ -90,11 +90,11 @@ export class TenantWorkspace {
 
     this.mdState = {};
 
-    this.MeasurementUnits = new EntityWorkspace<MeasurementUnit>();
+    this.MeasurementUnit = new EntityWorkspace<MeasurementUnit>();
     this.Custodies = new EntityWorkspace<Custody>();
-    this.Roles = new EntityWorkspace<Role>();
+    this.Role = new EntityWorkspace<Role>();
     this.Views = new EntityWorkspace<View>();
-    this.LocalUsers = new EntityWorkspace<LocalUser>();
+    this.LocalUser = new EntityWorkspace<LocalUser>();
     this.Cultures = new EntityWorkspace<Culture>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
     this.ProductCategory = new EntityWorkspace<ProductCategory>();
@@ -178,9 +178,12 @@ export class TenantWorkspace {
   getMultilingualValueImmediate(item: any, propName: string) {
     if (!!propName) {
       const propName2 = propName + '2';
+      const propName3 = propName + '3';
       if (!!item) {
         if (this.isSecondaryLanguage && !!item[propName2]) {
           return item[propName2];
+        } else if (this.isTernaryLanguage && !!item[propName3]) {
+          return item[propName3];
         } else {
           return item[propName];
         }
