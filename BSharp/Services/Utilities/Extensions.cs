@@ -148,8 +148,6 @@ namespace BSharp.Services.Utilities
             return @this.Name == "Parent" && @this.DeclaringType.GetProperty("Node")?.PropertyType == typeof(HierarchyId);
         }
 
-
-
         /// <summary>
         /// Returns only the part of the stream that is not enclosed inside brackets,
         /// And for everything else returns null
@@ -547,6 +545,16 @@ namespace BSharp.Services.Utilities
             }
 
             return result;
+        }
+
+        public static bool StartsWithIgnoreCase(this ArraySegment<char> segment, string prefix)
+        {
+            return segment.Count >= prefix.Length && Enumerable.Range(0, prefix.Length).All(i => char.ToLower(prefix[i]) == char.ToLower(segment[i]));
+        }
+
+        public static ArraySegment<char> SubString(this char[] array, int offset)
+        {
+            return new ArraySegment<char>(array, offset, array.Length - offset);
         }
     }
 }

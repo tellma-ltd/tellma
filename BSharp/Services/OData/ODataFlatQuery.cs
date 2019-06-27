@@ -433,11 +433,6 @@ namespace BSharp.Services.OData
             {
                 string FilterToSql(FilterExpression exp)
                 {
-                    if (exp is FilterBrackets bracketsExp)
-                    {
-                        return $"({FilterToSql(bracketsExp.Inner)})";
-                    }
-
                     if (exp is FilterConjunction conExp)
                     {
                         return $"({FilterToSql(conExp.Left)}) AND ({FilterToSql(conExp.Right)})";
@@ -446,6 +441,11 @@ namespace BSharp.Services.OData
                     if (exp is FilterDisjunction disExp)
                     {
                         return $"({FilterToSql(disExp.Left)}) OR ({FilterToSql(disExp.Right)})";
+                    }
+
+                    if(exp is FilterNegation notExp)
+                    {
+                        return $"NOT ({FilterToSql(notExp.Inner)})";
                     }
 
                     if (exp is FilterAtom atom)

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BSharp.Services.OData
@@ -43,28 +44,57 @@ namespace BSharp.Services.OData
         /// </summary>
         private static IEnumerable<string> Tokenize(string preprocessedFilter)
         {
-            List<string> symbols = new List<string>(new string[] {
+            // All the symbols, we use spaces before and after the operators to tell them apart
+            // Special handling for "Not(exp)" we need to allow for no space before or after it, and at
+            // the same time cannot get confused with a property names like "Notes"
+            List<string> symbols = new List<string>(new string[] { // the order matters
 
                     // Logical Operators
-                    " and ", " or ",
-
-                    // Brackets
+                    " and ", " or ", "not",
+                    
+                    // Parentheses
                     "(", ")",
                 });
 
-            List<string> tokens = new List<string>();
+
+            char[] filterArray = preprocessedFilter.ToCharArray();
             bool insideQuotes = false;
-            string acc = "";
+            StringBuilder acc = new StringBuilder();
             int index = 0;
-            while (index < preprocessedFilter.Length)
+
+            string MatchingOperator(int i)
             {
-                bool isSingleQuote = preprocessedFilter[index] == '\'';
+                var matchingSymbol = symbols.FirstOrDefault(s => filterArray.SubString(i)
+                        .StartsWithIgnoreCase(s));
 
-                if(isSingleQuote)
+                if(matchingSymbol == "not")
                 {
-                    bool followedBySingleQuote = (index + 1) < preprocessedFilter.Length && preprocessedFilter[index + 1] == '\'';
+                    // The operator "not" requires more elaborate handling, since it may not necessarily be preceded or superseded by a space
+                    // but we don't want to confuse it with properties that contain "not" in their name like "Notes"
+                    int prevIndex = i - 1;
+                    bool precededProperly = prevIndex < 0 || filterArray[prevIndex] == ' ' || filterArray[prevIndex] == '(';
+                    int nextIndex = i + matchingSymbol.Length;
+                    bool followedProperly = nextIndex >= filterArray.Length || filterArray[nextIndex] == ' ' || filterArray[nextIndex] == '(';
 
-                    acc += preprocessedFilter[index];
+                    // we ensure that 
+                    return precededProperly && followedProperly ? matchingSymbol : null;
+                }
+                else
+                {
+                    // all the other symbols can be precisely matched
+                    return matchingSymbol;
+                }
+            }
+
+            while (index < filterArray.Length)
+            {
+                bool isSingleQuote = filterArray[index] == '\'';
+
+                if (isSingleQuote)
+                {
+                    bool followedBySingleQuote = (index + 1) < filterArray.Length && filterArray[index + 1] == '\'';
+
+                    acc.Append(filterArray[index]);
                     index++;
 
                     if (!insideQuotes)
@@ -75,7 +105,7 @@ namespace BSharp.Services.OData
                     {
                         insideQuotes = false;
                     }
-                    else // followed by a single quote
+                    else // inside quotes and followed by a single quote
                     {
                         index++; // skip the other single quote, it's just there for escaping the first one
                     }
@@ -84,22 +114,27 @@ namespace BSharp.Services.OData
                 {
                     // Everything that is not inside single quotes is ripe for lexical analysis   
                     string matchingSymbol;
-                    if(!insideQuotes && (matchingSymbol = symbols.FirstOrDefault(preprocessedFilter.Substring(index).StartsWith)) != null)
-                    { 
+                    if (!insideQuotes && (matchingSymbol = MatchingOperator(index)) != null)
+                    {
                         // Add all that has been accumulating before the symbol
-                        if (!string.IsNullOrWhiteSpace(acc))
+                        if (acc.Length > 0)
                         {
-                            tokens.Add(acc.Trim());
-                            acc = "";
+                            var token = acc.ToString().Trim();
+                            if (!string.IsNullOrWhiteSpace(token))
+                            {
+                                yield return token;
+                            }
+
+                            acc = new StringBuilder();
                         }
 
-                        // And add the symbol
-                        tokens.Add(matchingSymbol.Trim());
+                        // And add the symbol  
+                        yield return matchingSymbol.ToLower().Trim();
                         index = index + matchingSymbol.Length;
                     }
                     else
                     {
-                        acc += preprocessedFilter[index];
+                        acc.Append(filterArray[index]);
                         index++;
                     }
                 }
@@ -111,46 +146,169 @@ namespace BSharp.Services.OData
                 throw new InvalidOperationException("Uneven number of single quotation marks in filter query parameter, quotation marks in literals should be escaped by specifying them twice");
             }
 
-            if (!string.IsNullOrWhiteSpace(acc))
+            if (acc.Length > 0)
             {
-                tokens.Add(acc.Trim());
+                var token = acc.ToString().Trim();
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    yield return token;
+                }
             }
-
-            return tokens;
         }
 
         /// <summary>
         /// Constructs and returns an abstract expression tree based on a token stream
         /// </summary>
-        public static FilterExpression ParseTokenStream(IEnumerable<string> tokenStream)
+        public static FilterExpression ParseTokenStream(IEnumerable<string> tokens)
         {
-            if (tokenStream == null)
+            // This is an implementation of the shunting-yard algorithm from Edsger Dijkstra https://bit.ly/1fEvvLI
+
+            var ops = new Stack<string>();
+            var output = new Stack<FilterExpression>();
+
+            // Inline function to make it easy to add tokens to the output stack
+            void AddToOutput(string token)
             {
-                throw new ArgumentNullException(nameof(tokenStream));
+                switch (token)
+                {
+                    case "and":
+                        if (output.Count < 2)
+                        {
+                            throw new InvalidOperationException("Badly formatted filter parameter, a conjunction 'and' was missing one or both of its 2 operands");
+                        }
+
+                        output.Push(new FilterConjunction { Left = output.Pop(), Right = output.Pop() });
+                        break;
+                    case "or":
+                        if (output.Count < 2)
+                        {
+                            throw new InvalidOperationException("Badly formatted filter parameter, a disjunction 'or' was missing one or both of its 2 operands");
+                        }
+
+                        output.Push(new FilterDisjunction { Left = output.Pop(), Right = output.Pop() });
+                        break;
+                    case "not":
+                        if (output.Count < 1)
+                        {
+                            throw new InvalidOperationException("Badly formatted filter parameter, a negation 'not' was missing its operand");
+                        }
+
+                        output.Push(new FilterNegation { Inner = output.Pop() });
+                        break;
+                    default:
+                        output.Push(FilterAtom.Parse(token));
+                        break;
+                }
             }
 
-            if (tokenStream.IsEnclosedInPairBrackets())
+            // The shunting-yard implementation
+            foreach (var token in tokens)
             {
-                return FilterBrackets.ParseStream(tokenStream);
+                if (token == "not")
+                {
+                    // if it is a logical negation push it on the operators stack
+                    ops.Push(token);
+                }
+                else if (_operators.TryGetValue(token, out OperatorInfo opInfo)) // if it is an operator
+                {
+                    // inline predicate determines how many items do we pop from the operator stack
+                    bool KeepPopping()
+                    {
+                        /* Modified from Wikipedia: Keep popping while...
+                          
+                            (the operator at the top of the operator stack is not a left parenthesis) AND 
+                            (   
+                                (there is a 'not' at the top of the operator stack) OR
+                                (there is an operator at the top of the operator stack with greater precedence) OR
+                                (the operator at the top of the operator stack has equal precedence and is left associative)
+                            )
+                         */
+
+                        if (ops.Count == 0)
+                        {
+                            // There is nothing left to pop
+                            return false;
+                        }
+
+                        string peek = ops.Peek();
+                        _operators.TryGetValue(peek, out OperatorInfo peekInfo);
+
+                        return peek != "(" &&
+                            (
+                                peek == "not" || peekInfo.Precedence > opInfo.Precedence ||
+                                (peekInfo.Precedence == opInfo.Precedence && peekInfo.IsLeftAssociative)
+                            );
+                    }
+
+                    while (KeepPopping())
+                    {
+                        AddToOutput(ops.Pop());
+                    }
+
+                    ops.Push(token);
+                }
+                else if (token == "(")
+                {
+                    ops.Push(token);
+                }
+                else if (token == ")")
+                {
+                    if (ops.Count == 0)
+                    {
+                        // There should have been a left paren in the stack
+                        throw new InvalidOperationException("Filter expression contains mismatched parentheses");
+                    }
+
+                    // Keep popping from the operator queue until you hit a left paren
+                    while (ops.Count > 0 && ops.Peek() != "(")
+                    {
+                        // Add to output
+                        AddToOutput(ops.Pop());
+                    }
+
+                    if (ops.Count > 0 && ops.Peek() == "(")
+                    {
+                        // Pop the left paren
+                        ops.Pop();
+                    }
+                    else
+                    {
+                        // There should have been a left paren in the stack
+                        throw new InvalidOperationException("Filter expression contains mismatched parentheses");
+                    }
+                }
+                else
+                {
+                    // It's a simple atom, add it the output
+                    AddToOutput(token);
+                }
             }
-            else if (tokenStream.OutsideBrackets().Any(e => e == "or"))
+
+            // Anything left in the operators queue, add it to the output
+            while (ops.Count > 0)
             {
-                // OR has lower precedence than AND
-                return FilterDisjunction.ParseStream(tokenStream);
+                if (ops.Peek() != "(")
+                {
+                    // Add to output
+                    AddToOutput(ops.Pop());
+                }
+                else
+                {
+                    // Depends whether you want to be forgiving of left parentheses that weren't closed
+                    // ops.Pop();
+
+                    // There should not be a left paren in the stack
+                    throw new InvalidOperationException("Filter expression contains mismatched parentheses");
+                }
             }
-            else if (tokenStream.OutsideBrackets().Any(e => e == "and"))
+
+            // If the filter expression is valid, there should be exactly one item in the output stack at this stage
+            if (output.Count != 1)
             {
-                return FilterConjunction.ParseStream(tokenStream);
-            }
-            else if (tokenStream.Count() <= 1)
-            {
-                return FilterAtom.Parse(tokenStream.SingleOrDefault() ?? "");
-            }
-            else
-            {
-                // Programmer mistake
                 throw new InvalidOperationException("Badly formatted filter parameter");
             }
+
+            return output.Pop();
         }
 
         public abstract IEnumerable<FilterAtom> Atoms();
@@ -164,5 +322,28 @@ namespace BSharp.Services.OData
         {
             return Atoms().GetEnumerator();
         }
+
+        private static readonly Dictionary<string, OperatorInfo> _operators = new Dictionary<string, OperatorInfo>
+        {
+            ["and"] = new OperatorInfo { Precedence = 6, Associativity = Associativity.Left },
+            ["or"] = new OperatorInfo { Precedence = 7, Associativity = Associativity.Left },
+        };
+
+        private struct OperatorInfo
+        {
+            public int Precedence { get; set; }
+            public Associativity Associativity { get; set; }
+
+            public bool IsLeftAssociative
+            {
+                get
+                {
+                    return Associativity == Associativity.Left;
+                }
+            }
+        }
+
+        private enum Associativity { Left, Right }
+
     }
 }
