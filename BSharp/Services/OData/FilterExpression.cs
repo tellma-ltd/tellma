@@ -64,8 +64,9 @@ namespace BSharp.Services.OData
 
             string MatchingOperator(int i)
             {
-                var matchingSymbol = symbols.FirstOrDefault(s => filterArray.SubString(i)
-                        .StartsWithIgnoreCase(s));
+                // This basically finds the first symbol that matches the beginning of the current index at filterArray
+                var matchingSymbol = symbols.FirstOrDefault(symbol => (filterArray.Length - i) >= symbol.Length && 
+                    Enumerable.Range(0, symbol.Length).All(j => char.ToLower(symbol[j]) == char.ToLower(filterArray[i + j])));
 
                 if(matchingSymbol == "not")
                 {

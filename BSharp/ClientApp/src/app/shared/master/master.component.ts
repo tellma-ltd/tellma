@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef,
 import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
-import { merge, Observable, of, Subject } from 'rxjs';
+import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
@@ -162,6 +162,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   private originalTableColumnPaths: string[];
   private _tableColumnPathsAndExtras: string[];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
+  private _subscriptions = new Subscription();
 
   public searchView: SearchView;
   public checked = {};
@@ -238,9 +239,11 @@ export class MasterComponent implements OnInit, OnDestroy {
 
     const otherSignals = this.notifyFetch$;
     const allSignals = merge(searchBoxSignals, otherSignals);
-    allSignals.pipe(
+    const sub = allSignals.pipe(
       switchMap(() => this.doFetch())
     ).subscribe();
+
+    this._subscriptions.add(sub);
   }
 
   ngOnInit() {
@@ -250,11 +253,13 @@ export class MasterComponent implements OnInit, OnDestroy {
 
     if (!this.alreadyInit) { // called once
       // this will only work in screen mode
-      this.route.paramMap.subscribe((params: ParamMap) => {
+      const sub = this.route.paramMap.pipe(tap((params: ParamMap) => {
         if (params.has('view')) {
           this.searchView = SearchView[params.get('view')];
         }
-      });
+      })).subscribe();
+
+      this._subscriptions.add(sub);
     }
 
     // Reset the state of the master component state
@@ -285,6 +290,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // This cancels any asynchronous backend calls
     this.notifyDestruct$.next();
+    this._subscriptions.unsubscribe();
     this.cancelAllTreeQueries();
   }
 
@@ -918,7 +924,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       expand: null,
       inactive: s.inactive,
       format: format
-    }).subscribe(
+    }).pipe(tap(
       (blob: Blob) => {
         this.showExportSpinner = false;
         const fileName = `${this.exportFileName || this.translate.instant('Export')} ${from}-${to} ${new Date().toDateString()}.${format}`;
@@ -931,7 +937,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       () => {
         this.showExportSpinner = false;
       }
-    );
+    )).subscribe();
   }
 
   public get showExportErrorMessage(): boolean {
@@ -998,12 +1004,12 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.actionValidationErrors = {};
 
     const ids = this.checkedIds;
-    action(ids).subscribe(
+    action(ids).pipe(tap(
       () => this.checked = {},
       (friendlyError: any) => {
         this.handleActionError(ids, friendlyError);
       }
-    );
+    )).subscribe();
   }
 
   onDelete() {
@@ -1012,7 +1018,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.actionValidationErrors = {};
 
     const ids = this.checkedIds;
-    this.crud.delete(ids).subscribe(
+    this.crud.delete(ids).pipe(tap(
       () => {
         // Update the UI to reflect deletion of items
         this.state.delete(ids, this.workspace.current[this.state.collectionName]);
@@ -1025,7 +1031,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       (friendlyError: any) => {
         this.handleActionError(ids, friendlyError);
       }
-    );
+    )).subscribe();
   }
 
   onDeleteWithDescendants() {
@@ -1034,7 +1040,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.actionValidationErrors = {};
 
     const ids = this.checkedIds;
-    this.crud.deleteWithDescendants(ids).subscribe(
+    this.crud.deleteWithDescendants(ids).pipe(tap(
       () => {
         // Update the UI to reflect deletion of items
         this.state.delete(ids, this.workspace.current[this.state.collectionName]);
@@ -1047,7 +1053,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       (friendlyError: any) => {
         this.handleActionError(ids, friendlyError);
       }
-    );
+    )).subscribe();
   }
 
   private handleActionError(ids: (string | number)[], friendlyError) {
