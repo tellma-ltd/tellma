@@ -97,6 +97,19 @@ export class ApiService {
 
         return obs$;
       },
+      saveForClient: (key: string, value: string) => {
+        const params = `key=${key}&value=${value}`;
+        const url = appconfig.apiAddress + `api/local-users/client?` + encodeURIComponent(params);
+        const obs$ = this.http.post<DataWithVersion<UserSettingsForClient>>(url, null).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
       invite: (id: number | string) => {
         this.showRotator = true;
         const url = appconfig.apiAddress + `api/local-users/invite?id=${id}`;

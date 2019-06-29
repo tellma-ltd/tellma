@@ -61,6 +61,8 @@ namespace BSharp.Data.Model
         /// </summary>
         public string ImageId { get; set; }
 
+        public ICollection<LocalUserSetting> Settings { get; set; }
+
         internal static void OnModelCreating(ModelBuilder builder)
         {
             // IsActive defaults to TRUE

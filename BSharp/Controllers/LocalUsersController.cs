@@ -11,23 +11,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using M = BSharp.Data.Model;
 
@@ -138,7 +131,7 @@ namespace BSharp.Controllers
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 int userId = _tenantInfo.UserId();
-                var user = await _db.LocalUsers.FirstOrDefaultAsync(e => e.Id == userId);
+                var user = await _db.LocalUsers.Include(e => e.Settings).FirstOrDefaultAsync(e => e.Id == userId);
 
                 // prepare the result
                 var forClient = new UserSettingsForClient
@@ -147,6 +140,7 @@ namespace BSharp.Controllers
                     Name = user.Name,
                     Name2 = user.Name2,
                     ImageId = user.ImageId,
+                    CustomSettings = user.Settings.ToDictionary(e => e.Key, e => e.Value),
                 };
 
                 var result = new DataWithVersion<UserSettingsForClient>
@@ -157,6 +151,46 @@ namespace BSharp.Controllers
 
                 return Ok(result);
             }, _logger);
+        }
+
+        [HttpPost("client")]
+        public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> SaveUserSetting(
+            [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))] [Required(ErrorMessage = nameof(RequiredAttribute))] string key,
+            [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))] string value)
+        {
+            var userId = _tenantInfo.UserId();
+            var setting = await _db.LocalUserSettings.FirstOrDefaultAsync(e => e.UserId == userId && e.Key == key);
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                if (setting != null)
+                {
+                    // DELETE
+                    _db.LocalUserSettings.Remove(setting);
+                }
+            }
+            else if (setting != null)
+            {
+                // UPDATE
+                setting.Value = value;
+            }
+            else
+            {
+                // INSERT
+                setting = new M.LocalUserSetting
+                {
+                    UserId = userId,
+                    Key = key,
+                    Value = value
+                };
+
+                               
+                _db.LocalUserSettings.Add(setting);
+                _db.Entry(setting).Property(nameof(M.ModelBase.TenantId)).CurrentValue = _tenantIdProvider.GetTenantId().Value;
+            }
+
+            await _db.SaveChangesAsync();
+            return await UserSettingsForClient();
         }
 
         [HttpPut("invite")]
@@ -375,7 +409,7 @@ namespace BSharp.Controllers
             var result = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "local-users");
 
             // This gives every user the ability to view their Local-User object
-            if(level == PermissionLevel.Read)
+            if (level == PermissionLevel.Read)
             {
                 var readMyUser = new AbstractPermission
                 {

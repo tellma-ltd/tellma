@@ -54,6 +54,8 @@ namespace BSharp.Data
 
         public DbSet<ProductCategory> ProductCategories { get; set; }
 
+        public DbSet<LocalUserSetting> LocalUserSettings { get; set; }
+
         #endregion
 
 
@@ -118,6 +120,9 @@ namespace BSharp.Data
             // Product Category
             AddTenantId<ProductCategory>(builder);
             ProductCategory.OnModelCreating(builder);
+
+            // Local User Settings
+            LocalUserSetting.OnModelCreating(builder);
         }
 
         /// <summary>
