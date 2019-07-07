@@ -146,7 +146,6 @@ namespace BSharp.Controllers
                 Skip = skip,
                 Top = memoryList.Count(),
                 OrderBy = args.OrderBy,
-                Desc = args.Desc,
                 TotalCount = totalCount,
 
                 Data = responseData,

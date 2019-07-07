@@ -4,8 +4,8 @@
     <span *ngSwitchCase="'error'" class="text-danger"> Error </span>
     <span *ngSwitchCase="'text'">{{ textValue }}</span>
     <span *ngSwitchCase="'choice'"> {{ choiceValue }} </span>
-    <div *ngSwitchCase="'state'" [style.text-align]="alignment" [style.background-color]="stateColor">
-        <span class="text-white px-1"> {{ stateValue }} </span>      
+    <div *ngSwitchCase="'state'" [style.text-align]="alignment" >
+        <span class="text-white px-2" [style.background-color]="stateColor"> {{ stateValue }} </span>      
     </div>
     <span *ngSwitchCase="'boolean'">{{ booleanValue }}</span>
     <span *ngSwitchCase="'number'" class="d-block" [style.text-align]="alignment">{{ value | number:digitsInfo }}</span>

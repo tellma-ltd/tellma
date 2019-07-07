@@ -27,10 +27,11 @@ let _cache: DtoDescriptor;
 
 export function metadata_IfrsNote(ws: TenantWorkspace, trx: TranslateService, _subtype: string): DtoDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (trx.currentLang !== _currentLang && ws.settings !== _settings) {
+  if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     _cache = metadata_IfrsConceptInner(ws, trx, _subtype);
+    _cache.apiEndpoint = 'ifrs-notes';
     _cache.properties['IsAggregate'] = { control: 'boolean', label: trx.instant('IfrsNotes_IsAggregate') };
     _cache.properties['ForDebit'] = { control: 'boolean', label: trx.instant('IfrsNotes_ForDebit') };
     _cache.properties['ForCredit'] = { control: 'boolean', label: trx.instant('IfrsNotes_ForCredit') };

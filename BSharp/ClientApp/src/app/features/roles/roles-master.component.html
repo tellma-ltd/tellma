@@ -1,12 +1,7 @@
-<b-master apiEndpoint="roles" viewId="roles" [mode]="mode" [expand]="expand"
+<b-master collection="Role" viewId="roles" [mode]="mode"
   [masterCrumb]="'Roles' | translate" [tileTemplate]="tile"
   [tableDescriptionColumnTemplate]="descriptionColumn"
-  [tableColumnPaths]="['Code', 'IsPublic', 'IsActive']"
-  [tableColumnTemplates]="{
-            'Code' : { headerTemplate : header_Code, rowTemplate : row_Code, weight : 1 },
-            'IsPublic' : { headerTemplate : header_IsPublic, rowTemplate : row_IsPublic, weight : 1 },
-            'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
-          }"
+  selectDefault="Code,IsPublic,IsActive"
   [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
@@ -36,17 +31,6 @@
 <ng-template #descriptionColumn let-id="id">
     <span class="text-truncate">{{ ws.getMultilingualValue('Role', id, 'Name') }}</span>
 </ng-template>
-
-<!-- Table Templates -->
-<ng-template #header_Code>{{ 'Code' | translate }}</ng-template>
-<ng-template #row_Code let-id="id"> {{ c[id].Code }} </ng-template>
-
-<ng-template #header_IsPublic>{{ 'Role_IsPublic' | translate }}</ng-template>
-<ng-template #row_IsPublic let-id="id"> {{ (c[id].IsPublic ? 'Yes' : 'No') | translate }} </ng-template>
-
-<ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
-<ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
-
 
 <!-- Multiselect Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>

@@ -8,6 +8,10 @@ using System.Text.RegularExpressions;
 
 namespace BSharp.Services.OData
 {
+    /// <summary>
+    /// The base class for all filters and contains utilities for parsing filter strings
+    /// IMPORTANT: there is a high fidality replica of this in TypeScript for the ClientApp , the two must be kept in sync
+    /// </summary>
     public abstract class FilterExpression : IEnumerable<FilterAtom>
     {
         public static FilterExpression Parse(string filter)

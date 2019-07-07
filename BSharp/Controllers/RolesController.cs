@@ -185,7 +185,7 @@ MERGE INTO [dbo].[Roles] AS t
                 // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
                 var code = nameof(RoleForQuery.Code);
 
-                query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {code} contains '{search}'");
+                query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }
 
             return query;

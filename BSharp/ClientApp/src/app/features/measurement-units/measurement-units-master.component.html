@@ -1,13 +1,8 @@
-<b-master apiEndpoint="measurement-units" viewId="measurement-units" [expand]="expand" [mode]="mode"
+<b-master collection="MeasurementUnit" viewId="measurement-units" [mode]="mode"
   [masterCrumb]="'MeasurementUnits' | translate" [tileTemplate]="tile"
   [tableDescriptionColumnTemplate]="descriptionColumn"
-  [tableColumnPaths]="['Code', 'UnitType', 'UnitAmount', 'BaseAmount', 'IsActive']" [tableColumnTemplates]="{
-            'Code' : { headerTemplate : header_Code, rowTemplate : row_Code, weight : 1 },
-            'UnitType' : { headerTemplate : header_UnitType, rowTemplate : row_UnitType, weight : 1 },
-            'UnitAmount' : { headerTemplate : header_UnitAmount, rowTemplate : row_UnitAmount, weight : 1 },
-            'BaseAmount' : { headerTemplate : header_BaseAmount, rowTemplate : row_BaseAmount, weight : 1 },
-            'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
-          }" [multiselectActions]="[
+  selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive"
+  [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
@@ -25,6 +20,7 @@
           }">
 </b-master>
 
+
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
@@ -35,47 +31,12 @@
   </div>
 </ng-template>
 
+
 <!-- Description Column -->
-<!-- <ng-template #descriptionColumn let-id="id">
-    <span class="text-truncate">{{ ws.getMultilingualValue('MeasurementUnit', id, 'Name') }}</span>
-</ng-template> -->
 <ng-template #descriptionColumn let-id="id">
   <span class="text-truncate">
     <b-switch baseCollection="MeasurementUnit" [entityId]="id"></b-switch>
   </span>
-</ng-template>
-
-<!-- Table Templates -->
-<ng-template #header_Code>{{ 'Code' | translate }}</ng-template>
-<!-- <ng-template #row_Code let-id="id"> {{ c[id].Code }} </ng-template> -->
-<ng-template #row_Code let-id="id">
-  <b-switch baseCollection="MeasurementUnit" path="Code" [entityId]="id"></b-switch>
-</ng-template>
-
-<ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
-<!-- <ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template> -->
-<ng-template #row_IsActive let-id="id">
-  <b-switch baseCollection="MeasurementUnit" path="IsActive" [entityId]="id"></b-switch>
-</ng-template>
-
-<ng-template #header_UnitType>{{ 'MU_UnitType' | translate }}</ng-template>
-<!-- <ng-template #row_UnitType let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.UnitType">{{ unitTypeLookup(c[id].UnitType) | translate }} </b-restricted></ng-template> -->
-<ng-template #row_UnitType let-id="id">
-  <b-switch baseCollection="MeasurementUnit" path="UnitType" [entityId]="id"></b-switch>
-</ng-template>
-
-<ng-template #header_UnitAmount>{{ 'MU_UnitAmount' | translate }}</ng-template>
-<!-- <ng-template #row_UnitAmount let-id="id"><b-restricted [metadata]="c[id].EntityMetadata?.UnitAmount"> {{ c[id].UnitAmount | number }}</b-restricted> </ng-template> -->
-<ng-template #row_UnitAmount let-id="id">
-  <b-switch baseCollection="MeasurementUnit" path="UnitAmount" [entityId]="id"></b-switch>
-</ng-template>
-
-
-<!-- <ng-template #header_BaseAmount>{{ 'MU_BaseAmount' | translate }}</ng-template> -->
-<ng-template #header_BaseAmount><b-auto-label baseCollection="MeasurementUnit" path="BaseAmount"></b-auto-label></ng-template>
-<!-- <ng-template #row_BaseAmount let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.BaseAmount">{{ c[id].BaseAmount | number }}</b-restricted> </ng-template> -->
-<ng-template #row_BaseAmount let-id="id">
-  <b-switch baseCollection="MeasurementUnit" path="BaseAmount" [entityId]="id"></b-switch>
 </ng-template>
 
 

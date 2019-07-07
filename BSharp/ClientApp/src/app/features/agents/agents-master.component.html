@@ -1,4 +1,4 @@
-<b-master [apiEndpoint]="'agents/' + agentType" [viewId]="agentType" [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb | translate"
+<!-- <b-master [apiEndpoint]="'agents/' + agentType" [viewId]="agentType" [mode]="mode" [masterCrumb]="masterCrumb | translate"
   [tileTemplate]="tile" [tableColumnPaths]="adjustForMultilingual(tableColumnPaths, ['Name', 'Title'], ws)" [tableColumnTemplates]="{
             'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
             'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
@@ -32,7 +32,7 @@
                 { template: createdByMe, expression: 'CreatedById eq me'}
               ]
             }">
-</b-master>
+</b-master> -->
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">

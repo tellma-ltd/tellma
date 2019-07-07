@@ -28,11 +28,6 @@ namespace BSharp.Controllers.DTO
         public string OrderBy { get; set; }
 
         /// <summary>
-        /// Whether the order by clause should be ascending or descending
-        /// </summary>
-        public bool Desc { get; set; } = false;
-
-        /// <summary>
         /// A search string that is interpreted in a customized way by every controller
         /// </summary>
         public string Search { get; set; }

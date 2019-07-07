@@ -67,7 +67,7 @@ namespace BSharp.Controllers
                 var name = nameof(CultureForQuery.Name);
                 var englishName = nameof(CultureForQuery.EnglishName);
 
-                query.Filter($"{name} contains '{search}' or {englishName} contains '{search}'");
+                query.Filter($"{name} {Ops.contains} '{search}' or {englishName} {Ops.contains} '{search}'");
             }
 
             return query;

@@ -1,12 +1,9 @@
-<b-master apiEndpoint="product-categories" viewId="product-categories" [expand]="expand" [mode]="mode"
+<b-master collection="ProductCategory" viewId="product-categories" [mode]="mode"
   [enableTreeView]="true" [masterCrumb]="'ProductCategories' | translate"
   [tileTemplate]="tile"  
   [tableDescriptionColumnTemplate]="descriptionColumn"
-  [tableColumnPaths]="['Code', 'IsActive']"
-  [tableColumnTemplates]="{
-            'Code' : { headerTemplate : header_Code, rowTemplate : row_Code, weight : 1 },
-            'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
-          }" [multiselectActions]="[
+  selectDefault="Code,IsActive"
+  [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
@@ -32,36 +29,11 @@
 </ng-template>
 
 <!-- Tree Node Template -->
-<ng-template #node let-node="node">
+<!-- <ng-template #node let-node="node">
   <span class="text-truncate">{{ ws.getMultilingualValue('ProductCategory', node.id, 'Name') }}
     <ng-container *ngIf="c[node.id]?.ChildCount">&nbsp;&nbsp;<span
         class="badge bg-white border">{{ c[node.id]?.ChildCount }}</span></ng-container></span>
-
-  <!-- &nbsp;&nbsp;<span *ngIf="c[node.id]?.ChildCount">({{ c[node.id]?.ChildCount }})</span> -->
-
-</ng-template>
-
-<!-- Table Templates -->
-<!-- <ng-template #header_Name>{{ ('Name' | translate) + ws.primaryPostfix }}</ng-template>
-<ng-template #row_Name let-id="id"> {{ c[id].Name }} </ng-template>
-
-<ng-template #header_Name2>{{ ('Name' | translate) + ws.secondaryPostfix }}</ng-template>
-<ng-template #row_Name2 let-id="id"> {{ c[id].Name2 }} </ng-template>
-
-<ng-template #header_Name3>{{ ('Name' | translate) + ws.ternaryPostfix }}</ng-template>
-<ng-template #row_Name3 let-id="id"> {{ c[id].Name3 }} </ng-template> -->
-
-<ng-template #header_Code>{{ 'Code' | translate }}</ng-template>
-<ng-template #row_Code let-id="id"> {{ c[id].Code }} </ng-template>
-
-<ng-template #header_Parent>{{ 'TreeParent' | translate }}</ng-template>
-<ng-template #row_Parent let-id="id">
-  <b-restricted [metadata]="c[id].EntityMetadata?.ParentId">
-    {{ ws.getMultilingualValue('ProductCategory', c[id]?.ParentId, 'Name') }} </b-restricted>
-</ng-template>
-
-<ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
-<ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }} </ng-template>
+</ng-template> -->
 
 
 <!-- Multiselect Actions -->

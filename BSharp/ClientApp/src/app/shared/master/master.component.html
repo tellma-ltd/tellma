@@ -25,7 +25,9 @@
           {{ masterCrumb }}
         </li>
       </ul>
+
     </div>
+
 
     <!-- Search and Filter -->
     <div class="p-1" [class.col-6]="isScreenMode" [class.col-12]="isPopupMode">
@@ -42,7 +44,7 @@
             <div class="bg-danger b-indicator" *ngIf="isAnyFilterChecked"></div>
           </button>
 
-          <ul class="b-filter-dropdown-menu small shadow" ngbDropdownMenu>
+          <ul class="b-filter-dropdown-menu small shadow" style="min-width: 250px" ngbDropdownMenu>
 
             <!-- Include Inactive -->
             <li class="dropdown-item" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{
@@ -57,13 +59,26 @@
                 <li class="dropdown-item" [class.selected]="isFilterChecked(groupName, e.expression)"
                   (click)="onFilterCheck(groupName, e.expression)">
                   <div>
-                    <ng-container *ngTemplateOutlet="e.template"></ng-container>
-
+                    <ng-container *ngTemplateOutlet="e.template || defaultExpressionTemplate"></ng-container>
+                    <ng-template #defaultExpressionTemplate>
+                      {{ e.expression }}
+                    </ng-template>
                   </div>
-
                 </li>
               </ng-container>
             </ng-container>
+
+            <!-- Custom Filter -->
+            <li>
+              <hr />
+            </li>
+            <li class="dropdown-item bg-white" style="cursor: default" [class.selected]="!!customFilter">
+              <div>
+                <input class="form-control b-input w-100 border-0" style="font-size: inherit"
+                  placeholder="{{ 'CustomFilter' | translate }}..." [(ngModel)]="customFilter"
+                  [ngModelOptions]="{updateOn: 'blur'}" />
+              </div>
+            </li>
 
             <!-- Clear Filter -->
             <li>
@@ -197,18 +212,20 @@
                 </button>
               </div>
             </ng-container>
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"  *ngIf="showDelete">
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
+              *ngIf="showDelete">
               <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)"
                 [disabled]="!canDelete">
                 {{ 'Delete' | translate }}
               </button>
             </div>
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"  *ngIf="showDeleteWithDescendants">
-                <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteWithDescendantsModal)"
-                  [disabled]="!canDelete">
-                  {{ 'DeleteWithDescendants' | translate }}
-                </button>
-              </div>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
+              *ngIf="showDeleteWithDescendants">
+              <button type="button" class="dropdown-item btn-light"
+                (click)="modalService.open(deleteWithDescendantsModal)" [disabled]="!canDelete">
+                {{ 'DeleteWithDescendants' | translate }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -246,8 +263,7 @@
             <div class="w-100 border bg-white" style="border-top-width: 0!important"
               *ngFor="let node of treeNodes; trackBy: trackByNodeId" [class.d-none]="!showTreeNode(node)">
               <div class="b-tree-tile" [class.b-highlight]="isRecentlyViewed(node.id)">
-                <div [style.padding-left]="paddingLeft(node)"
-                  [style.padding-right]="paddingRight(node)">
+                <div [style.padding-left]="paddingLeft(node)" [style.padding-right]="paddingRight(node)">
                   <button class="border-0 px-4 w-100 h-100" style="background-color: transparent"
                     [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
                     (click)="onExpand(node)">
@@ -255,12 +271,13 @@
                   </button>
                 </div>
                 &nbsp;
-                <div class="p-2 b-pointer flex-grow-1" (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight">
+                <div class="p-2 b-pointer flex-grow-1" (click)="onSelect(node.id)"
+                  [class.font-weight-bold]="node.highlight">
                   <ng-container *ngTemplateOutlet="tileTemplate;context: { id : node.id }">
                   </ng-container>
                 </div>
                 <div class="px-2 py-1" *ngIf="showNodeSpinner(node)">
-                    <b-spinner></b-spinner>
+                  <b-spinner></b-spinner>
                 </div>
               </div>
             </div>
@@ -291,15 +308,22 @@
               </th>
 
               <!-- Description -->
-              <th class="b-pointer2" [style.width]="colWidth('(Description)')">
+              <th class="b-pointer" [style.width]="colWidth('(Description)')"
+                [class.dropdown-toggle]="isOrderedBy('(Description)')" (click)="onOrderBy('(Description)')">
                 {{ 'Description' | translate }}
               </th>
 
               <!-- Custom feature columns -->
               <th class="b-pointer" *ngFor="let colPath of tableColumnPaths" [style.width]="colWidth(colPath)"
-                [class.dropdown-toggle]="orderBy === colPath" (click)="onOrderBy(colPath)">
-                <ng-content *ngTemplateOutlet="tableColumnTemplates[colPath].headerTemplate">
-                </ng-content>
+                [class.dropdown-toggle]="isOrderedBy(colPath)" (click)="onOrderBy(colPath)">
+                <b-auto-label [baseCollection]="collection" [path]="colPath" [subtype]="subtype">
+                </b-auto-label>
+              </th>
+              <th>
+                <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+                  title="{{ 'EditColumns' | translate }}" (click)="modalService.open(selectModal)">
+                  <fa-icon icon="cog"></fa-icon>
+                </button>
               </th>
             </tr>
           </thead>
@@ -327,6 +351,7 @@
                 <ng-content *ngTemplateOutlet="selectColumns;context: { id: id }">
                 </ng-content>
 
+                <td></td>
               </tr>
             </ng-container>
 
@@ -366,6 +391,10 @@
                 <!-- Column rows -->
                 <ng-content *ngTemplateOutlet="selectColumns;context: { id: node.id }">
                 </ng-content>
+
+                <td>
+
+                </td>
 
               </tr>
             </ng-container>
@@ -409,8 +438,8 @@
       <!-- Template reused in both tree and flat tables -->
       <ng-template #selectColumns let-id="id">
         <td class="b-pointer" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
-          <ng-container *ngTemplateOutlet="tableColumnTemplates[colPath].rowTemplate;context: { id: id }">
-          </ng-container>
+          <b-switch [baseCollection]="collection" [path]="colPath" [subtype]="subtype" [entityId]="id">
+          </b-switch>
         </td>
       </ng-template>
 
@@ -428,6 +457,7 @@
       <b-error-message *ngIf="showErrorMessage">
         {{ errorMessage }}
       </b-error-message>
+
     </div>
   </div>
 </div>
@@ -529,31 +559,31 @@
 <!-- Delete Modal -->
 <ng-template #deleteWithDescendantsModal let-modal>
 
-    <!-- header -->
-    <div class="modal-header">
-      <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
-      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-  
-    <!-- body -->
-    <div class="modal-body">
-      {{ 'DeleteWithDescendantsConfirmationMessage' | translate: { count: checkedCount } }}
-    </div>
-  
-    <!-- footer -->
-    <div class="modal-footer">
-      <button class="btn btn-danger" (click)="modal.dismiss(); onDeleteWithDescendants();">
-        <fa-icon icon="trash"></fa-icon>
-        &nbsp;{{ 'Delete' | translate }}
-      </button>
-      <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()" ngbAutofocus>
-        <fa-icon icon="times"></fa-icon>
-        &nbsp;{{ 'Cancel' | translate }}
-      </button>
-    </div>
-  </ng-template>
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title"> {{ 'Confirmation' | translate }} </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    {{ 'DeleteWithDescendantsConfirmationMessage' | translate: { count: checkedCount } }}
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-danger" (click)="modal.dismiss(); onDeleteWithDescendants();">
+      <fa-icon icon="trash"></fa-icon>
+      &nbsp;{{ 'Delete' | translate }}
+    </button>
+    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>
 
 <!-- Error Modal -->
 <ng-template #errorModal let-modal>
@@ -571,6 +601,35 @@
   <!-- body -->
   <div class="modal-body">
     {{ actionErrorMessage }}
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-primary" (click)="modal.dismiss();" ngbAutofocus>
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Dismiss' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+
+<!-- Select Modal (Temporary) -->
+<ng-template #selectModal let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title">
+       {{ 'EditColumns' | translate }}
+    </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    <input class="form-control b-input w-100" type="text" [(ngModel)]="stateSelect"
+      [ngModelOptions]="{updateOn: 'blur'}" />
   </div>
 
   <!-- footer -->

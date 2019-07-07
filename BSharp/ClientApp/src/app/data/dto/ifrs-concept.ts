@@ -27,7 +27,8 @@ export function metadata_IfrsConceptInner(ws: TenantWorkspace, trx: TranslateSer
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     return {
         select: _select,
-        orderby: ws.isSecondaryLanguage ? `${_select[1]},${_select[0]}` : ws.isTernaryLanguage ? `${_select[2]},${_select[0]}` : _select[0],
+        apiEndpoint: '',
+        orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
         format: (item: DtoKeyBase) => ws.getMultilingualValueImmediate(item, _select[0]),
         properties: {
             IfrsType: {

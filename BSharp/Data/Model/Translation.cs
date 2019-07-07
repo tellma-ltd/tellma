@@ -562,6 +562,9 @@ namespace BSharp.Data.Model
             En(Constants.Client, "Filter", "Filter"),
             Ar(Constants.Client, "Filter", "تصفية"),
 
+            En(Constants.Client, "CustomFilter", "Custom Filter"),
+            Ar(Constants.Client, "CustomFilter", "تصفية نصية"),
+
             En(Constants.Client, "IncludeInactive", "Include Inactive"),
             Ar(Constants.Client, "IncludeInactive", "إشمل غير المنشط"),
 
@@ -871,6 +874,9 @@ namespace BSharp.Data.Model
 
             En(Constants.Client, "RedirectingToSignIn", "Redirecting to sign-in page"),
             Ar(Constants.Client, "RedirectingToSignIn", "جار تحويلك إلى صفحة تسجيل الدخول"),
+
+            En(Constants.Client, "EditColumns", "Edit Columns"),
+            Ar(Constants.Client, "EditColumns", "تعديل الأعمدة"),
 
 
 

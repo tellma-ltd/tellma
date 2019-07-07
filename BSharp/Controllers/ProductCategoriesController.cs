@@ -186,7 +186,7 @@ MERGE INTO [dbo].[ProductCategories] AS t
                 var name3 = nameof(ProductCategoryForQuery.Name3);
                 var code = nameof(ProductCategoryForQuery.Code);
 
-                query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {name3} contains '{search}' or {code} contains '{search}'");
+                query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }
 
             return query;

@@ -109,6 +109,6 @@ namespace BSharp.Controllers.DTO
 
         public string Name2 { get; set; }
 
-        public Dictionary<string, string> CustomSettings { get; set; }
+        public Dictionary<string, string> CustomSettings { get; set; } = new Dictionary<string, string>();
     }
 }

@@ -1,7 +1,7 @@
 {
   "name": "BSharp",
   "short_name": "BSharp",
-  "theme_color": "#343a40",
+  "theme_color": "#f8f9fa",
   "background_color": "#f8f9fa",
   "display": "standalone",
   "scope": "/",

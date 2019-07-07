@@ -39,59 +39,11 @@ export class SwitchComponent implements OnInit {
   get pathArray(): string[] {
     if (this.path !== this._previousPath || !this._pathArray) {
       this._previousPath = this.path;
-      this._pathArray = (this.path || '').split('/').filter(e => !!e);
+      this._pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
     }
 
     return this._pathArray;
   }
-
-  // private dtoDescriptor(ignoreLast = false): DtoDescriptor {
-
-  //   if (!this.baseCollection) {
-  //     throw new Error(`The baseCollection is not specified, therefore cannot retrieve the DTO descriptor`);
-  //   }
-
-  //   const pathArray = this.pathArray;
-  //   const length = pathArray.length - (ignoreLast ? 1 : 0);
-  //   let currentDtoDescriptor = metadata[this.baseCollection](this.ws.current, this.translate, this.subtype);
-
-  //   for (let i = 0; i < length; i++) {
-  //     const step = pathArray[i];
-  //     const propDescriptor = currentDtoDescriptor.properties[step];
-
-  //     if (!propDescriptor) {
-  //       throw new Error(`Property ${step} does not exist`);
-
-  //     } else if (propDescriptor.control !== 'navigation') {
-  //       throw new Error(`Property ${step} is not a navigation property`);
-
-  //     } else {
-  //       const coll = propDescriptor.collection || propDescriptor.type;
-  //       const subtype = propDescriptor.subtype;
-
-  //       currentDtoDescriptor = metadata[coll](this.ws.current, this.translate, subtype);
-  //     }
-  //   }
-
-  //   return currentDtoDescriptor;
-  // }
-
-  // private propDescriptor(): PropDescriptor {
-
-  //   const pathArray = this.pathArray;
-  //   if (pathArray.length > 0) {
-  //     const dtoDescriptor = this.dtoDescriptor(true);
-  //     const lastStep = pathArray[pathArray.length - 1];
-  //     const result = dtoDescriptor.properties[lastStep];
-  //     if (!result) {
-  //       throw new Error(`Property '${lastStep}' does not exist`);
-  //     } else {
-  //       return result;
-  //     }
-  //   } else {
-  //     throw new Error(`The path is empty, therefore cannot retrieve the property descriptor`);
-  //   }
-  // }
 
   private dtoDescriptor(ignoreLast = false) {
     return dtoDescriptorImpl(this.pathArray, this.baseCollection, this.subtype, this.ws.current, this.translate, ignoreLast);

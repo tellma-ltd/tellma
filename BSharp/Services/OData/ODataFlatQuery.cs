@@ -282,7 +282,7 @@ namespace BSharp.Services.OData
 
                     // In this loop we ensure all levels to the selected properties
                     // have their Ids and Foreign Keys added to the select collection
-                    for (int i = 0; i < path.Length; i++)
+                    for (int i = 0; i <= path.Length; i++)
                     {
                         var subpath = new ArraySegment<string>(path, 0, i);
                         var join = joinTree[subpath];
@@ -468,7 +468,13 @@ namespace BSharp.Services.OData
                             throw new InvalidOperationException($"Could not find property {propName} on type {join.Type}");
                         }
 
+                        var idType = join.Type.GetProperty("Id").PropertyType;
                         var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                        bool isHierarchyId = propType == typeof(HierarchyId);
+                        if (isHierarchyId)
+                        {
+                            propType = Nullable.GetUnderlyingType(idType) ?? idType;
+                        }
 
                         // (C) Prepare the value (e.g. "'Huntington Rd.'")
                         var valueString = atom.Value;
@@ -485,7 +491,7 @@ namespace BSharp.Services.OData
                         }
                         else
                         {
-                            if (propType == typeof(string) || propType == typeof(char) || propType == typeof(HierarchyId))
+                            if (propType == typeof(string) || propType == typeof(char))
                             {
                                 if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
                                 {
@@ -513,28 +519,28 @@ namespace BSharp.Services.OData
                         string propSQL = $"[{symbol}].[{atom.Property}]";
                         switch (atom.Op?.ToLower() ?? "")
                         {
-                            case "gt":
+                            case Ops.gt:
                                 return $"{propSQL} > {paramSymbol}";
 
-                            case "ge":
+                            case Ops.ge:
                                 return $"{propSQL} >= {paramSymbol}";
 
-                            case "lt":
+                            case Ops.lt:
                                 return $"{propSQL} < {paramSymbol}";
 
-                            case "le":
+                            case Ops.le:
                                 return $"{propSQL} <= {paramSymbol}";
 
-                            case "eq":
+                            case Ops.eq:
                                 string eqSql = isNull ? "IS" : "=";
                                 return $"{propSQL} {eqSql} {paramSymbol}";
 
-                            case "ne":
+                            case Ops.ne:
                                 string neSql = isNull ? "IS NOT" : "<>";
                                 return $"{propSQL} {neSql} {paramSymbol}";
 
-                            case "contains": // Must be text
-                                if (propType != typeof(string))
+                            case Ops.contains: // Must be text
+                                if (propType != typeof(string) || isHierarchyId)
                                 {
                                     // Developer mistake
                                     throw new InvalidOperationException($"Property {propName} is not of type String, therefore cannot use the operator '{atom.Op}'");
@@ -542,8 +548,8 @@ namespace BSharp.Services.OData
 
                                 return $"{propSQL} LIKE N'%' + {paramSymbol} + N'%'";
 
-                            case "ncontains": // Must be text
-                                if (propType != typeof(string))
+                            case Ops.ncontains: // Must be text
+                                if (propType != typeof(string) || isHierarchyId)
                                 {
                                     // Developer mistake
                                     throw new InvalidOperationException($"Property {propName} is not of type String, therefore cannot use the operator '{atom.Op}'");
@@ -551,18 +557,9 @@ namespace BSharp.Services.OData
 
                                 return $"{propSQL} NOT LIKE N'%' + {paramSymbol} + N'%'";
 
-                            //case "childofh": // Must be hierarchy Id
-                            //    if (propType != typeof(HierarchyId))
-                            //    {
-                            //        // Developer mistake
-                            //        throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
-                            //    }
-
-                            //    return $"{propSQL}.GetAncestor(1) = {paramSymbol}";
-
-                            case "childof": // Must be hierarchy Id
+                            case Ops.childof: // Must be hierarchy Id
                                 {
-                                    if (propType != typeof(HierarchyId))
+                                    if (!isHierarchyId)
                                     {
                                         // Developer mistake
                                         throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
@@ -575,19 +572,9 @@ namespace BSharp.Services.OData
                                     return $"{propSQL}.GetAncestor(1) = {parentNode}";
                                 }
 
-                            //case "descendantofh": // Must be hierarchy Id
-                                
-                            //    if (propType != typeof(HierarchyId))
-                            //    {
-                            //        // Developer mistake
-                            //        throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
-                            //    }
-
-                            //    return $"{propSQL}.IsDescendantOf({paramSymbol}) = 1";
-
-                            case "descendantof": // Must be hierarchy Id
+                            case Ops.descof: // Must be hierarchy Id
                                 {
-                                    if (propType != typeof(HierarchyId))
+                                    if (!isHierarchyId)
                                     {
                                         // Developer mistake
                                         throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");

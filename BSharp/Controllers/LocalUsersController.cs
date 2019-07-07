@@ -160,6 +160,7 @@ namespace BSharp.Controllers
         {
             var userId = _tenantInfo.UserId();
             var setting = await _db.LocalUserSettings.FirstOrDefaultAsync(e => e.UserId == userId && e.Key == key);
+            bool hasChanged = false;
 
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -167,12 +168,17 @@ namespace BSharp.Controllers
                 {
                     // DELETE
                     _db.LocalUserSettings.Remove(setting);
+                    hasChanged = true;
                 }
             }
             else if (setting != null)
             {
                 // UPDATE
-                setting.Value = value;
+                if(setting.Value != value)
+                {
+                    setting.Value = value;
+                    hasChanged = true;
+                }
             }
             else
             {
@@ -187,9 +193,18 @@ namespace BSharp.Controllers
                                
                 _db.LocalUserSettings.Add(setting);
                 _db.Entry(setting).Property(nameof(M.ModelBase.TenantId)).CurrentValue = _tenantIdProvider.GetTenantId().Value;
+                hasChanged = true;
             }
 
-            await _db.SaveChangesAsync();
+            if(hasChanged)
+            {
+                // Update the version
+                var user = await _db.LocalUsers.FirstOrDefaultAsync(e => e.Id == userId);
+                user.UserSettingsVersion = Guid.NewGuid();
+
+                // Save all changes
+                await _db.SaveChangesAsync();
+            }
             return await UserSettingsForClient();
         }
 
@@ -449,7 +464,7 @@ namespace BSharp.Controllers
                 // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
                 var email = nameof(LocalUserForQuery.Email);
 
-                query.Filter($"{name} contains '{search}' or {name2} contains '{search}' or {email} contains '{search}'");
+                query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {email} {Ops.contains} '{search}'");
             }
 
             return query;

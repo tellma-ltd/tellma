@@ -13,7 +13,6 @@ import { TenantForClient } from './dto/tenant';
 import { IfrsNote } from './dto/ifrs-note';
 import { ProductCategory } from './dto/product-category';
 import { Subject } from 'rxjs';
-import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
 
 export enum MasterStatus {
 
@@ -30,10 +29,10 @@ export enum MasterStatus {
 export enum MasterDisplayMode {
 
   // shows a flat table in table view, and plain tiles in tiles view
-  flat = 1,
+  flat = 'flat',
 
   // shows a tree table in table view, and a tiles tree in tiles view
-  tree = 2,
+  tree = 'tree',
 }
 
 export enum DetailsStatus {
@@ -259,22 +258,26 @@ export class Workspace {
   }
 }
 
+export const DEFAULT_PAGE_SIZE = 25;
+
 export class MasterDetailsStore {
 
   displayMode: MasterDisplayMode;
-  top = 40;
+  top = DEFAULT_PAGE_SIZE;
   skip = 0;
   search: string = null;
-  orderBy: string = null;
-  desc: boolean;
+  orderby: string = null;
   total = 0;
   expand: string;
   inactive = false;
-  filterState: {
+  select: string = null;
+  builtInFilter = '';
+  builtInFilterSelections: {
     [groupName: string]: {
       [expression: string]: boolean
     }
   } = {};
+  customFilter: string = null;
 
   collectionName: string;
   bag: { [key: string]: any; };
@@ -287,7 +290,7 @@ export class MasterDetailsStore {
   detailsStatus: DetailsStatus;
 
   public get isTreeMode(): boolean {
-    return this.displayMode === MasterDisplayMode.tree && (!this.orderBy || this.orderBy === 'Node');
+    return this.displayMode === MasterDisplayMode.tree && (!this.orderby || this.orderby === 'Node');
   }
 
   private _oldTreeNodes: NodeInfo[];

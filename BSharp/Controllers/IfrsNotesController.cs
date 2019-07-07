@@ -175,7 +175,7 @@ MERGE INTO [dbo].[IfrsConcepts] AS t
                 var label2 = nameof(IfrsNoteForQuery.Label2);
                 var label3 = nameof(IfrsNoteForQuery.Label3); // TODO
 
-                query.Filter($"{label} contains '{search}' or {label2} contains '{search}' or {label3} contains '{search}'");
+                query.Filter($"{label} {Ops.contains} '{search}' or {label2} {Ops.contains} '{search}' or {label3} {Ops.contains} '{search}'");
             }
 
             return query;

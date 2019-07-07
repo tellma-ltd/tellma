@@ -1009,7 +1009,7 @@ UNION
                 foreach (var atom in filterExp)
                 {
                     // AddPath(atom.Path, atom.Property);
-                    filterPathTree.AddPath(atom.Path);
+                    filterPathTree.AddPath(atom.Path, atom.Property);
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
@@ -1142,7 +1142,7 @@ UNION
         {
             public Type Type { get; set; }
 
-            public int IdIndex { get; set; }
+            public int IdIndex { get; set; } = -1; // To make critical bugs go down with a bang
 
             public PropertyInfo IdProperty { get; set; }
 

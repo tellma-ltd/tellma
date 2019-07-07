@@ -7,7 +7,7 @@ import { metadata_Role } from './role';
 import { metadata_ProductCategory } from './product-category';
 import { metadata_IfrsNote } from './ifrs-note';
 
-export const metadata: { [key: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => DtoDescriptor } = {
+export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => DtoDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
     LocalUser: metadata_LocalUser,
     Role: metadata_Role,
@@ -25,7 +25,12 @@ export interface DtoDescriptor {
     /**
      * When ordering by a nav property of this DTO type, this value specifies the OData 'orderby' value to use
      */
-    orderby: string;
+    orderby: string[];
+
+    /**
+     * The server endpoint from which to retrieve DTOs of this type, after the 'https://www.bsharp.online/api/' part
+     */
+    apiEndpoint: string;
 
     /**
      * A function that returns a display string representing the entity
@@ -145,7 +150,7 @@ export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
     | NumberPropDescriptor | DatePropDscriptor | DatetimePropDscriptor | NavigationPropDescriptor | StatePropDescriptor;
 
 export function dtoDescriptorImpl(pathArray: string[], baseCollection: string, baseSubtype: string,
-    ws: TenantWorkspace, trx: TranslateService, ignoreLast = false): DtoDescriptor {
+    ws: TenantWorkspace, trx: TranslateService, ignoreLast = false, labels: string[] = null): DtoDescriptor {
 
     if (!baseCollection) {
         throw new Error(`The baseCollection is not specified, therefore cannot retrieve the DTO descriptor`);
@@ -165,6 +170,10 @@ export function dtoDescriptorImpl(pathArray: string[], baseCollection: string, b
             throw new Error(`Property ${step} is not a navigation property`);
 
         } else {
+            if (!!labels) {
+                labels.push(propDesc.label);
+            }
+
             const coll = propDesc.collection || propDesc.type;
             const subtype = propDesc.subtype;
 
@@ -176,15 +185,19 @@ export function dtoDescriptorImpl(pathArray: string[], baseCollection: string, b
 }
 
 export function propDescriptorImpl(pathArray: string[], baseCollection: string, baseSubtype: string,
-    ws: TenantWorkspace, trx: TranslateService): PropDescriptor {
+    ws: TenantWorkspace, trx: TranslateService, labels: string[] = null): PropDescriptor {
 
     if (pathArray.length > 0) {
-        const dtoDesc = dtoDescriptorImpl(pathArray, baseCollection, baseSubtype, ws, trx, true);
+        const dtoDesc = dtoDescriptorImpl(pathArray, baseCollection, baseSubtype, ws, trx, true, labels);
         const lastStep = pathArray[pathArray.length - 1];
         const result = dtoDesc.properties[lastStep];
         if (!result) {
             throw new Error(`Property '${lastStep}' does not exist`);
         } else {
+            if (!!labels) {
+                labels.push(result.label);
+            }
+
             return result;
         }
     } else {

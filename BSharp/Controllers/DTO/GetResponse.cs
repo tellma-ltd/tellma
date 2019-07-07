@@ -27,8 +27,6 @@ namespace BSharp.Controllers.DTO
 
         public string OrderBy { get; set; }
 
-        public bool Desc { get; set; }
-
         public int TotalCount { get; set; }
     }
 }

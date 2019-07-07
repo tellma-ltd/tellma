@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { DtoDescriptor, metadata, PropDescriptor, dtoDescriptorImpl, propDescriptorImpl } from '~/app/data/dto/metadata';
+import { propDescriptorImpl, dtoDescriptorImpl } from '~/app/data/dto/metadata';
 
 @Component({
   selector: 'b-auto-label',
@@ -32,20 +32,17 @@ export class AutoLabelComponent implements OnInit {
   get pathArray(): string[] {
     if (this.path !== this._previousPath || !this._pathArray) {
       this._previousPath = this.path;
-      this._pathArray = (this.path || '').split('/').filter(e => !!e);
+      this._pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
     }
 
     return this._pathArray;
   }
 
-  private propDescriptor() {
-    return propDescriptorImpl(this.pathArray, this.baseCollection, this.subtype, this.ws.current, this.translate);
-  }
-
   get label(): string {
     try {
-      const prop = this.propDescriptor();
-      return prop.label;
+      const labels = [];
+      propDescriptorImpl(this.pathArray, this.baseCollection, this.subtype, this.ws.current, this.translate, labels);
+      return labels.join(' / ');
     } catch (ex) {
       console.error(ex.message);
       return `(${this.translate.instant('Error')})`;

@@ -98,8 +98,9 @@ export class ApiService {
         return obs$;
       },
       saveForClient: (key: string, value: string) => {
-        const params = `key=${key}&value=${value}`;
-        const url = appconfig.apiAddress + `api/local-users/client?` + encodeURIComponent(params);
+        const keyParam = `key=${encodeURIComponent(key)}`;
+        const valueParam = !!value ? `&value=${encodeURIComponent(value)}` : '';
+        const url = appconfig.apiAddress + `api/local-users/client?` + keyParam + valueParam;
         const obs$ = this.http.post<DataWithVersion<UserSettingsForClient>>(url, null).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
