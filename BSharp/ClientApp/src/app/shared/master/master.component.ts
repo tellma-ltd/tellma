@@ -106,6 +106,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   selectDefault: string;
 
   @Input()
+  selectForTiles: string;
+
+  @Input()
   skipInput: number;
 
   @Input()
@@ -253,6 +256,10 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.searchView = (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
     let hasChanged = false;
 
+    // default display mode
+    let displayMode: MasterDisplayMode = this.enableTreeView ?
+      MasterDisplayMode.tree : MasterDisplayMode.flat; // Default search view
+
     // here we handle the URL parameters
     // taking a snapshot is enough as this is only required first time the screen loads
     // subsequent changes (while the component is alive) are set in the state before the url
@@ -276,17 +283,11 @@ export class MasterComponent implements OnInit, OnDestroy {
       }
 
       // display mode: has a precise default value
-      const displayMode: MasterDisplayMode = !!params.get('display') && !!MasterDisplayMode[params.get('display')] ?
-        MasterDisplayMode[params.get('display')] :
-        this.enableTreeView ? MasterDisplayMode.tree : MasterDisplayMode.flat; // Default search view
-
-      if (this.state.displayMode !== displayMode) {
-        this.state.displayMode = displayMode;
-        hasChanged = true;
-      }
+      displayMode = !!params.get('display') && !!MasterDisplayMode[params.get('display')] ?
+        MasterDisplayMode[params.get('display')] : displayMode; // Default search view
 
       // select
-      const urlSelect = params.get('select') ||  this.selectFromUserSettings || this.selectDefault || '';
+      const urlSelect = params.get('select') || this.selectFromUserSettings || this.selectDefault || '';
       if (urlSelect !== this.state.select) {
         this.state.select = urlSelect;
         hasChanged = true;
@@ -320,6 +321,12 @@ export class MasterComponent implements OnInit, OnDestroy {
         this.state.skip = urlSkip;
         hasChanged = true;
       }
+    }
+
+    // display mode: has a precise default value
+    if (this.state.displayMode !== displayMode) {
+      this.state.displayMode = displayMode;
+      hasChanged = true;
     }
 
     // (hasChanged === true) means we navigated to this screen with different url params than last time
@@ -413,7 +420,6 @@ export class MasterComponent implements OnInit, OnDestroy {
         s.masterStatus = MasterStatus.loaded;
         s.top = response.Top;
         s.skip = response.Skip;
-        s.orderby = response.OrderBy || null;
         s.total = response.TotalCount;
         s.bag = response.Bag;
         s.collectionName = response.CollectionName;
@@ -588,6 +594,11 @@ export class MasterComponent implements OnInit, OnDestroy {
     const resultPaths: { [path: string]: boolean } = {};
     const baseDtoDescriptor = this.dtoDescriptor;
 
+    // (0) add select for tiles
+    if (this.selectForTiles) {
+      this.selectForTiles.split(',').forEach(e => resultPaths[e] = true);
+    }
+
     // (1) append the current DTO type default properties (usually 'Name', 'Name2' and 'Name3')
     baseDtoDescriptor.select.forEach(e => resultPaths[e] = true);
 
@@ -629,7 +640,9 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   private get selectFromUserSettings(): string {
-    return this.workspace.current.userSettings.CustomSettings[this.selectKey];
+    const settings = this.workspace.current.userSettings;
+    settings.CustomSettings = settings.CustomSettings || {};
+    return settings.CustomSettings[this.selectKey];
   }
 
   ////////////// UI Bindings below
@@ -1424,15 +1437,19 @@ export class MasterComponent implements OnInit, OnDestroy {
       this.urlStateChange();
 
       // Save the new value with the server, to be used again afterwards
-      this.workspace.current.userSettings.CustomSettings[this.selectKey] = v;
+      const settings = this.workspace.current.userSettings;
+      if (!settings.CustomSettings) {
+        settings.CustomSettings = {};
+      }
+      settings.CustomSettings[this.selectKey] = v;
       this.api.localUsersApi(this.notifyDestruct$).saveForClient(this.selectKey, v)
-      .pipe(
-        tap(x => {
-          this.workspace.current.userSettings = x.Data;
-          this.workspace.current.userSettingsVersion = x.Version;
-        })
-      )
-      .subscribe();
+        .pipe(
+          tap(x => {
+            this.workspace.current.userSettings = x.Data;
+            this.workspace.current.userSettingsVersion = x.Version;
+          })
+        )
+        .subscribe();
     }
   }
 }

@@ -63,7 +63,6 @@ export function metadata_LocalUser(ws: TenantWorkspace, trx: TranslateService, _
           control: 'state',
           label: trx.instant('State'),
           choices: ['New', 'Confirmed'],
-//           alignment: 'center',
           format: (c: string) => {
             switch (c) {
               case 'New': return trx.instant('User_New');

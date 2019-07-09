@@ -473,7 +473,6 @@ export class MasterDetailsStore {
       const item = entityWs[id];
 
       // When instructed, ensure the ancestors are all present and loaded, return otherwise
-
       if (mode === TreeRefreshMode.includeIfAncestorsLoaded) {
         let ancestor = item;
 
@@ -488,7 +487,7 @@ export class MasterDetailsStore {
         }
       }
 
-      // get (or create) the parent and set its status and isExpand according to refreshMode
+      // get (or create) the parent
       let newParentNode: NodeInfo = null;
       if (!!item.ParentId) {
 
@@ -499,6 +498,7 @@ export class MasterDetailsStore {
           newParentNode.isExpanded = true;
 
           // keep the expansion state from before the refresh
+          // When mode === cleanSlate, this dictionary will be empty anyways
           const oldParentNode = currentNodesDic[item.ParentId];
           if (!!oldParentNode) {
             newParentNode.isExpanded = oldParentNode.isExpanded;
@@ -520,6 +520,14 @@ export class MasterDetailsStore {
         n.index = ++newParentNode.lastChildIndex;
       } else {
         n.index = ++rootsInfo.lastIndex;
+      }
+
+      // if an old node was loading its children in progress, we retain its status and isExpand
+      // useful when you expand multiple nodes at the same time
+      const oldNode = currentNodesDic[id];
+      if (!!oldNode && oldNode.status === MasterStatus.loading) {
+        n.status = oldNode.status;
+        n.isExpanded = oldNode.isExpanded;
       }
 
       nodesDic[id] = n;

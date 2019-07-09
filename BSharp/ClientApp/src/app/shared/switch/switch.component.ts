@@ -53,7 +53,7 @@ export class SwitchComponent implements OnInit {
     return propDescriptorImpl(this.pathArray, this.baseCollection, this.subtype, this.ws.current, this.translate);
   }
 
-  private entity(): DtoKeyBase {
+  private entity(meta: { meta: 0 | 1 | 2 } = null): DtoKeyBase {
 
     if (!this.baseCollection) {
       throw new Error(`The baseCollection is not specified, therefore cannot retrieve the value`);
@@ -72,8 +72,15 @@ export class SwitchComponent implements OnInit {
 
       // get the property descriptor
       const step = pathArray[i];
-      const currentPropDescriptor = currentDtoDescriptor.properties[step];
 
+      // in case the navigation property was forbidden or not even loaded
+      const s = currentEntity.EntityMetadata[step] || 0;
+      if (s < 2) {
+        meta.meta = s;
+        return null;
+      }
+
+      const currentPropDescriptor = currentDtoDescriptor.properties[step];
       if (!currentPropDescriptor) {
         throw new Error(`Property '${step}' does not exist`);
 
@@ -84,6 +91,10 @@ export class SwitchComponent implements OnInit {
         const coll = currentPropDescriptor.collection || currentPropDescriptor.type;
         const subtype = currentPropDescriptor.subtype;
         const id = currentEntity[currentPropDescriptor.foreignKeyName];
+        if (!id) {
+          return null;
+        }
+
         currentEntity = this.ws.current[coll][id];
         currentDtoDescriptor = metadata[coll](this.ws.current, this.translate, subtype);
       }
@@ -115,6 +126,10 @@ export class SwitchComponent implements OnInit {
       if (pathArray.length === 0) {
         return entity;
       } else {
+        if (!entity) {
+          return null;
+        }
+
         const propName = pathArray[pathArray.length - 1];
         const dtoDescriptor = this.dtoDescriptor(true);
         const propDescriptor = dtoDescriptor.properties[propName];
@@ -143,16 +158,40 @@ export class SwitchComponent implements OnInit {
       if (pathArray.length === 0) {
         return 2;
       } else {
-        const entity = this.entity();
+        const meta: { meta: 0 | 1 | 2 } = { meta: 2 };
+        const entity = this.entity(meta);
+
+        // this means somewhere along the nav chain, there is a nav property that isn't loaded
+        if (meta.meta === 0) {
+          // here we check whether the nav property was even
+          // valid to begin with or valid but not loaded
+          return this.control === 'error' ? -1 : 0;
+        } else if (meta.meta === 1) {
+          // not allowed to see it
+          return 1;
+        }
+
+        // after the previous check, this means the property is loaded and it is null
+        if (!entity) {
+          return 2;
+        }
+
         const propName = pathArray[pathArray.length - 1];
+        if (propName === 'Id') {
+          return 2; // Id is always loaded
+        }
+
         const result = entity.EntityMetadata[propName] || 0;
         if (result === 0) {
+          // here we check whether the nav property was even
+          // valid to begin with or valid but not loaded
           return this.control === 'error' ? -1 : 0;
         } else {
           return result;
         }
       }
-    } catch {
+    } catch (ex) {
+      console.error(ex.message);
       return -1;
     }
   }

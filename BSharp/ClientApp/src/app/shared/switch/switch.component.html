@@ -1,11 +1,12 @@
 <ng-container [ngSwitch]="metavalue">
   <!-- Loaded Value -->
   <ng-container *ngSwitchCase="2" [ngSwitch]="control">
+
     <span *ngSwitchCase="'error'" class="text-danger"> Error </span>
     <span *ngSwitchCase="'text'">{{ textValue }}</span>
     <span *ngSwitchCase="'choice'"> {{ choiceValue }} </span>
-    <div *ngSwitchCase="'state'" [style.text-align]="alignment" >
-        <span class="text-white px-2" [style.background-color]="stateColor"> {{ stateValue }} </span>      
+    <div *ngSwitchCase="'state'" [style.text-align]="alignment">
+      <span class="text-white px-2" [style.background-color]="stateColor"> {{ stateValue }} </span>
     </div>
     <span *ngSwitchCase="'boolean'">{{ booleanValue }}</span>
     <span *ngSwitchCase="'number'" class="d-block" [style.text-align]="alignment">{{ value | number:digitsInfo }}</span>
@@ -13,6 +14,7 @@
     <span *ngSwitchCase="'datetime'">{{ value | date:'yyyy-MM-dd HH:mm' }}</span>
     <span *ngSwitchCase="'navigation'">{{ navigationValue }}</span>
     <span *ngSwitchDefault>{{ value }}</span>
+
   </ng-container>
 
   <!-- Restricted Value -->

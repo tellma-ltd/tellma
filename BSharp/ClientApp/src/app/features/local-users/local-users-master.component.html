@@ -1,7 +1,7 @@
 <b-master collection="LocalUser" viewId="local-users"
   [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
   [tableDescriptionColumnTemplate]="descriptionColumn"
-  selectDefault="Email,State,LastAccess,IsActive"
+  selectDefault="Email,State,LastAccess,IsActive" selectForTiles="ImageId,Email,State"
   [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }

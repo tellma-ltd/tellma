@@ -1,7 +1,7 @@
 <b-master collection="MeasurementUnit" viewId="measurement-units" [mode]="mode"
   [masterCrumb]="'MeasurementUnits' | translate" [tileTemplate]="tile"
   [tableDescriptionColumnTemplate]="descriptionColumn"
-  selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive"
+  selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive" selectForTiles="Code"
   [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }

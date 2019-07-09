@@ -2,7 +2,7 @@
   [enableTreeView]="true" [masterCrumb]="'ProductCategories' | translate"
   [tileTemplate]="tile"  
   [tableDescriptionColumnTemplate]="descriptionColumn"
-  selectDefault="Code,IsActive"
+  selectDefault="Code,IsActive" selectForTiles="Code"
   [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }

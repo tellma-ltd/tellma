@@ -1,6 +1,6 @@
 <b-master collection="Role" viewId="roles" [mode]="mode"
   [masterCrumb]="'Roles' | translate" [tileTemplate]="tile"
-  [tableDescriptionColumnTemplate]="descriptionColumn"
+  [tableDescriptionColumnTemplate]="descriptionColumn" selectForTiles="Code"
   selectDefault="Code,IsPublic,IsActive"
   [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
