@@ -20,6 +20,7 @@ import {
 } from '~/app/data/workspace.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { metadata, DtoDescriptor, dtoDescriptorImpl } from '~/app/data/dto/metadata';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 enum SearchView {
   tiles = 'tiles',
@@ -155,6 +156,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   private _computeOrderByCache: { [path: string]: string } = {}; // need to be erased on screen startup
   private _computeOrderByLang: string = null;
   private _reverseOrderByCache: { [path: string]: string } = {}; // need to be erased on screen startup
+  private _editingColumns = false;
 
   public searchView: SearchView;
   public checked = {};
@@ -251,6 +253,7 @@ export class MasterComponent implements OnInit, OnDestroy {
     this._computeOrderByCache = {}; // need to be erased on screen startup
     this._computeOrderByLang = null;
     this._reverseOrderByCache = {}; // need to be erased on screen startup
+    this._editingColumns = false;
 
     // use the default
     this.searchView = (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
@@ -643,6 +646,24 @@ export class MasterComponent implements OnInit, OnDestroy {
     const settings = this.workspace.current.userSettings;
     settings.CustomSettings = settings.CustomSettings || {};
     return settings.CustomSettings[this.selectKey];
+  }
+
+  private saveSelect(v: string) {
+
+    // Save the new value with the server, to be used again afterwards
+    const settings = this.workspace.current.userSettings;
+    if (!settings.CustomSettings) {
+      settings.CustomSettings = {};
+    }
+    settings.CustomSettings[this.selectKey] = v;
+    this.api.localUsersApi(this.notifyDestruct$).saveForClient(this.selectKey, v)
+      .pipe(
+        tap(x => {
+          this.workspace.current.userSettings = x.Data;
+          this.workspace.current.userSettingsVersion = x.Version;
+        })
+      )
+      .subscribe();
   }
 
   ////////////// UI Bindings below
@@ -1433,23 +1454,41 @@ export class MasterComponent implements OnInit, OnDestroy {
     v = v || null;
     if (this.state.select !== v) {
       this.state.select = v;
+
       this.fetch();
       this.urlStateChange();
-
-      // Save the new value with the server, to be used again afterwards
-      const settings = this.workspace.current.userSettings;
-      if (!settings.CustomSettings) {
-        settings.CustomSettings = {};
-      }
-      settings.CustomSettings[this.selectKey] = v;
-      this.api.localUsersApi(this.notifyDestruct$).saveForClient(this.selectKey, v)
-        .pipe(
-          tap(x => {
-            this.workspace.current.userSettings = x.Data;
-            this.workspace.current.userSettingsVersion = x.Version;
-          })
-        )
-        .subscribe();
+      this.saveSelect(v);
     }
+  }
+
+  public onDragLeave(e: CdkDragDrop<string[]>) {
+    if (e.previousIndex !== e.currentIndex) {
+      const paths = this.tableColumnPaths;
+      moveItemInArray(paths, e.previousIndex, e.currentIndex);
+      this.state.select = paths.join(',');
+
+      this.urlStateChange();
+      this.saveSelect(this.state.select);
+    }
+  }
+
+  get editingColumns(): boolean {
+    return this._editingColumns;
+  }
+
+  set editingColumns(v: boolean) {
+    this._editingColumns = v;
+  }
+
+  public onEditColumns() {
+    this.editingColumns = !this.editingColumns;
+  }
+
+  public onDeleteColumn(index: number) {
+    const paths = this.tableColumnPaths;
+    this.state.select = paths.filter((_: string, i: number) => index !== i).join(',');
+
+    this.urlStateChange();
+    this.saveSelect(this.state.select);
   }
 }

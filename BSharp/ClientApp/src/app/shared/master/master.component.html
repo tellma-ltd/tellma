@@ -290,7 +290,8 @@
         <table class="table table-hover table-sm bg-white border-bottom b-master-table text-nowrap"
           [class.table-striped]="isFlatMode">
           <thead>
-            <tr [class.dropup]="desc">
+            <tr [class.dropup]="desc" cdkDropList cdkDropListOrientation="horizontal"
+              (cdkDropListDropped)="onDragLeave($event)">
 
               <!-- Checkboxes -->
               <th class="b-multiselect-th">
@@ -314,15 +315,26 @@
               </th>
 
               <!-- Custom feature columns -->
-              <th class="b-pointer" *ngFor="let colPath of tableColumnPaths" [style.width]="colWidth(colPath)"
-                [class.dropdown-toggle]="isOrderedBy(colPath)" (click)="onOrderBy(colPath)">
-                <b-auto-label [baseCollection]="collection" [path]="colPath" [subtype]="subtype">
-                </b-auto-label>
+              <th class="b-pointer" *ngFor="let colPath of tableColumnPaths; let i = index"
+                [style.width]="colWidth(colPath)" [class.dropdown-toggle]="isOrderedBy(colPath)"
+                (click)="onOrderBy(colPath)" cdkDrag>
+                <!-- <div class="d-flex align-items-center"> -->
+
+                  <b-auto-label [baseCollection]="collection" [path]="colPath" [subtype]="subtype">
+                  </b-auto-label>
+                  <!-- &nbsp;
+                  <button *ngIf="editingColumns" class="btn btn-light btn-sm b-white-button b-toolbar-button" style="margin:-20px 0"
+                  type="button" (click)="onDeleteColumn(i)">
+                  <fa-icon class="text-danger" icon="trash"></fa-icon>
+                </button> -->
+                <!-- </div> -->
               </th>
+
+              <!-- Cog -->
               <th>
                 <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-                  title="{{ 'EditColumns' | translate }}" (click)="modalService.open(selectModal)">
-                  <fa-icon icon="cog"></fa-icon>
+                  title="{{ editingColumns ? 'Done' : 'EditColumns' | translate }}" (click)="modalService.open(editColumns)">
+                  <fa-icon [icon]="editingColumns ? 'save' : 'pen'"></fa-icon>
                 </button>
               </th>
             </tr>
@@ -614,12 +626,12 @@
 
 
 <!-- Select Modal (Temporary) -->
-<ng-template #selectModal let-modal>
+<ng-template #editColumns let-modal>
 
   <!-- header -->
   <div class="modal-header">
     <h5 class="modal-title">
-       {{ 'EditColumns' | translate }}
+      {{ 'EditColumns' | translate }}
     </h5>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
       <span aria-hidden="true">&times;</span>

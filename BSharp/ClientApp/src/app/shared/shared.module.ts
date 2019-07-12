@@ -6,6 +6,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import {
   NgbCollapseModule,
   NgbDropdownModule,
@@ -156,6 +157,7 @@ library.add(
     RouterModule.forChild([]),
     HttpClientModule,
     ScrollingModule,
+    DragDropModule,
     NgbDropdownModule,
     NgbModalModule,
     NgbPopoverModule,

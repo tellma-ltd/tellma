@@ -624,6 +624,23 @@ table.b-master-table th {
   font-size: 80%;
 }
 
+// when a th is being dragged, a preview th is appended to the body outside any table
+th.cdk-drag-preview {
+  font-size: 80%;
+  border-bottom: 2px solid $gray-300;
+  background-color: rgba(255, 255, 255, 0.5)!important;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+}
+
+// this is the placeholder area while dragging
+th.cdk-drag-placeholder {
+  background-color: $gray-200!important;
+  color:transparent;
+}
+
+
 // disable those horrible select-unselect animations
 .custom-control-label::before,
 .custom-file-label,
@@ -1100,4 +1117,15 @@ $container-margin: 15px;
 
 .b-tree-tile span:empty:before {
   content: "\200b";
+}
+
+
+/* Animate items as they're being sorted. */
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Animate an item that has been dropped. */
+.cdk-drag-animating {
+  transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
 }
