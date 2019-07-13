@@ -1462,9 +1462,11 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   public onDragLeave(e: CdkDragDrop<string[]>) {
-    if (e.previousIndex !== e.currentIndex) {
-      const paths = this.tableColumnPaths;
-      moveItemInArray(paths, e.previousIndex, e.currentIndex);
+    const paths = this.tableColumnPaths;
+    const currIndex = this.workspace.ws.isRtl ? (paths.length - e.currentIndex - 1) : e.currentIndex;
+    const prevIndex = e.previousIndex;
+    if (prevIndex !== currIndex) {
+      moveItemInArray(paths, prevIndex, currIndex);
       this.state.select = paths.join(',');
 
       this.urlStateChange();

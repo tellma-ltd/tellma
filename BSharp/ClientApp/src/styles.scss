@@ -191,7 +191,7 @@ ngb-tabset li.nav-item .small {
 $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
 
 .b-rtl {
-  direction: rtl;
+  direction: rtl!important;
   text-align: right;
 }
 
@@ -632,6 +632,11 @@ th.cdk-drag-preview {
   padding: 0.3rem;
   display: flex;
   align-items: center;
+}
+
+// for some reason this was necessary, otherwise it remains ltr in Arabic
+.b-rtl th.cdk-drag-preview {
+  direction: rtl;
 }
 
 // this is the placeholder area while dragging
