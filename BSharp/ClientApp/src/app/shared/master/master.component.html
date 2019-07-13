@@ -320,9 +320,9 @@
                 (click)="onOrderBy(colPath)" cdkDrag>
                 <!-- <div class="d-flex align-items-center"> -->
 
-                  <b-auto-label [baseCollection]="collection" [path]="colPath" [subtype]="subtype">
-                  </b-auto-label>
-                  <!-- &nbsp;
+                <b-auto-label [baseCollection]="collection" [path]="colPath" [subtype]="subtype">
+                </b-auto-label>
+                <!-- &nbsp;
                   <button *ngIf="editingColumns" class="btn btn-light btn-sm b-white-button b-toolbar-button" style="margin:-20px 0"
                   type="button" (click)="onDeleteColumn(i)">
                   <fa-icon class="text-danger" icon="trash"></fa-icon>
@@ -333,7 +333,8 @@
               <!-- Cog -->
               <th>
                 <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-                  title="{{ editingColumns ? 'Done' : 'EditColumns' | translate }}" (click)="modalService.open(editColumns)">
+                  title="{{ editingColumns ? 'Done' : 'EditColumns' | translate }}"
+                  (click)="modalService.open(editColumns)">
                   <fa-icon [icon]="editingColumns ? 'save' : 'pen'"></fa-icon>
                 </button>
               </th>
