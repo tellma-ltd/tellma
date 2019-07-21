@@ -489,10 +489,15 @@ namespace BSharp.Services.OData
 
         public async Task<(T, EntitiesMap)> FirstOrDefaultAsync()
         {
-            //if(string.IsNullOrWhiteSpace(_orderby))
-            //{
-            //    OrderBy("Id");
-            //}
+            if (string.IsNullOrWhiteSpace(_orderby))
+            {
+                if(typeof(T).GetProperty("Id") == null)
+                {
+                    throw new InvalidOperationException("FirstOrDefault was invoked without an orderby parameter on a type without Id");
+                }
+
+                OrderBy("Id");
+            }
 
             Top(1);
             var (data, related) = await ToListAsync();
