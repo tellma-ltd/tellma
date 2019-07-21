@@ -10,6 +10,7 @@ namespace BSharp.Services.OData
 {
     public interface IODataQueryFactory
     {
-        ODataQuery<T, TKey> MakeODataQuery<T, TKey>(DbConnection conn, Func<Type, string> sources) where T : DtoKeyBase<TKey>;
+        ODataQuery<T> MakeODataQuery<T>(DbConnection conn, Func<Type, string> sources) where T : DtoBase;
+        ODataAggregateQuery<T> MakeODataAggregateQuery<T>(DbConnection conn, Func<Type, string> sources) where T : DtoBase;
     }
 }

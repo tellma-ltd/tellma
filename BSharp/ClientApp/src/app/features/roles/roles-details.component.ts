@@ -86,7 +86,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
   permissionLevelChoices(item: Permission): { name: string, value: any }[] {
     // Returns the permission levels only permitted by the specified view
-    const view = this.ws.get('Views', item.ViewId);
+    const view = this.ws.get('View', item.ViewId);
     const allowedLevels = view ? view.AllowedPermissionLevels : '';
     if (!this._permissionLevelChoices[allowedLevels]) {
       this._permissionLevelChoices[allowedLevels] = Object.keys(Permission_Level)
@@ -166,7 +166,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   viewFormatter: (id: number | string) => string = (id: number | string) =>
-    !!this.ws.get('Views', id) && !!this.ws.get('Views', id).ResourceName ?
-      (this.translate.instant(this.ws.get('Views', id).ResourceName)) :
-      this.ws.getMultilingualValue('Views', id, 'Name')
+    !!this.ws.get('View', id) && !!this.ws.get('View', id).ResourceName ?
+      (this.translate.instant(this.ws.get('View', id).ResourceName)) :
+      this.ws.getMultilingualValue('View', id, 'Name')
 }

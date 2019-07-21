@@ -17,12 +17,20 @@ namespace BSharp.Services.OData
             _accessor = accessor;
         }
 
-        public ODataQuery<T, TKey> MakeODataQuery<T, TKey>(DbConnection conn, Func<Type, string> sources) where T : DtoKeyBase<TKey>
+        public ODataQuery<T> MakeODataQuery<T>(DbConnection conn, Func<Type, string> sources) where T : DtoBase
         {
             var timeZone = TimeZoneInfo.Local; // TODO: pick up from the context
             var userId = _accessor?.GetCurrentInfo()?.UserId ?? 0;
 
-            return new ODataQuery<T, TKey>(conn, sources, _localizer, userId, timeZone); // TODO: handle the case when we are not querying tenant data
+            return new ODataQuery<T>(conn, sources, _localizer, userId, timeZone); // TODO: handle the case when we are not querying tenant data
+        }
+
+        public ODataAggregateQuery<T> MakeODataAggregateQuery<T>(DbConnection conn, Func<Type, string> sources) where T : DtoBase
+        { 
+            var timeZone = TimeZoneInfo.Local; // TODO: pick up from the context
+            var userId = _accessor?.GetCurrentInfo()?.UserId ?? 0;
+
+            return new ODataAggregateQuery<T>(conn, sources, _localizer, userId, timeZone); // TODO: handle the case when we are not querying tenant data
         }
     }
 }

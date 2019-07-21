@@ -48,7 +48,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal("ProductCategory", responseData.CollectionName);
 
             Assert.Equal(0, responseData.TotalCount);
-            Assert.Empty(responseData.Data);
+            Assert.Empty(responseData.Result);
         }
 
         [Trait(Testing, ProductCategories)]
@@ -86,12 +86,12 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Assert that the response is well-formed singleton of ProductCategory
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<ProductCategory>>();
-            Assert.Single(responseData.Data);
+            Assert.Single(responseData.Result);
 
             // Assert that the result matches the saved entity
             Assert.Equal("ProductCategory", responseData.CollectionName);
 
-            var responseDto = responseData.Data.FirstOrDefault();
+            var responseDto = responseData.Result.FirstOrDefault();
             Assert.NotNull(responseDto?.Id);
             Assert.Equal(dtoForSave.Name, responseDto.Name);
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
@@ -118,7 +118,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<ProductCategory>>();
             Assert.Equal("ProductCategory", getByIdResponse.CollectionName);
 
-            var responseDto = getByIdResponse.Entity;
+            var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Equal(entity.Name2, responseDto.Name2);
@@ -182,7 +182,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Confirm that the response is well-formed
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<ProductCategory>>();
-            var responseDto = responseData.Data.FirstOrDefault();
+            var responseDto = responseData.Result.FirstOrDefault();
 
             // Confirm the entity was saved
             Assert.NotNull(responseDto.Id);
@@ -245,8 +245,8 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Confirm that the response content is well formed singleton
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<ProductCategory>>();
-            Assert.Single(responseData.Data);
-            var responseDto = responseData.Data.Single();
+            Assert.Single(responseData.Result);
+            var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was deactivated
             Assert.False(responseDto.IsActive, "The product category was not deactivated");
@@ -269,8 +269,8 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Confirm that the response content is well formed singleton
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<ProductCategory>>();
-            Assert.Single(responseData.Data);
-            var responseDto = responseData.Data.Single();
+            Assert.Single(responseData.Result);
+            var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was activated
             Assert.True(responseDto.IsActive, "The product category was not activated");
@@ -293,7 +293,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<ProductCategory>>();
             Assert.Equal("ProductCategory", getByIdResponse.CollectionName);
 
-            var responseDto = getByIdResponse.Entity;
+            var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Null(responseDto.Name2);

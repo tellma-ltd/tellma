@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
+    [StrongDto]
     public class ProductCategoryForSave : DtoForSaveKeyBase<int?>
     {
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]
@@ -65,10 +66,9 @@ namespace BSharp.Controllers.DTO
         [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
-    }
 
-    public class ProductCategoryForQuery : ProductCategory
-    {
+        // For Query
+
         [BasicField]
         public HierarchyId Node { get; set; }
 
@@ -77,12 +77,12 @@ namespace BSharp.Controllers.DTO
 
         [NavigationProperty(ForeignKey = nameof(ParentId))]
         [Display(Name = "TreeParent")]
-        public ProductCategoryForQuery Parent { get; set; }
+        public ProductCategory Parent { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
 }

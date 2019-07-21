@@ -39,20 +39,20 @@ namespace BSharp.Controllers.DTO
         [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
-    }
 
-    public class RoleMembershipForQuery : RoleMembership, IAuditedDto
-    {
+
+        // For Query
+
         [NavigationProperty(ForeignKey = nameof(UserId))]
-        public LocalUserForQuery User { get; set; }
+        public LocalUser User { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(RoleId))]
-        public RoleForQuery Role { get; set; }
+        public Role Role { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
 }

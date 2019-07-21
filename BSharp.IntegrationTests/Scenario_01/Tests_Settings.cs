@@ -41,16 +41,15 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetByIdResponse<Settings>>();
+            var responseData = await response.Content.ReadAsAsync<GetEntityResponse<Settings>>();
 
             // Assert the result makes sense
-            Assert.Equal("Settings", responseData.CollectionName);
-            var settings = responseData.Entity;
+            var settings = responseData.Result;
 
             Assert.Contains("Contoso", settings.ShortCompanyName);
             Assert.Equal("en", settings.PrimaryLanguageId);
 
-            _shared.SetItem("Settings", responseData.Entity);
+            _shared.SetItem("Settings", responseData.Result);
         }
 
         [Trait(Testing, settings)]
@@ -73,13 +72,9 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetByIdResponse<Settings>>();
-            var responsedDto = responseData.Entity;
+            var responseData = await response.Content.ReadAsAsync<SaveSettingsResponse>();
 
-            // Assert that the result matches the saved entity
-            Assert.Equal("Settings", responseData.CollectionName);
-
-            var responseDto = responseData.Entity;
+            var responseDto = responseData.Result;
             Assert.Equal(settings.ShortCompanyName, responseDto.ShortCompanyName);
             Assert.Equal(settings.ShortCompanyName2, responseDto.ShortCompanyName2);
             Assert.Equal(settings.PrimaryLanguageId, responseDto.PrimaryLanguageId);

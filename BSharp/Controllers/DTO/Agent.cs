@@ -62,15 +62,13 @@ namespace BSharp.Controllers.DTO
         [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
-    }
 
-    public class AgentForQuery : Agent, IAuditedDto
-    {
+        // For Query
+
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
 }
-

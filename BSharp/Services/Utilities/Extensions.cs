@@ -319,7 +319,7 @@ namespace BSharp.Services.Utilities
                 var date = obj.ParseToDateTime();
                 if (t.IsDateTimeOffset())
                 {
-                    if(sourceTimeZone != null)
+                    if (sourceTimeZone != null)
                     {
                         return date.AddTimeZone(sourceTimeZone);
                     }
@@ -407,7 +407,7 @@ namespace BSharp.Services.Utilities
         /// <returns></returns>
         public static IEnumerable<T> Enumerate<T>(this object collection)
         {
-            foreach(var item in collection.Enumerate())
+            foreach (var item in collection.Enumerate())
             {
                 yield return (T)item;
             }
@@ -440,12 +440,12 @@ namespace BSharp.Services.Utilities
             {
                 cmd.CommandText = sql;
 
-                foreach(var p in ps)
+                foreach (var p in ps)
                 {
                     cmd.Parameters.Add(p);
                 }
 
-                if(connection.State != System.Data.ConnectionState.Open)
+                if (connection.State != System.Data.ConnectionState.Open)
                 {
                     ownsConnection = true;
                     connection.Open();
@@ -453,7 +453,7 @@ namespace BSharp.Services.Utilities
 
                 var dbValue = await cmd.ExecuteScalarAsync();
 
-                if(dbValue == DBNull.Value)
+                if (dbValue == DBNull.Value)
                 {
                     result = default(T);
                 }
@@ -463,12 +463,30 @@ namespace BSharp.Services.Utilities
                 }
             }
 
-            if(ownsConnection)
+            if (ownsConnection)
             {
                 connection.Close();
             }
 
             return result;
+        }
+
+        public static bool IsPrefixOf(this string[] potentialPrefix, ArraySegment<string> segment)
+        {
+            if (potentialPrefix.Length > segment.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < potentialPrefix.Length; i++)
+            {
+                if (potentialPrefix[i] != segment[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

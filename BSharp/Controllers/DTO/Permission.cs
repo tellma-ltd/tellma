@@ -48,7 +48,7 @@ namespace BSharp.Controllers.DTO
         public string Memo { get; set; }
     }
 
-    public class Permission : PermissionForSave
+    public class Permission : PermissionForSave, IAuditedDto
     {
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -63,24 +63,24 @@ namespace BSharp.Controllers.DTO
         [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
-    }
 
-    public class PermissionForQuery : Permission, IAuditedDto
-    {
+        // For Query
+
         [BasicField]
         [NavigationProperty(ForeignKey = nameof(ViewId))]
-        public ViewForQuery View { get; set; }
+        public View View { get; set; }
 
         [BasicField]
         [NavigationProperty(ForeignKey = nameof(RoleId))]
-        public RoleForQuery Role { get; set; }
+        public Role Role { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
+
 
     // The two DTOs below carry permission information to the client so
     // the client can adjust the UI accordingly, the string key in the dictionary

@@ -325,37 +325,41 @@ SELECT * FROM (
             {
                 switch (t.Name)
                 {
-                    case nameof(AgentForQuery):
+                    case nameof(Agent):
                         return "(SELECT * FROM [dbo].[Custodies] WHERE [CustodyType] = 'Agent')";
 
-                    case nameof(CustodyForQuery):
+                    case nameof(Custody):
                         return "[dbo].[Custodies]";
 
-                    case nameof(LocalUserForQuery):
+                    case nameof(LocalUser):
                         return "(SELECT *, IIF(ExternalId IS NULL, 'New', 'Confirmed') As [State] FROM [dbo].[LocalUsers])";
 
-                    case nameof(MeasurementUnitForQuery):
+                    case nameof(MeasurementUnit):
                         return "(SELECT * FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')";
 
-                    case nameof(PermissionForQuery):
+                        // Temporary TODO: remove
+                    case nameof(MeasurementUnitFact):
+                        return "(SELECT [TenantId],[Name],[Name2],[Code],[UnitType],[UnitAmount],[BaseAmount],[IsActive],[CreatedAt],[CreatedById],[ModifiedAt],[ModifiedById] FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')";
+
+                    case nameof(Permission):
                         return "(SELECT * FROM [dbo].[Permissions] WHERE Level <> 'Sign')";
 
-                    case nameof(RequiredSignatureForQuery):
+                    case nameof(RequiredSignature):
                         return "(SELECT * FROM [dbo].[Permissions] WHERE Level = 'Sign')";
 
-                    case nameof(RoleMembershipForQuery):
+                    case nameof(RoleMembership):
                         return "[dbo].[RoleMemberships]";
 
-                    case nameof(RoleForQuery):
+                    case nameof(Role):
                         return "[dbo].[Roles]";
 
-                    case nameof(ProductCategoryForQuery):
+                    case nameof(ProductCategory):
                         return @"(SELECT [Q].*,
     (SELECT COUNT(*) FROM [dbo].[ProductCategories] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([Q].[Node]) = 1) As [ActiveChildCount],
     (SELECT COUNT(*) FROM [dbo].[ProductCategories] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount]
 FROM [dbo].[ProductCategories] As [Q])";
 
-                    case nameof(IfrsNoteForQuery):
+                    case nameof(IfrsNote):
                         return @"(SELECT 
 	[C].*, 
 	[N].[Node] As [Node],
@@ -369,7 +373,7 @@ FROM [dbo].[ProductCategories] As [Q])";
 	(SELECT [Id] FROM [dbo].[IfrsNotes] WHERE [N].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsConcepts] As [C] JOIN [dbo].[IfrsNotes] As [N] ON [C].[Id] = [N].[Id])";
 
-                    case nameof(ViewForQuery):
+                    case nameof(View):
                         return $@"(SELECT
  V.[Id], 
  V.Name AS [Name], 

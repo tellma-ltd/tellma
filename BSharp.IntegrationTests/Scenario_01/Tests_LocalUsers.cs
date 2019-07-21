@@ -31,8 +31,8 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseData = await response.Content.ReadAsAsync<GetResponse<LocalUser>>();
 
             // Assert the result makes sense
-            Assert.Equal("LocalUsers", responseData.CollectionName);
-            Assert.Single(responseData.Data); // First user
+            Assert.Equal("LocalUser", responseData.CollectionName);
+            Assert.Single(responseData.Result); // First user
         }
 
         [Trait(Testing, localUsers)]
@@ -82,12 +82,12 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Assert that the response is well-formed singleton
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<LocalUser>>();
-            Assert.Single(responseData.Data);
+            Assert.Single(responseData.Result);
 
             // Assert that the result matches the saved entity
-            Assert.Equal("LocalUsers", responseData.CollectionName);
+            Assert.Equal("LocalUser", responseData.CollectionName);
 
-            var responseDto = responseData.Data.FirstOrDefault();
+            var responseDto = responseData.Result.FirstOrDefault();
             Assert.NotNull(responseDto?.Id);
             Assert.Equal(dtoForSave.Name, responseDto.Name);
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
@@ -119,9 +119,9 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Confirm that the response is a well formed GetByIdResponse
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<LocalUser>>();
-            Assert.Equal("LocalUsers", getByIdResponse.CollectionName);
+            Assert.Equal("LocalUser", getByIdResponse.CollectionName);
 
-            var responseDto = getByIdResponse.Entity;
+            var responseDto = getByIdResponse.Result;
             Assert.NotNull(responseDto?.Id);
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Equal(entity.Name2, responseDto.Name2);
@@ -211,7 +211,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Get the entity we just saved
             var id = _shared.GetItem<LocalUser>("LocalUsers_AhmadAkra").Id;
             var response1 = await _client.GetAsync($"{localUsersURL}/{id}?expand=Roles/Role");
-            var dto = (await response1.Content.ReadAsAsync<GetByIdResponse<LocalUser>>()).Entity;
+            var dto = (await response1.Content.ReadAsAsync<GetByIdResponse<LocalUser>>()).Result;
 
             // Modify it slightly
             dto.EntityState = "Updated";
@@ -224,7 +224,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var response2 = await _client.PostAsJsonAsync($"{localUsersURL}?expand=Roles/Role", dtosForSave);
             _output.WriteLine(await response2.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
-            var dto2 = (await response2.Content.ReadAsAsync<EntitiesResponse<LocalUser>>()).Data.FirstOrDefault();
+            var dto2 = (await response2.Content.ReadAsAsync<EntitiesResponse<LocalUser>>()).Result.FirstOrDefault();
 
             // Confirm it has been changed
             Assert.Equal(dto.Name, dto2.Name);
@@ -256,8 +256,8 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Confirm that the response content is well formed singleton
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<LocalUser>>();
-            Assert.Single(responseData.Data);
-            var responseDto = responseData.Data.Single();
+            Assert.Single(responseData.Result);
+            var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was deactivated
             Assert.False(responseDto.IsActive, "The organization was not deactivated");
@@ -279,8 +279,8 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Confirm that the response content is well formed singleton
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<LocalUser>>();
-            Assert.Single(responseData.Data);
-            var responseDto = responseData.Data.Single();
+            Assert.Single(responseData.Result);
+            var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was activated
             Assert.True(responseDto.IsActive, "The Organization was not activated");

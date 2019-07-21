@@ -23,6 +23,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Globalization;
+using System.Reflection;
 
 namespace BSharp
 {
@@ -151,7 +152,7 @@ namespace BSharp
             });
 
             // AutoMapper https://automapper.org/
-            services.AddAutoMapper();
+            services.AddAutoMapper(typeof(Startup).Assembly); // Otherwise unit tests don't run
 
         }
 

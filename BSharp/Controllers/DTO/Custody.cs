@@ -10,7 +10,7 @@ namespace BSharp.Controllers.DTO
     /// <summary>
     /// All savable DTOs must inherit from <see cref="DtoForSaveKeyBase{TKey}"/>
     /// </summary>
-    [StrongDto("Custodies")]
+    [StrongDto]
     public class CustodyForSave : DtoForSaveKeyBase<int?>
     {
         [BasicField]
@@ -65,14 +65,13 @@ namespace BSharp.Controllers.DTO
         [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
-    }
 
-    public class CustodyForQuery : Custody, IAuditedDto
-    {
+        // For Query
+
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.DTO
 {
-    [StrongDto("Cultures")]
+    [StrongDto]
     public class CultureForSave : DtoKeyBase<string>
     {
     }
@@ -24,10 +24,5 @@ namespace BSharp.Controllers.DTO
 
         [BasicField]
         public bool IsActive { get; set; }
-    }
-
-    public class CultureForQuery : Culture
-    {
-
     }
 }

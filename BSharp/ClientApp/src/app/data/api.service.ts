@@ -28,6 +28,7 @@ import { GlobalSettingsForClient } from './dto/global-settings';
 import { TenantForClient } from './dto/tenant';
 import { IfrsNote } from './dto/ifrs-note';
 import { ProductCategory } from './dto/product-category';
+import { GetEntityResponse } from './dto/get-entity-response';
 
 @Injectable({
   providedIn: 'root'
@@ -203,7 +204,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/settings?${params}`;
 
-        const obs$ = this.http.get<GetByIdResponse<Settings>>(url).pipe(
+        const obs$ = this.http.get<GetEntityResponse<Settings>>(url).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
@@ -291,7 +292,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}?${params}`;
 
-        const obs$ = this.http.get<GetResponse<TDto>>(url).pipe(
+        const obs$ = this.http.get<GetResponse>(url).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
@@ -313,7 +314,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}/${id}?${params}`;
 
-        const obs$ = this.http.get<GetByIdResponse<TDto>>(url).pipe(
+        const obs$ = this.http.get<GetByIdResponse>(url).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
@@ -338,7 +339,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}?${params}`;
 
-        const obs$ = this.http.post<EntitiesResponse<TDto>>(url, entities, {
+        const obs$ = this.http.post<EntitiesResponse>(url, entities, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           tap(() => this.showRotator = false),
@@ -499,7 +500,7 @@ export class ApiService {
       const url = appconfig.apiAddress + `api/${endpoint}/activate?${params}`;
 
       this.showRotator = true;
-      const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
+      const obs$ = this.http.put<EntitiesResponse>(url, ids, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }).pipe(
         tap(() => this.showRotator = false),
@@ -534,7 +535,7 @@ export class ApiService {
       const url = appconfig.apiAddress + `api/${endpoint}/deactivate?${params}`;
 
       this.showRotator = true;
-      const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
+      const obs$ = this.http.put<EntitiesResponse>(url, ids, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }).pipe(
         tap(() => this.showRotator = false),

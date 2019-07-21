@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace BSharp.Controllers
 {
     [Route("api/translations")]
-    public class TranslationsController : CrudControllerBase<TranslationForSave, Translation, TranslationForQuery, string>
+    public class TranslationsController : CrudControllerBase<TranslationForSave, Translation, string>
     {
         private readonly AdminContext _db;
         private readonly ISqlStringLocalizerFactory _localizerFactory;
@@ -83,7 +83,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override ODataQuery<TranslationForQuery, string> Search(ODataQuery<TranslationForQuery, string> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override ODataQuery<Translation> Search(ODataQuery<Translation> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             throw new NotImplementedException();
         }

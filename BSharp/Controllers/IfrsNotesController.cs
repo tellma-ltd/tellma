@@ -26,7 +26,7 @@ namespace BSharp.Controllers
 {
     [Route("api/ifrs-notes")]
     [LoadTenantInfo]
-    public class IfrsNotesController : ReadControllerBase<IfrsNote, IfrsNoteForQuery, string>
+    public class IfrsNotesController : ReadEntitiesControllerBase<IfrsNote, string>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
@@ -46,7 +46,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<IfrsNote>>> Activate([FromBody] List<string> ids, [FromQuery] ActivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<IfrsNote>>> Activate([FromBody] string[] ids, [FromQuery] ActivateArguments args)
         {
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
@@ -54,14 +54,14 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<IfrsNote>>> Deactivate([FromBody] List<string> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<IfrsNote>>> Deactivate([FromBody] string[] ids, [FromQuery] DeactivateArguments args)
         {
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<IfrsNote>>> ActivateDeactivate([FromBody] List<string> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<IfrsNote>>> ActivateDeactivate([FromBody] string[] ids, bool returnEntities, string expand, bool isActive)
         {
             await CheckActionPermissions(ids);
 
@@ -101,50 +101,16 @@ MERGE INTO [dbo].[IfrsConcepts] AS t
             }
 
             // Determine whether entities should be returned
-            if (!returnEntities)
+            if (returnEntities)
             {
-                // IF no returned items are expected, simply return 200 OK
-                return Ok();
+                // Return results
+                var response = await GetByIdListAsync(ids, expand);
+                return Ok(response);
             }
             else
             {
-                // Load the entities using their Ids
-                var affectedDbEntitiesQ = CreateODataQuery().FilterByIds(ids.ToArray());
-                var affectedDbEntitiesExpandedQ = affectedDbEntitiesQ.Clone().Expand(expand);
-                var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-
-                // sort the entities the way their Ids came, as a good practice
-                var affectedEntities = Mapper.Map<List<IfrsNote>>(affectedDbEntities);
-                IfrsNote[] sortedAffectedEntities = new IfrsNote[ids.Count];
-                Dictionary<string, IfrsNote> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id);
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    var id = ids[i];
-                    IfrsNote entity = null;
-                    if (affectedEntitiesDic.ContainsKey(id))
-                    {
-                        entity = affectedEntitiesDic[id];
-                    }
-
-                    sortedAffectedEntities[i] = entity;
-                }
-
-                // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-                await ApplyReadPermissionsMask(affectedDbEntities, affectedDbEntitiesExpandedQ, await UserPermissions(PermissionLevel.Read), GetDefaultMask());
-
-                // Flatten related entities and map each to its respective DTO 
-                var relatedEntities = FlattenRelatedEntitiesAndTrim(affectedDbEntities, expand);
-
-                // Prepare a proper response
-                var response = new EntitiesResponse<IfrsNote>
-                {
-                    Data = sortedAffectedEntities,
-                    CollectionName = GetCollectionName(typeof(IfrsNote)),
-                    RelatedEntities = relatedEntities
-                };
-
-                // Commit and return
-                return Ok(response);
+                // IF no returned items are expected, simply return 200 OK
+                return Ok();
             }
         }
 
@@ -164,16 +130,16 @@ MERGE INTO [dbo].[IfrsConcepts] AS t
             return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
         }
 
-        protected override ODataQuery<IfrsNoteForQuery, string> Search(ODataQuery<IfrsNoteForQuery, string> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override ODataQuery<IfrsNote> Search(ODataQuery<IfrsNote> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var label = nameof(IfrsNoteForQuery.Label);
-                var label2 = nameof(IfrsNoteForQuery.Label2);
-                var label3 = nameof(IfrsNoteForQuery.Label3); // TODO
+                var label = nameof(IfrsNote.Label);
+                var label2 = nameof(IfrsNote.Label2);
+                var label3 = nameof(IfrsNote.Label3);
 
                 query.Filter($"{label} {Ops.contains} '{search}' or {label2} {Ops.contains} '{search}' or {label3} {Ops.contains} '{search}'");
             }

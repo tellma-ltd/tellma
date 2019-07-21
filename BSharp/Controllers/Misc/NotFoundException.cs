@@ -9,8 +9,6 @@ namespace BSharp.Controllers.Misc
     /// </summary>
     public class NotFoundException<TKey> : Exception
     {
-        private int id;
-
         public NotFoundException(IEnumerable<TKey> ids)
         {
             Ids = ids;

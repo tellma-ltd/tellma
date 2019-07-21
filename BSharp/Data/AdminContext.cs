@@ -34,7 +34,6 @@ namespace BSharp.Data
 
         // Localization
         public DbSet<Culture> Cultures { get; set; }
-        public DbSet<Dto.CultureForQuery> VW_Cultures { get; set; }
 
         public DbSet<Translation> Translations { get; set; }
         // public DbSet<Dto.TranslationForQuery> VW_Translations { get; set; }

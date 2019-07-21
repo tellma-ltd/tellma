@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
-    [StrongDto("Translations")]
+    [StrongDto]
     public class TranslationForSave : DtoForSaveKeyBase<string>
     {
         [BasicField]
@@ -29,11 +29,10 @@ namespace BSharp.Controllers.DTO
 
         [Display(Name = "T_Notes")]
         public string Notes { get; set; }
-    }
 
-    public class TranslationForQuery : Translation
-    {
+        // For Query
+
         [NavigationProperty(ForeignKey = nameof(CultureId))]
-        public CultureForQuery Culture { get; set; }
+        public Culture Culture { get; set; }
     }
 }

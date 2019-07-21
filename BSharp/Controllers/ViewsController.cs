@@ -17,7 +17,7 @@ namespace BSharp.Controllers
 {
     [Route("api/views")]
     [LoadTenantInfo]
-    public class ViewsController : ReadControllerBase<View, ViewForQuery, string>
+    public class ViewsController : ReadEntitiesControllerBase<View, string>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
@@ -53,17 +53,17 @@ namespace BSharp.Controllers
             return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
         }
 
-        protected override ODataQuery<ViewForQuery, string> Search(ODataQuery<ViewForQuery, string> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override ODataQuery<View> Search(ODataQuery<View> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(MeasurementUnitForQuery.Name);
-                var name2 = nameof(MeasurementUnitForQuery.Name2);
+                var name = nameof(View.Name);
+                var name2 = nameof(View.Name2);
                 // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
-                var code = nameof(MeasurementUnitForQuery.Code);
+                var code = nameof(View.Code);
 
                 query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }

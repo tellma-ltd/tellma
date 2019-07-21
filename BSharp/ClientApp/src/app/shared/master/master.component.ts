@@ -418,7 +418,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       select: select,
       filter: filter,
     }).pipe(
-      tap((response: GetResponse<DtoForSaveKeyBase>) => {
+      tap((response: GetResponse) => {
         s = this.state; // get the source
         s.masterStatus = MasterStatus.loaded;
         s.top = response.Top;
@@ -483,7 +483,7 @@ export class MasterComponent implements OnInit, OnDestroy {
       select: select
       // expand: this.expand
     }).pipe(
-      tap((response: GetResponse<DtoForSaveKeyBase>) => {
+      tap((response: GetResponse) => {
         s = this.state; // get the source
         s.collectionName = response.CollectionName;
 

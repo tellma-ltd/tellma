@@ -9,6 +9,7 @@ namespace BSharp.Controllers.DTO
     /// <summary>
     /// All savable DTOs must inherit from <see cref="DtoForSaveKeyBase{TKey}"/>
     /// </summary>
+    [StrongDto]
     public class MeasurementUnitForSave : DtoForSaveKeyBase<int?>
     {
         [BasicField]
@@ -65,17 +66,13 @@ namespace BSharp.Controllers.DTO
         [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
-    }
 
-    /// <summary>
-    /// The DTO used to query the DB context
-    /// </summary>
-    public class MeasurementUnitForQuery : MeasurementUnit, IAuditedDto
-    {
+        // For Query
+
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
 }

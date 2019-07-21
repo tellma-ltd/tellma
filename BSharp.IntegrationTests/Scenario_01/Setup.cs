@@ -39,7 +39,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var response = await _client.GetAsync($"/api/roles/{1}?expand=Permissions/View,Members/User");
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Role>>();
-            var role = getByIdResponse.Entity;
+            var role = getByIdResponse.Result;
 
             role.EntityState = "Updated";
             role.Permissions.Add(new Permission

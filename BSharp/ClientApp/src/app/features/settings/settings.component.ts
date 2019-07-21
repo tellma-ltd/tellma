@@ -7,11 +7,12 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, catchError, tap } from 'rxjs/operators';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
-import { addRelatedEntitiesToWorkspace } from '~/app/data/util';
+import { mergeEntitiesInWorkspace } from '~/app/data/util';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { SaveSettingsResponse } from '~/app/data/dto/save-settings-response';
 import { handleFreshSettings } from '~/app/data/tenant-resolver.guard';
 import { StorageService } from '~/app/data/storage.service';
+import { GetEntityResponse } from '~/app/data/dto/get-entity-response';
 
 @Component({
   selector: 'b-settings',
@@ -62,13 +63,13 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
     // server call
     return this.crud.get({ expand: this.expand }).pipe(
-      tap((response: GetByIdResponse<Settings>) => {
+      tap((response: GetEntityResponse<Settings>) => {
 
         // add the settings locally
-        this._viewModel = response.Entity;
+        this._viewModel = response.Result;
 
         // Add related items to the workspace
-        addRelatedEntitiesToWorkspace(response.RelatedEntities, this.workspace);
+        mergeEntitiesInWorkspace(response.Entities, this.workspace);
 
         // display the settings
         this.detailsStatus = DetailsStatus.loaded;
@@ -293,8 +294,8 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
         (response: SaveSettingsResponse) => {
 
           // update the workspace with the DTO from the server
-          this._viewModel = response.Entity;
-          addRelatedEntitiesToWorkspace(response.RelatedEntities, this.workspace);
+          this._viewModel = response.Result;
+          mergeEntitiesInWorkspace(response.Entities, this.workspace);
 
           // Update the cache with fresh versions
           if (!!response.SettingsForClient) {

@@ -7,6 +7,7 @@ using S = System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.Controllers.DTO
 {
+    [StrongDto]
     public class LocalUserForSave<TRoleMembership> : DtoForSaveKeyBase<int?>, IMultilingualName
     {
         [BasicField]
@@ -26,9 +27,9 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "User_Email")]
         public string Email { get; set; }
 
-        [NavigationProperty(ForeignKey = nameof(RoleMembershipForQuery.UserId))]
+        [NavigationProperty(ForeignKey = nameof(RoleMembership.UserId))]
         [Display(Name = "User_Roles")]
-        public List<TRoleMembership> Roles { get; set; } = new List<TRoleMembership>();
+        public List<TRoleMembership> Roles { get; set; }
 
         [ForeignKey]
         [Display(Name = "User_Agent")]
@@ -41,7 +42,7 @@ namespace BSharp.Controllers.DTO
 
     public class LocalUserForSave : LocalUserForSave<RoleMembershipForSave> { }
 
-    public class LocalUser<TRoleMembership> : LocalUserForSave<TRoleMembership>
+    public class LocalUser : LocalUserForSave<RoleMembership>
     {
         public string ExternalId { get; set; }
 
@@ -69,21 +70,17 @@ namespace BSharp.Controllers.DTO
         [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
-    }
 
+        // For Query
 
-    public class LocalUser : LocalUser<RoleMembership> { }
-
-    public class LocalUserForQuery : LocalUser<RoleMembershipForQuery>, IAuditedDto
-    {
         [NavigationProperty(ForeignKey = nameof(AgentId))]
-        public AgentForQuery Agent { get; set; }
+        public Agent Agent { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
 
 

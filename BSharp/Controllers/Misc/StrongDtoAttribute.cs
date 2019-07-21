@@ -6,18 +6,19 @@ using System.Threading.Tasks;
 namespace BSharp.Controllers.Misc
 {
     /// <summary>
-    /// This represents the type name of the entities from the point of view of the API consumers
-    /// By default the type name is retrieved with Type.Name, but this is available for entities 
-    /// that wish to override this behavior
+    /// This represents a strong dto which is returned and stored in its own centralized collection
+    /// in API responses, as opposed to being a weak entity that is attached to another strong entity
     /// </summary>
     [AttributeUsage(validOn: AttributeTargets.Class, Inherited = true)]
     public class StrongDtoAttribute : Attribute
     {
-        public StrongDtoAttribute(string collectionName)
+        public StrongDtoAttribute(Type type = null, bool isFact = false)
         {
-            CollectionName = collectionName;
+            Type = type;
+            IsFact = isFact;
         }
 
-        public string CollectionName { get; set; }
+        public Type Type { get; private set; }
+        public bool IsFact { get; private set; }
     }
 }

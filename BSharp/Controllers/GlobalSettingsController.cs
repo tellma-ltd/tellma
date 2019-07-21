@@ -106,7 +106,7 @@ namespace BSharp.Controllers
                     var result = new SaveGlobalSettingsResponse
                     {
                         CollectionName = res.CollectionName,
-                        Entity = res.Entity,
+                        Result = res.Result,
                         RelatedEntities = res.RelatedEntities,
                         SettingsForClient = GetForClientImpl()
                     };
@@ -169,7 +169,7 @@ namespace BSharp.Controllers
             var result = new GetByIdResponse<GlobalSettings>
             {
                 CollectionName = "Settings",
-                Entity = settings,
+                Result = settings,
             };
 
             if (!string.IsNullOrWhiteSpace(args.Expand))

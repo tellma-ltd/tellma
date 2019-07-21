@@ -21,8 +21,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    public abstract class CrudControllerBase<TDtoForSave, TDto, TDtoForQuery, TKey> : ReadControllerBase<TDto, TDtoForQuery, TKey>
-        where TDtoForQuery : DtoForSaveKeyBase<TKey>, new()
+    public abstract class CrudControllerBase<TDtoForSave, TDto, TKey> : ReadEntitiesControllerBase<TDto, TKey>
         where TDtoForSave : DtoForSaveKeyBase<TKey>, new()
         where TDto : DtoForSaveKeyBase<TKey>, new()
     {
@@ -463,34 +462,7 @@ return the entities
                     EntitiesResponse<TDto> result = null;
                     if((args.ReturnEntities ?? false) && ids != null)
                     {
-                        // Prepare a query of the resultm, and clone it
-                        var query = CreateODataQuery();
-                        query.UseTransaction(trx);
-                        query.FilterByIds(ids.ToArray());
-                        var qClone = query.Clone();
-
-                        // Expand the result as specified in the OData agruments and load into memory
-                        query.Expand(args.Expand);
-                        var memoryList = await query.ToListAsync(); // this is potentially unordered, should that be a concern?
-
-                        // Apply the permissions on the result
-                        var permissions = await UserPermissions(PermissionLevel.Read);
-                        var defaultMask = GetDefaultMask();
-                        await ApplyReadPermissionsMask(memoryList, qClone, permissions, defaultMask);
-
-                        // Flatten related entities and map each to its respective DTO 
-                        var relatedEntities = FlattenRelatedEntitiesAndTrim(memoryList, args.Expand);
-
-                        // Map the primary result to DTOs as well
-                        var resultData = Mapper.Map<List<TDto>>(memoryList);
-
-                        // Prepare the result in a response object
-                        result = new EntitiesResponse<TDto>
-                        {
-                            Data = resultData,
-                            RelatedEntities = relatedEntities,
-                            CollectionName = GetCollectionName(typeof(TDto))
-                        };
+                        result = await GetByIdListAsync(ids.ToArray(), args.Expand, trx);
                     }
 
                     // Commit and return

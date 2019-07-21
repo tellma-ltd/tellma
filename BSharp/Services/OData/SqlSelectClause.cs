@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace BSharp.Services.OData
 {
@@ -19,10 +18,16 @@ namespace BSharp.Services.OData
             return "SELECT " + string.Join(", ", _columns.Select(e => $"[{e.Symbol}].[{e.PropName}]"));
         }
 
-        public List<(ArraySegment<string> Path, string PropName)> GetColumnMap()
+        public List<SqlStatementColumn> GetColumnMap()
         {
             // Prepare the column map
-            var columnMap = _columns.Select(e => (e.Path, e.PropName)).ToList();
+            var columnMap = _columns.Select(e => new SqlStatementColumn
+            {
+                Path = e.Path,
+                Property = e.PropName
+            })
+            .ToList();
+
             return columnMap;
         }
     }

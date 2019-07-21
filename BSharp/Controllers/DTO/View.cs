@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
-    [StrongDto("Views")]
+    [StrongDto]
     public class ViewForSave<TPermission, TRequiredSignature> : DtoForSaveKeyBase<string>
     {
         [Display(Name = "Signatures")]
@@ -52,10 +52,6 @@ namespace BSharp.Controllers.DTO
     }
 
     public class View : View<Permission, RequiredSignature>
-    {
-    }
-
-    public class ViewForQuery : View<PermissionForQuery, RequiredSignatureForQuery>
     {
     }
 }

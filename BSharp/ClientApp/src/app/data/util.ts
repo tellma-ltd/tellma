@@ -2,7 +2,6 @@ import { EntitiesResponse } from './dto/get-response';
 import { WorkspaceService } from './workspace.service';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { DtoKeyBase } from './dto/dto-key-base';
-import { DtoBase } from './dto/dto-base';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -11,71 +10,62 @@ import { DtoBase } from './dto/dto-base';
 // will see that reflected updated everywhere where that name is displayed
 export function addToWorkspace(response: EntitiesResponse, workspace: WorkspaceService): (number | string)[] {
 
-  // Add related entities
+  // Merge fresh entities in the workspace
   const relatedEntities = response.RelatedEntities;
-  addRelatedEntitiesToWorkspace(relatedEntities, workspace);
+  mergeEntitiesInWorkspace(relatedEntities, workspace);
 
-  // Add main entities
-  {
-    const mainEntities = response.Data;
-    const collectionName = response.CollectionName;
-    if (!collectionName) {
-      // Programmer mistake
-      console.error('collectionName is not specified by the server');
-    } else {
-      for (let i = 0; i < mainEntities.length; i++) {
-        const freshItem = mainEntities[i];
-        const staleItem = workspace.current[collectionName][freshItem.Id];
-        apply(freshItem, staleItem, workspace, collectionName);
-      }
-    }
+  const result = {};
+  result[response.CollectionName] = response.Result;
+  mergeEntitiesInWorkspace(result, workspace);
 
-    // Return the IDs of the main entities
-    return mainEntities.map(e => e.Id);
-  }
+  // Return the IDs of the main entities
+  return response.Result.map(e => e.Id);
 }
 
 export function addSingleToWorkspace(response: GetByIdResponse, workspace: WorkspaceService): (number | string) {
 
-  // Add related entities
-  const relatedEntities = response.RelatedEntities;
-  addRelatedEntitiesToWorkspace(relatedEntities, workspace);
+  // Merge fresh entities in the workspace
+  const entities = response.RelatedEntities;
+  mergeEntitiesInWorkspace(entities, workspace);
 
-  // Add main entities
-  const freshItem = response.Entity;
-  const collectionName = response.CollectionName;
-  if (!collectionName) {
-    // Programmer mistake
-    console.error('collectionName is not specified by the server');
-  } else {
-    const staleItem = workspace.current[collectionName][freshItem.Id];
-    apply(freshItem, staleItem, workspace, collectionName);
-  }
+  const result = {};
+  result[response.CollectionName] = [ response.Result ];
+  mergeEntitiesInWorkspace(result, workspace);
 
-  // Return the IDs of the main entities
-  return freshItem.Id;
+  // Return the ID of the result
+  return response.Result.Id;
 }
 
-export function addRelatedEntitiesToWorkspace(relatedEntities: { [key: string]: DtoKeyBase[] }, workspace: WorkspaceService) {
-  if (!!relatedEntities) {
-    const collectionNames = Object.keys(relatedEntities);
+export function mergeEntitiesInWorkspace(entities: { [key: string]: DtoKeyBase[] }, workspace: WorkspaceService) {
+  if (!!entities) {
+    const collectionNames = Object.keys(entities);
     for (let c = 0; c < collectionNames.length; c++) {
       const collectionName = collectionNames[c];
-      const collection = relatedEntities[collectionName];
+      const collection = entities[collectionName];
+      const wsCollection = workspace.current[collectionName];
+      if (!collection) {
+        // dev mistake
+        console.error(`Could not find collection '${collectionName}' in the response`);
+      }
+      if (!wsCollection) {
+        // dev mistake
+        console.error(`Could not find collection '${collectionName}' in the workspace`);
+      }
+
       for (let i = 0; i < collection.length; i++) {
         const freshItem = collection[i];
-        const staleItem = workspace.current[collectionName][freshItem.Id];
-        apply(freshItem, staleItem, workspace, collectionName);
+        const staleItem = wsCollection[freshItem.Id];
+        apply(freshItem, staleItem, wsCollection);
       }
     }
   }
 }
 
-function apply(freshItem: DtoKeyBase, staleItem: DtoKeyBase, workspace: WorkspaceService, collectionName: string) {
+function apply(freshItem: DtoKeyBase, staleItem: DtoKeyBase, wsCollection: any) {
   if (!!staleItem) {
-    workspace.current[collectionName][freshItem.Id] = JSON.parse(JSON.stringify(merge(freshItem, staleItem)));
+    wsCollection[freshItem.Id] = JSON.parse(JSON.stringify(merge(freshItem, staleItem)));
   } else {
-    workspace.current[collectionName][freshItem.Id] = freshItem;
+    wsCollection[freshItem.Id] = freshItem;
   }
 }
 

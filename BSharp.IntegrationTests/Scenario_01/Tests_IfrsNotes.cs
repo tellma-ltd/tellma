@@ -48,7 +48,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal("IfrsNote", responseData.CollectionName);
 
             Assert.Equal(0, responseData.TotalCount);
-            Assert.Empty(responseData.Data);
+            Assert.Empty(responseData.Result);
         }
 
         [Trait(Testing, IfrsNotes)]

@@ -26,7 +26,7 @@ namespace BSharp.Controllers
 {
     [Route("api/measurement-units")]
     [LoadTenantInfo]
-    public class MeasurementUnitsController : CrudControllerBase<MeasurementUnitForSave, MeasurementUnit, MeasurementUnitForQuery, int?>
+    public class MeasurementUnitsController : CrudControllerBase<MeasurementUnitForSave, MeasurementUnit, int?>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
@@ -108,50 +108,16 @@ MERGE INTO [dbo].MeasurementUnits AS t
             }
 
             // Determine whether entities should be returned
-            if (!returnEntities)
+            if (returnEntities)
             {
-                // IF no returned items are expected, simply return 200 OK
-                return Ok();
+                // Return results
+                var response = await GetByIdListAsync(nullableIds, expand);
+                return Ok(response);
             }
             else
             {
-                // Load the entities using their Ids
-                var affectedDbEntitiesQ = CreateODataQuery().FilterByIds(nullableIds);
-                var affectedDbEntitiesExpandedQ = affectedDbEntitiesQ.Clone().Expand(expand);
-                var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-
-                // sort the entities the way their Ids came, as a good practice
-                var affectedEntities = Mapper.Map<List<MeasurementUnit>>(affectedDbEntities);
-                MeasurementUnit[] sortedAffectedEntities = new MeasurementUnit[ids.Count];
-                Dictionary<int, MeasurementUnit> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    var id = ids[i];
-                    MeasurementUnit entity = null;
-                    if (affectedEntitiesDic.ContainsKey(id))
-                    {
-                        entity = affectedEntitiesDic[id];
-                    }
-
-                    sortedAffectedEntities[i] = entity;
-                }
-
-                // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-                await ApplyReadPermissionsMask(affectedDbEntities, affectedDbEntitiesExpandedQ, await UserPermissions(PermissionLevel.Read), GetDefaultMask());
-
-                // Flatten related entities and map each to its respective DTO 
-                var relatedEntities = FlattenRelatedEntitiesAndTrim(affectedDbEntities, expand);
-
-                // Prepare a proper response
-                var response = new EntitiesResponse<MeasurementUnit>
-                {
-                    Data = sortedAffectedEntities,
-                    CollectionName = GetCollectionName(typeof(MeasurementUnit)),
-                    RelatedEntities = relatedEntities
-                };
-
-                // Commit and return
-                return Ok(response);
+                // IF no returned items are expected, simply return 200 OK
+                return Ok();
             }
         }
 
@@ -171,17 +137,17 @@ MERGE INTO [dbo].MeasurementUnits AS t
             return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
         }
 
-        protected override ODataQuery<MeasurementUnitForQuery, int?> Search(ODataQuery<MeasurementUnitForQuery, int?> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override ODataQuery<MeasurementUnit> Search(ODataQuery<MeasurementUnit> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(MeasurementUnitForQuery.Name);
-                var name2 = nameof(MeasurementUnitForQuery.Name2);
-                // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
-                var code = nameof(MeasurementUnitForQuery.Code);
+                var name = nameof(MeasurementUnit.Name);
+                var name2 = nameof(MeasurementUnit.Name2);
+                // var name3 = nameof(MeasurementUnit.Name3); // TODO
+                var code = nameof(MeasurementUnit.Code);
 
                 query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }
@@ -466,7 +432,7 @@ SET NOCOUNT ON;
             var props = saveProps.Union(readProps).ToArray();
 
             // The result that will be returned
-            var result = new AbstractDataGrid(props.Length, response.Data.Count() + 1);
+            var result = new AbstractDataGrid(props.Length, response.Result.Count() + 1);
 
             // Add the header
             List<PropertyInfo> addedProps = new List<PropertyInfo>(props.Length);
@@ -494,51 +460,51 @@ SET NOCOUNT ON;
                 }
             }
 
-            // Add the rows
-            foreach (var entity in response.Data)
-            {
-                var metadata = entity.EntityMetadata;
-                var row = result[result.AddRow()];
-                int i = 0;
-                foreach (var prop in addedProps)
-                {
-                    metadata.TryGetValue(prop.Name, out FieldMetadata meta);
-                    if (meta == FieldMetadata.Loaded)
-                    {
-                        var content = prop.GetValue(entity);
+            //// Add the rows
+            //foreach (var entity in response.Ids)
+            //{
+            //    var metadata = entity.EntityMetadata;
+            //    var row = result[result.AddRow()];
+            //    int i = 0;
+            //    foreach (var prop in addedProps)
+            //    {
+            //        metadata.TryGetValue(prop.Name, out FieldMetadata meta);
+            //        if (meta == FieldMetadata.Loaded)
+            //        {
+            //            var content = prop.GetValue(entity);
 
-                        // Special handling for choice lists
-                        var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
-                        if (choiceListAttr != null)
-                        {
-                            var choiceIndex = Array.FindIndex(choiceListAttr.Choices, e => e.Equals(content));
-                            if (choiceIndex != -1)
-                            {
-                                string displayName = choiceListAttr.DisplayNames[choiceIndex];
-                                content = _localizer[displayName];
-                            }
-                        }
+            //            // Special handling for choice lists
+            //            var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
+            //            if (choiceListAttr != null)
+            //            {
+            //                var choiceIndex = Array.FindIndex(choiceListAttr.Choices, e => e.Equals(content));
+            //                if (choiceIndex != -1)
+            //                {
+            //                    string displayName = choiceListAttr.DisplayNames[choiceIndex];
+            //                    content = _localizer[displayName];
+            //                }
+            //            }
 
-                        // Special handling for DateTimeOffset
-                        if (prop.PropertyType.IsDateTimeOffset() && content != null)
-                        {
-                            content = ToExportDateTime((DateTimeOffset)content);
-                        }
+            //            // Special handling for DateTimeOffset
+            //            if (prop.PropertyType.IsDateTimeOffset() && content != null)
+            //            {
+            //                content = ToExportDateTime((DateTimeOffset)content);
+            //            }
 
-                        row[i] = AbstractDataCell.Cell(content);
-                    }
-                    else if (meta == FieldMetadata.Restricted)
-                    {
-                        row[i] = AbstractDataCell.Cell(Constants.Restricted);
-                    }
-                    else
-                    {
-                        row[i] = AbstractDataCell.Cell("-");
-                    }
+            //            row[i] = AbstractDataCell.Cell(content);
+            //        }
+            //        else if (meta == FieldMetadata.Restricted)
+            //        {
+            //            row[i] = AbstractDataCell.Cell(Constants.Restricted);
+            //        }
+            //        else
+            //        {
+            //            row[i] = AbstractDataCell.Cell("-");
+            //        }
 
-                    i++;
-                }
-            }
+            //        i++;
+            //    }
+            //}
 
             return result;
         }

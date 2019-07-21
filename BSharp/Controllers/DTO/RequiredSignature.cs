@@ -33,7 +33,7 @@ namespace BSharp.Controllers.DTO
         public string Memo { get; set; }
     }
 
-    public class RequiredSignature : RequiredSignatureForSave
+    public class RequiredSignature : RequiredSignatureForSave, IAuditedDto
     {
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -48,23 +48,21 @@ namespace BSharp.Controllers.DTO
         [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
-    }
 
-    public class RequiredSignatureForQuery : RequiredSignature, IAuditedDto
-    {
+        // For Query
+
         [BasicField]
         [NavigationProperty(ForeignKey = nameof(ViewId))]
-        public ViewForQuery View { get; set; }
+        public View View { get; set; }
 
         [BasicField]
         [NavigationProperty(ForeignKey = nameof(RoleId))]
-        public RoleForQuery Role { get; set; }
+        public Role Role { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
-
 }

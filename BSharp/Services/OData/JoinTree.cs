@@ -19,10 +19,19 @@ namespace BSharp.Services.OData
             ForeignKeyName = foreignKeyName;
         }
 
-        public Type Type { get; private set; } // the DTO type of the current node
+        /// <summary>
+        /// The DTO type of the current node
+        /// </summary>
+        public Type Type { get; private set; }
 
+        /// <summary>
+        /// The foreign key on the *parent* DTO
+        /// </summary>
         public string ForeignKeyName { get; private set; } // e.g. 'AgentId'
 
+        /// <summary>
+        /// The symbol of the path leading up to the current node, root node usually has the symbol "P"
+        /// </summary>
         public string Symbol { get; private set; } // e.g. 'P1', 'P2'
 
         public JoinTree this[ArraySegment<string> path]

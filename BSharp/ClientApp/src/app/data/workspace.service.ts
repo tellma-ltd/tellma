@@ -75,9 +75,9 @@ export class TenantWorkspace {
   MeasurementUnit: EntityWorkspace<MeasurementUnit>;
   Custodies: EntityWorkspace<Custody>;
   Role: EntityWorkspace<Role>;
-  Views: EntityWorkspace<View>;
+  View: EntityWorkspace<View>;
   LocalUser: EntityWorkspace<LocalUser>;
-  Cultures: EntityWorkspace<Culture>;
+  Culture: EntityWorkspace<Culture>;
   IfrsNote: EntityWorkspace<IfrsNote>;
   ProductCategory: EntityWorkspace<ProductCategory>;
 
@@ -92,9 +92,9 @@ export class TenantWorkspace {
     this.MeasurementUnit = new EntityWorkspace<MeasurementUnit>();
     this.Custodies = new EntityWorkspace<Custody>();
     this.Role = new EntityWorkspace<Role>();
-    this.Views = new EntityWorkspace<View>();
+    this.View = new EntityWorkspace<View>();
     this.LocalUser = new EntityWorkspace<LocalUser>();
-    this.Cultures = new EntityWorkspace<Culture>();
+    this.Culture = new EntityWorkspace<Culture>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
     this.ProductCategory = new EntityWorkspace<ProductCategory>();
   }

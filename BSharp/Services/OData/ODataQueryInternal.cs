@@ -7,11 +7,12 @@ using System.Text;
 namespace BSharp.Services.OData
 {
     /// <summary>
-    /// This represents an odata query without any one-to-many path steps (e.g. expand=Order/LineItems is not allowed)
+    /// This represents an odata query without any one-to-many path steps (e.g. expand=Order/LineItems is not allowed),
+    /// this class is for internal use of the OData library, and not to be used directly anywhere else in the solution
     /// </summary>
-    public class ODataFlatQuery // Cannot handle many to one immediately
+    public class ODataQueryInternal : IQueryInternal
     {
-        public ODataFlatQuery PrincipalQuery { get; set; } // Need to populate these 3 properties and use them below
+        public ODataQueryInternal PrincipalQuery { get; set; } // Need to populate these 3 properties and use them below
 
         public string ForeignKeyToPrincipalQuery { get; set; }
 
@@ -57,7 +58,7 @@ namespace BSharp.Services.OData
 
         /// <summary>
         /// Calling this method will keep a permanent cache of some parts of the result, therefore
-        /// if the OData arguments need to change after that, a new <see cref="ODataFlatQuery"/> must be created
+        /// if the OData arguments need to change after that, a new <see cref="ODataQueryInternal"/> must be created
         /// </summary>
         public SqlStatement PrepareStatement(
             Func<Type, string> sources,
@@ -88,13 +89,14 @@ namespace BSharp.Services.OData
             string offsetFetchSql = PrepareOffsetFetch();
 
             // (7) Finally put together the final SQL statement and return it
-            string sql = PrepareSql(
+            string sql = ODataTools.CombineSql(
                     selectSql: selectSql,
                     joinSql: joinSql,
                     principalQuerySql: principalQuerySql,
                     whereSql: whereSql,
                     orderbySql: orderbySql,
-                    offsetFetchSql: offsetFetchSql
+                    offsetFetchSql: offsetFetchSql,
+                    groupbySql: null
                 );
 
             // (8) Return the result
@@ -125,7 +127,7 @@ namespace BSharp.Services.OData
 
         /// <summary>
         /// Calling this method will keep a permanent cache of some parts of the result, therefore
-        /// if the OData arguments need to change after that, a new <see cref="ODataFlatQuery"/> must be created
+        /// if the OData arguments need to change after that, a new <see cref="ODataQueryInternal"/> must be created
         /// </summary>
         private string PrepareStatementAsPrincipal(
             Func<Type, string> sources,
@@ -163,51 +165,18 @@ namespace BSharp.Services.OData
             }
 
             // (7) Finally put together the final SQL statement and return it
-            string sql = PrepareSql(
+            string sql = ODataTools.CombineSql(
                     selectSql: selectSql,
                     joinSql: joinSql,
                     principalQuerySql: principalQuerySql,
                     whereSql: whereSql,
                     orderbySql: orderbySql,
-                    offsetFetchSql: offsetFetchSql
+                    offsetFetchSql: offsetFetchSql,
+                    groupbySql: null
                 );
 
             // (8) Return the result
             return sql;
-        }
-
-        private string PrepareSql(string selectSql, string joinSql, string principalQuerySql, string whereSql, string orderbySql, string offsetFetchSql)
-        {
-            var finalSQL = new StringBuilder();
-
-            finalSQL.AppendLine(selectSql);
-            finalSQL.Append(joinSql);
-
-            if (!string.IsNullOrWhiteSpace(principalQuerySql))
-            {
-                finalSQL.AppendLine();
-                finalSQL.Append(principalQuerySql);
-            }
-
-            if (!string.IsNullOrWhiteSpace(whereSql))
-            {
-                finalSQL.AppendLine();
-                finalSQL.Append(whereSql);
-            }
-
-            if (!string.IsNullOrWhiteSpace(orderbySql))
-            {
-                finalSQL.AppendLine();
-                finalSQL.Append(orderbySql);
-            }
-
-            if (!string.IsNullOrWhiteSpace(offsetFetchSql))
-            {
-                finalSQL.AppendLine();
-                finalSQL.Append(offsetFetchSql);
-            }
-
-            return finalSQL.ToString();
         }
 
         private SqlSelectClause PrepareSelect(JoinTree joinTree)
@@ -218,7 +187,11 @@ namespace BSharp.Services.OData
             {
                 // NULL happens when there is a select that has been segmented from the middle
                 // and the first section of the segment no longer terminates with a simple property
-                propName = propName ?? "Id";
+                // propName = propName ?? "Id";
+                if (propName == null)
+                {
+                    return;
+                }
 
                 if (selects.Add((symbol, propName)))
                 {
@@ -301,8 +274,11 @@ namespace BSharp.Services.OData
                             selectedJoins.Add(join);
                         }
 
-                        // The Id is ALWAYS included in every returned DTO
-                        AddSelect(join.Symbol, subpath, "Id");
+                        // The Id is ALWAYS required in every returned DTO that has an Id property
+                        if (join.Type.GetProperty("Id") != null)
+                        {
+                            AddSelect(join.Symbol, subpath, "Id");
+                        }
 
                         // Add all the foreign keys to the next level down
                         foreach (var nextJoin in join.Values)
@@ -322,13 +298,13 @@ namespace BSharp.Services.OData
             }
 
             // Deals with trees
-            foreach(var path in PathsToParentEntitiesWithExpandedAncestors)
+            foreach (var path in PathsToParentEntitiesWithExpandedAncestors)
             {
                 var join = joinTree[path];
                 AddSelect(join.Symbol, path, "ParentId");
             }
 
-            if(IsAncestorExpand)
+            if (IsAncestorExpand)
             {
                 var path = new string[0];
                 AddSelect(joinTree.Symbol, path, "ParentId");
@@ -409,7 +385,7 @@ namespace BSharp.Services.OData
                 string innerSql = PrincipalQuery.PrepareStatementAsPrincipal(sources, ps, IsAncestorExpand, PathToCollectionPropertyInPrincipal, currentUserId, currentUserTimeZone);
                 innerSql = ODataTools.IndentLines(innerSql);
 
-                if(IsAncestorExpand)
+                if (IsAncestorExpand)
                 {
                     principalQuerySql = $@"INNER JOIN (
 {innerSql}
@@ -431,179 +407,12 @@ namespace BSharp.Services.OData
             // Where is cached 
             if (_cachedWhere == null)
             {
-                string FilterToSql(FilterExpression exp)
-                {
-                    if (exp is FilterConjunction conExp)
-                    {
-                        return $"({FilterToSql(conExp.Left)}) AND ({FilterToSql(conExp.Right)})";
-                    }
-
-                    if (exp is FilterDisjunction disExp)
-                    {
-                        return $"({FilterToSql(disExp.Left)}) OR ({FilterToSql(disExp.Right)})";
-                    }
-
-                    if(exp is FilterNegation notExp)
-                    {
-                        return $"NOT ({FilterToSql(notExp.Inner)})";
-                    }
-
-                    if (exp is FilterAtom atom)
-                    {
-                        // (A) Prepare the symbol corresponding to the path, e.g. P1
-                        var join = joinTree[atom.Path];
-                        if (join == null)
-                        {
-                            // Developer mistake
-                            throw new InvalidOperationException($"The path '{string.Join('/', atom.Path)}' was not found in the joinTree");
-                        }
-                        var symbol = join.Symbol;
-
-                        // (B) Determine the type of the property
-                        var propName = atom.Property;
-                        var prop = join.Type.GetProperty(propName);
-                        if (prop == null)
-                        {
-                            // Developer mistake
-                            throw new InvalidOperationException($"Could not find property {propName} on type {join.Type}");
-                        }
-
-                        var idType = join.Type.GetProperty("Id").PropertyType;
-                        var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                        bool isHierarchyId = propType == typeof(HierarchyId);
-                        if (isHierarchyId)
-                        {
-                            propType = Nullable.GetUnderlyingType(idType) ?? idType;
-                        }
-
-                        // (C) Prepare the value (e.g. "'Huntington Rd.'")
-                        var valueString = atom.Value;
-                        object value;
-                        bool isNull = false;
-                        if (valueString == "null")
-                        {
-                            value = null;
-                            isNull = true;
-                        }
-                        else if (valueString?.ToLower() == "me")
-                        {
-                            value = currentUserId;
-                        }
-                        else
-                        {
-                            if (propType == typeof(string) || propType == typeof(char))
-                            {
-                                if (!valueString.StartsWith("'") || !valueString.EndsWith("'"))
-                                {
-                                    // Developer mistake
-                                    throw new InvalidOperationException($"Property {propName} is of type String, therefore the value it is compared to must be enclosed in single quotation marks");
-                                }
-
-                                valueString = valueString.Substring(1, valueString.Length - 2);
-                            }
-
-                            try
-                            {
-                                value = valueString.ChangeType(prop.PropertyType, currentUserTimeZone);
-                            }
-                            catch (ArgumentException)
-                            {
-                                // Developer mistake
-                                throw new InvalidOperationException($"The filter value '{valueString}' could not be parsed into a valid {propType}");
-                            }
-                        }
-
-                        string paramSymbol = isNull ? "NULL" : "@" + ps.AddParameter(value);
-
-                        // (D) parse the operator (e.g. "eq")
-                        string propSQL = $"[{symbol}].[{atom.Property}]";
-                        switch (atom.Op?.ToLower() ?? "")
-                        {
-                            case Ops.gt:
-                                return $"{propSQL} > {paramSymbol}";
-
-                            case Ops.ge:
-                                return $"{propSQL} >= {paramSymbol}";
-
-                            case Ops.lt:
-                                return $"{propSQL} < {paramSymbol}";
-
-                            case Ops.le:
-                                return $"{propSQL} <= {paramSymbol}";
-
-                            case Ops.eq:
-                                string eqSql = isNull ? "IS" : "=";
-                                return $"{propSQL} {eqSql} {paramSymbol}";
-
-                            case Ops.ne:
-                                string neSql = isNull ? "IS NOT" : "<>";
-                                return $"{propSQL} {neSql} {paramSymbol}";
-
-                            case Ops.contains: // Must be text
-                                if (propType != typeof(string) || isHierarchyId)
-                                {
-                                    // Developer mistake
-                                    throw new InvalidOperationException($"Property {propName} is not of type String, therefore cannot use the operator '{atom.Op}'");
-                                }
-
-                                return $"{propSQL} LIKE N'%' + {paramSymbol} + N'%'";
-
-                            case Ops.ncontains: // Must be text
-                                if (propType != typeof(string) || isHierarchyId)
-                                {
-                                    // Developer mistake
-                                    throw new InvalidOperationException($"Property {propName} is not of type String, therefore cannot use the operator '{atom.Op}'");
-                                }
-
-                                return $"{propSQL} NOT LIKE N'%' + {paramSymbol} + N'%'";
-
-                            case Ops.childof: // Must be hierarchy Id
-                                {
-                                    if (!isHierarchyId)
-                                    {
-                                        // Developer mistake
-                                        throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
-                                    }
-
-                                    var treeSource = sources(join.Type);
-                                    string parentNode = isNull ? "HierarchyId::GetRoot()" : 
-                                        $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
-
-                                    return $"{propSQL}.GetAncestor(1) = {parentNode}";
-                                }
-
-                            case Ops.descof: // Must be hierarchy Id
-                                {
-                                    if (!isHierarchyId)
-                                    {
-                                        // Developer mistake
-                                        throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
-                                    }
-
-                                    var treeSource = sources(join.Type);
-                                    string parentNode = isNull ? "HierarchyId::GetRoot()" :
-                                        $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
-
-                                    return $"{propSQL}.IsDescendantOf({parentNode}) = 1";
-                                }
-
-                            default:
-                                // Developer mistake
-                                throw new InvalidOperationException($"The filter operator '{atom.Op}' is not recognized");
-                        }
-
-                    }
-
-                    // Programmer mistake
-                    throw new InvalidOperationException("Unknown AST type");
-                }
-
                 string whereFilter = null;
                 string whereInIds = null;
 
                 if (Filter != null)
                 {
-                    whereFilter = FilterToSql(Filter);
+                    whereFilter = ODataTools.FilterToSql(Filter, sources, ps, joinTree, currentUserId, currentUserTimeZone);
                 }
 
                 if (Ids != null)

@@ -29,7 +29,7 @@ namespace BSharp.Controllers
 {
     [Route("api/local-users")]
     [LoadTenantInfo]
-    public class LocalUsersController : CrudControllerBase<LocalUserForSave, LocalUser, LocalUserForQuery, int?>
+    public class LocalUsersController : CrudControllerBase<LocalUserForSave, LocalUser, int?>
     {
         private readonly ApplicationContext _db;
         private readonly AdminContext _adminDb;
@@ -81,10 +81,10 @@ namespace BSharp.Controllers
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
                 // Retrieve the user whose image we're about to return (This also checks the read permissions of the caller)
-                var dbUserResponse = await GetByIdImplAsync(id, new GetByIdArguments { Expand = null });
+                var dbUserResponse = await GetByIdImplAsync(id, new GetByIdArguments { Select = nameof(LocalUser.ImageId), Expand = null });
 
                 // Get the blob name
-                var imageId = dbUserResponse.Entity.ImageId;
+                var imageId = dbUserResponse.RelatedEntities[dbUserResponse.CollectionName].Cast<LocalUser>().SingleOrDefault(e => e.Id == dbUserResponse.Result?.Id)?.ImageId;
                 if (imageId != null)
                 {
                     // Get the bytes
@@ -372,50 +372,16 @@ namespace BSharp.Controllers
             }
 
             // Determine whether entities should be returned
-            if (!returnEntities)
+            if (returnEntities)
             {
-                // IF no returned items are expected, simply return 200 OK
-                return Ok();
+                // Return results
+                var response = await GetByIdListAsync(nullableIds, expand);
+                return Ok(response);
             }
             else
             {
-                // Load the entities using their Ids
-                var affectedDbEntitiesQ = CreateODataQuery().FilterByIds(nullableIds);
-                var affectedDbEntitiesExpandedQ = affectedDbEntitiesQ.Clone().Expand(expand);
-                var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-
-                // sort the entities the way their Ids came, as a good practice
-                var affectedEntities = Mapper.Map<List<LocalUser>>(affectedDbEntities);
-                LocalUser[] sortedAffectedEntities = new LocalUser[ids.Count];
-                Dictionary<int, LocalUser> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    var id = ids[i];
-                    LocalUser entity = null;
-                    if (affectedEntitiesDic.ContainsKey(id))
-                    {
-                        entity = affectedEntitiesDic[id];
-                    }
-
-                    sortedAffectedEntities[i] = entity;
-                }
-
-                // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-                await ApplyReadPermissionsMask(affectedDbEntities, affectedDbEntitiesExpandedQ, await UserPermissions(PermissionLevel.Read), GetDefaultMask());
-
-                // Flatten related entities and map each to its respective DTO 
-                var relatedEntities = FlattenRelatedEntitiesAndTrim(affectedDbEntities, expand);
-
-                // Prepare a proper response
-                var response = new EntitiesResponse<LocalUser>
-                {
-                    Data = sortedAffectedEntities,
-                    CollectionName = GetCollectionName(typeof(LocalUser)),
-                    RelatedEntities = relatedEntities
-                };
-
-                // Commit and return
-                return Ok(response);
+                // IF no returned items are expected, simply return 200 OK
+                return Ok();
             }
         }
 
@@ -452,17 +418,17 @@ namespace BSharp.Controllers
             return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
         }
 
-        protected override ODataQuery<LocalUserForQuery, int?> Search(ODataQuery<LocalUserForQuery, int?> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override ODataQuery<LocalUser> Search(ODataQuery<LocalUser> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(LocalUserForQuery.Name);
-                var name2 = nameof(LocalUserForQuery.Name2);
+                var name = nameof(LocalUser.Name);
+                var name2 = nameof(LocalUser.Name2);
                 // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
-                var email = nameof(LocalUserForQuery.Email);
+                var email = nameof(LocalUser.Email);
 
                 query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {email} {Ops.contains} '{search}'");
             }

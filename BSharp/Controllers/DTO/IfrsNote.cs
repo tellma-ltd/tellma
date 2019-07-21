@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
+    [StrongDto]
     public class IfrsNote : IfrsConcept
     {
         [BasicField]
@@ -28,10 +29,8 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "IfrsNotes_ForCredit")]
         public bool? ForCredit { get; set; }
 
-    }
+        // For Query
 
-    public class IfrsNoteForQuery : IfrsNote
-    {
         [BasicField]
         public HierarchyId Node { get; set; }
 
@@ -40,12 +39,13 @@ namespace BSharp.Controllers.DTO
 
         [NavigationProperty(ForeignKey = nameof(ParentId))]
         [Display(Name = "TreeParent")]
-        public IfrsNoteForQuery Parent { get; set; }
+        public IfrsNote Parent { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
+
 }

@@ -151,7 +151,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
           );
         }
       })
-    ).subscribe((results: GetResponse<DtoKeyBase>) => {
+    ).subscribe((results: GetResponse) => {
       // Populate the dropdown with the results
       if (!!results) {
         this._searchResults = addToWorkspace(results, this.workspace);

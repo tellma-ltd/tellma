@@ -19,31 +19,31 @@ namespace BSharp.IntegrationTests.Temp
             {
                 switch (t.Name)
                 {
-                    case nameof(MeasurementUnitForQuery):
+                    case nameof(MeasurementUnit):
                         return "[dbo].[MeasurementUnits]";
 
-                    case nameof(RoleForQuery):
+                    case nameof(Role):
                         return "[dbo].[Roles]";
 
-                    case nameof(AgentForQuery):
+                    case nameof(Agent):
                         return "[dbo].[Custodies]";
 
-                    case nameof(RoleMembershipForQuery):
+                    case nameof(RoleMembership):
                         return "[dbo].[RoleMemberships]";
 
-                    case nameof(LocalUserForQuery):
+                    case nameof(LocalUser):
                         return "[dbo].[LocalUsers]";
 
-                    case nameof(RequiredSignatureForQuery):
+                    case nameof(RequiredSignature):
                         return "(SELECT * FROM [dbo].[Permissions] WHERE Level = 'Sign')";
 
-                    case nameof(PermissionForQuery):
+                    case nameof(Permission):
                         return "(SELECT * FROM [dbo].[Permissions] WHERE Level <> 'Sign')";
                 }
                 return null;
             };
 
-            var query = new ODataQuery<LocalUserForQuery, int?>(null, sources, new MockLocalizer(), 0, TimeZoneInfo.Local);
+            var query = new ODataQuery<LocalUser, int?>(null, sources, new MockLocalizer(), 0, TimeZoneInfo.Local);
 
             query.Select("Roles/Memo");
             query.Filter("IsActive eq true");

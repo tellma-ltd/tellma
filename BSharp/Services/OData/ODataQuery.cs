@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Services.OData
 {
-    public class ODataQuery<T, TKey> where T : DtoKeyBase<TKey>
+    public class ODataQuery<T> where T : DtoBase
     {
         private readonly SqlConnection _conn;
         private readonly Func<Type, string> _sources;
@@ -28,7 +28,7 @@ namespace BSharp.Services.OData
         private string _select;
         private string _expand;
         private string _orderby;
-        private TKey[] _ids;
+        private object[] _ids;
         private string _composableSql;
         private string _preparatorySql;
         private SqlParameter[] _parameters;
@@ -48,9 +48,9 @@ namespace BSharp.Services.OData
             _userTimeZone = userTimeZone;
         }
 
-        public ODataQuery<T, TKey> Clone()
+        public ODataQuery<T> Clone()
         {
-            var clone = new ODataQuery<T, TKey>(_conn, _sources, _localizer, _userId, _userTimeZone)
+            var clone = new ODataQuery<T>(_conn, _sources, _localizer, _userId, _userTimeZone)
             {
                 _top = _top,
                 _skip = _skip,
@@ -68,7 +68,7 @@ namespace BSharp.Services.OData
             return clone;
         }
 
-        public ODataQuery<T, TKey> Select(string paths)
+        public ODataQuery<T> Select(string paths)
         {
             if (string.IsNullOrWhiteSpace(paths))
             {
@@ -79,7 +79,7 @@ namespace BSharp.Services.OData
             return this;
         }
 
-        public ODataQuery<T, TKey> Expand(string paths)
+        public ODataQuery<T> Expand(string paths)
         {
             if (string.IsNullOrWhiteSpace(paths))
             {
@@ -90,7 +90,7 @@ namespace BSharp.Services.OData
             return this;
         }
 
-        public ODataQuery<T, TKey> Filter(string condition)
+        public ODataQuery<T> Filter(string condition)
         {
             if (!string.IsNullOrWhiteSpace(condition))
             {
@@ -106,13 +106,19 @@ namespace BSharp.Services.OData
             return this;
         }
 
-        public ODataQuery<T, TKey> FilterByIds(params TKey[] ids)
+        public ODataQuery<T> FilterByIds(params object[] ids)
         {
+            if(typeof(T).GetProperty("Id") == null)
+            {
+                // Developer mistake
+                throw new InvalidOperationException($"Type {typeof(T).Name} does not have an Id, yet 'FilterByIds' has been invoked on an ODataQuery with {typeof(T).Name} as a generic argument");
+            }
+
             _ids = ids;
             return this;
         }
 
-        public ODataQuery<T, TKey> OrderBy(string paths)
+        public ODataQuery<T> OrderBy(string paths)
         {
             if (string.IsNullOrWhiteSpace(paths))
             {
@@ -123,19 +129,19 @@ namespace BSharp.Services.OData
             return this;
         }
 
-        public ODataQuery<T, TKey> Top(int top)
+        public ODataQuery<T> Top(int top)
         {
             _top = top;
             return this;
         }
 
-        public ODataQuery<T, TKey> Skip(int skip)
+        public ODataQuery<T> Skip(int skip)
         {
             _skip = skip;
             return this;
         }
 
-        public ODataQuery<T, TKey> FromSql(string composableSql, string preparatorySql = null, params SqlParameter[] parameters)
+        public ODataQuery<T> FromSql(string composableSql, string preparatorySql = null, params SqlParameter[] parameters)
         {
             _composableSql = composableSql;
             _preparatorySql = preparatorySql;
@@ -144,7 +150,7 @@ namespace BSharp.Services.OData
             return this;
         }
 
-        public ODataQuery<T, TKey> UseTransaction(DbTransaction trx)
+        public ODataQuery<T> UseTransaction(DbTransaction trx)
         {
             if (!(trx is SqlTransaction))
             {
@@ -158,16 +164,16 @@ namespace BSharp.Services.OData
 
         public async Task<int> CountAsync()
         {
-            SelectExpression selectExp = SelectExpression.Parse("Id");
+            SelectExpression selectExp = SelectExpression.Parse(typeof(T).GetProperty("Id") != null ? "Id" : _select);
             FilterExpression filterExp = _filterConditions?.Select(c => FilterExpression.Parse(c))
                 .Aggregate((e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
-            ValidatePathsAndProperties(null, null, filterExp, null);
+            ValidatePathsAndProperties(selectExp, null, filterExp, null);
 
-            var flatQuery = new ODataFlatQuery
+            var flatQuery = new ODataQueryInternal
             {
                 ResultType = typeof(T),
-                KeyType = typeof(TKey),
+                KeyType = typeof(T).GetProperty("Id")?.PropertyType,
                 Select = selectExp,
                 Filter = filterExp,
                 Ids = _ids == null ? null : string.Join(",", _ids.Select(e => e)),
@@ -252,14 +258,18 @@ namespace BSharp.Services.OData
             }
         }
 
-        public async Task<List<T>> ToListAsync()
+        public async Task<(List<T>, EntitiesMap)> ToListAsync()
         {
-            OrderByExpression orderbyId = OrderByExpression.Parse("Id");
+            if(string.IsNullOrWhiteSpace(_orderby))
+            {
+                // Developer mistake
+                throw new InvalidOperationException($"ODataQuery of type {typeof(T).Name} was executed without an orderby clause");
+            }
 
             // Create the expressions, for filter, turn all the filters into expressions and AND them together
             SelectExpression selectExp = SelectExpression.Parse(_select);
             ExpandExpression expandExp = ExpandExpression.Parse(_expand);
-            OrderByExpression orderbyExp = OrderByExpression.Parse(_orderby) ?? orderbyId;
+            OrderByExpression orderbyExp = OrderByExpression.Parse(_orderby);
             FilterExpression filterExp = _filterConditions?.Select(c => FilterExpression.Parse(c))
                 .Aggregate((e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
@@ -268,14 +278,20 @@ namespace BSharp.Services.OData
 
             // ------------------------
 
-            var segments = new Dictionary<ArraySegment<string>, ODataFlatQuery>(new PathEqualityComparer());
+            var segments = new Dictionary<ArraySegment<string>, ODataQueryInternal>(new PathEqualityComparer());
 
             // Helper method, will be used later in both the select and the expand loops
-            ODataFlatQuery MakeFlatQuery(ArraySegment<string> previousFullPath, ArraySegment<string> subPath, Type type)
+            ODataQueryInternal MakeFlatQuery(ArraySegment<string> previousFullPath, ArraySegment<string> subPath, Type type)
             {
-                ODataFlatQuery principalQuery = previousFullPath == null ? null : segments[previousFullPath];
+                ODataQueryInternal principalQuery = previousFullPath == null ? null : segments[previousFullPath];
                 ArraySegment<string> pathToCollectionPropertyInPrincipal = previousFullPath == null ? null : subPath;
-                Type keyType = type.GetProperty("Id").PropertyType;
+                Type keyType = type.GetProperty("Id")?.PropertyType;
+
+                if(principalQuery != null && keyType == null)
+                {
+                    // Programmer mistake
+                    throw new InvalidOperationException($"Type {type.Name} has no Id property, yet it is used as a navigation collection on another entity");
+                }
 
                 string foreignKeyToPrincipalQuery = null;
                 bool isAncestorExpand = false;
@@ -318,7 +334,7 @@ namespace BSharp.Services.OData
                     principalQuery.PathsToParentEntitiesWithExpandedAncestors.Add(pathToParentEntity);
                 }
 
-                var flatQuery = new ODataFlatQuery
+                var flatQuery = new ODataQueryInternal
                 {
                     PrincipalQuery = principalQuery,
                     IsAncestorExpand = isAncestorExpand,
@@ -326,7 +342,7 @@ namespace BSharp.Services.OData
                     ForeignKeyToPrincipalQuery = foreignKeyToPrincipalQuery,
                     ResultType = type,
                     KeyType = keyType,
-                    OrderBy = orderbyId
+                    OrderBy = OrderByExpression.Parse("Id")
                 };
 
                 return flatQuery;
@@ -344,7 +360,7 @@ namespace BSharp.Services.OData
                     {
                         if (!segments.ContainsKey(fullPath))
                         {
-                            ODataFlatQuery flatQuery = MakeFlatQuery(previousFullPath, subPath, type);
+                            ODataQueryInternal flatQuery = MakeFlatQuery(previousFullPath, subPath, type);
 
                             flatQuery.Select = new SelectExpression
                             {
@@ -384,7 +400,7 @@ namespace BSharp.Services.OData
                     {
                         if (!segments.ContainsKey(fullPath))
                         {
-                            ODataFlatQuery flatQuery = MakeFlatQuery(previousFullPath, subPath, type);
+                            ODataQueryInternal flatQuery = MakeFlatQuery(previousFullPath, subPath, type);
                             segments[fullPath] = flatQuery;
                         }
 
@@ -455,332 +471,48 @@ namespace BSharp.Services.OData
                 };
             }
 
-            var results = segments.ToDictionary(e => e.Value, e => new List<DtoBase>());
+            var results = segments.ToDictionary(e => (IQueryInternal)e.Value, e => new List<DtoBase>());
 
-            List<SqlStatement> statements = results.Keys
-                .Select(q => q.PrepareStatement(_sources, ps, _userId, _userTimeZone)).ToList(); // The order matters for the hydration step later
+            List<(IQueryInternal, SqlStatement)> queries = results.Keys.Select(q => 
+                (q, q.PrepareStatement(_sources, ps, _userId, _userTimeZone))).ToList(); // The order matters for the hydration step later
 
-            StringBuilder sql = new StringBuilder();
-            if (!string.IsNullOrWhiteSpace(_preparatorySql))
-            {
-                sql.AppendLine(_preparatorySql);
-                sql.AppendLine(); // Just for aesthetics
-            }
+            var result = await ObjectLoader.LoadStatements<T>(
+                queries: queries,
+                preparatorySql: null,
+                ps: ps,
+                conn: _conn,
+                trx: _trx);
 
-            foreach (var statement in statements)
-            {
-                sql.AppendLine(statement.Sql);
-                sql.AppendLine(); // Just for aesthetics
-            }
 
-            using (var cmd = _conn.CreateCommand())
-            {
-                if (_trx != null)
-                {
-                    cmd.Transaction = _trx;
-                }
-
-                // Prepare the SQL command
-                cmd.CommandText = sql.ToString();
-                foreach (var parameter in ps)
-                {
-                    cmd.Parameters.Add(parameter);
-                }
-
-                bool ownsConnection = _conn.State != System.Data.ConnectionState.Open;
-                if (ownsConnection)
-                {
-                    _conn.Open();
-                }
-
-                // These dictionaries will contain the result
-                var memory = new HashSet<(string, ColumnMapTree)>(); // Remembers which (Id, tree) combinations have been added already
-                var allEntities = new Dictionary<Type, Dictionary<string, DtoBase>>(); // int ids are cast to string
-
-                DtoBase AddEntity(SqlDataReader reader, ColumnMapTree entityDef)
-                {
-                    var entityType = entityDef.Type; // TODO: The specific type to use when instantiating the entity: should come from discriminator e.g. Agent
-                    var collectionType = entityType; // TODO: The root type of the collection where to store and track this entity e.g. Custody
-
-                    // Make sure the dictionary that tracks this type is created already
-                    if (!allEntities.ContainsKey(collectionType))
-                    {
-                        allEntities[collectionType] = new Dictionary<string, DtoBase>();
-                    }
-
-                    var entitiesOfType = allEntities[collectionType];
-
-                    var dbId = reader[entityDef.IdIndex];
-                    if (dbId == DBNull.Value)
-                    {
-                        return null;
-                    }
-
-                    var id = dbId.ToString();
-                    entitiesOfType.TryGetValue(id, out DtoBase entity);
-                    bool isPopulated = false;
-                    if (entity == null)
-                    {
-                        entity = Activator.CreateInstance(entityType) as DtoBase;
-                        entityDef.IdProperty.SetValue(entity, dbId);
-
-                        entitiesOfType.Add(id, entity);
-                        memory.Add((id, entityDef));
-
-                        // new entity
-                        isPopulated = false;
-                    }
-                    else
-                    {
-                        if (memory.Add((id, entityDef)))
-                        {
-                            // Entity added before, but from a different part of the join tree
-                            isPopulated = false;
-                        }
-                        else
-                        {
-                            // Entity added in a previous row
-                            isPopulated = true;
-                        }
-                    }
-
-                    // As an optimization, only populate again if not populated before
-                    if (!isPopulated)
-                    {
-                        foreach (var (propInfo, index) in entityDef.Properties)
-                        {
-                            if(propInfo.PropertyType == typeof(HierarchyId))
-                            {
-                                continue;
-                            }
-
-                            var dbValue = reader[index];
-                            if (dbValue != DBNull.Value)
-                            {
-                                // chars still comes from the DB as a string
-                                if (propInfo.PropertyType == typeof(char?))
-                                {
-                                    dbValue = dbValue.ToString()[0]; // gets the char
-                                }
-
-                                propInfo.SetValue(entity, dbValue);
-                            }
-
-                            entity.EntityMetadata[propInfo.Name] = FieldMetadata.Loaded;
-                        }
-                    }
-
-                    foreach (var subEntityDef in entityDef.Values)
-                    {
-                        AddEntity(reader, subEntityDef);
-                    }
-
-                    return entity;
-                }
-
-                // The result that will be returned at the end
-                try
-                {
-                    Stopwatch w1 = new Stopwatch();
-                    Stopwatch w2 = new Stopwatch();
-
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        w1.Start();
-                        foreach (var statement in statements)
-                        {
-                            var list = results[statement.Query];
-
-                            // Group the column map by the path (which represents the target entity)
-                            var entityDefs = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap);
-
-                            // Loop over the result from the database
-                            while (await reader.ReadAsync())
-                            {
-                                w2.Start();
-                                var record = AddEntity(reader, entityDefs);
-                                w2.Stop();
-                                list.Add(record);
-                            }
-
-                            await reader.NextResultAsync();
-                        }
-                        w1.Stop();
-                    }
-                }
-                finally
-                {
-                    if (ownsConnection)
-                    {
-                        _conn.Close();
-                        _conn.Dispose();
-                    }
-                }
-
-                // All simple properties are populated, but not their navigation properties, those are done here
-                var typePropertiesCache = new Dictionary<Type, IEnumerable<PropertyInfo>>();
-                foreach (var entitiesOfType in allEntities)
-                {
-                    Type type = null;
-                    List<(PropertyInfo NavProperty, PropertyInfo FkProperty)> navProperties = null;
-
-                    foreach (var entity in entitiesOfType.Value.Values.OrderBy(e => e.GetType()))
-                    {
-                        var entityType = entity.GetType();
-
-                        // Just an optimization
-                        if (entityType != type)
-                        {
-                            type = entityType;
-                            navProperties = new List<(PropertyInfo NavProperty, PropertyInfo FkProperty)>();
-                            foreach (var prop in type.GetProperties())
-                            {
-                                var navPropertyAtt = prop.GetCustomAttribute<NavigationPropertyAttribute>();
-                                if (navPropertyAtt != null && !prop.PropertyType.IsList())
-                                {
-                                    var propCollectionType = prop.PropertyType; // TODO: Use the root type
-
-                                    if (allEntities.ContainsKey(propCollectionType))
-                                    {
-                                        var fkProp = type.GetProperty(navPropertyAtt.ForeignKey);
-                                        navProperties.Add((prop, fkProp));
-                                    }
-                                }
-                            }
-                        }
-
-                        foreach (var (navProp, fkProp) in navProperties)
-                        {
-                            var fk = fkProp.GetValue(entity)?.ToString();
-                            if (fk != null)
-                            {
-                                var propCollectionType = navProp.PropertyType; // TODO: Use the root type
-                                var entitiesOfPropertyType = allEntities[propCollectionType];
-
-                                entitiesOfPropertyType.TryGetValue(fk, out DtoBase navPropValue);
-                                if (navPropValue != null)
-                                {
-                                    navProp.SetValue(entity, navPropValue);
-                                }
-                            }
-
-                            entity.EntityMetadata[navProp.Name] = FieldMetadata.Loaded;
-                        }
-                    }
-                }
-
-                List<T> result = new List<T>();
-
-                IList MakeList(Type t, IEnumerable collection = null)
-                {
-                    var listType = typeof(List<>).MakeGenericType(t);
-                    var list = (IList)Activator.CreateInstance(listType);
-                    if(collection != null)
-                    {
-                        foreach (var item in collection)
-                        {
-                            list.Add(item);
-                        }
-                    }
-
-                    return list;
-                }
-
-                // Here we populate the collection navigation properties after the simple properties have been populated
-                foreach (var (query, list) in results)
-                {
-                    if(query.IsAncestorExpand)
-                    {
-                        // Nothing to do here since this isn't a collection navigation property
-                        // This is the Parent property which was already populated in the previous step
-                        continue;
-                    }
-                    else if (query.PrincipalQuery == null)
-                    {
-                        result = list.Cast<T>().ToList();
-                    }
-                    else
-                    {
-                        var principalQuery = query.PrincipalQuery;
-                        var principalEntities = results[principalQuery]; // The list of entities that
-                        var pathToCollection = query.PathToCollectionPropertyInPrincipal;
-                        var pathToCollectionEntity = new ArraySegment<string>(pathToCollection.Array, pathToCollection.Offset, pathToCollection.Count - 1);
-                        var collectionPropName = pathToCollection[pathToCollection.Count - 1];
-
-                        var collectionEntities = new HashSet<DtoBase>();
-                        foreach (var principalEntity in principalEntities)
-                        {
-                            // need to go down the path
-                            var currentEntity = principalEntity;
-                            bool nullStep = false;
-                            foreach (var step in pathToCollectionEntity)
-                            {
-                                var nextObject = currentEntity.GetType().GetProperty(step).GetValue(currentEntity);
-                                if (nextObject == null)
-                                {
-                                    nullStep = true;
-                                    break;
-                                }
-
-                                if (!nullStep)
-                                {
-                                    currentEntity = nextObject as DtoBase;
-                                }
-                            }
-
-                            collectionEntities.Add(currentEntity);
-                        }
-
-                        var fkName = query.ForeignKeyToPrincipalQuery;
-                        var fkProp = query.ResultType.GetProperty(fkName);
-                        var groupedCollections = list.GroupBy(e => fkProp.GetValue(e).ToString()).ToDictionary(g => g.Key, g => MakeList(query.ResultType, g));
-
-                        PropertyInfo idProp = null;
-                        PropertyInfo collectionProp = null;
-                        foreach (var collectionEntity in collectionEntities)
-                        {
-                            if (idProp == null)
-                            {
-                                idProp = collectionEntity.GetType().GetProperty("Id");
-                            }
-
-                            if (collectionProp == null)
-                            {
-                                collectionProp = collectionEntity.GetType().GetProperty(collectionPropName);
-                            }
-
-                            var id = idProp.GetValue(collectionEntity).ToString();
-                            var collection = groupedCollections.ContainsKey(id) ? groupedCollections[id] : MakeList(query.ResultType);
-                            
-                            collectionProp.SetValue(collectionEntity, collection);
-                            collectionEntity.EntityMetadata[collectionPropName] = FieldMetadata.Loaded;
-                        }
-                    }
-                }
-
-                return result;
-            }
+            return (result.Result.Cast<T>().ToList(), result.RelatedEntities);
         }
 
-        public async Task<T> FirstOrDefaultAsync()
+        public async Task<(T, EntitiesMap)> FirstOrDefaultAsync()
         {
-            if(string.IsNullOrWhiteSpace(_orderby))
-            {
-                OrderBy("Id");
-            }
+            //if(string.IsNullOrWhiteSpace(_orderby))
+            //{
+            //    OrderBy("Id");
+            //}
 
             Top(1);
-            var result = await ToListAsync();
-            return result.FirstOrDefault();
+            var (data, related) = await ToListAsync();
+            return (data.FirstOrDefault(), related);
         }
 
         /// <summary>
         /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
         /// and returns a mapping from every entity Id in the original query to all the criteria that are satified by this entity
         /// </summary>
-        public async Task<IEnumerable<IdIndex<TKey>>> GetIndexToIdMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        public async Task<IEnumerable<IdIndex>> GetIndexToIdMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
         {
-            return await GetIndexMapInner<TKey>(criteriaIndexes);
+            var idType = typeof(T).GetProperty("Id")?.PropertyType;
+            if(idType == null)
+            {
+                // Programmer mistake
+                throw new InvalidOperationException("");
+            }
+
+            return await GetIndexMapInner(criteriaIndexes, idType);
         }
 
         /// <summary>
@@ -790,16 +522,15 @@ namespace BSharp.Services.OData
         /// in that it is useful when the origianl query is dynamically constructed using <see cref="FromSql(string, string, SqlStatementParameter[])"/>
         /// by passing in new data that doesn't have Ids, and hence the indexes of the items in the memory list are used as Ids instead
         /// </summary>
-        public async Task<IEnumerable<IdIndex<int>>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        public async Task<IEnumerable<IdIndex>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
         {
-            return await GetIndexMapInner<int>(criteriaIndexes);
+            return await GetIndexMapInner(criteriaIndexes, typeof(int));
         }
 
         /// <summary>
-        /// The internal implementation of <see cref="GetIndexToIdMap(IEnumerable{IndexAndCriteria})"/>
-        /// and <see cref="GetIndexToIndexMap(IEnumerable{IndexAndCriteria})"/>
+        /// Internal Implementation
         /// </summary>
-        private async Task<IEnumerable<IdIndex<TId>>> GetIndexMapInner<TId>(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        private async Task<IEnumerable<IdIndex>> GetIndexMapInner(IEnumerable<IndexAndCriteria> criteriaIndexes, Type idType)
         {
             if (!string.IsNullOrWhiteSpace(_select) || !string.IsNullOrWhiteSpace(_expand))
             {
@@ -812,11 +543,10 @@ namespace BSharp.Services.OData
 
             ValidatePathsAndProperties(null, null, filterExp, orderByExp);
 
-            var flatQuery = new ODataFlatQuery
+            var flatQuery = new ODataQueryInternal
             {
                 ResultType = typeof(T),
-                KeyType = typeof(TId),
-                // Select = SelectExpression.Parse("Id"),
+                KeyType = idType,
                 Filter = filterExp,
                 Ids = _ids == null ? null : string.Join(",", _ids.Select(e => e)),
                 OrderBy = orderByExp,
@@ -875,10 +605,10 @@ namespace BSharp.Services.OData
                 var criteriaExp = FilterExpression.Parse(criteria);
                 ValidatePathsAndProperties(null, null, criteriaExp, null);
 
-                var criteriaQuery = new ODataFlatQuery
+                var criteriaQuery = new ODataQueryInternal
                 {
                     ResultType = typeof(T),
-                    KeyType = typeof(TId),
+                    KeyType = idType,
                     Filter = criteriaExp,
                 };
 
@@ -930,7 +660,7 @@ UNION
 
                 try
                 {
-                    var result = new List<IdIndex<TId>>();
+                    var result = new List<IdIndex>();
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         // Loop over the result from the database
@@ -939,10 +669,10 @@ UNION
                             var dbId = reader["Id"];
                             var dbIndex = reader["Index"];
 
-                            result.Add(new IdIndex<TId>
+                            result.Add(new IdIndex
                             {
 
-                                Id = (TId)dbId,
+                                Id = dbId,
                                 Index = (int)dbIndex
                             });
                         }
@@ -1138,66 +868,12 @@ UNION
         /// <summary>
         /// For efficient traversal of the result column map
         /// </summary>
-        private class ColumnMapTree : Dictionary<string, ColumnMapTree>
-        {
-            public Type Type { get; set; }
-
-            public int IdIndex { get; set; } = -1; // To make critical bugs go down with a bang
-
-            public PropertyInfo IdProperty { get; set; }
-
-            public List<(PropertyInfo Property, int Index)> Properties { get; set; } = new List<(PropertyInfo Property, int Index)>();
-
-            public static ColumnMapTree Build(Type type, List<(ArraySegment<string> Path, string Property)> columnMap)
-            {
-                var root = new ColumnMapTree { Type = type };
-
-                for (var i = 0; i < columnMap.Count; i++)
-                {
-                    var (path, property) = columnMap[i];
-                    var currentTree = root;
-                    for (int j = 0; j < path.Count; j++)
-                    {
-                        var step = path[j];
-
-                        if (!currentTree.ContainsKey(step))
-                        {
-                            var prop = currentTree.Type.GetProperty(step);
-                            if (prop == null)
-                            {
-                                // Developer mistake
-                                throw new InvalidOperationException($"Property {step} was not found on type {currentTree.Type.Name}");
-                            }
-
-                            currentTree[step] = new ColumnMapTree
-                            {
-                                Type = prop.PropertyType,
-                            };
-                        }
-
-                        currentTree = currentTree[step];
-                    }
-
-                    if (property == "Id")
-                    {
-                        currentTree.IdIndex = i;
-                        currentTree.IdProperty = currentTree.Type.GetProperty("Id"); // Useful later for optimization
-                    }
-                    else
-                    {
-                        var propInfo = currentTree.Type.GetProperty(property);
-                        currentTree.Properties.Add((propInfo, i));
-                    }
-                }
-
-                return root;
-            }
-        }
     }
 
-    public class IdIndex<TKey>
+
+    public class IdIndex
     {
-        public TKey Id { get; set; }
+        public object Id { get; set; }
 
         public int Index { get; set; }
     }

@@ -54,7 +54,7 @@ namespace BSharp.Controllers
         // API
 
         [HttpGet]
-        public async Task<ActionResult<GetByIdResponse<Settings>>> Get([FromQuery] GetByIdArguments args)
+        public async Task<ActionResult<GetEntityResponse<Settings>>> Get([FromQuery] GetByIdArguments args)
         {
             // Authorized access (Criteria are not supported here)
             var readPermissions = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, PermissionLevel.Read, "settings");
@@ -124,9 +124,8 @@ namespace BSharp.Controllers
                     var res = await GetImpl(new GetByIdArguments { Expand = args.Expand });
                     var result = new SaveSettingsResponse
                     {
-                        CollectionName = res.CollectionName,
-                        Entity = res.Entity,
-                        RelatedEntities = res.RelatedEntities,
+                        Entities = res.Entities,
+                        Result = res.Result,
                         SettingsForClient = await GetForClientImpl()
                     };
 
@@ -175,7 +174,7 @@ namespace BSharp.Controllers
 
         // Helper methods
 
-        private async Task<GetByIdResponse<Settings>> GetImpl(GetByIdArguments args)
+        private async Task<GetEntityResponse<Settings>> GetImpl(GetByIdArguments args)
         {
             M.Settings mSettings = await _db.Settings.FirstOrDefaultAsync();
             if (mSettings == null)
@@ -185,10 +184,9 @@ namespace BSharp.Controllers
             }
 
             var settings = _mapper.Map<Settings>(mSettings);
-            var result = new GetByIdResponse<Settings>
+            var result = new GetEntityResponse<Settings>
             {
-                CollectionName = "Settings",
-                Entity = settings,
+                Result = settings,
             };
 
             if (!string.IsNullOrWhiteSpace(args.Expand))
@@ -253,9 +251,8 @@ namespace BSharp.Controllers
             }
         }
 
-        private void Expand(string expand, Settings settings, GetByIdResponse<Settings> result)
+        private void Expand(string expand, Settings settings, GetEntityResponse<Settings> result)
         {
-
         }
 
         private void ValidateAndPreprocessSettings(SettingsForSave entity)

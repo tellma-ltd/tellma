@@ -21,7 +21,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   private notifyDestruct$ = new Subject<void>();
   private localUsersApi = this.api.localUsersApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Agent,Roles/Role';
+  public expand = 'Roles/Role';
 
   create = () => {
     const result = new LocalUserForSave();

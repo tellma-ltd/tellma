@@ -15,8 +15,8 @@ namespace BSharp.Controllers.DTO
 
         int? ModifiedById { get; set; }
 
-        LocalUserForQuery CreatedBy { get; set; }
+        LocalUser CreatedBy { get; set; }
 
-        LocalUserForQuery ModifiedBy { get; set; }
+        LocalUser ModifiedBy { get; set; }
     }
 }

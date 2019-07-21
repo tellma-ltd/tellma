@@ -11,8 +11,7 @@ using System.Threading.Tasks;
 namespace BSharp.Controllers
 {
 
-    public abstract class CrudTreeControllerBase<TDtoForSave, TDto, TDtoForQuery, TKey> : CrudControllerBase<TDtoForSave, TDto, TDtoForQuery, TKey>
-        where TDtoForQuery : DtoForSaveKeyBase<TKey>, new()
+    public abstract class CrudTreeControllerBase<TDtoForSave, TDto, TKey> : CrudControllerBase<TDtoForSave, TDto, TKey>
         where TDtoForSave : DtoForSaveKeyBase<TKey>, new()
         where TDto : DtoForSaveKeyBase<TKey>, new()
     {

@@ -7,7 +7,7 @@ namespace BSharp.Controllers.DTO
 {
     public class GetByIdResponse<TDto> where TDto : DtoBase
     {
-        public TDto Entity { get; set; }
+        public TDto Result { get; set; }
 
         public string CollectionName { get; set; }
         

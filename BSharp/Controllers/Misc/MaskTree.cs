@@ -71,6 +71,43 @@ namespace BSharp.Controllers.Misc
             return tree;
         }
 
+        public static MaskTree GetMaskTree(IEnumerable<(string[], string)> paths)
+        {
+            var tree = new MaskTree();
+            if (paths != null)
+            {
+                foreach (var (path, prop) in paths)
+                {
+                    var currentTree = tree;
+
+                    void Traverse(string step)
+                    {
+
+                        if (!currentTree.ContainsKey(step))
+                        {
+                            currentTree[step] = new MaskTree();
+                        }
+
+                        currentTree = currentTree[step];
+                    }
+
+                    // first the path
+                    foreach (var step in path)
+                    {
+                        Traverse(step);
+                    }
+
+                    // then the property
+                    if (!string.IsNullOrWhiteSpace(prop))
+                    {
+                        Traverse(prop);
+                    }
+                }
+            }
+
+            return tree;
+        }
+
         /// <summary>
         /// Finds the intersection between two mask trees, i.e the fields that are accessible in both trees
         /// </summary>
@@ -249,7 +286,7 @@ namespace BSharp.Controllers.Misc
             }
 
             // Removal takes place outside the loop to avoid the dreadful "IEnumerable Was Modified" exception
-            if(toRemove.Any())
+            if (toRemove.Any())
             {
                 toRemove.ForEach(key =>
                 {

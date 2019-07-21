@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
+    [StrongDto]
     public class RoleForSave<TPermission, TRequiredSignature, TRoleMembership> : DtoForSaveKeyBase<int?>
     {
         [BasicField]
@@ -27,15 +28,15 @@ namespace BSharp.Controllers.DTO
         [Display(Name = "Role_IsPublic")]
         public bool IsPublic { get; set; }
 
-        [NavigationProperty(ForeignKey = nameof(PermissionForQuery.RoleId))]
+        [NavigationProperty(ForeignKey = nameof(Permission.RoleId))]
         [Display(Name = "Permissions")]
         public List<TPermission> Permissions { get; set; } = new List<TPermission>();
 
-        [NavigationProperty(ForeignKey = nameof(RequiredSignatureForQuery.RoleId))]
+        [NavigationProperty(ForeignKey = nameof(RequiredSignature.RoleId))]
         [Display(Name = "Signatures")]
         public List<TRequiredSignature> Signatures { get; set; } = new List<TRequiredSignature>();
 
-        [NavigationProperty(ForeignKey = nameof(RoleMembershipForQuery.RoleId))]
+        [NavigationProperty(ForeignKey = nameof(RoleMembership.RoleId))]
         [Display(Name = "Members")]
         public List<TRoleMembership> Members { get; set; } = new List<TRoleMembership>();
     }
@@ -45,7 +46,7 @@ namespace BSharp.Controllers.DTO
 
     }
 
-    public class Role<TPermission, TRequiredSignature, TRoleMembership> : RoleForSave<TPermission, TRequiredSignature, TRoleMembership>
+    public class Role : RoleForSave<Permission, RequiredSignature, RoleMembership>
     {
         [BasicField]
         [Display(Name = "IsActive")]
@@ -64,19 +65,13 @@ namespace BSharp.Controllers.DTO
         [ForeignKey]
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
-    }
 
-    public class Role : Role<Permission, RequiredSignature, RoleMembership>
-    {
+        // For Query
 
-    }
-
-    public class RoleForQuery : Role<PermissionForQuery, RequiredSignatureForQuery, RoleMembershipForQuery>, IAuditedDto
-    {
         [NavigationProperty(ForeignKey = nameof(CreatedById))]
-        public LocalUserForQuery CreatedBy { get; set; }
+        public LocalUser CreatedBy { get; set; }
 
         [NavigationProperty(ForeignKey = nameof(ModifiedById))]
-        public LocalUserForQuery ModifiedBy { get; set; }
+        public LocalUser ModifiedBy { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace BSharp.Controllers
 {
     [Route("api/roles")]
     [LoadTenantInfo]
-    public class RolesController : CrudControllerBase<RoleForSave, Role, RoleForQuery, int?>
+    public class RolesController : CrudControllerBase<RoleForSave, Role, int?>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
@@ -110,50 +110,16 @@ MERGE INTO [dbo].[Roles] AS t
             }
 
             // Determine whether entities should be returned
-            if (!returnEntities)
+            if (returnEntities)
             {
-                // IF no returned items are expected, simply return 200 OK
-                return Ok();
+                // Return results
+                var response = await GetByIdListAsync(nullableIds, expand);
+                return Ok(response);
             }
             else
             {
-                // Load the entities using their Ids
-                var affectedDbEntitiesQ = CreateODataQuery().FilterByIds(nullableIds);
-                var affectedDbEntitiesExpandedQ = affectedDbEntitiesQ.Clone().Expand(expand);
-                var affectedDbEntities = await affectedDbEntitiesExpandedQ.ToListAsync();
-
-                // sort the entities the way their Ids came, as a good practice
-                var affectedEntities = Mapper.Map<List<Role>>(affectedDbEntities);
-                Role[] sortedAffectedEntities = new Role[ids.Count];
-                Dictionary<int, Role> affectedEntitiesDic = affectedEntities.ToDictionary(e => e.Id.Value);
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    var id = ids[i];
-                    Role entity = null;
-                    if (affectedEntitiesDic.ContainsKey(id))
-                    {
-                        entity = affectedEntitiesDic[id];
-                    }
-
-                    sortedAffectedEntities[i] = entity;
-                }
-
-                // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-                await ApplyReadPermissionsMask(affectedDbEntities, affectedDbEntitiesExpandedQ, await UserPermissions(PermissionLevel.Read), GetDefaultMask());
-
-                // Flatten related entities and map each to its respective DTO 
-                var relatedEntities = FlattenRelatedEntitiesAndTrim(affectedDbEntities, expand);
-
-                // Prepare a proper response
-                var response = new EntitiesResponse<Role>
-                {
-                    Data = sortedAffectedEntities,
-                    CollectionName = GetCollectionName(typeof(Role)),
-                    RelatedEntities = relatedEntities
-                };
-
-                // Commit and return
-                return Ok(response);
+                // IF no returned items are expected, simply return 200 OK
+                return Ok();
             }
         }
 
@@ -173,17 +139,17 @@ MERGE INTO [dbo].[Roles] AS t
             return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
         }
 
-        protected override ODataQuery<RoleForQuery, int?> Search(ODataQuery<RoleForQuery, int?> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override ODataQuery<Role> Search(ODataQuery<Role> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(RoleForQuery.Name);
-                var name2 = nameof(RoleForQuery.Name2);
+                var name = nameof(Role.Name);
+                var name2 = nameof(Role.Name2);
                 // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
-                var code = nameof(RoleForQuery.Code);
+                var code = nameof(Role.Code);
 
                 query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }

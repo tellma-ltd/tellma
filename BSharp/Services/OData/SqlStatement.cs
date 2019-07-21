@@ -12,8 +12,10 @@ namespace BSharp.Services.OData
         /// <summary>
         /// Maps every column index to the path and property
         /// </summary>
-        public List<(ArraySegment<string> Path, string Property)> ColumnMap { get; set; }
+        public List<SqlStatementColumn> ColumnMap { get; set; }
 
-        public ODataFlatQuery Query { get; set; }
+        public IQueryInternal Query { get; set; }
+
+        public bool IsAggregate { get; set; }
     }
 }
