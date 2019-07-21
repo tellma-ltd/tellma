@@ -181,7 +181,7 @@ namespace BSharp.Services.OData
                     throw new InvalidOperationException($"The path '{string.Join('/', atom.Path)}' was not found in the joinTree");
                 }
                 var symbol = join.Symbol;
-                string orderby = $"[{symbol}].[{atom.Property}] {atom.OrderDirection.ToUpper()}";
+                string orderby = ODataTools.AtomSql(symbol, atom.Property, atom.Aggregation) + $" {atom.OrderDirection.ToUpper()}";
                 orderbys.Add(orderby);
             }
 

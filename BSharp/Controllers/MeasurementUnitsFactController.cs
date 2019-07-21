@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
+    // TODO remove
     [Route("api/measurement-units-fact")]
     [LoadTenantInfo]
     public class MeasurementUnitsFactController : ReadControllerBase<MeasurementUnitFact>
@@ -34,7 +35,7 @@ namespace BSharp.Controllers
 
         protected override string DefaultOrderBy()
         {
-            return "Name";
+            return "Code";
         }
 
         protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<MeasurementUnitFact> response, ExportArguments args)
