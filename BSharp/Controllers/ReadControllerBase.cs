@@ -125,10 +125,8 @@ namespace BSharp.Controllers
             // Load the data in memory
             var result = await query.ToListAsync();
 
-            string collectionName = GetCollectionName(typeof(TDto));
-
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
-            await ApplyReadPermissionsMask(result, collectionName, qClone, permissions, defaultMask);
+            await ApplyReadPermissionsMask(result, qClone, permissions, defaultMask);
 
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(result, args.Expand);
@@ -143,7 +141,7 @@ namespace BSharp.Controllers
 
                 Result = result,
                 RelatedEntities = relatedEntities,
-                CollectionName = collectionName
+                CollectionName = GetCollectionName(typeof(TDto))
             };
         }
 
@@ -419,7 +417,6 @@ namespace BSharp.Controllers
         /// </summary>
         protected virtual Task ApplyReadPermissionsMask(
             List<TDto> resultEntities,
-            string collectionName,
             ODataQuery<TDto> query,
             IEnumerable<AbstractPermission> permissions,
             MaskTree defaultMask)
@@ -528,14 +525,9 @@ namespace BSharp.Controllers
         /// <summary>
         /// Retrieves the collection name from the DTO type
         /// </summary>
-        protected static string GetCollectionName(Type dtoType)
+        protected static string GetCollectionName(Type entityType)
         {
-            return GetRootType(dtoType).Name;
-        }
-
-        protected static Type GetRootType(Type dtoType)
-        {
-            return dtoType; // TODO
+            return entityType.GetRootType().Name;
         }
 
         /// <summary>

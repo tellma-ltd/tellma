@@ -75,12 +75,10 @@ namespace BSharp.Controllers
                 // This can only mean lack of permissions
                 throw new ForbiddenException();
             }
-
-            var collectionName = GetCollectionName(typeof(TDto));
-
+            
             // Apply the permission masks (setting restricted fields to null) and adjust the metadata accordingly
             var singleton = new List<TDto> { result };
-            await ApplyReadPermissionsMask(singleton, collectionName, qClone, permissions, GetDefaultMask());
+            await ApplyReadPermissionsMask(singleton, qClone, permissions, GetDefaultMask());
 
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(singleton, args.Expand);
@@ -89,7 +87,7 @@ namespace BSharp.Controllers
             return new GetByIdResponse<TDto>
             {
                 Result = result,
-                CollectionName = collectionName,
+                CollectionName = GetCollectionName(typeof(TDto)),
                 RelatedEntities = relatedEntities
             };
         }
@@ -114,8 +112,7 @@ namespace BSharp.Controllers
             // Apply the permissions on the result
             var permissions = await UserPermissions(PermissionLevel.Read);
             var defaultMask = GetDefaultMask();
-            var collectionName = GetCollectionName(typeof(TDto));
-            await ApplyReadPermissionsMask(result, collectionName, qClone, permissions, defaultMask);
+            await ApplyReadPermissionsMask(result, qClone, permissions, defaultMask);
 
             // Flatten and Trim
             var relatedEntities = FlattenAndTrim(result, expand);
@@ -140,7 +137,7 @@ namespace BSharp.Controllers
             {
                 Result = sortedResult,
                 RelatedEntities = relatedEntities,
-                CollectionName = collectionName
+                CollectionName = GetCollectionName(typeof(TDto))
             };
         }
 
@@ -191,7 +188,6 @@ namespace BSharp.Controllers
         /// </summary>
         protected override async Task ApplyReadPermissionsMask(
             List<TDto> resultEntities,
-            string collectionName,
             ODataQuery<TDto> query,
             IEnumerable<AbstractPermission> permissions,
             MaskTree defaultMask)
