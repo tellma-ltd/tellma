@@ -320,7 +320,7 @@
                 (click)="onOrderBy(colPath)" cdkDrag>
                 <!-- <div class="d-flex align-items-center"> -->
 
-                <b-auto-label [baseCollection]="collection" [path]="colPath" [subtype]="subtype">
+                <b-auto-label [baseCollection]="collectionPart" [path]="colPath" [subtype]="subtypePart">
                 </b-auto-label>
                 <!-- &nbsp;
                   <button *ngIf="editingColumns" class="btn btn-light btn-sm b-white-button b-toolbar-button" style="margin:-20px 0"
@@ -451,7 +451,7 @@
       <!-- Template reused in both tree and flat tables -->
       <ng-template #selectColumns let-id="id">
         <td class="b-pointer" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
-          <b-switch [baseCollection]="collection" [path]="colPath" [subtype]="subtype" [entityId]="id">
+          <b-switch [baseCollection]="collectionPart" [path]="colPath" [subtype]="subtypePart" [entityId]="id">
           </b-switch>
         </td>
       </ng-template>

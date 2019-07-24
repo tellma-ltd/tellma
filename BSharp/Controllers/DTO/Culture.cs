@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.DTO
 {
-    [StrongDto]
+    [StrongEntity]
     public class CultureForSave : DtoKeyBase<string>
     {
     }

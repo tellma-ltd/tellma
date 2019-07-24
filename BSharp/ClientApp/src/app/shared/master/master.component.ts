@@ -1,11 +1,10 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
 import { addToWorkspace, downloadBlob } from '~/app/data/util';
@@ -32,36 +31,16 @@ enum SearchView {
   templateUrl: './master.component.html',
   styleUrls: ['./master.component.scss']
 })
-export class MasterComponent implements OnInit, OnDestroy {
-
-  private _collection: string;
-  private alreadyInit = false;
+export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   masterCrumb: string;
 
   @Input()
-  set collection(v: string) {
-    if (this._collection !== v) {
+  collection: string; // This is one of two properties that define the screen
 
-      // this property defines a whole new screen from the POV of the user
-      // when this property changes it is equivalent to a screen closing and
-      // and another screen opening even though Angular may reuse the same
-      // component and never call ngOnDestroy and ngOnInit. So we call them
-      // manually here if this is not the first time this property is set
-      // to simulate a screen closing and opening again
-
-      if (this.alreadyInit) {
-        this.ngOnDestroy();
-      }
-
-      this._collection = v;
-
-      if (this.alreadyInit) {
-        this.ngOnInit();
-      }
-    }
-  }
+  @Input()
+  subtype: string; // This is one of two properties that define the screen
 
   @Input()
   viewId: string; // for the permissions
@@ -144,6 +123,8 @@ export class MasterComponent implements OnInit, OnDestroy {
   @ViewChild('errorModal')
   public errorModal: TemplateRef<any>;
 
+  private _collection: string;
+  private _subtype: string;
   private localState = new MasterDetailsStore();  // Used in popup mode
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
@@ -337,8 +318,6 @@ export class MasterComponent implements OnInit, OnDestroy {
     if (hasChanged || this.state.masterStatus !== MasterStatus.loaded) {
       this.fetch();
     }
-
-    this.alreadyInit = true;
   }
 
   ngOnDestroy() {
@@ -346,6 +325,40 @@ export class MasterComponent implements OnInit, OnDestroy {
     this.notifyDestruct$.next();
     this._subscriptions.unsubscribe();
     this.cancelAllTreeQueries();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+
+      // the combinatino of these two properties defines a whole new screen from the POV of the user
+      // when either of these properties change it is equivalent to a screen closing and
+      // and another screen opening even though Angular may reuse the same
+      // component and never call ngOnDestroy and ngOnInit. So we call them
+      // manually here if this is not the first time these properties are set
+      // to simulate a screen closing and opening again
+      const screenDefProperties = [changes.collection, changes.subtype];
+
+      const anyChanges = screenDefProperties.some(prop => !!prop);
+      const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+
+      if (anyChanges) {
+
+        if (notFirstChange) {
+          this.ngOnDestroy();
+        }
+
+        if (!!changes.collection) {
+          this._collection = changes.collection.currentValue;
+        }
+
+        if (!!changes.subtype) {
+          this._subtype = changes.subtype.currentValue;
+        }
+
+        // set the values
+        if (notFirstChange) {
+          this.ngOnInit();
+        }
+    }
   }
 
   private cancelAllTreeQueries(): void {
@@ -454,8 +467,8 @@ export class MasterComponent implements OnInit, OnDestroy {
     }
 
     const parentId = parentNode.id;
-    const isString = !!this.collection ?
-      metadata[this.collection](this.workspace.current, this.translate, null).properties['Id'].control === 'text' :
+    const isString = !!this.collectionPart ?
+      metadata[this.collectionPart](this.workspace.current, this.translate, null).properties['Id'].control === 'text' :
       isNaN(<any>parentId); // TODO make this more robust
 
     // capture the state object and clear the details object
@@ -566,22 +579,6 @@ export class MasterComponent implements OnInit, OnDestroy {
 
   // Calculated screen properties
 
-  get collection(): string {
-    return this._collection;
-  }
-
-  get collectionPart(): string {
-    // We merge both collection and subtype in one input property to adhere to the
-    // principle of a single property defining the screen
-    return !!this.collection ? this.collection.split('|')[0] : null;
-  }
-
-  get subtypePart(): string {
-    // We merge both collection and subtype in one input property to adhere to the
-    // principle of a single property defining the screen
-    return !!this.collection ? this.collection.split('|')[1] || null : null;
-  }
-
   get dtoDescriptor(): DtoDescriptor {
     const coll = this.collectionPart;
     return !!coll ? metadata[coll](this.workspace.current, this.translate, this.subtypePart) : null;
@@ -639,7 +636,7 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   private get selectKey(): string {
-    return `${this.collection}/select`;
+    return `${this.collectionPart + (!!this.subtypePart ? '/' + this.subtypePart : '')}/select`;
   }
 
   private get selectFromUserSettings(): string {
@@ -667,6 +664,14 @@ export class MasterComponent implements OnInit, OnDestroy {
   }
 
   ////////////// UI Bindings below
+
+  get collectionPart(): string {
+    return this._collection; // !!this.collection ? this.collection.split('|')[0] : null;
+  }
+
+  get subtypePart(): string {
+    return this._subtype; // !!this.collection ? this.collection.split('|')[1] || null : null;
+  }
 
   get errorMessage() {
     return this.state.errorMessage;

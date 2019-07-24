@@ -71,7 +71,8 @@
             <div class="align-self-center">
               <div class="b-dp-wrapper b-dp-dark bg-white mx-1">
                 <b-image
-                  [src]="'local-users/' + ws?.userSettings?.UserId + '/image|' + (ws?.userSettings?.ImageId || '')"
+                  [src]="'local-users/' + ws?.userSettings?.UserId + '/image'"
+                  [imageId]="ws?.userSettings?.ImageId"
                   shape="circle" [size]="28"></b-image>
               </div>
             </div>

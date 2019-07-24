@@ -26,7 +26,7 @@
   <div class="d-flex">
     <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
     <div class="border b-dp-wrapper2">
-      <b-image [src]="'local-users/' + c[id].Id + '/image|' + (c[id].ImageId || '')" [size]="42"></b-image>
+      <b-image [src]="'local-users/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></b-image>
     </div>
     &nbsp;&nbsp;&nbsp;
   </ng-container>

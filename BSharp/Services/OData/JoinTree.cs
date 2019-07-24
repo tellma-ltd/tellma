@@ -147,6 +147,7 @@ namespace BSharp.Services.OData
                         string foreignKeyName = prop.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
                         if (string.IsNullOrWhiteSpace(foreignKeyName))
                         {
+                            // Programmer mistake
                             throw new InvalidOperationException($"Navigation property '{step}' on type {currentType.Name} is not adorned with the name of the foreign key property");
                         }
 

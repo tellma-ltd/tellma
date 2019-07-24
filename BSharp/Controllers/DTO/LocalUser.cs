@@ -7,7 +7,7 @@ using S = System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.Controllers.DTO
 {
-    [StrongDto]
+    [StrongEntity]
     public class LocalUserForSave<TRoleMembership> : DtoForSaveKeyBase<int?>, IMultilingualName
     {
         [BasicField]

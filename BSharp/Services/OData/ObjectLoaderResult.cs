@@ -11,6 +11,6 @@ namespace BSharp.Services.OData
     {
         public List<DtoBase> Result { get; set; }
 
-        public EntitiesMap RelatedEntities { get; set; }
+        public IndexedEntities StrongIdEntities { get; set; }
     }
 }

@@ -28,7 +28,7 @@ namespace BSharp.Services.OData
         private string _select;
         private string _expand;
         private string _orderby;
-        private object[] _ids;
+        private IEnumerable<object> _ids;
         private string _composableSql;
         private string _preparatorySql;
         private SqlParameter[] _parameters;
@@ -58,7 +58,7 @@ namespace BSharp.Services.OData
                 _select = _select,
                 _expand = _expand,
                 _orderby = _orderby,
-                _ids = _ids?.ToArray(),
+                _ids = _ids?.ToList(),
                 _composableSql = _composableSql,
                 _preparatorySql = _preparatorySql,
                 _parameters = _parameters?.ToArray(),
@@ -106,15 +106,15 @@ namespace BSharp.Services.OData
             return this;
         }
 
-        public ODataQuery<T> FilterByIds(params object[] ids)
+        public ODataQuery<T> FilterByIds<TKey>(params TKey[] ids)
         {
-            if(typeof(T).GetProperty("Id") == null)
+            if (!IsDtoKeyBase())
             {
                 // Developer mistake
-                throw new InvalidOperationException($"Type {typeof(T).Name} does not have an Id, yet 'FilterByIds' has been invoked on an ODataQuery with {typeof(T).Name} as a generic argument");
+                throw new InvalidOperationException($"Type {typeof(T).Name} does not inherit from {typeof(DtoKeyBase).Name}, yet 'FilterByIds' has been invoked on an ODataQuery<{typeof(T).Name}>");
             }
 
-            _ids = ids;
+            _ids = ids.Cast<object>();
             return this;
         }
 
@@ -164,7 +164,7 @@ namespace BSharp.Services.OData
 
         public async Task<int> CountAsync()
         {
-            SelectExpression selectExp = SelectExpression.Parse(typeof(T).GetProperty("Id") != null ? "Id" : _select);
+            SelectExpression selectExp = SelectExpression.Parse(IsDtoKeyBase() ? "Id" : _select);
             FilterExpression filterExp = _filterConditions?.Select(c => FilterExpression.Parse(c))
                 .Aggregate((e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
@@ -176,7 +176,7 @@ namespace BSharp.Services.OData
                 KeyType = typeof(T).GetProperty("Id")?.PropertyType,
                 Select = selectExp,
                 Filter = filterExp,
-                Ids = _ids == null ? null : string.Join(",", _ids.Select(e => e)),
+                Ids = _ids == null ? null : string.Join(",", _ids),
                 Skip = _skip,
                 Top = _top
             };
@@ -224,7 +224,7 @@ namespace BSharp.Services.OData
 
             using (var cmd = _conn.CreateCommand())
             {
-                if(_trx != null)
+                if (_trx != null)
                 {
                     cmd.Transaction = _trx;
                 }
@@ -258,9 +258,9 @@ namespace BSharp.Services.OData
             }
         }
 
-        public async Task<(List<T>, EntitiesMap)> ToListAsync()
+        public async Task<List<T>> ToListAsync()
         {
-            if(string.IsNullOrWhiteSpace(_orderby))
+            if (string.IsNullOrWhiteSpace(_orderby))
             {
                 // Developer mistake
                 throw new InvalidOperationException($"ODataQuery of type {typeof(T).Name} was executed without an orderby clause");
@@ -287,7 +287,7 @@ namespace BSharp.Services.OData
                 ArraySegment<string> pathToCollectionPropertyInPrincipal = previousFullPath == null ? null : subPath;
                 Type keyType = type.GetProperty("Id")?.PropertyType;
 
-                if(principalQuery != null && keyType == null)
+                if (principalQuery != null && keyType == null)
                 {
                     // Programmer mistake
                     throw new InvalidOperationException($"Type {type.Name} has no Id property, yet it is used as a navigation collection on another entity");
@@ -305,7 +305,7 @@ namespace BSharp.Services.OData
                         collectionProperty = collectionProperty.PropertyType.GetProperty(step);
                     }
 
-                    if(collectionProperty.IsParent())
+                    if (collectionProperty.IsParent())
                     {
                         foreignKeyToPrincipalQuery = "ParentId";
                         isAncestorExpand = true;
@@ -319,15 +319,15 @@ namespace BSharp.Services.OData
                             // Programmer mistake
                             throw new InvalidOperationException($"Navigation collection {collectionProperty.Name} on type {collectionProperty.DeclaringType} is not adorned with the associated foreign key");
                         }
-                    }                    
+                    }
                 }
 
-                if(isAncestorExpand)
+                if (isAncestorExpand)
                 {
                     // the path to parent entity is the path above minus the "Parent"
                     var pathToParentEntity = new ArraySegment<string>(
-                        array: pathToCollectionPropertyInPrincipal.Array, 
-                        offset: 0, 
+                        array: pathToCollectionPropertyInPrincipal.Array,
+                        offset: 0,
                         count: pathToCollectionPropertyInPrincipal.Count - 1);
 
                     // Adding this causes the principal query to always include ParentId in the select clause
@@ -440,7 +440,7 @@ namespace BSharp.Services.OData
             var root = segments[new string[0]];
             root.Filter = filterExp;
             root.OrderBy = orderbyExp;
-            root.Ids = _ids == null ? null : string.Join(",", _ids.Select(e => e.ToString()));
+            root.Ids = _ids == null ? null : string.Join(",", _ids);
             root.Skip = _skip;
             root.Top = _top;
 
@@ -473,7 +473,7 @@ namespace BSharp.Services.OData
 
             var results = segments.ToDictionary(e => (IQueryInternal)e.Value, e => new List<DtoBase>());
 
-            List<(IQueryInternal, SqlStatement)> queries = results.Keys.Select(q => 
+            List<(IQueryInternal, SqlStatement)> queries = results.Keys.Select(q =>
                 (q, q.PrepareStatement(_sources, ps, _userId, _userTimeZone))).ToList(); // The order matters for the hydration step later
 
             var result = await ObjectLoader.LoadStatements<T>(
@@ -484,58 +484,52 @@ namespace BSharp.Services.OData
                 trx: _trx);
 
 
-            return (result.Result.Cast<T>().ToList(), result.RelatedEntities);
+            return result.Cast<T>().ToList();
         }
 
-        public async Task<(T, EntitiesMap)> FirstOrDefaultAsync()
+        public async Task<T> FirstOrDefaultAsync()
         {
             if (string.IsNullOrWhiteSpace(_orderby))
             {
-                if(typeof(T).GetProperty("Id") == null)
+                if (!IsDtoKeyBase())
                 {
-                    throw new InvalidOperationException("FirstOrDefault was invoked without an orderby parameter on a type without Id");
+                    // Programmer mistake
+                    throw new InvalidOperationException($"{nameof(FirstOrDefaultAsync)} was invoked without an orderby parameter to retrieve a type {typeof(T).Name} which doesn't inherit from {typeof(DtoKeyBase)}");
                 }
 
                 OrderBy("Id");
             }
 
             Top(1);
-            var (data, related) = await ToListAsync();
-            return (data.FirstOrDefault(), related);
+            var data = await ToListAsync();
+            return data.FirstOrDefault();
         }
 
         /// <summary>
         /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
         /// and returns a mapping from every entity Id in the original query to all the criteria that are satified by this entity
         /// </summary>
-        public async Task<IEnumerable<IdIndex>> GetIndexToIdMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        public async Task<IEnumerable<IdIndex<TKey>>> GetIndexToIdMap<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes)
         {
-            var idType = typeof(T).GetProperty("Id")?.PropertyType;
-            if(idType == null)
-            {
-                // Programmer mistake
-                throw new InvalidOperationException("");
-            }
-
-            return await GetIndexMapInner(criteriaIndexes, idType);
+            return await GetIndexMapInner<TKey>(criteriaIndexes);
         }
 
         /// <summary>
         /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
-        /// and returns a mapping from every entity Id (which is specifically and INT) in the original query to all the criteria
+        /// and returns a mapping from every entity Id (which is specifically an INT) in the original query to all the criteria
         /// that are satified by this entity, this is different from <see cref="GetIndexToIdMap(IEnumerable{IndexAndCriteria})"/>
         /// in that it is useful when the origianl query is dynamically constructed using <see cref="FromSql(string, string, SqlStatementParameter[])"/>
         /// by passing in new data that doesn't have Ids, and hence the indexes of the items in the memory list are used as Ids instead
         /// </summary>
-        public async Task<IEnumerable<IdIndex>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        public async Task<IEnumerable<IdIndex<int>>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
         {
-            return await GetIndexMapInner(criteriaIndexes, typeof(int));
+            return await GetIndexMapInner<int>(criteriaIndexes);
         }
 
         /// <summary>
         /// Internal Implementation
         /// </summary>
-        private async Task<IEnumerable<IdIndex>> GetIndexMapInner(IEnumerable<IndexAndCriteria> criteriaIndexes, Type idType)
+        private async Task<IEnumerable<IdIndex<TKey>>> GetIndexMapInner<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes)
         {
             if (!string.IsNullOrWhiteSpace(_select) || !string.IsNullOrWhiteSpace(_expand))
             {
@@ -551,9 +545,9 @@ namespace BSharp.Services.OData
             var flatQuery = new ODataQueryInternal
             {
                 ResultType = typeof(T),
-                KeyType = idType,
+                KeyType = typeof(TKey),
                 Filter = filterExp,
-                Ids = _ids == null ? null : string.Join(",", _ids.Select(e => e)),
+                Ids = _ids == null ? null : string.Join(",", _ids),
                 OrderBy = orderByExp,
                 Skip = _skip,
                 Top = _top
@@ -613,13 +607,13 @@ namespace BSharp.Services.OData
                 var criteriaQuery = new ODataQueryInternal
                 {
                     ResultType = typeof(T),
-                    KeyType = idType,
+                    KeyType = typeof(TKey),
                     Filter = criteriaExp,
                 };
 
                 SqlJoinClause joinClause = criteriaQuery.JoinSql();
                 string joinSql = joinClause.ToSql(SourceOverride);
-                string whereSql = criteriaQuery.WhereSql(sources, joinClause.JoinTree, ps, _userId, _userTimeZone);
+                string whereSql = criteriaQuery.WhereSql(SourceOverride, joinClause.JoinTree, ps, _userId, _userTimeZone);
 
 
                 var sqlBuilder = new StringBuilder();
@@ -636,7 +630,7 @@ UNION
 
 {s2}");
 
-            if(!string.IsNullOrWhiteSpace(_preparatorySql))
+            if (!string.IsNullOrWhiteSpace(_preparatorySql))
             {
                 sql = $@"{_preparatorySql}
 
@@ -665,20 +659,19 @@ UNION
 
                 try
                 {
-                    var result = new List<IdIndex>();
+                    var result = new List<IdIndex<TKey>>();
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         // Loop over the result from the database
                         while (await reader.ReadAsync())
                         {
                             var dbId = reader["Id"];
-                            var dbIndex = reader["Index"];
+                            var dbIndex = reader.GetInt32(1);
 
-                            result.Add(new IdIndex
+                            result.Add(new IdIndex<TKey>
                             {
-
-                                Id = dbId,
-                                Index = (int)dbIndex
+                                Id = (TKey)dbId,
+                                Index = dbIndex
                             });
                         }
                     }
@@ -770,6 +763,15 @@ UNION
                     allowNavigationTerminals: false);
             }
         }
+
+        /// <summary>
+        /// Simply checks if the type argument <see cref="T"/> inherites from <see cref="DtoKeyBase"/>
+        /// </summary>
+        private bool IsDtoKeyBase()
+        {
+            return typeof(T).IsSubclassOf(typeof(DtoKeyBase));
+        }
+
 
         /// <summary>
         /// For efficiently segmenting SELECT and EXPAND arguments along the one-to-many relations
@@ -876,9 +878,9 @@ UNION
     }
 
 
-    public class IdIndex
+    public class IdIndex<TKey>
     {
-        public object Id { get; set; }
+        public TKey Id { get; set; }
 
         public int Index { get; set; }
     }

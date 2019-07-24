@@ -29,7 +29,7 @@ namespace BSharp.Services.OData
         /// <param name="conn"></param>
         /// <param name="trx">The transaction if any</param>
         /// <returns>The hydrated DTOs list + any related strong entities</returns>            
-        public static async Task<ObjectLoaderResult> LoadStatements<T>(
+        public static async Task<List<DtoBase>> LoadStatements<T>(
            List<(IQueryInternal Query, SqlStatement Statement)> queries,
            string preparatorySql,
            SqlStatementParameters ps,
@@ -75,16 +75,95 @@ namespace BSharp.Services.OData
 
 
                 // These dictionaries will contain the result
-                var memory = new HashSet<(string, ColumnMapTree)>(); // Remembers which (Id, tree) combinations have been added already
-                var allIdEntities = new Dictionary<Type, Dictionary<string, DtoBase>>(); // int ids are cast to string
-                var relatedEntitiesDic = new Dictionary<Type, List<DtoBase>>();
+                bool isAggregate = false;
+                bool isFirstRow = false;
+                var memory = new HashSet<(object Id, ColumnMapTree Tree)>(); // Remembers which (Id, tree) combinations have been added already
+                var allIdEntities = new IndexedEntities(); // int ids are cast to string
+
+                var cacheDynamicPropertyName = new Dictionary<(ArraySegment<string>, string, string), string>();
+                string DynamicPropertyName(ArraySegment<string> path, string prop, string aggregation)
+                {
+                    if (!cacheDynamicPropertyName.ContainsKey((path, prop, aggregation)))
+                    {
+                        string pathAndPropertyString = prop;
+
+                        string pathString = string.Join('/', path);
+                        if (!string.IsNullOrWhiteSpace(pathString))
+                        {
+                            pathAndPropertyString = $"{pathString}/{pathAndPropertyString}";
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(aggregation))
+                        {
+                            pathAndPropertyString = $"{aggregation}({pathAndPropertyString})";
+                        }
+
+                        cacheDynamicPropertyName[(path, prop, aggregation)] = pathAndPropertyString;
+                    }
+
+                    return cacheDynamicPropertyName[(path, prop, aggregation)];
+                }
+
+
+
+                var dynamicProps = new List<DynamicPropInfo>();
+
+                // This method hydrates the properties of entity (whether a normal DTO or a dynamic entity) as per the entityDef
+                void HydrateProperties(SqlDataReader reader, DtoBase entity, ColumnMapTree entityDef)
+                {
+                    foreach (var (propInfo, index, aggregation) in entityDef.Properties)
+                    {
+                        if (propInfo.PropertyType == typeof(HierarchyId))
+                        {
+                            continue;
+                        }
+
+                        var dbValue = reader[index];
+                        if (dbValue != DBNull.Value)
+                        {
+                            // char still comes from the DB as a string
+                            if (propInfo.PropertyType == typeof(char?))
+                            {
+                                dbValue = dbValue.ToString()[0]; // gets the char
+                            }
+
+                            if (entity is DynamicEntity dynamicEntity)
+                            {
+                                // The propertyNameMap was populated as soon as the ColumnMapTree was created
+                                string propName = DynamicPropertyName(entityDef.Path, propInfo.Name, aggregation);
+                                dynamicEntity[propName] = dbValue;
+
+                                if (isFirstRow)
+                                {
+                                    // dynamicProps.Add(new DynamicPropInfo(propInfo.PropertyType, propName));
+                                    dynamicProps.Add(new DynamicPropInfo(
+                                        propType: propInfo.PropertyType,
+                                        name: propName,
+                                        declaringType: propInfo.DeclaringType,
+                                        path: entityDef.Path,
+                                        property: propInfo.Name,
+                                        aggregation: null));
+                                }
+                            }
+                            else
+                            {
+                                propInfo.SetValue(entity, dbValue);
+                            }
+                        }
+
+                        if (!(entity is DynamicEntity))
+                        {
+                            entity.EntityMetadata[propInfo.Name] = FieldMetadata.Loaded;
+                        }
+                    }
+                }
 
                 // This method will return one of 3 things: 
                 // 1 - Either a propert DTO with ID, if the entity definition contains an Id index
                 // 2 - Or a Fact DTO (without Id), if the entity defintion does not contain an Id index
                 // 3 - Or a dynamic entity (a dictionary), if the entity defintion does not contain an Id index and this is an aggregate query
                 // NOTE: parameter isIdParent ensures that if the parent DTO has an Id, that every child DTO also has an Id
-                DtoBase AddEntity(SqlDataReader reader, ColumnMapTree entityDef, bool isAggregate, bool addToRelatedEntities, DynamicEntity dynamicEntity = null)
+                DtoBase AddEntity(SqlDataReader reader, ColumnMapTree entityDef, DynamicEntity dynamicEntity = null)
                 {
                     if (isAggregate && !entityDef.IdExists)
                     {
@@ -99,7 +178,7 @@ namespace BSharp.Services.OData
 
                         foreach (var subEntityDef in entityDef.Children)
                         {
-                            AddEntity(reader, subEntityDef, isAggregate, addToRelatedEntities: true, dynamicEntity);
+                            AddEntity(reader, subEntityDef, dynamicEntity);
                         }
 
                         return dynamicEntity;
@@ -113,15 +192,13 @@ namespace BSharp.Services.OData
 
                         if (entityDef.IdExists)
                         {
-                            var collectionType = entityType; // TODO: The root type of the collection where to store and track this entity e.g. Custody
+                            var collectionType = entityType.GetRootType();
 
                             // Make sure the dictionary that tracks this type is created already
-                            if (!allIdEntities.ContainsKey(collectionType))
+                            if (!allIdEntities.TryGetValue(collectionType, out IndexedEntitiesOfType entitiesOfType))
                             {
-                                allIdEntities[collectionType] = new Dictionary<string, DtoBase>();
+                                entitiesOfType = allIdEntities[collectionType] = new IndexedEntitiesOfType();
                             }
-
-                            var entitiesOfType = allIdEntities[collectionType];
 
                             var dbId = reader[entityDef.IdIndex];
                             if (dbId == DBNull.Value)
@@ -129,31 +206,16 @@ namespace BSharp.Services.OData
                                 return null;
                             }
 
-                            var id = dbId.ToString();
-                            entitiesOfType.TryGetValue(id, out entity);
+                            var id = dbId;
+                            entitiesOfType.TryGetValue(id, out DtoKeyBase keyEntity);
 
-                            if (entity == null)
+                            if (keyEntity == null)
                             {
-                                entity = Activator.CreateInstance(entityType) as DtoBase;
-                                entityDef.IdProperty.SetValue(entity, dbId);
+                                keyEntity = Activator.CreateInstance(entityType) as DtoKeyBase;
+                                keyEntity.SetId(dbId);
 
-                                entitiesOfType.Add(id, entity);
+                                entitiesOfType.Add(id, keyEntity);
                                 memory.Add((id, entityDef));
-
-                                // If instructed, add the entity to related entities
-                                if(addToRelatedEntities)
-                                {
-                                    if (entityType.GetCustomAttribute<StrongDtoAttribute>() != null)
-                                    {
-                                        // Add the newly created entity to the related entities
-                                        if (!relatedEntitiesDic.TryGetValue(collectionType, out List<DtoBase> relatedEntitiesOfType))
-                                        {
-                                            relatedEntitiesOfType = relatedEntitiesDic[collectionType] = new List<DtoBase>();
-                                        }
-
-                                        relatedEntitiesOfType.Add(entity);
-                                    }
-                                }
 
                                 // New entity
                                 isHydrated = false;
@@ -172,16 +234,15 @@ namespace BSharp.Services.OData
                                 }
                             }
 
+                            entity = keyEntity;
                         }
                         else // NOTE: This must be a level 0, otherwise validation earlier would capture it
                         {
-                            // This is the root of a query without that doesn't return Id
+                            // New entity
+                            isHydrated = false;
 
                             // Create the entity
                             entity = Activator.CreateInstance(entityType) as DtoBase;
-
-                            // New entity
-                            isHydrated = false;
                         }
 
                         // As an optimization, only hydrate again if not hydrated before
@@ -194,7 +255,7 @@ namespace BSharp.Services.OData
                         // Recursively call the next level down
                         foreach (var subEntityDef in entityDef.Children)
                         {
-                            AddEntity(reader, subEntityDef, isAggregate, addToRelatedEntities: true);
+                            AddEntity(reader, subEntityDef);
                         }
 
                         return entity;
@@ -213,14 +274,15 @@ namespace BSharp.Services.OData
                     {
                         foreach (var statement in statements)
                         {
-                            bool isRootQuery = statement.Query?.PrincipalQuery == null;
+                            isFirstRow = true;
+                            isAggregate = statement.IsAggregate;
                             var list = results[statement.Query];
 
                             // Group the column map by the path (which represents the target entity)
                             var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap);
 
                             // Sanity checking: if this isn't an aggregate query, 
-                            if (!statement.IsAggregate && entityDef.Children.Any(e => !e.IdExists))
+                            if (!isAggregate && entityDef.Children.Any(e => !e.IdExists))
                             {
                                 // Developer mistake
                                 throw new InvalidOperationException($"The query for '{statement.Sql}' is not an aggregate query but is missing essential Ids");
@@ -229,15 +291,24 @@ namespace BSharp.Services.OData
                             // Loop over the result from the database
                             while (await reader.ReadAsync())
                             {
-                                var record = AddEntity(reader, entityDef, statement.IsAggregate, addToRelatedEntities: !isRootQuery);
+                                var record = AddEntity(reader, entityDef);
                                 list.Add(record);
+                                isFirstRow = false;
                             }
 
-                            if (isRootQuery)
+                            if (statement.Query?.PrincipalQuery == null)
                             {
-                                // This is the root query
+                                // This is the root query, assign the result to the final list
                                 result = list;
-                                isAggregateRootQuery = statement.IsAggregate;
+
+                                // Set a flag to indicate whether the root query is aggregate (useful later)
+                                isAggregateRootQuery = isAggregate;
+
+                                // Assign the dynamicProps to every DynamicEntity
+                                if (isAggregateRootQuery)
+                                {
+                                    result.ForEach(e => ((DynamicEntity)e).Properties = dynamicProps);
+                                }
                             }
 
                             await reader.NextResultAsync();
@@ -253,82 +324,120 @@ namespace BSharp.Services.OData
                     }
                 }
 
-
-                var allEntities = allIdEntities.ToDictionary(e => e.Key, e => e.Value.Values.ToList());
-                if (!isAggregateRootQuery && !allEntities.ContainsKey(typeof(T)))
+                var allEntities = allIdEntities.ToDictionary(e => e.Key, e => e.Value.Values.Cast<DtoBase>().ToList());
+                if (result.Any())
                 {
-                    // this indicates that the result is a fact table, we add the fact lines here in order to have their weak nav properties hydrated
-                    allEntities[typeof(T)] = result;
-                }
-
-                // All simple properties are populated before, but not their navigation properties, those are done here
-                Type cacheType = null;
-                List<(PropertyInfo, PropertyInfo, bool)> cacheNavProperties = null;
-
-                foreach (var entitiesOfType in allEntities.Values)
-                    foreach (var entity in entitiesOfType)
+                    var resultRootType = result.First().GetType().GetRootType();
+                    if (!allEntities.ContainsKey(resultRootType))
                     {
-                        var entityType = entity.GetType();
+                        // this indicates that the result is a fact table, we add the fact lines here in order to have their weak nav properties hydrated
+                        allEntities[resultRootType] = result;
+                    }
 
-                        // Just an optimization: prepare the list of nav properties for this type
-                        if (entityType != cacheType)
+                    // Here we add the navigation properties to the definition of dynamic entities
+                    if (result.First() is DynamicEntity dynamicEntity)
+                    {
+                        var dimensionProps = dynamicEntity.Properties
+                                        .Where(p => p.IsDimension);
+
+                        var spannedTypes = dimensionProps
+                                        .Select(p => (p.Path, p.DeclaringType))
+                                        .Distinct()
+                                        .ToList();
+
+                        // A hash of all the simple dimension properties and their paths
+                        var dynamicPropsHash = dimensionProps
+                                        .ToDictionary(e => (e.Path, e.Property));
+
+                        // We loop over all the navigation properties in all spanned types, any navigation property whose
+                        // foreign key property is in the collection we also add it to the collection
+                        foreach (var (path, type) in spannedTypes)
                         {
-                            cacheType = entityType;
-                            cacheNavProperties = new List<(PropertyInfo, PropertyInfo, bool)>();
-                            foreach (var prop in cacheType.GetProperties())
+                            foreach (var propInfo in type.GetProperties())
                             {
-                                var navPropertyAtt = prop.GetCustomAttribute<NavigationPropertyAttribute>();
-                                if (navPropertyAtt != null && !prop.PropertyType.IsList())
+                                var fkName = propInfo.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
+                                if (!string.IsNullOrWhiteSpace(fkName) && dynamicPropsHash.TryGetValue((path, fkName), out DynamicPropInfo fkProp))
                                 {
-                                    var strongDtoAtt = prop.PropertyType.GetCustomAttribute<StrongDtoAttribute>();
-                                    var propCollectionType = strongDtoAtt?.Type ?? prop.PropertyType;
-
-                                    if (allIdEntities.ContainsKey(propCollectionType))
-                                    {
-                                        // For query, means this property will live in its own
-                                        var isStrongPropertyType = strongDtoAtt != null;
-                                        var fkProp = cacheType.GetProperty(navPropertyAtt.ForeignKey);
-                                        cacheNavProperties.Add((prop, fkProp, isStrongPropertyType));
-                                    }
+                                    dynamicEntity.Properties.Add(new DynamicPropInfo(
+                                        propType: propInfo.PropertyType,
+                                        name: DynamicPropertyName(path, propInfo.Name, null),
+                                        declaringType: propInfo.DeclaringType,
+                                        path: path,
+                                        property: propInfo.Name,
+                                        aggregation: null,
+                                        fk: fkProp));
                                 }
                             }
                         }
+                    }
+                }
 
-                        foreach (var (navProp, fkProp, isStrongPropertyType) in cacheNavProperties)
+                // The method below efficiently retrieves the navigation properties of each entity
+                Type cacheType = null;
+                List<(IPropInfo NavProp, IPropInfo FkProp)> navAndFkCache = null;
+                List<(IPropInfo NavProp, IPropInfo FkProp)> GetNavAndFkProps(DtoBase entity)
+                {
+                    if (entity.GetType() != cacheType) // In a single root type we might have entities belonging to multiple different deriving types
+                    {
+                        cacheType = entity.GetType();
+                        navAndFkCache = new List<(IPropInfo NavProp, IPropInfo FkProp)>();
+
+                        IEnumerable<IPropInfo> nonListProperties;
+                        if (entity is DynamicEntity dynamicEntity)
+                        {
+                            nonListProperties = dynamicEntity.Properties;
+                        }
+                        else
+                        {
+                            nonListProperties = cacheType.GetProperties()
+                                .Where(e => !e.PropertyType.IsList())
+                                .Select(e => new PropInfo(e));
+                        }
+
+                        navAndFkCache = nonListProperties
+                            .Where(p => p.ForeignKeyProperty() != null && allIdEntities.ContainsKey(p.PropertyType.GetRootType()))
+                            .Select(p => (p, p.ForeignKeyProperty()))
+                            .ToList();
+                    }
+
+                    return navAndFkCache;
+                }
+
+                // All simple properties are populated before, but not navigation properties, those are done here
+                foreach (var (rootType, entitiesOfType) in allEntities.Where(e => e.Value.Any()))
+                {
+                    bool isDynamic = rootType == typeof(DynamicEntity);
+
+                    // Loop over all entities and use the method above to hydrate the navigation properties
+                    foreach (var entity in entitiesOfType)
+                    {
+                        foreach (var (navProp, fkProp) in GetNavAndFkProps(entity))
                         {
                             // The nav property can only be loaded if the FK property is loaded first
-                            if (entity.EntityMetadata.TryGetValue(fkProp.Name, out FieldMetadata meta) && meta == FieldMetadata.Loaded)
+                            if (isDynamic || entity.EntityMetadata.TryGetValue(fkProp.Name, out FieldMetadata meta) && meta == FieldMetadata.Loaded)
                             {
-                                var fk = fkProp.GetValue(entity)?.ToString();
-                                if (fk == null)
+                                var fkValue = fkProp.GetValue(entity);
+                                if (fkValue == null)
                                 {
                                     // it is loaded and its value is NULL
                                     entity.EntityMetadata[navProp.Name] = FieldMetadata.Loaded;
                                 }
                                 else
                                 {
-                                    var propCollectionType = navProp.PropertyType; // TODO: Use the root type
+                                    var propCollectionType = navProp.PropertyType.GetRootType();
                                     var entitiesOfPropertyType = allIdEntities[propCollectionType]; // It must be available since we checked earlier that it exists
-
-                                    if (entitiesOfPropertyType != null)
+                                    entitiesOfPropertyType.TryGetValue(fkValue, out DtoKeyBase navPropValue);
+                                    if (navPropValue != null)
                                     {
-                                        entitiesOfPropertyType.TryGetValue(fk, out DtoBase navPropValue);
-                                        if (navPropValue != null)
-                                        {
-                                            // it is loaded and it has a value
-                                            entity.EntityMetadata[navProp.Name] = FieldMetadata.Loaded;
-                                            if (!isStrongPropertyType)
-                                            {
-                                                // If it is for query it will be returned in the "related" entities, not in the DTO itself
-                                                navProp.SetValue(entity, navPropValue);
-                                            }
-                                        }
+                                        // it is loaded and it has a value
+                                        entity.EntityMetadata[navProp.Name] = FieldMetadata.Loaded;
+                                        navProp.SetValue(entity, navPropValue);
                                     }
                                 }
                             }
                         }
                     }
-
+                }
 
                 // Here we populate the collection navigation properties after the simple properties have been populated
                 foreach (var (query, list) in results)
@@ -354,36 +463,13 @@ namespace BSharp.Services.OData
                             var currentEntity = principalEntity;
                             foreach (var step in pathToCollectionEntity)
                             {
-                                object nextObject = null;
                                 var prop = currentEntity.GetType().GetProperty(step);
-                                if (prop.PropertyType.GetCustomAttribute<StrongDtoAttribute>() != null)
-                                {
-                                    // this property is for query, retrieve the value from allEntities
-                                    var propType = prop.PropertyType; // TODO: Use the collection type
-                                    if (allIdEntities.TryGetValue(propType, out Dictionary<string, DtoBase> resultsOfType))
-                                    {
-                                        var navFkName = prop.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
-                                        if (navFkName == null)
-                                        {
-                                            // Developer mistake
-                                            throw new InvalidOperationException($"Property {prop.Name} has a strong type, but does not have a foreign key associated with it");
-                                        }
+                                currentEntity = prop.GetValue(currentEntity) as DtoBase;
 
-                                        nextObject = resultsOfType[navFkName];
-                                    }
-                                }
-                                else
+                                // Check if the nextObject is null
+                                if (currentEntity == null)
                                 {
-                                    nextObject = prop.GetValue(currentEntity);
-                                }
-
-                                // If there is a null object on the path, call it quits
-                                if (nextObject != null)
-                                {
-                                    currentEntity = nextObject as DtoBase;
-                                }
-                                else
-                                {
+                                    // If there is a null object on the path, call it quits
                                     break;
                                 }
                             }
@@ -397,28 +483,18 @@ namespace BSharp.Services.OData
 
                         var fkName = query.ForeignKeyToPrincipalQuery;
                         var fkProp = query.ResultType.GetProperty(fkName);
-                        var groupedCollections = list.GroupBy(e => fkProp.GetValue(e).ToString()).ToDictionary(g => g.Key, g => MakeList(query.ResultType, g));
+                        var groupedCollections = list.GroupBy(e => fkProp.GetValue(e)).ToDictionary(g => g.Key, g => MakeList(query.ResultType, g));
 
-                        PropertyInfo idProp = null;
                         PropertyInfo collectionProp = null;
-                        foreach (var collectionEntity in collectionEntities)
+                        foreach (var collectionEntity in collectionEntities.Cast<DtoKeyBase>())
                         {
-                            if (idProp == null)
-                            {
-                                idProp = collectionEntity.GetType().GetProperty("Id");
-                                if(idProp == null)
-                                {
-                                    // Programmer mistake
-                                    throw new InvalidOperationException($"Type {collectionEntity.GetType().Name} does not have an Id property, and yet it has collection navigation properties");
-                                }
-                            }
-
+                            // Rule every entity with collections attached to it must be a DtoKeyBase
                             if (collectionProp == null)
                             {
                                 collectionProp = collectionEntity.GetType().GetProperty(collectionPropName);
                             }
 
-                            var id = idProp.GetValue(collectionEntity).ToString();
+                            var id = collectionEntity.GetId();
                             var collection = groupedCollections.ContainsKey(id) ? groupedCollections[id] : MakeList(query.ResultType);
 
                             collectionEntity.EntityMetadata[collectionPropName] = FieldMetadata.Loaded;
@@ -427,76 +503,11 @@ namespace BSharp.Services.OData
                     }
                 }
 
-                // Prepare related entities
-                var relatedEntities = new EntitiesMap();
-                foreach (var (type, entities) in relatedEntitiesDic)
-                {
-                    relatedEntities[type.Name] = entities;
-                }
-
                 // Return the result
-                return new ObjectLoaderResult
-                {
-                    RelatedEntities = relatedEntities,
-                    Result = result
-                };
-            }
-
-        }
-
-        private static string DynamicPropertyName(ArraySegment<string> path, string prop, string aggregation)
-        {
-            // TODO: cache
-            string pathAndPropertyString = prop;
-
-            string pathString = string.Join('/', path);
-            if (!string.IsNullOrWhiteSpace(pathString))
-            {
-                pathAndPropertyString = $"{pathString}/{pathAndPropertyString}";
-            }
-
-            if (!string.IsNullOrWhiteSpace(aggregation))
-            {
-                pathAndPropertyString = $"{aggregation}({pathAndPropertyString})";
-            }
-
-            return pathAndPropertyString;
-        }
-
-        // This method hydrates the properties of entity (whether a normal DTO or a dynamic entity) as per the entityDef
-        private static void HydrateProperties(SqlDataReader reader, DtoBase entity, ColumnMapTree entityDef)
-        {
-            foreach (var (propInfo, index, aggregation) in entityDef.Properties)
-            {
-                if (propInfo.PropertyType == typeof(HierarchyId))
-                {
-                    continue;
-                }
-
-                var dbValue = reader[index];
-                if (dbValue != DBNull.Value)
-                {
-                    // char still comes from the DB as a string
-                    if (propInfo.PropertyType == typeof(char?))
-                    {
-                        dbValue = dbValue.ToString()[0]; // gets the char
-                    }
-
-                    if (entity is DynamicEntity dynamicEntity)
-                    {
-                        // The propertyNameMap was populated as soon as the ColumnMapTree was created
-                        string propName = DynamicPropertyName(entityDef.Path, propInfo.Name, aggregation);
-                        dynamicEntity[propName] = dbValue;
-                    }
-                    else
-                    {
-                        propInfo.SetValue(entity, dbValue);
-                    }
-                }
-
-                entity.EntityMetadata[propInfo.Name] = FieldMetadata.Loaded;
+                return result;
             }
         }
+
 
         /// <summary>
         /// Just a helper method for returning a generic IList
@@ -516,6 +527,7 @@ namespace BSharp.Services.OData
             return list;
         }
 
+
         /// <summary>
         /// A tree structure representing the columns of an SQL select statement, in a
         /// way that makes hydrating the DTOs from the statement result more efficient
@@ -531,11 +543,6 @@ namespace BSharp.Services.OData
             /// When no IdIndex is set, this level is not DTOable
             /// </summary>
             public int IdIndex { get; set; } = -1;
-
-            /// <summary>
-            /// The PropertyInfo of the Id property is cached here for performance
-            /// </summary>
-            public PropertyInfo IdProperty { get; set; }
 
             /// <summary>
             /// All the properties at this level mentioned by all the paths
@@ -569,7 +576,7 @@ namespace BSharp.Services.OData
                 {
                     var columnInfo = columnMap[i];
                     var path = columnInfo.Path;
-                    var property = columnInfo.Property;
+                    var propName = columnInfo.Property;
                     var aggregation = columnInfo.Aggregation;
                     var currentTree = root;
 
@@ -596,15 +603,14 @@ namespace BSharp.Services.OData
                         currentTree = currentTree[step];
                     }
 
-                    if (property == "Id" && string.IsNullOrWhiteSpace(aggregation))
+                    if (propName == "Id" && string.IsNullOrWhiteSpace(aggregation) && currentTree.Type.IsSubclassOf(typeof(DtoKeyBase)))
                     {
                         // This IdIndex is only set for DTOable path terminals
                         currentTree.IdIndex = i;
-                        currentTree.IdProperty = currentTree.Type.GetProperty("Id"); // Useful later for optimization
                     }
                     else
                     {
-                        var propInfo = currentTree.Type.GetProperty(property);
+                        var propInfo = currentTree.Type.GetProperty(propName);
                         currentTree.Properties.Add((propInfo, i, aggregation));
                     }
                 }

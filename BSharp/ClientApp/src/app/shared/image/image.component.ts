@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subject, of, Observable } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
@@ -24,7 +24,7 @@ enum ImageStatus {
   styleUrls: ['./image.component.scss'],
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: ImageComponent }]
 })
-export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValueAccessor {
 
   @Input()
   shape: 'square' | 'circle' = 'square';
@@ -42,27 +42,10 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
   isEdit = false;
 
   @Input()
-  set src(v: string) {
-    v = v || '|';
+  src: string;
 
-    if (this.src !== v) {
-      if (this.alreadyInit) {
-        this.ngOnDestroy();
-      }
-
-      const split = v.split('|');
-      this._src = split[0];
-      this._imageId = split[1];
-
-      if (this.alreadyInit) {
-        this.ngOnInit();
-      }
-    }
-  }
-
-  get src(): string {
-    return `${this._src}|${this._imageId}`;
-  }
+  @Input()
+  imageId: string;
 
   @ViewChild('input')
   input: ElementRef;
@@ -76,7 +59,6 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
   private _imageId: string;
   private _value: string = null; // base64 byte array
   private _metadataPrefix: string; // base64 byte array
-  private alreadyInit = false;
 
   public status: ImageStatus;
   public dataUrl: string = null;
@@ -128,13 +110,45 @@ export class ImageComponent implements OnInit, OnDestroy, ControlValueAccessor {
   }
 
   ngOnInit() {
-
     this.update();
-    this.alreadyInit = true;
   }
 
   ngOnDestroy() {
     this.notifyCancel$.next();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+
+      // the combinatino of these two properties defines a whole new screen from the POV of the user
+      // when either of these properties change it is equivalent to a screen closing and
+      // and another screen opening even though Angular may reuse the same
+      // component and never call ngOnDestroy and ngOnInit. So we call them
+      // manually here if this is not the first time these properties are set
+      // to simulate a screen closing and opening again
+      const screenDefProperties = [changes.src, changes.imageId];
+
+      const anyChanges = screenDefProperties.some(prop => !!prop);
+      const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+
+      if (anyChanges) {
+
+        if (notFirstChange) {
+          this.ngOnDestroy();
+        }
+
+        if (!!changes.src) {
+          this._src = changes.src.currentValue;
+        }
+
+        if (!!changes.imageId) {
+          this._imageId = changes.imageId.currentValue;
+        }
+
+        // set the values
+        if (notFirstChange) {
+          this.ngOnInit();
+        }
+      }
   }
 
   private update(): void {

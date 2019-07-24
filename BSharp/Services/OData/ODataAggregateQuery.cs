@@ -102,7 +102,7 @@ namespace BSharp.Services.OData
             return this;
         }
 
-        public async Task<(List<DtoBase> Result, EntitiesMap RelatedEntities)> ToListAsync()
+        public async Task<List<DtoBase>> ToListAsync()
         {
             // ------------------------ Validation Step
             // Create the expressions. As for filter: turn all the filters into expressions and AND them together
@@ -115,12 +115,6 @@ namespace BSharp.Services.OData
             if (selectExp == null)
             {
                 string message = $"The select argument is required";
-                throw new BadRequestException(message);
-            }
-
-            if (_top > 0 && selectExp.Count(e => e.IsDimension) > 1)
-            {
-                string message = $"The 'top' argument is only allowed when there is a single dimension";
                 throw new BadRequestException(message);
             }
 
@@ -209,7 +203,7 @@ namespace BSharp.Services.OData
                 conn: _conn, 
                 trx:_trx);
 
-            return (result.Result, result.RelatedEntities);
+            return result;
         }
 
         /// <summary>

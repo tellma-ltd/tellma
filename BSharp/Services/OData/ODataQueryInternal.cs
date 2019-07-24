@@ -1,4 +1,5 @@
-﻿using BSharp.Services.Utilities;
+﻿using BSharp.Controllers.DTO;
+using BSharp.Services.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -274,8 +275,8 @@ namespace BSharp.Services.OData
                             selectedJoins.Add(join);
                         }
 
-                        // The Id is ALWAYS required in every returned DTO that has an Id property
-                        if (join.Type.GetProperty("Id") != null)
+                        // The Id is ALWAYS required in every DtoKeyBase
+                        if (join.Type.IsSubclassOf(typeof(DtoKeyBase)))
                         {
                             AddSelect(join.Symbol, subpath, "Id");
                         }

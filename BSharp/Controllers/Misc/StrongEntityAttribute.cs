@@ -10,9 +10,9 @@ namespace BSharp.Controllers.Misc
     /// in API responses, as opposed to being a weak entity that is attached to another strong entity
     /// </summary>
     [AttributeUsage(validOn: AttributeTargets.Class, Inherited = true)]
-    public class StrongDtoAttribute : Attribute
+    public class StrongEntityAttribute : Attribute
     {
-        public StrongDtoAttribute(Type type = null, bool isFact = false)
+        public StrongEntityAttribute(Type type = null, bool isFact = false)
         {
             Type = type;
             IsFact = isFact;

@@ -488,5 +488,92 @@ namespace BSharp.Services.Utilities
 
             return true;
         }
+
+        /// <summary>
+        /// Determines if this type derives from <see cref="DtoBase"/>
+        /// </summary>
+        public static bool IsDto(this Type type)
+        {
+            return type.IsSubclassOf(typeof(DtoBase));
+        }
+
+        /// <summary>
+        /// Checks if this type is adorned with <see cref="StrongEntityAttribute"/>
+        /// </summary>
+        public static bool IsStrongEntity(this Type type)
+        {
+            return type.GetCustomAttribute<StrongEntityAttribute>() != null;
+        }
+
+        /// <summary>
+        /// Returns the root type which corresponds to the SQL table of this type
+        /// </summary>
+        public static Type GetRootType(this Type type)
+        {
+            return type.GetCustomAttribute<StrongEntityAttribute>()?.Type ?? type;
+        }
+
+        /// <summary>
+        /// Retrieves the value of the property either directly from the dto or from the strongIdEntities
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <param name="dto"></param>
+        /// <param name="strongIdEntities"></param>
+        /// <returns></returns>
+        public static DtoBase GetDto(this PropertyInfo prop, DtoBase dto, IndexedEntities strongIdEntities)
+        {
+            if (prop == null)
+            {
+                throw new ArgumentNullException(nameof(prop));
+            }
+
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+
+            if (strongIdEntities == null)
+            {
+                throw new ArgumentNullException(nameof(strongIdEntities));
+            }
+
+            var dtoType = dto.GetType();
+            var propType = prop.PropertyType;
+
+            if (!dtoType.IsStrongEntity())
+            {
+                return prop.GetValue(dto) as DtoBase;
+            }
+
+
+            // This is a navigation with a strong type
+            // Get the root type of the entity
+            Type propRootType = prop.PropertyType.GetRootType();
+
+            // Get the id of the entity
+            string fkName = prop.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
+            if (fkName == null)
+            {
+                // Programmer mistake
+                throw new InvalidOperationException($"The property {prop.Name} on type {dtoType.Name} has a strong type {propType.Name} but it the property is not adorned with a foreign key");
+            }
+
+            var fkProp = dtoType.GetProperty(fkName);
+            if (fkProp == null)
+            {
+                // Programmer mistake
+                throw new InvalidOperationException($"The property {prop.Name} on type {dtoType.Name} is adorened with a foreign key that doesn't exist");
+            }
+            var fkValue = fkProp.GetValue(dto);
+
+            if(!strongIdEntities.ContainsKey(propRootType))
+            {
+                // Programmer mistake
+                throw new InvalidOperationException($"The type {propRootType} was not found in the strong Id entities collection");
+            }
+
+            // return the result
+            return strongIdEntities[propRootType][fkValue] as DtoBase;
+        }
     }
 }

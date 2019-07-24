@@ -1,7 +1,9 @@
-﻿using System;
+﻿using BSharp.Services.OData;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace BSharp.Controllers.DTO
@@ -79,6 +81,7 @@ namespace BSharp.Controllers.DTO
         {
             return _dic.GetEnumerator();
         }
-    }
 
+        public List<DynamicPropInfo> Properties { get; set; } = new List<DynamicPropInfo>();
+    }
 }

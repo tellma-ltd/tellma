@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 namespace BSharp.Controllers.DTO
 {
-    [StrongDto(isFact: true)]
+    [StrongEntity(isFact: true)]
     public class MeasurementUnitFact : DtoBase
     {
         [BasicField]

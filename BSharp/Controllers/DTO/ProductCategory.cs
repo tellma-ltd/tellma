@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
-    [StrongDto]
+    [StrongEntity]
     public class ProductCategoryForSave : DtoForSaveKeyBase<int?>
     {
         [System.ComponentModel.DataAnnotations.Schema.NotMapped]

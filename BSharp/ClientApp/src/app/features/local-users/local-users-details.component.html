@@ -49,8 +49,8 @@
 
   <div class="col-12 col-md-4 b-details-image-container">
     <div class="border" *ngIf="model?.EntityMetadata?.ImageId === 2">
-      <b-image *ngIf="!!model" [src]="model.Id ? 'local-users/' + model.Id + '/image|' + (model?.ImageId || '') : null"
-        [(ngModel)]="model.Image" [isEdit]="isEdit"></b-image>
+      <b-image *ngIf="!!model" [src]="model.Id ? 'local-users/' + model.Id + '/image' : null"
+      [imageId]="model?.ImageId" [(ngModel)]="model.Image" [isEdit]="isEdit"></b-image>
     </div>
   </div>
 

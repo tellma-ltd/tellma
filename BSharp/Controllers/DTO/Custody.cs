@@ -10,7 +10,7 @@ namespace BSharp.Controllers.DTO
     /// <summary>
     /// All savable DTOs must inherit from <see cref="DtoForSaveKeyBase{TKey}"/>
     /// </summary>
-    [StrongDto]
+    [StrongEntity]
     public class CustodyForSave : DtoForSaveKeyBase<int?>
     {
         [BasicField]
