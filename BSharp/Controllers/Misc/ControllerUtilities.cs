@@ -332,10 +332,6 @@ SELECT * FROM (
                     case nameof(MeasurementUnit):
                         return "(SELECT * FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')";
 
-                    // Temporary TODO: remove
-                    case nameof(MeasurementUnitFact):
-                        return "(SELECT [TenantId],[Name],[Name2],[Code],[UnitType],[UnitAmount],[BaseAmount],[IsActive],[CreatedAt],[CreatedById],[ModifiedAt],[ModifiedById] FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')";
-
                     case nameof(Permission):
                         return "(SELECT *, [Level] As [Action] FROM [dbo].[Permissions] WHERE Level <> 'Sign')"; // TODO fix the Level column
 
