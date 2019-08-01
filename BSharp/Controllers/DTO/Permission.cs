@@ -26,12 +26,11 @@ namespace BSharp.Controllers.DTO
         public int? RoleId { get; set; }
 
         [BasicField]
-        [ChoiceList(new object[]
-            { Constants.Read, Constants.Update, Constants.Create, Constants.ReadCreate }, new string[] {
-            "Permission_Read", "Permission_Update", "Permission_Create", "Permission_ReadAndCreate" })]
+        [ChoiceList(new object[] { Constants.Read, Constants.Update, "IsActive", "ResendInvitationEmail", "All" },
+            new string[] { "Permission_Read", "Permission_Update", "Permission_IsActive", "ResendInvitationEmail", "View_All" })]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [Display(Name = "Permission_Level")]
-        public string Level { get; set; }
+        [Display(Name = "Permission_Action")]
+        public string Action { get; set; }
 
         [BasicField]
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
@@ -87,18 +86,18 @@ namespace BSharp.Controllers.DTO
     // represents the ViewId, its mere presence indicates that the user has read access
     // and the 3 boolean values indicate whether the user can create, update or sign
     // the associated view id
-    public class PermissionsForClient : Dictionary<string, ViewPermissionsForClient>
+    public class PermissionsForClient : Dictionary<string, Dictionary<string, bool>>
     {
     }
 
-    public class ViewPermissionsForClient
+    public class ViewPermissionsForClient : Dictionary<string, bool>
     {
         // The mere presence of this ViewPermission means that 
         // the user has read access over the associated viewId
 
-        public bool? Read { get; set; }
-        public bool? Create { get; set; }
-        public bool? Update { get; set; }
-        public bool? Sign { get; set; }
+        //public bool? Read { get; set; }
+        //public bool? Create { get; set; }
+        //public bool? Update { get; set; }
+        //public bool? Sign { get; set; }
     }
 }

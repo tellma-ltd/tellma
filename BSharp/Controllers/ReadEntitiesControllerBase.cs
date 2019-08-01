@@ -54,7 +54,7 @@ namespace BSharp.Controllers
             }
 
             // Apply read permissions
-            var permissions = await UserPermissions(PermissionLevel.Read);
+            var permissions = await UserPermissions(Constants.Read);
             string permissionsCriteria = GetReadPermissionsCriteria(permissions);
             query = query.Filter(permissionsCriteria);
 
@@ -110,7 +110,7 @@ namespace BSharp.Controllers
             var result = await query.ToListAsync(); // this is potentially unordered, should that be a concern?
 
             // Apply the permissions on the result
-            var permissions = await UserPermissions(PermissionLevel.Read);
+            var permissions = await UserPermissions(Constants.Read);
             var defaultMask = GetDefaultMask();
             await ApplyReadPermissionsMask(result, qClone, permissions, defaultMask);
 
@@ -145,8 +145,9 @@ namespace BSharp.Controllers
         /// Verifies that the user has sufficient permissions to update the list of entities provided, this implementation 
         /// assumes that the view has permission levels Read and Update only, which most entities
         /// </summary>
-        protected virtual async Task CheckActionPermissions(IEnumerable<TKey> entityIds)
+        protected virtual Task CheckActionPermissions(IEnumerable<TKey> entityIds)
         {
+            return Task.CompletedTask;
             // TODO
 
             //var updatePermissions = await UserPermissions(PermissionLevel.Update);

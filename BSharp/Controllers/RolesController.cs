@@ -123,9 +123,9 @@ MERGE INTO [dbo].[Roles] AS t
             }
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "roles");
+            return ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "roles");
         }
 
         protected override DbContext GetDbContext()

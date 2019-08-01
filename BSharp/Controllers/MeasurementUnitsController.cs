@@ -121,9 +121,9 @@ MERGE INTO [dbo].MeasurementUnits AS t
             }
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "measurement-units");
+            return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "measurement-units");
         }
         
         protected override DbContext GetDbContext()

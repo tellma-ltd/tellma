@@ -87,7 +87,7 @@ namespace BSharp.Controllers
             var query = CreateODataQuery();
 
             // Retrieve the user permissions for the current view
-            var permissions = await UserPermissions(PermissionLevel.Read);
+            var permissions = await UserPermissions(Constants.Read);
 
             // Filter out permissions with masks that would be violated by the filter or order by arguments
             var defaultMask = GetDefaultMask() ?? new MaskTree();
@@ -154,7 +154,7 @@ namespace BSharp.Controllers
             var query = CreateODataAggregateQuery();
 
             // Retrieve the user permissions for the current view
-            var permissions = await UserPermissions(PermissionLevel.Read);
+            var permissions = await UserPermissions(Constants.Read);
             var permissionsCount = permissions.Count();
 
             // Filter out permissions with masks that would be violated by the filter argument
@@ -236,7 +236,7 @@ namespace BSharp.Controllers
         /// <summary>
         /// Retrieves the user permissions for the current view and the specified level
         /// </summary>
-        protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level);
+        protected abstract Task<IEnumerable<AbstractPermission>> UserPermissions(string action);
 
         /// <summary>
         /// If the user has no permission masks defined (can see all), this mask is used.

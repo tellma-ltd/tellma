@@ -45,7 +45,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             role.Permissions.Add(new Permission
             {
                 ViewId = viewId,
-                Level = level,
+                Action = level,
                 Criteria = criteria,
                 EntityState = "Inserted"
             });

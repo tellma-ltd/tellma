@@ -217,8 +217,8 @@ export class TenantWorkspace {
 
     const viewPerms = this.permissions[viewId];
     const allPerms = this.permissions['all'];
-    return (!!viewPerms && (viewPerms.Create || viewPerms.Update || viewPerms.Sign))
-      || (!!allPerms && (allPerms.Create || allPerms.Update || allPerms.Sign));
+    return (!!viewPerms && (viewPerms.Update || viewPerms.All))
+      || (!!allPerms && (allPerms.Update || allPerms.All));
   }
 
   public canUpdate(viewId: string, createdById: string | number) {
@@ -231,8 +231,8 @@ export class TenantWorkspace {
     const allPerms = this.permissions['all'];
     // const userId = this.userSettings.UserId;
     // (userId === createdById) ||
-    return (!!viewPerms && (viewPerms.Update || viewPerms.Sign))
-      || (!!allPerms && (allPerms.Update || allPerms.Sign));
+    return (!!viewPerms && (viewPerms.Update || viewPerms.All))
+      || (!!allPerms && (allPerms.Update || allPerms.All));
   }
 }
 

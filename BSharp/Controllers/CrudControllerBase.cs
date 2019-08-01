@@ -221,7 +221,7 @@ namespace BSharp.Controllers
 
         private async Task<List<TDtoForSave>> ApplyUpdatePermissionsMask(List<TDtoForSave> entities)
         {
-            var permissions = await UserPermissions(PermissionLevel.Update);
+            // var permissions = await UserPermissions(PermissionLevel.Update);
             /* 
              * Step 1: Get complete mask for TDtoForSave
              * 
@@ -446,7 +446,7 @@ return the entities
             {
                 try
                 {
-                    // Enlist the current
+                    // Enlist in the current transaction
                     dbFacade.UseTransaction(trx);
 
                     // Validate

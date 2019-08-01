@@ -71,9 +71,9 @@ namespace BSharp.Controllers
             return query;
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "views");
+            return ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "views");
         }
     }
 }

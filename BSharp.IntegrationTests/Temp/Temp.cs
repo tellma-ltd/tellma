@@ -43,7 +43,7 @@ namespace BSharp.IntegrationTests.Temp
                 return null;
             };
 
-            var query = new ODataQuery<LocalUser, int?>(null, sources, new MockLocalizer(), 0, TimeZoneInfo.Local);
+            var query = new ODataQuery<LocalUser>(null, sources, new MockLocalizer(), 0, TimeZoneInfo.Local);
 
             query.Select("Roles/Memo");
             query.Filter("IsActive eq true");

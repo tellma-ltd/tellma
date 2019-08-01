@@ -84,7 +84,8 @@ namespace BSharp.Controllers
                 var dbUserResponse = await GetByIdImplAsync(id, new GetByIdArguments { Select = nameof(LocalUser.ImageId), Expand = null });
 
                 // Get the blob name
-                var imageId = dbUserResponse.RelatedEntities[dbUserResponse.CollectionName].Cast<LocalUser>().SingleOrDefault(e => e.Id == dbUserResponse.Result?.Id)?.ImageId;
+                var imageId = dbUserResponse.Result?.ImageId;
+                //var imageId = dbUserResponse.RelatedEntities[dbUserResponse.CollectionName].Cast<LocalUser>().SingleOrDefault(e => e.Id == dbUserResponse.Result?.Id)?.ImageId;
                 if (imageId != null)
                 {
                     // Get the bytes
@@ -385,16 +386,16 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            var result = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "local-users");
+            var result = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "local-users");
 
             // This gives every user the ability to view their Local-User object
-            if (level == PermissionLevel.Read)
+            if (action == Constants.Read)
             {
                 var readMyUser = new AbstractPermission
                 {
-                    Level = "Read",
+                    Action = "Read",
                     Criteria = "Id eq me",
                     ViewId = "local-users"
                 };

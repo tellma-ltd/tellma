@@ -57,7 +57,7 @@ namespace BSharp.Controllers
         public async Task<ActionResult<GetEntityResponse<Settings>>> Get([FromQuery] GetByIdArguments args)
         {
             // Authorized access (Criteria are not supported here)
-            var readPermissions = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, PermissionLevel.Read, "settings");
+            var readPermissions = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, Constants.Read, "settings");
             if (!readPermissions.Any())
             {
                 return StatusCode(403);
@@ -82,7 +82,7 @@ namespace BSharp.Controllers
         public async Task<ActionResult<SaveSettingsResponse>> Save([FromBody] SettingsForSave settingsForSave, [FromQuery] SaveArguments args)
         {
             // Authorized access (Criteria are not supported here)
-            var updatePermissions = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, PermissionLevel.Update, "settings");
+            var updatePermissions = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, Constants.Update, "settings");
             if (!updatePermissions.Any())
             {
                 return StatusCode(403);

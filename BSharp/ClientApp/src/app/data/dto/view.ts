@@ -9,9 +9,18 @@ export class ViewForSave<TPermission = PermissionForSave> extends DtoForSaveKeyB
 export class View extends ViewForSave<Permission> {
     Name: string;
     Name2: string;
+    Name3: string;
     Code: string;
     IsActive: boolean;
-    AllowedPermissionLevels: ('Read' | 'Update' | 'Create' | 'ReadCreate' | 'Sign')[];
+    Actions: ViewAction[];
+    // AllowedPermissionLevels: ('Read' | 'Update' | 'Create' | 'ReadCreate' | 'Sign')[];
+}
+
+export class ViewAction extends DtoForSaveKeyBase {
+    ViewId: string;
+    Action: string;
+    SupportsCriteria: boolean;
+    SupportsMask: boolean;
 }
 
 export function Views_DoNotApplyPermissions(stale: View, fresh: View): View {

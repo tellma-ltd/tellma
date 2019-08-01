@@ -9,7 +9,7 @@ namespace BSharp.Controllers.Misc
     {
         public string ViewId { get; set; }
 
-        public string Level { get; set; }
+        public string Action { get; set; }
 
         public string Criteria { get; set; }
 

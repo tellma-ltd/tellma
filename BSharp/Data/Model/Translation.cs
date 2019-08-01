@@ -352,14 +352,17 @@ namespace BSharp.Data.Model
             En(Constants.Shared, "Permission_Role", "Role"),
             Ar(Constants.Shared, "Permission_Role", "الدور"),
 
-            En(Constants.Shared, "Permission_Level", "Level"),
-            Ar(Constants.Shared, "Permission_Level", "الدرجة"),
+            En(Constants.Shared, "Permission_Action", "Action"),
+            Ar(Constants.Shared, "Permission_Action", "نشاط"),
 
             En(Constants.Shared, "Permission_Read", "Read"),
             Ar(Constants.Shared, "Permission_Read", "اطلاع"),
 
             En(Constants.Shared, "Permission_Update", "Update"),
             Ar(Constants.Shared, "Permission_Update", "تعديل"),
+
+            En(Constants.Shared, "Permission_IsActive", "Activate/Deactivate"),
+            Ar(Constants.Shared, "Permission_IsActive", "تنشيط - إيقاف النشاط"),
 
             En(Constants.Shared, "Permission_Create", "Create"),
             Ar(Constants.Shared, "Permission_Create", "إنشاء"),

@@ -66,13 +66,13 @@ namespace BSharp.IntegrationTests.Scenario_01
                     {
                         EntityState = "Inserted",
                         ViewId = "individuals",
-                        Level = "Read"
+                        Action = "Read"
                     },
                     new PermissionForSave
                     {
                         EntityState = "Inserted",
                         ViewId = "organizations",
-                        Level = "Update"
+                        Action = "Update"
                     }
                 },
                 Members = new List<RoleMembershipForSave>
@@ -110,13 +110,13 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Permissions,
                     p =>
                     {
-                        Assert.Equal(dtoForSave.Permissions[0].Level, p.Level);
+                        Assert.Equal(dtoForSave.Permissions[0].Action, p.Action);
                         Assert.Equal(dtoForSave.Permissions[0].ViewId, p.ViewId);
                         Assert.NotNull(p.Id);
                     },
                     p =>
                     {
-                        Assert.Equal(dtoForSave.Permissions[1].Level, p.Level);
+                        Assert.Equal(dtoForSave.Permissions[1].Action, p.Action);
                         Assert.Equal(dtoForSave.Permissions[1].ViewId, p.ViewId);
                         Assert.NotNull(p.Id);
                     }
@@ -159,13 +159,13 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Permissions,
                     p =>
                     {
-                        Assert.Equal(entity.Permissions[0].Level, p.Level);
+                        Assert.Equal(entity.Permissions[0].Action, p.Action);
                         Assert.Equal(entity.Permissions[0].ViewId, p.ViewId);
                         Assert.NotNull(p.Id);
                     },
                     p =>
                     {
-                        Assert.Equal(entity.Permissions[1].Level, p.Level);
+                        Assert.Equal(entity.Permissions[1].Action, p.Action);
                         Assert.Equal(entity.Permissions[1].ViewId, p.ViewId);
                         Assert.NotNull(p.Id);
                     }
@@ -200,7 +200,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                     {
                         EntityState = "Inserted",
                         ViewId = "DoesntExist", // Doesn't exist
-                        Level = "Read"
+                        Action = "Read"
                     }
                 }
             };
@@ -236,7 +236,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Modify it slightly
             dto.EntityState = "Updated";
-            dto.Permissions[0].Level = "Create";
+            dto.Permissions[0].Action = "Create";
             dto.Permissions[0].EntityState = "Updated";
             dto.Permissions[1].EntityState = "Deleted";
 
@@ -257,7 +257,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Collection(dto2.Permissions,
                     p =>
                     {
-                        Assert.Equal(dto.Permissions[0].Level, p.Level);
+                        Assert.Equal(dto.Permissions[0].Action, p.Action);
                         Assert.Equal(dto.Permissions[0].ViewId, p.ViewId);
                     }
                 );

@@ -70,12 +70,12 @@ namespace BSharp.Controllers
             return query;
         }
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
             // Cultures are always readable for all
             IEnumerable<AbstractPermission> result = new List<AbstractPermission>
             {
-                new AbstractPermission { ViewId = "cultures", Level = Constants.Update }
+                new AbstractPermission { ViewId = "cultures", Action = Constants.Update }
             };
 
             return Task.FromResult(result);

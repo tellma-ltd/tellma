@@ -114,9 +114,9 @@ MERGE INTO [dbo].[IfrsConcepts] AS t
             }
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "ifrs-notes");
+            return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "ifrs-notes");
         }
         
         protected override DbContext GetDbContext()

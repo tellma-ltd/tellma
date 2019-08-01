@@ -124,9 +124,9 @@ MERGE INTO [dbo].[ProductCategories] AS t
             }
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(PermissionLevel level)
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, level, "product-categories");
+            return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "product-categories");
         }
 
         protected override DbContext GetDbContext()

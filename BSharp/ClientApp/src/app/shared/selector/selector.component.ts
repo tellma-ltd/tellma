@@ -34,7 +34,9 @@ export class SelectorComponent implements ControlValueAccessor {
   writeValue(v: any): void {
 
     v = v || '';
-    this.selector.nativeElement.value = v; // Format
+    if (this.selector.nativeElement.value !== v) {
+      this.selector.nativeElement.value = v; // Format
+    }
   }
 
   registerOnChange(fn: (val: any) => void): void {
@@ -49,4 +51,8 @@ export class SelectorComponent implements ControlValueAccessor {
     this.isDisabled = isDisabled;
   }
 
+  public trackByFn(_: number, item: { name: string, value: any }) {
+    // Might cause problems if we supply a new list with an item having the same value but a different name
+    return item.value;
+  }
 }

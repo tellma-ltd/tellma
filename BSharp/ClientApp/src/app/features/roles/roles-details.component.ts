@@ -3,11 +3,12 @@ import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Role, RoleForSave } from '~/app/data/dto/role';
-import { Permission, Permission_Level } from '~/app/data/dto/permission';
+import { Permission, Permission_Level as Permission_Action } from '~/app/data/dto/permission';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
+import { View } from '~/app/data/dto/view';
 
 @Component({
   selector: 'b-roles-details',
@@ -25,11 +26,11 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   @Input()
   public showIsPublic = true;
 
-  private _permissionLevelChoices: { [allowedLevels: string]: { name: string, value: any }[] } = {};
+  private _permissionActionChoices: { [viewId: string]: { name: string, value: any }[] } = {};
   private notifyDestruct$ = new Subject<void>();
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Permissions/View,Signatures/View,Members/User';
+  public expand = 'Permissions/View/Actions,Members/User';
 
   create = () => {
     const result = new RoleForSave();
@@ -84,25 +85,81 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     this.rolesApi = this.api.rolesApi(this.notifyDestruct$);
   }
 
-  permissionLevelChoices(item: Permission): { name: string, value: any }[] {
-    // Returns the permission levels only permitted by the specified view
-    const view = this.ws.get('View', item.ViewId);
-    const allowedLevels = view ? view.AllowedPermissionLevels : '';
-    if (!this._permissionLevelChoices[allowedLevels]) {
-      this._permissionLevelChoices[allowedLevels] = Object.keys(Permission_Level)
-        .filter(key => key !== 'Sign' && allowedLevels.indexOf(key) !== -1)
-        .map(key => ({ name: Permission_Level[key], value: key }));
+  permissionActionChoices(item: Permission): { name: string, value: any }[] {
+    if (!item.ViewId) {
+      return [];
     }
 
-    return this._permissionLevelChoices[allowedLevels];
+    // Returns the permission actions only permitted by the specified view
+    if (!this._permissionActionChoices[item.ViewId]) {
+      const view = <View>this.ws.get('View', item.ViewId);
+      if (!!view && !!view.Actions) {
+        this._permissionActionChoices[item.ViewId] =
+        view.Actions.map(e => ({ name: Permission_Action[e.Action], value: e.Action })).concat([{ value: 'All', name: 'View_All' }]);
+      } else {
+        this._permissionActionChoices[item.ViewId] = [];
+      }
+    }
+
+    return this._permissionActionChoices[item.ViewId];
   }
 
-  public permissionLevelLookup(value: string): string {
+  public permissionActionLookup(value: string): string {
     if (!value) {
       return '';
     }
 
-    return Permission_Level[value];
+    if (value === 'All') {
+      return 'View_All';
+    }
+
+    return Permission_Action[value];
+  }
+
+  public disableCriteria(viewId: string, action: string) {
+    // TODO cache this
+    if (!viewId || !action) {
+      return true;
+    }
+    const view = <View>this.ws.get('View', viewId);
+    if (!!view && !!view.Actions) {
+      const viewAction = view.Actions.find(e => e.Action === action);
+      return !(viewAction && viewAction.SupportsCriteria);
+    } else {
+      return true;
+    }
+  }
+
+  public disableMask(viewId: string, action: string) {
+    // TODO cache this
+    if (!viewId || !action) {
+      return true;
+    }
+    const view = <View>this.ws.get('View', viewId);
+    if (!!view && !!view.Actions) {
+      const viewAction = view.Actions.find(e => e.Action === action);
+      return !(viewAction && viewAction.SupportsMask);
+    } else {
+      return true;
+    }
+  }
+
+  public onPermissionChanged(item: Permission) {
+    // Here we clear away fields that are not compatible with other field values
+    const choices = this.permissionActionChoices(item);
+    if (choices.length === 1) {
+      item.Action = choices[0].value;
+    } else if (choices.every(e => e.value !== item.Action)) {
+      item.Action = null;
+    }
+
+    if (this.disableMask(item.ViewId, item.Action)) {
+      item.Mask = null;
+    }
+
+    if (this.disableCriteria(item.ViewId, item.Action)) {
+      item.Criteria = null;
+    }
   }
 
   public onActivate = (model: Role): void => {

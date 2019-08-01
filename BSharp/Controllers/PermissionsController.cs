@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -60,14 +61,14 @@ namespace BSharp.Controllers
                 var allPermissions = await _db.AbstractPermissions.FromSql($@"
     DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-    SELECT ViewId, Criteria, Level, Mask 
+    SELECT ViewId, Criteria, Level As Action, Mask 
     FROM [dbo].[Permissions] P
     JOIN [dbo].[Roles] R ON P.RoleId = R.Id
     JOIN [dbo].[RoleMemberships] RM ON R.Id = RM.RoleId
     WHERE R.IsActive = 1 
     AND RM.UserId = @UserId
     UNION
-    SELECT ViewId, Criteria, Level, Mask 
+    SELECT ViewId, Criteria, Level As Action, Mask 
     FROM [dbo].[Permissions] P
     JOIN [dbo].[Roles] R ON P.RoleId = R.Id
     WHERE R.IsPublic = 1 
@@ -79,39 +80,9 @@ namespace BSharp.Controllers
                 foreach (var gViewIds in allPermissions.GroupBy(e => e.ViewId))
                 {
                     string viewId = gViewIds.Key;
-                    var gLevels = gViewIds.GroupBy(e => e.Level);
-                    var viewPermissions = new ViewPermissionsForClient();
-                    foreach (var gLevel in gLevels)
-                    {
-                        var level = gLevel.Key;
-                        if (level == Constants.Read)
-                        {
-                            viewPermissions.Read = true;
-                        }
+                    Dictionary<string, bool> viewActions = gViewIds.GroupBy(e => e.Action).ToDictionary(g => g.Key, g => true);
 
-                        if (level == Constants.Create)
-                        {
-                            viewPermissions.Create = true;
-                        }
-
-                        if (level == Constants.ReadCreate)
-                        {
-                            viewPermissions.Read = true;
-                            viewPermissions.Create = true;
-                        }
-
-                        if (level == Constants.Update)
-                        {
-                            viewPermissions.Update = true;
-                        }
-
-                        if (level == Constants.Sign)
-                        {
-                            viewPermissions.Sign = true;
-                        }
-                    }
-
-                    permissions[viewId] = viewPermissions;
+                    permissions[viewId] = viewActions;
                 }
 
                 // Tag the permissions for client with their current version

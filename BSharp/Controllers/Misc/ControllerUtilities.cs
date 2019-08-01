@@ -168,7 +168,7 @@ namespace BSharp.Controllers.Misc
         /// Passing the view Id "all" to this method will result in an Exception
         /// </summary>
         /// <returns>The list abstract user permissions that pertain to the current user and specified level and view Ids</returns>
-        public static async Task<IEnumerable<AbstractPermission>> GetPermissions(DbQuery<AbstractPermission> q, PermissionLevel level, params string[] viewIds)
+        public static async Task<IEnumerable<AbstractPermission>> GetPermissions(DbQuery<AbstractPermission> q, string action, params string[] viewIds)
         {
             // Validate parameters
             if (q == null)
@@ -198,31 +198,26 @@ namespace BSharp.Controllers.Misc
                 SqlDbType = SqlDbType.Structured
             };
 
+            var actionParameter = new SqlParameter("Action", action);
+
             // Prepare the WHERE clause that corresponds to the permission level
             string levelWhereClause;
-            switch (level)
+            switch (action)
             {
-                case PermissionLevel.Read:
-                    levelWhereClause = $"E.Level LIKE '{Constants.Read}%' OR E.Level = '{Constants.Update}' OR E.Level = '{Constants.Sign}'";
+                case Constants.Read:
+                    levelWhereClause = "";
                     break;
-                case PermissionLevel.Update:
-                    levelWhereClause = $"E.Level = '{Constants.Update}' OR E.Level = '{Constants.Sign}'";
-                    break;
-                case PermissionLevel.Create:
-                    levelWhereClause = $"E.Level LIKE '%{Constants.Read}'";
-                    break;
-                case PermissionLevel.Sign:
-                    levelWhereClause = $"E.Level = '{Constants.Sign}'";
-                    break;
+
                 default:
-                    throw new Exception("Unhandled PermissionLevel enum value"); // Programmer mistake
+                    levelWhereClause = $"WHERE E.Action = @Action OR E.Action = 'All'";
+                    break;
             }
 
             // Retrieve the permissions
             // Note: There is another query similiar to this one in PermissionsController
             var result = await q.FromSql($@"
 SELECT * FROM (
-    SELECT ViewId, Criteria, Mask, Level 
+    SELECT ViewId, Criteria, Mask, Level As Action 
     FROM [dbo].[Permissions] P
     JOIN [dbo].[Roles] R ON P.RoleId = R.Id
     JOIN [dbo].[RoleMemberships] RM ON R.Id = RM.RoleId
@@ -230,14 +225,14 @@ SELECT * FROM (
     AND RM.UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId')) 
     AND P.ViewId IN (SELECT Code FROM @ViewIds)
     UNION
-    SELECT ViewId, Criteria, Mask, Level 
+    SELECT ViewId, Criteria, Mask, Level As Action 
     FROM [dbo].[Permissions] P
     JOIN [dbo].[Roles] R ON P.RoleId = R.Id
     WHERE R.IsPublic = 1 
     AND R.IsActive = 1
     AND P.ViewId IN (SELECT Code FROM @ViewIds)
-) AS E WHERE {levelWhereClause}
-", viewIdsTvp).ToListAsync();
+) AS E {levelWhereClause}
+", actionParameter, viewIdsTvp).ToListAsync();
 
             return result;
         }
@@ -337,12 +332,12 @@ SELECT * FROM (
                     case nameof(MeasurementUnit):
                         return "(SELECT * FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')";
 
-                        // Temporary TODO: remove
+                    // Temporary TODO: remove
                     case nameof(MeasurementUnitFact):
                         return "(SELECT [TenantId],[Name],[Name2],[Code],[UnitType],[UnitAmount],[BaseAmount],[IsActive],[CreatedAt],[CreatedById],[ModifiedAt],[ModifiedById] FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')";
 
                     case nameof(Permission):
-                        return "(SELECT * FROM [dbo].[Permissions] WHERE Level <> 'Sign')";
+                        return "(SELECT *, [Level] As [Action] FROM [dbo].[Permissions] WHERE Level <> 'Sign')"; // TODO fix the Level column
 
                     case nameof(RequiredSignature):
                         return "(SELECT * FROM [dbo].[Permissions] WHERE Level = 'Sign')";
@@ -374,36 +369,99 @@ FROM [dbo].[ProductCategories] As [Q])";
 FROM [dbo].[IfrsConcepts] As [C] JOIN [dbo].[IfrsNotes] As [N] ON [C].[Id] = [N].[Id])";
 
                     case nameof(View):
+                        var builtInValuesCollection = _builtInViews.Select(e => $"('{e.Id}', {localize(e.Name)})");
+                        var builtInValuesString = builtInValuesCollection.Aggregate((s1, s2) => $@"{s1},
+{s2}");
+
                         return $@"(SELECT
  V.[Id], 
  V.Name AS [Name], 
  V.Name2 AS [Name2], 
- -- V.Name3 AS [Name3], 
+ V.Name3 AS [Name3], 
  V.[Id] AS [Code], 
- CASE WHEN V.[Id] = 'all' THEN CAST(1 AS BIT) ELSE IsNULL(T.[IsActive], CAST(0 AS BIT)) END AS [IsActive], 
- V.[AllowedPermissionLevels], 
+ CASE WHEN V.[Id] = 'all' THEN CAST(1 AS BIT) ELSE IsNULL(T.[IsActive], CAST(0 AS BIT)) END AS [IsActive]
+FROM 
+  (
+  VALUES
+    {builtInValuesString}
+  ) 
+AS V ([Id], [Name], [Name2], [Name3])
+LEFT JOIN [dbo].[Views] AS T ON V.Id = T.Id)";
+
+                    case nameof(ViewAction):
+
+                        // This takes the original list and transforms it into a friendly format, adding the very common "Read" and "Update" permissions if they are needed
+                        var builtInValueActionsCollections = _builtInViews.SelectMany(x =>
+                             x.Levels.Select(y => new { Id = $"{x.Id}|{y.Action}", ViewId = x.Id, y.Action, SupportsCriteria = y.Criteria, SupportsMask = false })
+                            .Concat(Enumerable.Repeat(new { Id = $"{x.Id}|{Constants.Update}", ViewId = x.Id, Action = Constants.Update, SupportsCriteria = true, SupportsMask = true }, x.Update ? 1 : 0))
+                            .Concat(Enumerable.Repeat(new { Id = $"{x.Id}|{Constants.Read}", ViewId = x.Id, Action = Constants.Read, SupportsCriteria = true, SupportsMask = true }, x.Read ? 1 : 0))
+                        )
+                        .Select(e => $"('{e.Id}', '{e.ViewId}', '{e.Action}', {(e.SupportsCriteria ? "1" : "0")}, {(e.SupportsMask ? "1" : "0")})");
+
+                        var builtInValueActionsString = builtInValueActionsCollections.Aggregate((s1, s2) => $@"{s1},
+{s2}");
+
+                        return $@"(SELECT
+ [V].[Id], 
+ [V].[ViewId] AS [ViewId], 
+ [V].[Action] AS [Action], 
  CAST(V.[SupportsCriteria] AS BIT) AS [SupportsCriteria], 
  CAST(V.[SupportsMask] AS BIT) AS [SupportsMask]
 FROM 
   (
   VALUES
-    ('all', {localize("View_All")}, 'ReadUpdate', 0, 0),
-    ('measurement-units', {localize("MeasurementUnits")}, 'ReadUpdate', 1, 1),
-    ('roles', {localize("Roles")}, 'ReadUpdate',  1, 1),
-    ('local-users', {localize("Users")}, 'ReadUpdate',  1, 1),
-    ('views', {localize("Views")}, 'ReadUpdate',  1, 1),
-    ('individuals', {localize("Individuals")}, 'ReadUpdate', 1, 1),
-    ('organizations', {localize("Organizations")}, 'ReadUpdate', 1, 1),
-    ('ifrs-notes', {localize("IfrsNotes")}, 'Read', 1, 1),
-    ('product-categories', {localize("ProductCategories")}, 'ReadUpdate', 1, 1),
-	('settings', {localize("Settings")}, 'ReadUpdate', 0, 0)
+    {builtInValueActionsString}
   ) 
-AS V ([Id], [Name], [Name2], [Name3], [AllowedPermissionLevels], [SupportsCriteria], [SupportsMask])
-LEFT JOIN [dbo].[Views] AS T ON V.Id = T.Id)";
+AS [V] ([Id], [ViewId], [Action], [SupportsCriteria], [SupportsMask])
+LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)";
+
                 }
 
                 return null;
             };
         }
+
+        private static readonly ViewInfo[] _builtInViews = new ViewInfo[]
+        {
+            new ViewInfo { Id = "all", Name = "View_All", Levels = new LevelInfo[] { Li("Read", false), Li("Update", false) } },
+            new ViewInfo { Id = "measurement-units", Name = "MeasurementUnits", Read = true, Update = true , Levels = new LevelInfo[] { Li("IsActive") } },
+            new ViewInfo { Id = "roles", Name = "Roles", Read = true, Update = true, Levels = new LevelInfo[] { Li("IsActive") } },
+            new ViewInfo { Id = "local-users", Name = "Users", Read = true, Update = true, Levels = new LevelInfo[] { Li("IsActive"), Li("ResendInvitationEmail") } },
+            new ViewInfo { Id = "views", Name = "Views", Read = true, Update = true, Levels = new LevelInfo[] { Li("IsActive") } },
+            new ViewInfo { Id = "ifrs-notes", Name = "IfrsNotes", Read = true, Levels = new LevelInfo[] { Li("IsActive") } },
+            new ViewInfo { Id = "product-categories", Name = "ProductCategories", Read = true, Update = true, Levels = new LevelInfo[] { Li("IsActive") } },
+            new ViewInfo { Id = "settings", Name = "Settings", Levels = new LevelInfo[] { Li("Read", false), Li("Update", false) } },
+        };
+
+        private static LevelInfo Li(string name, bool criteria = true)
+        {
+            return new LevelInfo { Action = name, Criteria = criteria };
+        }
+    }
+
+    public class ViewInfo
+    {
+        public string Id { get; set; }
+
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Indicates that this view is an endpoint that supports read level, both with Mask and Criteria: OData style
+        /// </summary>
+        public bool Read { get; set; }
+
+        /// <summary>
+        /// Indicates that this view is an endpoint that supports read level, both with Mask and Criteria: OData style
+        /// </summary>
+        public bool Update { get; set; }
+
+        public LevelInfo[] Levels { get; set; }
+    }
+
+    public class LevelInfo
+    {
+        public string Action { get; set; }
+
+        public bool Criteria { get; set; }
     }
 }

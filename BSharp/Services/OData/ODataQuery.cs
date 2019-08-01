@@ -404,17 +404,13 @@ namespace BSharp.Services.OData
                             segments[fullPath] = flatQuery;
                         }
 
+                        if(previousFullPath != null)
                         {
-                            var flatQuery = segments[fullPath];
-                            if (flatQuery.Expand == null && subPath.Count >= 2) // If there is more than just the collection property, then we add an expand
+                            var flatQuery = segments[previousFullPath];
+                            if (subPath.Count >= 2) // If there is more than just the collection property, then we add an expand
                             {
-                                flatQuery.Expand = new ExpandExpression
-                                {
-                                    new ExpandAtom
-                                    {
-                                        Path = subPath.SkipLast(1).ToArray()
-                                    }
-                                };
+                                flatQuery.Expand = flatQuery.Expand ?? new ExpandExpression();
+                                flatQuery.Expand.Add(new ExpandAtom { Path = subPath.SkipLast(1).ToArray() });
                             }
                         }
                         previousFullPath = fullPath;
