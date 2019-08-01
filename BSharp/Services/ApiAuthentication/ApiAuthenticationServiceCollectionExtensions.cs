@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
             if (string.IsNullOrWhiteSpace(authorityUri))
             {
                 // IF Authority URI is not supplied assume the embedded identity server instance is enabled and used
-                authorityUri = "https://localhost:44339"; // TODO: Make this automatic somehow
+                authorityUri = "https://localhost:44368"; // TODO: Make this automatic somehow
             }
 
             // Add the default scheme for the embedded IdentityServer
