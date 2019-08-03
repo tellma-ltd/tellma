@@ -17,9 +17,6 @@ namespace BSharp.Services.Utilities
         // Permission Levels
         public const string Read = nameof(Read);
         public const string Update = nameof(Update);
-        public const string Create = nameof(Create);
-        public const string ReadCreate = nameof(ReadCreate);
-        public const string Sign = nameof(Sign);
 
         // Caching
         public const string Fresh = "Fresh";

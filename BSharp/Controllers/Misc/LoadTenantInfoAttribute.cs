@@ -7,6 +7,7 @@ using BSharp.Services.Utilities;
 using BSharp.Services.ApiAuthentication;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BSharp.Controllers.Misc
 {
@@ -33,7 +34,7 @@ namespace BSharp.Controllers.Misc
             public void OnResourceExecuting(ResourceExecutingContext context)
             {
                 // (1) Make sure the API caller have provided a tenantId
-                var tenantIdProvider = (ITenantIdProvider)_provider.GetService(typeof(ITenantIdProvider));
+                var tenantIdProvider = _provider.GetRequiredService<ITenantIdProvider>();
                 if (!tenantIdProvider.HasTenantId())
                 {
                     // If there is no tenant Id header cut the pipeline short and return a Forbidden result
@@ -48,7 +49,7 @@ namespace BSharp.Controllers.Misc
                 var appContext = (ApplicationContext)_provider.GetService(typeof(ApplicationContext));
 
                 // Retrieve the TenantUserInfo with help from the DI container
-                var tenantInfoAccessor = (ITenantUserInfoAccessor)_provider.GetService(typeof(ITenantUserInfoAccessor));
+                var tenantInfoAccessor = _provider.GetRequiredService<ITenantUserInfoAccessor>();
                 var tenantInfo = tenantInfoAccessor.GetCurrentInfo();
 
                 if (tenantInfo.UserId == null && tenantInfo.Email == null && tenantInfo.ExternalId == null)
@@ -75,7 +76,7 @@ namespace BSharp.Controllers.Misc
                     // Update external Id in this tenant and in all other tenants where this user is registered
                     appContext.Database.ExecuteSqlCommandAsync($"UPDATE [dbo].[LocalUsers] SET ExternalId = {externalId} WHERE Email = {email}");
 
-                    var adminContext = (AdminContext)_provider.GetService(typeof(AdminContext));
+                    var adminContext = _provider.GetRequiredService<AdminContext>();
                     adminContext.Database.ExecuteSqlCommandAsync($"UPDATE [dbo].[GlobalUsers] SET ExternalId = {externalId} WHERE Email = {email}");
                 }
 

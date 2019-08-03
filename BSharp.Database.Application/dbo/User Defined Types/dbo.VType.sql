@@ -1,0 +1,2 @@
+﻿CREATE TYPE [dbo].[VTYPE]
+	FROM DECIMAL(38, 22);

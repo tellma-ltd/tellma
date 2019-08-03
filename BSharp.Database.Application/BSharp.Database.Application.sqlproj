@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>BSharp.Database.Application</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{bf2096e3-ed24-4ee1-befc-a67c3ffa38b6}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>BSharp</RootNamespace>
+    <AssemblyName>BSharp</AssemblyName>
+    <ModelCollation>1025,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <IncludeSchemaNameInFileName>True</IncludeSchemaNameInFileName>
+    <GenerateCreateScript>True</GenerateCreateScript>
+    <DefaultCollation>Arabic_CI_AS</DefaultCollation>
+    <DefaultFilegroup>PRIMARY</DefaultFilegroup>
+    <CompatibilityMode>150</CompatibilityMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="dbo\" />
+    <Folder Include="dbo\Tables\" />
+    <Folder Include="dbo\Views\" />
+    <Folder Include="dbo\Functions\" />
+    <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="dbo\User Defined Types\" />
+    <Folder Include="Security\" />
+    <Folder Include="Tests" />
+    <Folder Include="Provisioning" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\dbo.Documents.sql" />
+    <Build Include="dbo\Tables\dbo.Agents.sql" />
+    <Build Include="dbo\Tables\dbo.LineTypesSpecifications.sql" />
+    <Build Include="dbo\Tables\dbo.Users.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentAssignments.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentLines.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsAccounts.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsNotes.sql" />
+    <Build Include="dbo\Tables\dbo.Reconciliation.sql" />
+    <Build Include="dbo\Tables\dbo.Resources.sql" />
+    <Build Include="dbo\Tables\dbo.Settings.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentTypes.sql" />
+    <Build Include="dbo\Tables\dbo.MeasurementUnits.sql" />
+    <Build Include="dbo\Tables\dbo.ExchangeRatesHistory.sql" />
+    <Build Include="dbo\Tables\dbo.ResponsibilityCenters.sql" />
+    <Build Include="dbo\Functions\dbo.fn_FunctionalCurrency.sql" />
+    <Build Include="dbo\Functions\dbo.fn_CurrencyExchange.sql" />
+    <Build Include="dbo\Functions\dbo.fi_JournalDetails.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Documents_Validate__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Transactions__Post.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_TrialBalance.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Documents__Assign.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Notes__Update.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_Ifrs.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Accounts__Activate.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ValidationErrorList.sql" />
+    <Build Include="Security\api.sql" />
+    <Build Include="Security\dal.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AgentList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Agents__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IndexedUuidList.sql" />
+    <Build Include="dbo\Tables\dbo.Translations.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_ResponsibilityCenters__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Resources__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_MeasurementUnits_Validate__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_MeasurementUnits__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_MeasurementUnits__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Agents_Validate__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Agents__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_MeasurementUnits__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_MeasurementUnits__Activate.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_ResponsibilityCenters__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_ResponsibilityCenters_Validate__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Settings__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.SettingList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.StringList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_IfrsDisclosureDetails_Validate__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Resources__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Resources_Validate__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DocumentWideLineList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Documents__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Post.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Documents_State__Update.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Operation__SetOperatingSegment.sql" />
+    <Build Include="dbo\Functions\dbo.fe_Responsibility__FirstSibling.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsAccountsIfrsNotes.sql" />
+    <Build Include="dbo\User Defined Types\dbo.VType.sql" />
+    <None Include="Tests\00_TestMain.sql" />
+    <None Include="Tests\01_IfrsConcepts.sql" />
+    <None Include="Tests\02_MeasurementUnits.sql" />
+    <None Include="Tests\03_Operations.sql" />
+    <None Include="Tests\04_Resources.sql" />
+    <None Include="Tests\05_Agents.sql" />
+    <None Include="Tests\05_Places.sql" />
+    <None Include="Tests\10_Documents.sql" />
+    <None Include="Tests\30_HRCycle.sql" />
+    <None Include="Tests\40_PurchasingCycle.sql" />
+    <None Include="Tests\50_ProductionCycle.sql" />
+    <None Include="Tests\60_SalesCycle.sql" />
+    <None Include="Tests\11W_Financing.sql" />
+    <None Include="Tests\TestingToBeCleaned.sql" />
+    <None Include="Provisioning\02_Accounts.sql" />
+    <None Include="Provisioning\04_AccountsNotes.sql" />
+    <None Include="Provisioning\08_MeasurementUnits.sql" />
+    <None Include="Provisioning\012_IfrsNotes.sql" />
+    <PostDeploy Include="Provisioning\00_Main.sql" />
+    <None Include="Provisioning\05_LineTypeSpecifications.sql" />
+    <None Include="Provisioning\06_DocumentTypes.sql" />
+    <Build Include="Security\bll.sql" />
+    <Build Include="dbo\Tables\dbo.LineTypes.sql" />
+    <Build Include="dbo\Functions\dbo.fe_EndDateTime__StartDateTime_Frequency_Duration.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.ui_Documents_Lines_Entries__Json.sql" />
+    <None Include="dbo\Stored Procedures\dbo.bll_Documents__Fill.sql" />
+    <Build Include="dbo\Functions\dbo.fw_Documents__Json.sql" />
+    <Build Include="dbo\Functions\dbo.fw_TransactionLines__Json.sql" />
+    <Build Include="dbo\Functions\dbo.fw_TransactionEntries__Json.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DocumentLineTypeList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AccountList.sql" />
+    <Build Include="dbo\Functions\dbo.fn_User__Language.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LocalUserList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Documents_Validate__Assign.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Assign.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Unpost.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Documents_Validate__Sign.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Documents__Sign.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Sign.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentSignatures.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Unsign.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Documents__Unsign.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Documents_Validate__Unsign.sql" />
+    <Build Include="dbo\Functions\dbo.fi_MyWorkspace.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentAssignmentsHistory.sql" />
+    <Build Include="dbo\Tables\dbo.Notifications.sql" />
+    <Build Include="dbo\Functions\dbo.fi_MyNotifications.sql" />
+    <Build Include="dbo\Functions\dbo.fi_Document__Assignments.sql" />
+    <Build Include="dbo\Functions\dbo.fi_Document__Signatures.sql" />
+    <Build Include="dbo\Tables\dbo.Roles.sql" />
+    <Build Include="dbo\Tables\dbo.Permissions.sql" />
+    <Build Include="dbo\Tables\dbo.Views.sql" />
+    <Build Include="dbo\User Defined Types\dbo.RoleList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Roles__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Roles_Validate__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Roles__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Roles__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Roles__Activate.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ViewList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Views__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_Views_Validate__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Views__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_Views__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Views__Save.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentLineEntries.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DocumentLineEntryList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_MeasurementUnits__Select.sql" />
+    <Build Include="dbo\Tables\dbo.RoleMemberships.sql" />
+    <Build Include="dbo\Tables\dbo.Accounts.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_RawMaterials.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_RM_FastMovement.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_MerchandiseInTransit.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_FinishedGoods_ResourceBased.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_FinishedGoods_AccountBased.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_ConsumablesServices.sql" />
+    <Build Include="dbo\Tables\dbo.AgentRelations.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_IfrsConcepts__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_IfrsConcepts__Activate.sql" />
+    <Build Include="dbo\Tables\dbo.TemplateLines.sql" />
+    <Build Include="dbo\Views\dbo.Employees.sql" />
+    <Build Include="dbo\Functions\dbo.fi_Agents.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_Accounts__Save.sql" />
+    <Build Include="dbo\Views\dbo.InventoriesFact.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_NegativeInventories.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_SalesDetails.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_SalesSummary.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_Account__Statement.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_AssetRegister.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_BankAccountBalances.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_BankBalances.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__EmploymentIncomeTax.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_PurchasesSummary.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__WitholdingTaxOnPayment.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_Paysheet.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_BankAccount__Statement.sql" />
+    <Build Include="dbo\Tables\dbo.ProductCategories.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ProductCategoryList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_ProductCategories__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_ProductCategories__Save.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsDisclosureDetails.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_IfrsDisclosureDetails__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_IfrsDisclosureDetails__Save.sql" />
+    <Build Include="dbo\Functions\dbo.fi_IfrsDisclosureDetails.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsConcepts.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsDisclosures.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IfrsDisclosureDetailList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_ProductCategories_Validate__Delete.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.adm_Tree__Organize.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_ProductCategories__Delete.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_ProductCategories__Delete.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_ProductCategories_Validate__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_ProductCategories__Select.sql" />
+    <Build Include="dbo\Views\dbo.DocumentLineEntriesDetailsView.sql" />
+    <Build Include="dbo\Views\dbo.AccountsBalancesView.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_ProductCategories__DeleteWithDescendants.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceInstances.sql" />
+    <Build Include="dbo\Views\dbo.TransactionsEntriesSummaryView.sql" />
+    <Build Include="dbo\Functions\dbo.fi_JournalSummary.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DocumentLineList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_DocumentWideLines__Unpivot.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentStatesHistory.sql" />
+    <Build Include="dbo\Tables\dbo.VoucherBooklets.sql" />
+    <Build Include="dbo\Tables\dbo.Workflows.sql" />
+    <Build Include="dbo\Tables\dbo.WorkflowSignatories.sql" />
+    <Build Include="dbo\Tables\dbo.VoucherTypes.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IdWithStateList.sql" />
+    <Build Include="dbo\Tables\dbo.Plans.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceLookup1s.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.rpt_Production__Actual_vs_Planned.sql" />
+    <Build Include="dbo\Functions\dbo.fn_MeasurementUnitRatio.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_ResourceLookups1__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ResourceLookupList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_ResourceLookup1s_Validate__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_ResourceLooup1s__Save.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_ResourceLookup1s__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_ResourceLookup1s__Activate.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceTypes.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_SalesOrderLines__Price.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_SalesOrder__Discount.sql" />
+    <Build Include="dbo\User Defined Types\dbo.UuidList.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_ResourceLookup1s__Delete.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_ResourceLookup1s__Delete.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.api_MeasurementUnits__Delete.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.dal_MeasurementUnits__Delete.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.bll_MeasurementUnits_Validate__Delete.sql" />
+    <Build Include="dbo\Stored Procedures\dbo.OnConnect.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Tests\11M_Financing.sql" />
+    <None Include="Tests\12_ManualMisc.sql" />
+    <None Include="Provisioning\07_AccountSpecifications.sql" />
+    <None Include="BSharp.publish.xml" />
+    <None Include="Provisioning\01_IfrsConcepts.sql" />
+    <None Include="Provisioning\011_IfrsDisclosures.sql" />
+    <None Include="Tests\03_ProductCategories.sql" />
+    <None Include="BSharp.Database.Application.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="BSharp.Database.Application.refactorlog" />
+  </ItemGroup>
+</Project>

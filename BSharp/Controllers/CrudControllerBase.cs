@@ -456,9 +456,10 @@ return the entities
                         throw new UnprocessableEntityException(ModelState);
                     }
 
-                    // Save
+                    // Save and retrieve Ids
                     var ids = await PersistAsync(entities, args);
 
+                    // Use the Ids to retrieve the items
                     EntitiesResponse<TDto> result = null;
                     if((args.ReturnEntities ?? false) && ids != null)
                     {

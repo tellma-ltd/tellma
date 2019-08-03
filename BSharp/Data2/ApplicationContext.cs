@@ -200,8 +200,8 @@ namespace BSharp.Data
         private readonly ITenantIdProvider _tenantIdProvider;
 
         // Constructor
-        public ApplicationContext(IShardResolver shardProvider, ITenantIdProvider tenantIdProvider, IUserProvider userIdProvider, ITenantUserInfoAccessor accessor) :
-            base(CreateDbContextOptions(shardProvider, tenantIdProvider, userIdProvider, accessor))
+        public ApplicationContext(IShardResolver shardResolver, ITenantIdProvider tenantIdProvider, IUserProvider userProvider, ITenantUserInfoAccessor accessor) :
+            base(CreateDbContextOptions(shardResolver, tenantIdProvider, userProvider, accessor))
         {
             _tenantIdProvider = tenantIdProvider;
         }

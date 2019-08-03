@@ -77,7 +77,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Migrations\Application\" />
     <Folder Include="wwwroot\lib\qrcode\" />
   </ItemGroup>
 

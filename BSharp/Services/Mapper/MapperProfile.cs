@@ -23,43 +23,6 @@ namespace BSharp.Services.Mapper
             // here we disabled this behavior, i.e a null maps to a null
             AllowNullCollections = true;
 
-            //// Measurement Units
-            //CreateDtoMap2<MeasurementUnitForQuery, MeasurementUnit>();
-
-            //// Agents
-            //CreateDtoMap2<AgentForQuery, Agent>();
-
-            //// Local Users
-            //CreateDtoMap2<LocalUserForQuery, LocalUser>();
-
-            //// Role Membership
-            //CreateDtoMap2<RoleMembershipForQuery, RoleMembership>();
-
-            //// Roles
-            //CreateDtoMap2<RoleForQuery, Role>();
-
-            //// Permissions
-            //CreateDtoMap2<PermissionForQuery, Permission>();
-
-            //// Views
-            //CreateDtoMap2<ViewForQuery, View>();
-
-            //// Translations
-            //CreateDtoMap2<TranslationForQuery, Translation>();
-
-            //// IFRS Notes
-            //CreateDtoMap2<IfrsNoteForQuery, IfrsNote>();
-
-            //// IFRS Notes
-            //CreateDtoMap2<ProductCategoryForQuery, ProductCategory>();
-
-            //CreateMap<TranslationForSave, M.Translation>()
-            //    .ForMember(e => e.Culture, opt => opt.MapFrom(e => e.Id == null ? null : e.Id.Split(SEPARATOR)[0]))
-            //    .ForMember(e => e.Name, opt => opt.MapFrom(e => e.Id == null ? null : string.Join("|", e.Id.Split(SEPARATOR).Skip(1)) ));
-
-            //CreateDtoMap<M.Translation, Translation>()
-            //    .ForMember(e => e.Id, opt => opt.MapFrom(e => $"{e.Culture}|{e.Name}"));
-
             // Settings
             CreateMap<SettingsForSave, M.Settings>();
             CreateDtoMap<M.Settings, Settings>();
@@ -69,9 +32,6 @@ namespace BSharp.Services.Mapper
             CreateMap<GlobalSettingsForSave, M.GlobalSettings>();
             CreateDtoMap<M.GlobalSettings, Controllers.DTO.GlobalSettings>();
             CreateMap<M.GlobalSettings, GlobalSettingsForClient>();
-
-            //// Cultures
-            //CreateDtoMap2<CultureForQuery, Culture>();
 
             // Tenants
             CreateMap<M.Tenant, TenantForClient>();
