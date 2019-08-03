@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Documents__Unsign]
-	@Documents [dbo].[UuidList] READONLY
+	@Documents [dbo].[IdList] READONLY
 AS
 BEGIN
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();

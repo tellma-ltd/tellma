@@ -7,4 +7,70 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Users]" />
   </Operation>
+  <Operation Name="Move Schema" Key="378623bd-2f5f-40a4-8495-f2ef3097aebf" ChangeDateTime="08/03/2019 17:35:03">
+    <Property Name="ElementName" Value="[dbo].[api_IfrsDisclosureDetails__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0564e55b-d004-4c38-aff3-7f38de748014" ChangeDateTime="08/03/2019 17:35:18">
+    <Property Name="ElementName" Value="[api].[api_IfrsDisclosureDetails__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsDisclosureDetails__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="7114e8ca-64bd-4227-8bf5-186484007b80" ChangeDateTime="08/03/2019 17:36:30">
+    <Property Name="ElementName" Value="[dbo].[api_IfrsConcepts__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="98eae502-1598-4204-8d6b-a859a7a51855" ChangeDateTime="08/03/2019 17:36:52">
+    <Property Name="ElementName" Value="[api].[api_IfrsConcepts__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsConcepts__Activate]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="0bb67fb8-d16a-4e2f-9331-8f9e31571717" ChangeDateTime="08/03/2019 17:37:30">
+    <Property Name="ElementName" Value="[dbo].[dal_IfrsConcepts__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e4f3e8eb-ef54-4fb5-b10d-827d5edf9275" ChangeDateTime="08/03/2019 17:37:42">
+    <Property Name="ElementName" Value="[dal].[dal_IfrsConcepts__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsConcepts__Activate]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="24825a82-476a-474f-82c3-3a37e6e05d8b" ChangeDateTime="08/03/2019 17:38:14">
+    <Property Name="ElementName" Value="[dbo].[dal_IfrsDisclosureDetails__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="badc71ab-ad38-40ba-8986-8d7cd4de59b3" ChangeDateTime="08/03/2019 17:38:25">
+    <Property Name="ElementName" Value="[dal].[dal_IfrsDisclosureDetails__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsDisclosureDetails__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="794e1fa2-183c-4b61-a086-6264bd2ab735" ChangeDateTime="08/03/2019 17:39:29">
+    <Property Name="ElementName" Value="[dbo].[IndexedUuidList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IndexedIdList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="22f8e69d-a799-4cbb-8438-1a736670496c" ChangeDateTime="08/03/2019 17:40:01">
+    <Property Name="ElementName" Value="[dbo].[UuidList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IdList]" />
+  </Operation>
 </Operations>

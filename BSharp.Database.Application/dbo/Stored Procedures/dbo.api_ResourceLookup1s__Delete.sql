@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[api_ResourceLookup1s__Delete]
-	@Ids [dbo].[UuidList] READONLY,
+	@Ids [dbo].[IdList] READONLY,
 	@IsDeleted BIT,
 	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
 AS

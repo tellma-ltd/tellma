@@ -1,5 +1,5 @@
 ﻿BEGIN -- Cleanup & Declarations
-	DECLARE @MeasurementUnitsDTO [dbo].MeasurementUnitList, @MeasurementUnitsIds dbo.[IndexedUuidList];
+	DECLARE @MeasurementUnitsDTO [dbo].MeasurementUnitList, @MeasurementUnitsIds dbo.[IndexedIdList];
 	DECLARE @ETBUnit INT, @USDUnit INT, @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT,
 			@wmoUnit INT, @hrUnit INT, @yrUnit INT, @dayUnit INT, @moUnit INT;
 END

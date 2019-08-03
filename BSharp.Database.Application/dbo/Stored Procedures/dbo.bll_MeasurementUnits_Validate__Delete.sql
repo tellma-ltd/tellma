@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[bll_MeasurementUnits_Validate__Delete]
-	@Ids [dbo].[IndexedUuidList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;

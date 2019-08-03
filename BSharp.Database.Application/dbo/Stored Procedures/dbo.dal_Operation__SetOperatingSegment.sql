@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Operation__SetOperatingSegment]
 	@OperationId INT
 AS
-	DECLARE @Id INT, @Ids [dbo].[UuidList], @NextIds [dbo].[UuidList];
+	DECLARE @Id INT, @Ids [dbo].[IdList], @NextIds [dbo].[IdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 

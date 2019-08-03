@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[api_IfrsDisclosureDetails__Save]
+﻿CREATE PROCEDURE [api].[IfrsDisclosureDetails__Save]
 	@Entities [IfrsDisclosureDetailList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -12,6 +12,6 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 	
-	EXEC [dbo].[dal_IfrsDisclosureDetails__Save]
+	EXEC [dal].[IfrsDisclosureDetails__Save]
 		@Entities = @Entities;
 END;

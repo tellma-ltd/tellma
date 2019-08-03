@@ -4,7 +4,7 @@
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
-	DECLARE @Ids [dbo].[UuidList];
+	DECLARE @Ids [dbo].[IdList];
 	DECLARE @ResultJson NVARCHAR(MAX);
 	DECLARE @Lines dbo.[DocumentLineList];
 	DECLARE @Entries dbo.DocumentLineEntryList;

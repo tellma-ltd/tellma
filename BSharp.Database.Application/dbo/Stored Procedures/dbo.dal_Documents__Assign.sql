@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Documents__Assign]
-	@Documents [dbo].[UuidList] READONLY,
+	@Documents [dbo].[IdList] READONLY,
 	@AssigneeId INT,
 	@Comment NVARCHAR(1024)
 AS

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[api_Documents__Unsign]
-	@Documents [dbo].[UuidList] READONLY,
+	@Documents [dbo].[IdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN

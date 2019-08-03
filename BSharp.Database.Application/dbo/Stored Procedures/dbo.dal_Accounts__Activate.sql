@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Accounts__Activate] -- [dbo].[dal_Accounts__Activate] @Accounts = N'CashOnHand', @IsActive = 0
-	@Ids dbo.[UuidList] READONLY,
+	@Ids dbo.[IdList] READONLY,
 	@IsActive bit
 AS
 BEGIN

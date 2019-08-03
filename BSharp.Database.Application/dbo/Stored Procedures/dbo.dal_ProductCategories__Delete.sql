@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[dal_ProductCategories__Delete]
-	@Entities [UuidList] READONLY
+	@Entities [IdList] READONLY
 AS
 	IF NOT EXISTS(SELECT * FROM @Entities) RETURN;
 

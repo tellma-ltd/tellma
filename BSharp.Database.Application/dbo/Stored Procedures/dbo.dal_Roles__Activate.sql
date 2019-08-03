@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Roles__Activate]
-	@Ids [dbo].[UuidList] READONLY,
+	@Ids [dbo].[IdList] READONLY,
 	@IsActive bit
 AS
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();

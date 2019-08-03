@@ -17,7 +17,7 @@ INSERT INTO @IfrsDisclosureDetailsDTO
 --(N'TaxIdentificationNumber', N'123456789'),
 --(N'FunctionalCurrencyCode', N'ETB');
 
-EXEC [dbo].[api_IfrsDisclosureDetails__Save]
+EXEC [api].[IfrsDisclosureDetails__Save]
 	@Entities = @IfrsDisclosureDetailsDTO,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
 
@@ -40,7 +40,7 @@ DELETE @IfrsDisclosureDetailsDTO WHERE [IsDirty] = 0
 INSERT INTO @IfrsDisclosureDetailsDTO ([IfrsDisclosureId],[Value], [ValidSince]) Values
 (N'AddressOfRegisteredOfficeOfEntity', N'Addis Abab, N/S/L, Woreda:01, House:New', N'2018.08.01');
 
-EXEC [dbo].[api_IfrsDisclosureDetails__Save]
+EXEC [api].[IfrsDisclosureDetails__Save]
 	@Entities = @IfrsDisclosureDetailsDTO,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
 

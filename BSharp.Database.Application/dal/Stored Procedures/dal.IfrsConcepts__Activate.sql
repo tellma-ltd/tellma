@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[dal_IfrsConcepts__Activate]
+﻿CREATE PROCEDURE [dal].[IfrsConcepts__Activate]
 	@Ids [dbo].[StringList] READONLY,
 	@IsActive bit
 AS

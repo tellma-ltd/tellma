@@ -1,16 +1,8 @@
 ﻿DECLARE @IfrsConcepts AS TABLE (
-	[Pk]				INT IDENTITY(1,1) PRIMARY KEY,
-	[Id]				NVARCHAR (255)		,--NONUNIQUE INDEX IX_@IfrsConcepts__Id,		-- Ifrs Concept
-	[IfrsType]			NVARCHAR (255)		DEFAULT (N'Regulatory') NOT NULL, -- N'Amendment', N'Extension', N'Regulatory'
-	[IsActive]			BIT					NOT NULL DEFAULT 1,
-	[Label]				NVARCHAR (1024)		NOT NULL,
-	[Label2]			NVARCHAR (1024),
-	[Label3]			NVARCHAR (1024),
-	[Documentation]		NVARCHAR (MAX),
-	[Documentation2]	NVARCHAR (MAX),
-	[Documentation3]	NVARCHAR (MAX),
-	[EffectiveDate]		DATETIME2(7)		NOT NULL DEFAULT('0001-01-01 00:00:00'),
-	[ExpiryDate]		DATETIME2(7)		NOT NULL DEFAULT('9999-12-31 23:59:59')
+	[Id]				NVARCHAR (255),
+	[IfrsType]			NVARCHAR (255)		DEFAULT (N'Regulatory'), -- N'Amendment', N'Extension', N'Regulatory'
+	[Label]				NVARCHAR (1024),
+	[Documentation]		NVARCHAR (2048)
 );
 BEGIN-- Ifrs Concepts Extension
 	INSERT INTO @IfrsConcepts([IfrsType], [Id], [Label], [Documentation]) VALUES 
@@ -201,7 +193,8 @@ BEGIN -- Ifrs Concepts list
 
 
 
-	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'Revenue' ,N'Revenue', N'Expiry date 2020-01-01: The income arising in the course of an entity''s ordinary activities. Income is increases in economic benefits during the accounting period in the form of inflows or enhancements of assets or decreases of liabilities that result in an increase in equity, other than those relating to contributions from equity participants. Effective 2020-01-01: The income arising in the course of an entity''s ordinary activities. Income is increases in assets, or decreases in liabilities, that result in increases in equity, other than those relating to contributions from holders of equity claims.');
+	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'Revenue' ,N'Revenue', N'Expiry date 2020-01-01: The income arising in the course of an entity''s ordinary activities. Income is increases in economic benefits during the accounting period in the form of inflows or enhancements of assets or decreases of liabilities that result in an increase in equity, other than those relating to contributions from equity participants.');
+	--Effective 2020-01-01: The income arising in the course of an entity''s ordinary activities. Income is increases in assets, or decreases in liabilities, that result in increases in equity, other than those relating to contributions from holders of equity claims.');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'InterestRevenueCalculatedUsingEffectiveInterestMethod' ,N'Interest revenue calculated using effective interest method', N'The amount of interest revenue calculated using the effective interest method.');
 	--Effective interest method is the method that is used in the calculation of the amortised cost of a financial asset or a financial liability and in the allocation and recognition of the interest revenue or interest expense in profit or loss over the relevant period. [Refer: Revenue]');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'InsuranceRevenue' ,N'Insurance revenue', N'The amount of revenue arising from the groups of insurance contracts issued. Insurance revenue shall depict the provision of coverage and other services arising from the group of insurance contracts at an amount that reflects the consideration to which the entity expects to be entitled in exchange for those services. [Refer: Insurance contracts issued [member]; Revenue]');
@@ -7304,18 +7297,24 @@ BEGIN -- Ifrs Concepts list
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'AllYearsOfInsuranceClaimMember' ,N'All years of insurance claim [member]', N'This member stands for all years of the insurance claims. It also represents the standard value for the ''Years of insurance claim'' axis if no other member is used.');
 END -- Ifrs Concept list
 
-SELECT COUNT(*) TempIFRSConceptsCount FROM @IfrsConcepts;
+DECLARE @DistinctIfrsConcepts AS TABLE (
+	[Pk]				INT IDENTITY(1,1) PRIMARY KEY,
+	[Id]				NVARCHAR (255)		UNIQUE,
+	[IfrsType]			NVARCHAR (255)		DEFAULT (N'Regulatory') NOT NULL, -- N'Amendment', N'Extension', N'Regulatory'
+	[IsActive]			BIT					NOT NULL DEFAULT 1,
+	[Label]				NVARCHAR (1024)		NOT NULL,
+	[Documentation]		NVARCHAR (2048),
+	[EffectiveDate]		DATETIME2(7)		NOT NULL DEFAULT('0001-01-01 00:00:00'),
+	[ExpiryDate]		DATETIME2(7)		NOT NULL DEFAULT('9999-12-31 23:59:59')
+);
 
-IF (SELECT COUNT(*) FROM [dbo].[IfrsConcepts]) 
-	<> (SELECT COUNT(DISTINCT [Id]) FROM @IfrsConcepts)
+INSERT INTO  @DistinctIfrsConcepts([Id], [IfrsType], [Label], [Documentation])
+SELECT DISTINCT [Id], [IfrsType], [Label], [Documentation] FROM @IfrsConcepts;
+
 MERGE [dbo].[IfrsConcepts] AS t
 USING (
-	SELECT [Id], [IfrsType], [IsActive], [Label], [Label2], [Label3],
-	[Documentation], [Documentation2], [Documentation3], [EffectiveDate], [ExpiryDate]
-	FROM @IfrsConcepts
-	WHERE [PK] IN ( -- choosing the first occurrence of a concept
-		SELECT MIN(PK) FROM @IfrsConcepts GROUP BY [Id]
-		)
+	SELECT [Id], [IfrsType], [Label], [Documentation]
+	FROM @DistinctIfrsConcepts
 ) AS s
 ON (t.[Id] = s.[Id])
 WHEN MATCHED AND
@@ -7331,7 +7330,5 @@ UPDATE SET
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
-	INSERT ([Id], [Label], [Documentation], [Documentation2], [Documentation3], [EffectiveDate], [ExpiryDate])
-	VALUES(s.[Id], s.[Label], s.[Documentation], s.[Documentation2], s.[Documentation3], s.[EffectiveDate], s.[ExpiryDate]);
-
-SELECT COUNT(*) DbIFRSConceptsCount FROM IfrsConcepts;
+	INSERT ([Id], [IfrsType], [Label], [Documentation])
+	VALUES(s.[Id], s.[IfrsType], s.[Label], s.[Documentation]);

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[api_Transactions__Post]
-	@Entities [dbo].[UuidList] READONLY,
+	@Entities [dbo].[IdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN

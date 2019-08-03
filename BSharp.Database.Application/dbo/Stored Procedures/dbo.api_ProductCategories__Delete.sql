@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[api_ProductCategories__Delete]
-	@Entities [UuidList] READONLY,
+	@Entities [IdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN

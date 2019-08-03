@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[bll_ProductCategories_Validate__Delete]
-	@Entities [IndexedUuidList] READONLY,
+	@Entities [IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;

@@ -5,7 +5,7 @@
 	@Entries [dbo].DocumentLineEntryList READONLY
 AS
 BEGIN
-	DECLARE @IndexedIds [dbo].[IndexedUuidList], @LinesIndexedIds [dbo].[IndexedUuidList];
+	DECLARE @IndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexedIdList];
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));

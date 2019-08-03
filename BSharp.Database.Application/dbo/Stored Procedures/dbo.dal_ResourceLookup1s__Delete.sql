@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[dal_ResourceLookup1s__Delete]
-	@Ids [dbo].[UuidList] READONLY,
+	@Ids [dbo].[IdList] READONLY,
 	@IsDeleted BIT = 1
 AS
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();

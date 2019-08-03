@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[api_Documents__Sign]
-	@Entities [dbo].[UuidList] READONLY,
+	@Entities [dbo].[IdList] READONLY,
 	@State NVARCHAR(255),
 	@ReasonId INT,
 	@ReasonDetails	NVARCHAR(1024),
