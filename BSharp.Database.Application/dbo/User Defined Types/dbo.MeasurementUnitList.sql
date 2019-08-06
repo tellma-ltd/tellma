@@ -10,7 +10,6 @@
 	[Description3]	NVARCHAR (255),
 	[UnitAmount]	FLOAT (53)		NOT NULL,
 	[BaseAmount]	FLOAT (53)		NOT NULL,
-	[IsDirty]		BIT				NOT NULL DEFAULT 0,
 	[Code]			NVARCHAR (255),
 	INDEX IX_MeasurementUnitList__Code ([Code]),
 	INDEX IX_MeasurementUnitList__Name ([Name]),

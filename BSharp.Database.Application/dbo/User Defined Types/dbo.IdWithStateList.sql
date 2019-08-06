@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[UiidWithStateList] AS TABLE (
+﻿CREATE TYPE [dbo].[IdWithStateList] AS TABLE (
 	[Id]	INT PRIMARY KEY,
-	[State]	NVARCHAR(255)
+	[State]	NVARCHAR(30)
 );

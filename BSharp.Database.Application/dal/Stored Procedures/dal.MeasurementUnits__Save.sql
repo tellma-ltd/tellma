@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [dbo].[dal_MeasurementUnits__Save]
+﻿CREATE PROCEDURE [dal].[MeasurementUnits__Save]
 	@Entities [MeasurementUnitList] READONLY,
-	@ReturnEntities BIT = 0
+	@ReturnEntities BIT
 AS
 SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];

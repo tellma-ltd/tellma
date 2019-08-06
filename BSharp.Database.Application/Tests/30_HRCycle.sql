@@ -61,7 +61,7 @@ BEGIN --================  LEAVES =======================--
 	[DocumentIndex], [LineType], [OperationId1],[AgentId2],[AgentId1], [ResourceId1], [Amount1], [Value1]) VALUES
 	(@LIdx + 1, @DIdx, @LineType, @WSI, @Finance,	@TizitaNigussie, @ETB,			1000,		1000);
 END;
-EXEC [dbo].[api_Documents__Save]
+EXEC [api].[Documents__Save]
 	@Documents = @DSave, @DocumentLineTypes = @DLTSave,
 	@Lines = @LSave, @Entries = @ESave,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,

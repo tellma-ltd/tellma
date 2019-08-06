@@ -33,7 +33,7 @@ Produced = Sold + Closing - Opening
 
 */
 -- some operations are used in the line corresponding to production event
-	[Id]					INT PRIMARY KEY,
+	[Id]					INT PRIMARY KEY IDENTITY(1,1),
 	[ResponsibilityDomain]	NVARCHAR (255)		NOT NULL, -- Investment, Profit, Revenue, Cost
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),

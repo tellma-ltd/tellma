@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fi_Agents] ( -- SELECT * FROM dbo.fi_Agents(N'supploer', 0))
+﻿CREATE FUNCTION [dbo].[fi_Agents] ( -- SELECT * FROM dbo.fi_Agents(N'supplier', 0))
 	@AgentRelationType NVARCHAR (255) = NULL,
 	@IsActive BIT = NULL
 ) RETURNS TABLE
@@ -8,6 +8,6 @@ RETURN
 	WHERE [Id] IN (
 		SELECT [AgentId]
 		FROM dbo.[AgentRelations]
-		WHERE (@AgentRelationType IS NULL OR [AgentRelationType] = @AgentRelationType)
+		WHERE (@AgentRelationType IS NULL OR [AgentRelationTypeId] = @AgentRelationType)
 		AND (@IsActive IS NULL OR [IsActive] = @IsActive)
 	);

@@ -40,7 +40,6 @@ BEGIN
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 
-
 	MERGE INTO [dbo].[Permissions] AS t
 	USING (
 		SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [ViewId], [Level], [Criteria], [Memo]

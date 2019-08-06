@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[api_Agents__Save]
 	@Entities [AgentList] READONLY,
+	@ReturnEntities BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -13,5 +14,5 @@ SET NOCOUNT ON;
 		RETURN;
 
 	EXEC [dbo].[dal_Agents__Save]
-		@Entities = @Entities;
+		@Entities = @Entities, @ReturnEntities = @ReturnEntities;
 END

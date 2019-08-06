@@ -29,7 +29,7 @@ BEGIN
 		(N'yr', N'Time', N'Year', 1, 31104000);
 
 		DECLARE @VSon NVARCHAR(MAX), @RJson NVARCHAR(MAX);
-	EXEC api_MeasurementUnits__Save 
+	EXEC [api].[MeasurementUnits__Save] 
 		@Entities = @MeasurementUnits, 
 		@ValidationErrorsJson = @VSon OUTPUT,
 		@ResultsJson = @RJson OUTPUT

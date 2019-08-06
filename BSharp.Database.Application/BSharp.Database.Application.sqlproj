@@ -78,6 +78,7 @@
     <Folder Include="dal\Stored Procedures" />
     <Folder Include="dal\Functions" />
     <Folder Include="api\Stored Procedures" />
+    <Folder Include="api\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -98,8 +99,6 @@
     <Build Include="dbo\Functions\dbo.fn_FunctionalCurrency.sql" />
     <Build Include="dbo\Functions\dbo.fn_CurrencyExchange.sql" />
     <Build Include="dbo\Functions\dbo.fi_JournalDetails.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Documents_Validate__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Transactions__Post.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_TrialBalance.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Documents__Assign.sql" />
@@ -117,15 +116,10 @@
     <Build Include="dbo\Stored Procedures\dbo.api_Resources__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_MeasurementUnits_Validate__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_MeasurementUnits__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_MeasurementUnits__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Agents_Validate__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Agents__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Activate.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_MeasurementUnits__Activate.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_MeasurementUnits__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_ResponsibilityCenters__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_ResponsibilityCenters_Validate__Save.sql" />
@@ -138,9 +132,7 @@
     <Build Include="dbo\Stored Procedures\dbo.bll_Resources_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentWideLineList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Documents__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Post.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Documents_State__Update.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Functions\dbo.fe_Responsibility__FirstSibling.sql" />
@@ -182,9 +174,6 @@
     <Build Include="dbo\Stored Procedures\dbo.bll_Documents_Validate__Assign.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Assign.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Unpost.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Documents_Validate__Sign.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Documents__Sign.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Sign.sql" />
     <Build Include="dbo\Tables\dbo.DocumentSignatures.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Unsign.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Documents__Unsign.sql" />
@@ -213,7 +202,6 @@
     <Build Include="dbo\Stored Procedures\dbo.dal_Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLineEntries.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineEntryList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_MeasurementUnits__Select.sql" />
     <Build Include="dbo\Tables\dbo.RoleMemberships.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_RawMaterials.sql" />
@@ -285,14 +273,30 @@
     <Build Include="dbo\User Defined Types\dbo.IdList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_ResourceLookup1s__Delete.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_ResourceLookup1s__Delete.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_MeasurementUnits__Delete.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_MeasurementUnits__Delete.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_MeasurementUnits_Validate__Delete.sql" />
     <Build Include="api\Stored Procedures\api.IfrsDisclosureDetails__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.OnConnect.sql" />
-    <Build Include="api\Stored Procedures\dbo.api_IfrsConcepts__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.IfrsConcepts__Activate.sql" />
     <Build Include="dal\Stored Procedures\dal.IfrsConcepts__Activate.sql" />
     <Build Include="dal\Stored Procedures\dal.IfrsDisclosureDetails__Save.sql" />
+    <Build Include="api\Stored Procedures\api.MeasurementUnits__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.MeasurementUnits__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.MeasurementUnits__Save.sql" />
+    <Build Include="api\Stored Procedures\api.MeasurementUnits__Select.sql" />
+    <Build Include="dal\Stored Procedures\dal.MeasurementUnits__Activate.sql" />
+    <Build Include="dal\Stored Procedures\dal.MeasurementUnits__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.MeasurementUnits__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Save.sql" />
+    <Build Include="api\Functions\dbo.fs_MeasurementUnits.sql" />
+    <Build Include="dbo\Tables\dbo.AgentRelationTypes.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Save.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Filter__Sign.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Sign.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Ready__Select.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

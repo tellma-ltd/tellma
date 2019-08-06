@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[LineTypesSpecifications] (
-	[LineTypeId]					NVARCHAR (255),
+	[LineTypeId]					NVARCHAR (50),
 	[EntryNumber]					INT,
 
 	-- IsEditableTill specifies the state up till which is is possible to edit the field

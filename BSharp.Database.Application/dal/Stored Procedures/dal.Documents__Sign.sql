@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[dal_Documents__Sign]
+﻿CREATE PROCEDURE [dal].[Documents__Sign]
 -- @Entites contain only the documents where Actor and Role are compatible with current state
 	@Entities [dbo].[IdList] READONLY,
 	@State NVARCHAR(255),
