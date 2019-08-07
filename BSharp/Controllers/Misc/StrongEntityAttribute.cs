@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.Misc
 {
+    // TODO: Delete
+
     /// <summary>
     /// This represents a strong dto which is returned and stored in its own centralized collection
     /// in API responses, as opposed to being a weak entity that is attached to another strong entity

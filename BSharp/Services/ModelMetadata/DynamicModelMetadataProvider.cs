@@ -73,6 +73,12 @@ namespace BSharp.Services.ModelMetadata
                                     Constants.Hidden : _localizer[name] + SecondaryPostfix(info);
                                     break;
 
+                                case Language.Ternary:
+                                    // A null name indicates a hidden column in Excel templates
+                                    result = string.IsNullOrWhiteSpace(info.TernaryLanguageId) ?
+                                    Constants.Hidden : _localizer[name] + TernaryPostfix(info);
+                                    break;
+
                                 default:
                                     result = _localizer[name];
                                     break;
@@ -113,7 +119,7 @@ namespace BSharp.Services.ModelMetadata
 
         private string PrimaryPostfix(TenantUserInfo info)
         {
-            if (info != null && info.SecondaryLanguageId != null)
+            if (info != null && info.SecondaryLanguageId != null && info.TernaryLanguageId != null)
             {
                 return $" ({info.PrimaryLanguageSymbol})";
             }
@@ -131,6 +137,15 @@ namespace BSharp.Services.ModelMetadata
 
             return "";
         }
+        private string TernaryPostfix(TenantUserInfo info)
+        {
+            if (info != null && info.TernaryLanguageId != null)
+            {
+                return $" ({info.TernaryLanguageSymbol})";
+            }
+
+            return "";
+        }
 
         public bool IsSameOrSubclass<TBase>(Type potentialDescendant)
         {
@@ -139,7 +154,7 @@ namespace BSharp.Services.ModelMetadata
                    || potentialDescendant == potentialBase;
         }
 
-
+        // TODO: Delete
         public bool IsSameOrSubclass(Type potentialBase, Type potentialDescendant)
         {
             return potentialDescendant.IsSubclassOf(potentialBase)

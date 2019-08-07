@@ -9,7 +9,7 @@ namespace BSharp.Services.MultiTenancy
 {
     /// <summary>
     /// This service retrieves the tenant id from the request header
-    /// and throws an exception if none is provided
+    /// or null otherwise
     /// </summary>
     public class TenantIdProvider : ITenantIdProvider
     {

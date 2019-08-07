@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.Misc
 {
+    // TODO: Delete
+
     /// <summary>
     /// Custom validation attribute, checks whether the value is one
     /// of a specified list of choices

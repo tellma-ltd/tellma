@@ -6,6 +6,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
+    // TODO: Delete
+
     /// <summary>
     /// All savable DTOs must inherit from <see cref="DtoForSaveKeyBase{TKey}"/>
     /// </summary>

@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
+    // TODO: Delete
+
     [StrongEntity]
     public class ViewForSave<TPermission, TRequiredSignature> : DtoForSaveKeyBase<string>
     {

@@ -55,17 +55,19 @@ AS
     -- Set the User Id
     EXEC sp_set_session_context @key = N'UserId', @value = @UserId;
 
-    -- Return the user information
+    -- Return the user and tenant information
     SELECT 
+		-- User Info
         @UserId AS userId, 
         @Name AS Name,
         @Name2 AS Name2,
         @ExternalId AS ExternalId, 
         @Email AS Email, 
-        @SettingsVersion AS SettingsVersion, 
         @PermissionsVersion AS PermissionsVersion,
         @UserSettingsVersion AS UserSettingsVersion,
+		-- Tenant Info
         @ViewsAndSpecsVersion AS ViewsAndSpecsVersion,
+        @SettingsVersion AS SettingsVersion, 
         @PrimaryLanguageId AS PrimaryLanguageId,
         @PrimaryLanguageSymbol AS PrimaryLanguageSymbol,
         @SecondaryLanguageId AS SecondaryLanguageId,

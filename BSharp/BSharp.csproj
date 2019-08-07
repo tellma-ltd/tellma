@@ -131,6 +131,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.en.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="ClientApp\src\app\data\dto\deactivate-arguments.js">
       <DependentUpon>deactivate-arguments.ts</DependentUpon>
     </None>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.DTO
 {
+    // TODO: Delete
     public class RoleMembershipForSave : DtoForSaveKeyBase<int?>
     {
         [BasicField]

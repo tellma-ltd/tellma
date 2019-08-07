@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Services.OData
 {
+    // TODO: Delete
     public class HierarchyId
     {
     }

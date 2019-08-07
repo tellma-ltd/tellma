@@ -293,6 +293,7 @@
     <Build Include="api\Stored Procedures\dbo.api_IfrsConcepts__Activate.sql" />
     <Build Include="dal\Stored Procedures\dal.IfrsConcepts__Activate.sql" />
     <Build Include="dal\Stored Procedures\dal.IfrsDisclosureDetails__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Action_Views__Permissions.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

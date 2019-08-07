@@ -22,6 +22,8 @@ namespace BSharp.Controllers.Misc
     {
         public const string ALL = "all";
 
+        // TODO: Delete DataTable methods
+
         /// <summary>
         /// Constructs a SQL data table containing all the public properties of the 
         /// entities' type and populates the data table with the provided entities

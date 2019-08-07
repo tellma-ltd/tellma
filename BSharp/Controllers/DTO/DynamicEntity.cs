@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.DTO
 {
+    // TODO: Delete
+
     /// <summary>
     /// Represents a DTO with variable properties, this is typically used to contain the results of aggregate queries
     /// in which case the properties will be the requested dimensions and measures, it is implemented as a dictionary

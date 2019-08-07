@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace BSharp.Data.Model
 {
+
+    // TODO: Delete
+
     /// <summary>
     /// A Query type https://docs.microsoft.com/en-us/ef/core/modeling/query-types
     /// represents the structure of validation errors that are reported by SQL stored procedures

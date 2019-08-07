@@ -12,11 +12,17 @@ namespace BSharp.Services.MultiTenancy
     /// </summary>
     public class TenantUserInfo
     {
+        // User Info
         public int? UserId { get; set; }
         public string Name { get; set; }
         public string Name2 { get; set; }
+        public string Name3 { get; set; }
         public string Email { get; set; }
         public string ExternalId { get; set; }
+        public string PermissionsVersion { get; set; }
+        public string UserSettingsVersion { get; set; }
+
+        // Tenant Info
         public string PrimaryLanguageId { get; set; }
         public string PrimaryLanguageSymbol { get; set; }
         public string SecondaryLanguageId { get; set; }
@@ -24,8 +30,6 @@ namespace BSharp.Services.MultiTenancy
         public string TernaryLanguageId { get; set; }
         public string TernaryLanguageSymbol { get; set; }
         public string SettingsVersion { get; set; }
-        public string PermissionsVersion { get; set; }
-        public string UserSettingsVersion { get; set; }
         public string ViewsAndSpecsVersion { get; set; }
     }
 }

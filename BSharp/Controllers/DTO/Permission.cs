@@ -6,6 +6,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.Controllers.DTO
 {
+    // TODO: Delete (Not the for client part
+
     // Note: The permissions is a semi-weak entity, meaning it does not have its own screen or API
     // Permissions are always retrieved and saved as a child collection of some other strong entity
     // I call it "semi"- weak because it comes associated with more than one entity, therefore to stress

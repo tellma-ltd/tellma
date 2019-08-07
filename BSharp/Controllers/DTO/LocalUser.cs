@@ -7,6 +7,8 @@ using S = System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.Controllers.DTO
 {
+    // TODO: Delete (Not the for client part)
+
     [StrongEntity]
     public class LocalUserForSave<TRoleMembership> : DtoForSaveKeyBase<int?>, IMultilingualName
     {

@@ -380,26 +380,6 @@ namespace BSharp.Services.Utilities
         }
 
         /// <summary>
-        /// Indicates whether the property is adorned with the <see cref="ForeignKeyAttribute"/> which means that
-        /// this is a foreign key and it has an associated navigation property
-        /// </summary>
-        /// <param name="prop"></param>
-        /// <returns></returns>
-        public static bool IsForeignKey(this PropertyInfo prop)
-        {
-            return prop.GetCustomAttribute<ForeignKeyAttribute>() != null;
-        }
-
-        /// <summary>
-        /// Determines if the property is adorned with the <see cref="IgnoreInMetadataAttribute"/> which indicates that 
-        /// the property should not be included in the DTO metadata
-        /// </summary>
-        public static bool IsIgnored(this PropertyInfo prop)
-        {
-            return prop.GetCustomAttribute<IgnoreInMetadataAttribute>() != null;
-        }
-
-        /// <summary>
         /// Useful for reflection, allows you to iterate over a collection that is typed as an object
         /// </summary>
         /// <typeparam name="T"></typeparam>

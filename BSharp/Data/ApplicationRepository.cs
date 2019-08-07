@@ -1,10 +1,9 @@
-﻿using BSharp.Controllers.DTO;
-using BSharp.Services.OData;
+﻿using BSharp.EntityModel;
 using BSharp.Services.Sharding;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,143 +11,24 @@ namespace BSharp.Data
 {
     public interface IRepository
     {
-        ODataQuery<T> CreateQuery<T>() where T : DtoBase;
+        RepositoryQuery<T> CreateQuery<T>() where T : Entity;
     }
 
+    /// <summary>
+    /// A very thin and lightweight layer around the application database (every tenant
+    /// has a single database), it's the entry point of all functionality that requires 
+    /// SQL: Tables, Views, Stored Procedures etc.., it contains no logic of its own
+    /// </summary>
     public class ApplicationRepository : IDisposable, IRepository
     {
+        private readonly IShardResolver _shardResolver;
+        private SqlConnection _conn;
+        private UserInfo _userInfo;
+        private TenantInfo _tenantInfo;
+
         public ApplicationRepository(IShardResolver shardResolver)
         {
             _shardResolver = shardResolver;
-        }
-
-        private readonly IShardResolver _shardResolver;
-        private SqlConnection _conn;
-
-        private async Task InitConnection(string connectionString)
-        {
-            _conn = new SqlConnection(connectionString);
-            using (SqlCommand cmd = _conn.CreateCommand())
-            {
-                cmd.CommandText = @"
-    -- Set the global values of the session context
-    EXEC sp_set_session_context @key=N'Culture', @value=@Culture;
-    EXEC sp_set_session_context @key=N'NeutralCulture', @value=@NeutralCulture;
-
-    -- Get the User Id
-    DECLARE 
-        @UserId INT, 
-        @Name NVARCHAR(255), 
-        @Name2 NVARCHAR(255), 
-        @ExternalId NVARCHAR(450), 
-        @Email NVARCHAR(255), 
-        @SettingsVersion UNIQUEIDENTIFIER, 
-        @PermissionsVersion UNIQUEIDENTIFIER,
-        @ViewsAndSpecsVersion UNIQUEIDENTIFIER,
-        @UserSettingsVersion UNIQUEIDENTIFIER,
-        @PrimaryLanguageId NVARCHAR(255),
-        @PrimaryLanguageSymbol NVARCHAR(255),
-        @SecondaryLanguageId NVARCHAR(255),
-        @SecondaryLanguageSymbol NVARCHAR(255)
-        @TernaryLanguageId NVARCHAR(255),
-        @TernaryLanguageSymbol NVARCHAR(255);
-
-    SELECT
-        @UserId = [Id],
-        @Name = [Name],
-        @Name2 = [Name2],
-        @Name3 = [Name3],
-        @ExternalId = [ExternalId],
-        @Email = [Email],
-        @PermissionsVersion = [PermissionsVersion],
-        @UserSettingsVersion = [UserSettingsVersion]
-    FROM [dbo].[LocalUsers] 
-    WHERE [IsActive] = 1 AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
-
-    -- Set LastAccess (Works only if @UserId IS NOT NULL)
-    UPDATE [dbo].[LocalUsers] SET [LastAccess] = SYSDATETIMEOFFSET() WHERE [Id] = @UserId;
-
-    -- Get hashes
-    SELECT 
-        @SettingsVersion = [SettingsVersion],
-        @ViewsAndSpecsVersion = [ViewsAndSpecsVersion],
-        @PrimaryLanguageId = [PrimaryLanguageId],
-        @PrimaryLanguageSymbol = [PrimaryLanguageSymbol],
-        @SecondaryLanguageId = [SecondaryLanguageId],
-        @SecondaryLanguageSymbol = [SecondaryLanguageSymbol]
-    FROM [dbo].[Settings]
-
-    -- Set the User Id
-    EXEC sp_set_session_context @key=N'UserId', @value=@UserId;
-
-    -- Return the user information
-    SELECT 
-        @UserId AS userId, 
-        @Name AS Name,
-        @Name2 AS Name2,
-        @ExternalId AS ExternalId, 
-        @Email AS Email, 
-        @SettingsVersion AS SettingsVersion, 
-        @PermissionsVersion AS PermissionsVersion,
-        @UserSettingsVersion AS UserSettingsVersion,
-        @ViewsAndSpecsVersion AS ViewsAndSpecsVersion,
-        @PrimaryLanguageId AS PrimaryLanguageId,
-        @PrimaryLanguageSymbol AS PrimaryLanguageSymbol,
-        @SecondaryLanguageId AS SecondaryLanguageId,
-        @SecondaryLanguageSymbol AS SecondaryLanguageSymbol;
-";
-                cmd.Parameters.AddWithValue("@ExternalUserId", userService.GetUserId());
-                cmd.Parameters.AddWithValue("@UserEmail", userService.GetUserEmail());
-                cmd.Parameters.AddWithValue("@Culture", CultureInfo.CurrentUICulture.Name);
-                cmd.Parameters.AddWithValue("@NeutralCulture", CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name);
-
-                _conn.Open();
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        int i = 0;
-                        var info = new TenantUserInfo
-                        {
-                            UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++), // User
-                            Name = reader.IsDBNull(i) ? null : reader.GetString(i++), // User
-                            Name2 = reader.IsDBNull(i) ? null : reader.GetString(i++), // User
-                            ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++), // User
-                            Email = reader.IsDBNull(i) ? null : reader.GetString(i++), // User
-                            SettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
-                            PermissionsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(), // User
-                            UserSettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(), // User
-                            ViewsAndSpecsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
-                            PrimaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            PrimaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            SecondaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            SecondaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                        };
-
-                        // Provide the user throughout the current session
-                        accessor.SetInfo(tenantId, info);
-                    }
-                    else
-                    {
-                        throw new Controllers.Misc.BadRequestException("Something went wrong while querying the user ID from the Database");
-                    }
-                }
-
-                // Prepare the options based on the connection created with the shard manager
-                optionsBuilder = optionsBuilder.UseSqlServer(_conn);
-            }
-
-        }
-
-        private async Task<SqlConnection> Connection()
-        {
-            if (_conn == null)
-            {
-                string connString = _shardResolver.GetShardConnectionString();
-                await InitConnection(connString);
-            }
-
-            return _conn;
         }
 
         /// <summary>
@@ -157,39 +37,215 @@ namespace BSharp.Data
         /// this method makes it possible to conncet to a custom connection string instead, 
         /// this is useful when connecting to multiple tenants at the same time to do aggregate reporting for example
         /// </summary>
-        public async Task Init(string connectionString)
+        public async Task InitConnectionAsync(string connectionString)
         {
-            await InitConnection(connectionString);
+            if (_conn != null)
+            {
+                throw new InvalidOperationException("The connection is already initialized");
+            }
+
+            _conn = new SqlConnection(connectionString);
+            _conn.Open();
+
+            // Always 
+            (_userInfo, _tenantInfo) = await OnConnectAsync(null, null, null, null);
         }
 
-        public ODataQuery<T> CreateQuery<T>() where T : DtoBase
+        /// <summary>
+        /// Initializes the connection if it is not already initialized
+        /// </summary>
+        /// <returns>The connection string that was initialized</returns>
+        private async Task<SqlConnection> ConnectionAsync()
+        {
+            if (_conn == null)
+            {
+                string connString = _shardResolver.GetShardConnectionString();
+                await InitConnectionAsync(connString);
+            }
+
+            return _conn;
+        }
+
+        /// <summary>
+        /// Returns the name of the initial catalog from the active connection's connection string
+        /// </summary>
+        /// <returns></returns>
+        private string InitialCatalog()
+        {
+            if (_conn == null || _conn.ConnectionString == null)
+            {
+                return null;
+            }
+
+            return new SqlConnectionStringBuilder(_conn.ConnectionString).InitialCatalog;
+        }
+
+        /// <summary>
+        /// Loads a <see cref="UserInfo"/> object from the database, this occurs once per <see cref="ApplicationRepository"/> 
+        /// instance, subsequent calls are satisfied from cache
+        /// </summary>
+        public async Task<UserInfo> GetUserInfoAsync()
+        {
+            await ConnectionAsync(); // This automatically initializes the user info
+            return _userInfo;
+        }
+
+        /// <summary>
+        /// Loads a <see cref="TenantInfo"/> object from the database, this occurs once per <see cref="ApplicationRepository"/> 
+        /// instance, subsequent calls are satisfied from cache
+        /// </summary>
+        public async Task<TenantInfo> GetTenantInfoAsync()
+        {
+            await ConnectionAsync(); // This automatically initializes the tenant info
+            return _tenantInfo;
+        }
+
+        /// <summary>
+        /// Creates and returns a new <see cref="ODataQuery{T}"/> object
+        /// </summary>
+        /// <typeparam name="T">The root type of the query</typeparam>
+        public RepositoryQuery<T> CreateQuery<T>() where T : Entity
         {
             throw new NotImplementedException();
         }
 
 
-        publci async Task<()>
+        #region Stored Procedures
 
-        public async Task<IEnumerable<int?>> MeasurementUnits__Save(IEnumerable<MeasurementUnit> entities)
+        public async Task<(UserInfo, TenantInfo)> OnConnectAsync(string externalUserId, string userEmail, string culture, string neutralCulture)
         {
-            var conn = Connection();
-            using (var cmd = conn.CreateCommand())
+            UserInfo userInfo = null;
+            TenantInfo tenantInfo = null;
+
+            using (SqlCommand cmd = _conn.CreateCommand())
             {
                 // Parameters
-                cmd.Parameters.AddWithValue("Param1", 33);
+                cmd.Parameters.AddWithValue("@ExternalUserId", externalUserId);
+                cmd.Parameters.AddWithValue("@UserEmail", userEmail);
+                cmd.Parameters.AddWithValue("@Culture", culture);
+                cmd.Parameters.AddWithValue("@NeutralCulture", neutralCulture);
 
-                // SQL
-                cmd.CommandText = "EXEC [dal].[MeasurementUnits__Save] @Param1 = @Param1"; // Typically call a stored procedure
+                // Command
+                cmd.CommandText = @"EXEC [dal].[OnConnect] 
+@ExternalUserId = @ExternalUserId, 
+@UserEmail      = @UserEmail, 
+@Culture        = @Culture, 
+@NeutralCulture = @NeutralCulture";
 
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                // Execute and Load
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    while (await reader.ReadAsync())
+                    if (await reader.ReadAsync())
                     {
-                        yield return reader.GetInt32(0);
+                        int i = 0;
+
+                        // The user Info
+                        userInfo = new UserInfo
+                        {
+                            UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++),
+                            Name = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            Name2 = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            Email = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            PermissionsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                            UserSettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                        };
+
+                        // The tenant Info
+                        tenantInfo = new TenantInfo
+                        {
+                            ViewsAndSpecsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                            SettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                            PrimaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            PrimaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            SecondaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            SecondaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            TernaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            TernaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++)
+                        };
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException($"[dal].[OnConnect] did not return any data, InitialCatalog: {InitialCatalog()}, ExternalUserId: {externalUserId}, UserEmail: {userEmail}");
                     }
                 }
             }
+
+            return (userInfo, tenantInfo);
         }
+
+        public async Task<IEnumerable<AbstractPermission>> Action_Views__PermissionsAsync(string action, IEnumerable<string> viewIds)
+        {
+            var result = new List<AbstractPermission>();
+
+            using (SqlCommand cmd = _conn.CreateCommand())
+            {
+                // Parameters
+                var viewIdsTable = RepositoryUtilities.DataTable(viewIds.Select(e => new { Code = e }));
+                var viewIdsTvp = new SqlParameter("@ViewIds", viewIdsTable)
+                {
+                    TypeName = $"dbo.StringList",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(viewIdsTvp);
+                cmd.Parameters.AddWithValue("@Action", action);
+
+                cmd.CommandText = @"EXEC [dal].[Action_Views__Permissions]
+@Action = @Action,
+@ViewIds = @ViewIds
+";
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new AbstractPermission
+                        {
+                            ViewId = reader.GetString(i++),
+                            Action = reader.GetString(i++),
+                            Criteria = reader.GetString(i++),
+                            Mask = reader.GetString(i++)
+                        });
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        //public async Task<IEnumerable<IdIndex<int>>> MeasurementUnits__SaveAsync(IEnumerable<MeasurementUnit> entities)
+        //{
+        //    var result = new List<IdIndex<int>>();
+
+        //    SqlConnection conn = await ConnectionAsync();
+        //    using (SqlCommand cmd = conn.CreateCommand())
+        //    {
+        //        // Parameters
+        //        cmd.Parameters.AddWithValue("Param1", 33);
+
+        //        // SQL
+        //        cmd.CommandText = "EXEC [dal].[MeasurementUnits__Save] @Param1 = @Param1";
+
+        //        // Load the results
+        //        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+        //        {
+        //            while (await reader.ReadAsync())
+        //            {
+        //                result.Add(new IdIndex<int>
+        //                {
+        //                    Id = reader.GetInt32(0),
+        //                    Index = reader.GetInt32(0)
+        //                });
+        //            }
+        //        }
+        //    }
+
+        //    return result;
+        //}
 
         public void Dispose()
         {
@@ -199,24 +255,5 @@ namespace BSharp.Data
                 _conn.Dispose();
             }
         }
-    }
-
-    public class 
-
-    public interface IReadonlyRepository<T, TKey> where T : DtoBase
-    {
-        ODataQuery<T> Query();
-    }
-
-    public interface IUpdatableRepository<T, TForSave, TKey> : IReadonlyRepository<T, TKey> where TForSave : DtoBase where T : DtoBase
-    {
-        List<ValidationResult> ValidateSave(IEnumerable<T> entities);
-
-        List<TKey> Save(IEnumerable<T> entities);
-    }
-
-    public class ValidationResult
-    {
-
     }
 }
