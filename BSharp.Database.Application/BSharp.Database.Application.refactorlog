@@ -73,4 +73,252 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[IdList]" />
   </Operation>
+  <Operation Name="Move Schema" Key="0ae72817-6d21-42fa-a285-ee936450865c" ChangeDateTime="08/03/2019 18:55:49">
+    <Property Name="ElementName" Value="[dbo].[api_MeasurementUnits__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7472c453-75dd-4bb1-a214-ae77d6f548ab" ChangeDateTime="08/03/2019 18:56:01">
+    <Property Name="ElementName" Value="[api].[api_MeasurementUnits__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits__Activate]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="3c5d2ffe-3cdd-48bc-b978-538c210cea14" ChangeDateTime="08/03/2019 19:46:41">
+    <Property Name="ElementName" Value="[dbo].[api_MeasurementUnits__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="287874bd-b279-415e-9663-df57a0c0ed00" ChangeDateTime="08/03/2019 19:46:52">
+    <Property Name="ElementName" Value="[api].[api_MeasurementUnits__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7e0964c8-f232-4514-8cae-33db633ede33" ChangeDateTime="08/03/2019 19:47:20">
+    <Property Name="ElementName" Value="[dbo].[api_MeasurementUnits__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="af062635-a35f-4e82-b013-dbfcc5b462ba" ChangeDateTime="08/03/2019 19:47:36">
+    <Property Name="ElementName" Value="[dbo].[MeasurementUnits__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="50040d31-62f9-4e3c-967e-fabdc7e8f29a" ChangeDateTime="08/03/2019 19:50:26">
+    <Property Name="ElementName" Value="[dbo].[api_MeasurementUnits__Select]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="815cd035-fae5-4b74-930c-6685740e5022" ChangeDateTime="08/03/2019 19:50:37">
+    <Property Name="ElementName" Value="[api].[api_MeasurementUnits__Select]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits__Select]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="0d308ae7-75b8-4c37-9b52-13d85a79cfb4" ChangeDateTime="08/03/2019 19:51:16">
+    <Property Name="ElementName" Value="[dbo].[bll_MeasurementUnits_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5e83411c-f273-49c9-a5ba-5d09180bf7d1" ChangeDateTime="08/03/2019 19:51:26">
+    <Property Name="ElementName" Value="[bll].[bll_MeasurementUnits_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="0529e365-683b-48fd-86f7-9afe8dfbc040" ChangeDateTime="08/03/2019 19:52:31">
+    <Property Name="ElementName" Value="[dbo].[bll_MeasurementUnits_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="785e8ee5-d0a7-43af-a369-adfe3381d235" ChangeDateTime="08/03/2019 19:52:40">
+    <Property Name="ElementName" Value="[bll].[bll_MeasurementUnits_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits_Validate__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="7f66372e-43ee-46aa-8698-90802348aa76" ChangeDateTime="08/03/2019 19:54:10">
+    <Property Name="ElementName" Value="[dbo].[dal_MeasurementUnits__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="449b70ee-5f8a-440c-a015-a0ee13b1e453" ChangeDateTime="08/03/2019 19:54:27">
+    <Property Name="ElementName" Value="[dal].[dal_MeasurementUnits__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits__Activate]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="49dd6916-9734-45bb-9ce8-d666586d3b3a" ChangeDateTime="08/03/2019 19:55:59">
+    <Property Name="ElementName" Value="[dbo].[dal_MeasurementUnits__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6982e734-659e-4457-8e63-161a90232a85" ChangeDateTime="08/03/2019 19:56:09">
+    <Property Name="ElementName" Value="[dal].[dal_MeasurementUnits__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits__Delete]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="3a849a54-fc8b-48d4-86dc-09131d770851" ChangeDateTime="08/03/2019 19:56:56">
+    <Property Name="ElementName" Value="[dbo].[dal_MeasurementUnits__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b0321f58-d64b-4ab4-8cca-1cd8df77f8f3" ChangeDateTime="08/03/2019 19:57:11">
+    <Property Name="ElementName" Value="[dal].[dal_MeasurementUnits__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f3b7e9d7-ce21-4304-840d-f89e2f185bf2" ChangeDateTime="08/04/2019 11:15:44">
+    <Property Name="ElementName" Value="[dbo].[AgentRelations].[AgentRelationType]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentRelations]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentRelationTypeId]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="88e3e9f7-3984-472b-aa72-8423c2405260" ChangeDateTime="08/04/2019 17:54:07">
+    <Property Name="ElementName" Value="[dbo].[api_Documents__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bed70ad4-06ce-4b2b-80d4-dde9a229a5d7" ChangeDateTime="08/04/2019 17:54:18">
+    <Property Name="ElementName" Value="[api].[api_Documents__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="5107c8f0-ba77-437d-9715-3ec4952cf35d" ChangeDateTime="08/04/2019 17:56:11">
+    <Property Name="ElementName" Value="[dbo].[bll_Documents_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Move Schema" Key="ec8bab28-b151-4e6b-abf2-825dc3a04437" ChangeDateTime="08/04/2019 17:56:22">
+    <Property Name="ElementName" Value="[api].[bll_Documents_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="23060e5e-fff2-4030-8729-e4e36062a73a" ChangeDateTime="08/04/2019 17:56:37">
+    <Property Name="ElementName" Value="[bll].[bll_Documents_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_Validate__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="38addd1b-5aa1-4f06-afc9-96f384140924" ChangeDateTime="08/04/2019 17:59:19">
+    <Property Name="ElementName" Value="[dbo].[dal_Document__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="55d66af3-b477-4d4d-965d-283c4f37b870" ChangeDateTime="08/04/2019 17:59:47">
+    <Property Name="ElementName" Value="[dal].[dal_Document__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d5d2e67e-c62f-41e6-86a3-512dddb7114e" ChangeDateTime="08/05/2019 10:22:49">
+    <Property Name="ElementName" Value="[dbo].[DocumentTypes].[Code]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Prefix]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="ab968b26-bbd7-475c-86f9-b5fe94e9ee2e" ChangeDateTime="08/06/2019 13:01:08">
+    <Property Name="ElementName" Value="[dbo].[api_Documents__Sign]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="09917c35-7a4e-46cf-ab04-f5e0faea2bdc" ChangeDateTime="08/06/2019 13:01:19">
+    <Property Name="ElementName" Value="[api].[api_Documents__Sign]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Sign]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="63cda7c5-d5b8-4b8b-99e6-9a848b4e776d" ChangeDateTime="08/06/2019 13:02:06">
+    <Property Name="ElementName" Value="[dbo].[bll_Documents_Validate__Sign]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b29eee05-6c01-4f3e-97f8-9013407bb127" ChangeDateTime="08/06/2019 13:02:17">
+    <Property Name="ElementName" Value="[bll].[bll_Documents_Validate__Sign]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_Validate__Sign]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="a397624c-6c2b-4668-afa0-779a2a6af1eb" ChangeDateTime="08/06/2019 13:02:31">
+    <Property Name="ElementName" Value="[dbo].[dal_Documents__Sign]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="983ec747-7a99-4fbe-8e4b-be7b931b4de4" ChangeDateTime="08/06/2019 13:02:40">
+    <Property Name="ElementName" Value="[dal].[dal_Documents__Sign]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Sign]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="b5b71b7d-f870-4dca-8b53-585a88f967dc" ChangeDateTime="08/06/2019 13:03:39">
+    <Property Name="ElementName" Value="[dbo].[dal_Documents_State__Update]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c5e97bc4-8fcb-462b-8c5e-2c3ef9d1f5b2" ChangeDateTime="08/06/2019 13:03:52">
+    <Property Name="ElementName" Value="[dal].[dal_Documents_State__Update]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_State__Update]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c56785c5-6f73-4e5e-a62a-071f97c83ffe" ChangeDateTime="08/06/2019 13:16:27">
+    <Property Name="ElementName" Value="[dbo].[UiidWithStateList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IdWithStateList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="35385be0-d0f2-447d-ae2a-edfc48c38ce5" ChangeDateTime="08/06/2019 13:18:36">
+    <Property Name="ElementName" Value="[bll].[Documents_Validate__Sign]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_Filter__Sign]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="40d1a905-c11a-4466-9600-434009258210" ChangeDateTime="08/06/2019 13:25:04">
+    <Property Name="ElementName" Value="[dbo].[Documents_Ready__Select]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

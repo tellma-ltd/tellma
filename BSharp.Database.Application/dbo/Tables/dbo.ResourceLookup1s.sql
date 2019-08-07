@@ -4,7 +4,7 @@
 	[Name2]				NVARCHAR (255),
 	[Name3]				NVARCHAR (255),
 	[IsActive]			BIT					NOT NULL DEFAULT 1,
-	[IsDeleted]			BIT					NOT NULL DEFAULT 0,
+	[Code]				NVARCHAR(10), -- code for inter-tenant reporting
 	[SortKey]			DECIMAL (9,4),	-- Sort code for reporting purposes
 	[CreatedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),

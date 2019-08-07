@@ -1,15 +1,15 @@
 ﻿CREATE TYPE [dbo].DocumentLineEntryList AS TABLE (
-	[Index]					INT,
-	[DocumentLineIndex]		INT					NOT NULL,
-	[DocumentIndex]			INT					NOT NULL,
-	[Id]					INT NOT NULL DEFAULT 0,
-	[DocumentLineId]		INT,
-	[EntryNumber]			INT,
+	[Index]					INT					PRIMARY KEY IDENTITY (0,1),
+	[DocumentLineIndex]		INT					NOT NULL DEFAULT 0,
+	[DocumentIndex]			INT					NOT NULL DEFAULT 0,
+	[Id]					INT					NOT NULL DEFAULT 0,
+	[DocumentLineId]		INT					NOT NULL DEFAULT 0,
+	[EntryNumber]			INT					NOT NULL DEFAULT 1,
 	[Direction]				SMALLINT			NOT NULL,
 	[AccountId]				INT		NOT NULL,
 	[IfrsNoteId]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
 	[ResponsibilityCenterId]INT,				-- called SegmentId in B10. When not needed, we use the entity itself.
-	[ResourceId]			INT,				-- NUll because it may be specified by Account				
+	[ResourceId]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')), -- because it may be specified by Account				
 	[InstanceId]			INT,
 	[BatchCode]				NVARCHAR (255),
 	[DueDate]				DATE,
@@ -31,9 +31,6 @@
 	[RelatedQuantity]		MONEY ,			-- used in Tax accounts, to store the quantiy of taxable item
 	[RelatedMoneyAmount]	MONEY 				NOT NULL DEFAULT 0, -- e.g., amount subject to tax
 
-	[EntityState]			NVARCHAR (255)		NOT NULL DEFAULT(N'Inserted'),
-	PRIMARY KEY ([Index]),
-	INDEX IX_TransactionEntryList_TransactionLineIndex ([DocumentLineIndex]),
-	CHECK ([Direction] IN (-1, 1)),
-	CHECK ([EntityState] IN (N'Unchanged', N'Inserted', N'Updated', N'Deleted'))
+	INDEX IX_DocumentEntryList_DocumentLineIndex ([DocumentLineIndex]),
+	CHECK ([Direction] IN (-1, 1))
 );

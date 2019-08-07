@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [dbo].[DocumentLines] (
 --	These are for transactions only. If there are Lines from requests or inquiries, etc=> other tables
-	[Id]					INT PRIMARY KEY,
+	[Id]					INT PRIMARY KEY IDENTITY(1,1),
 	[DocumentId]			INT	NOT NULL,
 
-	[LineTypeId]			NVARCHAR (255)		NOT NULL, -- specifies the number of entries
+	[LineTypeId]			NVARCHAR (50)		NOT NULL, -- specifies the number of entries
 	[TemplateLineId]		INT, -- depending on the line type, the user may/may not be allowed to edit
 	[ScalingFactor]			FLOAT, -- Qty sold for Price list, Qty produced for BOM
 	[AgentId]				INT, -- useful for storing the conversion agent in conversion transactions

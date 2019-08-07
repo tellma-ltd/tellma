@@ -1,15 +1,15 @@
 ﻿CREATE TABLE [dbo].[Documents] (
 --	This table for all business documents that are routed for requisition, authorization, completion, and posting.
 --	Its scope is 
-	[Id]									INT PRIMARY KEY,
+	[Id]									INT PRIMARY KEY IDENTITY(1,1),
 	-- Common to all document types
-	[DocumentTypeId]						NVARCHAR (255)	NOT NULL,	
+	[DocumentTypeId]						NVARCHAR (50)	NOT NULL,	
 	[SerialNumber]							INT				NOT NULL,	-- auto generated, copied to paper if needed.
 	[DocumentDate]							DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()),
-	[State]									NVARCHAR (255)	NOT NULL DEFAULT N'Draft', -- N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Declined', N'Posted'
+	[State]									NVARCHAR (30)	NOT NULL DEFAULT N'Draft', -- N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Declined', N'Posted'
 	
 	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
-	[EvidenceTypeId]						NVARCHAR(255)		NOT NULL,
+	[EvidenceTypeId]						NVARCHAR(30)		NOT NULL,
 	-- When evidence type = source document
 	[VoucherBookletId]						INT, -- each range might be dedicated for a special purpose
 	[VoucherNumericReference]				INT, -- must fall between RangeStarts and RangeEnds of the booklet
@@ -43,7 +43,7 @@
 	-- Transaction specific, to record the acquisition or loss of goods and services
 	-- Orders that are not negotiables, are assumed to happen, and hence are journalized, even we are verifying it later.
 	
-	[Frequency]								NVARCHAR (255)	NOT NULL DEFAULT (N'OneTime'), -- an easy way to define a recurrent document
+	[Frequency]								NVARCHAR (30)	NOT NULL DEFAULT (N'OneTime'), -- an easy way to define a recurrent document
 	[Repetitions]							INT				NOT NULL DEFAULT 0, -- time unit is function of frequency
 	[EndDate] AS (
 					CASE 
@@ -68,7 +68,7 @@
 	CONSTRAINT [CK_Documents__Duration] CHECK ([Frequency] IN (N'OneTime', N'Daily', N'Weekly', N'Monthly', N'Quarterly', N'Yearly')),
 	CONSTRAINT [FK_Documents__DocumentTypeId] FOREIGN KEY ([DocumentTypeId]) REFERENCES [dbo].[DocumentTypes] ([Id]) ON UPDATE CASCADE, 
 	CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())) ,
-	CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
+	CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
 	CONSTRAINT [CK_Documents__EvidenceTypeId] CHECK ([EvidenceTypeId] IN (N'Authentication', N'SourceDocument', N'Attachment', N'Trust')),
 	CONSTRAINT [FK_Documents__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	CONSTRAINT [FK_Documents__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])

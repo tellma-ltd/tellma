@@ -1,6 +1,7 @@
-﻿CREATE PROCEDURE [dbo].[bll_Documents_Validate__Save]
+﻿CREATE PROCEDURE [bll].[Documents_Validate__Save]
 	@Documents [dbo].[DocumentList] READONLY,
-	@Entries [dbo].DocumentLineEntryList READONLY,
+	@Lines [dbo].[DocumentLineList] READONLY, 
+	@Entries [dbo].[DocumentLineEntryList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
@@ -98,8 +99,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[IfrsAccounts] IA ON A.IfrsAccountId = IA.Id
 	WHERE (E.ExternalReference IS NULL)
 	AND (E.[Direction] = 1 AND IA.[DebitExternalReferenceSetting] = N'Required' OR
-		E.[Direction] = -1 AND IA.[CreditExternalReferenceSetting] = N'Required')
-	AND (E.[EntityState] IN (N'Inserted', N'Updated'));
+		E.[Direction] = -1 AND IA.[CreditExternalReferenceSetting] = N'Required');
 
 	-- Additional Reference is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -112,8 +112,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[IfrsAccounts] IA ON A.IfrsAccountId = IA.Id
 	WHERE (E.[AdditionalReference] IS NULL)
 	AND (E.[Direction] = 1 AND IA.[DebitAdditionalReferenceSetting] = N'Required' OR
-		E.[Direction] = -1 AND IA.[CreditAdditionalReferenceSetting] = N'Required')
-	AND (E.[EntityState] IN (N'Inserted', N'Updated'));
+		E.[Direction] = -1 AND IA.[CreditAdditionalReferenceSetting] = N'Required');
 
 	-- RelatedAgent is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -125,8 +124,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
 	JOIN dbo.[IfrsAccounts] IA ON A.IfrsAccountId = IA.Id
 	WHERE (E.[RelatedAgentId] IS NULL)
-	AND (IA.[RelatedAgentAccountSetting] = N'Required')
-	AND (E.[EntityState] IN (N'Inserted', N'Updated'));
+	AND (IA.[RelatedAgentAccountSetting] = N'Required');
 	
 	-- RelatedResource is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -138,7 +136,6 @@ SET NOCOUNT ON;
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
 	JOIN dbo.[IfrsAccounts] IA ON A.IfrsAccountId = IA.Id
 	WHERE (E.[RelatedResourceId] IS NULL)
-	AND (IA.[RelatedResourceSetting] = N'Required')
-	AND (E.[EntityState] IN (N'Inserted', N'Updated'));
+	AND (IA.[RelatedResourceSetting] = N'Required');
 
 	SELECT @ValidationErrorsJson = (SELECT * FROM @ValidationErrors	FOR JSON PATH);

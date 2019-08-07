@@ -1,10 +1,11 @@
 ﻿BEGIN -- Cleanup & Declarations
-	DECLARE @MeasurementUnitsDTO [dbo].MeasurementUnitList, @MeasurementUnitsIds dbo.[IndexedIdList];
+	DECLARE @MU1 [dbo].MeasurementUnitList, @MU2 [dbo].MeasurementUnitList, @MU3 [dbo].MeasurementUnitList,
+			@MeasurementUnitsIds dbo.[IndexedIdList];
 	DECLARE @ETBUnit INT, @USDUnit INT, @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT,
 			@wmoUnit INT, @hrUnit INT, @yrUnit INT, @dayUnit INT, @moUnit INT;
 END
 BEGIN -- Inserting
-	INSERT INTO @MeasurementUnitsDTO (
+	INSERT INTO @MU1 (
 	[Name], [UnitType], [Description], [UnitAmount], [BaseAmount], [Code]) VALUES
 	(N'AED', N'Money', N'UAE Dirham', 3.67, 1, N'AED'),
 	(N'd', N'Time', N'Day', 1, 86400, NULL),
@@ -32,76 +33,72 @@ BEGIN -- Inserting
 	(N'wyr', N'Time', N'work year', 1, 14976, NULL),
 	(N'yr', N'Time', N'Year', 1, 31104000, NULL);
 
-	EXEC [dbo].[api_MeasurementUnits__Save]
-		@Entities = @MeasurementUnitsDTO,
+	EXEC [api].[MeasurementUnits__Save]
+		@Entities = @MU1,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
+
+	--SELECT * FROM @MU1;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'MeasurementUnits: Place 1'
+		Print 'MeasurementUnits: Inserting'
 		GOTO Err_Label;
 	END
 END
 
 -- Display units whose code starts with m
-DELETE FROM @MeasurementUnitsDTO;
-INSERT INTO @MeasurementUnitsDTO ([Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount], [IsDirty])
-SELECT [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount], 0
+INSERT INTO @MU2 ([Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount])
+SELECT [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
 FROM [dbo].MeasurementUnits
 WHERE [Name] Like 'm%';
+SET @RowCount = @@ROWCOUNT;
 
 -- Inserting
 DECLARE @TestingValidation bit = 0
 IF (@TestingValidation = 1)
-INSERT INTO @MeasurementUnitsDTO
+INSERT INTO @MU2
 	([Name], [UnitType], [Description], [UnitAmount], [BaseAmount], [Code]) Values
 	(N'AED', N'Money', N'AE Dirhams', 3.67, 1, N'AED'),
 	(N'c', N'Time', N'Century', 1, 3110400000, NULL),
 	(N'dozen', N'Count', N'Dazzina', 1, 12, NULL);
 -- Updating
-UPDATE @MeasurementUnitsDTO 
+UPDATE @MU2 
 SET 
 --	[Name] = N'pcs',
-	[Description] = N'Metric Ton',
-	[IsDirty] = 1
+	[Description] = N'Metric Ton' -- Capitalizing the letter T
 WHERE [Name] = N'mt';
 
-DELETE FROM @MeasurementUnitsDTO WHERE [IsDirty] = 0;-- [EntityState] = N'Unchanged';
+-- SELECT * FROM @MU2;
+DELETE FROM @MU2 WHERE [Name] Like 'm%' AND [Name] <> N'mt';
 -- Calling Save API
-EXEC [dbo].[api_MeasurementUnits__Save]
-	@Entities = @MeasurementUnitsDTO,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
+EXEC [api].[MeasurementUnits__Save]
+	@Entities = @MU2,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL
 BEGIN
-	Print 'MeasurementUnits: Place 2'
+	Print 'MeasurementUnits: Updating'
 	GOTO Err_Label;
 END
 
-DELETE FROM @MeasurementUnitsDTO;
-INSERT INTO @MeasurementUnitsDTO ([Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount], [IsDirty])
-SELECT [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount], 0
+INSERT INTO @MU3 ([Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount])
+SELECT [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
 FROM [dbo].MeasurementUnits
 WHERE [Name] Like 'm%';
 
 -- Calling Delete API
-INSERT INTO @MeasurementUnitsIds([Index], [Id]) SELECT [Index], [Id] FROM @MeasurementUnitsDTO
-EXEC [dbo].[api_MeasurementUnits__Delete]
+INSERT INTO @MeasurementUnitsIds([Index], [Id]) SELECT [Index], [Id] FROM @MU3;
+EXEC [api].[MeasurementUnits__Delete]
 	@Ids = @MeasurementUnitsIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
 
+--SELECT * FROM [dbo].[fs_MeasurementUnits]();
+
 IF @ValidationErrorsJson IS NOT NULL
 BEGIN
-	Print 'MeasurementUnits: Place 3'
+	Print 'MeasurementUnits: Deleting'
 	GOTO Err_Label;
 END
-
-	SELECT MU.Code, MU.[Name], MU.[Description], MU.BaseAmount, MU.IsActive, 
-	LUC.[Name] AS CreatedBy, MU.CreatedAt, LUM.[Name] AS ModifiedBy, MU.ModifiedAt, IsDeleted
-	FROM [dbo].MeasurementUnits MU
-	JOIN dbo.[Users] LUC ON MU.CreatedById = LUC.Id
-	JOIN dbo.[Users] LUM ON MU.ModifiedById = LUM.Id
---	WHERE IsDeleted = 0;
 
 SELECT
 	@ETBUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ETB'),

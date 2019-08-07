@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[bll_MeasurementUnits_Validate__Delete]
+﻿CREATE PROCEDURE [bll].[MeasurementUnits_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -12,7 +12,6 @@ SET NOCOUNT ON;
     FROM dbo.MeasurementUnits MU
 	JOIN dbo.[Resources] R ON R.UnitId = MU.Id
 	JOIN @Ids FE ON FE.[Id] = MU.[Id]
-    --WHERE R.IsDeleted = 0
 	OPTION (HASH JOIN);
 
 	SELECT @ValidationErrorsJson = 

@@ -12,14 +12,14 @@ BEGIN
 		RETURN;
 
 	-- Sign the document before posting it
-	EXEC [dbo].[bll_Documents_Validate__Sign]
+	EXEC [bll].[Documents_Filter__Sign]
 		@Entities = @Entities,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dbo].[dal_Documents__Sign] @Entities = @Entities;
+	EXEC [dal].[Documents__Sign] @Entities = @Entities;
 
 	-- Validate, checking available signatures for transaction type
 	EXEC [dbo].[bll_Transactions_Validate__Post]
@@ -29,5 +29,5 @@ BEGIN
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dbo].[dal_Documents_State__Update] @Entities = @Entities, @State = N'Posted';
+	EXEC [dal].[Documents_State__Update] @Entities = @Entities, @State = N'Posted';
 END;

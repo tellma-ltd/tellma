@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [dbo].[dal_MeasurementUnits__Delete]
+﻿CREATE PROCEDURE [dal].[MeasurementUnits__Activate]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@IsDeleted bit
+	@IsActive bit
 AS
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
@@ -10,9 +10,9 @@ AS
 		SELECT [Id]
 		FROM @Ids
 	) AS s ON (t.Id = s.Id)
-	WHEN MATCHED AND (t.[IsDeleted] <> @IsDeleted)
+	WHEN MATCHED AND (t.IsActive <> @IsActive)
 	THEN
 		UPDATE SET 
-			t.[IsDeleted]		= @IsDeleted,
+			t.[IsActive]		= @IsActive,
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId;

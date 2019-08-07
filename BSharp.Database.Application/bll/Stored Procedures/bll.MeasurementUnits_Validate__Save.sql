@@ -1,17 +1,9 @@
-﻿CREATE PROCEDURE [dbo].[bll_MeasurementUnits_Validate__Save]
+﻿CREATE PROCEDURE [bll].[MeasurementUnits_Validate__Save]
 	@Entities [MeasurementUnitList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-    SELECT
-		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_CannotModifyInactiveItem'
-    FROM @Entities
-    WHERE Id IN (SELECT Id from [dbo].[MeasurementUnits] WHERE IsActive = 0)
-	OPTION (HASH JOIN);
 
 	-- Code must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

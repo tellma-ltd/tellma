@@ -22,11 +22,11 @@ BEGIN
 	EXEC [dbo].[dal_Documents__Unsign] @Documents = @Documents;
 	
 	-- get the documents whose state will change
-	DECLARE @TransitionedIds [dbo].[UiidWithStateList];
+	DECLARE @TransitionedIds [dbo].[IdWithStateList];
 	/*
 	INSERT INTO @TransitionedIds([Id])
 	EXEC [dbo].[bll_Documents_State__Select]
 	*/
 	IF EXISTS(SELECT * FROM @TransitionedIds)
-		EXEC dal_Documents_State__Update @Entities = @TransitionedIds
+		EXEC [dal].[Documents_State__Update] @Entities = @TransitionedIds
 END;

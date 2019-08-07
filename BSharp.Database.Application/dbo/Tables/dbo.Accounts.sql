@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Accounts] (
-	[Id]						INT PRIMARY KEY,
+	[Id]						INT CONSTRAINT [PK_Accounts] PRIMARY KEY IDENTITY ,
 	-- For Trial balance reporting based on a custom classification
 	[CustomClassificationId]	INT,
 	-- For IFRS reporting

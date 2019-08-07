@@ -26,16 +26,16 @@ BEGIN
 	Print 'Place: Inserting IfrsConcepts'
 	GOTO Err_Label;
 END
-UPDATE @IfrsDisclosureDetailsDTO SET [IsDirty] = 0;
+
 UPDATE @IfrsDisclosureDetailsDTO
-SET ValidSince = N'2018.08.01', [IsDirty] = 1
+SET ValidSince = N'2018.08.01'
 WHERE [Index] IN (2, 3, 6);
 
 UPDATE @IfrsDisclosureDetailsDTO
-SET ValidSince = N'2018.09.15', [IsDirty] = 1
+SET ValidSince = N'2018.09.15'
 WHERE [Index] IN (5);
 
-DELETE @IfrsDisclosureDetailsDTO WHERE [IsDirty] = 0
+DELETE @IfrsDisclosureDetailsDTO WHERE [Index] NOT IN (2, 3, 5, 6);
 
 INSERT INTO @IfrsDisclosureDetailsDTO ([IfrsDisclosureId],[Value], [ValidSince]) Values
 (N'AddressOfRegisteredOfficeOfEntity', N'Addis Abab, N/S/L, Woreda:01, House:New', N'2018.08.01');

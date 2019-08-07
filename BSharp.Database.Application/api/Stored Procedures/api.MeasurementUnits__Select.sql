@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[api_MeasurementUnits__Select]
+﻿CREATE PROCEDURE [api].[MeasurementUnits__Select]
 	@SearchCriteria NVARCHAR(1024)
 AS
 -- user has read permissions?

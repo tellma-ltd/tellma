@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Resources] (
-	[Id]						INT PRIMARY KEY,
+	[Id]						INT PRIMARY KEY IDENTITY(1,1),
 /*
 	Money,
 	Intangible [rights,..]
@@ -43,7 +43,9 @@
 	[CustomsReference]			NVARCHAR (255), -- how it is referred to by Customs
 	[UniversalProductCode]		NVARCHAR (255), -- for barcode readers
 	[PreferredSupplierId]		INT,-- FK, Table Agents, specially for purchasing
---	Useful for smart posting
+--	Useful for smart posting, we may need a list of compatible accounts ResourceId, AccountId.
+-- If no compatible list, we get all accounts compatible with IFRS. They come at the top
+-- Must have in the tree at least one account per warehouse.
 	[ExpenseAccountId]			INT,
 	[RevenueAccountId]			INT,
 	-- The following properties are user-defined, used for reporting
