@@ -20,7 +20,7 @@ namespace BSharp.Data.Queries
     {
         // From constructor
         private readonly SqlConnection _conn;
-        private readonly Func<Type, string> _sources;
+        private readonly Func<Type, SqlSource> _sources;
         private readonly IStringLocalizer _localizer;
         private readonly int _userId;
         private readonly TimeZoneInfo _userTimeZone;
@@ -45,7 +45,7 @@ namespace BSharp.Data.Queries
         /// <param name="localizer">For validation error messages</param>
         /// <param name="userId">Used as context when preparing certain filter expressions</param>
         /// <param name="userTimeZone">Used as context when preparing certain filter expressions</param>
-        public Query(SqlConnection conn, Func<Type, string> sources, IStringLocalizer localizer, int userId, TimeZoneInfo userTimeZone)
+        public Query(SqlConnection conn, Func<Type, SqlSource> sources, IStringLocalizer localizer, int userId, TimeZoneInfo userTimeZone)
         {
             if (!(conn is SqlConnection))
             {
@@ -213,25 +213,17 @@ namespace BSharp.Data.Queries
 
             // Prepare the parameters
             var ps = new SqlStatementParameters();
-            if (_parameters != null)
-            {
-                // If explicit parameters were provided in a FromSql call, use them
-                foreach (var p in _parameters)
-                {
-                    ps.AddParameter(p);
-                }
-            }
 
             // Prepare the sources
             var sources = _sources;
             if (!string.IsNullOrWhiteSpace(_composableSql))
             {
-                // If a composable SQL is provided in FromSql call, use it as the source of T rather than the default
+                // If a composable SQL is provided in a FromSql call, use it as the source of T rather than the default
                 sources = (t) =>
                 {
                     if (t == typeof(T))
                     {
-                        return $@"({_composableSql})";
+                        return new SqlSource($@"({_composableSql})", _parameters);
                     }
                     else
                     {
@@ -240,8 +232,11 @@ namespace BSharp.Data.Queries
                 };
             }
 
+            // Get raw SQL sources
+            var rawSources = QueryTools.RawSources(sources, ps);
+
             // Load the statement
-            var sql = flatQuery.PrepareStatement(_sources, ps, _userId, _userTimeZone).Sql;
+            var sql = flatQuery.PrepareStatement(rawSources, ps, _userId, _userTimeZone).Sql;
             sql = QueryTools.IndentLines(sql);
             sql = $@"SELECT COUNT(*) As [Count] FROM (
 {sql}
@@ -477,18 +472,10 @@ namespace BSharp.Data.Queries
             root.Skip = _skip;
             root.Top = _top;
 
-            // ------------------------ Step #1
+            // ------------------------ Step #2
 
             // Prepare the parameters
             var ps = new SqlStatementParameters();
-            if (_parameters != null)
-            {
-                // If explicit parameters were provided in a FromSql call, use them
-                foreach (var p in _parameters)
-                {
-                    ps.AddParameter(p);
-                }
-            }
 
             // Prepare the sources
             var sources = _sources;
@@ -499,7 +486,7 @@ namespace BSharp.Data.Queries
                 {
                     if (t == typeof(T))
                     {
-                        return $@"({_composableSql})";
+                        return new SqlSource($@"({_composableSql})", _parameters);
                     }
                     else
                     {
@@ -508,9 +495,12 @@ namespace BSharp.Data.Queries
                 };
             }
 
+            // Get raw SQL sources
+            var rawSources = QueryTools.RawSources(sources, ps);
+
             // Prepare the SqlStatements
             List<(IQueryInternal, SqlStatement)> queries = segments.Cast<IQueryInternal>().Select(q =>
-                (q, q.PrepareStatement(_sources, ps, _userId, _userTimeZone))).ToList(); // The order matters for the Entity loader
+                (q, q.PrepareStatement(rawSources, ps, _userId, _userTimeZone))).ToList(); // The order matters for the Entity loader
 
             // Load the entities
             var result = await EntityLoader.LoadStatements<T>(
@@ -600,14 +590,6 @@ namespace BSharp.Data.Queries
 
             // Prepare the parameters
             var ps = new SqlStatementParameters();
-            if (_parameters != null)
-            {
-                // If explicit parameters were provided in a FromSql call, use them
-                foreach (var p in _parameters)
-                {
-                    ps.AddParameter(p);
-                }
-            }
 
             // Prepare the sources
             var sources = _sources;
@@ -618,7 +600,7 @@ namespace BSharp.Data.Queries
                 {
                     if (t == typeof(T))
                     {
-                        return $@"({_composableSql})";
+                        return new SqlSource($@"({_composableSql})", _parameters);
                     }
                     else
                     {
@@ -627,11 +609,14 @@ namespace BSharp.Data.Queries
                 };
             }
 
+            // Get raw SQL sources
+            var rawSources = QueryTools.RawSources(sources, ps);
+
             // Use the internal query to create the SQL
-            var sourceSql = flatQuery.PrepareStatement(sources, ps, _userId, _userTimeZone).Sql;
+            var sourceSql = flatQuery.PrepareStatement(rawSources, ps, _userId, _userTimeZone).Sql;
 
             // Prepare a new sources function that uses the above SQL to override the default SQL for type T
-            string SourceOverride(Type t)
+            string RawSourceOverride(Type t)
             {
                 if (t == typeof(T))
                 {
@@ -639,7 +624,7 @@ namespace BSharp.Data.Queries
                 }
                 else
                 {
-                    return sources(t);
+                    return rawSources(t);
                 }
             }
 
@@ -660,9 +645,9 @@ namespace BSharp.Data.Queries
                     Filter = criteriaExp,
                 };
 
-                SqlJoinClause joinClause = criteriaQuery.JoinSql();
-                string joinSql = joinClause.ToSql(SourceOverride);
-                string whereSql = criteriaQuery.WhereSql(SourceOverride, joinClause.JoinTree, ps, _userId, _userTimeZone);
+                JoinTree joinTree = criteriaQuery.JoinSql();
+                string joinSql = joinTree.GetSql(RawSourceOverride);
+                string whereSql = criteriaQuery.WhereSql(RawSourceOverride, joinTree, ps, _userId, _userTimeZone);
 
 
                 var sqlBuilder = new StringBuilder();
@@ -765,7 +750,6 @@ UNION
                 PathValidator expandPathTree = new PathValidator();
                 foreach (var atom in expandExp)
                 {
-                    // AddPath(atom.Path);
                     expandPathTree.AddPath(atom.Path);
                 }
 
@@ -838,6 +822,9 @@ UNION
             /// </summary>
             public bool IsParent { get; set; }
 
+            /// <summary>
+            /// Create a path tree using the provided rood type and collection of paths
+            /// </summary>
             public static PathTree Build(Type type, IEnumerable<string[]> paths)
             {
                 var root = new PathTree { Type = type, IsList = true, IsParent = false };

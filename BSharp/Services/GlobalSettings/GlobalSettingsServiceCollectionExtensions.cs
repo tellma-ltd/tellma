@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if(config != null)
             {
-                services.Configure<GlobalSettingsCacheConfiguration>(config.GetSection("GlobalSettingsCache"));
+                services.Configure<GlobalSettingsCacheOptions>(config.GetSection("GlobalSettingsCache"));
             }
 
             // Register DI service

@@ -18,8 +18,8 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Creates a new <see cref="JoinTree"/>
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="foreignKeyName"></param>
+        /// <param name="type">The root <see cref="Entity"/> type of this join tree</param>
+        /// <param name="foreignKeyName">Optionally: the foreign key pointing to the parent join tree</param>
         public JoinTree(Type type, string foreignKeyName = null)
         {
             Type = type ?? throw new ArgumentNullException(nameof(type));
@@ -77,13 +77,7 @@ namespace BSharp.Data.Queries
                 throw new ArgumentNullException(nameof(sources));
             }
 
-            var source = sources(Type);
-            if (string.IsNullOrWhiteSpace(source))
-            {
-                // Developer mistake
-                throw new InvalidOperationException($"Type {Type.Name} does not have a valid source string");
-            }
-
+            string source = sources(Type);
             StringBuilder builder = new StringBuilder();
             if (parentSymbol == null)
             {

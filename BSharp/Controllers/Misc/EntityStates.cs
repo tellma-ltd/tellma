@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.Misc
 {
+    // TODO: Delete
     public static class EntityStates
     {
         public const string Inserted = nameof(Inserted);

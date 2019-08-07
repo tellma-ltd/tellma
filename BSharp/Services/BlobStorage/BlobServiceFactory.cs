@@ -6,11 +6,11 @@ namespace BSharp.Services.BlobStorage
 {
     public class BlobServiceFactory : IBlobServiceFactory
     {
-        private readonly BlobServiceConfiguration _config;
+        private readonly BlobServiceOptions _config;
         private readonly ApplicationContext _db;
-        private readonly ITenantIdProvider _tenantIdProvider;
+        private readonly ITenantIdAccessor _tenantIdProvider;
 
-        public BlobServiceFactory(IOptions<BlobServiceConfiguration> options, ApplicationContext db, ITenantIdProvider tenantIdProvider)
+        public BlobServiceFactory(IOptions<BlobServiceOptions> options, ApplicationContext db, ITenantIdAccessor tenantIdProvider)
         {
             _config = options.Value;
             _db = db;

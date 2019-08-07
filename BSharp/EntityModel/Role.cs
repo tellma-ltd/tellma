@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.EntityModel
 {
     [StrongEntity]
-    public class RoleForSave<TPermission, TRoleMembership> : EntityKeyBase<int>
+    public class RoleForSave<TPermission, TRoleMembership> : EntityWithKey<int>
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]

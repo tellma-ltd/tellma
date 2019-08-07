@@ -9,7 +9,7 @@ namespace BSharp.EntityModel
     // Permissions are always retrieved and saved as a child collection of some other strong entity
     // We call it "semi"- weak because it comes associated with more than one strong entity
 
-    public class PermissionForSave : EntityKeyBase<int>
+    public class PermissionForSave : EntityWithKey<int>
     {
         [Display(Name = "Permission_View")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]

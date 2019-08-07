@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class EmailServiceCollectionExtensions
     {
-        public static IServiceCollection AddEmail(this IServiceCollection services, Action<EmailConfiguration> action)
+        public static IServiceCollection AddEmail(this IServiceCollection services, Action<EmailOptions> action)
         {
             if (services == null)
             {
@@ -24,6 +24,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddEmail(this IServiceCollection services, IConfiguration config = null)
         {
+            throw new Exception("Your ConfigureServicesError trick works!");
+
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
@@ -32,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
             if (config != null)
             {
                 // Add configuration
-                services.Configure<EmailConfiguration>(config);
+                services.Configure<EmailOptions>(config);
             }
 
             // Register the services

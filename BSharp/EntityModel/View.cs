@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.EntityModel
 {
     [StrongEntity]
-    public class ViewForSave<TPermission> : EntityKeyBase<string>
+    public class ViewForSave<TPermission> : EntityWithKey<string>
     {
         [ForeignKey(nameof(Permission.ViewId))]
         [Display(Name = "Permissions")]

@@ -17,7 +17,7 @@ namespace BSharp.Data.Queries
     {
         // From constructor
         private readonly SqlConnection _conn;
-        private readonly Func<Type, string> _sources;
+        private readonly Func<Type, SqlSource> _sources;
         private readonly IStringLocalizer _localizer;
         private readonly int _userId;
         private readonly TimeZoneInfo _userTimeZone;
@@ -36,7 +36,7 @@ namespace BSharp.Data.Queries
         /// <param name="localizer">For validation error messages</param>
         /// <param name="userId">Used as context when preparing certain filter expressions</param>
         /// <param name="userTimeZone">Used as context when preparing certain filter expressions</param>
-        public AggregateQuery(SqlConnection conn, Func<Type, string> sources, IStringLocalizer localizer, int userId, TimeZoneInfo userTimeZone)
+        public AggregateQuery(SqlConnection conn, Func<Type, SqlSource> sources, IStringLocalizer localizer, int userId, TimeZoneInfo userTimeZone)
         {
             _conn = conn;
             _sources = sources;
@@ -198,7 +198,8 @@ namespace BSharp.Data.Queries
 
             // Prepare the statement from the internal query
             var ps = new SqlStatementParameters();
-            SqlStatement statement = query.PrepareStatement(_sources, ps, _userId, _userTimeZone);
+            var rawSources = QueryTools.RawSources(_sources, ps);
+            SqlStatement statement = query.PrepareStatement(rawSources, ps, _userId, _userTimeZone);
 
             // load the entities and return them
             var queries = new List<(IQueryInternal Query, SqlStatement Statement)> { (query, statement) };

@@ -76,7 +76,6 @@
     <Folder Include="dal" />
     <Folder Include="bll\Stored Procedures" />
     <Folder Include="dal\Stored Procedures" />
-    <Folder Include="dal\Functions" />
     <Folder Include="api\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>

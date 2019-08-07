@@ -119,11 +119,11 @@ namespace BSharp.Data.Queries
         }
 
         /// <summary>
-        /// Turns a filter expression into an SQL WHERE clause (without the WHERE keyword), adds all required parameters into the SqlStatementParameters
+        /// Turns a filter expression into an SQL WHERE clause (without the WHERE keyword), adds all required parameters into the <see cref="SqlStatementParameters"/>
         /// </summary>
         public static string FilterToSql(FilterExpression e, Func<Type, string> sources, SqlStatementParameters ps, JoinTree joinTree, int currentUserId, TimeZoneInfo currentUserTimeZone)
         {
-            if(e == null)
+            if (e == null)
             {
                 return null;
             }
@@ -171,7 +171,7 @@ namespace BSharp.Data.Queries
                     if (isHierarchyId)
                     {
                         var idType = join.Type.GetProperty("Id")?.PropertyType;
-                        if(idType == null)
+                        if (idType == null)
                         {
                             // Programmer mistake
                             throw new InvalidOperationException($"Type {join.Type} is a tree structure but has no Id property");
@@ -269,7 +269,7 @@ namespace BSharp.Data.Queries
                                     throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
                                 }
 
-                                var treeSource = sources(join.Type);
+                                string treeSource = sources(join.Type);
                                 string parentNode = isNull ? "HierarchyId::GetRoot()" :
                                     $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
 
@@ -284,7 +284,7 @@ namespace BSharp.Data.Queries
                                     throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
                                 }
 
-                                var treeSource = sources(join.Type);
+                                string treeSource = sources(join.Type);
                                 string parentNode = isNull ? "HierarchyId::GetRoot()" :
                                     $"(SELECT [Node] FROM {treeSource} As [T] WHERE [T].[Id] = {paramSymbol})";
 
@@ -348,6 +348,31 @@ namespace BSharp.Data.Queries
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Changes a function mapping a <see cref="Type"/> to <see cref="SqlSource"/> into a function mapping a <see cref="Type"/> to raw SQL strings.
+        /// The <see cref="SqlSource.Parameters"/> are automatically added to the <see cref="SqlStatementParameters"/> inside the function whenever a 
+        /// source is requested
+        /// </summary>
+        public static Func<Type, string> RawSources(Func<Type, SqlSource> sources, SqlStatementParameters ps)
+        {
+            // This hashset ensures that parameters to request a certain type are only added once
+            var aleadyRequested = new HashSet<Type>();
+            return (t) =>
+            {
+                var source = sources(t);
+                if (aleadyRequested.Add(t) && source.Parameters != null)
+                {
+                    foreach (var p in source.Parameters)
+                    {
+                        ps.AddParameter(p);
+                    }
+                }
+
+                // Return the raw SQL script
+                return source.SQL;
+            };
         }
     }
 }

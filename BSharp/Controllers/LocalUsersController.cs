@@ -33,12 +33,12 @@ namespace BSharp.Controllers
     {
         private readonly ApplicationContext _db;
         private readonly AdminContext _adminDb;
-        private readonly ITenantIdProvider _tenantIdProvider;
+        private readonly ITenantIdAccessor _tenantIdProvider;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger<LocalUsersController> _logger;
         private readonly IEmailSender _emailSender;
         private readonly EmailTemplatesProvider _emailTemplates;
-        private readonly GlobalConfiguration _config;
+        private readonly GlobalOptions _config;
         private readonly IStringLocalizer<LocalUsersController> _localizer;
         private readonly ITenantUserInfoAccessor _tenantInfo;
         private readonly IBlobService _blobService;
@@ -49,12 +49,12 @@ namespace BSharp.Controllers
             AdminContext adminDb,
             IModelMetadataProvider metadataProvider,
             ILogger<LocalUsersController> logger,
-            IOptions<GlobalConfiguration> options,
+            IOptions<GlobalOptions> options,
             IServiceProvider serviceProvider,
             IEmailSender emailSender,
             EmailTemplatesProvider emailTemplates,
             IStringLocalizer<LocalUsersController> localizer,
-            ITenantIdProvider tenantIdProvider,
+            ITenantIdAccessor tenantIdProvider,
             ITenantUserInfoAccessor tenantInfo,
             IBlobService blobService) : base(logger, localizer, serviceProvider)
         {

@@ -1,6 +1,8 @@
 ﻿using BSharp.Controllers.DTO;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Data.Queries;
+using BSharp.EntityModel;
 using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.OData;
@@ -26,7 +28,7 @@ namespace BSharp.Controllers
 {
     [Route("api/measurement-units")]
     [LoadTenantInfo]
-    public class MeasurementUnitsController : CrudControllerBase<MeasurementUnitForSave, MeasurementUnit, int?>
+    public class MeasurementUnitsController : CrudControllerBase<MeasurementUnitForSave, MeasurementUnit, int>
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
@@ -146,10 +148,10 @@ MERGE INTO [dbo].MeasurementUnits AS t
 
                 var name = nameof(MeasurementUnit.Name);
                 var name2 = nameof(MeasurementUnit.Name2);
-                // var name3 = nameof(MeasurementUnit.Name3); // TODO
+                var name3 = nameof(MeasurementUnit.Name3); // TODO
                 var code = nameof(MeasurementUnit.Code);
 
-                query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
+                query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }
 
             return query;
@@ -160,20 +162,8 @@ MERGE INTO [dbo].MeasurementUnits AS t
             // Hash the indices for performance
             var indices = entities.ToIndexDictionary();
 
-            // Check that Ids make sense in relation to EntityState, and that no entity is DELETED
-            // All these errors indicate a bug
-            foreach (var entity in entities)
-            {
-                if (entity.EntityState == EntityStates.Deleted)
-                {
-                    // Won't be supported for this API
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", _localizer["MeasurementUnits"]]);
-                }
-            }
-
             // Check that Ids are unique
-            var duplicateIds = entities.Where(e => e.Id != null).GroupBy(e => e.Id.Value).Where(g => g.Count() > 1);
+            var duplicateIds = entities.Where(e => e.Id != 0).GroupBy(e => e.Id).Where(g => g.Count() > 1);
             foreach (var groupWithDuplicateIds in duplicateIds)
             {
                 foreach (var entity in groupWithDuplicateIds)

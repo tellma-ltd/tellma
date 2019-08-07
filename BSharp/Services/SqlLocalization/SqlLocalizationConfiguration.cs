@@ -9,6 +9,5 @@ namespace BSharp.Services.SqlLocalization
     {
         public string DefaultCulture { get; set; } = "en-GB";
         public string DefaultUICulture { get; set; } = "en";
-        public int CacheExpirationMinutes { get; set; } = 120;
     }
 }

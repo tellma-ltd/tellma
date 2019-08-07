@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BSharp.EntityModel
 {
-    public class ViewAction : EntityKeyBase<string>
+    public class ViewAction : EntityWithKey<int>
     {
         [AlwaysAccessible]
         public string ViewId { get; set; }

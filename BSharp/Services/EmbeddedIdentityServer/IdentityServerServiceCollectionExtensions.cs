@@ -1,6 +1,4 @@
-﻿using BSharp.Data;
-using BSharp.Data.Model;
-using BSharp.Services.EmbeddedIdentityServer;
+﻿using BSharp.Services.EmbeddedIdentityServer;
 using BSharp.Services.Utilities;
 using IdentityModel;
 using IdentityServer4.Models;
@@ -23,8 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// only authenticates a single web client and a single mobile client, the technician need only provide a valid
         /// signing certificate in the environment and set its thumbprint in a configuration provider
         /// </summary>
-        public static IServiceCollection AddEmbeddedIdentityServerIfEnabled(
-            this IServiceCollection services, IConfiguration config, IHostingEnvironment env)
+        public static IServiceCollection AddEmbeddedIdentityServer(this IServiceCollection services,
+            IConfiguration configSection, IConfiguration clientsConfigSection, IMvcBuilder mvcBuilder, bool isDevelopment)
         {
             // basic sanity checks
             if (services == null)
@@ -32,43 +30,36 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (config == null)
+            if (configSection == null)
             {
-                throw new ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(configSection));
             }
 
-            // Check that the embedded identity server is enabled
-            var enabled = config["EmbeddedIdentityServerEnabled"];
-            if (enabled?.ToLower() != "true")
-            {
-                return services;
-            }
-
-            // Get the section
-            var embeddedIdentitySection = config.GetSection("EmbeddedIdentityServer");
+            // Extract the configuration section of Identity Server into a strongly typed object that is easier to deal with
+            var config = configSection.Get<EmbeddedIdentityServerOptions>();
 
             // Register the identity context
-            services.AddDbContext<IdentityContext>(opt =>
-                opt.UseSqlServer(config.GetConnectionString(Constants.IdentityConnection)));
+            string connString = config?.ConnectionString ?? throw new Exception("To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider");
+            services.AddDbContext<EmbeddedIdentityServerContext>(opt =>
+                    opt.UseSqlServer(connString));
 
-            // Setup configurations
-            services.Configure<IdentityOptions>(embeddedIdentitySection);
+            // Setup the identity options (password requirements, lockout, etc)
+            services.Configure<IdentityOptions>(configSection);
 
-            // Increase the default tokens expiry from 1 day to 3 days
+            // Increase the default email and password reset tokens lifespan from 1 day to 3 days
             services.Configure<DataProtectionTokenProviderOptions>(opt =>
                     opt.TokenLifespan = TimeSpan.FromDays(Constants.TokenExpiryInDays));
 
             // Add default identity setup for the embedded IdentityServer instance
-            services.AddIdentity<User, IdentityRole>(opt =>
+            services.AddIdentity<EmbeddedIdentityServerUser, IdentityRole>(opt =>
             {
-                // When the server is online, the system should require a a valid email
-                // opt.SignIn.RequireConfirmedEmail = config["Online"]?.ToLower() == "true";
                 opt.SignIn.RequireConfirmedEmail = true;
+                opt.User.RequireUniqueEmail = true;
             })
                 .AddErrorDescriber<LocalizedIdentityErrorDescriptor>()
                 .AddDefaultTokenProviders()
                 // Use the identity context database
-                .AddEntityFrameworkStores<IdentityContext>();
+                .AddEntityFrameworkStores<EmbeddedIdentityServerContext>();
 
             // For windows authentication
             services.Configure<IISOptions>(opt =>
@@ -78,7 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             // Add identity server
-            services.Configure<ClientStoreConfiguration>(config.GetSection("ClientStore"));
+            services.Configure<ClientApplicationsOptions>(clientsConfigSection);
             var builder = services.AddIdentityServer(opt =>
             {
                 opt.UserInteraction.LoginUrl = "/identity/sign-in";
@@ -88,74 +79,91 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddInMemoryIdentityResources(GetIdentityResources())
                 .AddInMemoryApiResources(GetApiResources())
 
-                // This one uses the ClientStoreConfiguration configured earlier
+                // This one uses the ClientsConfiguration configured earlier
                 .AddClientStore<DefaultsToSameOriginClientStore>()
-                .AddAspNetIdentity<User>();
+                .AddAspNetIdentity<EmbeddedIdentityServerUser>();
 
             // Add signing credentials
-            if (env.IsDevelopment())
+            if (isDevelopment)
             {
+                // Not secure, good for development only
                 builder.AddDeveloperSigningCredential();
             }
             else
             {
-                var certThumbprint = embeddedIdentitySection["X509Certificate2Thumbprint"];
-                X509Certificate2 cert = null;
-                if (!string.IsNullOrWhiteSpace(certThumbprint))
-                {
-                    using (X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser))
-                    {
-                        certStore.Open(OpenFlags.ReadOnly);
-                        X509Certificate2Collection certCollection = certStore.Certificates.Find(
-                                                   X509FindType.FindByThumbprint, certThumbprint, validOnly: false);
+                var certThumbprint = config?.X509Certificate2Thumbprint ?? 
+                    throw new Exception("To enable the embedded IdentityServer in production, a valid X509 certificate thumbprint must be specified in a configuration provider");
 
-                        // Get the first cert with the thumbprint
-                        if (certCollection.Count > 0)
-                        {
-                            cert = certCollection[0];
-                            builder.AddSigningCredential(cert);
-                        }
-                        else
-                        {
-                            throw new Exception("Specified X509 certificate thumbprint was not found");
-                        }
-                    }
-                }
-                else
+                using (X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser))
                 {
-                    throw new Exception("To enable the embedded Identity Server, a valid X509 certificate thumbprint must be specified in a configuration provider");
+                    certStore.Open(OpenFlags.ReadOnly);
+                    X509Certificate2Collection certCollection = certStore.Certificates.Find(
+                                               X509FindType.FindByThumbprint, certThumbprint, validOnly: false);
+
+                    // Get the first cert with the thumbprint
+                    if (certCollection.Count > 0)
+                    {
+                        X509Certificate2 cert = certCollection[0];
+                        builder.AddSigningCredential(cert);
+                    }
+                    else
+                    {
+                        throw new Exception($"The specified X509 certificate thumbprint '{certThumbprint}' was not found");
+                    }
                 }
             }
 
             // add external providers
             var authBuilder = services.AddAuthentication();
 
-            var googleSection = embeddedIdentitySection.GetSection("Google");
-            var googleClientId = googleSection["ClientId"];
-            var googleClientSecret = googleSection["ClientSecret"];
-            if (!string.IsNullOrWhiteSpace(googleClientId))
+            if (config?.Google != null && config.Google.ClientId != null)
             {
                 authBuilder.AddGoogle("Google", "Google", opt =>
                 {
-                    opt.ClientId = googleClientId;
-                    opt.ClientSecret = googleClientSecret;
+                    opt.ClientId = config.Google.ClientId;
+                    opt.ClientSecret = config.Google.ClientSecret;
                 });
             }
 
-            var microsoftSection = embeddedIdentitySection.GetSection("Microsoft");
-            var microsoftClientId = microsoftSection["ClientId"];
-            var microsoftClientSecret = microsoftSection["ClientSecret"];
-            if (!string.IsNullOrWhiteSpace(microsoftClientId))
+            if (config?.Microsoft != null && config.Microsoft.ClientId != null)
             {
                 authBuilder.AddMicrosoftAccount("Microsoft", "Microsoft", opt =>
                 {
-                    opt.ClientId = microsoftClientId;
-                    opt.ClientSecret = microsoftClientSecret;
+                    opt.ClientId = config.Microsoft.ClientId;
+                    opt.ClientSecret = config.Microsoft.ClientSecret;
                 });
             }
 
+            // Configure cookie authentication for the embedded identity server
+            services.ConfigureApplicationCookie(opt =>
+            {
+                opt.ExpireTimeSpan = TimeSpan.FromDays(config.CookieSessionLifetimeInDays);
+                opt.SlidingExpiration = true;
+                opt.LoginPath = $"/identity/sign-in";
+                opt.LogoutPath = $"/identity/sign-out";
+                opt.AccessDeniedPath = $"/identity/access-denied";
+            });
+
+            // Add the Identity Server web pages (sign-in, change password, etc...)
+            mvcBuilder.AddRazorPagesOptions(opt =>
+            {
+                opt.AllowAreas = true;
+                opt.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
+                opt.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+
+            });
+
             return services;
         }
+
+        /// <summary>
+        /// Embedded IdentityServer middleware
+        /// </summary>
+        public static IApplicationBuilder UseEmbeddedIdentityServer(this IApplicationBuilder app)
+        {
+            return app.UseIdentityServer();
+        }
+
 
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {

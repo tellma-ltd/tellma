@@ -6,6 +6,12 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class BlobServiceCollectionExtensions
     {
+        /// <summary>
+        /// Registers the applications that 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public static IServiceCollection AddBlobService(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
@@ -15,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if(config != null)
             {
-                services.Configure<BlobServiceConfiguration>(config);
+                services.Configure<BlobServiceOptions>(config);
             }
 
             services.AddScoped<IBlobServiceFactory, BlobServiceFactory>();

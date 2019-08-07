@@ -2,7 +2,6 @@
 using BSharp.Controllers.Misc;
 using BSharp.Data.Model;
 using BSharp.Services.MultiTenancy;
-using BSharp.Services.OData;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

@@ -18,9 +18,9 @@ namespace BSharp.Services.GlobalSettings
 
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly IServiceProvider _serviceProvider;
-        private readonly GlobalSettingsCacheConfiguration _config;
+        private readonly GlobalSettingsCacheOptions _config;
 
-        public GlobalSettingsCache(IServiceProvider serviceProvider, IOptions<GlobalSettingsCacheConfiguration> options)
+        public GlobalSettingsCache(IServiceProvider serviceProvider, IOptions<GlobalSettingsCacheOptions> options)
         {
             _serviceProvider = serviceProvider;
             _config = options.Value;

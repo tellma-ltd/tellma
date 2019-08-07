@@ -23,7 +23,7 @@
     /// Base class of all entities that have an Id property
     /// </summary>
     /// <typeparam name="TKey">The type of the Id property</typeparam>
-    public abstract class EntityKeyBase<TKey> : EntityWithKey
+    public abstract class EntityWithKey<TKey> : EntityWithKey
     {
         /// <summary>
         /// This is an integer for entities that have a simple integer Id in the SQL database,

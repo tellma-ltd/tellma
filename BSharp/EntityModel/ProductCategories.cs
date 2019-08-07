@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.EntityModel
 {
     [StrongEntity]
-    public class ProductCategoryForSave : EntityKeyBase<int>
+    public class ProductCategoryForSave : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }

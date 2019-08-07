@@ -2,35 +2,37 @@
 
 namespace BSharp.Services.MultiTenancy
 {
-    public class TenantUserInfoAccessor : ITenantUserInfoAccessor
-    {
-        private readonly IHttpContextAccessor _contextAccessor;
-        private readonly ITenantIdProvider _tenantIdProvider;
+    // TODO: Delete
 
-        public TenantUserInfoAccessor(IHttpContextAccessor contextAccessor, ITenantIdProvider tenantIdProvider)
-        {
-            _contextAccessor = contextAccessor;
-            _tenantIdProvider = tenantIdProvider;
-        }
+    //public class TenantUserInfoAccessor : ITenantUserInfoAccessor
+    //{
+    //    private readonly IHttpContextAccessor _contextAccessor;
+    //    private readonly ITenantIdAccessor _tenantIdProvider;
 
-        public TenantUserInfo GetInfo(int tenantId)
-        {
-            return _contextAccessor.HttpContext.Items[Key(tenantId)] as TenantUserInfo;
-        }
+    //    public TenantUserInfoAccessor(IHttpContextAccessor contextAccessor, ITenantIdAccessor tenantIdProvider)
+    //    {
+    //        _contextAccessor = contextAccessor;
+    //        _tenantIdProvider = tenantIdProvider;
+    //    }
 
-        public void SetInfo(int tenantId, TenantUserInfo info)
-        {
-            _contextAccessor.HttpContext.Items[Key(tenantId)] = info;
-        }
+    //    public TenantUserInfo GetInfo(int tenantId)
+    //    {
+    //        return _contextAccessor.HttpContext.Items[Key(tenantId)] as TenantUserInfo;
+    //    }
 
-        public TenantUserInfo GetCurrentInfo()
-        {
-            return GetInfo(_tenantIdProvider.GetTenantId().Value);
-        }
+    //    public void SetInfo(int tenantId, TenantUserInfo info)
+    //    {
+    //        _contextAccessor.HttpContext.Items[Key(tenantId)] = info;
+    //    }
 
-        private string Key(int tenantId)
-        {
-            return $"Tenant-Info-{tenantId}";
-        }
-    }
+    //    public TenantUserInfo GetCurrentInfo()
+    //    {
+    //        return GetInfo(_tenantIdProvider.GetTenantId().Value);
+    //    }
+
+    //    private string Key(int tenantId)
+    //    {
+    //        return $"Tenant-Info-{tenantId}";
+    //    }
+    //}
 }

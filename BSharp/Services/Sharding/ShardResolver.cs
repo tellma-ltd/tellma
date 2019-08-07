@@ -25,15 +25,15 @@ namespace BSharp.Services.Sharding
         // This efficient lock prevents concurrency issues when updating the cache
         private static ReaderWriterLockSlim _shardingLock = new ReaderWriterLockSlim();
 
-        private readonly ITenantIdProvider _tenantIdProvider;
+        private readonly ITenantIdAccessor _tenantIdProvider;
         private readonly IServiceProvider _serviceProvider;
         private readonly IMemoryCache _cache;
         private readonly IConfiguration _config;
 
-        public ShardResolver(ITenantIdProvider tenantIdProvider,
-            IServiceProvider serviceProvider, IMemoryCache cache, IConfiguration config)
+        public ShardResolver(ITenantIdAccessor tenantIdAccessor, IServiceProvider serviceProvider,
+            IMemoryCache cache, IConfiguration config)
         {
-            _tenantIdProvider = tenantIdProvider;
+            _tenantIdProvider = tenantIdAccessor;
             _serviceProvider = serviceProvider;
             _cache = cache;
             _config = config;

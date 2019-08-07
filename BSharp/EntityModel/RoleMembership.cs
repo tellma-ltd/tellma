@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.EntityModel
 {
-    public class RoleMembershipForSave : EntityKeyBase<int>
+    public class RoleMembershipForSave : EntityWithKey<int>
     {
         [Display(Name = "RoleMembership_User")]
         [AlwaysAccessible]

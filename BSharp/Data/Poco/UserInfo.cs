@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BSharp.Data
+﻿namespace BSharp.Data
 {
     /// <summary>
-    /// A class for storing basic information about the currently authenticated user, information that is retrieved from the database
+    /// A class for storing basic information about the currently authenticated user, information
+    /// that is retrieved from the matching <see cref="EntityModel.User"/> in the tenant database
     /// </summary>
     public class UserInfo
     {
-        // User Info
         public int? UserId { get; set; }
         public string Name { get; set; }
         public string Name2 { get; set; }

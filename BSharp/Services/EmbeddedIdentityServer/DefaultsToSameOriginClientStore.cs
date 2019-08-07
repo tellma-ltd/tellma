@@ -23,9 +23,9 @@ namespace BSharp.Services.EmbeddedIdentityServer
     public class DefaultsToSameOriginClientStore : IClientStore
     {
         private readonly IHttpContextAccessor _accessor;
-        private readonly ClientStoreConfiguration _config;
+        private readonly ClientApplicationsOptions _config;
 
-        public DefaultsToSameOriginClientStore(IHttpContextAccessor accessor, IOptions<ClientStoreConfiguration> options)
+        public DefaultsToSameOriginClientStore(IHttpContextAccessor accessor, IOptions<ClientApplicationsOptions> options)
         {
             _accessor = accessor;
             _config = options.Value;
@@ -35,12 +35,12 @@ namespace BSharp.Services.EmbeddedIdentityServer
         private IEnumerable<Client> GetClients()
         {
             // Determine the ClientApp's URI from the config file
-            var uri = _config.WebClientUri.WithTrailingSlash();
-            if (string.IsNullOrWhiteSpace(uri))
+            var webClientUri = _config?.WebClientUri.WithTrailingSlash();
+            if (string.IsNullOrWhiteSpace(webClientUri))
             {
                 // IF it is not defined, then use the same origin as IdentityServer by default
                 var request = _accessor?.HttpContext?.Request;
-                uri = $"https://{request?.Host}/{request?.PathBase}";
+                webClientUri = $"https://{request?.Host}/{request?.PathBase}";
             }
 
             // return the Application Client Web App
@@ -50,12 +50,12 @@ namespace BSharp.Services.EmbeddedIdentityServer
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
 
-                RedirectUris = { $"{uri}sign-in-callback", $"{uri}assets/silent-refresh-callback.html" },
-                PostLogoutRedirectUris = { $"{uri}welcome" },
-                AllowedCorsOrigins = { uri },
+                RedirectUris = { $"{webClientUri}sign-in-callback", $"{webClientUri}assets/silent-refresh-callback.html" },
+                PostLogoutRedirectUris = { $"{webClientUri}welcome" },
+                AllowedCorsOrigins = { webClientUri },
 
                 RequireConsent = false,
-                AccessTokenLifetime = 60 * 60 * 24 * 3, // 3 days
+                AccessTokenLifetime = 60 * 60 * 24 * (_config?.WebClientAccessTokenLifetimeInDays ?? ClientApplicationsOptions.DEFAULT_ACCESS_TOKEN_LIFETIME_IN_DAYS),
                 AlwaysIncludeUserClaimsInIdToken = true,
 
                 AllowedScopes =
@@ -67,12 +67,11 @@ namespace BSharp.Services.EmbeddedIdentityServer
                     },
             };
 
-            //// TODO: Return the Mobile Client App 
+            /// TODO: Mobile Client App 
             //yield return new Client {
             //    ClientId = "BSharpMobileClient",
             //    AllowedGrantTypes = GrantTypes.Code,
             //    RequirePkce = true,
-
             //};
         }
 

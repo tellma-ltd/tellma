@@ -8,6 +8,7 @@ using BSharp.Services.ApiAuthentication;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace BSharp.Controllers.Misc
 {
@@ -34,11 +35,11 @@ namespace BSharp.Controllers.Misc
             public void OnResourceExecuting(ResourceExecutingContext context)
             {
                 // (1) Make sure the API caller have provided a tenantId
-                var tenantIdProvider = _provider.GetRequiredService<ITenantIdProvider>();
+                var tenantIdProvider = _provider.GetRequiredService<ITenantIdAccessor>();
                 if (!tenantIdProvider.HasTenantId())
                 {
                     // If there is no tenant Id header cut the pipeline short and return a Forbidden result
-                    context.Result = new BadRequestObjectResult($"The required header '{TenantIdProvider.REQUEST_HEADER_TENANT_ID}' was not supplied");
+                    context.Result = new BadRequestObjectResult($"The required header '{TenantIdAccessor.REQUEST_HEADER_TENANT_ID}' was not supplied");
                     return;
                 }
 

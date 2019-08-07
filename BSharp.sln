@@ -14,6 +14,8 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "BSharp.Database.Admin", "BS
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "BSharp.Database.Application", "BSharp.Database.Application\BSharp.Database.Application.sqlproj", "{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "BSharp.Database.Identity", "BSharp.Database.Identity\BSharp.Database.Identity.sqlproj", "{8F9E57E8-8D87-45D2-A521-768161F98B8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,12 @@ Global
 		{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BF2096E3-ED24-4EE1-BEFC-A67C3FFA38B6}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F9E57E8-8D87-45D2-A521-768161F98B8E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

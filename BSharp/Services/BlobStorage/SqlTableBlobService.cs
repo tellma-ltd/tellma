@@ -13,9 +13,9 @@ namespace BSharp.Services.BlobStorage
     {
         private readonly string _notFoundError = "Sorry, the contents of this blob {0} were not found";
         private readonly ApplicationContext _db;
-        private readonly ITenantIdProvider _tenantIdProvider;
+        private readonly ITenantIdAccessor _tenantIdProvider;
 
-        public SqlTableBlobService(ApplicationContext db, ITenantIdProvider tenantIdProvider)
+        public SqlTableBlobService(ApplicationContext db, ITenantIdAccessor tenantIdProvider)
         {
             _db = db;
             _tenantIdProvider = tenantIdProvider;

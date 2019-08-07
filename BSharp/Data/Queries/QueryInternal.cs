@@ -440,7 +440,7 @@ namespace BSharp.Data.Queries
         /// </summary>
         private string PrepareWhere(Func<Type, string> sources, JoinTree joinTree, SqlStatementParameters ps, int currentUserId, TimeZoneInfo currentUserTimeZone)
         {
-            // Where is cached 
+            // WHERE is cached 
             if (_cachedWhere == null)
             {
                 string whereFilter = null;
@@ -453,6 +453,8 @@ namespace BSharp.Data.Queries
 
                 if (Ids != null)
                 {
+                    // TODO Use a simple comparison when there is one Id and a TVP when there are multiple
+
                     string paramName = ps.AddParameter(Ids);
                     var isIntKey = (Nullable.GetUnderlyingType(KeyType) ?? KeyType) == typeof(int);
                     string value = isIntKey ? "CONVERT(INT, VALUE)" : "VALUE";
@@ -511,7 +513,7 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            string orderbySql = ""; //  "ORDER BY Id DESC"; // Default order by
+            string orderbySql = ""; // Default order by
             if (orderbys.Count > 0)
             {
                 orderbySql = "ORDER BY " + string.Join(", ", orderbys);

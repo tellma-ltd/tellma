@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.EntityModel
 {
     [StrongEntity]
-    public class MeasurementUnitForSave : EntityKeyBase<int>
+    public class MeasurementUnitForSave : EntityWithKey<int>
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]

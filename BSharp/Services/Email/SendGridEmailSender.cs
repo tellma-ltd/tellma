@@ -11,10 +11,10 @@ namespace BSharp.Services.Email
 {
     public class SendGridEmailSender : IEmailSender
     {
-        private readonly SendGridConfiguration _config;
+        private readonly SendGridOptions _config;
         private readonly ILogger<SendGridEmailSender> _logger;
 
-        public SendGridEmailSender(SendGridConfiguration config, ILogger<SendGridEmailSender> logger)
+        public SendGridEmailSender(SendGridOptions config, ILogger<SendGridEmailSender> logger)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _logger = logger;

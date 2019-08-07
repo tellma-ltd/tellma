@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers.Misc
 {
+    // TODO: Delete
     public class AbstractPermission
     {
         public string ViewId { get; set; }

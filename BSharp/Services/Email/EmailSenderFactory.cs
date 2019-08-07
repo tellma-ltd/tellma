@@ -7,11 +7,11 @@ namespace BSharp.Services.Email
 {
     public class EmailSenderFactory : IEmailSenderFactory
     {
-        private readonly EmailConfiguration _config;
-        private readonly GlobalConfiguration _globalConfig;
+        private readonly EmailOptions _config;
+        private readonly GlobalOptions _globalConfig;
         private readonly ILogger<SendGridEmailSender> _logger;
 
-        public EmailSenderFactory(IOptions<EmailConfiguration> options, IOptions<GlobalConfiguration> globalOptions, ILogger<SendGridEmailSender> logger)
+        public EmailSenderFactory(IOptions<EmailOptions> options, IOptions<GlobalOptions> globalOptions, ILogger<SendGridEmailSender> logger)
         {
             _config = options.Value;
             _globalConfig = globalOptions.Value;
