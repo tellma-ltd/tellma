@@ -1,6 +1,4 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Ready__Select]
-	@param1 int = 0,
-	@param2 int
+	@Entities [dbo].[IdList] READONLY
 AS
-	SELECT @param1, @param2
-RETURN 0
+	SELECT [Id] FROM @Entities;

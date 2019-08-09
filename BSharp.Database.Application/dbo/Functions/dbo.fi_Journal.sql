@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fi_JournalSummary] (
+﻿CREATE FUNCTION [dbo].[fi_Journal] (-- SELECT * FROM [dbo].[fi_Journal]('01.01.2015','01.01.2020')
 	@fromDate Date = '2000.01.01', 
 	@toDate Date = '2100.01.01'
 ) RETURNS TABLE
@@ -10,31 +10,44 @@ RETURN
 		SELECT 5 As I UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
 	)
 	SELECT
+		V.[Id],
+		V.[DocumentLineId],
 		V.[DocumentId],
 		V.[DocumentDate],
 		V.[SerialNumber],
 		V.[VoucherNumericReference],
 		V.[DocumentTypeId],
+		V.[LineTypeId],
 		V.[Direction],
 		V.[AccountId],
+		V.[IfrsAccountId],
+		V.[AgentId],
 		V.[IfrsNoteId],
 		V.[ResponsibilityCenterId],
 		V.[ResourceId],
+		--R.[UnitId],
 		V.[InstanceId],
 		V.[BatchCode],
-		V.[Quantity],
+		--V.[Quantity],
 -- because too many joins with table Measurement units affects performance, I will only add the 
 -- normalized quantities when needed
 		V.[MoneyAmount],
-		V.[MoneyAmount] * EU.[BaseAmount] / EU.[UnitAmount] As NormalizedMoneyAmount,
+		R.[CurrencyId],
+		-- When financial instruments 
 		V.[Mass],
-		V.[Mass] * MU.[BaseAmount] / MU.[UnitAmount] As NormalizedMass,
-		V.[Volume], 
+		R.[MassUnitId],
+		V.[Volume],
+		R.[VolumeUnitId],
+		--ISNULL(V.[Volume] * VU.[BaseAmount] / VU.[UnitAmount], 0) As NormalizedVolume,		
 		V.[Area],
+		R.[AreaUnitId],
 		V.[Length],
+		R.[LengthUnitId],
 		V.[Time],
+		R.[TimeUnitId],
 		V.[Count],
-		V.[Count] * CU.[BaseAmount] / CU.[UnitAmount] As NormalizedCount,
+		R.[CountUnitId],
+		--ISNULL(V.[Count] * CU.[BaseAmount] / CU.[UnitAmount],0) As NormalizedCount,
 		V.[Value],
 		V.[Memo],
 		V.[ExternalReference],
@@ -43,13 +56,12 @@ RETURN
 		V.[RelatedAccountId],
 		V.[RelatedQuantity],
 		V.[RelatedMoneyAmount]
-	FROM dbo.[TransactionsEntriesSummaryView] V
+	FROM dbo.[DocumentLineEntriesDetailsView] V
 	JOIN dbo.Resources R ON V.ResourceId = R.Id
-	JOIN dbo.MeasurementUnits EU ON R.CurrencyId = EU.Id
-	JOIN dbo.MeasurementUnits MU ON R.MassUnitId = MU.Id
-	--JOIN dbo.MeasurementUnits VU ON R.VolumeUnitId = VU.Id
-	JOIN dbo.MeasurementUnits CU ON R.CountUnitId = CU.Id
-	--JOIN dbo.Resources RR ON V.RelatedResourceId = RR.Id
+	--LEFT JOIN dbo.MeasurementUnits MU ON R.MassUnitId = MU.Id
+	--LEFT JOIN dbo.MeasurementUnits VU ON R.VolumeUnitId = VU.Id
+	--LEFT JOIN dbo.MeasurementUnits CU ON R.CountUnitId = CU.Id
+	--LEFT JOIN dbo.Resources RR ON V.RelatedResourceId = RR.Id
 	WHERE V.[Frequency]		= N'OneTime'
 	AND (@fromDate IS NULL OR [DocumentDate] >= @fromDate)
 	AND (@toDate IS NULL OR [DocumentDate] < @toDate)
@@ -62,7 +74,6 @@ RETURN
 		V.[SerialNumber],
 		V.[VoucherReference],
 		V.[DocumentType],
-		V.[IsSystem],
 		V.[Direction],
 		V.[AccountId],
 		V.[IfrsAccountId],
@@ -120,7 +131,6 @@ RETURN
 		V.[SerialNumber],
 		V.[VoucherReference],
 		V.[DocumentType],
-		V.[IsSystem],
 		V.[Direction],
 		V.[AccountId],
 		V.[IfrsAccountId],
@@ -177,7 +187,6 @@ RETURN
 		V.[SerialNumber],
 		V.[VoucherReference],
 		V.[DocumentType],
-		V.[IsSystem],
 		V.[Direction],
 		V.[AccountId],
 		V.[IfrsAccountId],

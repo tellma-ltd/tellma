@@ -15,9 +15,9 @@ DECLARE @VR1_2 VTYPE, @VRU_3 VTYPE, @Frequency NVARCHAR (255), @P1_2 int, @P1_U 
 		--:r .\14_SalesCycle.sql
 		--:r .\12_ManualMisc.sql
 SELECT @fromDate = '2017.01.01', @toDate = '2017.01.31'
-select [ResponsibilityCenterId], sum([MoneyAmount]) from [DocumentLineEntries]
-group by rollup([ResponsibilityCenterId])
-order by [ResponsibilityCenterId]
+--select [ResponsibilityCenterId], sum([MoneyAmount]) from [DocumentLineEntries]
+--group by rollup([ResponsibilityCenterId])
+--order by [ResponsibilityCenterId]
 --SELECT * from [fi_Journal](@fromDate, @toDate) ORDER BY [Id], [EntryId];
 --EXEC rpt_TrialBalance @fromDate = @fromDate, @toDate = @toDate, @PrintQuery=1;
 --SELECT * FROM dbo.Documents;

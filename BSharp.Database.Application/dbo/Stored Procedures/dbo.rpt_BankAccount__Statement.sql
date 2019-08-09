@@ -22,7 +22,7 @@ BEGIN
 		[RelatedResourceId] As [OtherPartyCurrency],
 		[RelatedAccountId] As [OtherParty],
 		[RelatedMoneyAmount] As [OtherPartyAmount]
-	FROM [dbo].[fi_JournalDetails](@fromDate, @toDate)
+	FROM [dbo].[fi_Journal](@fromDate, @toDate)
 	WHERE [AccountId] = @AccountId;
 END;
 GO;

@@ -1,4 +1,5 @@
-﻿DECLARE @IfrsConcepts AS TABLE (
+﻿-- It is better to have it filled from IfrsDisclosures, IfrsAccounts, and IfrsNotes
+DECLARE @IfrsConcepts AS TABLE (
 	[Id]				NVARCHAR (255),
 	[IfrsType]			NVARCHAR (255)		DEFAULT (N'Regulatory'), -- N'Amendment', N'Extension', N'Regulatory'
 	[Label]				NVARCHAR (1024),
@@ -50,7 +51,6 @@ BEGIN -- Ifrs Concepts list
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'Assets' ,N'Assets', N'Expiry date 2020-01-01: The amount of resources: (a) controlled by the entity as a result of past events; and (b) from which future economic benefits are expected to flow to the entity.');
 	-- Effective 2020-01-01: The amount of a present economic resource controlled by the entity as a result of past events. Economic resource is a right that has the potential to produce economic benefits.');
 
-
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'IssuedCapital' ,N'Issued capital', N'The nominal value of capital issued.');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'RetainedEarnings' ,N'Retained earnings', N'A component of equity representing the entity''s cumulative undistributed earnings or deficit.');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'SharePremium' ,N'Share premium', N'The amount received or receivable from the issuance of the entity''s shares in excess of nominal value.');
@@ -61,8 +61,6 @@ BEGIN -- Ifrs Concepts list
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'NoncontrollingInterests' ,N'Non-controlling interests', N'The amount of equity in a subsidiary not attributable, directly or indirectly, to a parent. [Refer: Subsidiaries [member]]');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'Equity' ,N'Equity', N'The amount of residual interest in the assets of the entity after deducting all its liabilities.');
 
-
-
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'NoncurrentProvisionsForEmployeeBenefits' ,N'Non-current provisions for employee benefits', N'The amount of non-current provisions for employee benefits. [Refer: Provisions for employee benefits]');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'OtherLongtermProvisions' ,N'Other non-current provisions', N'The amount of non-current provisions other than provisions for employee benefits. [Refer: Non-current provisions]');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'NoncurrentProvisions' ,N'Non-current provisions', N'The amount of non-current provisions. [Refer: Provisions]');
@@ -72,7 +70,6 @@ BEGIN -- Ifrs Concepts list
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'OtherNoncurrentFinancialLiabilities' ,N'Other non-current financial liabilities', N'The amount of non-current financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Other financial liabilities]');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'OtherNoncurrentNonfinancialLiabilities' ,N'Other non-current non-financial liabilities', N'The amount of non-current non-financial liabilities that the entity does not separately disclose in the same statement or note. [Refer: Other financial liabilities]');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'NoncurrentLiabilities' ,N'Non-current liabilities', N'The amount of liabilities that do not meet the definition of current liabilities. [Refer: Current liabilities]');
-
 
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'CurrentProvisionsForEmployeeBenefits' ,N'Current provisions for employee benefits', N'The amount of current provisions for employee benefits. [Refer: Provisions for employee benefits]');
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'OtherShorttermProvisions' ,N'Other current provisions', N'The amount of current provisions other than provisions for employee benefits. [Refer: Provisions]');
@@ -7298,7 +7295,7 @@ BEGIN -- Ifrs Concepts list
 END -- Ifrs Concept list
 
 DECLARE @DistinctIfrsConcepts AS TABLE (
-	[Pk]				INT IDENTITY(1,1) PRIMARY KEY,
+	[Pk]				INT IDENTITY PRIMARY KEY,
 	[Id]				NVARCHAR (255)		UNIQUE,
 	[IfrsType]			NVARCHAR (255)		DEFAULT (N'Regulatory') NOT NULL, -- N'Amendment', N'Extension', N'Regulatory'
 	[IsActive]			BIT					NOT NULL DEFAULT 1,

@@ -53,12 +53,10 @@ BEGIN
 	GOTO Err_Label;
 END
 
---IF @DebugSettings = 1
+IF @DebugIfrsConcepts = 1
 	SELECT
 		IDD.IfrsDisclosureId,  IDD.[Value], IDD.ValidSince,
-		LUC.[Name] AS CreatedBy, IDD.CreatedAt, LUM.[Name] AS ModifiedBy, IDD.ModifiedAt
+		LUC.[Email] AS CreatedBy, IDD.CreatedAt, LUM.[Email] AS ModifiedBy, IDD.ModifiedAt
 	FROM [dbo].[IfrsDisclosureDetails] IDD
 	JOIN dbo.[Users] LUC ON IDD.CreatedById = LUC.Id
-	JOIN dbo.[Users] LUM ON IDD.ModifiedById = LUM.Id
-	WHERE IsDeleted = 0;
-	;
+	JOIN dbo.[Users] LUM ON IDD.ModifiedById = LUM.Id;

@@ -11,7 +11,8 @@ Assumptions:
 */
 	@fromDate Date = '01.01.2020',
 	@toDate Date = '01.01.2020',
-	@CountUnit INT
+	@MassUnitId INT,
+	@CountUnitId INT
 AS
 	WITH
 	Ifrs_FG AS ( -- Typically, there is ONE such node only.
@@ -26,21 +27,20 @@ AS
 	OpeningBalances AS (
 		SELECT
 			AccountId,
-			SUM([NormalizedCount] * [Direction]) AS [Count],
-			SUM([NormalizedMass] * [Direction]) AS [Mass]
-		FROM [dbo].[fi_JournalDetails](NULL, @fromDate)
+			SUM([Mass] * [Direction]) AS [Mass],
+			SUM([Count] * [Direction]) AS [Count]
+		FROM [dbo].[fi_NormalizedJournal](NULL, @fromDate, @MassUnitId, @CountUnitId)
 		WHERE AccountId IN (SELECT Id FROM FinishedGoodsAccounts)
 		GROUP BY AccountId
 	),
 	Movements AS (
 		SELECT
 			AccountId,
-			SUM(CASE WHEN [Direction] > 0 THEN [NormalizedCount] ELSE 0 END) AS CountIn,
-			SUM(CASE WHEN [Direction] < 0 THEN [NormalizedCount] ELSE 0 END) AS CountOut,	
-			SUM(CASE WHEN [Direction] > 0 THEN [NormalizedMass] ELSE 0 END) AS MassIn,
-			SUM(CASE WHEN [Direction] < 0 THEN [NormalizedMass] ELSE 0 END) AS MassOut
-	
-		FROM [dbo].[fi_JournalDetails](@fromDate, @toDate)
+			SUM(CASE WHEN [Direction] > 0 THEN [Mass] ELSE 0 END) AS MassIn,
+			SUM(CASE WHEN [Direction] < 0 THEN [Mass] ELSE 0 END) AS MassOut,
+			SUM(CASE WHEN [Direction] > 0 THEN [Count] ELSE 0 END) AS CountIn,
+			SUM(CASE WHEN [Direction] < 0 THEN [Count] ELSE 0 END) AS CountOut
+		FROM [dbo].[fi_NormalizedJournal](@fromDate, @toDate, @MassUnitId, @CountUnitId)
 		WHERE AccountId IN (SELECT Id FROM FinishedGoodsAccounts)
 		GROUP BY AccountId
 	),

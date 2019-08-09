@@ -1,10 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Filter__Sign]
-	@Entities [dbo].[IdList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Entities [dbo].[IdList] READONLY
 AS
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-
 	-- Signing can be at any time
 	-- We simply record the signature if
 	-- It belongs to an agent

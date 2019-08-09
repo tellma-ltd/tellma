@@ -5,7 +5,7 @@ AS
 BEGIN
 SET NOCOUNT ON;
 -- Validate
-	EXEC [dbo].[bll_IfrsDisclosureDetails_Validate__Save]
+	EXEC [bll].[IfrsDisclosureDetails_Validate__Save]
 		@Entities = @Entities,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

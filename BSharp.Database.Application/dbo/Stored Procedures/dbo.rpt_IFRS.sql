@@ -15,7 +15,7 @@ BEGIN
 	WHERE [Code] = @PresentationCurrencyCode;
 
 	CREATE TABLE [dbo].#Ifrs(
-		[Id]	INT	Identity(1,1) PRIMARY KEY,
+		[Id]	INT	IDENTITY PRIMARY KEY,
 		[Field] [nvarchar](255)	NOT NULL,
 		[Value] [nvarchar](255)
 	);
@@ -47,7 +47,7 @@ BEGIN
 
 	INSERT INTO #Ifrs([Field], [Value])
 	SELECT [IfrsAccountId], SUM([Value] * [Direction])
-	FROM dbo.[fi_JournalDetails](@fromDate, @toDate)
+	FROM dbo.[fi_Journal](@fromDate, @toDate)
 	GROUP BY [IfrsAccountId];
 
 	SELECT * FROM #Ifrs;

@@ -7,7 +7,9 @@ Assumptions:
 
 */
 	@fromDate Date = '01.01.2015', 
-	@toDate Date = '01.01.2020'
+	@toDate Date = '01.01.2020',
+	@MassUnitId INT,
+	@CountUnitId INT
 AS
 BEGIN
 	WITH
@@ -23,20 +25,20 @@ BEGIN
 	OpeningBalances AS (
 		SELECT
 			J.ResourceId,
-			SUM(J.[NormalizedCount] * J.[Direction]) AS [Count],
-			SUM(J.[NormalizedMass] * J.[Direction]) AS [Mass]
-		FROM [dbo].[fi_JournalDetails](NULL, @fromDate) J
+			SUM(J.[Count] * J.[Direction]) AS [Count],
+			SUM(J.[Mass] * J.[Direction]) AS [Mass]
+		FROM [dbo].[fi_NormalizedJournal](NULL, @fromDate, @MassUnitId, @CountUnitId) J
 		WHERE J.AccountId IN (SELECT Id FROM RawMaterialAccounts)
 		GROUP BY J.ResourceId
 	),
 	Movements AS (
 		SELECT
 			J.ResourceId,
-			SUM(CASE WHEN J.[Direction] > 0 THEN J.[NormalizedCount] ELSE 0 END) AS CountIn,
-			SUM(CASE WHEN J.[Direction] > 0 THEN J.[NormalizedMass] ELSE 0 END) AS MassIn,
-			SUM(CASE WHEN J.[Direction] < 0 THEN J.[NormalizedCount] ELSE 0 END) AS CountOut,			
-			SUM(CASE WHEN J.[Direction] < 0 THEN J.[NormalizedMass] ELSE 0 END) AS MassOut
-		FROM [dbo].[fi_JournalDetails](@fromDate, @toDate) J
+			SUM(CASE WHEN J.[Direction] > 0 THEN J.[Count] ELSE 0 END) AS CountIn,
+			SUM(CASE WHEN J.[Direction] > 0 THEN J.[Mass] ELSE 0 END) AS MassIn,
+			SUM(CASE WHEN J.[Direction] < 0 THEN J.[Count] ELSE 0 END) AS CountOut,			
+			SUM(CASE WHEN J.[Direction] < 0 THEN J.[Mass] ELSE 0 END) AS MassOut
+		FROM [dbo].[fi_NormalizedJournal](@fromDate, @toDate, @MassUnitId, @CountUnitId) J
 		WHERE J.AccountId IN (SELECT Id FROM RawMaterialAccounts)
 		GROUP BY J.ResourceId
 	),

@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[IfrsAccounts] (
-	[Id]						NVARCHAR (255) PRIMARY KEY NONCLUSTERED, -- Ifrs Concept
-	[Node]						HIERARCHYID,
+	[Id]						NVARCHAR (255) CONSTRAINT [PK_IfrsAccounts] PRIMARY KEY NONCLUSTERED CONSTRAINT [FK_IfrsAccounts__Id] FOREIGN KEY ([Id]) REFERENCES [dbo].[IfrsConcepts] ([Id]) ON DELETE CASCADE,
+	[Node]						HIERARCHYID CONSTRAINT [CK_IfrsNotes__Node] UNIQUE INDEX [IX_IfrsAccounts__Node] CLUSTERED,
 	[ParentNode]				AS [Node].GetAncestor(1),
 
 	-- Aggregate means, it does not take direct entries, but rather used for aggregation only
@@ -58,11 +58,6 @@
 	[RelatedAgentRelationTypeList]NVARCHAR (1024),
 	[RelatedAgentAccountLabel]	NVARCHAR (255),
 	[RelatedAgentAccountLabel2]	NVARCHAR (255),
-	[RelatedAgentAccountLabel3]	NVARCHAR (255),
-
-	CONSTRAINT [FK_IfrsAccounts__IfrsConcepts]	FOREIGN KEY ([Id]) REFERENCES [dbo].[IfrsConcepts] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
-	);
-GO
-CREATE UNIQUE CLUSTERED INDEX IfrsAccounts__Node
-ON [dbo].[IfrsAccounts]([Node]);  
+	[RelatedAgentAccountLabel3]	NVARCHAR (255)
+);
 GO

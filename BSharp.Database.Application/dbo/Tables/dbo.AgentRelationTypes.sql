@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[AgentRelationTypes] ( -- managed by Banan IT
-	[Id]						INT PRIMARY KEY IDENTITY(1,1),
+	[Id]						INT PRIMARY KEY IDENTITY,
 	[SingularLabel]				NVARCHAR (50)	NOT NULL, -- legal Label
 	[SingularLabel2]			NVARCHAR (50),
 	[SingularLabel3]			NVARCHAR (50),

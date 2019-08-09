@@ -22,14 +22,14 @@ BEGIN
 	IF (@ByResource = 1)
 		SET @Query = @Query + N'
 			R.[Name] As Resource,
-			T.[Amount], MU.[Name] As UOM,'
+			--T.[Amount], MU.[Name] As UOM,'
 	IF (@ByIfrsNote = 1)
 		SET @Query = @Query + N'
 			T.IfrsNoteId As IfrsNote,'
 	SET @Query = @Query + N'
-			Mass, Volume, Count, Usage,
-			(CASE WHEN T.Net > 0 THEN Net ELSE 0 END) As Debit,
-			(CASE WHEN T.Net < 0 THEN -Net ELSE 0 END) As Credit
+			[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time], [Count],
+			(CASE WHEN T.[Value] > 0 THEN T.[Value] ELSE 0 END) As Debit,
+			(CASE WHEN T.[Value] < 0 THEN -T.[Value] ELSE 0 END) As Credit
 		FROM 
 		(
 			SELECT AccountId, '
@@ -37,20 +37,22 @@ BEGIN
 	IF (@ByResource = 1) SET @Query = @Query + N'ResourceId, '
 	IF (@ByIfrsNote = 1) SET @Query = @Query + N'IfrsNoteId, '
 	SET @Query = @Query + N'
+			CAST(SUM([Direction] * [MoneyAmount]) AS money) AS [MoneyAmount],
 			CAST(SUM([Direction] * [Mass]) AS money) AS [Mass],
 			CAST(SUM([Direction] * [Volume]) AS money) AS [Volume],	
 			CAST(SUM([Direction] * [Area]) AS money) AS [Area],
 			CAST(SUM([Direction] * [Length]) AS money) AS [Length],
 			CAST(SUM([Direction] * [Time]) AS money) AS [Time],
 			CAST(SUM([Direction] * [Count]) AS money) AS [Count],	
-			CAST(SUM([Direction] * [Value]) AS money) AS [Net]
+			CAST(SUM([Direction] * [Value]) AS money) AS [Value]
 			FROM [dbo].[fi_Journal](@fromDate, @toDate)
 			GROUP BY AccountId'
 	IF (@ByResponsibilityCenter = 1) SET @Query = @Query + N', ResponsibilityCenterId'
 	IF (@ByResource = 1) SET @Query = @Query + N', ResourceId'
 	IF (@ByIfrsNote = 1) SET @Query = @Query + N', IfrsNoteId'
 	SET @Query = @Query + N'		
-			HAVING 
+			HAVING
+				SUM([Direction] * [MoneyAmount]) <> 0 OR
 				SUM([Direction] * [Mass]) <> 0 OR
 				SUM([Direction] * [Volume]) <> 0 OR
 				SUM([Direction] * [Area]) <> 0 OR
@@ -58,14 +60,13 @@ BEGIN
 				SUM([Direction] * [Time]) <> 0 OR
 				SUM([Direction] * [Count]) <> 0 OR
 				SUM([Direction] * [Value]) <> 0
-			OR 
 		) T 
 		JOIN [dbo].Accounts A ON T.AccountId = A.Id'
 	IF (@ByResponsibilityCenter = 1) SET @Query = @Query + N'
-		JOIN [dbo].[ResponsibilityCenters] S ON T.ResponsibilityCenterId = S.Id'
+		LEFT JOIN [dbo].[ResponsibilityCenters] S ON T.ResponsibilityCenterId = S.Id'
 	IF (@ByResource = 1) SET @Query = @Query + N'
 		JOIN [dbo].[Resources] R ON T.ResourceId = R.Id
-		JOIN [dbo].[MeasurementUnits] MU ON R.MeasurementUnitId = MU.Id
+		--JOIN [dbo].[MeasurementUnits] MU ON R.MeasurementUnitId = MU.Id
 		'
 	SET @Query = @Query + N'
 		ORDER BY A.[Code]'

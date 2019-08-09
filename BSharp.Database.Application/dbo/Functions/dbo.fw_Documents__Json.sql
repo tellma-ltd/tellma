@@ -17,7 +17,5 @@ SELECT *
 		[TransactionType] NVARCHAR (255) '$.TransactionType',
 		[Frequency] NVARCHAR (255) '$.Frequency',
 		[Repetitions] INT '$.Repetitions',
-		[EndDate] DATETIME2 (7) '$.EndDate',
-
-		[EntityState] NVARCHAR (255) '$.EntityState'
+		[EndDate] DATETIME2 (7) '$.EndDate'
 	);

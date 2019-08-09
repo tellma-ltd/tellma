@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Resources] (
-	[Id]						INT PRIMARY KEY IDENTITY(1,1),
+	[Id]						INT PRIMARY KEY IDENTITY,
 /*
 	Money,
 	Intangible [rights,..]

@@ -17,6 +17,7 @@
 	[Description2]				NVARCHAR (255),
 	[Description3]				NVARCHAR (255),
 	-- UI Specs
+	[SortKey]					DECIMAL (9,4),
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT (3), -- For presentation purposes
 	[DefaultVoucherTypeId]		NVARCHAR (30),

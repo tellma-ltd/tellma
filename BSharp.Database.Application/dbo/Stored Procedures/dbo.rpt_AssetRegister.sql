@@ -25,7 +25,7 @@ BEGIN
 			SUM(J.[Count] * J.[Direction]) AS [Count],
 			SUM(J.[Value] * J.[Direction]) AS [Value],
 			SUM(J.[Time] * J.[Direction]) AS [ServiceLife]
-		FROM [dbo].[fi_JournalDetails](NULL, @fromDate) J
+		FROM [dbo].[fi_Journal](NULL, @fromDate) J
 		WHERE J.AccountId IN (SELECT Id FROM FixedAssetAccounts)
 		GROUP BY J.ResourceId
 	),
@@ -35,7 +35,7 @@ BEGIN
 			SUM(J.[Count] * J.[Direction]) AS [Count],
 			SUM(J.[Value] * J.[Direction]) AS [Value],
 			SUM(J.[Time] * J.[Direction]) AS [ServiceLife]
-		FROM [dbo].[fi_JournalDetails](@fromDate, @toDate) J
+		FROM [dbo].[fi_Journal](@fromDate, @toDate) J
 		WHERE J.AccountId IN (SELECT Id FROM FixedAssetAccounts)
 		GROUP BY J.ResourceId, J.[IfrsNoteId]
 	),

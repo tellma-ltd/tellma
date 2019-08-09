@@ -15,5 +15,5 @@
 	INDEX IX_MeasurementUnitList__Name ([Name]),
 	INDEX IX_MeasurementUnitList__Name2 ([Name2]),
 	INDEX IX_MeasurementUnitList__Name3 ([Name3]),
-	CHECK ([UnitType] IN (N'Pure', N'Time', N'Distance', N'Count', N'Mass', N'Volume', N'Money'))
+	CHECK ([UnitType] IN (N'Pure', N'Time', N'Distance', N'Count', N'Mass', N'Volume', N'Currency'))
 );

@@ -6,19 +6,19 @@ INSERT INTO @L1(
 	[LineTypeId], [ScalingFactor]) VALUES
 	(N'ManualLine', 1),
 	(N'ManualLine', 2);
+INSERT INTO dbo.Accounts([Name], [Code], [IfrsAccountId]) VALUES
+(N'CBE - USD', N'1101', N'BalancesWithBanks'),
+(N'Capital - MA', N'3101', N'IssuedCapital'),
+(N'Capital - AA', N'3102', N'IssuedCapital');
 
-INSERT INTO dbo.Accounts([Name], [Code]) VALUES
-(N'CBE - USD', N'1101'),
-(N'Capital - MA', N'3101'),
-(N'Capital - AA', N'3102');
 DECLARE @CBEUSD INT, @CapitalMA INT, @CapitalAA INT;
 SELECT @CBEUSD = [Id] FROM dbo.Accounts WHERE Code = N'1101';
 SELECT @CapitalMA = [Id] FROM dbo.Accounts WHERE Code = N'3101';
 SELECT @CapitalAA = [Id] FROM dbo.Accounts WHERE Code = N'3102';
 
-INSERT INTO dbo.[Resources]([ResourceType], [Name], [Code], [ValueMeasure], [UnitId]) VALUES
-(N'currencies', N'USD', N'101', N'Currency', @USDUnit), --  -- Currency, Mass, Volumne, Area, Length, Count, Time
-(N'financial-instruments', N'Common Shares', N'301', N'Count', @pcsUnit);
+INSERT INTO dbo.[Resources]([ResourceType], [Name], [Code], [ValueMeasure], [UnitId], [CurrencyId], [CountUnitId]) VALUES
+(N'currencies', N'USD', N'101', N'Currency', @USDUnit, @USDUnit, NULL), --  -- Currency, Mass, Volumne, Area, Length, Count, Time
+(N'financial-instruments', N'Common Shares', N'301', N'Count', @pcsUnit, NULL, @pcsUnit);
 DECLARE @USD INT, @CommonStock INT;
 SELECT @USD = [Id] FROM dbo.[Resources] WHERE Code = N'101';
 SELECT @CommonStock = [Id] FROM dbo.[Resources] WHERE Code = N'301';
@@ -80,9 +80,10 @@ BEGIN
 	GOTO Err_Label;
 END;
 
+DECLARE @DocsToSign [dbo].[IdList]
+INSERT INTO @DocsToSign([Id]) SELECT [Id] FROM dbo.Documents;-- WHERE STATE = N'Draft';
 EXEC [api].[Documents__Sign]
-	@DocumentTypeId = N'manual-journals',
-	@Documents = @D2, @Lines = @L2, @Entries = @E2,
+	@Entities = @DocsToSign, @State = N'Posted', @ReasonDetails = N'for testing',
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
@@ -91,4 +92,8 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-SELECT * FROM dbo.Documents; SELECT * FROM dbo.DocumentLines; SELECT * FROM dbo.DocumentLineEntries;
+--SELECT * FROM dbo.Documents; 
+--SELECT * FROM dbo.DocumentLines; 
+--SELECT * FROM dbo.DocumentLineEntries;
+--SELECT * FROM [DocumentLineEntriesDetailsView];
+--SELECT * FROM dbo.DocumentSignatures;

@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[DocumentLineEntries] (
 --	These are for transactions only. If there are entries from requests or inquiries, etc=> other tables
-	[Id]					INT PRIMARY KEY IDENTITY(1,1),
+	[Id]					INT PRIMARY KEY IDENTITY,
 	[DocumentLineId]		INT	NOT NULL,
 	[EntryNumber]			INT					NOT NULL,
 --	Upon posting the document, the auto generated entries will be MERGED with the present ones

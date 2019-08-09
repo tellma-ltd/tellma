@@ -1,7 +1,9 @@
 ﻿CREATE TABLE [dbo].[Documents] (
 --	This table for all business documents that are routed for requisition, authorization, completion, and posting.
---	Its scope is 
-	[Id]									INT PRIMARY KEY IDENTITY(1,1),
+--	Its scope is
+
+-- Kimbirly suggestion: [Id]: PRIMARY KEY NONCLUSTERED, ([DocumentDate], [Id]): Clustered index
+	[Id]									INT PRIMARY KEY IDENTITY,
 	-- Common to all document types
 	[DocumentTypeId]						NVARCHAR (50)	NOT NULL,	
 	[SerialNumber]							INT				NOT NULL,	-- auto generated, copied to paper if needed.

@@ -33,7 +33,7 @@ SET NOCOUNT ON;
 	FROM @Entities FE 
 	JOIN [dbo].[ProductCategories] BE ON FE.Code = BE.Code
 	WHERE FE.[Code] IS NOT NULL
-	AND ((FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id))
+	AND (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
 	-- Code must not be duplicated in the uploaded list
@@ -59,7 +59,7 @@ SET NOCOUNT ON;
 		FE.[Name]
 	FROM @Entities FE 
 	JOIN [dbo].[ProductCategories] BE ON FE.[Name] = BE.[Name]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id)
+	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
 	-- Name2 must not exist in the db
@@ -70,7 +70,7 @@ SET NOCOUNT ON;
 		FE.[Name2]
 	FROM @Entities FE 
 	JOIN [dbo].[ProductCategories] BE ON FE.[Name2] = BE.[Name2]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id)
+	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
 	-- Name3 must not exist in the db
@@ -81,7 +81,7 @@ SET NOCOUNT ON;
 		FE.[Name3]
 	FROM @Entities FE 
 	JOIN [dbo].[ProductCategories] BE ON FE.[Name3] = BE.[Name3]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id)
+	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
 	-- Name must be unique in the uploaded list

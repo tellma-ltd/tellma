@@ -1,15 +1,15 @@
 ﻿CREATE TABLE [dbo].[Agents] (
 --	These includes all the natural and legal persons with which the business entity may interact
-	[Id]						INT PRIMARY KEY IDENTITY(1,1),
+	[Id]						INT PRIMARY KEY IDENTITY,
 	[IsActive]					BIT				NOT NULL DEFAULT 1, -- 0 means the person is dead or the organization is close
-	[Name]						NVARCHAR (255)	NOT NULL, -- legal name
+	[Name]						NVARCHAR (255)	NOT NULL CONSTRAINT [IX_Agents__Name] UNIQUE,
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	--[ShortName]					NVARCHAR (255),		-- Nickname
 	[Code]						NVARCHAR (30),
 	[SystemCode]				NVARCHAR (30), -- some used are: anoymous, self, parent
 --	Common
-	[AgentType]					NVARCHAR (30)	NOT NULL,  -- 'Individual', 'System' (software), 'Organization' (Dept, Team)
+	[AgentType]					NVARCHAR (30)	NOT NULL	CONSTRAINT [CK_Agents_AgentType] CHECK ([AgentType] IN (N'Individual', N'Organization', N'System')), -- Organization includes Dept, Team
 	[IsRelated]					BIT				NOT NULL DEFAULT 0,
 	[TaxIdentificationNumber]	NVARCHAR (30),  -- China has the maximum, 18 characters
 	[IsLocal]					BIT,
@@ -52,16 +52,10 @@
 	[OwnershipPercent]			DECIMAL	DEFAULT 0, -- If investment, how much the entity owns in this agent. If shareholder, how much he owns in the entity
 
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]				INT					NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Agents__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	CONSTRAINT [CK_Agents_AgentType] CHECK ([AgentType] IN (N'Individual', N'Organization', N'System')), -- Organization includes Dept, Team
-	CONSTRAINT [FK_Agents__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_Agents__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]				INT					NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Agents__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 );
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Agents__Name]
-  ON [dbo].[Agents]([Name]);
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Agents__Name2]
   ON [dbo].[Agents]([Name2]) WHERE [Name2] IS NOT NULL;

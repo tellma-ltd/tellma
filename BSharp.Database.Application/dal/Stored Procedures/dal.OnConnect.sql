@@ -4,6 +4,7 @@
 	@ExternalUserId NVARCHAR(255),
 	@UserEmail NVARCHAR(255)
 AS
+BEGIN
     -- Set the global values of the session context
     EXEC [sys].[sp_set_session_context] @key = N'Culture', @value = @Culture;
     EXEC [sys].[sp_set_session_context] @key = N'NeutralCulture', @value = @NeutralCulture;
@@ -28,28 +29,30 @@ AS
         @TernaryLanguageSymbol NVARCHAR(255);
 
     SELECT
-        @UserId = [Id],
-        @Name = [Name],
-        @Name2 = [Name2],
-        @Name3 = [Name3],
-        @ExternalId = [ExternalId],
-        @Email = [Email],
-        @PermissionsVersion = [PermissionsVersion],
-        @UserSettingsVersion = [UserSettingsVersion]
-    FROM [dbo].[Users] 
-    WHERE [IsActive] = 1 AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
+        @UserId				= U.[Id],
+        @Name				= A.[Name],
+        @Name2				= A.[Name2],
+        @Name3				= A.[Name3],
+        @ExternalId			= U.[ExternalId],
+        @Email				= U.[Email],
+        @PermissionsVersion = U.[PermissionsVersion],
+        @UserSettingsVersion = U.[UserSettingsVersion]
+    FROM [dbo].[Users] U
+	JOIN dbo.Agents A ON U.[Id] = A.[Id]
+    WHERE U.[IsActive] = 1
+	AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
 
     -- Set LastAccess (Works only when @UserId IS NOT NULL)
     UPDATE [dbo].[Users] SET [LastAccess] = SYSDATETIMEOFFSET() WHERE [Id] = @UserId;
 
     -- Get hashes
     SELECT 
-        @SettingsVersion = [SettingsVersion],
-        @ViewsAndSpecsVersion = [ViewsAndSpecsVersion],
-        @PrimaryLanguageId = [PrimaryLanguageId],
-        @PrimaryLanguageSymbol = [PrimaryLanguageSymbol],
-        @SecondaryLanguageId = [SecondaryLanguageId],
-        @SecondaryLanguageSymbol = [SecondaryLanguageSymbol]
+        @SettingsVersion		= [SettingsVersion],
+        @ViewsAndSpecsVersion	= [ViewsAndSpecsVersion],
+        @PrimaryLanguageId		= [PrimaryLanguageId],
+        @PrimaryLanguageSymbol	= [PrimaryLanguageSymbol],
+        @SecondaryLanguageId	= [SecondaryLanguageId],
+        @SecondaryLanguageSymbol= [SecondaryLanguageSymbol]
     FROM [dbo].[Settings]
 
     -- Set the User Id
@@ -70,3 +73,4 @@ AS
         @PrimaryLanguageSymbol AS PrimaryLanguageSymbol,
         @SecondaryLanguageId AS SecondaryLanguageId,
         @SecondaryLanguageSymbol AS SecondaryLanguageSymbol;
+END;
