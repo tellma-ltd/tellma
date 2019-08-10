@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Filter__Sign]
-	@Entities [dbo].[IdList] READONLY
+	@Entities [dbo].[IdList] READONLY,
+	@State NVARCHAR(30)
 AS
 SET NOCOUNT ON;
 	-- Signing can be at any time

@@ -18,7 +18,7 @@ BEGIN -- Inserting
 	EXEC [dbo].[api_ProductCategories__Save]
 		@Entities = @ProductCategoriesDTO,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-		@ReturnEntities = 1;
+		@ReturnIds = 1;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
@@ -48,7 +48,7 @@ BEGIN -- Inserting
 	EXEC [dbo].[api_ProductCategories__Save]
 		@Entities = @ProductCategoriesDTO,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-		@ReturnEntities = 1;
+		@ReturnIds = 1;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN

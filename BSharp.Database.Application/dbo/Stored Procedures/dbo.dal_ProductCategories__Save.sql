@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[dal_ProductCategories__Save]
-	@Entities [ProductCategoryList] READONLY
+	@Entities [ProductCategoryList] READONLY,
+	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];

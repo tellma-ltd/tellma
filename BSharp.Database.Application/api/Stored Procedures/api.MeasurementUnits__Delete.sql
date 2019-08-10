@@ -1,13 +1,23 @@
 ﻿CREATE PROCEDURE [api].[MeasurementUnits__Delete]
-	@Ids [dbo].[IndexedIdList] READONLY,
+	@IndexedIds [dbo].[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
 AS
 SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+
+	INSERT INTO @ValidationErrors
 	EXEC [bll].[MeasurementUnits_Validate__Delete]
-		@Ids = @Ids,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Ids = @IndexedIds;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
+	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 	EXEC [dal].[MeasurementUnits__Delete] @Ids = @Ids;

@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[api_Resources__Save]
 	@Entities [dbo].[ResourceList] READONLY,
+	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN

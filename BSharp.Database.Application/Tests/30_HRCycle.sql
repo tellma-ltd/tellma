@@ -82,7 +82,7 @@ WHERE [State] = N'Draft';
 EXEC [dbo].[api_Transactions__Post]
 	@Documents = @Docs,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-	@ReturnEntities = 0,
+	@ReturnIds = 0,
  	@ResultJson = @ResultJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 

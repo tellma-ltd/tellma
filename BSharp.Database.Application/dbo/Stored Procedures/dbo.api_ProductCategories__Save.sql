@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[api_ProductCategories__Save]
 	@Entities [ProductCategoryList] READONLY,
+	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN

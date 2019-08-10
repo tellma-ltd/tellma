@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Accounts__Save]
-	@Entities [AccountList] READONLY
+	@Entities [AccountList] READONLY,
+	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];

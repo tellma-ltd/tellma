@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Views__Save]
 	@Views [dbo].[ViewList] READONLY, 
-	@Permissions [dbo].[PermissionList] READONLY
+	@Permissions [dbo].[PermissionList] READONLY,
+	@ReturnIds BIT = 0
 AS
 BEGIN
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();

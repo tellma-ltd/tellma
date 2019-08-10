@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[bll_ProductCategories_Validate__Save]
 	@Entities [dbo].[ProductCategoryList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
+	,@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];

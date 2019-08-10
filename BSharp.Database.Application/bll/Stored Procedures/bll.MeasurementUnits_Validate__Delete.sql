@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[MeasurementUnits_Validate__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -14,9 +14,5 @@ SET NOCOUNT ON;
 	JOIN @Ids FE ON FE.[Id] = MU.[Id]
 	OPTION (HASH JOIN);
 
-	SELECT @ValidationErrorsJson = 
-	(
-		SELECT *
-		FROM @ValidationErrors
-		FOR JSON PATH
-	);
+	SELECT TOP(@Top) *
+	FROM @ValidationErrors;

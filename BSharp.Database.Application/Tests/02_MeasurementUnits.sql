@@ -1,6 +1,6 @@
 ﻿BEGIN -- Cleanup & Declarations
 	DECLARE @MU1 [dbo].MeasurementUnitList, @MU2 [dbo].MeasurementUnitList, @MU3 [dbo].MeasurementUnitList,
-			@MeasurementUnitsIds dbo.[IndexedIdList];
+			@MUIndexedIds dbo.[IndexedIdList];
 	DECLARE @ETBUnit INT, @USDUnit INT, @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT,
 			@wmoUnit INT, @hrUnit INT, @yrUnit INT, @dayUnit INT, @moUnit INT;
 END
@@ -65,9 +65,9 @@ FROM [dbo].MeasurementUnits
 WHERE [Name] Like 'm%';
 
 -- Calling Delete API
-INSERT INTO @MeasurementUnitsIds([Index], [Id]) SELECT [Index], [Id] FROM @MU3;
+INSERT INTO @MUIndexedIds([Index], [Id]) SELECT [Index], [Id] FROM @MU3;
 EXEC [api].[MeasurementUnits__Delete]
-	@Ids = @MeasurementUnitsIds,
+	@IndexedIds = @MUIndexedIds,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT
 
 --SELECT * FROM [dbo].[fs_MeasurementUnits]();

@@ -6,7 +6,7 @@
 	@AgentId INT = NULL,
 	@RoleId INT = NULL,
 	@SignedAt DATETIMEOFFSET(7) = NULL,
-	@ReturnEntities BIT = 0,
+	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -17,7 +17,8 @@ SET @AgentId = ISNULL(@AgentId, CONVERT(INT, SESSION_CONTEXT(N'UserId')));
 -- Filter out the documents where the user signature is irrelevant
 	INSERT INTO @FilteredEntities([Id])
 	EXEC [bll].[Documents_Filter__Sign]
-		@Entities = @Entities;
+		@Entities = @Entities,
+		@State = @State;
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
@@ -35,13 +36,14 @@ SET @AgentId = ISNULL(@AgentId, CONVERT(INT, SESSION_CONTEXT(N'UserId')));
 
 	INSERT INTO @ReadyEntities([Id])
 	EXEC [bll].[Documents_Ready__Select]
-		@Entities = @FilteredEntities;
+		@Entities = @FilteredEntities,
+		@State = @State;
 	
 	IF EXISTS(SELECT * FROM @ReadyEntities)
 		EXEC [dal].[Documents_State__Update]
 			@Entities = @ReadyEntities,
 			@State = @State;
 
-	--IF @ReturnEntities = 1
+	--IF @ReturnIds = 1
 	--	SELECT * FROM @ReadyEntities;
 END;

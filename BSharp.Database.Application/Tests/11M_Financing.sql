@@ -23,6 +23,22 @@ DECLARE @USD INT, @CommonStock INT;
 SELECT @USD = [Id] FROM dbo.[Resources] WHERE Code = N'101';
 SELECT @CommonStock = [Id] FROM dbo.[Resources] WHERE Code = N'301';
 
+DECLARE @Accountant INT, @Comptroller INT;
+INSERT INTO dbo.Roles([Name]) VALUES
+(N'Accountant'),
+(N'Comptroller');
+SELECT @Accountant = [Id] FROM dbo.[Roles] WHERE [Name] = N'Accountant';
+SELECT @Comptroller = [Id] FROM dbo.[Roles] WHERE [Name] = N'Comptroller';
+
+DECLARE @WorkflowId INT;
+INSERT INTO dbo.Workflows(DocumentTypeId, FromState, ToState)
+Values(N'manual-journals', N'Draft', N'Posted');
+SELECT @WorkflowId = SCOPE_IDENTITY();
+
+INSERT INTO dbo.WorkflowSignatories(WorkflowId, RoleId) VALUES
+(@WorkflowId, @Accountant),
+(@WorkflowId, @Comptroller);
+
 INSERT INTO @E1 (
 	[EntryNumber], [Direction], [AccountId], [IfrsNoteId],				[ResourceId], [Count], [MoneyAmount],	[Value]) VALUES
 	(1,				+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			200000,			4700000),
@@ -82,9 +98,17 @@ END;
 
 DECLARE @DocsToSign [dbo].[IdList]
 INSERT INTO @DocsToSign([Id]) SELECT [Id] FROM dbo.Documents;-- WHERE STATE = N'Draft';
+
 EXEC [api].[Documents__Sign]
-	@Entities = @DocsToSign, @State = N'Posted', @ReasonDetails = N'for testing',
+	@Entities = @DocsToSign, @State = N'Posted', @ReasonDetails = N'seems ok', @RoleId = @Accountant,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+SELECT * FROM dbo.Documents; SELECT * FROM dbo.DocumentSignatures;
+
+EXEC [api].[Documents__Sign]
+	@Entities = @DocsToSign, @State = N'Posted', @ReasonDetails = N'passed review', @RoleId = @Comptroller,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

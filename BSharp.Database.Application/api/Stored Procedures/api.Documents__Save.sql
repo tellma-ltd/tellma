@@ -3,7 +3,7 @@
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[DocumentLineList] READONLY, 
 	@Entries [dbo].[DocumentLineEntryList] READONLY,
-	@ReturnEntities BIT = 0,
+	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -28,5 +28,5 @@ BEGIN
 		@Documents = @Documents,
 		@Lines = @Lines,
 		@Entries = @Entries,
-		@ReturnEntities = @ReturnEntities;
+		@ReturnIds = @ReturnIds;
 END;

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Roles__Save]
 	@Roles [dbo].[RoleList] READONLY, 
-	@Permissions [dbo].[PermissionList] READONLY
+	@Permissions [dbo].[PermissionList] READONLY,
+	@ReturnIds BIT = 0
 AS
 BEGIN
 	DECLARE @IndexedIds [dbo].[IndexedIdList];

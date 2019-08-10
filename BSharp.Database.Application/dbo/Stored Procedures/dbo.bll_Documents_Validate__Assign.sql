@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[bll_Documents_Validate__Assign]
 	@Entities [dbo].[IndexedIdList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
+	,@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];

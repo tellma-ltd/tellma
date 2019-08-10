@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[dal_ResponsibilityCenters__Save]
-	@Entities [ResponsibilityCenterList] READONLY
+	@Entities [ResponsibilityCenterList] READONLY,
+	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();

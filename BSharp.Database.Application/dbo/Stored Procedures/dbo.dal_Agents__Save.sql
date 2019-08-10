@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Agents__Save]
 	@Entities [AgentList] READONLY,
-	@ReturnEntities BIT
+	@ReturnIds BIT = 0
 AS
 BEGIN
 SET NOCOUNT ON;
@@ -92,6 +92,6 @@ SET NOCOUNT ON;
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
-	IF @ReturnEntities = 1
+	IF @ReturnIds = 1
 	SELECT * FROM @IndexedIds;
 END
