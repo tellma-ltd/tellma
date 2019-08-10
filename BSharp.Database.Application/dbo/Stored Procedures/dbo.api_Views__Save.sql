@@ -5,11 +5,20 @@
 	@ReturnIds BIT = 0
 AS
 BEGIN
-	--Validate Domain rules
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+
+	--INSERT INTO @ValidationErrors
 	EXEC [dbo].[bll_Views_Validate__Save]
 		@Views = @Views,
 		@Permissions = @Permissions,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

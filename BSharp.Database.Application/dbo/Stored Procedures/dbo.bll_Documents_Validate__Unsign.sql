@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[bll_Documents_Validate__Unsign]
 	@Entities [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
-	,@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -16,4 +15,4 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	WHERE (BE.[State] <> N'Draft');
 
-	SELECT @ValidationErrorsJson = (SELECT * FROM @ValidationErrors	FOR JSON PATH);
+	SELECT TOP (@Top) * FROM @ValidationErrors;

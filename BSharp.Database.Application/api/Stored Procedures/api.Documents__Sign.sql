@@ -1,49 +1,68 @@
 ﻿CREATE PROCEDURE [api].[Documents__Sign]
-	@Entities [dbo].[IdList] READONLY,
+	@IndexedIds [dbo].[IndexedIdList] READONLY,
 	@State NVARCHAR(30),
 	@ReasonId INT = NULL,
 	@ReasonDetails	NVARCHAR(1024) = NULL,
 	@AgentId INT = NULL,
-	@RoleId INT = NULL,
+	@RoleId INT,
 	@SignedAt DATETIMEOFFSET(7) = NULL,
-	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
-DECLARE @FilteredEntities [dbo].[IdList], @ReadyEntities [dbo].[IdList];
-SET @SignedAt = ISNULL(@SignedAt, SYSDATETIMEOFFSET());
-SET @AgentId = ISNULL(@AgentId, CONVERT(INT, SESSION_CONTEXT(N'UserId')));
+SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	DECLARE @Ids [dbo].[IdList], @FilteredIds [dbo].[IdList], @ReadyIds [dbo].[IdList], @FinalIds [dbo].[IdList];
+	SET @SignedAt = ISNULL(@SignedAt, SYSDATETIMEOFFSET());
+	SET @AgentId = ISNULL(@AgentId, CONVERT(INT, SESSION_CONTEXT(N'UserId')));
 
+	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 -- Filter out the documents where the user signature is irrelevant
-	INSERT INTO @FilteredEntities([Id])
+	INSERT INTO @FilteredIds([Id])
 	EXEC [bll].[Documents_Filter__Sign]
-		@Entities = @Entities,
+		@Ids = @Ids,
 		@State = @State;
+
+	INSERT INTO @ValidationErrors
+	EXEC [bll].[Documents_Validate__Sign]
+		@Ids = @FilteredIds;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
 	EXEC [dal].[Documents__Sign]
-		@Entities = @FilteredEntities,
+		@Ids = @FilteredIds,
 		@State = @State,
 		@ReasonId = @ReasonId,
 		@ReasonDetails = @ReasonDetails,
 		@AgentId = @AgentId,
 		@RoleId = @RoleId,
 		@SignedAt = @SignedAt;
+	
+	-- Find additional role signatures required for documents satisfying special conditions
+	DECLARE @ConditionalSignatories [DocumentSignatoryList];
+	-- Code from B# to fill ConditionalSignatories
 
 	---- get the documents who satsified all the requirements for state change
-
-	INSERT INTO @ReadyEntities([Id])
+	INSERT INTO @ReadyIds([Id])
 	EXEC [bll].[Documents_Ready__Select]
-		@Entities = @FilteredEntities,
+		@Ids = @FilteredIds,
+		@ConditionalSignatories =  @ConditionalSignatories,
 		@State = @State;
 	
-	IF EXISTS(SELECT * FROM @ReadyEntities)
-		EXEC [dal].[Documents_State__Update]
-			@Entities = @ReadyEntities,
-			@State = @State;
+	EXEC [dal].[Documents_State__Update]
+		@Ids = @ReadyIds,
+		@State = @State;
 
-	--IF @ReturnIds = 1
-	--	SELECT * FROM @ReadyEntities;
+	INSERT INTO @FinalIds SELECT * FROM @ReadyIds
+
+	EXEC [dal].[Documents__Assign]
+		@Documents  = @FinalIds,
+		@AssigneeId = NULL;
 END;

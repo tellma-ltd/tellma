@@ -76,7 +76,7 @@ BEGIN TRY
 	--SELECT * FROM dbo.[fi_AssetRegister]('2017.02.01', '2018.02.01');
 	--SELECT @fromDate = '2017.01.01', @toDate = '2024.01.01';
 	--SELECT * FROM dbo.fi_AssetRegister(@fromDate, @toDate);
-	EXEC dbo.rpt_BankAccount__Statement @CBEUSD,  @fromDate, @toDate;
+	--EXEC dbo.rpt_BankAccount__Statement @CBEUSD,  @fromDate, @toDate;
 	--SELECT * from dbo.fi_Account__Statement(N'DistributionCosts', @SalesDepartment, @Goff, @fromDate, @toDate) ORDER BY StartDateTime;
 	--SELECT * FROM dbo.fi_ERCA__EmployeeIncomeTax('2018.02.01', '2018.03.01');
 	--SELECT * FROM dbo.fi_Paysheet(default, default, '2018.02', @Basic, @Transportation);

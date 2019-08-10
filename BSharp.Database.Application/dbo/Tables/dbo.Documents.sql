@@ -8,7 +8,7 @@
 	[DocumentTypeId]						NVARCHAR (50)	NOT NULL,	
 	[SerialNumber]							INT				NOT NULL,	-- auto generated, copied to paper if needed.
 	[DocumentDate]							DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()),
-	[State]									NVARCHAR (30)	NOT NULL DEFAULT N'Draft', -- N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Declined', N'Posted'
+	[State]									NVARCHAR (30)	NOT NULL DEFAULT N'Draft' CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
 	
 	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
 	[EvidenceTypeId]						NVARCHAR(30)		NOT NULL,
@@ -70,7 +70,7 @@
 	CONSTRAINT [CK_Documents__Duration] CHECK ([Frequency] IN (N'OneTime', N'Daily', N'Weekly', N'Monthly', N'Quarterly', N'Yearly')),
 	CONSTRAINT [FK_Documents__DocumentTypeId] FOREIGN KEY ([DocumentTypeId]) REFERENCES [dbo].[DocumentTypes] ([Id]) ON UPDATE CASCADE, 
 	CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())) ,
-	CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
+	
 	CONSTRAINT [CK_Documents__EvidenceTypeId] CHECK ([EvidenceTypeId] IN (N'Authentication', N'SourceDocument', N'Attachment', N'Trust')),
 	CONSTRAINT [FK_Documents__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	CONSTRAINT [FK_Documents__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])

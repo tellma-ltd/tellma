@@ -51,12 +51,12 @@ BEGIN
 	WHEN MATCHED THEN
 		UPDATE SET 
 			t.[ViewId]		= s.[ViewId], 
-			t.[Level]		= s.[Level],
+			t.[Action]		= s.[Level],
 			t.[Criteria]	= s.[Criteria],
 			t.[Memo]		= s.[Memo],
 			t.[ModifiedAt]	= @Now,
 			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[ViewId],	[Level],	[Criteria], [Memo])
+		INSERT ([RoleId],	[ViewId],	[Action],	[Criteria], [Memo])
 		VALUES (s.[RoleId], s.[ViewId], s.[Level], s.[Criteria], s.[Memo]);
 END;

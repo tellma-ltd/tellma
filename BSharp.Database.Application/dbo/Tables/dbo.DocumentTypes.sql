@@ -13,6 +13,7 @@
 	[IsPostedOrInvalid]			BIT				DEFAULT (1),
 */
 	[IsSourceDocument]			BIT				DEFAULT (1), -- <=> IsVoucherReferenceRequired
+	[FinalState]				NVARCHAR (30)	NOT NULL DEFAULT N'Posted',
 	[Description]				NVARCHAR (255),
 	[Description2]				NVARCHAR (255),
 	[Description3]				NVARCHAR (255),

@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[MeasurementUnits__Activate]
-	@Ids [dbo].[IdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT
 AS
 SET NOCOUNT ON;

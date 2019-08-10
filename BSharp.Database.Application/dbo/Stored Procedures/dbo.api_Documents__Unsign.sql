@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[api_Documents__Unsign]
-	@Documents [dbo].[IdList] READONLY,
+	@Documents [dbo].[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -13,8 +13,7 @@ BEGIN
 
 	-- Validate, checking available signatures for transaction type
 	EXEC [dbo].[bll_Documents_Validate__Unsign]
-		@Entities = @Documents,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Entities = @Documents;;
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

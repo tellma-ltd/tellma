@@ -46,7 +46,6 @@ INSERT INTO @E1 (
 	(3,				-1,			@CapitalAA,N'IssueOfEquity',		@CommonStock,	1000,		0,				2350000),
 	(4,				+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			100,			2000);
 
-
 EXEC [api].[Documents__Save]
 	@DocumentTypeId = N'manual-journals',
 	@Documents = @D1, @Lines = @L1, @Entries = @E1,
@@ -109,6 +108,7 @@ EXEC [api].[Documents__Sign]
 	@Entities = @DocsToSign, @State = N'Posted', @ReasonDetails = N'passed review', @RoleId = @Comptroller,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
+SELECT * FROM dbo.Documents; SELECT * FROM dbo.DocumentSignatures;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

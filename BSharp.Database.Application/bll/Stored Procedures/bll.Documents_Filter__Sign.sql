@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Filter__Sign]
-	@Entities [dbo].[IdList] READONLY,
+	@Ids [dbo].[IdList] READONLY,
 	@State NVARCHAR(30)
 AS
 SET NOCOUNT ON;
@@ -7,5 +7,5 @@ SET NOCOUNT ON;
 	-- We simply record the signature if
 	-- It belongs to an agent
 	-- It is required as per policy
-	SELECT [Id] FROM @Entities
+	SELECT [Id] FROM @Ids
 	WHERE [Id] <> 0;
