@@ -1,9 +1,9 @@
-﻿using BSharp.Controllers.Misc;
-using BSharp.EntityModel;
+﻿using BSharp.EntityModel;
 using BSharp.Services.Utilities;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
@@ -19,11 +19,7 @@ namespace BSharp.Data.Queries
     public class Query<T> where T : Entity
     {
         // From constructor
-        private readonly SqlConnection _conn;
-        private readonly Func<Type, SqlSource> _sources;
-        private readonly IStringLocalizer _localizer;
-        private readonly int _userId;
-        private readonly TimeZoneInfo _userTimeZone;
+        private readonly QueryArgumentsFactory _factory;
 
         // From setter methods
         private int? _top;
@@ -45,18 +41,9 @@ namespace BSharp.Data.Queries
         /// <param name="localizer">For validation error messages</param>
         /// <param name="userId">Used as context when preparing certain filter expressions</param>
         /// <param name="userTimeZone">Used as context when preparing certain filter expressions</param>
-        public Query(SqlConnection conn, Func<Type, SqlSource> sources, IStringLocalizer localizer, int userId, TimeZoneInfo userTimeZone)
+        public Query(QueryArgumentsFactory factory)
         {
-            if (!(conn is SqlConnection))
-            {
-                throw new InvalidOperationException("Only Microsoft SQL Server is supported");
-            }
-
-            _conn = conn as SqlConnection;
-            _sources = sources;
-            _localizer = localizer;
-            _userId = userId;
-            _userTimeZone = userTimeZone;
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         /// <summary>
@@ -64,7 +51,7 @@ namespace BSharp.Data.Queries
         /// </summary>
         private Query<T> Clone()
         {
-            var clone = new Query<T>(_conn, _sources, _localizer, _userId, _userTimeZone)
+            var clone = new Query<T>(_factory)
             {
                 _top = _top,
                 _skip = _skip,
@@ -92,6 +79,14 @@ namespace BSharp.Data.Queries
         }
 
         /// <summary>
+        /// A version of <see cref="Select(SelectExpression)"/> that accepts a string
+        /// </summary>
+        public Query<T> Select(string select)
+        {
+            return Select(SelectExpression.Parse(select));
+        }
+
+        /// <summary>
         /// Applies an <see cref="ExpandExpression"/> on the <see cref="Query{T}"/> to determine what related tables to
         /// include in the result, any tables touched by the <see cref="SelectExpression"/> will have it overriding the <see cref="ExpandExpression"/>
         /// </summary>
@@ -100,6 +95,14 @@ namespace BSharp.Data.Queries
             var clone = Clone();
             clone._expand = expand;
             return clone;
+        }
+
+        /// <summary>
+        /// A version of <see cref="Expand(ExpandExpression)" that accepts a string
+        /// </summary>
+        public Query<T> Expand(string expand)
+        {
+            return Expand(ExpandExpression.Parse(expand));
         }
 
         /// <summary>
@@ -119,6 +122,14 @@ namespace BSharp.Data.Queries
             }
 
             return clone;
+        }
+
+        /// <summary>
+        /// A version of <see cref="Filter(FilterExpression)" that accepts a string
+        /// </summary>
+        public Query<T> Filter(string filter)
+        {
+            return Filter(FilterExpression.Parse(filter));
         }
 
         /// <summary>
@@ -147,6 +158,14 @@ namespace BSharp.Data.Queries
             var clone = Clone();
             clone._orderby = orderby;
             return clone;
+        }
+
+        /// <summary>
+        /// A version of <see cref="OrderBy(OrderByExpression)" that accepts a string
+        /// </summary>
+        public Query<T> OrderBy(string orderBy)
+        {
+            return OrderBy(OrderByExpression.Parse(orderBy));
         }
 
         /// <summary>
@@ -192,12 +211,19 @@ namespace BSharp.Data.Queries
         /// </summary>
         public async Task<int> CountAsync()
         {
+            var args = await _factory();
+            var conn = args.Connection;
+            var sources = args.Sources;
+            var userId = args.UserId;
+            var userTimeZone = args.UserTimeZone;
+            var localizer = args.Localizer;
+
             SelectExpression selectExp = IsEntityWithKey() ? SelectExpression.Parse("Id") : _select;
             FilterExpression filterExp = _filterConditions?.Aggregate(
                 (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
             // To prevent SQL injection
-            ValidatePathsAndProperties(selectExp, null, filterExp, null);
+            ValidatePathsAndProperties(selectExp, null, filterExp, null, localizer);
 
             // Prepare the query
             var flatQuery = new QueryInternal
@@ -215,7 +241,6 @@ namespace BSharp.Data.Queries
             var ps = new SqlStatementParameters();
 
             // Prepare the sources
-            var sources = _sources;
             if (!string.IsNullOrWhiteSpace(_composableSql))
             {
                 // If a composable SQL is provided in a FromSql call, use it as the source of T rather than the default
@@ -236,7 +261,7 @@ namespace BSharp.Data.Queries
             var rawSources = QueryTools.RawSources(sources, ps);
 
             // Load the statement
-            var sql = flatQuery.PrepareStatement(rawSources, ps, _userId, _userTimeZone).Sql;
+            var sql = flatQuery.PrepareStatement(rawSources, ps, userId, userTimeZone).Sql;
             sql = QueryTools.IndentLines(sql);
             sql = $@"SELECT COUNT(*) As [Count] FROM (
 {sql}
@@ -251,7 +276,7 @@ namespace BSharp.Data.Queries
             }
 
             // Execute the SqlStatement
-            using (var cmd = _conn.CreateCommand())
+            using (var cmd = conn.CreateCommand())
             {
                 // Prepare the SQL command
                 cmd.CommandText = sql;
@@ -261,10 +286,10 @@ namespace BSharp.Data.Queries
                 }
 
                 // It is alawys closed, but we add this code anyways for robustness
-                bool ownsConnection = _conn.State != System.Data.ConnectionState.Open;
+                bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
                 if (ownsConnection)
                 {
-                    _conn.Open();
+                    conn.Open();
                 }
 
                 try
@@ -278,8 +303,8 @@ namespace BSharp.Data.Queries
                     // This block is never entered, but we put anyways for robustness
                     if (ownsConnection)
                     {
-                        _conn.Close();
-                        _conn.Dispose();
+                        conn.Close();
+                        conn.Dispose();
                     }
                 }
             }
@@ -290,6 +315,13 @@ namespace BSharp.Data.Queries
         /// </summary>
         public async Task<List<T>> ToListAsync()
         {
+            var args = await _factory();
+            var conn = args.Connection;
+            var sources = args.Sources;
+            var userId = args.UserId;
+            var userTimeZone = args.UserTimeZone;
+            var localizer = args.Localizer;
+
             if (_orderby == null)
             {
                 // Developer mistake
@@ -304,7 +336,7 @@ namespace BSharp.Data.Queries
                 (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
             // To prevent SQL injection
-            ValidatePathsAndProperties(selectExp, expandExp, filterExp, orderbyExp);
+            ValidatePathsAndProperties(selectExp, expandExp, filterExp, orderbyExp, localizer);
 
             // ------------------------ Step #1
 
@@ -345,7 +377,7 @@ namespace BSharp.Data.Queries
                     else
                     {
                         // Must be a collection then
-                        foreignKeyToPrincipalQuery = collectionProperty.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
+                        foreignKeyToPrincipalQuery = collectionProperty.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
                         if (string.IsNullOrWhiteSpace(foreignKeyToPrincipalQuery))
                         {
                             // Programmer mistake
@@ -478,7 +510,6 @@ namespace BSharp.Data.Queries
             var ps = new SqlStatementParameters();
 
             // Prepare the sources
-            var sources = _sources;
             if (!string.IsNullOrWhiteSpace(_composableSql))
             {
                 // If a composable SQL is provided in FromSql call, use it as the source of T rather then the default
@@ -500,14 +531,14 @@ namespace BSharp.Data.Queries
 
             // Prepare the SqlStatements
             List<(IQueryInternal, SqlStatement)> queries = segments.Cast<IQueryInternal>().Select(q =>
-                (q, q.PrepareStatement(rawSources, ps, _userId, _userTimeZone))).ToList(); // The order matters for the Entity loader
+                (q, q.PrepareStatement(rawSources, ps, userId, userTimeZone))).ToList(); // The order matters for the Entity loader
 
             // Load the entities
             var result = await EntityLoader.LoadStatements<T>(
                 queries: queries,
                 preparatorySql: null,
                 ps: ps,
-                conn: _conn);
+                conn: conn);
 
             // Return the entities
             return result.Cast<T>().ToList();
@@ -563,6 +594,13 @@ namespace BSharp.Data.Queries
         /// </summary>
         private async Task<IEnumerable<IndexedId<TKey>>> GetIndexMapInner<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes)
         {
+            var args = await _factory();
+            var conn = args.Connection;
+            var sources = args.Sources;
+            var userId = args.UserId;
+            var userTimeZone = args.UserTimeZone;
+            var localizer = args.Localizer;
+
             if (_select != null || _expand != null)
             {
                 // Programmer mistake
@@ -574,7 +612,7 @@ namespace BSharp.Data.Queries
                 (e1, e2) => new FilterConjunction { Left = e1, Right = e2 });
 
             // To prevent SQL injection
-            ValidatePathsAndProperties(null, null, filterExp, orderByExp);
+            ValidatePathsAndProperties(null, null, filterExp, orderByExp, localizer);
 
             // Prepare the internal query
             var flatQuery = new QueryInternal
@@ -592,7 +630,6 @@ namespace BSharp.Data.Queries
             var ps = new SqlStatementParameters();
 
             // Prepare the sources
-            var sources = _sources;
             if (!string.IsNullOrWhiteSpace(_composableSql))
             {
                 // If a composable SQL is provided in FromSql call, use it as the source of T rather then the default
@@ -604,7 +641,7 @@ namespace BSharp.Data.Queries
                     }
                     else
                     {
-                        return _sources(t);
+                        return sources(t);
                     }
                 };
             }
@@ -613,7 +650,7 @@ namespace BSharp.Data.Queries
             var rawSources = QueryTools.RawSources(sources, ps);
 
             // Use the internal query to create the SQL
-            var sourceSql = flatQuery.PrepareStatement(rawSources, ps, _userId, _userTimeZone).Sql;
+            var sourceSql = flatQuery.PrepareStatement(rawSources, ps, userId, userTimeZone).Sql;
 
             // Prepare a new sources function that uses the above SQL to override the default SQL for type T
             string RawSourceOverride(Type t)
@@ -636,7 +673,7 @@ namespace BSharp.Data.Queries
                 string criteria = criteriaIndex.Criteria;
 
                 var criteriaExp = FilterExpression.Parse(criteria);
-                ValidatePathsAndProperties(null, null, criteriaExp, null);
+                ValidatePathsAndProperties(null, null, criteriaExp, null, localizer);
 
                 var criteriaQuery = new QueryInternal
                 {
@@ -647,7 +684,7 @@ namespace BSharp.Data.Queries
 
                 JoinTree joinTree = criteriaQuery.JoinSql();
                 string joinSql = joinTree.GetSql(RawSourceOverride);
-                string whereSql = criteriaQuery.WhereSql(RawSourceOverride, joinTree, ps, _userId, _userTimeZone);
+                string whereSql = criteriaQuery.WhereSql(RawSourceOverride, joinTree, ps, userId, userTimeZone);
 
 
                 var sqlBuilder = new StringBuilder();
@@ -671,7 +708,7 @@ UNION
 {sql}";
             }
 
-            using (var cmd = _conn.CreateCommand())
+            using (var cmd = conn.CreateCommand())
             {
                 // Prepare the SQL command
                 cmd.CommandText = sql;
@@ -681,10 +718,10 @@ UNION
                 }
 
                 // This block is never entered, but we add it anyways for robustness sake
-                bool ownsConnection = _conn.State != System.Data.ConnectionState.Open;
+                bool ownsConnection = conn.State != System.Data.ConnectionState.Open;
                 if (ownsConnection)
                 {
-                    _conn.Open();
+                    conn.Open();
                 }
 
                 try
@@ -713,8 +750,8 @@ UNION
                     // This block is never entered but we add it here for robustness
                     if (ownsConnection)
                     {
-                        _conn.Close();
-                        _conn.Dispose();
+                        conn.Close();
+                        conn.Dispose();
                     }
                 }
             }
@@ -723,7 +760,7 @@ UNION
         /// <summary>
         /// To prevent SQL injection attacks
         /// </summary>
-        private void ValidatePathsAndProperties(SelectExpression selectExp, ExpandExpression expandExp, FilterExpression filterExp, OrderByExpression orderbyExp)
+        private void ValidatePathsAndProperties(SelectExpression selectExp, ExpandExpression expandExp, FilterExpression filterExp, OrderByExpression orderbyExp, IStringLocalizer localizer)
         {
             // This is important to avoid SQL injection attacks
 
@@ -738,7 +775,7 @@ UNION
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                selectPathValidator.Validate(typeof(T), _localizer, "select",
+                selectPathValidator.Validate(typeof(T), localizer, "select",
                     allowLists: true,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -754,7 +791,7 @@ UNION
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                expandPathTree.Validate(typeof(T), _localizer, "expand",
+                expandPathTree.Validate(typeof(T), localizer, "expand",
                     allowLists: true,
                     allowSimpleTerminals: false,
                     allowNavigationTerminals: true);
@@ -771,7 +808,7 @@ UNION
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                filterPathTree.Validate(typeof(T), _localizer, "filter",
+                filterPathTree.Validate(typeof(T), localizer, "filter",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -787,7 +824,7 @@ UNION
                     orderbyPathTree.AddPath(atom.Path, atom.Property);
                 }
 
-                orderbyPathTree.Validate(typeof(T), _localizer, "orderby",
+                orderbyPathTree.Validate(typeof(T), localizer, "orderby",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);

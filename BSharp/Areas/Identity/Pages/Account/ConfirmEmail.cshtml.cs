@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Authorization;
-using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,10 +14,10 @@ namespace BSharp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ConfirmEmailModel : PageModel
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
         private readonly ILogger<ConfirmEmailModel> _logger;
 
-        public ConfirmEmailModel(UserManager<User> userManager, ILogger<ConfirmEmailModel> logger)
+        public ConfirmEmailModel(UserManager<EmbeddedIdentityServerUser> userManager, ILogger<ConfirmEmailModel> logger)
         {
             _userManager = userManager;
             _logger = logger;

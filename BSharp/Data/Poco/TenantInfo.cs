@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BSharp.Data
+﻿namespace BSharp.Data
 {
     /// <summary>
     /// A class for storing basic information about a particular tenant, information that is retrieved from the database
@@ -11,6 +6,9 @@ namespace BSharp.Data
     public class TenantInfo
     {
         // Tenant Info
+        public string ShortCompanyName { get; set; }
+        public string ShortCompanyName2 { get; set; }
+        public string ShortCompanyName3 { get; set; }
         public string ViewsAndSpecsVersion { get; set; }
         public string SettingsVersion { get; set; }
         public string PrimaryLanguageId { get; set; }

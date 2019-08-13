@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BSharp.Data.Model;
+﻿using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace BSharp.Areas.Identity.Pages.Account.Manage
 {
@@ -15,20 +11,17 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
     {
         private const string AuthenicatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}";
 
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly ILogger<TwoFactorAuthenticationModel> _logger;
-        private readonly IStringLocalizer<TwoFactorAuthenticationModel> _localizer;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+        private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
+        private readonly IStringLocalizer _localizer;
 
         public TwoFactorAuthenticationModel(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            ILogger<TwoFactorAuthenticationModel> logger,
-            IStringLocalizer<TwoFactorAuthenticationModel> localizer)
+            UserManager<EmbeddedIdentityServerUser> userManager,
+            SignInManager<EmbeddedIdentityServerUser> signInManager,
+            IStringLocalizer<Strings> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _logger = logger;
             _localizer = localizer;
         }
 

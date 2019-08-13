@@ -28,12 +28,12 @@ namespace BSharp.Controllers
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
-        private readonly ILogger<RolesController> _logger;
-        private readonly IStringLocalizer<RolesController> _localizer;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer _localizer;
         private readonly ITenantUserInfoAccessor _tenantInfo;
 
         public RolesController(ILogger<RolesController> logger,
-            IStringLocalizer<RolesController> localizer, IServiceProvider serviceProvider, ITenantUserInfoAccessor tenantInfoAccessor) : base(logger, localizer, serviceProvider)
+            IStringLocalizer<Strings> localizer, IServiceProvider serviceProvider, ITenantUserInfoAccessor tenantInfoAccessor) : base(logger, localizer, serviceProvider)
         {
             _db = serviceProvider.GetRequiredService<ApplicationContext>();
             _metadataProvider = serviceProvider.GetRequiredService<IModelMetadataProvider>();
@@ -602,7 +602,7 @@ DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             throw new NotImplementedException();
         }
 
-        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsSql(IEnumerable<RoleForSave> entities)
+        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsQuery(IEnumerable<RoleForSave> entities)
         {
             // Preamble SQL
             string preambleSql = 

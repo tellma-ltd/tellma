@@ -75,8 +75,16 @@
     <Build Include="dal\Stored Procedures\GlobalUsers__AddAndMatch.sql" />
     <Build Include="dal\Stored Procedures\GetDatabaseConnectionInfo.sql" />
     <Build Include="dal\Stored Procedures\OnConnect.sql" />
+    <Build Include="dal\Stored Procedures\GetAccessibleDatabaseIds.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BSharp.Database.Admin.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
   </ItemGroup>
 </Project>

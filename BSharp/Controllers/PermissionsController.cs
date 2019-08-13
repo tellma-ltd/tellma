@@ -26,14 +26,14 @@ namespace BSharp.Controllers
         // Private fields
 
         private readonly ApplicationContext _db;
-        private readonly ILogger<PermissionsController> _logger;
+        private readonly ILogger _logger;
         private readonly ITenantUserInfoAccessor _tenantInfo;
 
 
         // Constructor
 
         public PermissionsController(ApplicationContext db, ILogger<PermissionsController> logger,
-            IStringLocalizer<PermissionsController> localizer, IMapper mapper, ITenantUserInfoAccessor tenantInfo)
+            ITenantUserInfoAccessor tenantInfo)
         {
             _db = db;
             _logger = logger;

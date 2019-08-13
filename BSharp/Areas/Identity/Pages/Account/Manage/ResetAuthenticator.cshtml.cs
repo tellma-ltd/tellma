@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BSharp.Data.Model;
+﻿using System.Threading.Tasks;
+using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,16 +10,16 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
 {
     public class ResetAuthenticatorModel : PageModel
     {
-        UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        ILogger<ResetAuthenticatorModel> _logger;
-        private readonly IStringLocalizer<ResetAuthenticatorModel> _localizer;
+        private UserManager<EmbeddedIdentityServerUser> _userManager;
+        private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
+        private ILogger _logger;
+        private readonly IStringLocalizer _localizer;
 
         public ResetAuthenticatorModel(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
+            UserManager<EmbeddedIdentityServerUser> userManager,
+            SignInManager<EmbeddedIdentityServerUser> signInManager,
             ILogger<ResetAuthenticatorModel> logger,
-            IStringLocalizer<ResetAuthenticatorModel> localizer)
+            IStringLocalizer<Strings> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;

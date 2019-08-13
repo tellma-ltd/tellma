@@ -11,7 +11,7 @@ namespace BSharp.Services.Email
         private readonly IStringLocalizer _localizer;
         private readonly IHttpContextAccessor _httpAccessor;
 
-        public EmailTemplatesProvider(IStringLocalizer<EmailTemplatesProvider> localizer, IHttpContextAccessor httpAccessor)
+        public EmailTemplatesProvider(IStringLocalizer<Strings> localizer, IHttpContextAccessor httpAccessor)
         {
             _localizer = localizer;
             _httpAccessor = httpAccessor;

@@ -19,6 +19,5 @@ namespace BSharp.Controllers.Dto
 
     public class GlobalSettingsForClient
     {
-        public Dictionary<string, Culture> ActiveCultures { get; set; }
     }
 }

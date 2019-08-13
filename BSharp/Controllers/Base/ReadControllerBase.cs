@@ -93,8 +93,7 @@ namespace BSharp.Controllers
             var select = SelectExpression.Parse(args.Select);
 
             // Prepare the query
-            var repo = GetRepository();
-            var query = await repo.QueryAsync<TEntity>();
+            var query = GetRepository().Query<TEntity>();
 
             // Retrieve the user permissions for the current view
             var permissions = await UserPermissions(Constants.Read);
@@ -164,8 +163,7 @@ namespace BSharp.Controllers
             var select = AggregateSelectExpression.Parse(args.Select);
 
             // Prepare the query
-            var repo = GetRepository();
-            var query = await repo.AggregateQueryAsync<TEntity>();
+            var query = GetRepository().AggregateQuery<TEntity>();
 
             // Retrieve the user permissions for the current view
             var permissions = await UserPermissions(Constants.Read);
@@ -281,7 +279,7 @@ namespace BSharp.Controllers
             defaultMask = Normalize(defaultMask);
             return permissions.Where(e =>
             {
-                var permissionMask = string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : Normalize(MaskTree.GetMaskTree(MaskTree.Split(e.Mask)));
+                var permissionMask = string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : Normalize(MaskTree.Parse(e.Mask));
                 return permissionMask.Covers(userMask);
             });
         }

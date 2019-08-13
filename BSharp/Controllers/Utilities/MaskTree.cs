@@ -109,6 +109,15 @@ namespace BSharp.Controllers.Misc
         }
 
         /// <summary>
+        /// Parses a mask string into a <see cref="MaskTree"/>. A mask string is a comma separated
+        /// list of paths, which are in tern a slash (/) separated list of path steps, for example A/B,C,D/E/F contains 3 paths
+        /// </summary>
+        public static MaskTree Parse(string mask)
+        {
+            return GetMaskTree(Split(mask));
+        }
+
+        /// <summary>
         /// Finds the intersection between two mask trees, i.e the fields that are accessible in both trees
         /// </summary>
         public MaskTree IntersectionWith(MaskTree tree)

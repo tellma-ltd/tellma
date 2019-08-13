@@ -13,7 +13,7 @@ namespace BSharp.Data.Queries
     /// <summary>
     /// Contains helper methods that are used in the implementations of <see cref="Query{T}"/> and <see cref="AggregateQuery{T}"/>
     /// </summary>
-    public static class QueryTools
+    internal static class QueryTools
     {
         /// <summary>
         /// Takes a string in the form of "A/B/C" and returns the path ["A", "B"] and the property "C"

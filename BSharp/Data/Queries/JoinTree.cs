@@ -13,7 +13,7 @@ namespace BSharp.Data.Queries
     /// IMPORTANT: This class is used internally in <see cref="QueryInternal"/> and <see cref="AggregateQueryInternal"/>
     /// and is not to be used directly anywhere else in the solution
     /// </summary>
-    public class JoinTree : Dictionary<string, JoinTree>
+    internal class JoinTree : Dictionary<string, JoinTree>
     {
         /// <summary>
         /// Creates a new <see cref="JoinTree"/>

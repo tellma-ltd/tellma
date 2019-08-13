@@ -190,7 +190,7 @@ namespace BSharp.Data.Queries
                             throw new InvalidOperationException("Badly formatted filter parameter, a conjunction 'and' was missing one or both of its 2 operands");
                         }
 
-                        output.Push(new FilterConjunction { Left = output.Pop(), Right = output.Pop() });
+                        output.Push(FilterConjunction.Make(left: output.Pop(), right: output.Pop()));
                         break;
                     case "or":
                         if (output.Count < 2)
@@ -198,7 +198,7 @@ namespace BSharp.Data.Queries
                             throw new InvalidOperationException("Badly formatted filter parameter, a disjunction 'or' was missing one or both of its 2 operands");
                         }
 
-                        output.Push(new FilterDisjunction { Left = output.Pop(), Right = output.Pop() });
+                        output.Push(FilterDisjunction.Make(left: output.Pop(), right: output.Pop()));
                         break;
                     case "not":
                         if (output.Count < 1)
@@ -206,7 +206,7 @@ namespace BSharp.Data.Queries
                             throw new InvalidOperationException("Badly formatted filter parameter, a negation 'not' was missing its operand");
                         }
 
-                        output.Push(new FilterNegation { Inner = output.Pop() });
+                        output.Push(FilterNegation.Make(inner: output.Pop()));
                         break;
                     default:
                         output.Push(FilterAtom.Parse(token));

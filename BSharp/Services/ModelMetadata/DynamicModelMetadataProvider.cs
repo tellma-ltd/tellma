@@ -21,11 +21,11 @@ namespace BSharp.Services.ModelMetadata
     public class DynamicModelMetadataProvider : DefaultModelMetadataProvider
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly ITenantUserInfoAccessor _tenantInfo;
-        private readonly IStringLocalizer<DynamicModelMetadataProvider> _localizer;
+        private readonly ITenantInfoAccessor _tenantInfo;
+        private readonly IStringLocalizer _localizer;
 
         public DynamicModelMetadataProvider(ICompositeMetadataDetailsProvider detailsProvider, IHttpContextAccessor contextAccessor,
-            ITenantUserInfoAccessor tenantInfo, IStringLocalizer<DynamicModelMetadataProvider> localizer) : base(detailsProvider)
+            ITenantInfoAccessor tenantInfo, IStringLocalizer<Strings> localizer) : base(detailsProvider)
         {
             _contextAccessor = contextAccessor;
             _tenantInfo = tenantInfo;
@@ -33,7 +33,7 @@ namespace BSharp.Services.ModelMetadata
         }
 
         public DynamicModelMetadataProvider(ICompositeMetadataDetailsProvider detailsProvider, IOptions<MvcOptions> optionsAccessor,
-            IHttpContextAccessor contextAccessor, ITenantUserInfoAccessor tenantInfo, IStringLocalizer<DynamicModelMetadataProvider> localizer) : base(detailsProvider, optionsAccessor)
+            IHttpContextAccessor contextAccessor, ITenantUserInfoAccessor tenantInfo, IStringLocalizer<Strings> localizer) : base(detailsProvider, optionsAccessor)
         {
             _contextAccessor = contextAccessor;
             _tenantInfo = tenantInfo;

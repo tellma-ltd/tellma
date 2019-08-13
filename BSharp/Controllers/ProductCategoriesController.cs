@@ -30,11 +30,11 @@ namespace BSharp.Controllers
     {
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
-        private readonly ILogger<ProductCategoriesController> _logger;
-        private readonly IStringLocalizer<ProductCategoriesController> _localizer;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer _localizer;
         private readonly ITenantUserInfoAccessor _tenantInfo;
 
-        public ProductCategoriesController(ILogger<ProductCategoriesController> logger, IStringLocalizer<ProductCategoriesController> localizer,
+        public ProductCategoriesController(ILogger<ProductCategoriesController> logger, IStringLocalizer<Strings> localizer,
             IServiceProvider serviceProvider) : base(logger, localizer, serviceProvider)
         {
             _logger = logger;
@@ -986,7 +986,7 @@ SET NOCOUNT ON;
             return (result, errorKeyMap);
         }
 
-        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsSql(IEnumerable<ProductCategoryForSave> entities)
+        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsQuery(IEnumerable<ProductCategoryForSave> entities)
         {
             // Preamble SQL
             string preambleSql =

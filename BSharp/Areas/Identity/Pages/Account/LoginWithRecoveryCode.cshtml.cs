@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,13 +14,13 @@ namespace BSharp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginWithRecoveryCodeModel : PageModel
     {
-        private readonly SignInManager<User> _signInManager;
-        private readonly ILogger<LoginWithRecoveryCodeModel> _logger;
-        private readonly IStringLocalizer<LoginWithRecoveryCodeModel> _localizer;
-        private readonly ClientStoreConfiguration _config;
+        private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer _localizer;
+        private readonly ClientApplicationsOptions _config;
 
-        public LoginWithRecoveryCodeModel(SignInManager<User> signInManager, ILogger<LoginWithRecoveryCodeModel> logger, 
-            IStringLocalizer<LoginWithRecoveryCodeModel> localizer, IOptions<ClientStoreConfiguration> options)
+        public LoginWithRecoveryCodeModel(SignInManager<EmbeddedIdentityServerUser> signInManager, ILogger<LoginWithRecoveryCodeModel> logger, 
+            IStringLocalizer<Strings> localizer, IOptions<ClientApplicationsOptions> options)
         {
             _signInManager = signInManager;
             _logger = logger;

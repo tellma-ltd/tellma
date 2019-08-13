@@ -98,7 +98,11 @@ namespace BSharp
                     // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
                     opt.Filters.Add(typeof(CheckGlobalVersionsFilter));
                 })
-                    .AddDataAnnotationsLocalization()
+                    .AddDataAnnotationsLocalization(opt =>
+                    {
+                        // This allows us to have a single RESX file for all classes and namespaces
+                        opt.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(Strings));
+                    })
                     .AddJsonOptions(opt =>
                     {
                         // The JSON options below instruct the serializer to keep property names in PascalCase, 
@@ -271,8 +275,8 @@ namespace BSharp
         }
     }
 
-    ///// <summary>
-    ///// TODO: 
-    ///// </summary>
-    //internal class Strings { }
+    /// <summary>
+    /// Only here to allow us to have a single shared resource file, as per the official docs https://bit.ly/2Z1fH0k
+    /// </summary>
+    public class Strings { }
 }

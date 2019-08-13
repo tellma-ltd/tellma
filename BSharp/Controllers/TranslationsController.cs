@@ -25,7 +25,7 @@ namespace BSharp.Controllers
         private readonly ILogger _logger;
 
         public TranslationsController(AdminContext db, ISqlStringLocalizerFactory localizerFactory, ILogger<TranslationsController> logger,
-            IStringLocalizer<TranslationsController> localizer, IServiceProvider serviceProvider) : base(logger, localizer, serviceProvider)
+            IStringLocalizer<Strings> localizer, IServiceProvider serviceProvider) : base(logger, localizer)
         {
             _db = db;
             _localizerFactory = localizerFactory;
@@ -58,7 +58,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsSql(IEnumerable<TranslationForSave> entities)
+        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsQuery(IEnumerable<TranslationForSave> entities)
         {
             throw new NotImplementedException();
         }

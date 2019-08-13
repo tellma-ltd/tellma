@@ -7,8 +7,10 @@ namespace BSharp.Data
 {
     public interface IRepository
     {
-        Task<Query<T>> QueryAsync<T>() where T : Entity;
+        Query<T> Query<T>() where T : Entity;
 
-        Task<AggregateQuery<T>> AggregateQueryAsync<T>() where T : Entity;
+        AggregateQuery<T> AggregateQuery<T>() where T : Entity;
+
+        // Task<Query<T>> AsQueryAsync<T, TForSave>(List<TForSave> entities) where T : Entity where TForSave : Entity;
     }
 }

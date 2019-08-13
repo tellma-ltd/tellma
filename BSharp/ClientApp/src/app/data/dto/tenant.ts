@@ -9,9 +9,10 @@ export class Tenant extends TenantForSave {
 
 }
 
-export class TenantForClient extends DtoBase {
+export class UserCompany extends DtoBase {
     Id: number;
     Name: string;
     Name2: string;
+    Name3: string;
     ImageId: string;
 }

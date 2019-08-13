@@ -5,7 +5,7 @@ namespace BSharp.Data.Queries
     /// <summary>
     /// Interface for both <see cref="QueryInternal"/> internal and <see cref="AggregateQueryInternal"/>
     /// </summary>
-    public interface IQueryInternal
+    internal interface IQueryInternal
     {
         /// <summary>
         /// If this query A is to retrieve the navigation collection of another query B, then B is the principal query of A

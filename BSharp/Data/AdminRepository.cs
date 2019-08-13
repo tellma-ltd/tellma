@@ -19,7 +19,7 @@ namespace BSharp.Data
 
         private readonly IExternalUserAccessor _externalUserAccessor;
         private readonly IClientInfoAccessor _clientInfoAccessor;
-        private readonly IStringLocalizer<AdminRepository> _localizer;
+        private readonly IStringLocalizer _localizer;
         private readonly string _connectionString;
 
         private SqlConnection _conn;
@@ -27,8 +27,8 @@ namespace BSharp.Data
 
         #region Lifecycle
 
-        public AdminRepository(IOptions<AdminRepositoryOptions> config, IExternalUserAccessor externalUserAccessor, 
-            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<AdminRepository> localizer)
+        public AdminRepository(IOptions<AdminRepositoryOptions> config, IExternalUserAccessor externalUserAccessor,
+            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer)
         {
             _connectionString = config?.Value?.ConnectionString ?? throw new ArgumentException("The admin connection string was not supplied", nameof(config));
             _externalUserAccessor = externalUserAccessor;
@@ -93,7 +93,7 @@ namespace BSharp.Data
         {
             var conn = await GetConnectionAsync();
             var sources = GetSources();
-            var userInfo = await GetUserInfoAsync();
+            var userInfo = await GetGlobalUserInfoAsync();
             var userId = userInfo.UserId ?? 0;
             var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
 
@@ -104,14 +104,14 @@ namespace BSharp.Data
         {
             var conn = await GetConnectionAsync();
             var sources = GetSources();
-            var userInfo = await GetUserInfoAsync();
+            var userInfo = await GetGlobalUserInfoAsync();
             var userId = userInfo.UserId ?? 0;
             var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
 
             return new AggregateQuery<T>(conn, sources, _localizer, userId, userTimeZone);
         }
 
-        private Func<Type, SqlSource> GetSources()
+        private static Func<Type, SqlSource> GetSources()
         {
             return (t) =>
             {
@@ -120,15 +120,20 @@ namespace BSharp.Data
                     case nameof(GlobalUser):
                         return new SqlSource("[dbo].[GlobalUsers]");
 
-                    //case nameof(SqlDataba):
-                    //    return new SqlSource("(SELECT * FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')");
+                    case nameof(SqlDatabase):
+                        return new SqlSource("[dbo].[SqlDatabases]");
+
+                    case nameof(SqlServer):
+                        return new SqlSource("[dbo].[SqlServers]");
+
+                    case nameof(GlobalUserMembership):
+                        return new SqlSource("[dbo].[GlobalUserMemberships]");
 
                     default:
-                        throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(ApplicationRepository)} queries");
+                        throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(AdminRepository)} queries");
                 }
             };
         }
-
 
         #endregion
 
@@ -178,14 +183,6 @@ namespace BSharp.Data
             return result;
         }
 
-
-
-        public Task<GlobalUserInfo> GetUserInfoAsync()
-        {
-            // TODO
-            throw new NotImplementedException();
-        }
-
         public Task SetUserExternalIdByUserIdAsync(int userId, string externalId)
         {
             throw new NotImplementedException();
@@ -207,13 +204,12 @@ namespace BSharp.Data
             throw new NotImplementedException();
         }
 
-
         public async Task<DatabaseConnectionInfo> GetDatabaseConnectionInfo(int databaseId)
         {
             DatabaseConnectionInfo result = null;
 
             var conn = await GetConnectionAsync();
-            using(var cmd = conn.CreateCommand())
+            using (var cmd = conn.CreateCommand())
             {
                 // Parameters
                 cmd.Parameters.AddWithValue("@DatabaseId", databaseId);
@@ -236,6 +232,29 @@ namespace BSharp.Data
                             UserName = reader.IsDBNull(i) ? null : reader.GetString(i++),
                             PasswordKey = reader.IsDBNull(i) ? null : reader.GetString(i++),
                         };
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<int>> GetAccessibleDatabaseIds()
+        {
+            var result = new List<int>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandText = $"EXEC [dal].[{nameof(GetAccessibleDatabaseIds)}]";
+
+                // Execute and Load
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(reader.GetInt32(0));
                     }
                 }
             }

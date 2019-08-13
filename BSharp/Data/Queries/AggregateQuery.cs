@@ -16,11 +16,7 @@ namespace BSharp.Data.Queries
     public class AggregateQuery<T> where T : Entity
     {
         // From constructor
-        private readonly SqlConnection _conn;
-        private readonly Func<Type, SqlSource> _sources;
-        private readonly IStringLocalizer _localizer;
-        private readonly int _userId;
-        private readonly TimeZoneInfo _userTimeZone;
+        private readonly QueryArgumentsFactory _factory;
 
         // Through setter methods
         private int? _top;
@@ -36,13 +32,9 @@ namespace BSharp.Data.Queries
         /// <param name="localizer">For validation error messages</param>
         /// <param name="userId">Used as context when preparing certain filter expressions</param>
         /// <param name="userTimeZone">Used as context when preparing certain filter expressions</param>
-        public AggregateQuery(SqlConnection conn, Func<Type, SqlSource> sources, IStringLocalizer localizer, int userId, TimeZoneInfo userTimeZone)
+        public AggregateQuery(QueryArgumentsFactory factory)
         {
-            _conn = conn;
-            _sources = sources;
-            _localizer = localizer;
-            _userId = userId;
-            _userTimeZone = userTimeZone;
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         /// <summary>
@@ -50,7 +42,7 @@ namespace BSharp.Data.Queries
         /// </summary>
         private AggregateQuery<T> Clone()
         {
-            var clone = new AggregateQuery<T>(_conn, _sources, _localizer, _userId, _userTimeZone)
+            var clone = new AggregateQuery<T>(_factory)
             {
                 _top = _top,
                 _filterConditions = _filterConditions?.ToList(),
@@ -105,6 +97,13 @@ namespace BSharp.Data.Queries
 
         public async Task<List<Entity>> ToListAsync()
         {
+            var args = await _factory();
+            var conn = args.Connection;
+            var sources = args.Sources;
+            var userId = args.UserId;
+            var userTimeZone = args.UserTimeZone;
+            var localizer = args.Localizer;
+
             // ------------------------ Validation Step
             // Create the expressions. As for filter: turn all the filters into expressions and AND them together
             AggregateSelectExpression selectExp = _select;
@@ -115,11 +114,11 @@ namespace BSharp.Data.Queries
             if (selectExp == null)
             {
                 string message = $"The select argument is required";
-                throw new BadRequestException(message);
+                throw new InvalidOperationException(message);
             }
 
             // To prevent SQL injection
-            ValidatePathsAndProperties(selectExp, filterExp);
+            ValidatePathsAndProperties(selectExp, filterExp, localizer);
 
             //// ------------------------ Entityable analysis
             //// Grab all paths that terminate with "Id"
@@ -198,8 +197,8 @@ namespace BSharp.Data.Queries
 
             // Prepare the statement from the internal query
             var ps = new SqlStatementParameters();
-            var rawSources = QueryTools.RawSources(_sources, ps);
-            SqlStatement statement = query.PrepareStatement(rawSources, ps, _userId, _userTimeZone);
+            var rawSources = QueryTools.RawSources(sources, ps);
+            SqlStatement statement = query.PrepareStatement(rawSources, ps, userId, userTimeZone);
 
             // load the entities and return them
             var queries = new List<(IQueryInternal Query, SqlStatement Statement)> { (query, statement) };
@@ -207,7 +206,7 @@ namespace BSharp.Data.Queries
                 queries: queries,
                 preparatorySql: null,
                 ps: ps,
-                conn: _conn);
+                conn: conn);
 
             return result;
         }
@@ -215,7 +214,7 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Protects against SQL injection attacks
         /// </summary>
-        private void ValidatePathsAndProperties(AggregateSelectExpression selectExp, FilterExpression filterExp)
+        private void ValidatePathsAndProperties(AggregateSelectExpression selectExp, FilterExpression filterExp, IStringLocalizer localizer)
         {
             // This is important to avoid SQL injection attacks
 
@@ -230,7 +229,7 @@ namespace BSharp.Data.Queries
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                selectPathValidator.Validate(typeof(T), _localizer, "select",
+                selectPathValidator.Validate(typeof(T), localizer, "select",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);
@@ -247,7 +246,7 @@ namespace BSharp.Data.Queries
                 }
 
                 // Make sure the paths are valid (Protects against SQL injection)
-                filterPathTree.Validate(typeof(T), _localizer, "filter",
+                filterPathTree.Validate(typeof(T), localizer, "filter",
                     allowLists: false,
                     allowSimpleTerminals: true,
                     allowNavigationTerminals: false);

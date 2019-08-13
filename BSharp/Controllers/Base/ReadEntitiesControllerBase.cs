@@ -49,7 +49,7 @@ namespace BSharp.Controllers
 
             // Prepare the odata query
             var repo = GetRepository();
-            var query = await repo.QueryAsync<TEntity>();
+            var query = repo.Query<TEntity>();
 
             // Add the filter by Id
             query = query.FilterByIds(id);
@@ -101,7 +101,7 @@ namespace BSharp.Controllers
         {
             // Prepare a query of the result, and clone it
             var repo = GetRepository();
-            var query = await repo.QueryAsync<TEntity>();
+            var query = repo.Query<TEntity>();
 
             // Filter by Ids
             query = query.FilterByIds(ids);
@@ -167,7 +167,8 @@ namespace BSharp.Controllers
                     .Select(e => FilterExpression.Parse(e.Criteria))
                     .Aggregate((e1, e2) => FilterDisjunction.Make(e1, e2));
 
-                var query = (await GetRepository().QueryAsync<TEntity>())
+                var query = GetRepository()
+                    .Query<TEntity>()
                     .Select(SelectExpression.Parse("Id"))
                     .FilterByIds(ids);
 
@@ -347,7 +348,7 @@ namespace BSharp.Controllers
                     // Having no criteria is a very common case that can be optimized by skipping the database call
                     var addDefault = permissions.Any(p => string.IsNullOrWhiteSpace(p.Mask));
                     var masks = permissions.Select(e => e.Mask).Where(e => !string.IsNullOrWhiteSpace(e));
-                    var maskTrees = masks.Select(mask => MaskTree.GetMaskTree(MaskTree.Split(mask))).ToList();
+                    var maskTrees = masks.Select(mask => MaskTree.Parse(mask)).ToList();
                     if (addDefault)
                     {
                         maskTrees.Add(defaultMask);
@@ -372,7 +373,7 @@ namespace BSharp.Controllers
                         .Select(g => new
                         {
                             Criteria = g.Key,
-                            Mask = g.Select(e => string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : MaskTree.GetMaskTree(MaskTree.Split(e.Mask)))
+                            Mask = g.Select(e => string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : MaskTree.Parse(e.Mask))
                             .Aggregate((t1, t2) => t1.UnionWith(t2)) // takes the union of all the mask trees
                         }).ToArray();
 
@@ -380,7 +381,7 @@ namespace BSharp.Controllers
                     var universalMask = permissions
                         .Where(e => string.IsNullOrWhiteSpace(e.Criteria))
                         .Distinct()
-                        .Select(e => string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : MaskTree.GetMaskTree(MaskTree.Split(e.Mask)))
+                        .Select(e => string.IsNullOrWhiteSpace(e.Mask) ? defaultMask : MaskTree.Parse(e.Mask))
                         .Aggregate(MaskTree.BasicFieldsMaskTree(), (t1, t2) => t1.UnionWith(t2)); // we use a seed here since if the collection is empty this will throw an error
 
                     var criteriaWithIndexes = maskAndCriteriaArray

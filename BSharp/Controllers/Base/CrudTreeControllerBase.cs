@@ -1,23 +1,22 @@
-﻿using BSharp.Controllers.Dto;
-using BSharp.Controllers.Misc;
+﻿using BSharp.Controllers.Misc;
+using BSharp.EntityModel;
+using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-
-    public abstract class CrudTreeControllerBase<TDtoForSave, TDto, TKey> : CrudControllerBase<TDtoForSave, TDto, TKey>
-        where TDtoForSave : DtoForSaveKeyBase<TKey>, new()
-        where TDto : DtoForSaveKeyBase<TKey>, new()
+    public abstract class CrudTreeControllerBase<TEntityForSave, TEntity, TKey> : CrudControllerBase<TEntityForSave, TEntity, TKey>
+        where TEntityForSave : EntityWithKey<TKey>, new()
+        where TEntity : EntityWithKey<TKey>, new()
     {
         private readonly ILogger _logger;
 
-        public CrudTreeControllerBase(ILogger logger, IStringLocalizer localizer, IServiceProvider serviceProvider) : base(logger, localizer, serviceProvider)
+        public CrudTreeControllerBase(ILogger logger, IStringLocalizer localizer) : base(logger, localizer)
         {
             _logger = logger;
         }
@@ -43,7 +42,7 @@ namespace BSharp.Controllers
                 return;
             }
 
-            await CheckActionPermissions(ids);
+            await CheckActionPermissions(Constants.Delete, ids.ToArray());
             await ValidateDeleteWithDescendantsAsync(ids);
             if (!ModelState.IsValid)
             {
@@ -55,8 +54,6 @@ namespace BSharp.Controllers
 
         /// <summary>
         /// Deletes the entities specified by the list of Ids
-        /// Assumes that the view does not allow 'Create' permission level, if it does
-        /// ignore this method and override <see cref="DeleteImplAsync(List{TKey})"/> instead
         /// </summary>
         protected abstract Task DeleteWithDescendantsAsync(List<TKey> ids);
 

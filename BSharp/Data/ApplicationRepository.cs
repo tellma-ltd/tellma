@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,13 +24,13 @@ namespace BSharp.Data
     /// SQL: Tables, Views, Stored Procedures etc.., it contains no logic of its own.
     /// By default it connects to the tenant Id supplied in the headers 
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
+    [SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
     public class ApplicationRepository : IDisposable, IRepository
     {
         private readonly IShardResolver _shardResolver;
         private readonly IExternalUserAccessor _externalUserAccessor;
         private readonly IClientInfoAccessor _clientInfoAccessor;
-        private readonly IStringLocalizer<ApplicationRepository> _localizer;
+        private readonly IStringLocalizer _localizer;
 
         private SqlConnection _conn;
         private UserInfo _userInfo;
@@ -38,7 +39,7 @@ namespace BSharp.Data
         #region Lifecycle
 
         public ApplicationRepository(IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor, 
-            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<ApplicationRepository> localizer)
+            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer)
         {
             _shardResolver = shardResolver;
             _externalUserAccessor = externalUserAccessor;
@@ -140,49 +141,57 @@ namespace BSharp.Data
 
         #region Queries
 
+        public Query<User> Users => Query<User>();
+
+
         /// <summary>
-        /// Creates and returns a new <see cref="Query{T}"/>
+        /// Creates and returns a new <see cref="Queries.Query{T}"/>
         /// </summary>
-        /// <typeparam name="T">The type of the <see cref="Query{T}"/></typeparam>
-        public async Task<Query<T>> QueryAsync<T>() where T : Entity
+        /// <typeparam name="T">The type of the <see cref="Queries.Query{T}"/></typeparam>
+        public Query<T> Query<T>() where T : Entity
         {
-            var conn = await GetConnectionAsync();
-            var tenantInfo = await GetTenantInfoAsync();
-            var sources = GetSources(tenantInfo);
-            var userInfo = await GetUserInfoAsync();
-            var userId = userInfo.UserId ?? 0;
-            var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone; 
-            return new Query<T>(conn, sources, _localizer, userId, userTimeZone);
+            return new Query<T>(GetFactory());
         }
 
         /// <summary>
-        /// Creates and returns a new <see cref="AggregateQuery{T}"/>
+        /// Creates and returns a new <see cref="Queries.AggregateQuery{T}"/>
         /// </summary>
-        /// <typeparam name="T">The root type of the <see cref="AggregateQuery{T}"/></typeparam>
-        public async Task<AggregateQuery<T>> AggregateQueryAsync<T>() where T : Entity
+        /// <typeparam name="T">The root type of the <see cref="Queries.AggregateQuery{T}"/></typeparam>
+        public AggregateQuery<T> AggregateQuery<T>() where T : Entity
         {
-            var conn = await GetConnectionAsync();
-            var tenantInfo = await GetTenantInfoAsync();
-            var sources = GetSources(tenantInfo);
-            var userInfo = await GetUserInfoAsync();
-            var userId = userInfo.UserId ?? 0;
-            var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
-            return new AggregateQuery<T>(conn, sources, _localizer, userId, userTimeZone);
+            return new AggregateQuery<T>(GetFactory());
+        }
+
+        private QueryArgumentsFactory GetFactory()
+        {
+            async Task<QueryArguments> Factory()
+            {
+                var conn = await GetConnectionAsync();
+                var tenantInfo = await GetTenantInfoAsync();
+                var sources = GetSources(tenantInfo, _localizer);
+                var userInfo = await GetUserInfoAsync();
+                var userId = userInfo.UserId ?? 0;
+                var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
+
+                return new QueryArguments(conn, sources, userId, userTimeZone, _localizer);
+            }
+
+            return Factory;
         }
 
         /// <summary>
         /// Returns a function that maps every <see cref="Entity"/> type in <see cref="ApplicationRepository"/> 
         /// to the default SQL query that retrieves it + some optional parameters
         /// </summary>
-        private Func<Type, SqlSource> GetSources(TenantInfo info)
+        private static Func<Type, SqlSource> GetSources(TenantInfo info, IStringLocalizer localizer)
         {
             var lang1 = info.PrimaryLanguageId;
             var lang2 = info.SecondaryLanguageId;
             var lang3 = info.TernaryLanguageId;
 
-            var loc1 = lang1 == null ? null : _localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang1));
-            var loc2 = lang2 == null ? null : _localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang2));
-            var loc3 = lang3 == null ? null : _localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang3));
+            var loc1 = lang1 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang1));
+            var loc2 = lang2 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang2));
+            var loc3 = lang3 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang3));
 
             // TODO Do something about SQL injection risk
             string localize1(string s) => loc1 == null ? "NULL" : $"N'{loc1[s]?.ToString().Replace("'", "''")}'";
@@ -377,6 +386,9 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                         // The tenant Info
                         tenantInfo = new TenantInfo
                         {
+                            ShortCompanyName = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            ShortCompanyName2 = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            ShortCompanyName3 = reader.IsDBNull(i) ? null : reader.GetString(i++),
                             ViewsAndSpecsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
                             SettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
                             PrimaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
@@ -453,7 +465,37 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             return result;
         }
 
+        #endregion
+
         #region MeasurementUnits
+
+        public Query<MeasurementUnit> MeasurementUnits__AsQuery(List<MeasurementUnitForSave> entities)
+        {
+            // TODO: Move to a function in the database
+
+            // This method returns the provided entities as a Query that can be selected, filtered etc...
+            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[MeasurementUnitList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            string preambleSql =
+                $@"DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
+DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+DECLARE @True BIT = 1;";
+
+            string sql =
+                $@"SELECT [E].[Index] AS [Id], [E].[Name], [E].[Name2], [E].[Name3], [E].[Code], [E].[UnitType], [E].[UnitAmount], [E].[BaseAmount],
+@True AS [IsActive], @Now AS [CreatedAt], @UserId AS [CreatedById], @Now AS [ModifiedAt], @UserId AS [ModifiedById] 
+FROM @Entities [E]";
+
+            var query = Query<MeasurementUnit>();
+            return query.FromSql(sql, preambleSql, entitiesTvp);
+        }
 
         public async Task<IEnumerable<ValidationError>> MeasurementUnits_Validate__Save(List<MeasurementUnitForSave> entities, int top)
         {
@@ -649,8 +691,6 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 }
             }
         }
-
-        #endregion
 
         #endregion
     }

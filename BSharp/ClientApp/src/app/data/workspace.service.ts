@@ -9,7 +9,7 @@ import { DtoKeyBase } from './dto/dto-key-base';
 import { SettingsForClient } from './dto/settings';
 import { PermissionsForClient } from './dto/permission';
 import { GlobalSettingsForClient } from './dto/global-settings';
-import { TenantForClient } from './dto/tenant';
+import { UserCompany } from './dto/tenant';
 import { IfrsNote } from './dto/ifrs-note';
 import { ProductCategory } from './dto/product-category';
 import { Subject } from 'rxjs';
@@ -260,7 +260,7 @@ export class Workspace {
 
   // The user's companies
   companiesStatus: MasterStatus;
-  companies: TenantForClient[];
+  companies: UserCompany[];
 
   // Current tenantID selected by the user
   tenantId: number;

@@ -1,5 +1,4 @@
-﻿using BSharp.Controllers.Misc;
-using BSharp.EntityModel;
+﻿using BSharp.EntityModel;
 using BSharp.Services.Utilities;
 using System;
 using System.Collections;
@@ -10,10 +9,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace BSharp.Data.Queries
 {
-    public static class EntityLoader
+    internal static class EntityLoader
     {
         /// <summary>
         /// This method builds one large SQL script from the supplied <see cref="SqlStatement"/>s and executes it against a SQL server connection in one go,

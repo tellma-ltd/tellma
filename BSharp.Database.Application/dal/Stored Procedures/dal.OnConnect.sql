@@ -20,6 +20,9 @@ AS
         @PermissionsVersion UNIQUEIDENTIFIER,
         @ViewsAndSpecsVersion UNIQUEIDENTIFIER,
         @UserSettingsVersion UNIQUEIDENTIFIER,
+        @ShortCompanyName NVARCHAR(255), 
+        @ShortCompanyName2 NVARCHAR(255), 
+        @ShortCompanyName3 NVARCHAR(255), 
         @PrimaryLanguageId NVARCHAR(255),
         @PrimaryLanguageSymbol NVARCHAR(255),
         @SecondaryLanguageId NVARCHAR(255),
@@ -44,6 +47,9 @@ AS
 
     -- Get hashes
     SELECT 
+		@ShortCompanyName = [ShortCompanyName],
+		@ShortCompanyName2 = [ShortCompanyName2],
+		@ShortCompanyName3 = [ShortCompanyName3],
         @SettingsVersion = [SettingsVersion],
         @ViewsAndSpecsVersion = [ViewsAndSpecsVersion],
         @PrimaryLanguageId = [PrimaryLanguageId],
@@ -67,6 +73,9 @@ AS
         @PermissionsVersion AS [PermissionsVersion],
         @UserSettingsVersion AS [UserSettingsVersion],
 		-- Tenant Info
+		@ShortCompanyName AS [ShortCompanyName],
+		@ShortCompanyName2 AS [ShortCompanyName2],
+		@ShortCompanyName3 AS [ShortCompanyName3],
         @ViewsAndSpecsVersion AS [ViewsAndSpecsVersion],
         @SettingsVersion AS [SettingsVersion], 
         @PrimaryLanguageId AS [PrimaryLanguageId],

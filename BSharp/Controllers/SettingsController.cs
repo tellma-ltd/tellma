@@ -32,7 +32,7 @@ namespace BSharp.Controllers
         private readonly ApplicationContext _db;
         private readonly ILogger<SettingsController> _logger;
         private readonly IGlobalSettingsCache _globalSettingsCache;
-        private readonly IStringLocalizer<SettingsController> _localizer;
+        private readonly IStringLocalizer _localizer;
         private readonly IMapper _mapper;
         private readonly ITenantUserInfoAccessor _tenantInfo;
 
@@ -40,7 +40,7 @@ namespace BSharp.Controllers
         // Constructor
 
         public SettingsController(ApplicationContext db, ILogger<SettingsController> logger, IGlobalSettingsCache globalSettingsCache,
-            IStringLocalizer<SettingsController> localizer, IMapper mapper, ITenantUserInfoAccessor tenantInfo)
+            IStringLocalizer<Strings> localizer, IMapper mapper, ITenantUserInfoAccessor tenantInfo)
         {
             _db = db;
             _logger = logger;

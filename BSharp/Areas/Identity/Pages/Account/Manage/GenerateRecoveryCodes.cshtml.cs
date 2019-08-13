@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using BSharp.Data.Model;
+using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,14 +12,14 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
 {
     public class GenerateRecoveryCodesModel : PageModel
     {
-        private readonly UserManager<User> _userManager;
-        private readonly ILogger<GenerateRecoveryCodesModel> _logger;
-        private readonly IStringLocalizer<GenerateRecoveryCodesModel> _localizer;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer _localizer;
 
         public GenerateRecoveryCodesModel(
-            UserManager<User> userManager,
+            UserManager<EmbeddedIdentityServerUser> userManager,
             ILogger<GenerateRecoveryCodesModel> logger,
-            IStringLocalizer<GenerateRecoveryCodesModel> localizer)
+            IStringLocalizer<Strings> localizer)
         {
             _userManager = userManager;
             _logger = logger;

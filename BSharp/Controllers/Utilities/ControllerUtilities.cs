@@ -318,6 +318,9 @@ namespace BSharp.Controllers.Misc
             }
         }
 
+        /// <summary>
+        /// If some 2 or more entities have the same Id that isn't 0, an appropriate error is added to the <see cref="ModelStateDictionary"/>
+        /// </summary>
         public static void ValidateUniqueIds<TEntity>(List<TEntity> entities, ModelStateDictionary modelState, IStringLocalizer localizer) where TEntity : EntityWithKey
         {
             if (entities is null)

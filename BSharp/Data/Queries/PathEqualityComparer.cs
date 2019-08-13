@@ -8,7 +8,7 @@ namespace BSharp.Data.Queries
     /// An <see cref="IEqualityComparer{T}"/> implementation for <see cref="ArraySegment{T}"/> paths.
     /// Used in hash sets and dictionaries to equate two paths when the are comprised of identical steps
     /// </summary>
-    public class PathEqualityComparer : IEqualityComparer<ArraySegment<string>>
+    internal class PathEqualityComparer : IEqualityComparer<ArraySegment<string>>
     {
         public bool Equals(ArraySegment<string> x, ArraySegment<string> y)
         {

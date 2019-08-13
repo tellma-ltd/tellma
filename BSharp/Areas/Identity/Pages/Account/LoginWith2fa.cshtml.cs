@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Authorization;
-using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using BSharp.Services.EmbeddedIdentityServer;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace BSharp.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LoginWith2faModel : PageModel
     {
-        private readonly SignInManager<User> _signInManager;
-        private readonly ILogger<LoginWith2faModel> _logger;
-        private readonly IStringLocalizer<LoginWith2faModel> _localizer;
-        private readonly ClientStoreConfiguration _config;
+        private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer _localizer;
+        private readonly ClientApplicationsOptions _config;
 
-        public LoginWith2faModel(SignInManager<User> signInManager, ILogger<LoginWith2faModel> logger, 
-            IStringLocalizer<LoginWith2faModel> localizer, IOptions<ClientStoreConfiguration> options)
+        public LoginWith2faModel(SignInManager<EmbeddedIdentityServerUser> signInManager, ILogger<LoginWith2faModel> logger, 
+            IStringLocalizer<Strings> localizer, IOptions<ClientApplicationsOptions> options)
         {
             _signInManager = signInManager;
             _logger = logger;

@@ -7,7 +7,7 @@
 	-- but a key to look the password up from a configuration provider, when
 	-- this is left as null, it is assumed to be the same password as the admin DB
     [PasswordKey] NVARCHAR(255) NULL, 
-    [Description] NVARCHAR(255) NULL,
+    [Description] NVARCHAR(1024) NULL,
 	[CreatedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]	INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	[ModifiedAt]	DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 

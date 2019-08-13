@@ -36,16 +36,16 @@ namespace BSharp.Services.Sharding
             _options = options.Value;
         }
 
-        public string GetConnectionString()
+        public string GetConnectionString(int? tenantId = null)
         {
             string shardConnString = null;
-            int tenantId = _tenantIdProvider.GetTenantId();
+            int databaseId = tenantId ?? _tenantIdProvider.GetTenantId();
 
             // Step (1) retrieve the conn string from the cache inside a READ lock
             _shardingLock.EnterReadLock();
             try
             {
-                _cache.TryGetValue(CacheKey(tenantId), out shardConnString);
+                _cache.TryGetValue(CacheKey(databaseId), out shardConnString);
             }
             finally
             {
@@ -60,7 +60,7 @@ namespace BSharp.Services.Sharding
                 {
                     // To avoid a race-condition causing multiple threads to populate the cache in parallel immediately after they all 
                     // have a cache miss inside the previous READ lock, here we check the cache again inside the WRITE lock
-                    _cache.TryGetValue(CacheKey(tenantId), out shardConnString);
+                    _cache.TryGetValue(CacheKey(databaseId), out shardConnString);
                     if (shardConnString == null)
                     {
                         DatabaseConnectionInfo connectionInfo;
@@ -75,7 +75,7 @@ namespace BSharp.Services.Sharding
                         using (var scope = _serviceProvider.CreateScope())
                         {
                             var repo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                            connectionInfo = repo.GetDatabaseConnectionInfo(databaseId: tenantId).GetAwaiter().GetResult();
+                            connectionInfo = repo.GetDatabaseConnectionInfo(databaseId: databaseId).GetAwaiter().GetResult();
 
                             dbName = connectionInfo?.DatabaseName;
                         }
@@ -83,7 +83,7 @@ namespace BSharp.Services.Sharding
                         // This is a catastrophic error, should not happen in theory
                         if (string.IsNullOrWhiteSpace(dbName))
                         {
-                            throw new InvalidOperationException($"The sharding route for tenant Id {tenantId} is missing");
+                            throw new InvalidOperationException($"The sharding route for tenant Id {databaseId} is missing");
                         }
 
                         // This is the same SQL Server where the admin database resides
@@ -159,7 +159,7 @@ namespace BSharp.Services.Sharding
 
                         // Set the cache, with an expiry
                         var expiryTime = DateTimeOffset.Now.AddMinutes(GetCacheExpirationInMinutes());
-                        _cache.Set(CacheKey(tenantId), shardConnString, expiryTime);
+                        _cache.Set(CacheKey(databaseId), shardConnString, expiryTime);
 
                         // NOTE: Sharding routes is a type of data that is very frequently read, yet very rarely if never updated
                         // so we have decided to rely only on cache expiry to keep the cache fresh (2h by default), so if you move a tenant

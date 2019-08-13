@@ -22,12 +22,12 @@ namespace BSharp.Controllers
         private readonly ApplicationContext _db;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger<ViewsController> _logger;
-        private readonly IStringLocalizer<ViewsController> _localizer;
+        private readonly IStringLocalizer _localizer;
 
         private readonly ITenantUserInfoAccessor _tenantInfo;
 
         public ViewsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<ViewsController> logger,
-            IStringLocalizer<ViewsController> localizer, IServiceProvider serviceProvider, ITenantUserInfoAccessor tenantInfoAccessor) : base(logger, localizer, serviceProvider)
+            IStringLocalizer<Strings> localizer, IServiceProvider serviceProvider, ITenantUserInfoAccessor tenantInfoAccessor) : base(logger, localizer, serviceProvider)
         {
             _db = db;
             _metadataProvider = metadataProvider;

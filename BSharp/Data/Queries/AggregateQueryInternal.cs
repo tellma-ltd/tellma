@@ -9,7 +9,7 @@ namespace BSharp.Data.Queries
     /// Responsible for creating an <see cref="SqlStatement"/> based on some query parameters.
     /// This is a helper class used internally in the implementation of <see cref="AggregateQuery{T}"/> and should not be used elsewhere in the solution
     /// </summary>
-    public class AggregateQueryInternal : IQueryInternal
+    internal class AggregateQueryInternal : IQueryInternal
     {
         /// <summary>
         /// The select parameter, should NOT contain collection nav properties or tree nav properties (Parent)

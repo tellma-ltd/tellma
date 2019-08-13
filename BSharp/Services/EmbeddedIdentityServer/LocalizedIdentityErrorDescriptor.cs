@@ -8,9 +8,9 @@ namespace BSharp.Services.EmbeddedIdentityServer
     /// </summary>
     public class LocalizedIdentityErrorDescriptor : IdentityErrorDescriber
     {
-        private readonly IStringLocalizer<LocalizedIdentityErrorDescriptor> _localizer;
+        private readonly IStringLocalizer _localizer;
 
-        public LocalizedIdentityErrorDescriptor(IStringLocalizer<LocalizedIdentityErrorDescriptor> localizer)
+        public LocalizedIdentityErrorDescriptor(IStringLocalizer<Strings> localizer)
         {
             _localizer = localizer;
         }
