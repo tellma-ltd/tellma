@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;

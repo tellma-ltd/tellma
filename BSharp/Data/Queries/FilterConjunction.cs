@@ -22,5 +22,23 @@ namespace BSharp.Data.Queries
         {
             return Left.Atoms().Union(Right.Atoms());
         }
+
+        /// <summary>
+        /// Returns a <see cref="FilterConjunction"/> containing of the left and right expressions
+        /// </summary>
+        public static FilterConjunction Make(FilterExpression left, FilterExpression right)
+        {
+            if (left is null)
+            {
+                throw new System.ArgumentNullException(nameof(left));
+            }
+
+            if (right is null)
+            {
+                throw new System.ArgumentNullException(nameof(right));
+            }
+
+            return new FilterConjunction { Left = left, Right = right };
+        }
     }
 }

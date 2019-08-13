@@ -1,5 +1,6 @@
 ﻿using BSharp.Data.Queries;
 using BSharp.EntityModel;
+using BSharp.Services.ClientInfo;
 using BSharp.Services.Identity;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Sharding;
@@ -12,15 +13,10 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace BSharp.Data
 {
-    public interface IRepository
-    {
-        Query<T> CreateQuery<T>() where T : Entity;
-        AggregateQuery<T> CreateAggregateQuery<T>() where T : Entity;
-    }
-
     /// <summary>
     /// A very thin and lightweight layer around the application database (every tenant
     /// has a dedicated application database), it's the entry point of all functionality that requires 
@@ -28,21 +24,25 @@ namespace BSharp.Data
     /// By default it connects to the tenant Id supplied in the headers 
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
-    public class ApplicationRepository : IDisposable //, IRepository
+    public class ApplicationRepository : IDisposable, IRepository
     {
         private readonly IShardResolver _shardResolver;
-        private readonly IExternalUserAccessor _externalUserProvider;
+        private readonly IExternalUserAccessor _externalUserAccessor;
+        private readonly IClientInfoAccessor _clientInfoAccessor;
         private readonly IStringLocalizer<ApplicationRepository> _localizer;
+
         private SqlConnection _conn;
         private UserInfo _userInfo;
         private TenantInfo _tenantInfo;
 
         #region Lifecycle
 
-        public ApplicationRepository(IShardResolver shardResolver, IExternalUserAccessor externalUserProvider, IStringLocalizer<ApplicationRepository> localizer)
+        public ApplicationRepository(IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor, 
+            IClientInfoAccessor clientInfoAccessor, IStringLocalizer<ApplicationRepository> localizer)
         {
             _shardResolver = shardResolver;
-            _externalUserProvider = externalUserProvider;
+            _externalUserAccessor = externalUserAccessor;
+            _clientInfoAccessor = clientInfoAccessor;
             _localizer = localizer;
         }
 
@@ -76,8 +76,8 @@ namespace BSharp.Data
             _conn.Open();
 
             // Always call OnConnect SP as soon as you create the connection
-            var externalUserId = _externalUserProvider.GetUserId();
-            var externalEmail = _externalUserProvider.GetUserEmail();
+            var externalUserId = _externalUserAccessor.GetUserId();
+            var externalEmail = _externalUserAccessor.GetUserEmail();
             var culture = CultureInfo.CurrentUICulture.Name;
             var neutralCulture = CultureInfo.CurrentUICulture.IsNeutralCulture ? CultureInfo.CurrentUICulture.Name : CultureInfo.CurrentUICulture.Parent.Name;
 
@@ -88,14 +88,17 @@ namespace BSharp.Data
         /// Initializes the connection if it is not already initialized
         /// </summary>
         /// <returns>The connection string that was initialized</returns>
-        private async Task<SqlConnection> ConnectionAsync()
+        private async Task<SqlConnection> GetConnectionAsync()
         {
             if (_conn == null)
             {
-                string connString = _shardResolver.GetShardConnectionString();
+                string connString = _shardResolver.GetConnectionString();
                 await InitConnectionAsync(connString);
             }
 
+            // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
+            // every time it is requested, otherwise commands will be executed outside the boundaries of the transaction
+            _conn.EnlistTransaction(Transaction.Current);
             return _conn;
         }
 
@@ -119,7 +122,7 @@ namespace BSharp.Data
         /// </summary>
         public async Task<UserInfo> GetUserInfoAsync()
         {
-            await ConnectionAsync(); // This automatically initializes the user info
+            await GetConnectionAsync(); // This automatically initializes the user info
             return _userInfo;
         }
 
@@ -129,7 +132,7 @@ namespace BSharp.Data
         /// </summary>
         public async Task<TenantInfo> GetTenantInfoAsync()
         {
-            await ConnectionAsync(); // This automatically initializes the tenant info
+            await GetConnectionAsync(); // This automatically initializes the tenant info
             return _tenantInfo;
         }
 
@@ -143,12 +146,12 @@ namespace BSharp.Data
         /// <typeparam name="T">The type of the <see cref="Query{T}"/></typeparam>
         public async Task<Query<T>> QueryAsync<T>() where T : Entity
         {
-            var conn = await ConnectionAsync();
+            var conn = await GetConnectionAsync();
             var tenantInfo = await GetTenantInfoAsync();
             var sources = GetSources(tenantInfo);
             var userInfo = await GetUserInfoAsync();
             var userId = userInfo.UserId ?? 0;
-            var userTimeZone = TimeZoneInfo.Local; // TODO: Use value from user
+            var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone; 
             return new Query<T>(conn, sources, _localizer, userId, userTimeZone);
         }
 
@@ -158,12 +161,12 @@ namespace BSharp.Data
         /// <typeparam name="T">The root type of the <see cref="AggregateQuery{T}"/></typeparam>
         public async Task<AggregateQuery<T>> AggregateQueryAsync<T>() where T : Entity
         {
-            var conn = await ConnectionAsync();
+            var conn = await GetConnectionAsync();
             var tenantInfo = await GetTenantInfoAsync();
             var sources = GetSources(tenantInfo);
             var userInfo = await GetUserInfoAsync();
             var userId = userInfo.UserId ?? 0;
-            var userTimeZone = TimeZoneInfo.Local; // TODO: Use value from user
+            var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
             return new AggregateQuery<T>(conn, sources, _localizer, userId, userTimeZone);
         }
 
@@ -193,7 +196,7 @@ namespace BSharp.Data
                 switch (t.Name)
                 {
                     case nameof(User):
-                        return new SqlSource("(SELECT *, IIF(ExternalId IS NULL, 'New', 'Confirmed') As [State] FROM [dbo].[LocalUsers])");
+                        return new SqlSource("(SELECT *, IIF(ExternalId IS NULL, 'New', 'Confirmed') As [State] FROM [dbo].[Users])");
 
                     case nameof(MeasurementUnit):
                         return new SqlSource("(SELECT * FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')");
@@ -249,10 +252,11 @@ LEFT JOIN [dbo].[Views] AS T ON V.Id = T.Id)", viewParameters);
 
                     case nameof(ViewAction):
 
-                        // This takes the original list and transforms it into a friendly format, adding the very common "Read" and "Update" permissions if they are needed
+                        // This takes the original list and transforms it into a friendly format, adding the very common "Read", "Update" and "Delete" permissions if they are needed
                         int i = 1;
                         var builtInValueActionsCollections = _builtInViews.SelectMany(x =>
                              x.Levels.Select(y => new { Id = i++, ViewId = x.Id, y.Action, SupportsCriteria = y.Criteria, SupportsMask = false })
+                            .Concat(Enumerable.Repeat(new { Id = i++, ViewId = x.Id, Action = Constants.Delete, SupportsCriteria = true, SupportsMask = false }, x.Delete ? 1 : 0))
                             .Concat(Enumerable.Repeat(new { Id = i++, ViewId = x.Id, Action = Constants.Update, SupportsCriteria = true, SupportsMask = true }, x.Update ? 1 : 0))
                             .Concat(Enumerable.Repeat(new { Id = i++, ViewId = x.Id, Action = Constants.Read, SupportsCriteria = true, SupportsMask = true }, x.Read ? 1 : 0))
                         )
@@ -283,13 +287,13 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
         private static readonly ViewInfo[] _builtInViews = new ViewInfo[]
         {
-            new ViewInfo { Id = "all", Name = "View_All", Levels = new LevelInfo[] { Li("Read", false), Li("Update", false) } },
-            new ViewInfo { Id = "measurement-units", Name = "MeasurementUnits", Read = true, Update = true , Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "roles", Name = "Roles", Read = true, Update = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "local-users", Name = "Users", Read = true, Update = true, Levels = new LevelInfo[] { Li("IsActive"), Li("ResendInvitationEmail") } },
-            new ViewInfo { Id = "views", Name = "Views", Read = true, Update = true, Levels = new LevelInfo[] { Li("IsActive") } },
+            new ViewInfo { Id = "all", Name = "View_All", Levels = new LevelInfo[] { Li("Read", false) } },
+            new ViewInfo { Id = "measurement-units", Name = "MeasurementUnits", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive") } },
+            new ViewInfo { Id = "roles", Name = "Roles", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive") } },
+            new ViewInfo { Id = "local-users", Name = "Users", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive"), Li("ResendInvitationEmail") } },
+            new ViewInfo { Id = "views", Name = "Views", Read = true, Levels = new LevelInfo[] { Li("IsActive") } },
             new ViewInfo { Id = "ifrs-notes", Name = "IfrsNotes", Read = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "product-categories", Name = "ProductCategories", Read = true, Update = true, Levels = new LevelInfo[] { Li("IsActive") } },
+            new ViewInfo { Id = "product-categories", Name = "ProductCategories", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive") } },
             new ViewInfo { Id = "settings", Name = "Settings", Levels = new LevelInfo[] { Li("Read", false), Li("Update", false) } },
         };
 
@@ -314,6 +318,8 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             /// </summary>
             public bool Update { get; set; }
 
+            public bool Delete { get; set; }
+
             public LevelInfo[] Levels { get; set; }
         }
 
@@ -328,12 +334,12 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
         #region Stored Procedures
 
-        public async Task<(UserInfo, TenantInfo)> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture)
+        private async Task<(UserInfo, TenantInfo)> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture)
         {
             UserInfo userInfo = null;
             TenantInfo tenantInfo = null;
 
-            using (SqlCommand cmd = _conn.CreateCommand())
+            using (SqlCommand cmd = _conn.CreateCommand()) // Use the private field _conn to avoid infinite recursion
             {
                 // Parameters
                 cmd.Parameters.AddWithValue("@ExternalUserId", externalUserId);
@@ -361,6 +367,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                             UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++),
                             Name = reader.IsDBNull(i) ? null : reader.GetString(i++),
                             Name2 = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            Name3 = reader.IsDBNull(i) ? null : reader.GetString(i++),
                             ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++),
                             Email = reader.IsDBNull(i) ? null : reader.GetString(i++),
                             PermissionsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
@@ -390,11 +397,26 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             return (userInfo, tenantInfo);
         }
 
+        public Task SetUserExternalId(int userId, string externalId)
+        {
+            // Finds the user with the given id and sets its ExternalId to the one supplied only if it's null
+            // $"UPDATE [dbo].[Users] SET ExternalId = {externalId} WHERE Id = {userId}";
+
+            throw new NotImplementedException();
+        }
+
+        public Task SetUserEmail(int userId, string email)
+        {
+            // Finds the user with the given id and sets its Email to the one supplied
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<AbstractPermission>> Action_Views__Permissions(string action, IEnumerable<string> viewIds)
         {
             var result = new List<AbstractPermission>();
 
-            using (SqlCommand cmd = _conn.CreateCommand())
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Parameters
                 var viewIdsTable = RepositoryUtilities.DataTable(viewIds.Select(e => new { Code = e }));
@@ -407,7 +429,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 cmd.Parameters.Add(viewIdsTvp);
                 cmd.Parameters.AddWithValue("@Action", action);
 
-                cmd.CommandText = @"EXEC [dal].[Action_Views__Permissions]
+                cmd.CommandText = $@"EXEC [dal].[{nameof(Action_Views__Permissions)}]
 @Action = @Action,
 @ViewIds = @ViewIds
 ";
@@ -431,21 +453,204 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             return result;
         }
 
+        #region MeasurementUnits
 
-
-        public Task SetUserExternalId(int userId, string externalId)
+        public async Task<IEnumerable<ValidationError>> MeasurementUnits_Validate__Save(List<MeasurementUnitForSave> entities, int top)
         {
-            // Finds the user with the given id and sets its ExternalId to the one supplied only if it's null
-            // $"UPDATE [dbo].[Users] SET ExternalId = {externalId} WHERE Id = {userId}";
+            var result = new List<ValidationError>();
 
-            throw new NotImplementedException();
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[MeasurementUnitList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.AddWithValue("@Top", top);
+
+                cmd.CommandText = $@"EXEC [bll].[{nameof(MeasurementUnits_Validate__Save)}]
+@Entities = @Entities,
+@Top = @Top
+";
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new ValidationError
+                        {
+                            Key = reader.GetString(i++),
+                            ErrorName = reader.GetString(i++),
+                            Argument1 = reader.GetString(i++),
+                            Argument2 = reader.GetString(i++),
+                            Argument3 = reader.GetString(i++),
+                            Argument4 = reader.GetString(i++),
+                            Argument5 = reader.GetString(i++)
+                        });
+                    }
+                }
+            }
+
+            return result;
         }
 
-        public Task SetUserEmail(int userId, string email)
+        public async Task<List<int>> MeasurementUnits__Save(List<MeasurementUnitForSave> entities, bool returnIds)
         {
-            // Finds the user with the given id and sets its Email to the one supplied
-            throw new NotImplementedException();
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[MeasurementUnitList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.AddWithValue("@ReturnIds", returnIds);
+
+                cmd.CommandText = $@"EXEC [dal].[{nameof(MeasurementUnits__Save)}]
+@Entities = @Entities,
+@ReturnIds = @ReturnIds
+";
+
+                if (returnIds)
+                {
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            int i = 0;
+                            result.Add(new IndexedId
+                            {
+                                Index = reader.GetInt32(i++),
+                                Id = reader.GetInt32(i++)
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            return result
+                .OrderBy(e => e.Index)
+                .Select(e => e.Id)
+                .ToList();
         }
+
+        public async Task MeasurementUnits__Activate(List<int> ids, bool isActive)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                var isActiveParam = new SqlParameter("@IsActive", isActive);
+
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.AddWithValue("@IsActive", isActive);
+
+                cmd.CommandText = $@"EXEC [dal].[{nameof(MeasurementUnits__Activate)}]
+@IdList = @IdList,
+@IsActive = @IsActive
+";
+
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> MeasurementUnits_Validate__Delete(List<int> ids, int top)
+        {
+            var result = new List<ValidationError>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.AddWithValue("@Top", top);
+
+                // Command
+                cmd.CommandText = $@"EXEC [bll].[{nameof(MeasurementUnits_Validate__Delete)}]
+@Ids = @Ids,
+@Top = @Top
+";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new ValidationError
+                        {
+                            Key = reader.GetString(i++),
+                            ErrorName = reader.GetString(i++),
+                            Argument1 = reader.GetString(i++),
+                            Argument2 = reader.GetString(i++),
+                            Argument3 = reader.GetString(i++),
+                            Argument4 = reader.GetString(i++),
+                            Argument5 = reader.GetString(i++)
+                        });
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public async Task MeasurementUnits__Delete(List<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+
+                cmd.CommandText = $@"EXEC [dal].[{nameof(MeasurementUnits__Delete)}]
+@IdList = @IdList
+";
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+                {
+                    throw new ForeignKeyViolationException();
+                }
+            }
+        }
+
+        #endregion
 
         #endregion
     }

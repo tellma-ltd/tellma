@@ -1,6 +1,5 @@
 using AutoMapper;
-using BSharp.Controllers.Misc;
-using BSharp.Data;
+using BSharp.Controllers;
 using BSharp.Services.ModelMetadata;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Builder;
@@ -99,7 +98,6 @@ namespace BSharp
                     // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
                     opt.Filters.Add(typeof(CheckGlobalVersionsFilter));
                 })
-                    .AddViewLocalization()
                     .AddDataAnnotationsLocalization()
                     .AddJsonOptions(opt =>
                     {

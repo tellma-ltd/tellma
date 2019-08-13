@@ -1,4 +1,4 @@
-﻿namespace BSharp.Controllers.DTO
+﻿namespace BSharp.Controllers.Dto
 {
     public class ImportArguments : ParseArguments
     {

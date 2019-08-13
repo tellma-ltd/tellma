@@ -88,7 +88,7 @@ export class LocalUsersDetailsComponent extends DetailsBaseComponent {
   public showDeactivate = (model: LocalUser) => !!model && model.IsActive;
   public showInvite = (model: LocalUser) => !!model && !model.ExternalId;
 
-  public canAction = (model: LocalUser) => this.ws.canUpdate('local-users', model.Id);
+  public canAction = (model: LocalUser) => this.ws.canDo('local-users', 'IsActive', model.Id);
   public actionTooltip = (model: LocalUser) => this.canAction(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 

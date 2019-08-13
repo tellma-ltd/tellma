@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BSharp.EntityModel;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Controllers.Dto
 {
-    public class GetAggregateResponse : EntitiesResponse<DtoBase>
+    public class GetAggregateResponse : EntitiesResponse<Entity>
     {
         public int Top { get; set; }
     }

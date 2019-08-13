@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
@@ -48,12 +48,12 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override Task DeleteAsync(List<string> ids)
+        protected override Task DeleteExecuteAsync(List<string> ids)
         {
             throw new NotImplementedException();
         }
 
-        protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<Translation> response, ExportArguments args)
+        protected override AbstractDataGrid EntitiesToAbstractGrid(GetResponse<Translation> response, ExportArguments args)
         {
             throw new NotImplementedException();
         }
@@ -63,7 +63,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override DbContext GetDbContext()
+        protected override DbContext GetRepository()
         {
             throw new NotImplementedException();
         }
@@ -78,7 +78,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override Task<List<string>> PersistAsync(List<TranslationForSave> entitiesAndMasks, SaveArguments args)
+        protected override Task<List<string>> SaveExecuteAsync(List<TranslationForSave> entitiesAndMasks, SaveArguments args)
         {
             throw new NotImplementedException();
         }
@@ -88,7 +88,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override Task<(List<TranslationForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
+        protected override Task<(List<TranslationForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid grid, ParseArguments args)
         {
             throw new NotImplementedException();
         }
@@ -98,7 +98,7 @@ namespace BSharp.Controllers
             throw new NotImplementedException();
         }
 
-        protected override Task ValidateAsync(List<TranslationForSave> entities)
+        protected override Task SaveValidateAsync(List<TranslationForSave> entities)
         {
             throw new NotImplementedException();
         }

@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{7f0b3c51-fa2a-4881-9a62-10571e15d8b7}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -16,13 +16,14 @@
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
     <IncludeCompositeObjects>True</IncludeCompositeObjects>
     <TargetDatabaseSet>True</TargetDatabaseSet>
-    <DefaultSchema>mgr</DefaultSchema>
+    <DefaultSchema>dbo</DefaultSchema>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -57,11 +58,25 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
-    <Folder Include="mgr" />
+    <Folder Include="dbo" />
+    <Folder Include="dal" />
+    <Folder Include="dbo\User Defined Types" />
+    <Folder Include="dbo\Tables" />
+    <Folder Include="dal\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="mgr.sql" />
-    <Build Include="mgr\Translations.sql" />
-    <Build Include="mgr\Abbas.sql" />
+    <Build Include="dbo\Tables\GlobalUserMemberships.sql" />
+    <Build Include="dbo\Tables\GlobalUsers.sql" />
+    <Build Include="dbo\Tables\SqlDatabases.sql" />
+    <Build Include="dbo\Tables\SqlServers.sql" />
+    <Build Include="dbo\User Defined Types\IdList.sql" />
+    <Build Include="dbo\User Defined Types\StringList.sql" />
+    <Build Include="dal\dal.sql" />
+    <Build Include="dal\Stored Procedures\GlobalUsers__AddAndMatch.sql" />
+    <Build Include="dal\Stored Procedures\GetDatabaseConnectionInfo.sql" />
+    <Build Include="dal\Stored Procedures\OnConnect.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="BSharp.Database.Admin.refactorlog" />
   </ItemGroup>
 </Project>

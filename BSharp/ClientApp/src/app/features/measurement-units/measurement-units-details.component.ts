@@ -76,7 +76,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: MeasurementUnit) => !!model && !model.IsActive;
   public showDeactivate = (model: MeasurementUnit) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: MeasurementUnit) => this.ws.canUpdate('measurement-units', model.Id);
+  public canActivateDeactivateItem = (model: MeasurementUnit) => this.ws.canDo('measurement-units', 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: MeasurementUnit) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

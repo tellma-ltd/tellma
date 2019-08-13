@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using BSharp.Controllers.DTO;
+using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ApiAuthentication;

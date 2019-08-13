@@ -23,8 +23,8 @@ namespace BSharp.EntityModel
 
         [Display(Name = "Permission_Action")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [ChoiceList(new object[] { Constants.Read, Constants.Update, "IsActive", "ResendInvitationEmail", "All" },
-            new string[] { "Permission_Read", "Permission_Update", "Permission_IsActive", "ResendInvitationEmail", "View_All" })]
+        [ChoiceList(new object[] { Constants.Read, Constants.Update, "Delete", "IsActive", "ResendInvitationEmail", "All" },
+            new string[] { "Permission_Read", "Permission_Update", "Permission_Delete", "Permission_IsActive", "ResendInvitationEmail", "View_All" })]
         [AlwaysAccessible]
         public string Action { get; set; }
 

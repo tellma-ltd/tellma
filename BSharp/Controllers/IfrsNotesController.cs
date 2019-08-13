@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
@@ -48,7 +48,7 @@ namespace BSharp.Controllers
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<IfrsNote>>> Activate([FromBody] string[] ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.InvokeActionImpl(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
             , _logger);
         }
@@ -56,7 +56,7 @@ namespace BSharp.Controllers
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<IfrsNote>>> Deactivate([FromBody] string[] ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.InvokeActionImpl(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
             , _logger);
         }
@@ -119,7 +119,7 @@ MERGE INTO [dbo].[IfrsConcepts] AS t
             return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "ifrs-notes");
         }
         
-        protected override DbContext GetDbContext()
+        protected override DbContext GetRepository()
         {
             return _db;
         }
@@ -147,7 +147,7 @@ MERGE INTO [dbo].[IfrsConcepts] AS t
             return query;
         }
 
-        protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<IfrsNote> response, ExportArguments args)
+        protected override AbstractDataGrid EntitiesToAbstractGrid(GetResponse<IfrsNote> response, ExportArguments args)
         {
             throw new NotImplementedException();
             //// Get all the properties without Id and EntityState

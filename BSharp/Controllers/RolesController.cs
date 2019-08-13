@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
@@ -46,7 +46,7 @@ namespace BSharp.Controllers
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Role>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.InvokeActionImpl(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
             , _logger);
         }
@@ -54,7 +54,7 @@ namespace BSharp.Controllers
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<Role>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.InvokeActionImpl(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
             , _logger);
         }
@@ -128,7 +128,7 @@ MERGE INTO [dbo].[Roles] AS t
             return ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "roles");
         }
 
-        protected override DbContext GetDbContext()
+        protected override DbContext GetRepository()
         {
             return _db;
         }
@@ -157,7 +157,7 @@ MERGE INTO [dbo].[Roles] AS t
             return query;
         }
 
-        protected override async Task ValidateAsync(List<RoleForSave> entities)
+        protected override async Task SaveValidateAsync(List<RoleForSave> entities)
         {
             // Hash the indices for performance
             var indices = entities.ToIndexDictionary();
@@ -397,7 +397,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
             }
         }
 
-        protected override async Task<List<int?>> PersistAsync(List<RoleForSave> entities, SaveArguments args)
+        protected override async Task<List<int?>> SaveExecuteAsync(List<RoleForSave> entities, SaveArguments args)
         {
             // Add created entities
             var roleIndices = entities.ToIndexDictionary();
@@ -549,7 +549,7 @@ UPDATE [dbo].[LocalUsers] SET PermissionsVersion = @NewId;
             }
         }
 
-        protected override async Task DeleteAsync(List<int?> ids)
+        protected override async Task DeleteExecuteAsync(List<int?> ids)
         {
             // Prepare a list of Ids to delete
             DataTable idsTable = ControllerUtilities.DataTable(ids.Select(e => new { Id = e }), addIndex: false);
@@ -592,12 +592,12 @@ DELETE FROM dbo.[Roles] WHERE Id IN (SELECT Id FROM @Ids)", idsTvp);
             throw new NotImplementedException();
         }
 
-        protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<Role> response, ExportArguments args)
+        protected override AbstractDataGrid EntitiesToAbstractGrid(GetResponse<Role> response, ExportArguments args)
         {
             throw new NotImplementedException();
         }
 
-        protected override Task<(List<RoleForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
+        protected override Task<(List<RoleForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid grid, ParseArguments args)
         {
             throw new NotImplementedException();
         }

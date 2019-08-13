@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using BSharp.EntityModel;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Controllers.Dto
 {
     /// <summary>
     /// Represents a response of raw entities for save + some search metadata
     /// </summary>
-    public class GetResponse<TDto> : EntitiesResponse<TDto> where TDto : DtoBase
+    public class GetResponse<TEntity> : EntitiesResponse<TEntity> where TEntity : Entity
     {
         public int Skip { get; set; }
 

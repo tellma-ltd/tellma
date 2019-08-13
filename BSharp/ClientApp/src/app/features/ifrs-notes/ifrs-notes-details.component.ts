@@ -53,7 +53,7 @@ export class IfrsNotesDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: IfrsNote) => !!model && !model.IsActive;
   public showDeactivate = (model: IfrsNote) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: IfrsNote) => this.ws.canUpdate('ifrs-notes', model.Id);
+  public canActivateDeactivateItem = (model: IfrsNote) => this.ws.canDo('ifrs-notes', 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: IfrsNote) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

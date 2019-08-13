@@ -1,13 +1,11 @@
-﻿using BSharp.Controllers.Misc;
+﻿using BSharp.EntityModel;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Controllers.Dto
 {
-    public class GlobalSettingsForSave : DtoBase
+    // TODO: Delete (Not the ForClient part)
+    public class GlobalSettingsForSave : Entity
     {
     }
 
@@ -18,7 +16,6 @@ namespace BSharp.Controllers.DTO
         /// </summary>
         public Guid SettingsVersion { get; set; }
     }
-
 
     public class GlobalSettingsForClient
     {

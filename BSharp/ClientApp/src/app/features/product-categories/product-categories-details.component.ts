@@ -54,7 +54,7 @@ export class ProductCategoriesDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: ProductCategory) => !!model && !model.IsActive;
   public showDeactivate = (model: ProductCategory) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: ProductCategory) => this.ws.canUpdate('product-categories', model.Id);
+  public canActivateDeactivateItem = (model: ProductCategory) => this.ws.canDo('product-categories', 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: ProductCategory) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

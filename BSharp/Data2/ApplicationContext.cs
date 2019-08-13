@@ -219,7 +219,7 @@ namespace BSharp.Data
         {
             // Prepare the options based on the connection created with the shard manager
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
-            string connectionString = shardResolver.GetShardConnectionString();
+            string connectionString = shardResolver.GetConnectionString();
             if (tenantIdProvider is DesignTimeTenantIdProvider)
             {
                 // Only for design time when running "ef migrations" command from the CLI
@@ -388,7 +388,7 @@ namespace BSharp.Data
 
         public class DesignTimeShardResolver : IShardResolver
         {
-            public string GetShardConnectionString()
+            public string GetConnectionString()
             {
                 return "Server=(localdb)\\MSSQLLocalDB;Database=BSharp;Trusted_Connection=true;MultipleActiveResultSets=true";
             }

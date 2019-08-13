@@ -234,6 +234,20 @@ export class TenantWorkspace {
     return (!!viewPerms && (viewPerms.Update || viewPerms.All))
       || (!!allPerms && (allPerms.Update || allPerms.All));
   }
+
+  public canDo(viewId: string, action: 'Read' | 'Update' | 'Delete' | 'IsActive' | 'ResendInvitationEmail', createdById: string | number) {
+
+    if (!viewId) {
+      return false;
+    }
+
+    const viewPerms = this.permissions[viewId];
+    const allPerms = this.permissions['all'];
+    // const userId = this.userSettings.UserId;
+    // (userId === createdById) ||
+    return (!!viewPerms && (viewPerms[action] || viewPerms.All))
+      || (!!allPerms && (allPerms[action] || allPerms.All));
+  }
 }
 
 // This contains the application state during a particular user session

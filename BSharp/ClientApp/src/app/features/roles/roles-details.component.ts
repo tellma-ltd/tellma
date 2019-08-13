@@ -181,7 +181,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: Role) => !!model && !model.IsActive;
   public showDeactivate = (model: Role) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: Role) => this.ws.canUpdate('roles', model.Id);
+  public canActivateDeactivateItem = (model: Role) => this.ws.canDo('roles', 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: Role) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

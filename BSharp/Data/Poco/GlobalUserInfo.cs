@@ -7,10 +7,7 @@
     public class GlobalUserInfo
     {
         public int? UserId { get; set; }
-        public string Name { get; set; }
         public string Email { get; set; }
         public string ExternalId { get; set; }
-        public string PermissionsVersion { get; set; }
-        public string UserSettingsVersion { get; set; }
     }
 }

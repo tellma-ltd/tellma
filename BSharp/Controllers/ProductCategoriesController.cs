@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
@@ -48,7 +48,7 @@ namespace BSharp.Controllers
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<ProductCategory>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.InvokeActionImpl(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
             , _logger);
         }
@@ -56,7 +56,7 @@ namespace BSharp.Controllers
         [HttpPut("deactivate")]
         public async Task<ActionResult<EntitiesResponse<ProductCategory>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(() =>
+            return await ControllerUtilities.InvokeActionImpl(() =>
                 ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false)
             , _logger);
         }
@@ -129,7 +129,7 @@ MERGE INTO [dbo].[ProductCategories] AS t
             return await ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "product-categories");
         }
 
-        protected override DbContext GetDbContext()
+        protected override DbContext GetRepository()
         {
             return _db;
         }
@@ -158,7 +158,7 @@ MERGE INTO [dbo].[ProductCategories] AS t
             return query;
         }
 
-        protected override async Task ValidateAsync(List<ProductCategoryForSave> entities)
+        protected override async Task SaveValidateAsync(List<ProductCategoryForSave> entities)
         {
             // Hash the indices for performance
             var indices = entities.ToIndexDictionary();
@@ -315,7 +315,7 @@ SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
 
         }
 
-        protected override async Task<List<int?>> PersistAsync(List<ProductCategoryForSave> entities, SaveArguments args)
+        protected override async Task<List<int?>> SaveExecuteAsync(List<ProductCategoryForSave> entities, SaveArguments args)
         {
             // Add created entities
             DataTable entitiesTable = ControllerUtilities.DataTable(entities, addIndex: true);
@@ -414,7 +414,7 @@ SET NOCOUNT ON;
             }
         }
 
-        protected override Task ValidateDeleteAsync(List<int?> ids)
+        protected override Task DeleteValidateAsync(List<int?> ids)
         {
             return Task.CompletedTask;
             //// Perform SQL-side validation
@@ -459,7 +459,7 @@ SET NOCOUNT ON;
             //}
         }
 
-        protected override async Task DeleteAsync(List<int?> ids)
+        protected override async Task DeleteExecuteAsync(List<int?> ids)
         {
             // Prepare a list of Ids to delete
             DataTable idsTable = ControllerUtilities.DataTable(ids.Select(e => new { Id = e }), addIndex: false);
@@ -654,7 +654,7 @@ SET NOCOUNT ON;
             return result;
         }
 
-        protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<ProductCategory> response, ExportArguments args)
+        protected override AbstractDataGrid EntitiesToAbstractGrid(GetResponse<ProductCategory> response, ExportArguments args)
         {
             // Get all the properties without Id and EntityState
             var type = typeof(ProductCategory);
@@ -740,7 +740,7 @@ SET NOCOUNT ON;
             return result;
         }
 
-        protected override async Task<(List<ProductCategoryForSave>, Func<string, int?>)> ToDtosForSave(AbstractDataGrid grid, ParseArguments args)
+        protected override async Task<(List<ProductCategoryForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid grid, ParseArguments args)
         {
             // Get the properties of the DTO for Save, excluding Id or EntityState
             string mode = args.Mode;

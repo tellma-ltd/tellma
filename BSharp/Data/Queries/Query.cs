@@ -541,7 +541,7 @@ namespace BSharp.Data.Queries
         /// Useful for RLS security enforcement, this method takes a list of permission criteria each associated with an index
         /// and returns a mapping from every entity Id in the original query to all the criteria that are satified by this entity
         /// </summary>
-        public async Task<IEnumerable<IdIndex<TKey>>> GetIndexToIdMap<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        public async Task<IEnumerable<IndexedId<TKey>>> GetIndexToIdMap<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes)
         {
             return await GetIndexMapInner<TKey>(criteriaIndexes);
         }
@@ -553,7 +553,7 @@ namespace BSharp.Data.Queries
         /// in that it is useful when the origianl query is dynamically constructed using <see cref="FromSql(string, string, SqlStatementParameter[])"/>
         /// by passing in new data that doesn't have Ids, and hence the indexes of the items in the memory list are used as Ids instead
         /// </summary>
-        public async Task<IEnumerable<IdIndex<int>>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        public async Task<IEnumerable<IndexedId<int>>> GetIndexToIndexMap(IEnumerable<IndexAndCriteria> criteriaIndexes)
         {
             return await GetIndexMapInner<int>(criteriaIndexes);
         }
@@ -561,7 +561,7 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Internal Implementation
         /// </summary>
-        private async Task<IEnumerable<IdIndex<TKey>>> GetIndexMapInner<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes)
+        private async Task<IEnumerable<IndexedId<TKey>>> GetIndexMapInner<TKey>(IEnumerable<IndexAndCriteria> criteriaIndexes)
         {
             if (_select != null || _expand != null)
             {
@@ -689,7 +689,7 @@ UNION
 
                 try
                 {
-                    var result = new List<IdIndex<TKey>>();
+                    var result = new List<IndexedId<TKey>>();
                     using (var reader = await cmd.ExecuteReaderAsync())
                     {
                         // Loop over the result from the database
@@ -698,7 +698,7 @@ UNION
                             var dbId = reader["Id"];
                             var dbIndex = reader.GetInt32(1);
 
-                            result.Add(new IdIndex<TKey>
+                            result.Add(new IndexedId<TKey>
                             {
                                 Id = (TKey)dbId,
                                 Index = dbIndex

@@ -58,17 +58,18 @@ AS
     -- Return the user and tenant information
     SELECT 
 		-- User Info
-        @UserId AS userId, 
-        @Name AS Name,
-        @Name2 AS Name2,
-        @ExternalId AS ExternalId, 
-        @Email AS Email, 
-        @PermissionsVersion AS PermissionsVersion,
-        @UserSettingsVersion AS UserSettingsVersion,
+        @UserId AS [UserId], 
+        @Name AS [Name],
+        @Name2 AS [Name2],
+        @Name3 AS [Name3],
+        @ExternalId AS [ExternalId], 
+        @Email AS [Email], 
+        @PermissionsVersion AS [PermissionsVersion],
+        @UserSettingsVersion AS [UserSettingsVersion],
 		-- Tenant Info
-        @ViewsAndSpecsVersion AS ViewsAndSpecsVersion,
-        @SettingsVersion AS SettingsVersion, 
-        @PrimaryLanguageId AS PrimaryLanguageId,
-        @PrimaryLanguageSymbol AS PrimaryLanguageSymbol,
-        @SecondaryLanguageId AS SecondaryLanguageId,
-        @SecondaryLanguageSymbol AS SecondaryLanguageSymbol;
+        @ViewsAndSpecsVersion AS [ViewsAndSpecsVersion],
+        @SettingsVersion AS [SettingsVersion], 
+        @PrimaryLanguageId AS [PrimaryLanguageId],
+        @PrimaryLanguageSymbol AS [PrimaryLanguageSymbol],
+        @SecondaryLanguageId AS [SecondaryLanguageId],
+        @SecondaryLanguageSymbol AS [SecondaryLanguageSymbol];

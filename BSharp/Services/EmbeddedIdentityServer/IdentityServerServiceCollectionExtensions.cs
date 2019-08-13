@@ -91,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
             else
             {
-                var certThumbprint = config?.X509Certificate2Thumbprint ?? 
+                var certThumbprint = config?.X509Certificate2Thumbprint ??
                     throw new Exception("To enable the embedded IdentityServer in production, a valid X509 certificate thumbprint must be specified in a configuration provider");
 
                 using (X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser))
@@ -145,7 +145,8 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             // Add the Identity Server web pages (sign-in, change password, etc...)
-            mvcBuilder.AddRazorPagesOptions(opt =>
+            mvcBuilder.AddViewLocalization()
+                    .AddRazorPagesOptions(opt =>
             {
                 opt.AllowAreas = true;
                 opt.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");

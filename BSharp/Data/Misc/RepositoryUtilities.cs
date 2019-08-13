@@ -1,11 +1,12 @@
-﻿using BSharp.Services.Utilities;
+﻿using BSharp.EntityModel;
+using BSharp.Services.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace BSharp.Data
 {
@@ -24,7 +25,7 @@ namespace BSharp.Data
                 table.Columns.Add(new DataColumn("Index", typeof(int)));
             }
 
-            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList() && e.Name != nameof(DtoBase.EntityMetadata));
+            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList() && !e.PropertyType.IsEntity() && e.Name != nameof(Entity.EntityMetadata));
             foreach (var prop in props)
             {
                 var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
@@ -90,5 +91,13 @@ namespace BSharp.Data
             return props;
         }
 
+
+        /// <summary>
+        /// Determines whether the given exception is a foreign key violation on delete
+        /// </summary>
+        public static bool IsForeignKeyViolation(SqlException ex)
+        {
+            return ex.Number == 547;
+        }
     }
 }

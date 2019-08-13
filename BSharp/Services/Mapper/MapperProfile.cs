@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BSharp.Controllers.DTO;
+using BSharp.Controllers.Dto;
 using System.Linq;
 using System.Linq.Expressions;
 using M = BSharp.Data.Model;
@@ -30,7 +30,7 @@ namespace BSharp.Services.Mapper
 
             // Global Settings
             CreateMap<GlobalSettingsForSave, M.GlobalSettings>();
-            CreateDtoMap<M.GlobalSettings, Controllers.DTO.GlobalSettings>();
+            CreateDtoMap<M.GlobalSettings, Controllers.Dto.GlobalSettings>();
             CreateMap<M.GlobalSettings, GlobalSettingsForClient>();
 
             // Tenants

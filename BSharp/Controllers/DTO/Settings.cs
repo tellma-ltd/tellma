@@ -1,13 +1,12 @@
-﻿using BSharp.Controllers.Misc;
+﻿using BSharp.EntityModel;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Controllers.Dto
 {
-    public class SettingsForSave : DtoBase
+    // TODO: delete (Not the ForClient part)
+
+    public class SettingsForSave : Entity
     {
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]

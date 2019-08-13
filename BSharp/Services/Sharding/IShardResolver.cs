@@ -7,6 +7,6 @@ namespace BSharp.Services.Sharding
 {
     public interface IShardResolver
     {
-        string GetShardConnectionString();
+        string GetConnectionString();
     }
 }

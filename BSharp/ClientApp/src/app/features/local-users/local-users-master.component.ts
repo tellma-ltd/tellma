@@ -49,6 +49,6 @@ export class LocalUsersMasterComponent extends MasterBaseComponent {
   }
 
   public canActivateOrDeactivate = () => {
-    return this.workspace.current.canUpdate('measurement-units', null);
+    return this.workspace.current.canDo('measurement-units', 'IsActive', null);
   }
 }

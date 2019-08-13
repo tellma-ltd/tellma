@@ -37,6 +37,7 @@
     <Compile Remove="ClientApp\dist\**" />
     <Compile Remove="ClientApp\hooks\**" />
     <Compile Remove="ClientApp\platforms\**" />
+    <Compile Remove="Data2\**" />
     <Compile Remove="Pages\Account\**" />
     <Content Remove="$(SpaRoot)**" />
     <Content Remove="ClientAppOld\dist\**" />
@@ -44,6 +45,7 @@
     <Content Remove="ClientApp\dist\**" />
     <Content Remove="ClientApp\hooks\**" />
     <Content Remove="ClientApp\platforms\**" />
+    <Content Remove="Data2\**" />
     <Content Remove="Pages\Account\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
@@ -54,12 +56,14 @@
     <EmbeddedResource Remove="ClientApp\dist\**" />
     <EmbeddedResource Remove="ClientApp\hooks\**" />
     <EmbeddedResource Remove="ClientApp\platforms\**" />
+    <EmbeddedResource Remove="Data2\**" />
     <EmbeddedResource Remove="Pages\Account\**" />
     <None Remove="ClientAppOld\dist\**" />
     <None Remove="ClientAppOld\platforms\**" />
     <None Remove="ClientApp\dist\**" />
     <None Remove="ClientApp\hooks\**" />
     <None Remove="ClientApp\platforms\**" />
+    <None Remove="Data2\**" />
     <None Remove="Pages\Account\**" />
   </ItemGroup>
 

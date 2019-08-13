@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using BSharp.IntegrationTests.Utilities;
 using BSharp.Services.Utilities;
 using System.Collections.Generic;

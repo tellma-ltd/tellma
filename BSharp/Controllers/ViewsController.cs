@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ImportExport;
@@ -37,12 +37,12 @@ namespace BSharp.Controllers
             _tenantInfo = tenantInfoAccessor;
         }
 
-        protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<View> response, ExportArguments args)
+        protected override AbstractDataGrid EntitiesToAbstractGrid(GetResponse<View> response, ExportArguments args)
         {
             throw new NotImplementedException();
         }
 
-        protected override DbContext GetDbContext()
+        protected override DbContext GetRepository()
         {
             return _db;
         }

@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ApiAuthentication;
@@ -38,12 +38,12 @@ namespace BSharp.Controllers
             _tenantInfo = serviceProvider.GetRequiredService<ITenantUserInfoAccessor>();
         }
 
-        protected override AbstractDataGrid DtosToAbstractGrid(GetResponse<Culture> response, ExportArguments args)
+        protected override AbstractDataGrid EntitiesToAbstractGrid(GetResponse<Culture> response, ExportArguments args)
         {
             throw new NotImplementedException();
         }
 
-        protected override DbContext GetDbContext()
+        protected override DbContext GetRepository()
         {
             return _db;
         }

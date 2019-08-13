@@ -119,7 +119,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   public showActivate = (model: Agent) => !!model && !model.IsActive;
   public showDeactivate = (model: Agent) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: Agent) => this.ws.canUpdate(model.AgentType, model.Id);
+  public canActivateDeactivateItem = (model: Agent) => this.ws.canDo(model.AgentType, 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: Agent) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

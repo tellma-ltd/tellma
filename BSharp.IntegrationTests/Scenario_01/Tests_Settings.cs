@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

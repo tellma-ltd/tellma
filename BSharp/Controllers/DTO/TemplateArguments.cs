@@ -1,6 +1,7 @@
 ﻿using BSharp.Controllers.Misc;
+using BSharp.EntityModel;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Controllers.Dto
 {
     public class TemplateArguments
     {

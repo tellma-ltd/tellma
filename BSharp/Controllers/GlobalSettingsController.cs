@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BSharp.Controllers.DTO;
+using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.GlobalSettings;

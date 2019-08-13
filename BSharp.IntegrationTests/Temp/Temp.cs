@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Services.OData;
 using Microsoft.Extensions.Localization;
 using System;
