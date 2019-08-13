@@ -11,7 +11,7 @@ SELECT [ViewId], [Criteria], [Mask], [Action] FROM (
     JOIN [dbo].[Roles] R ON P.[RoleId] = R.[Id]
     JOIN [dbo].[RoleMemberships] AS RM ON R.[Id] = RM.[RoleId]
     WHERE R.IsActive = 1 
-    AND RM.UserId = @UserId
+    AND RM.[AgentId] = @UserId
     AND P.ViewId IN (SELECT [Code] FROM @ViewIds)
 
 	UNION

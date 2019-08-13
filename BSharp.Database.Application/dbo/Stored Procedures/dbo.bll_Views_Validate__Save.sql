@@ -25,7 +25,6 @@ SET NOCOUNT ON;
 	FROM @Permissions P
 	WHERE P.RoleId IN (
 		SELECT [Id] FROM dbo.[Roles] WHERE IsActive = 0
-		)
-	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
+		);
 
 	SELECT @ValidationErrorsJson = (SELECT * FROM @ValidationErrors	FOR JSON PATH);

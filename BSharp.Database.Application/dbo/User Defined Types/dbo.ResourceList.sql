@@ -1,5 +1,5 @@
 ﻿CREATE TYPE [dbo].[ResourceList] AS TABLE (
-	[Index]						INT				IDENTITY(0, 1),
+	[Index]						INT		PRIMARY KEY IDENTITY(0, 1),
 	[Id]						INT NOT NULL DEFAULT 0,
 	[ResourceType]				NVARCHAR (255)		NOT NULL,
 	[Name]						NVARCHAR (255)		NOT NULL,
@@ -34,8 +34,5 @@
 	[ResourceLookup2Id]			INT,			-- UDL 
 	[ResourceLookup3Id]			INT,			-- UDL 
 	[ResourceLookup4Id]			INT,			-- UDL 
-	[EntityState]			NVARCHAR (255)	NOT NULL DEFAULT(N'Inserted'),
-	PRIMARY KEY ([Index]),
-	INDEX IX_ResourceList__Code ([Code]),
-	CHECK ([EntityState] IN (N'Unchanged', N'Inserted', N'Updated', N'Deleted'))
+	INDEX IX_ResourceList__Code ([Code])
 );

@@ -27,5 +27,5 @@ BEGIN
 	EXEC [dbo].[bll_Documents_State__Select]
 	*/
 	IF EXISTS(SELECT * FROM @TransitionedIds)
-		EXEC [dal].[Documents_State__Update] @Entities = @TransitionedIds
+		EXEC [dal].[Documents_State__Update] @Ids = @TransitionedIds
 END;

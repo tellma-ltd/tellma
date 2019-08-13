@@ -1,7 +1,7 @@
 ﻿BEGIN -- Cleanup & Declarations
 	DECLARE @D1 [dbo].[DocumentList], @L1 [dbo].DocumentLineList, @E1 [dbo].DocumentLineEntryList;
 	DECLARE @D2 [dbo].[DocumentList], @L2 [dbo].DocumentLineList, @E2 [dbo].DocumentLineEntryList;
-	DECLARE @LineType NVARCHAR (255);
+	DECLARE @LineType NVARCHAR (255), @DocsIdList dbo.[IdList];
 END
 -- get acceptable document types; and user permissions and general settings;
 -- Journal Vouchers

@@ -15,7 +15,6 @@ SET NOCOUNT ON;
 			[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
 			[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id]
 		FROM @Resources 
-		WHERE [EntityState] IN (N'Inserted', N'Updated')
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED 
 	THEN

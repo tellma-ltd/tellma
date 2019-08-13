@@ -34,7 +34,7 @@ SET NOCOUNT ON;
 	FROM @Roles FE
 	JOIN [dbo].Roles BE ON FE.Code = BE.Code
 	WHERE FE.[Code] IS NOT NULL
-	AND ((FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id))
+	AND (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
 	-- Code must not be duplicated in the uploaded list
@@ -60,7 +60,7 @@ SET NOCOUNT ON;
 		FE.[Name]
 	FROM @Roles FE
 	JOIN [dbo].Roles BE ON FE.[Name] = BE.[Name]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id)
+	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
 	-- Name2 must not exist in the db
@@ -71,7 +71,7 @@ SET NOCOUNT ON;
 		FE.[Name2]
 	FROM @Roles FE
 	JOIN [dbo].Roles BE ON FE.[Name2] = BE.[Name2]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id)
+	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
 	-- Name3 must not exist in the db
@@ -82,7 +82,7 @@ SET NOCOUNT ON;
 		FE.[Name3]
 	FROM @Roles FE
 	JOIN [dbo].Roles BE ON FE.[Name3] = BE.[Name3]
-	WHERE (FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id)
+	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
 	-- Name must be unique in the uploaded list
@@ -140,7 +140,6 @@ SET NOCOUNT ON;
 	WHERE (
 		P.ViewId NOT IN (SELECT [Id] FROM dbo.[Views] WHERE IsActive = 1) OR 
 		P.ViewId = N'All'
-	)
-	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
+	);
 
 	SELECT @ValidationErrorsJson = (SELECT * FROM @ValidationErrors	FOR JSON PATH);

@@ -88,8 +88,7 @@ BEGIN
 	)
 	SELECT
 		[Id], [Name], [ParentId], [Code], [ProductCategoryId], [GeographicRegionId], [CustomerSegmentId], [FunctionId], N'Unchanged'
-	FROM [dbo].[ResponsibilityCenters]
-	WHERE [Name] IN (N'Existin', N'Fake');
+	FROM [dbo].[ResponsibilityCenters];
 
 	UPDATE @OperationsDTO 
 	SET 

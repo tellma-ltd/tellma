@@ -8,7 +8,7 @@ IF NOT EXISTS(
 		FROM dbo.[Permissions] P
 		JOIN dbo.Roles R ON P.RoleId = R.Id
 		JOIN dbo.RoleMemberships RM ON R.Id = RM.RoleId
-		WHERE RM.Userid = @UserId
+		WHERE RM.[AgentId] = @UserId
 		AND P.ViewId = N'measurement-units'
 		AND (P.[Action] Like N'Read%' OR P.[Action] = N'Update')
 		UNION

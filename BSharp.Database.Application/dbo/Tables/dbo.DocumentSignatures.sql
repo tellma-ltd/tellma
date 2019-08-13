@@ -7,7 +7,7 @@
 	[Id]						INT PRIMARY KEY IDENTITY,
 	[DocumentId]				INT	NOT NULL,
 	
-	[State]						NVARCHAR (30)		NOT NULL,
+	[ToState]					NVARCHAR (30)		NOT NULL,
 	[ReasonId]					INT,	-- Especially important for states: Rejected/Failed/Declined.
 	[ReasonDetails]				NVARCHAR(1024),		-- especially useful when Reason Id = Other.
 	-- For a source document, SignedAt = Now(). For a copy, it is manually entered.
@@ -24,7 +24,7 @@
 	[RevokedById]				INT,
 
 	CONSTRAINT [FK_DocumentSignatures__Documents] FOREIGN KEY ([DocumentId]) REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
-	CONSTRAINT [CK_DocumentSignatures__State] CHECK ([State] IN (N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
+	CONSTRAINT [CK_DocumentSignatures__ToState] CHECK ([ToState] IN (N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
 	CONSTRAINT [FK_DocumentSignatures__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),
 	CONSTRAINT [FK_DocumentSignatures__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	CONSTRAINT [FK_DocumentSignatures__RevokedById] FOREIGN KEY ([RevokedById]) REFERENCES [dbo].[Users] ([Id])

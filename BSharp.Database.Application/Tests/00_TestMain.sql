@@ -30,7 +30,7 @@ BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[ResponsibilityCenters]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Roles]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Workflows]', RESEED, 1) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[WorkflowSignatories]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[WorkflowSignatures]', RESEED, 1) WITH NO_INFOMSGS;
 
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
 	DECLARE @ValidationErrorsJson nvarchar(max), @ResultsJson nvarchar(max);

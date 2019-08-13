@@ -79,6 +79,10 @@
     <Folder Include="dal\Functions" />
     <Folder Include="api\Stored Procedures" />
     <Folder Include="api\Functions" />
+    <Folder Include="rpt" />
+    <Folder Include="rpt\Functions" />
+    <Folder Include="rpt\Stored Procedures" />
+    <Folder Include="bll\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -99,9 +103,7 @@
     <Build Include="dbo\Functions\dbo.fn_FunctionalCurrency.sql" />
     <Build Include="dbo\Functions\dbo.fn_CurrencyExchange.sql" />
     <Build Include="dbo\Functions\dbo.fi_Journal.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_TrialBalance.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Notes__Update.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_Ifrs.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Accounts__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ValidationErrorList.sql" />
     <Build Include="Security\api.sql" />
@@ -175,8 +177,6 @@
     <Build Include="dbo\Tables\dbo.DocumentAssignmentsHistory.sql" />
     <Build Include="dbo\Tables\dbo.Notifications.sql" />
     <Build Include="dbo\Functions\dbo.fi_MyNotifications.sql" />
-    <Build Include="dbo\Functions\dbo.fi_Document__Assignments.sql" />
-    <Build Include="dbo\Functions\dbo.fi_Document__Signatures.sql" />
     <Build Include="dbo\Tables\dbo.Roles.sql" />
     <Build Include="dbo\Tables\dbo.Permissions.sql" />
     <Build Include="dbo\Tables\dbo.Views.sql" />
@@ -212,7 +212,6 @@
     <Build Include="dbo\Stored Procedures\dbo.rpt_NegativeInventories.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_SalesDetails.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_SalesSummary.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_Account__Statement.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_AssetRegister.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_BankAccountBalances.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_BankBalances.sql" />
@@ -246,7 +245,7 @@
     <Build Include="dbo\Tables\dbo.DocumentStatesHistory.sql" />
     <Build Include="dbo\Tables\dbo.VoucherBooklets.sql" />
     <Build Include="dbo\Tables\dbo.Workflows.sql" />
-    <Build Include="dbo\Tables\dbo.WorkflowSignatories.sql" />
+    <Build Include="dbo\Tables\dbo.WorkflowSignatures.sql" />
     <Build Include="dbo\Tables\dbo.VoucherTypes.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdWithStateList.sql" />
     <Build Include="dbo\Tables\dbo.Plans.sql" />
@@ -279,30 +278,40 @@
     <Build Include="dal\Stored Procedures\dal.MeasurementUnits__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Save.sql" />
-    <Build Include="api\Functions\dbo.fs_MeasurementUnits.sql" />
     <Build Include="dbo\Tables\dbo.AgentRelationTypes.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Save.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents_Filter__Sign.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Sign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Ready__Select.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <Build Include="dbo\Functions\dbo.fi_NormalizedJournal.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.IfrsDisclosureDetails_Validate__Save.sql" />
-    <Build Include="dbo\User Defined Types\dbo.DocumentSignatoryList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DocumentRoleList.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Assign.sql" />
     <Build Include="dal\Stored Procedures\dbo.Action_Views__Permissions.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Assign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Assign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Sign.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_State_Role__MissingSignatures.sql" />
+    <Build Include="Security\rpt.sql" />
+    <Build Include="rpt\Functions\rpt.MeasurementUnits.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.sp_TrialBalance.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.sp_Ifrs.sql" />
+    <Build Include="rpt\Functions\dbo.rpt_Account__Statement.sql" />
+    <Build Include="rpt\Functions\rpt.Documents.sql" />
+    <Build Include="rpt\Functions\rpt.Document__Signatures.sql" />
+    <Build Include="bll\Functions\bll.fn_Document_Criteria__Satisfied.sql" />
+    <Build Include="rpt\Functions\rpt.Documents_ToState_Roles__Missing.sql" />
+    <Build Include="rpt\Functions\rpt.Documents_ToState_Roles__MissingConditional.sql" />
+    <Build Include="rpt\Functions\rpt.DocumentsWithNoDefinedWorkflows.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
       <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
-      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
   </ItemGroup>
