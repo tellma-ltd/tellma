@@ -3,6 +3,8 @@
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
+SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	-- if all documents are already unsigned, return
 	IF NOT EXISTS(
 		SELECT * FROM [dbo].[DocumentSignatures]
@@ -12,6 +14,7 @@ BEGIN
 		RETURN;
 
 	-- Validate, checking available signatures for transaction type
+	INSERT INTO @ValidationErrors
 	EXEC [dbo].[bll_Documents_Validate__Unsign]
 		@Entities = @Documents;;
 			

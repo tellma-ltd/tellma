@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[bll_Transactions_Validate__Unpost]
 	@Entities [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
-	,@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -35,5 +34,4 @@ SET NOCOUNT ON;
 
 	-- No inactive custody
 	-- No inactive resource
-
-	SELECT @ValidationErrorsJson = (SELECT * FROM @ValidationErrors	FOR JSON PATH);
+	SELECT TOP (@Top) * FROM @ValidationErrors;

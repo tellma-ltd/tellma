@@ -5,7 +5,6 @@
 AS
 BEGIN
 SET NOCOUNT ON;
--- Validate
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	
 	INSERT INTO @ValidationErrors

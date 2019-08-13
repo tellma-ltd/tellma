@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[bll_Agents_Validate__Save]
 	@Entities [AgentList] READONLY,
 	@Top INT = 10
-	,@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -27,4 +26,4 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Agents] BE ON FE.Code = BE.Code
 	WHERE ((FE.Id IS NULL) OR (FE.Id <> BE.Id));
 
-	SELECT @ValidationErrorsJson = (SELECT * FROM @ValidationErrors	FOR JSON PATH);
+	SELECT TOP (@Top) * FROM @ValidationErrors;

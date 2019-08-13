@@ -7,11 +7,10 @@ AS
 BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	--INSERT INTO @ValidationErrors
+	INSERT INTO @ValidationErrors
 	EXEC [dbo].[bll_Roles_Validate__Save]
 		@Roles = @Roles,
-		@Permissions = @Permissions,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Permissions = @Permissions;
 
 	SELECT @ValidationErrorsJson = 
 	(
