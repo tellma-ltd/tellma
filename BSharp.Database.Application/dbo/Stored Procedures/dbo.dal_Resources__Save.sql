@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[dal_Resources__Save]
-	@Resources [dbo].[ResourceList] READONLY
+	@Resources [dbo].[ResourceList] READONLY,
+	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();

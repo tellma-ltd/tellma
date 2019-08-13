@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[MeasurementUnits__Save]
 	@Entities [MeasurementUnitList] READONLY,
-	@ReturnEntities BIT
+	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
@@ -40,5 +40,5 @@ SET NOCOUNT ON;
 	) AS x
 	OPTION (RECOMPILE);
 
-	IF @ReturnEntities = 1
+	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

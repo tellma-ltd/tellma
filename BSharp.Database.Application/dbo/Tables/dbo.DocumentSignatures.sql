@@ -4,7 +4,7 @@
 -- Duplicate last signatures are discarded.
 -- The signatures can only be revoked in the reverse order they were made in
 -- A signature can only be removed by the signatory or by an IT administrator
-	[Id]						INT PRIMARY KEY,
+	[Id]						INT PRIMARY KEY IDENTITY,
 	[DocumentId]				INT	NOT NULL,
 	
 	[State]						NVARCHAR (30)		NOT NULL,

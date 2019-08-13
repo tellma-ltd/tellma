@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Sign]
 -- @Entites contain only the documents where Actor and Role are compatible with current state
-	@Entities [dbo].[IdList] READONLY,
+	@Ids [dbo].[IdList] READONLY,
 	@State NVARCHAR(255),
 	@ReasonId INT,
 	@ReasonDetails	NVARCHAR(1024),
@@ -17,5 +17,5 @@ BEGIN
 	)
 	SELECT
 		[Id],		@State,		@ReasonId, @ReasonDetails,	@AgentId,	@RoleId, @SignedAt
-	FROM @Entities
+	FROM @Ids
 END;

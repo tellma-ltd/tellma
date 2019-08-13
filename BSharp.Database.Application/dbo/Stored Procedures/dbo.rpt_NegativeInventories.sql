@@ -19,7 +19,7 @@ AS
 			SUM([Length]) As [Length],
 			SUM([Count]) AS [Count],
 			SUM([Value]) As [Value]
-	FROM dbo.[fi_JournalDetails](NULL, @AsOfDate) J
+	FROM dbo.[fi_Journal](NULL, @AsOfDate) J
 	WHERE IfrsAccountId IN (SELECT Id FROM IfrsInventoryAccounts)
 	GROUP BY
 			[AccountId],

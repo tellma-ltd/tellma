@@ -114,7 +114,5 @@ RETURN
 		[RelatedVolume4]		DECIMAL,
 		[RelatedCount4]			DECIMAL,
 		[RelatedTime4]			DECIMAL,
-		[RelatedValue4]			VTYPE,
-
-		[EntityState1]			NVARCHAR (255) '$.EntityState'
+		[RelatedValue4]			VTYPE
 	) c;

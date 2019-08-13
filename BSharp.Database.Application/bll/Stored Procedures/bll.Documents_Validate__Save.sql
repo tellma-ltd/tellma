@@ -2,7 +2,7 @@
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[DocumentLineList] READONLY, 
 	@Entries [dbo].[DocumentLineEntryList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -138,4 +138,4 @@ SET NOCOUNT ON;
 	WHERE (E.[RelatedResourceId] IS NULL)
 	AND (IA.[RelatedResourceSetting] = N'Required');
 
-	SELECT @ValidationErrorsJson = (SELECT * FROM @ValidationErrors	FOR JSON PATH);
+	SELECT TOP (@Top) * FROM @ValidationErrors;

@@ -3,30 +3,32 @@
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[DocumentLineList] READONLY, 
 	@Entries [dbo].[DocumentLineEntryList] READONLY,
-	@ReturnEntities BIT = 0,
+	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
-	
-	--Validate Domain rules
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+
+	--INSERT INTO @ValidationErrors
 	--EXEC [bll].[Documents_Validate__Save]
 	--	@Documents = @Documents,
 	--	@Lines = @Lines,
-	--	@Entries = @Entries,
-	--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	--	@Entries = @Entries;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
-
-	--SELECT * FROM @TransactionsLocal;
-	--SELECT * FROM @WideLinesLocal;
-	--SELECT * FROM @EntriesLocal;
-	-- Validate business rules (read from the table)
 
 	EXEC [dal].[Documents__Save]
 		@DocumentTypeId = @DocumentTypeId,
 		@Documents = @Documents,
 		@Lines = @Lines,
 		@Entries = @Entries,
-		@ReturnEntities = @ReturnEntities;
+		@ReturnIds = @ReturnIds;
 END;

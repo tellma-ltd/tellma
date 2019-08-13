@@ -1,18 +1,37 @@
 ﻿SET NOCOUNT ON;
 --ROLLBACK
---RETURN
+/* Dependencies
+-- Optional screens, can pre-populate table with data
+	CustomAccountClassifications -- screen shows list of accounts
+	IfrsDisclosures
+	MeasurementUnits
+	IfrsNotes
+	IfrsAccounts -- screen shows list of accounts
+	AgentRelationTypes
+	JobTitles
+	Titles, MaritalStatuses, Tribes, Regions, EducationLevels, EducationSublevels, OrganizationTypes, 
+-- Critical screens for making a journal entry
+	Accounts
+	Agents, -- screen shows list of relations with Agents
+	Resources, -- screen for each ifrs type. Detail shows ResourceInstances
+	Roles
+	Workflows, -- screen 
+	Documents, -- screen shows Lines, LineEntries, Signatures, StatesHistory(?)
+*/
 BEGIN -- reset Identities
-DELETE FROM dbo.Accounts; DELETE FROM dbo.Resources;
-IF NOT EXISTS(SELECT * FROM [dbo].[IfrsDisclosureDetails])	DBCC CHECKIDENT ('[dbo].[IfrsDisclosureDetails]', RESEED, 0) WITH NO_INFOMSGS;
-	IF NOT EXISTS(SELECT * FROM [dbo].[MeasurementUnits])	DBCC CHECKIDENT ('[dbo].[MeasurementUnits]', RESEED, 0) WITH NO_INFOMSGS;
-	IF NOT EXISTS(SELECT * FROM [dbo].[ProductCategories])	DBCC CHECKIDENT ('[dbo].[ProductCategories]', RESEED, 0) WITH NO_INFOMSGS;
-	IF NOT EXISTS(SELECT * FROM [dbo].[ResponsibilityCenters])	DBCC CHECKIDENT ('[dbo].[ResponsibilityCenters]', RESEED, 0) WITH NO_INFOMSGS;
-	IF NOT EXISTS(SELECT * FROM [dbo].[Agents])				DBCC CHECKIDENT ('[dbo].[Agents]', RESEED, 0) WITH NO_INFOMSGS;
-	IF NOT EXISTS(SELECT * FROM [dbo].[Resources])			DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 0) WITH NO_INFOMSGS;
-	IF NOT EXISTS(SELECT * FROM [dbo].[Accounts])			DBCC CHECKIDENT ('[dbo].[Accounts]', RESEED, 0) WITH NO_INFOMSGS;
-	IF NOT EXISTS(SELECT * FROM [dbo].[DocumentLineEntries])DBCC CHECKIDENT ('[dbo].[DocumentLineEntries]', RESEED, 0) WITH NO_INFOMSGS;
-	IF NOT EXISTS(SELECT * FROM [dbo].[DocumentLines])		DBCC CHECKIDENT ('[dbo].[DocumentLines]', RESEED, 0) WITH NO_INFOMSGS;
-	IF NOT EXISTS(SELECT * FROM [dbo].[Documents])			DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 0) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Accounts]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Agents]', RESEED, 2) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[DocumentLines]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[DocumentLineEntries]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[MeasurementUnits]', RESEED, 100) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[ProductCategories]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[ResponsibilityCenters]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Roles]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Workflows]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[WorkflowSignatories]', RESEED, 1) WITH NO_INFOMSGS;
+
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
 	DECLARE @ValidationErrorsJson nvarchar(max), @ResultsJson nvarchar(max);
 	DECLARE @DebugIfrsConcepts bit = 0, @DebugMeasurementUnits bit = 0;
@@ -31,7 +50,7 @@ END
 
 BEGIN TRY
 	BEGIN TRANSACTION
-		--:r .\01_IfrsConcepts.sql
+		:r .\01_IfrsConcepts.sql
 		:r .\02_MeasurementUnits.sql
 		--:r .\03_ProductCategories.sql
 		--:r .\03_Operations.sql
@@ -39,9 +58,11 @@ BEGIN TRY
 		--:r .\05_Agents.sql
 		:r .\10_Documents.sql
 	--	select * from entries;
-	SELECT @fromDate = '2017.01.01', @toDate = '2024.03.01'
-	--SELECT * from dbo.[fi_Journal](@fromDate, @toDate) ORDER BY [Id], [EntryId];
-	--EXEC rpt_TrialBalance @fromDate = @fromDate, @toDate = @toDate;
+	--SELECT @fromDate = '2017.01.01', @toDate = '2024.03.01'
+	--SELECT * from dbo.[fi_Journal](@fromDate, @toDate);
+	--EXEC rpt_TrialBalance @fromDate = @fromDate, @toDate = @toDate, @PrintQuery = 0;
+
+
 	--SELECT * FROM dbo.[fi_WithholdingTaxOnPayment](default, default);
 	--SELECT * FROM dbo.[fi_ERCA__VAT_Purchases](default, default);
 	--DECLARE @i int = 0;
@@ -55,11 +76,11 @@ BEGIN TRY
 	--SELECT * FROM dbo.[fi_AssetRegister]('2017.02.01', '2018.02.01');
 	--SELECT @fromDate = '2017.01.01', @toDate = '2024.01.01';
 	--SELECT * FROM dbo.fi_AssetRegister(@fromDate, @toDate);
-	--SELECT * from dbo.fi_Account__Statement(N'BalancesWithBanks', @CBEETB, @ETB, @fromDate, @toDate) ORDER BY StartDateTime;
+	--EXEC dbo.rpt_BankAccount__Statement @CBEUSD,  @fromDate, @toDate;
 	--SELECT * from dbo.fi_Account__Statement(N'DistributionCosts', @SalesDepartment, @Goff, @fromDate, @toDate) ORDER BY StartDateTime;
 	--SELECT * FROM dbo.fi_ERCA__EmployeeIncomeTax('2018.02.01', '2018.03.01');
 	--SELECT * FROM dbo.fi_Paysheet(default, default, '2018.02', @Basic, @Transportation);
-Finish:
+
 	ROLLBACK;
 END TRY
 BEGIN CATCH

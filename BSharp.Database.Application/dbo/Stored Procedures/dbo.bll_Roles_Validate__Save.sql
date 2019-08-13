@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [dbo].[bll_Roles_Validate__Save]
 	@Roles [dbo].[RoleList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
-	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
+	@Top INT = 10
+	,@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];

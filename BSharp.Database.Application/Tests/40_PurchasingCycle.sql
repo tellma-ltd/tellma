@@ -39,7 +39,7 @@ WHERE [State] = N'Draft';
 EXEC [dbo].[api_Transactions__Post]
 	@Documents = @Docs,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-	@ReturnEntities = 0,
+	@ReturnIds = 0,
  	@DocumentsResultJson = @DResultJson OUTPUT,
 	@LinesResultJson = @LResultJson OUTPUT,
 	@EntriesResultJson = @EResultJson OUTPUT;

@@ -17,7 +17,7 @@ AS
 			J.ResourceId,	
 			SUM(CASE WHEN J.[Direction] > 0 THEN J.[Mass] ELSE 0 END) AS MassIn,
 			SUM(CASE WHEN J.[Direction] < 0 THEN J.[Mass] ELSE 0 END) AS MassOut
-		FROM [dbo].[fi_JournalDetails](@fromDate, @toDate) J
+		FROM [dbo].[fi_Journal](@fromDate, @toDate) J
 		WHERE J.AccountId IN (SELECT Id FROM RawMaterialAccounts)
 		GROUP BY J.ResourceId
 	),

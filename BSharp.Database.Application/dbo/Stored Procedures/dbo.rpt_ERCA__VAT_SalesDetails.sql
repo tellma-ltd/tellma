@@ -5,10 +5,10 @@ AS
 BEGIN
 	SELECT
 		J.Id, A.TaxIdentificationNumber AS TIN, J.AdditionalReference AS MRC,
-		J.ExternalReference AS RCPT_NUM, J.DocumentDate As RCPT_Date,  J.Quantity,
+		J.ExternalReference AS RCPT_NUM, J.DocumentDate As RCPT_Date,  J.[Mass],
 		J.RelatedMoneyAmount As Price, N'' AS COM_CODE, ResourceType As COM_DETAIL,
 		R.[Name] As [Description]
-	FROM dbo.[fi_JournalDetails](@fromDate, @toDate) J
+	FROM dbo.[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN dbo.Resources R ON J.RelatedResourceId = R.Id 
 	LEFT JOIN dbo.Agents A ON J.[RelatedAccountId] = A.Id
 	WHERE IfrsAccountId = N'CurrentValueAddedTaxPayables'

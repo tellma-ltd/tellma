@@ -13,7 +13,7 @@ BEGIN
 		J.[ExternalReference] As [Receipt Number], 
 		J.DocumentDate As [Receipt Date],
 		J.[DocumentLineId] -- for navigation
-	FROM [dbo].[fi_JournalDetails](@fromDate, @toDate) J
+	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAccountId] = A.Id
 	WHERE J.[IfrsAccountId] = N'CurrentWithholdingTaxPayable'
 	AND J.Direction = -1;

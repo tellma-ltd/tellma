@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[dal_ResourceLookup1s__Save]
-	@Entities [ResourceLookupList] READONLY
+	@Entities [ResourceLookupList] READONLY,
+	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();

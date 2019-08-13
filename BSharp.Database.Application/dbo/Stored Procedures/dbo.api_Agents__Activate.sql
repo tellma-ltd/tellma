@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[api_Agents__Activate]
-	@Ids [dbo].[IdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsActive BIT,
 	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
 AS

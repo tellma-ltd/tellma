@@ -3,7 +3,7 @@
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[DocumentLineList] READONLY, 
 	@Entries [dbo].[DocumentLineEntryList] READONLY,
-	@ReturnEntities BIT
+	@ReturnIds BIT = 0
 AS
 BEGIN
 	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList], @LinesIndexedIds [dbo].[IndexedIdList], @EntriesIndexedIds [dbo].[IndexedIdList];
@@ -129,6 +129,6 @@ BEGIN
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	IF (@ReturnEntities = 1)
+	IF (@ReturnIds = 1)
 		SELECT * FROM @DocumentsIndexedIds;
 END;

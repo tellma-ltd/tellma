@@ -33,6 +33,5 @@ RETURN
 			[RelatedReference]		NVARCHAR (255),
 			[RelatedAgentId]		INT,
 			[RelatedResourceId]		INT,
-			[RelatedAmount]			MONEY,
-			[EntityState]			NVARCHAR (255)
+			[RelatedAmount]			MONEY
 		) c;

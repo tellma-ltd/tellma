@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[ProductCategories] (
-	[Id]				INT PRIMARY KEY NONCLUSTERED IDENTITY(1,1),
+	[Id]				INT PRIMARY KEY NONCLUSTERED IDENTITY,
 	[ParentId]			INT,
 	[Name]				NVARCHAR (255)			NOT NULL,
 	[Name2]				NVARCHAR (255),

@@ -1,11 +1,8 @@
 ﻿CREATE TABLE [dbo].[IfrsDisclosures] (
-	[Id]				NVARCHAR (255) PRIMARY KEY NONCLUSTERED, -- Ifrs Concept
+	[Id]				NVARCHAR (255) PRIMARY KEY CONSTRAINT [FK_IfrsDisclosures__IfrsConcepts] FOREIGN KEY ([Id]) REFERENCES [dbo].[IfrsConcepts] ([Id]) ON DELETE CASCADE,
 	[CreatedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_IfrsDisclosures__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	CONSTRAINT [FK_IfrsDisclosures__IfrsConcepts]	FOREIGN KEY ([Id]) REFERENCES [dbo].[IfrsConcepts] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [FK_IfrsDisclosures__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_IfrsDisclosures__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_IfrsDisclosures__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 )
 GO

@@ -15,20 +15,25 @@ BEGIN
 		[IfrsNoteId],
 		[ResponsibilityCenterId],
 		[ResourceId],
-		[Quantity],
 		[MoneyAmount],
+		[CurrencyId],
 		[Mass],
-		-- NormalizedMass,
-		[Volume], 
-		-- NormalizedVolume,
-		[Count],
-		-- NormalizedCount,
+		[MassUnitId],
+		[Volume],
+		[VolumeUnitId],
+		[Area],
+		[AreaUnitId],
+		[Length],
+		[LengthUnitId],
 		[Time],
+		[TimeUnitId],
+		[Count],
+		[CountUnitId],
 		[Value],
 		[Memo],
 		[ExternalReference],
 		[AdditionalReference]
-	FROM [dbo].[fi_JournalDetails](@fromDate, @toDate)
+	FROM [dbo].[fi_Journal](@fromDate, @toDate)
 	WHERE [AccountId] = @AccountId;
 END;
 GO

@@ -17,18 +17,27 @@ BEGIN
 	--	WHERE IfrsAccountId IN
 	--		(SELECT [Id] FROM IfrsFinishedGoodsAccounts)
 	--),
-	WITH Actual AS (
+	WITH UnitRatios AS (
+		SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)
+		/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)) As [Ratio]
+		FROM dbo.MeasurementUnits
+		WHERE UnitType = N'Mass'
+		UNION
+		SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @CountUnitId)
+		/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @CountUnitId))
+		FROM dbo.MeasurementUnits
+		WHERE UnitType = N'Count'
+	),
+	Actual AS (
 		SELECT 
 			R.ResourceLookup1Id, J.ResponsibilityCenterId,
-			SUM(J.Direction * J.Quantity) AS Quantity,
-			J.UnitId,
-			SUM(J.Direction * J.NormalizedMass) * dbo.fn_MeasurementUnitRatio(@MassUnitId) AS [Mass],
-			SUM(J.Direction * J.NormalizedCount) * dbo.fn_MeasurementUnitRatio(@CountUnitId) AS [Count]
-		FROM fi_JournalDetails(@FromDate, @ToDate) J
+			SUM(J.Direction * J.[Mass]) AS [Mass],
+			SUM(J.Direction * J.[Count]) AS [Count]
+		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
-		WHERE J.LineTypeId = N'Production' 
+		WHERE J.IfrsNoteId = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		AND R.ResourceType = N'FinishedGoods'
-		GROUP BY J.ResponsibilityCenterId, R.ResourceLookup1Id, J.UnitId
+		GROUP BY J.ResponsibilityCenterId, R.ResourceLookup1Id
 	),
 	PlannedDetails AS (
 		SELECT 
@@ -40,21 +49,27 @@ BEGIN
 				(CASE WHEN ToDate < @ToDate THEN ToDate Else @ToDate END)
 			) + 1
 		) As [Mass],
+		[MassUnitId],
 		SUM([Count]) * (
 			DATEDIFF(
 				DAY,
 				(CASE WHEN FromDate > @fromDate THEN FromDate ELSE @fromDate END),
 				(CASE WHEN ToDate < @ToDate THEN ToDate Else @ToDate END)
 			) + 1
-		) As [Count]
+		) As [Count],
+		[CountUnitId]
 		FROM dbo.Plans
 		WHERE (ToDate >= @fromDate AND FromDate <= @ToDate)
 		AND Activity = N'Production'
-		GROUP BY ResourceLookup1Id, FromDate, ToDate
+		GROUP BY ResourceLookup1Id, [MassUnitId], [CountUnitId], FromDate, ToDate
 	),
 	Planned	AS (
-		SELECT ResourceLookup1Id, SUM(Mass) AS Mass, SUM([Count]) AS [Count]
-		FROM PlannedDetails
+		SELECT ResourceLookup1Id, 
+		SUM([Mass] * ISNULL(MR.[Ratio], 0)) AS Mass, 
+		SUM([Count] * ISNULL(CR.[Ratio], 0)) AS [Count]
+		FROM PlannedDetails P
+		LEFT JOIN UnitRatios MR ON P.MassUnitId = MR.Id
+		LEFT JOIN UnitRatios CR ON P.CountUnitId = CR.Id
 		GROUP BY ResourceLookup1Id
 	)
 	SELECT RL.Id, RL.SortKey, RL.[Name],

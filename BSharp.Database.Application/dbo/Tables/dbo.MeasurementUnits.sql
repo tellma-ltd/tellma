@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[MeasurementUnits] (
-	[Id]			INT PRIMARY KEY IDENTITY(1,1),
-	[UnitType]		NVARCHAR (255)		NOT NULL,
+	[Id]			INT PRIMARY KEY IDENTITY,
+	[UnitType]		NVARCHAR (255)		NOT NULL CONSTRAINT [CK_MeasurementUnits__UnitType] CHECK ([UnitType] IN (N'Pure', N'Time', N'Distance', N'Count', N'Mass', N'Volume', N'Currency')),
 	[Name]			NVARCHAR (255)		NOT NULL,
 	[Name2]			NVARCHAR (255),
 	[Name3]			NVARCHAR (255),
@@ -12,9 +12,8 @@
 	[IsActive]		BIT					NOT NULL DEFAULT 1,
 	[Code]			NVARCHAR (255),
 	[CreatedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]	INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	[ModifiedAt]	DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]	INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	CONSTRAINT [CK_MeasurementUnits__UnitType] CHECK ([UnitType] IN (N'Pure', N'Time', N'Distance', N'Count', N'Mass', N'Volume', N'Money'))
+	[CreatedById]	INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_MeasurementUnits__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
+	[ModifiedAt]	DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[ModifiedById]	INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_MeasurementUnits__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 );
 GO

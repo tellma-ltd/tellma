@@ -98,10 +98,8 @@
     <Build Include="dbo\Tables\dbo.ResponsibilityCenters.sql" />
     <Build Include="dbo\Functions\dbo.fn_FunctionalCurrency.sql" />
     <Build Include="dbo\Functions\dbo.fn_CurrencyExchange.sql" />
-    <Build Include="dbo\Functions\dbo.fi_JournalDetails.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Transactions__Post.sql" />
+    <Build Include="dbo\Functions\dbo.fi_Journal.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_TrialBalance.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Documents__Assign.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Notes__Update.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_Ifrs.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Accounts__Activate.sql" />
@@ -123,16 +121,13 @@
     <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_ResponsibilityCenters__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_ResponsibilityCenters_Validate__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.SettingList.sql" />
     <Build Include="dbo\User Defined Types\dbo.StringList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_IfrsDisclosureDetails_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Resources__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Resources_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentWideLineList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Post.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Functions\dbo.fe_Responsibility__FirstSibling.sql" />
@@ -152,9 +147,9 @@
     <None Include="Tests\60_SalesCycle.sql" />
     <None Include="Tests\11W_Financing.sql" />
     <None Include="Tests\TestingToBeCleaned.sql" />
-    <None Include="Provisioning\02_Accounts.sql" />
+    <None Include="Provisioning\013_IfrsAccounts.sql" />
     <None Include="Provisioning\04_AccountsNotes.sql" />
-    <None Include="Provisioning\08_MeasurementUnits.sql" />
+    <None Include="Provisioning\02_MeasurementUnits.sql" />
     <None Include="Provisioning\012_IfrsNotes.sql" />
     <PostDeploy Include="Provisioning\00_Main.sql" />
     <None Include="Provisioning\05_LineTypeSpecifications.sql" />
@@ -171,8 +166,6 @@
     <Build Include="dbo\User Defined Types\dbo.AccountList.sql" />
     <Build Include="dbo\Functions\dbo.fn_User__Language.sql" />
     <Build Include="dbo\User Defined Types\dbo.LocalUserList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Documents_Validate__Assign.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Assign.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Unpost.sql" />
     <Build Include="dbo\Tables\dbo.DocumentSignatures.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Unsign.sql" />
@@ -248,7 +241,6 @@
     <Build Include="dbo\Stored Procedures\dbo.dal_ProductCategories__DeleteWithDescendants.sql" />
     <Build Include="dbo\Tables\dbo.ResourceInstances.sql" />
     <Build Include="dbo\Views\dbo.TransactionsEntriesSummaryView.sql" />
-    <Build Include="dbo\Functions\dbo.fi_JournalSummary.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_DocumentWideLines__Unpivot.sql" />
     <Build Include="dbo\Tables\dbo.DocumentStatesHistory.sql" />
@@ -297,6 +289,15 @@
     <Build Include="dal\Stored Procedures\dal.Documents__Sign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Ready__Select.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
+    <Build Include="dbo\Functions\dbo.fi_NormalizedJournal.sql" />
+    <Build Include="dal\Stored Procedures\dal.Settings__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.IfrsDisclosureDetails_Validate__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DocumentSignatoryList.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Assign.sql" />
+    <Build Include="dal\Stored Procedures\dbo.Action_Views__Permissions.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Assign.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Assign.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Sign.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

@@ -9,7 +9,7 @@ BEGIN
 		AC.[PartyReference] As AccountNumber,
 		SUM(J.[MoneyAmount] * J.[Direction]) AS [Balance],
 		R.[Name] As Currency, R.Name2 As Currency2, R.Name3 As Currency3
-	FROM [dbo].[fi_JournalDetails](NULL, @AsOfDate) J
+	FROM [dbo].[fi_Journal](NULL, @AsOfDate) J
 	JOIN dbo.Accounts AC ON J.AccountId = AC.Id
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN dbo.Agents AG ON AC.AgentId = AG.Id

@@ -9,7 +9,7 @@ BEGIN
 		J.ExternalReference As [Invoice #], J.[AdditionalReference] As [Cash M/C #],
 		SUM(J.MoneyAmount) AS VAT, SUM(J.RelatedMoneyAmount) AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date], J.[DocumentLineId]
-	FROM dbo.[fi_JournalDetails](@fromDate, @toDate) J
+	FROM dbo.[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN dbo.Agents A ON J.[RelatedAccountId] = A.Id
 	WHERE IfrsAccountId = N'CurrentValueAddedTaxPayables'
 	AND J.Direction = -1

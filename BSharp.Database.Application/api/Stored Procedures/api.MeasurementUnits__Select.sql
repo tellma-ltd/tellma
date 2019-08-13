@@ -10,13 +10,13 @@ IF NOT EXISTS(
 		JOIN dbo.RoleMemberships RM ON R.Id = RM.RoleId
 		WHERE RM.Userid = @UserId
 		AND P.ViewId = N'measurement-units'
-		AND (P.[Level] Like N'Read%' OR P.[Level] = N'Update')
+		AND (P.[Action] Like N'Read%' OR P.[Action] = N'Update')
 		UNION
 		SELECT P.* 
 		FROM dbo.[Permissions] P
 		JOIN dbo.Roles R ON P.RoleId = R.Id
 		WHERE R.IsPublic = 1
 		AND P.ViewId = N'measurement-units'
-		AND (P.[Level] Like N'Read%' OR P.[Level] = N'Update')
+		AND (P.[Action] Like N'Read%' OR P.[Action] = N'Update')
 	) 
 	RAISERROR(N'Not enough permissions', 16, 1);
