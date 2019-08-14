@@ -1,39 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.EntityModel
 {
     [StrongEntity]
-    public class UserForSave<TRoleMembership> : EntityWithKey<int>
+    public class AgentForSave : EntityWithKey<int>
     {
-        [Display(Name = "User_Email")]
+        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        public string Email { get; set; }
+        [AlwaysAccessible]
+        public string Name { get; set; }
 
-        [Display(Name = "User_Roles")]
-        [ForeignKey(nameof(RoleMembership.UserId))]
-        public List<TRoleMembership> Roles { get; set; }
+        [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Name2 { get; set; }
+
+        [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Name3 { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Image")]
+        public byte[] Image { get; set; }
     }
 
-    public class UserForSave : UserForSave<RoleMembershipForSave> { }
-
-    public class User : UserForSave<RoleMembership>
+    public class Agent : AgentForSave
     {
-        public string ExternalId { get; set; }
-
-        [Display(Name = "State")]
-        public string State { get; set; }
+        public string ImageId { get; set; }
 
         [Display(Name = "IsActive")]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
-
-        [Display(Name = "User_LastActivity")]
-        public DateTimeOffset? LastAccess { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -49,9 +50,9 @@ namespace BSharp.EntityModel
 
         // For Query
 
-        [Display(Name = "User_Agent")]
+        [Display(Name = "Agent_User")]
         [ForeignKey(nameof(Id))]
-        public Agent Agent { get; set; }
+        public User User { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

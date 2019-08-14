@@ -6,8 +6,10 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -23,6 +25,7 @@ namespace BSharp.Data
         private readonly string _connectionString;
 
         private SqlConnection _conn;
+        private Transaction _transactionOverride;
         private GlobalUserInfo _userInfo;
 
         #region Lifecycle
@@ -71,7 +74,7 @@ namespace BSharp.Data
 
             // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
             // every time it is requested, otherwise commands will be executed outside the boundaries of the transaction
-            _conn.EnlistTransaction(Transaction.Current);
+            _conn.EnlistInTransaction(transactionOverride: _transactionOverride);
             return _conn;
         }
 
@@ -85,30 +88,43 @@ namespace BSharp.Data
             return _userInfo;
         }
 
+        /// <summary>
+        /// Enlists the repository's connection in the provided transaction such that all subsequent commands particupate in it, regardless of the ambient transaction
+        /// </summary>
+        /// <param name="transaction">The transaction to enlist the connection in</param>
+        public void EnlistTransaction(Transaction transaction)
+        {
+            _transactionOverride = transaction;
+        }
+
         #endregion
 
         #region Queries
 
-        public async Task<Query<T>> QueryAsync<T>() where T : Entity
+        public Query<T> Query<T>() where T : Entity
         {
-            var conn = await GetConnectionAsync();
-            var sources = GetSources();
-            var userInfo = await GetGlobalUserInfoAsync();
-            var userId = userInfo.UserId ?? 0;
-            var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
-
-            return new Query<T>(conn, sources, _localizer, userId, userTimeZone);
+            return new Query<T>(GetFactory());
         }
 
-        public async Task<AggregateQuery<T>> AggregateQueryAsync<T>() where T : Entity
+        public AggregateQuery<T> AggregateQuery<T>() where T : Entity
         {
-            var conn = await GetConnectionAsync();
-            var sources = GetSources();
-            var userInfo = await GetGlobalUserInfoAsync();
-            var userId = userInfo.UserId ?? 0;
-            var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
+            return new AggregateQuery<T>(GetFactory());
+        }
 
-            return new AggregateQuery<T>(conn, sources, _localizer, userId, userTimeZone);
+        private QueryArgumentsFactory GetFactory()
+        {
+            async Task<QueryArguments> Factory()
+            {
+                var conn = await GetConnectionAsync();
+                var sources = GetSources();
+                var userInfo = await GetGlobalUserInfoAsync();
+                var userId = userInfo.UserId ?? 0;
+                var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
+
+                return new QueryArguments(conn, sources, userId, userTimeZone, _localizer);
+            }
+
+            return Factory;
         }
 
         private static Func<Type, SqlSource> GetSources()
@@ -199,9 +215,56 @@ namespace BSharp.Data
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<EmailExternalId>> GlobalUsers__AddAndMatch(IEnumerable<string> emails, int databaseId)
+        public async Task<IEnumerable<string>> GlobalUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
         {
-            throw new NotImplementedException();
+            var result = new List<string>();
+
+            var conn = await GetConnectionAsync();
+            using(var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                var newEmailsTable = RepositoryUtilities.DataTable(newEmails.Select(e => new StringListItem { Id = e }));
+                var newEmailsTvp = new SqlParameter("@NewEmails", newEmailsTable)
+                {
+                    TypeName = $"dbo.StringList",
+                    SqlDbType = SqlDbType.Structured
+                };
+                
+                var oldEmailsTable = RepositoryUtilities.DataTable(oldEmails.Select(e => new StringListItem { Id = e }));
+                var oldEmailsTvp = new SqlParameter("@OldEmails", oldEmailsTable)
+                {
+                    TypeName = $"dbo.StringList",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.AddWithValue("@DatabaseId", databaseId);
+                cmd.Parameters.AddWithValue("@ReturnEmailsForCreation", returnEmailsForCreation);
+
+                // Command
+                cmd.CommandText = $@"EXEC [dbo].[{nameof(GlobalUsers__Save)}] 
+@NewEmails = @NewEmails, 
+@OldEmails = @OldEmails, 
+@DatabaseId = @DatabaseId, 
+@ReturnEmailsForCreation = @ReturnEmailsForCreation";
+
+                // Execute and load
+                if(returnEmailsForCreation)
+                {
+                    using(var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while(await reader.ReadAsync())
+                        {
+                            result.Add(reader.GetString(0));
+                        }
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            return result;
         }
 
         public async Task<DatabaseConnectionInfo> GetDatabaseConnectionInfo(int databaseId)

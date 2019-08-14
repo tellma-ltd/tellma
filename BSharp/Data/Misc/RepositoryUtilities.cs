@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
+using System.Transactions;
 
 namespace BSharp.Data
 {
@@ -98,6 +99,21 @@ namespace BSharp.Data
         public static bool IsForeignKeyViolation(SqlException ex)
         {
             return ex.Number == 547;
+        }
+
+        /// <summary>
+        /// Enlists the transaction in the ambient transaction, or in the transactionOverride if active
+        /// </summary>
+        public static void EnlistInTransaction(this SqlConnection conn, Transaction transactionOverride = null)
+        {
+            if (transactionOverride?.TransactionInformation.Status == TransactionStatus.Active)
+            {
+                conn.EnlistTransaction(transactionOverride);
+            }
+            else
+            {
+                conn.EnlistTransaction(Transaction.Current);
+            }
         }
     }
 }

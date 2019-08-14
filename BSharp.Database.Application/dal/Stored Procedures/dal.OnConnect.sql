@@ -21,7 +21,10 @@ BEGIN
         @PermissionsVersion UNIQUEIDENTIFIER,
         @ViewsAndSpecsVersion UNIQUEIDENTIFIER,
         @UserSettingsVersion UNIQUEIDENTIFIER,
-        @PrimaryLanguageId NVARCHAR(255),
+        @ShortCompanyName NVARCHAR(255), 
+        @ShortCompanyName2 NVARCHAR(255), 
+        @ShortCompanyName3 NVARCHAR(255), 
+		@PrimaryLanguageId NVARCHAR(255),
         @PrimaryLanguageSymbol NVARCHAR(255),
         @SecondaryLanguageId NVARCHAR(255),
         @SecondaryLanguageSymbol NVARCHAR(255),
@@ -47,12 +50,17 @@ BEGIN
 
     -- Get hashes
     SELECT 
-        @SettingsVersion		= [SettingsVersion],
+		@ShortCompanyName = [ShortCompanyName],
+		@ShortCompanyName2 = [ShortCompanyName2],
+		@ShortCompanyName3 = [ShortCompanyName3],
+		@SettingsVersion		= [SettingsVersion],
         @ViewsAndSpecsVersion	= [ViewsAndSpecsVersion],
         @PrimaryLanguageId		= [PrimaryLanguageId],
         @PrimaryLanguageSymbol	= [PrimaryLanguageSymbol],
         @SecondaryLanguageId	= [SecondaryLanguageId],
-        @SecondaryLanguageSymbol= [SecondaryLanguageSymbol]
+        @SecondaryLanguageSymbol= [SecondaryLanguageSymbol],
+        @TernaryLanguageId	= [TernaryLanguageId],
+        @TernaryLanguageSymbol= [TernaryLanguageSymbol]
     FROM [dbo].[Settings]
 
     -- Set the User Id
@@ -60,17 +68,25 @@ BEGIN
 
     -- Return the user information
     SELECT 
+		-- User Info
         @UserId AS userId, 
-        @Name AS Name,
-        @Name2 AS Name2,
-        @ExternalId AS ExternalId, 
-        @Email AS Email, 
-        @SettingsVersion AS SettingsVersion, 
-        @PermissionsVersion AS PermissionsVersion,
-        @UserSettingsVersion AS UserSettingsVersion,
-        @ViewsAndSpecsVersion AS ViewsAndSpecsVersion,
-        @PrimaryLanguageId AS PrimaryLanguageId,
-        @PrimaryLanguageSymbol AS PrimaryLanguageSymbol,
-        @SecondaryLanguageId AS SecondaryLanguageId,
-        @SecondaryLanguageSymbol AS SecondaryLanguageSymbol;
+        @Name AS [Name],
+        @Name2 AS [Name2],
+		@Name3 As [Name3],
+        @ExternalId AS [ExternalId], 
+        @Email AS [Email], 
+        @PermissionsVersion AS [PermissionsVersion],
+        @UserSettingsVersion AS [UserSettingsVersion],
+		-- Tenant Info
+		@ShortCompanyName AS [ShortCompanyName],
+		@ShortCompanyName2 AS [ShortCompanyName2],
+		@ShortCompanyName3 AS [ShortCompanyName3],
+        @ViewsAndSpecsVersion AS [ViewsAndSpecsVersion],
+        @SettingsVersion AS [SettingsVersion], 
+        @PrimaryLanguageId AS [PrimaryLanguageId],
+        @PrimaryLanguageSymbol AS [PrimaryLanguageSymbol],
+        @SecondaryLanguageId AS [SecondaryLanguageId],
+        @SecondaryLanguageSymbol AS [SecondaryLanguageSymbol],
+        @TernaryLanguageId AS [TernaryLanguageId],
+        @TernaryLanguageSymbol AS [TernaryLanguageSymbol];
 END;

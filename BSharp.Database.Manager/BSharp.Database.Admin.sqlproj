@@ -72,10 +72,11 @@
     <Build Include="dbo\User Defined Types\IdList.sql" />
     <Build Include="dbo\User Defined Types\StringList.sql" />
     <Build Include="dal\dal.sql" />
-    <Build Include="dal\Stored Procedures\GlobalUsers__AddAndMatch.sql" />
+    <Build Include="dal\Stored Procedures\GlobalUsers__Save.sql" />
     <Build Include="dal\Stored Procedures\GetDatabaseConnectionInfo.sql" />
     <Build Include="dal\Stored Procedures\OnConnect.sql" />
     <Build Include="dal\Stored Procedures\GetAccessibleDatabaseIds.sql" />
+    <Build Include="dbo\Tables\AdminUser.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BSharp.Database.Admin.refactorlog" />

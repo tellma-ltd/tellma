@@ -22,6 +22,8 @@ namespace BSharp.Controllers.Dto
 
         public string Name2 { get; set; }
 
+        public string Name3 { get; set; }
+
         public Dictionary<string, string> CustomSettings { get; set; } = new Dictionary<string, string>();
     }
 }

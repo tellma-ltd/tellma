@@ -7,4 +7,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="PasswordKey" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b7914eac-e84a-400e-b1c9-a489c8af3d9d" ChangeDateTime="08/14/2019 13:49:39">
+    <Property Name="ElementName" Value="[dbo].[AdminUser]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AdminUsers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="078ac3b2-9aab-481e-b038-f0fe93d77d23" ChangeDateTime="08/14/2019 13:57:49">
+    <Property Name="ElementName" Value="[dbo].[GlobalUsers__AddAndMatch]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GlobalUsers__Save]" />
+  </Operation>
 </Operations>

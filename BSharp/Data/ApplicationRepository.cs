@@ -35,10 +35,11 @@ namespace BSharp.Data
         private SqlConnection _conn;
         private UserInfo _userInfo;
         private TenantInfo _tenantInfo;
+        private Transaction _transactionOverride;
 
         #region Lifecycle
 
-        public ApplicationRepository(IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor, 
+        public ApplicationRepository(IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor,
             IClientInfoAccessor clientInfoAccessor, IStringLocalizer<Strings> localizer)
         {
             _shardResolver = shardResolver;
@@ -99,7 +100,7 @@ namespace BSharp.Data
 
             // Since we opened the connection once, we need to explicitly enlist it in any ambient transaction
             // every time it is requested, otherwise commands will be executed outside the boundaries of the transaction
-            _conn.EnlistTransaction(Transaction.Current);
+            _conn.EnlistInTransaction(transactionOverride: _transactionOverride);
             return _conn;
         }
 
@@ -135,6 +136,15 @@ namespace BSharp.Data
         {
             await GetConnectionAsync(); // This automatically initializes the tenant info
             return _tenantInfo;
+        }
+
+        /// <summary>
+        /// Enlists the repository's connection in the provided transaction such that all subsequent commands particupate in it, regardless of the ambient transaction
+        /// </summary>
+        /// <param name="transaction">The transaction to enlist the connection in</param>
+        public void EnlistTransaction(Transaction transaction)
+        {
+            _transactionOverride = transaction;
         }
 
         #endregion
@@ -431,7 +441,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Parameters
-                var viewIdsTable = RepositoryUtilities.DataTable(viewIds.Select(e => new { Code = e }));
+                var viewIdsTable = RepositoryUtilities.DataTable(viewIds.Select(e => new StringListItem { Id = e }));
                 var viewIdsTvp = new SqlParameter("@ViewIds", viewIdsTable)
                 {
                     TypeName = $"dbo.StringList",
@@ -691,6 +701,10 @@ FROM @Entities [E]";
                 }
             }
         }
+
+        #endregion
+
+        #region Users
 
         #endregion
     }

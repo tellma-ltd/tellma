@@ -1,6 +1,7 @@
 ﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Data.Queries;
 using BSharp.EntityModel;
 using BSharp.Services.ApiAuthentication;
 using BSharp.Services.BlobStorage;
@@ -130,7 +131,7 @@ namespace BSharp.Controllers
         {
             return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
             {
-                var user = await _appRepo.Users.Expand(e => e.Settings).Filter("Id eq me").FirstOrDefaultAsync();
+                var user = await _appRepo.Users.Select("").Expand(e => e.Settings).Filter("Id eq me").FirstOrDefaultAsync();
 
                 // prepare the result
                 var forClient = new UserSettingsForClient
@@ -138,6 +139,7 @@ namespace BSharp.Controllers
                     UserId = user.Id,
                     Name = user.Name,
                     Name2 = user.Name2,
+                    Name3 = user.Name3,
                     ImageId = user.ImageId,
                     CustomSettings = user.Settings.ToDictionary(e => e.Key, e => e.Value),
                 };
@@ -384,52 +386,46 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
-        {
-            var result = await ControllerUtilities.GetPermissions(_appRepo.AbstractPermissions, action, "users");
+        //protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        //{
+        //    var result = await UserPermissions(_appRepo.AbstractPermissions, action, "users");
 
-            // This gives every user the ability to view their User object
-            if (action == Constants.Read)
-            {
-                var readMyUser = new AbstractPermission
-                {
-                    Action = "Read",
-                    Criteria = "Id eq me",
-                    ViewId = "users"
-                };
+        //    // This gives every user the ability to view their User object
+        //    if (action == Constants.Read)
+        //    {
+        //        var readMyUser = new AbstractPermission
+        //        {
+        //            Action = "Read",
+        //            Criteria = "Id eq me",
+        //            ViewId = "users"
+        //        };
 
-                return Enumerable.Repeat(readMyUser, 1).Union(result);
-            }
-            else
-            {
-                return result;
-            }
-        }
+        //        return Enumerable.Repeat(readMyUser, 1).Union(result);
+        //    }
+        //    else
+        //    {
+        //        return result;
+        //    }
+        //}
 
-        protected override DbContext GetRepository()
+        protected override IRepository GetRepository()
         {
             return _appRepo;
         }
 
-        protected override Func<Type, string> GetSources()
-        {
-            var info = _tenantInfo.GetCurrentInfo();
-            return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
-        }
-
-        protected override ODataQuery<User> Search(ODataQuery<User> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<User> Search(Query<User> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(User.Name);
-                var name2 = nameof(User.Name2);
-                // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
-                var email = nameof(User.Email);
+                var name = nameof(EntityModel.User.Name);
+                var name2 = nameof(EntityModel.User.Name2);
+                var name3 = nameof(EntityModel.User.Name3);
+                var email = nameof(EntityModel.User.Email);
 
-                query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {email} {Ops.contains} '{search}'");
+                query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {email} {Ops.contains} '{search}'");
             }
 
             return query;
@@ -628,7 +624,7 @@ namespace BSharp.Controllers
             return table;
         }
 
-        protected override Task<List<int?>> SaveExecuteAsync(List<UserForSave> entitiesAndMasks, SaveArguments args)
+        protected override Task<List<int>> SaveExecuteAsync(List<UserForSave> entitiesAndMasks, ExpandExpression expand, bool returnIds)
         {
             throw new NotImplementedException();
         }
@@ -978,7 +974,8 @@ namespace BSharp.Controllers
         protected override async Task DeleteExecuteAsync(List<int?> ids)
         {
             // Make sure the user is not deleting his/her own account
-            var currentUserId = _tenantInfo.UserId();
+            var userInfo = await _appRepo.GetUserInfoAsync();
+            var currentUserId = userInfo.UserId;
             if (ids.Any(id => id == currentUserId))
             {
                 throw new BadRequestException(_localizer["Error_CannotDeleteYourOwnUser"].Value);
