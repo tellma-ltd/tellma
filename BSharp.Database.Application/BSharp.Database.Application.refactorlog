@@ -421,4 +421,139 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Documents_Validate__Assign]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d4bdd3ae-f117-445f-b58a-1baf92613006" ChangeDateTime="08/11/2019 12:14:05">
+    <Property Name="ElementName" Value="[bll].[Documents_Filter__Sign]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents_State_Role__MissingRoleSignature]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="a375e44d-8385-4c06-bdc3-3c6fae0cac38" ChangeDateTime="08/11/2019 13:33:04">
+    <Property Name="ElementName" Value="[dbo].[fs_MeasurementUnits]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="NewSchema" Value="rpt" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="449414ba-9e78-4b22-8902-968f7c2c498f" ChangeDateTime="08/11/2019 13:36:41">
+    <Property Name="ElementName" Value="[rpt].[fs_MeasurementUnits]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="4cf37be4-86ca-46bc-be77-e0f90dd1c19f" ChangeDateTime="08/11/2019 13:37:13">
+    <Property Name="ElementName" Value="[dbo].[rpt_TrialBalance]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="rpt" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="723c6a32-b56f-44dc-958f-b03810e12f14" ChangeDateTime="08/11/2019 13:37:27">
+    <Property Name="ElementName" Value="[rpt].[rpt_TrialBalance]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[sp_TrialBalance]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="38c4467f-945e-4467-8ba5-60ebd26f0020" ChangeDateTime="08/11/2019 13:38:39">
+    <Property Name="ElementName" Value="[dbo].[rpt_Ifrs]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="rpt" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2479a9ce-7cf2-4f30-84a3-d9761557d0df" ChangeDateTime="08/11/2019 13:38:55">
+    <Property Name="ElementName" Value="[rpt].[rpt_Ifrs]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[sp_Ifrs]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="a14ed289-43af-4102-89f9-9b7db80ab106" ChangeDateTime="08/11/2019 13:41:06">
+    <Property Name="ElementName" Value="[dbo].[rpt_Account__Statement]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="NewSchema" Value="rpt" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f8c85cd1-4583-45ae-8612-15a2933dfc85" ChangeDateTime="08/11/2019 13:41:21">
+    <Property Name="ElementName" Value="[rpt].[rpt_Account__Statement]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Account__Statement]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="04c2e7b0-5ed5-46d5-ae4b-85f246998958" ChangeDateTime="08/11/2019 14:14:31">
+    <Property Name="ElementName" Value="[rpt].[Document]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="0b8aa4d7-2757-4f22-8348-e7e7d6f39775" ChangeDateTime="08/11/2019 15:49:24">
+    <Property Name="ElementName" Value="[dbo].[fi_Document__Signatures]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="NewSchema" Value="rpt" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="12f9e803-1b1e-495c-a7a1-e97edf8211d0" ChangeDateTime="08/11/2019 15:49:43">
+    <Property Name="ElementName" Value="[rpt].[fi_Document__Signatures]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Signatures]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1095a5f5-e142-4f93-9025-6b9872dd40b7" ChangeDateTime="08/11/2019 16:27:30">
+    <Property Name="ElementName" Value="[dbo].[RoleMemberships].[Userid]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RoleMemberships]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f37b042e-3e58-4c7f-aa8e-71aab96f6ccb" ChangeDateTime="08/12/2019 09:06:34">
+    <Property Name="ElementName" Value="[dbo].[WorkflowSignatories]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[WorkflowSignatures]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7c68aa27-75a8-499f-ab1e-fc3ff4cdcc13" ChangeDateTime="08/12/2019 09:52:48">
+    <Property Name="ElementName" Value="[dbo].[DocumentSignatoryList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[DocumentSignatureList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="55a76f91-3b93-4a4b-b252-554efe37ddea" ChangeDateTime="08/12/2019 09:54:48">
+    <Property Name="ElementName" Value="[dbo].[DocumentSignatureList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[DocumentRoleList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="33adede3-346e-4b10-bc1e-ea48a000d33f" ChangeDateTime="08/12/2019 16:01:56">
+    <Property Name="ElementName" Value="[dbo].[DocumentSignatures].[State]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentSignatures]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ToState]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="22adb0b1-a34a-488f-b455-6ea5ed478290" ChangeDateTime="08/13/2019 17:13:33">
+    <Property Name="ElementName" Value="[dbo].[RoleMemberships].[ModifiedById]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RoleMemberships]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SavedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="feacb014-9354-45ce-a1f4-e02567ec5c0d" ChangeDateTime="08/13/2019 17:15:50">
+    <Property Name="ElementName" Value="[dbo].[RoleMemberships].[ValidFrom]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RoleMemberships]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ModifiedAt]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="572f2e62-9f32-4a2a-9898-b215ab7a24ed" ChangeDateTime="08/13/2019 17:18:50">
+    <Property Name="ElementName" Value="[dbo].[RoleMemberships].[ModifiedAt]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[RoleMemberships]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SavedAt]" />
+  </Operation>
 </Operations>

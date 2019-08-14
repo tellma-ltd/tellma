@@ -30,14 +30,18 @@ INSERT INTO dbo.Roles([Name]) VALUES
 SELECT @Accountant = [Id] FROM dbo.[Roles] WHERE [Name] = N'Accountant';
 SELECT @Comptroller = [Id] FROM dbo.[Roles] WHERE [Name] = N'Comptroller';
 
+INSERT INTO dbo.RoleMemberships([AgentId], [RoleId]) VALUES
+(@UserId, @Accountant),
+(@UserId, @Comptroller);
+
 DECLARE @WorkflowId INT;
 INSERT INTO dbo.Workflows(DocumentTypeId, FromState, ToState)
 Values(N'manual-journals', N'Draft', N'Posted');
 SELECT @WorkflowId = SCOPE_IDENTITY();
 
-INSERT INTO dbo.WorkflowSignatories(WorkflowId, RoleId) VALUES
-(@WorkflowId, @Accountant),
-(@WorkflowId, @Comptroller);
+INSERT INTO dbo.[WorkflowSignatures](WorkflowId, RoleId) VALUES
+(@WorkflowId, @Accountant);
+--(@WorkflowId, @Comptroller);
 
 INSERT INTO @E1 (
 	[EntryNumber], [Direction], [AccountId], [IfrsNoteId],				[ResourceId], [Count], [MoneyAmount],	[Value]) VALUES
@@ -95,20 +99,18 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-DECLARE @DocsToSign [dbo].[IdList]
-INSERT INTO @DocsToSign([Id]) SELECT [Id] FROM dbo.Documents;-- WHERE STATE = N'Draft';
+DECLARE @DocsToSign [dbo].[IndexedIdList]
+INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Draft';
 
 EXEC [api].[Documents__Sign]
-	@Entities = @DocsToSign, @State = N'Posted', @ReasonDetails = N'seems ok', @RoleId = @Accountant,
+	@DocsIndexedIds = @DocsToSign, @ToState = N'Posted', @ReasonDetails = N'seems ok',
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-SELECT * FROM dbo.Documents; SELECT * FROM dbo.DocumentSignatures;
+DELETE FROM @DocsIdList ; INSERT INTO @DocsIdList SELECT [Id] FROM dbo.[Documents];
+SELECT * FROM [rpt].[Documents__Signatures](@DocsIdList); SELECT * FROM rpt.Documents(@DocsIdList);
 
-EXEC [api].[Documents__Sign]
-	@Entities = @DocsToSign, @State = N'Posted', @ReasonDetails = N'passed review', @RoleId = @Comptroller,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
-SELECT * FROM dbo.Documents; SELECT * FROM dbo.DocumentSignatures;
+select *, ValidFrom AT TIME ZONE 'UTC' AS [SavedAt]  from RoleMemberships;
+select *, ValidFrom AT TIME ZONE 'UTC' AS [SavedAt] from RoleMembershipsHistory;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN

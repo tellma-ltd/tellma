@@ -61,8 +61,5 @@
 	[RelatedAgentId4]		INT,
 	[RelatedResourceId4]	INT,
 	[RelatedAmount4]		MONEY,
-
-	[EntityState]		NVARCHAR (255)		NOT NULL DEFAULT(N'Inserted'),
-	PRIMARY KEY ([DocumentIndex], [LineType]),
-	CHECK ([EntityState] IN (N'Unchanged', N'Inserted', N'Updated', N'Deleted'))
+	PRIMARY KEY ([DocumentIndex], [LineType])
 );

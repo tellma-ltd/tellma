@@ -170,34 +170,34 @@ BEGIN	-- Smart Posting
 		[Direction], [AccountId], [ResponsibilityCenterId], [NoteId], [AgentAccountId], [ResourceId],
 		[MoneyAmount], [Mass], [Volume], [Count], [Time], [Value], [ExpectedClosingDate], [Reference], [Memo], [RelatedReference],
 		[RelatedResourceId], [RelatedAgentAccountId], [RelatedMoneyAmount], [RelatedMass],
-		[RelatedVolume], [RelatedCount], [RelatedTime], [RelatedValue], [EntityState]
+		[RelatedVolume], [RelatedCount], [RelatedTime], [RelatedValue]
 	) -- assuming a line will not capture more than 100 entries (currently it only captures 4)
 	SELECT 100 + [Index],	[DocumentIndex], [Id], [DocumentId], [LineType],
 		[Direction1], [AccountId1], [ResponsibilityCenterId1], [NoteId1], [AgentAccountId1], [ResourceId1],
 		[MoneyAmount1], [Mass1], [Volume1], [Count1], [Time1], [Value1], [ExpectedClosingDate1], [Reference1], [Memo1], [RelatedReference1],
 		[RelatedResourceId1], [RelatedAgentAccountId1], [RelatedMoneyAmount1], [RelatedMass1],
-		[RelatedVolume1], [RelatedCount1], [RelatedTime1], [RelatedValue1], [EntityState]
+		[RelatedVolume1], [RelatedCount1], [RelatedTime1], [RelatedValue1]
 	FROM @LinesLocal WHERE [Direction1] IS NOT NULL
 	UNION
 	SELECT 200 + [Index],	[DocumentIndex], [Id], [DocumentId], [LineType],
 		[Direction2], [AccountId2], [ResponsibilityCenterId2], [NoteId2], [AgentAccountId2], [ResourceId2],
 		[MoneyAmount2], [Mass2], [Volume2], [Count2], [Time2], [Value2], [ExpectedClosingDate2], [Reference2], [Memo2], [RelatedReference2],
 		[RelatedResourceId2], [RelatedAgentAccountId2], [RelatedMoneyAmount2], [RelatedMass2],
-		[RelatedVolume2], [RelatedCount2], [RelatedTime2], [RelatedValue2], [EntityState]
+		[RelatedVolume2], [RelatedCount2], [RelatedTime2], [RelatedValue2]
 	FROM @LinesLocal WHERE [Direction2] IS NOT NULL
 	UNION
 	SELECT 300 + [Index],	[DocumentIndex], [Id], [DocumentId], [LineType],
 		[Direction3], [AccountId3], [ResponsibilityCenterId3], [NoteId3], [AgentAccountId3], [ResourceId3],
 		[MoneyAmount3], [Mass3], [Volume3], [Count3], [Time3], [Value3], [ExpectedClosingDate3], [Reference3], [Memo3], [RelatedReference3],
 		[RelatedResourceId3], [RelatedAgentAccountId3], [RelatedMoneyAmount3], [RelatedMass3],
-		[RelatedVolume3], [RelatedCount3], [RelatedTime3], [RelatedValue3], [EntityState]
+		[RelatedVolume3], [RelatedCount3], [RelatedTime3], [RelatedValue3]
 	FROM @LinesLocal WHERE [Direction3] IS NOT NULL
 	UNION
 	SELECT 400 + [Index],	[DocumentIndex], [Id], [DocumentId], [LineType],
 		[Direction4], [AccountId4], [ResponsibilityCenterId4], [NoteId4], [AgentAccountId4], [ResourceId4],
 		[MoneyAmount4], [Mass4], [Volume4], [Count4], [Time4], [Value4], [ExpectedClosingDate4], [Reference4], [Memo4], [RelatedReference4],
 		[RelatedResourceId4], [RelatedAgentAccountId4], [RelatedMoneyAmount4], [RelatedMass4],
-		[RelatedVolume4], [RelatedCount4], [RelatedTime4], [RelatedValue4], [EntityState]
+		[RelatedVolume4], [RelatedCount4], [RelatedTime4], [RelatedValue4]
 	FROM @LinesLocal WHERE [Direction4] IS NOT NULL;
 	
 --	SELECT * FROM @SmartEntriesLocal;

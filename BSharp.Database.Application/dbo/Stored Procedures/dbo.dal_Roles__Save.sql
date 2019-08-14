@@ -8,9 +8,6 @@ BEGIN
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	DELETE FROM [dbo].[Permissions]
-	WHERE [Id] IN (SELECT [Id] FROM @Permissions WHERE [EntityState] = N'Deleted');
-
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
@@ -20,7 +17,6 @@ BEGIN
 			SELECT 
 				[Index], [Id], [Name], [Name2], [IsPublic], [Code]
 			FROM @Roles 
-			WHERE [EntityState] IN (N'Inserted', N'Updated')
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
 		THEN
@@ -28,9 +24,7 @@ BEGIN
 				t.[Name]			= s.[Name],
 				t.[Name2]			= s.[Name2],
 				t.[IsPublic]		= s.[IsPublic],
-				t.[Code]			= s.[Code],
-				t.[ModifiedAt]		= @Now,
-				t.[ModifiedById]	= @UserId
+				t.[Code]			= s.[Code]
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[Name], [Name2],	[IsPublic],		[Code]
@@ -46,17 +40,20 @@ BEGIN
 		SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [ViewId], [Level], [Criteria], [Memo]
 		FROM @Permissions L
 		JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
-		WHERE L.[EntityState] IN (N'Inserted', N'Updated')
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
 			t.[ViewId]		= s.[ViewId], 
 			t.[Action]		= s.[Level],
 			t.[Criteria]	= s.[Criteria],
-			t.[Memo]		= s.[Memo],
-			t.[ModifiedAt]	= @Now,
-			t.[ModifiedById]	= @UserId
+			t.[Memo]		= s.[Memo]
 	WHEN NOT MATCHED THEN
 		INSERT ([RoleId],	[ViewId],	[Action],	[Criteria], [Memo])
-		VALUES (s.[RoleId], s.[ViewId], s.[Level], s.[Criteria], s.[Memo]);
+		VALUES (s.[RoleId], s.[ViewId], s.[Level], s.[Criteria], s.[Memo])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
+
+
+	IF (@ReturnIds = 1)
+		SELECT * FROM @IndexedIds;
 END;

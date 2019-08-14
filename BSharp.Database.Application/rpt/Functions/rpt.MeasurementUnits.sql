@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fs_MeasurementUnits] ()
+﻿CREATE FUNCTION [rpt].[MeasurementUnits] ()
 RETURNS TABLE
 AS 
 RETURN

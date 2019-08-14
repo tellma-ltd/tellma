@@ -2,7 +2,6 @@
 	@Views [dbo].[ViewList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
 	@Top INT = 10
-	,@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -25,7 +24,6 @@ SET NOCOUNT ON;
 	FROM @Permissions P
 	WHERE P.RoleId IN (
 		SELECT [Id] FROM dbo.[Roles] WHERE IsActive = 0
-		)
-	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
+		);
 
-	SELECT @ValidationErrorsJson = (SELECT * FROM @ValidationErrors	FOR JSON PATH);
+	SELECT TOP (@Top) * FROM @ValidationErrors;

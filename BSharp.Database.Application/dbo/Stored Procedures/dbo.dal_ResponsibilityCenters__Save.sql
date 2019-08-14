@@ -11,7 +11,6 @@ SET NOCOUNT ON;
 		SELECT [Index], [Id], [ResponsibilityDomain], [Name], [Name2], [Name3], [ParentId], [Code],
 		[OperationId], [ProductCategoryId], [GeographicRegionId], [CustomerSegmentId], [TaxSegmentId]
 		FROM @Entities 
-		WHERE [EntityState] IN (N'Inserted', N'Updated')
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED 
 	THEN

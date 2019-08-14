@@ -1,15 +1,15 @@
 ﻿CREATE TABLE [dbo].[RoleMemberships] (
-	[Id]				INT	PRIMARY KEY,
-	[Userid]			INT	NOT NULL,
-	[RoleId]			INT	NOT NULL,
+	[Id]				INT					CONSTRAINT [PK_RoleMemberships] PRIMARY KEY IDENTITY,
+	[AgentId]			INT	NOT NULL		CONSTRAINT [FK_RoleMemberships__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),	
+	[RoleId]			INT	NOT NULL		CONSTRAINT [FK_RoleMemberships__RoleId] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[Roles] ([Id]),
 	[Memo]				NVARCHAR (255),
-	[CreatedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	[ModifiedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	CONSTRAINT [FK_RoleMemberships__UserId] FOREIGN KEY ([Userid]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_RoleMemberships__RoleId] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[Roles] ([Id]),
-	CONSTRAINT [FK_RoleMemberships__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_RoleMemberships__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
-);
+	-- Computed columns require a workaround for Temporal tables:
+	--[SavedAt]			AS [ValidFrom] AT TIME ZONE 'UTC',
+	[SavedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_RoleMemberships__SavedById] FOREIGN KEY ([SavedById]) REFERENCES [dbo].[Users] ([Id]),
+	[ValidFrom]			DATETIME2			GENERATED ALWAYS AS ROW START NOT NULL,
+	[ValidTo]			DATETIME2			GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
+	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])
+)
+WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[RoleMembershipsHistory]));
 GO
+CREATE UNIQUE INDEX [IX_RoleMemberships__UserId_RoleId] ON [dbo].[RoleMemberships]([AgentId], RoleId)

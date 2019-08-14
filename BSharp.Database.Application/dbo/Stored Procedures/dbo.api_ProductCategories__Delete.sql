@@ -4,11 +4,18 @@
 AS
 BEGIN
 SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	--INSERT INTO @ValidationErrors
+	INSERT INTO @ValidationErrors
 	EXEC [dbo].[bll_ProductCategories_Validate__Delete]
-		@Entities = @Ids,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+		@Entities = @Ids;
+
+	SELECT @ValidationErrorsJson = 
+	(
+		SELECT *
+		FROM @ValidationErrors
+		FOR JSON PATH
+	);
 
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;

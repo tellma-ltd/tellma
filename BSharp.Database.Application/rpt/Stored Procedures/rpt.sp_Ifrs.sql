@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[rpt_Ifrs] --R
+﻿CREATE PROCEDURE [rpt].[sp_Ifrs] --R
 	@fromDate Date, 
 	@toDate Date,
 	@PresentationCurrencyCode nchar(3) = NULL,

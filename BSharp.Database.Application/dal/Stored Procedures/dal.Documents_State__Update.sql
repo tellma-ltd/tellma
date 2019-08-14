@@ -1,11 +1,11 @@
 ﻿CREATE PROCEDURE [dal].[Documents_State__Update]
 	@Ids [dbo].[IdList] READONLY,
-	@State NVARCHAR (30)
+	@ToState NVARCHAR (30)
 AS
 BEGIN
 	UPDATE dbo.Documents
 	SET
-		[State] = @State
+		[State] = @ToState
 	Where [Id] IN (
 		SELECT [Id] FROM @Ids
 	);

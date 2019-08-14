@@ -1,5 +1,5 @@
 ﻿CREATE TYPE [dbo].[DocumentWideLineList] AS TABLE (
-	[Index]					INT,
+	[Index]					INT PRIMARY KEY,
 	[DocumentLineIndex]		INT,
 	[DocumentIndex]			INT				NOT NULL,
 	[Id]					INT NOT NULL,
@@ -57,9 +57,5 @@
 	[RelatedResourceId2]	INT, -- Good, Service, Labor, Machine usage
 	[RelatedAgentId2]		INT,
 	[RelatedQuantity2]		MONEY ,		-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedMoneyAmount2]	MONEY 				NOT NULL DEFAULT 0,
-
-	[EntityState]		NVARCHAR (255)	NOT NULL DEFAULT(N'Inserted'),
-	PRIMARY KEY ([Index]),
-	CHECK ([EntityState] IN (N'Unchanged', N'Inserted', N'Updated', N'Deleted'))
+	[RelatedMoneyAmount2]	MONEY 				NOT NULL DEFAULT 0
 );

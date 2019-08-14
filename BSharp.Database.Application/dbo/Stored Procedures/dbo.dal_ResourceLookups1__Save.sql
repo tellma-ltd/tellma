@@ -10,7 +10,6 @@ SET NOCOUNT ON;
 	USING (
 		SELECT [Index], [Id], [SortKey], [Name], [Name2], [Name3]
 		FROM @Entities 
-		WHERE [EntityState] IN (N'Inserted', N'Updated')
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED 
 	THEN

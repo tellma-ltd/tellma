@@ -14,5 +14,4 @@ SET NOCOUNT ON;
 	JOIN @Ids FE ON FE.[Id] = MU.[Id]
 	OPTION (HASH JOIN);
 
-	SELECT TOP(@Top) *
-	FROM @ValidationErrors;
+	SELECT TOP(@Top) * FROM @ValidationErrors;
