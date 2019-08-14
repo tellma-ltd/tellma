@@ -7,13 +7,13 @@
 	[ToState]		NVARCHAR (30)		NOT NULL CONSTRAINT [CK_Workflows__ToState] CHECK ([ToState] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
 
 	[IsPaperless]	BIT					NOT NULL DEFAULT 1, -- When 0, user can specify who signed on paper.			
-	[CreatedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]	INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Workflows__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	
-	-- To be moved to WorkflowsAudit
-	--[RevokedAt]		DATETIMEOFFSET(7),
-	--[RevokedById]	INT CONSTRAINT [FK_Workflows__RevokedById] FOREIGN KEY ([RevokedById]) REFERENCES [dbo].[Users] ([Id])
-);
+	--[SavedAt]			AS [ValidFrom] AT TIME ZONE 'UTC',
+	[SavedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Workflows__SavedById] FOREIGN KEY ([SavedById]) REFERENCES [dbo].[Users] ([Id]),
+	[ValidFrom]			DATETIME2			GENERATED ALWAYS AS ROW START NOT NULL,
+	[ValidTo]			DATETIME2			GENERATED ALWAYS AS ROW END HIDDEN NOT NULL,
+	PERIOD FOR SYSTEM_TIME ([ValidFrom], [ValidTo])
+)
+WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[WorkflowsHistory]));
 GO
 CREATE UNIQUE INDEX [IX_Workflows__DocumentTypeId_FromState] ON dbo.Workflows([DocumentTypeId], [FromState]) ; --WHERE [RevokedById] IS NULL;
 GO

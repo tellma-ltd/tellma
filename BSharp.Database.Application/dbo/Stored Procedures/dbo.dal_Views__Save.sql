@@ -14,18 +14,20 @@ BEGIN
 
 	MERGE INTO [dbo].[Permissions] AS t
 	USING (
-		SELECT [Index], [Id], [ViewId], [Level], [Criteria], [Memo]
+		SELECT [Index], [Id], [RoleId], [ViewId], [Action], [Mask], [Criteria], [Memo]
 		FROM @Permissions
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
 			t.[ViewId]		= s.[ViewId], 
-			t.[Action]		= s.[Level],
+			t.[RoleId]		= s.[RoleId], 
+			t.[Action]		= s.[Action],
+			t.[Mask]		= s.[Mask],
 			t.[Criteria]	= s.[Criteria],
 			t.[Memo]		= s.[Memo]
 	WHEN NOT MATCHED THEN
-		INSERT ([ViewId], [Action],	[Criteria], [Memo])
-		VALUES (s.[ViewId], s.[Level], s.[Criteria], s.[Memo])
+		INSERT ([RoleId],	[ViewId],	[Action],	[Mask],		[Criteria], [Memo])
+		VALUES (s.[RoleId], s.[ViewId], s.[Action], s.[Mask], s.[Criteria], s.[Memo])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

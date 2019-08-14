@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[ResourceList] AS TABLE (
-	[Index]						INT		PRIMARY KEY IDENTITY(0, 1),
-	[Id]						INT NOT NULL DEFAULT 0,
+	[Index]						INT					PRIMARY KEY IDENTITY(0, 1),
+	[Id]						INT					NOT NULL DEFAULT 0,
 	[ResourceType]				NVARCHAR (255)		NOT NULL,
 	[Name]						NVARCHAR (255)		NOT NULL,
 	[Name2]						NVARCHAR (255),
@@ -8,7 +8,7 @@
 	[IsFungible]				BIT					NOT NULL DEFAULT 1,
 	[IsBatch]					BIT					NOT NULL DEFAULT 0,
 	[ValueMeasure]				NVARCHAR (255) NOT NULL, -- Currency, Mass, Volumne, Length, Count, Time, 
-	[UnitId]					INT					NOT NULL,
+	[UnitId]					INT,
 	[CurrencyId]				INT,			-- the unit If the resource has a financial meaure assigned to it.
 	[UnitPrice]					DECIMAL,		-- if not null, it specifies the Cost per Unit
 	[MassUnitId]				INT,			-- the unit If the resource has a mass measure assigned to it.

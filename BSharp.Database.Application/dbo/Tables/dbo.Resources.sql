@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Resources] (
-	[Id]						INT PRIMARY KEY IDENTITY,
+	[Id]						INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
 /*
 	Money,
 	Intangible [rights,..]
@@ -11,23 +11,34 @@
 	general services
 */
 	[ResourceType]				NVARCHAR (255)		NOT NULL,
-	[Name]						NVARCHAR (255)		NOT NULL,
+	[Name]						NVARCHAR (255)		NOT NULL CONSTRAINT [CX_Resources__Name] UNIQUE,
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 -- IsFungible = 0 <=> ResourceInstance is REQUIRED in table TransactionEntries when Document in Completed state
--- HasInstance, IsIdentifiable, IsSpecifiable
-	[IsFungible]				BIT					NOT NULL DEFAULT 0,
+--	HasInstances = 0 <=> IsFungible = 1. Cannot use a non fungible resource in posting without specifying which instance
+	[IsFungible]				BIT					NOT NULL DEFAULT 1,
 -- IsBatch = 1 <=> BatchNumber is REQUIRED in table TransactionEntries when Document in Completed state
 -- HasBatch, IsTrackable, 
 	[IsBatch]					BIT					NOT NULL DEFAULT 0,
-	[ValueMeasure]				NVARCHAR (255)		NOT NULL, -- Currency, Mass, Volumne, Area, Length, Count, Time, 
-	[UnitId]					INT	NOT NULL,
+	[ValueMeasure]				NVARCHAR (255)		NOT NULL CONSTRAINT [CK_Resources__ValueMeasure] CHECK ([ValueMeasure] IN (N'Currency', N'Mass', N'Volumne', N'Area', N'Length', N'Count', N'Time')),
+	[UnitId]					AS (
+									CASE
+										WHEN [ValueMeasure] = N'Currency'	THEN [CurrencyId]
+										WHEN [ValueMeasure] = N'Mass'		THEN [MassUnitId]
+										WHEN [ValueMeasure] = N'Volume'		THEN [VolumeUnitId]
+										WHEN [ValueMeasure] = N'Area'		THEN [AreaUnitId]
+										WHEN [ValueMeasure] = N'Length'		THEN [LengthUnitId]
+										WHEN [ValueMeasure] = N'Time'		THEN [LengthUnitId]
+										WHEN [ValueMeasure] = N'Count'		THEN [CountUnitId]
+										ELSE NULL
+									END
+								) PERSISTED,
 	[CurrencyId]				INT,	-- the unit If the resource has a financial meaure assigned to it.
 	[UnitPrice]					DECIMAL,		-- if not null, it specifies the Cost per Unit
-	[MassUnitId]				INT,-- the unit If the resource has a mass measure assigned to it.
+	[MassUnitId]				INT					CONSTRAINT [FK_Resources__MassUnitId] FOREIGN KEY ([MassUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[UnitMass]					DECIMAL,		-- if not null, it specifies the conversion rate Mass/Count
-	[VolumeUnitId]				INT,-- FK, Table Units
+	[VolumeUnitId]				INT					CONSTRAINT [FK_Resources__VolumeUnitId] FOREIGN KEY ([VolumeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[UnitVolume]				DECIMAL,		-- if not null, it specifies the conversion rate Volume/Count
 	[AreaUnitId]				INT,-- FK, Table Units
 	[UnitArea]					DECIMAL,		-- if not null, it specifies the conversion rate Area/Count
@@ -51,23 +62,17 @@
 	-- The following properties are user-defined, used for reporting
 	-- Examples for Steel finished goods are: Thickness and width. For cars: make and model.
 	[ProductCategoryId]			INT,
-	[ResourceLookup1Id]			INT,			-- UDL 
+	[ResourceLookup1Id]			INT					CONSTRAINT [FK_Resources__ResourceLookup1Id] FOREIGN KEY ([ResourceLookup1Id]) REFERENCES [dbo].[ResourceLookup1s] ([Id]),
 	[ResourceLookup2Id]			INT,			-- UDL 
 	[ResourceLookup3Id]			INT,			-- UDL 
 	[ResourceLookup4Id]			INT,			-- UDL 
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	CONSTRAINT [FK_Resources__MassUnitId] FOREIGN KEY ([MassUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	CONSTRAINT [FK_Resources__VolumeUnitId] FOREIGN KEY ([VolumeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	-- repeat for all lookups
 	CONSTRAINT [FK_Resources__ProductCategoryId] FOREIGN KEY ([ProductCategoryId]) REFERENCES [dbo].[ProductCategories] ([Id]),
-	CONSTRAINT [FK_Resources__ResourceLookup1Id] FOREIGN KEY ([ResourceLookup1Id]) REFERENCES [dbo].[ResourceLookup1s] ([Id]),
 );
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__Name]
-  ON [dbo].[Resources]([Name]);
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__Name2]
   ON [dbo].[Resources]([Name2]) WHERE [Name2] IS NOT NULL;
@@ -81,20 +86,20 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__SystemCode]
   ON [dbo].[Resources]([SystemCode]) WHERE [SystemCode] IS NOT NULL;
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__UnversalProductCode]
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__UniversalProductCode]
   ON [dbo].[Resources]([UniversalProductCode]) WHERE [UniversalProductCode] IS NOT NULL;
 GO
-
-ALTER TABLE [dbo].[Resources] ADD CONSTRAINT [CK_Resources__UnitId] CHECK (
-	[UnitId] = (
-		CASE
-			WHEN [ValueMeasure] = N'Currency' THEN [CurrencyId]
-			WHEN [ValueMeasure] = N'Mass' THEN [MassUnitId]
-			WHEN [ValueMeasure] = N'Volume' THEN [VolumeUnitId]
-			WHEN [ValueMeasure] = N'Area' THEN [AreaUnitId]
-			WHEN [ValueMeasure] = N'Length' THEN [LengthUnitId]
-			WHEN [ValueMeasure] = N'Count' THEN [CountUnitId]
-		END
-	)
-);
+--ALTER TABLE [dbo].[Resources] ADD CONSTRAINT [CK_Resources__UnitId] CHECK (
+--	[UnitId] = (
+--		CASE
+--			WHEN [ValueMeasure] = N'Currency' THEN [CurrencyId]
+--			WHEN [ValueMeasure] = N'Mass' THEN [MassUnitId]
+--			WHEN [ValueMeasure] = N'Volume' THEN [VolumeUnitId]
+--			WHEN [ValueMeasure] = N'Area' THEN [AreaUnitId]
+--			WHEN [ValueMeasure] = N'Length' THEN [LengthUnitId]
+--			WHEN [ValueMeasure] = N'Time' THEN [LengthUnitId]
+--			WHEN [ValueMeasure] = N'Count' THEN [CountUnitId]
+--		END
+--	)
+--);
 GO

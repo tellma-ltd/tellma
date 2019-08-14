@@ -33,9 +33,9 @@ BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[WorkflowSignatures]', RESEED, 1) WITH NO_INFOMSGS;
 
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
-	DECLARE @ValidationErrorsJson nvarchar(max), @ResultsJson nvarchar(max);
+	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @DebugIfrsConcepts bit = 0, @DebugMeasurementUnits bit = 0;
-	DECLARE @DebugProductCategories bit = 0, @DebugOperations bit = 1, @DebugResources bit = 0;
+	DECLARE @DebugProductCategories bit = 0, @DebugOperations bit = 1, @DebugResources bit = 1;
 	DECLARE @DebugAgents bit = 0, @DebugPlaces bit = 0;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
@@ -50,13 +50,21 @@ END
 
 BEGIN TRY
 	BEGIN TRANSACTION
-		:r .\01_IfrsConcepts.sql
-		:r .\02_MeasurementUnits.sql
-		--:r .\03_ProductCategories.sql
-		--:r .\03_Operations.sql
-		--:r .\04_Resources.sql
+		:r .\01_RolesPermissions.sql		
+		:r .\02_Workflows.sql
+		:r .\03_MeasurementUnits.sql
+		:r .\04_IfrsConcepts.sql
 		--:r .\05_Agents.sql
-		:r .\10_Documents.sql
+		:r .\06_Accounts.sql
+		:r .\07_Resources.sql
+		:r .\08_ResponsibilityCenters.sql
+		--:r .\10_Documents.sql
+
+		--:r .\71_Operations.sql
+		--:r .\72_ProductCategories.sql
+		--:r .\73_Places.sql
+		
+
 	--	select * from entries;
 	--SELECT @fromDate = '2017.01.01', @toDate = '2024.03.01'
 	--SELECT * from dbo.[fi_Journal](@fromDate, @toDate);

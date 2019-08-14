@@ -6,42 +6,6 @@ INSERT INTO @L1(
 	[LineTypeId], [ScalingFactor]) VALUES
 	(N'ManualLine', 1),
 	(N'ManualLine', 2);
-INSERT INTO dbo.Accounts([Name], [Code], [IfrsAccountId]) VALUES
-(N'CBE - USD', N'1101', N'BalancesWithBanks'),
-(N'Capital - MA', N'3101', N'IssuedCapital'),
-(N'Capital - AA', N'3102', N'IssuedCapital');
-
-DECLARE @CBEUSD INT, @CapitalMA INT, @CapitalAA INT;
-SELECT @CBEUSD = [Id] FROM dbo.Accounts WHERE Code = N'1101';
-SELECT @CapitalMA = [Id] FROM dbo.Accounts WHERE Code = N'3101';
-SELECT @CapitalAA = [Id] FROM dbo.Accounts WHERE Code = N'3102';
-
-INSERT INTO dbo.[Resources]([ResourceType], [Name], [Code], [ValueMeasure], [UnitId], [CurrencyId], [CountUnitId]) VALUES
-(N'currencies', N'USD', N'101', N'Currency', @USDUnit, @USDUnit, NULL), --  -- Currency, Mass, Volumne, Area, Length, Count, Time
-(N'financial-instruments', N'Common Shares', N'301', N'Count', @pcsUnit, NULL, @pcsUnit);
-DECLARE @USD INT, @CommonStock INT;
-SELECT @USD = [Id] FROM dbo.[Resources] WHERE Code = N'101';
-SELECT @CommonStock = [Id] FROM dbo.[Resources] WHERE Code = N'301';
-
-DECLARE @Accountant INT, @Comptroller INT;
-INSERT INTO dbo.Roles([Name]) VALUES
-(N'Accountant'),
-(N'Comptroller');
-SELECT @Accountant = [Id] FROM dbo.[Roles] WHERE [Name] = N'Accountant';
-SELECT @Comptroller = [Id] FROM dbo.[Roles] WHERE [Name] = N'Comptroller';
-
-INSERT INTO dbo.RoleMemberships([AgentId], [RoleId]) VALUES
-(@UserId, @Accountant),
-(@UserId, @Comptroller);
-
-DECLARE @WorkflowId INT;
-INSERT INTO dbo.Workflows(DocumentTypeId, FromState, ToState)
-Values(N'manual-journals', N'Draft', N'Posted');
-SELECT @WorkflowId = SCOPE_IDENTITY();
-
-INSERT INTO dbo.[WorkflowSignatures](WorkflowId, RoleId) VALUES
-(@WorkflowId, @Accountant);
---(@WorkflowId, @Comptroller);
 
 INSERT INTO @E1 (
 	[EntryNumber], [Direction], [AccountId], [IfrsNoteId],				[ResourceId], [Count], [MoneyAmount],	[Value]) VALUES

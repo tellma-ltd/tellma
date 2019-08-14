@@ -556,4 +556,57 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[SavedAt]" />
   </Operation>
+  <Operation Name="Move Schema" Key="4c463093-3762-4003-81b2-3c0ae027b5ad" ChangeDateTime="08/14/2019 14:05:44">
+    <Property Name="ElementName" Value="[dbo].[dal_Resources__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6365d6a8-9299-4d7b-b135-3cf6394185b1" ChangeDateTime="08/14/2019 14:05:56">
+    <Property Name="ElementName" Value="[dal].[dal_Resources__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Resources__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="b7ed715b-9a95-4011-bf1d-ad8e73a3a38b" ChangeDateTime="08/14/2019 14:07:26">
+    <Property Name="ElementName" Value="[dbo].[api_Resources__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="22f999cc-1cba-4503-b406-fa378de12a38" ChangeDateTime="08/14/2019 14:07:39">
+    <Property Name="ElementName" Value="[api].[api_Resources__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Resources__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="99976168-b2fb-41d3-af57-4f31c5ca3e09" ChangeDateTime="08/14/2019 15:12:23">
+    <Property Name="ElementName" Value="[dbo].[Resources].[IsFungible]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[HasInstances]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fe7df6fd-9736-4385-bef4-5d8321dc5fdf" ChangeDateTime="08/14/2019 15:15:46">
+    <Property Name="ElementName" Value="[dbo].[Resources].[HasInstances]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IsFungible]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="cffd4f4d-1603-478a-be8e-bb495f350f4c" ChangeDateTime="08/14/2019 15:17:06">
+    <Property Name="ElementName" Value="[dbo].[bll_Resources_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9e2f11b2-d57d-469d-b7b0-1d711ca387cb" ChangeDateTime="08/14/2019 15:17:18">
+    <Property Name="ElementName" Value="[bll].[bll_Resources_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Resources_Validate__Save]" />
+  </Operation>
 </Operations>
