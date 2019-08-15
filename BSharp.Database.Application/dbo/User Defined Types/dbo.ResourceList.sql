@@ -10,7 +10,7 @@
 	[ValueMeasure]				NVARCHAR (255) NOT NULL, -- Currency, Mass, Volumne, Length, Count, Time, 
 	[UnitId]					INT,
 	[CurrencyId]				INT,			-- the unit If the resource has a financial meaure assigned to it.
-	[UnitPrice]					DECIMAL,		-- if not null, it specifies the Cost per Unit
+	[UnitMoney]					DECIMAL,		-- if not null, it specifies the Cost per Unit
 	[MassUnitId]				INT,			-- the unit If the resource has a mass measure assigned to it.
 	[UnitMass]					DECIMAL,		-- if not null, it specifies the conversion rate Mass/Count
 	[VolumeUnitId]				INT,			-- FK, Table Units

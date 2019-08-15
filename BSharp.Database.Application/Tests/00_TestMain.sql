@@ -44,7 +44,7 @@ BEGIN -- reset Identities
 
 	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = N'support@banan-it.com';
 
-	EXEC sp_set_session_context 'UserId', @UserId;
+	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 END
 

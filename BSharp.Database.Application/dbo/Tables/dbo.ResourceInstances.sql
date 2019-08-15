@@ -1,11 +1,18 @@
 ﻿CREATE TABLE [dbo].[ResourceInstances] (
-	[Id]						INT PRIMARY KEY,
+	[Id]						INT					PRIMARY KEY IDENTITY(0, 1),
 	[ResourceId]				INT					NOT NULL,
 --	Tag #, Coil #, Check #, LC #
-	[InstanceTypeId]			INT, -- Check, CPO, LT, LG, LC, Coil, SKD, ...
 	[Code]						NVARCHAR (255)		NOT NULL,
 	[ProductionDate]			DATE,
 	[ExpiryDate]				DATE,
+
+	[MoneyAmount]				DECIMAL,
+	[Mass]						DECIMAL,
+	[Volume]					DECIMAL,
+	[Area]						DECIMAL,
+	[Length]					DECIMAL,
+	[Time]						DECIMAL,
+
 -- Case of Issued Payments
 	[Beneficiary]				NVARCHAR (255),
 	[IssuingBankAccountId]		INT,
@@ -26,10 +33,8 @@
 --
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ResourceInstances__CreatedById]	FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	CONSTRAINT [FK_ResourceInstances__CreatedById]	FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_ResourceInstances__ModifiedById]	FOREIGN KEY ([ModifiedById])REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) 	CONSTRAINT [FK_ResourceInstances__ModifiedById]	FOREIGN KEY ([ModifiedById])REFERENCES [dbo].[Users] ([Id])
 );
 GO;

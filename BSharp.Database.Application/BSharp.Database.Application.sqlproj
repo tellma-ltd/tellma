@@ -104,7 +104,6 @@
     <Build Include="dbo\Functions\dbo.fn_CurrencyExchange.sql" />
     <Build Include="dbo\Functions\dbo.fi_Journal.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Notes__Update.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Accounts__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ValidationErrorList.sql" />
     <Build Include="Security\api.sql" />
     <Build Include="Security\dal.sql" />
@@ -115,7 +114,6 @@
     <Build Include="dbo\Stored Procedures\dbo.api_ResponsibilityCenters__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Agents_Validate__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Agents__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Activate.sql" />
@@ -125,7 +123,6 @@
     <Build Include="dbo\User Defined Types\dbo.SettingList.sql" />
     <Build Include="dbo\User Defined Types\dbo.StringList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Resources_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentWideLineList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
@@ -182,7 +179,6 @@
     <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Roles_Validate__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Roles__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Roles__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ViewList.sql" />
@@ -205,7 +201,6 @@
     <Build Include="dbo\Tables\dbo.TemplateLines.sql" />
     <Build Include="dbo\Views\dbo.Employees.sql" />
     <Build Include="dbo\Functions\dbo.fi_Agents.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Accounts__Save.sql" />
     <Build Include="dbo\Views\dbo.InventoriesFact.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_NegativeInventories.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_SalesDetails.sql" />
@@ -313,6 +308,12 @@
     <Build Include="bll\Stored Procedures\bll.Resources_Validate__Delete.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceInstanceList.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents__Save.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.sp_ResourcesInstances.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IndexedImageIdList.sql" />
+    <Build Include="dal\Stored Procedures\dal.Roles__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Accounts__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

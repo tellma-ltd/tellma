@@ -1,5 +1,4 @@
 ﻿CREATE TYPE [dbo].[ViewList] AS TABLE (
-	[Index]				INT,
-	[Id]				NVARCHAR (255),
-	PRIMARY KEY ([Index])
+	[Index]				INT				PRIMARY KEY IDENTITY(0,1),
+	[Id]				NVARCHAR (255)
 );

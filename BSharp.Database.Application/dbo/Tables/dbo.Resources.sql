@@ -35,7 +35,7 @@
 									END
 								) PERSISTED,
 	[CurrencyId]				INT,	-- the unit If the resource has a financial meaure assigned to it.
-	[UnitPrice]					DECIMAL,		-- if not null, it specifies the Cost per Unit
+	[UnitMoney]					DECIMAL,		-- if not null, it specifies the money per Unit
 	[MassUnitId]				INT					CONSTRAINT [FK_Resources__MassUnitId] FOREIGN KEY ([MassUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[UnitMass]					DECIMAL,		-- if not null, it specifies the conversion rate Mass/Count
 	[VolumeUnitId]				INT					CONSTRAINT [FK_Resources__VolumeUnitId] FOREIGN KEY ([VolumeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),

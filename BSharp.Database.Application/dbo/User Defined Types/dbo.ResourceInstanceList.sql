@@ -1,13 +1,20 @@
 ﻿CREATE TYPE [dbo].[ResourceInstanceList] AS TABLE
 (
 	[Index]						INT					PRIMARY KEY IDENTITY (0, 1),
-	[Id]						INT					DEFAULT 0,
-	[ResourceId]				INT					NOT NULL,
+	[Id]						INT					NOT NULL DEFAULT 0,
+	[ResourceIndex]				INT					NOT NULL,
+	[ResourceId]				INT					NOT NULL DEFAULT 0,
 --	Tag #, Coil #, Check #, LC #
-	[InstanceTypeId]			INT, -- Check, CPO, LT, LG, LC, Coil, SKD, ...
 	[Code]						NVARCHAR (255)		NOT NULL,
 	[ProductionDate]			DATE,
 	[ExpiryDate]				DATE,
+
+	[MoneyAmount]				DECIMAL,
+	[Mass]						DECIMAL,
+	[Volume]					DECIMAL,
+	[Area]						DECIMAL,
+	[Length]					DECIMAL,
+	[Time]						DECIMAL,
 -- Case of Issued Payments
 	[Beneficiary]				NVARCHAR (255),
 	[IssuingBankAccountId]		INT,

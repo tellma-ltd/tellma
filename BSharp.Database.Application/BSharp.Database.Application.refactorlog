@@ -609,4 +609,70 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Resources_Validate__Save]" />
   </Operation>
+  <Operation Name="Move Schema" Key="e311a87e-5e9a-4650-b8d5-32b7f51988ed" ChangeDateTime="08/15/2019 12:09:08">
+    <Property Name="ElementName" Value="[dbo].[dal_Agents__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5875a046-5cab-4a8e-bf56-75ea6de74a3d" ChangeDateTime="08/15/2019 12:09:24">
+    <Property Name="ElementName" Value="[dal].[dal_Agents__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="46b846a6-f99b-4ec1-a936-828f7cce0567" ChangeDateTime="08/15/2019 13:24:26">
+    <Property Name="ElementName" Value="[dbo].[dal_Roles__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b058dcdc-c250-41d2-a869-082083a0dd8a" ChangeDateTime="08/15/2019 13:24:37">
+    <Property Name="ElementName" Value="[dal].[dal_Roles__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Roles__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="c548eac1-c184-4e82-9bb2-ecad090f9a5d" ChangeDateTime="08/15/2019 15:43:49">
+    <Property Name="ElementName" Value="[dbo].[dal_Accounts__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f6f14a37-d801-4fb4-9ee1-095e56812cae" ChangeDateTime="08/15/2019 15:44:03">
+    <Property Name="ElementName" Value="[dal].[dal_Accounts__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Accounts__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="c6532a7a-4e8c-4332-b2a1-1c31c64c7555" ChangeDateTime="08/15/2019 15:44:39">
+    <Property Name="ElementName" Value="[dbo].[dal_Accounts__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3880f04a-1a3f-447b-a054-94c326407e32" ChangeDateTime="08/15/2019 15:44:50">
+    <Property Name="ElementName" Value="[dal].[dal_Accounts__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Accounts__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f693dd5a-f42b-4283-adb6-3db8242012c0" ChangeDateTime="08/15/2019 16:48:55">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitPrice]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitMoney]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ddf5548c-cce0-4b08-bbec-bf57dd984e2c" ChangeDateTime="08/15/2019 16:50:48">
+    <Property Name="ElementName" Value="[dbo].[ResourceInstances].[Price]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceInstances]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MoneyAmount]" />
+  </Operation>
 </Operations>

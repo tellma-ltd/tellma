@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[dal_Roles__Save]
+﻿CREATE PROCEDURE [dal].[Roles__Save]
 	@Roles [dbo].[RoleList] READONLY, 
 	@Permissions [dbo].[PermissionList] READONLY,
 	-- RoleMembership
@@ -35,8 +35,12 @@ BEGIN
 			)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
-
-	MERGE INTO [dbo].[Permissions] AS t
+	
+	WITH BE AS (
+		SELECT * FROM dbo.[Permissions]
+		WHERE [RoleId] IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BE AS t
 	USING (
 		SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [ViewId], [Action], [Criteria], [Memo]
 		FROM @Permissions L
@@ -53,7 +57,6 @@ BEGIN
 		VALUES (s.[RoleId], s.[ViewId], s.[Action], s.[Criteria], s.[Memo])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
-
 
 	IF (@ReturnIds = 1)
 		SELECT * FROM @IndexedIds;

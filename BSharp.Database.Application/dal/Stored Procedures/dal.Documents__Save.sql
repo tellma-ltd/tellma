@@ -53,16 +53,20 @@ BEGIN
 	FROM @DocumentsIndexedIds
 	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
 
+	WITH BL AS (
+		SELECT * FROM dbo.[DocumentLines]
+		WHERE DocumentId IN (SELECT [Id] FROM @DocumentsIndexedIds)
+	)
 	INSERT INTO @LinesIndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
-		MERGE INTO [dbo].[DocumentLines] AS t
+		MERGE INTO BL AS t
 		USING (
 			SELECT L.[Index], L.[Id], DI.Id AS DocumentId, L.[LineTypeId], L.[TemplateLineId], L.[ScalingFactor]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
-		) AS s ON t.Id = s.Id
+		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[LineTypeId]		= s.[LineTypeId],
@@ -79,7 +83,11 @@ BEGIN
 	) AS x
 	WHERE [Index] IS NOT NULL;
 
-	MERGE INTO [dbo].[DocumentLineEntries] AS t
+	WITH BE AS (
+		SELECT * FROM dbo.[DocumentLineEntries]
+		WHERE [DocumentLineId] IN (SELECT [Id] FROM @LinesIndexedIds)
+	)
+	MERGE INTO BE AS t
 	USING (
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResponsibilityCenterId],
@@ -90,7 +98,7 @@ BEGIN
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[DocumentLineIndex] = LI.[Index]
-	) AS s ON t.Id = s.Id
+	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Direction]				= s.[Direction],	

@@ -1,4 +1,12 @@
-﻿DECLARE @Accountant INT, @Comptroller INT;
+﻿/* Use Cases
+Missing
+	- Inserting
+	- Updating
+	- Deleting
+	- Activating
+	- Deactivating
+*/
+DECLARE @Accountant INT, @Comptroller INT;
 INSERT INTO dbo.Roles([Name]) VALUES
 (N'Accountant'),
 (N'Comptroller');

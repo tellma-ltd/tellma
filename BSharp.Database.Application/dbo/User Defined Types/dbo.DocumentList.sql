@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[DocumentList] AS TABLE (
 	[Index]									INT				PRIMARY KEY IDENTITY (0,1),
-	[Id]									INT NOT NULL DEFAULT 0,
+	[Id]									INT				NOT NULL DEFAULT 0,
 	[DocumentDate]							DATE				NOT NULL DEFAULT (CONVERT (date, SYSDATETIME())),
 	[EvidenceTypeId]						NVARCHAR(30)		NOT NULL,
 	[VoucherBookletId]						INT, -- each range might be dedicated for a special purpose

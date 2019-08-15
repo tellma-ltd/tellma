@@ -1,4 +1,12 @@
-﻿DECLARE @CBEUSD INT, @CapitalMA INT, @CapitalAA INT;
+﻿/* Use Cases
+Missing
+	- Inserting
+	- Updating
+	- Deleting
+	- Activating
+	- Deactivating
+*/
+DECLARE @CBEUSD INT, @CapitalMA INT, @CapitalAA INT;
 
 INSERT INTO dbo.Accounts([Name], [Code], [IfrsAccountId]) VALUES
 (N'CBE - USD', N'1101', N'BalancesWithBanks'),
