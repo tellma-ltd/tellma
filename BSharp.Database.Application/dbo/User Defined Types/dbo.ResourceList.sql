@@ -5,7 +5,7 @@
 	[Name]						NVARCHAR (255)		NOT NULL,
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
-	[IsFungible]				BIT					NOT NULL DEFAULT 1,
+	[Uniqueness]				TINYINT				NOT NULL DEFAULT 0,
 	[IsBatch]					BIT					NOT NULL DEFAULT 0,
 	[ValueMeasure]				NVARCHAR (255) NOT NULL, -- Currency, Mass, Volumne, Length, Count, Time, 
 	[UnitId]					INT,

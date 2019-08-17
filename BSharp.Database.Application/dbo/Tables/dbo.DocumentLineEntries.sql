@@ -2,12 +2,12 @@
 --	These are for transactions only. If there are entries from requests or inquiries, etc=> other tables
 	[Id]					INT PRIMARY KEY IDENTITY,
 	[DocumentLineId]		INT	NOT NULL,
-	[EntryNumber]			INT					NOT NULL,
+	[EntryNumber]			INT					NOT NULL DEFAULT 1,
 --	Upon posting the document, the auto generated entries will be MERGED with the present ones
 --	based on AccountId, IfrsAccountId, IfrsNoteId, ResponsibilityCenterId, AgentAccountId, ResourceId
 --	to minimize Transaction Entries deletions
 --	It will be presented ORDER BY IsSystem, Direction, AccountId.Code, IfrsAccountId.Node, IfrsNoteId.Node, ResponsibilityCenterId.Node
-	[Direction]				SMALLINT			NOT NULL,
+	[Direction]				SMALLINT			NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
  -- Account selection enforces additional filters on the other columns
 	[AccountId]				INT	NOT NULL,
 -- Analysis of accounts including: cash, non current assets, equity, and expenses. Can be updated after posting
@@ -59,21 +59,19 @@
 	[RelatedAccountId]		INT,
 	[RelatedQuantity]		MONEY ,		-- used in Tax accounts, to store the quantiy of taxable item
 	[RelatedMoneyAmount]	MONEY 				NOT NULL DEFAULT 0, -- e.g., amount subject to tax
+	[SortKey]				DECIMAL (9,4),
 -- for auditing
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__CreatedById] FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[ModifiedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__ModifiedById] FOREIGN KEY ([ModifiedById])REFERENCES [dbo].[Users] ([Id]),
 
-	CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	CONSTRAINT [FK_DocumentLineEntries__DocumentLineId]	FOREIGN KEY ([DocumentLineId])	REFERENCES [dbo].[DocumentLines] ([Id]) ON DELETE CASCADE,
 	CONSTRAINT [FK_DocumentLineEntries__Accounts]	FOREIGN KEY ([AccountId])	REFERENCES [dbo].[Accounts] ([Id]),
 	CONSTRAINT [FK_DocumentLineEntries__IfrsNotes]	FOREIGN KEY ([IfrsNoteId])	REFERENCES [dbo].[IfrsNotes] ([Id]),
 	CONSTRAINT [FK_DocumentLineEntries__ResponsibilityCenters]	FOREIGN KEY ([ResponsibilityCenterId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 	CONSTRAINT [FK_DocumentLineEntries__Resources]	FOREIGN KEY ([ResourceId])	REFERENCES [dbo].[Resources] ([Id]),
 	CONSTRAINT [FK_DocumentLineEntries__ResourceInstances] FOREIGN KEY ([InstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),
-	CONSTRAINT [FK_DocumentLineEntries__CreatedById]	FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_DocumentLineEntries__ModifiedById]FOREIGN KEY ([ModifiedById])REFERENCES [dbo].[Users] ([Id]),
 );
 GO
 CREATE INDEX [IX_DocumentLineEntries__DocumentId] ON [dbo].[DocumentLineEntries]([DocumentLineId]);

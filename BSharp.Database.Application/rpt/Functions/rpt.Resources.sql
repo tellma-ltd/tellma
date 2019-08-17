@@ -5,7 +5,7 @@
 AS 
 RETURN
 	SELECT 	
-		[Id], [ResourceType], [Name], [IsActive], [IsFungible], [IsBatch], [Code]
+		[Id], [ResourceType], [Name], [IsActive], [Uniqueness], [IsBatch], [Code]
 	FROM dbo.Resources
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)
 GO

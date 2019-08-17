@@ -137,12 +137,12 @@
     <None Include="Tests\07_Resources.sql" />
     <None Include="Tests\05_Agents.sql" />
     <None Include="Tests\73_Places.sql" />
-    <None Include="Tests\10_Documents.sql" />
+    <None Include="Tests\10_JournalVouchers.sql" />
     <None Include="Tests\30_HRCycle.sql" />
     <None Include="Tests\40_PurchasingCycle.sql" />
     <None Include="Tests\50_ProductionCycle.sql" />
     <None Include="Tests\60_SalesCycle.sql" />
-    <None Include="Tests\11W_Financing.sql" />
+    <None Include="Tests\21_Financing.sql" />
     <None Include="Tests\TestingToBeCleaned.sql" />
     <None Include="Provisioning\013_IfrsAccounts.sql" />
     <None Include="Provisioning\04_AccountsNotes.sql" />
@@ -323,7 +323,7 @@
     </ArtifactReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Tests\11M_Financing.sql" />
+    <None Include="Tests\11_Financing.sql" />
     <None Include="Tests\12_ManualMisc.sql" />
     <None Include="Provisioning\07_AccountSpecifications.sql" />
     <None Include="BSharp.publish.xml" />

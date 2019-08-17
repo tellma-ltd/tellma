@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [rpt].[sp_ResourcesInstances]
 	@Ids dbo.[IdList] READONLY
 AS
-	SELECT 	[Id], [ResourceType], [Name], [IsActive], [IsFungible], [IsBatch], [Code]
+	SELECT 	[Id], [ResourceType], [Name], [IsActive], [Uniqueness], [IsBatch], [Code]
 	FROM dbo.Resources
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 

@@ -1,6 +1,13 @@
 ﻿CREATE TABLE [dbo].[Resources] (
 	[Id]						INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
 /*
+The resource type specifies the Ifrs Asset Classification and the labels for the dynamic columns.
+So, we have:
+	- money, money-checks-incoming
+	- raw-materials-general, raw-materials-rolls, raw-materials-skd
+	- finished-goods-general, finished-goods-hsp, finished-goods-vehicles
+	- ppe-general, ppe-computers (laptops & workstations), ppe-printers
+
 	Money,
 	Intangible [rights,..]
 	Material/Good [RM, WIP, FG, TM]
@@ -16,8 +23,10 @@
 	[Name3]						NVARCHAR (255),
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 -- IsFungible = 0 <=> ResourceInstance is REQUIRED in table TransactionEntries when Document in Completed state
---	HasInstances = 0 <=> IsFungible = 1. Cannot use a non fungible resource in posting without specifying which instance
-	[IsFungible]				BIT					NOT NULL DEFAULT 1,
+-- 0 = instances identified by measures. 
+-- 1 = instances have Id and are exchangeable when the measures are the same.
+-- 2 = instances have Id and are NOT exchangeable even when the measures are the same
+	[Uniqueness]				TINYINT				NOT NULL DEFAULT 0,
 -- IsBatch = 1 <=> BatchNumber is REQUIRED in table TransactionEntries when Document in Completed state
 -- HasBatch, IsTrackable, 
 	[IsBatch]					BIT					NOT NULL DEFAULT 0,
@@ -58,7 +67,7 @@
 -- If no compatible list, we get all accounts compatible with IFRS. They come at the top
 -- Must have in the tree at least one account per warehouse.
 	[ExpenseAccountId]			INT,
-	[RevenueAccountId]			INT,
+	[RevenueAccountId]			INT, -- additional accounts to be decided when we reach smart posting
 	-- The following properties are user-defined, used for reporting
 	-- Examples for Steel finished goods are: Thickness and width. For cars: make and model.
 	[ProductCategoryId]			INT,

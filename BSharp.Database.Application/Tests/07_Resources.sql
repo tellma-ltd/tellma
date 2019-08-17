@@ -20,10 +20,10 @@ BEGIN -- Cleanup & Declarations
 END
 BEGIN -- Inserting
 	INSERT INTO @R1
-	([ResourceType],		[Name],					[Code],		[SystemCode], [ValueMeasure], [CurrencyId], [IsFungible]) VALUES
-	(N'currencies',			N'ETB',					N'ETB',		N'Functional',	N'Currency',	@ETBUnit,		1),
-	(N'currencies',			N'USD',					N'USD',		NULL,			N'Currency',	@USDUnit,		1),
-	(N'currencies',			N'ETB Incming Checks',	N'ICKETB',	NULL,			N'Currency',	@ETBUnit,		0);
+	([ResourceType],		[Name],					[Code],		[SystemCode], [ValueMeasure], [CurrencyId], [Uniqueness]) VALUES
+	(N'money',				N'ETB',					N'ETB',		N'Functional',	N'Currency',	@ETBUnit,		0),
+	(N'money',				N'USD',					N'USD',		NULL,			N'Currency',	@USDUnit,		0),
+	(N'money',				N'ETB Incoming Checks',	N'ICKETB',	NULL,			N'Currency',	@ETBUnit,		1);
 DECLARE @ICKETBIndex INT = (SELECT [Index] FROM @R1 WHERE [Code] = N'ICKETB');
 DECLARE @CBEBank INT, @AWBBank INT;
 INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code], [MoneyAmount], [IssuingBankId]) VALUES
@@ -31,13 +31,13 @@ INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code], [MoneyAmount], [Issu
 				(@ICKETBIndex,	N'2017.10.15',		N'2308', 17550, @AWBBank);
 
 INSERT INTO @R1
-	([ResourceType],		[Name],					[Code],		[SystemCode], [ValueMeasure], [CountUnitId], [IsFungible]) VALUES
-	(N'motor-vehicles',		N'Toyota Camry 2018',	NULL,		NULL,			N'Count',		@pcsUnit,		0),
-	(N'motor-vehicles',		N'Fake',				NULL,		NULL,			N'Count',		@pcsUnit,		0),
-	(N'motor-vehicles',		N'Toyota Yaris 2018',	NULL,		NULL,			N'Count',		@pcsUnit,		0),
-	(N'general-goods',		N'Teddy bear',			NULL,		NULL,			N'Count',		@pcsUnit,		1),
-	(N'financial-instruments',N'Common Stock',		N'CMNSTCK',	N'CMNSTCK',		N'Count',		@shareUnit,		1),
-	(N'financial-instruments',N'Premium Stock',		N'PRMMSTCK',NULL,			N'Count',		@shareUnit,		1);
+	([ResourceType],		[Name],					[Code],		[SystemCode], [ValueMeasure], [CountUnitId], [Uniqueness]) VALUES
+	(N'motor-vehicles',		N'Toyota Camry 2018',	NULL,		NULL,			N'Count',		@pcsUnit,		1),
+	(N'motor-vehicles',		N'Fake',				NULL,		NULL,			N'Count',		@pcsUnit,		1),
+	(N'motor-vehicles',		N'Toyota Yaris 2018',	NULL,		NULL,			N'Count',		@pcsUnit,		1),
+	(N'general-goods',		N'Teddy bear',			NULL,		NULL,			N'Count',		@pcsUnit,		0),
+	(N'financial-instruments',N'Common Stock',		N'CMNSTCK',	N'CMNSTCK',		N'Count',		@shareUnit,		0),
+	(N'financial-instruments',N'Premium Stock',		N'PRMMSTCK',NULL,			N'Count',		@shareUnit,		0);
 DECLARE @ToyotaCamryIndex INT = (SELECT [Index] FROM @R1 WHERE [Name] = N'Toyota Camry 2018');
 DECLARE @ToyotaYarisIndex INT = (SELECT [Index] FROM @R1 WHERE [Name] = N'Toyota Yaris 2018');
 INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code]) VALUES
@@ -46,14 +46,14 @@ INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code]) VALUES
 				(@ToyotaCamryIndex,	N'2017.10.15',		N'199'),
 				(@ToyotaYarisIndex,	N'2017.10.01',		N'201');
 INSERT INTO @R1 
-	([ResourceType],		[Name],					[Code],		 [ValueMeasure], [MassUnitId], [IsFungible]) VALUES
+	([ResourceType],		[Name],					[Code],		 [ValueMeasure], [MassUnitId], [Uniqueness]) VALUES
 	(N'raw-materials',		N'HR 1000MMx1.9MM',		N'HR1000x1.9',	N'Mass',		@KgUnit,		0);
-DECLARE @HRIndex INT =  (SELECT [Index] FROM @R1 WHERE [Name] = N'HR 1000MMx1.9MM');
+DECLARE @HotRollIndex INT =  (SELECT [Index] FROM @R1 WHERE [Name] = N'HR 1000MMx1.9MM');
 INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code], [Mass]) VALUES
-				(@HRIndex,			N'2017.10.01',	N'54001', 7890),
-				(@HRIndex,			N'2017.10.15',	N'54002', 6985),
-				(@HRIndex,			N'2017.10.15',	N'60032', 7321),
-				(@HRIndex,			N'2017.10.01',	N'60342', 7100);
+				(@HotRollIndex,		N'2017.10.01',	N'54001', 7891),
+				(@HotRollIndex,		N'2017.10.15',	N'54002', 6985),
+				(@HotRollIndex,		N'2017.10.15',	N'60032', 7320),
+				(@HotRollIndex,		N'2017.10.01',	N'60342', 7100);
 INSERT INTO @R1
 	([ResourceType],		[Name],					[Code],		[SystemCode], [ValueMeasure], [MassUnitId]) VALUES
 	(N'general-goods',		N'Cotton',				NULL,		NULL,			N'Mass',		@KgUnit);

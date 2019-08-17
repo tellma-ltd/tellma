@@ -15,7 +15,7 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Resources] AS t
 		USING (
 			SELECT 	
-				[Index], [Id], [ResourceType], [Name], [Name2], [Name3], [IsFungible], [IsBatch], 
+				[Index], [Id], [ResourceType], [Name], [Name2], [Name3], Uniqueness, [IsBatch], 
 				[ValueMeasure], [CurrencyId], [UnitMoney], [MassUnitId], [UnitMass], [VolumeUnitId], [UnitVolume],
 				[AreaUnitId], [UnitArea], [LengthUnitId], [UnitLength], [TimeUnitId], [UnitTime], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
@@ -29,7 +29,7 @@ SET NOCOUNT ON;
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
-				t.[IsFungible]				= s.[IsFungible],
+				t.[Uniqueness]				= s.Uniqueness,
 				t.[IsBatch]					= s.[IsBatch],
 				t.[ValueMeasure]			= s.[ValueMeasure],
 				t.[CurrencyId]				= s.[CurrencyId],
@@ -56,12 +56,12 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ResourceType], [Name], [Name2], [Name3], [IsFungible], [IsBatch],
+			INSERT ([ResourceType], [Name], [Name2], [Name3], [Uniqueness], [IsBatch],
 				[ValueMeasure], [CurrencyId], [MassUnitId], [UnitMass], [VolumeUnitId], [UnitVolume],
 				[AreaUnitId], [UnitArea], [LengthUnitId], [UnitLength], [TimeUnitId], [UnitTime], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
 				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id])
-			VALUES (s.[ResourceType], s.[Name], s.[Name2], s.[Name3], s.[IsFungible], s.[IsBatch],
+			VALUES (s.[ResourceType], s.[Name], s.[Name2], s.[Name3], s.Uniqueness, s.[IsBatch],
 				s.[ValueMeasure], s.[CurrencyId], s.[MassUnitId], s.[UnitMass], s.[VolumeUnitId], s.[UnitVolume],
 				s.[AreaUnitId], s.[UnitArea], s.[LengthUnitId], s.[UnitLength], s.[TimeUnitId], s.[UnitTime], s.[CountUnitId],
 				s.[Code], s.[SystemCode], s.[Memo], s.[CustomsReference] ,s.[UniversalProductCode], s.[PreferredSupplierId],

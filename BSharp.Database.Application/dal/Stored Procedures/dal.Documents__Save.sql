@@ -63,7 +63,7 @@ BEGIN
 	(
 		MERGE INTO BL AS t
 		USING (
-			SELECT L.[Index], L.[Id], DI.Id AS DocumentId, L.[LineTypeId], L.[TemplateLineId], L.[ScalingFactor]
+			SELECT L.[Index], L.[Id], DI.Id AS DocumentId, L.[LineTypeId], L.[TemplateLineId], L.[ScalingFactor], L.[SortKey]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
 		) AS s ON (t.Id = s.Id)
@@ -72,11 +72,12 @@ BEGIN
 				t.[LineTypeId]		= s.[LineTypeId],
 				t.[TemplateLineId]	= s.[TemplateLineId], 
 				t.[ScalingFactor]	= s.[ScalingFactor],
+				t.[SortKey]			= s.[SortKey],
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [LineTypeId], [TemplateLineId], [ScalingFactor])
-			VALUES (s.[DocumentId], s.[LineTypeId], s.[TemplateLineId], s.[ScalingFactor])
+			INSERT ([DocumentId], [LineTypeId], [TemplateLineId], [ScalingFactor], [SortKey])
+			VALUES (s.[DocumentId], s.[LineTypeId], s.[TemplateLineId], s.[ScalingFactor], s.[SortKey])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id] 
@@ -94,7 +95,7 @@ BEGIN
 				[ResourceId], [InstanceId], [BatchCode], [DueDate], [Quantity],
 				[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value], [Memo],
 				[ExternalReference], [AdditionalReference], 
-				[RelatedResourceId], [RelatedAgentId], [RelatedMoneyAmount]
+				[RelatedResourceId], [RelatedAgentId], [RelatedMoneyAmount], [SortKey]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[DocumentLineIndex] = LI.[Index]
@@ -123,17 +124,18 @@ BEGIN
 			t.[RelatedResourceId]		= s.[RelatedResourceId],
 			t.[RelatedAccountId]		= s.[RelatedAgentId],
 			t.[RelatedMoneyAmount]		= s.[RelatedMoneyAmount],
+			t.[SortKey]					= s.[SortKey],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResponsibilityCenterId],
 				[ResourceId], [InstanceId], [BatchCode], [Quantity],
 				[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value], [Memo],
-				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount])
+				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount], [SortKey])
 		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IfrsNoteId], s.[ResponsibilityCenterId],
 				s.[ResourceId], s.[InstanceId], s.[BatchCode], s.[Quantity],
 				s.[MoneyAmount], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value], s.[Memo],
-				s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount])
+				s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount], s.[SortKey])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

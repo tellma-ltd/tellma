@@ -5,5 +5,6 @@
 	[DocumentId]			INT				NOT NULL DEFAULT 0,
 	[LineTypeId]			NVARCHAR (255)	NOT NULL,
 	[TemplateLineId]		INT,
-	[ScalingFactor]			FLOAT
+	[ScalingFactor]			FLOAT,
+	[SortKey]				DECIMAL (9,4)	NOT NULL
 );
