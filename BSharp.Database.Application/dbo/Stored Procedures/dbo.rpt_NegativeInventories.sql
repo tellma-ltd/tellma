@@ -2,9 +2,9 @@
 	@AsOfDate Date = '01.01.2020'
 AS
 	WITH IfrsInventoryAccounts AS (
-		SELECT Id FROM dbo.[IfrsAccounts]
+		SELECT Id FROM dbo.[IfrsAccountClassifications]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.IfrsAccounts WHERE Id = N'Inventories')
+			(SELECT [Node] FROM dbo.[IfrsAccountClassifications] WHERE Id = N'Inventories')
 		) = 1
 	)
 	SELECT
@@ -20,7 +20,7 @@ AS
 			SUM([Count]) AS [Count],
 			SUM([Value]) As [Value]
 	FROM dbo.[fi_Journal](NULL, @AsOfDate) J
-	WHERE IfrsAccountId IN (SELECT Id FROM IfrsInventoryAccounts)
+	WHERE [IfrsClassificationId] IN (SELECT Id FROM IfrsInventoryAccounts)
 	GROUP BY
 			[AccountId],
 			[ResponsibilityCenterId],

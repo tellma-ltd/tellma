@@ -7,6 +7,7 @@ END
 DECLARE @VR1_2 VTYPE, @VRU_3 VTYPE, @Frequency NVARCHAR (255), @P1_2 int, @P1_U int, @PU_3 int, @P2_3 int,
 		@date1 date = '2017.02.01', @date2 date = '2022.02.01', @dU datetime = '2018.02.01', @date3 datetime = '2023.02.01';
 		:r .\11_Financing.sql
+		:r .\12_Purchasing.sql
 		--:r .\21_Financing.sql
 		--:r .\30_HRCycle.sql
 		--:r .\40_PurchasingCycle.sql

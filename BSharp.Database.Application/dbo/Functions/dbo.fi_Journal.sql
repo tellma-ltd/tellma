@@ -20,7 +20,7 @@ RETURN
 		V.[LineTypeId],
 		V.[Direction],
 		V.[AccountId],
-		V.[IfrsAccountId],
+		V.[IfrsClassificationId],
 		V.[AgentId],
 		V.[IfrsNoteId],
 		V.[ResponsibilityCenterId],

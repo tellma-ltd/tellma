@@ -7294,6 +7294,65 @@ BEGIN -- Ifrs Concepts list
 	INSERT INTO @IfrsConcepts([Id], [Label], [Documentation]) VALUES (N'AllYearsOfInsuranceClaimMember' ,N'All years of insurance claim [member]', N'This member stands for all years of the insurance claims. It also represents the standard value for the ''Years of insurance claim'' axis if no other member is used.');
 END -- Ifrs Concept list
 
+BEGIN -- Ifrs amendments (missing member) and extensions (common practice not recognized yet)
+	INSERT INTO @IfrsConcepts([IfrsType], [Id], [Label]) VALUES
+(N'Amendment', N'ComputerEquipment', N'Computer equipment')
+,(N'Amendment', N'CommunicationAndNetworkEquipment', N'Communication and network equipment')
+,(N'Amendment', N'NetworkInfrastructure', N'Network infrastructure')
+,(N'Amendment', N'MiningProperty', N'Mining property')
+,(N'Amendment', N'PowerGeneratingAssets', N'Power generating assets')
+,(N'Amendment', N'LeaseholdImprovements', N'Leasehold improvements')
+,(N'Extension', N'SparePartsInventory', N'Spare parts inventory')
+,(N'Extension', N'RepairsAndMaintenanceAllowance', N'Repairs and maintenance allowance')
+
+,(N'Amendment', N'CustomerRelatedIntangibleAssets', N'Customer related intangible assets')
+,(N'Amendment', N'ValueOfBusinessAcquired', N'Value of business acquired')
+,(N'Amendment', N'CapitalisedDevelopmentExpenditure', N'Capitalized development expenditure')
+,(N'Amendment', N'TechnologybasedIntangibleAssets', N'Technology based intangible assets')
+--,(N'Extension', 1, N'/1/1/8/3/1/1/1/', N'NoncurrentLeasePrepaymentsCostOfSales', N'Non-current lease prepayments - Cost of sales')
+--,(N'Extension', 1, N'/1/1/8/3/1/1/2/', N'NoncurrentLeasePrepaymentsDistributionCosts', N'Non-current lease prepayments - Distrbution costs')
+--,(N'Extension', 1, N'/1/1/8/3/1/1/3/', N'NoncurrentLeasePrepaymentsAdministrativeExpenses', N'Non-current lease prepayments - Administrative expenses')
+--,(N'Extension', 1, N'/1/2/1/1/12/1/', N'UnassignedLabor', N'Unassigned labor')
+--,(N'Extension', 1, N'/1/2/1/2/1/1/', N'CurrentReceivablesFromTradeCustomers', N'Current trade customers receivables')
+--,(N'Extension', 1, N'/1/2/1/2/1/2/', N'CurrentReceivablesFromLessees', N'Current lessees receivables')
+--,(N'Extension', 1, N'/1/2/1/2/2/1/', N'CurrentReceivablesDueFromRelatedTradeCustomers', N'Current receivables due from related trade customers')
+--,(N'Extension', 1, N'/1/2/1/2/2/2/', N'CurrentReceivablesDueFromRelatedLessees', N'Current receivables due from related lessees')
+--,(N'Extension', 1, N'/1/2/1/2/3/2/1/', N'GoodsAndServicesDeliveredToCustomerButNotBilled', N'Goods and services delivered to customer but not billed')
+--,(N'Extension', 1, N'/1/2/1/2/3/2/2/', N'RentAccruedIncome', N'Rent accrued income')
+--,(N'Extension', 1, N'/1/2/1/2/7/1/', N'GoodsAndServicesBilledBySupplierButNotReceived', N'Goods and services billed by supplier but not received')
+--,(N'Extension', 1, N'/1/2/1/2/7/2/', N'LeaseInBilledByLessorButNotReceived', N'Lease in billed by lessor but not received')
+--,(N'Extension', 1, N'/1/2/1/2/7/3/', N'CurrentReceivablesFromEmployeesLoans', N'Current receviable from employees loans')
+--,(N'Extension', 1, N'/1/2/1/3/1/', N'CurrentWithholdingTaxReceivables', N'Current withholding tax receivables')
+,(N'Amendment', N'MiscellaneousOtherReserves', N'Miscellaneous other reserves')
+,(N'Extension', N'BalancesMigration', N'Balances Migration')
+--,(N'Extension', 1, N'/3/1/2/4/1/2/', N'AdvancesFromCustomersClassifiedAsNoncurrent', N'Advances from customers classified as non-current')
+--,(N'Extension', 1, N'/3/2/1/2/1/1/', N'CurrentPayablesToTradeSuppliers', N'Current payables to trade suppliers')
+--,(N'Extension', 1, N'/3/2/1/2/1/2/', N'CurrentPayablesToLessors', N'Current payables to lessors')
+--,(N'Extension', 1, N'/3/2/1/2/1/3/', N'CurrentPayablesToEmployees', N'Current payables to employees')
+--,(N'Extension', 1, N'/3/2/1/2/2/1/', N'CurrentPayablesToRelatedTradeSuppliers', N'Current payables to related suppliers')
+--,(N'Extension', 1, N'/3/2/1/2/2/2/', N'CurrentPayablesToRelatedLessors', N'Current payables to related lessors')
+--,(N'Extension', 1, N'/3/2/1/2/2/3/', N'CurrentPayablesToRelatedEmployees', N'Current payables to related employees')
+--,(N'Extension', 1, N'/3/2/1/2/4/1/2/', N'AdvancesFromCustomersClassifiedAsCurrent', N'Advances from customers classified as current')
+--,(N'Extension', 1, N'/3/2/1/2/4/2/3/', N'GoodsAndServicesReceivedFromSupplierButNotBilled', N'Goods and services received from supplier but not billed')
+--,(N'Extension', 1, N'/3/2/1/2/4/2/4/', N'ShorttermPensionContributionAccruals', N'Short-term pension contribution accruals')
+--,(N'Extension', 1, N'/3/2/1/2/5/3/', N'CurrentWithholdingTaxPayable', N'Current withholding tax payable')
+--,(N'Extension', 1, N'/3/2/1/2/5/4/', N'CurrentEmployeeIncomeTaxPayable', N'Current employee income tax payable')
+--,(N'Extension', 1, N'/3/2/1/2/5/5/', N'CurrentSocialSecurityTaxPayable', N'Current social security tax payable')
+--,(N'Extension', 1, N'/3/2/1/2/5/6/', N'CurrentZakatPayable', N'Current social security tax payable')
+--,(N'Extension', 1, N'/3/2/1/2/5/7/', N'CurrentDividendsTaxPayable', N'Current dividends tax payable')
+--,(N'Extension', 1, N'/3/2/1/2/7/1/', N'GoodsAndServicesBilledToCustomerButNotDelivered', N'Goods and services billed to customer but not delivered')
+--,(N'Extension', 1, N'/3/2/1/2/7/2/', N'LeaseOutBilledToLesseeButNotDelivered', N'Lease out billed to lessee but not delivered')
+
+,('Extension', N'InventoryPurchaseExtension', N'Inventory purchase')
+,('Extension', N'InventoryProductionExtension', N'Inventory production')
+,('Extension', N'InventorySalesExtension', 'Inventory sales')
+,('Extension', N'InventoryConsumptionExtension', 'Inventory consumption')
+,('Extension', N'InventoryLossExtension', 'Inventory loss')
+,('Extension', N'InventoryTransferExtension', 'Inventory transfer')
+
+END
+
+
 DECLARE @DistinctIfrsConcepts AS TABLE (
 	[Pk]				INT IDENTITY PRIMARY KEY,
 	[Id]				NVARCHAR (255)		UNIQUE,

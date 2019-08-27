@@ -6,7 +6,8 @@
 );
 
 INSERT @LineTypes([Id]) VALUES
-(N'ManualLine');
+(N'ManualLine'),
+(N'GoodReceiptInTransitWithInvoice');
 
 MERGE [dbo].LineTypes AS t
 USING @LineTypes AS s
@@ -96,6 +97,7 @@ DECLARE @DocumentTypesLineTypes TABLE(
 
 INSERT @DocumentTypesLineTypes ([DocumentTypeid], [LineTypeId], [IsVisibleByDefault]) VALUES
 	(N'manual-journals', N'ManualLine', 1),
+	(N'purchasing-international', N'GoodReceiptInTransitWithInvoice', 1),
 
 	(N'et-sales-witholding-tax-vouchers', N'ET.CustomerTaxWithholding', 1),
 	(N'et-sales-witholding-tax-vouchers', N'ReceivableCredit', 1), 

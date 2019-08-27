@@ -7,9 +7,9 @@ RETURN
 -- This is used just as an example. All reports will actually be 
 -- read from the TransactionViews fact table or the wrapping fi_Journal()
 WITH IfrsInventoryAccounts AS (
-	SELECT Id FROM dbo.[IfrsAccounts]
+	SELECT Id FROM dbo.[IfrsAccountClassifications]
 	WHERE [Node].IsDescendantOf(
-		(SELECT [Node] FROM dbo.IfrsAccounts WHERE Id = N'Inventories')
+		(SELECT [Node] FROM dbo.[IfrsAccountClassifications] WHERE Id = N'Inventories')
 	) = 1
 )
 	SELECT
@@ -20,7 +20,7 @@ WITH IfrsInventoryAccounts AS (
 		J.[Id],
 		J.[Direction],
 		J.[AccountId],
-		J.[IfrsAccountId],
+		J.[IfrsClassificationId],
 		J.[ResponsibilityCenterId],
 		J.[ResourceId],
 		J.[Mass],
@@ -41,4 +41,4 @@ WITH IfrsInventoryAccounts AS (
 		R.[ResourceLookup4Id]
 	FROM dbo.[fi_NormalizedJournal](NULL, NULL, @MassUnitId, @CountUnitId) J
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
-	WHERE J.IfrsAccountId IN (SELECT Id FROM IfrsInventoryAccounts);
+	WHERE J.[IfrsClassificationId] IN (SELECT Id FROM IfrsInventoryAccounts);

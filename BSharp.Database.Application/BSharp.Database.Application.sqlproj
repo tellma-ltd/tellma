@@ -91,8 +91,8 @@
     <Build Include="dbo\Tables\dbo.Users.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignments.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLines.sql" />
-    <Build Include="dbo\Tables\dbo.IfrsAccounts.sql" />
-    <Build Include="dbo\Tables\dbo.IfrsNotes.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsAccountClassifications.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsEntryClassifications.sql" />
     <Build Include="dbo\Tables\dbo.Reconciliation.sql" />
     <Build Include="dbo\Tables\dbo.Resources.sql" />
     <Build Include="dbo\Tables\dbo.Settings.sql" />
@@ -144,10 +144,10 @@
     <None Include="Tests\60_SalesCycle.sql" />
     <None Include="Tests\21_Financing.sql" />
     <None Include="Tests\TestingToBeCleaned.sql" />
-    <None Include="Provisioning\013_IfrsAccounts.sql" />
+    <None Include="Provisioning\013_IfrsAccountClassifications.sql" />
     <None Include="Provisioning\04_AccountsNotes.sql" />
     <None Include="Provisioning\02_MeasurementUnits.sql" />
-    <None Include="Provisioning\012_IfrsNotes.sql" />
+    <None Include="Provisioning\012_IfrsEntryClassifications.sql" />
     <PostDeploy Include="Provisioning\00_Main.sql" />
     <None Include="Provisioning\05_LineTypeSpecifications.sql" />
     <None Include="Provisioning\06_DocumentTypes.sql" />
@@ -314,6 +314,8 @@
     <Build Include="dal\Stored Procedures\dal.Roles__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Activate.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsStatements.sql" />
+    <Build Include="dbo\Tables\dbo.AccountsDisclosures.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -335,6 +337,7 @@
     <None Include="Tests\02_Workflows.sql" />
     <None Include="Tests\06_Accounts.sql" />
     <None Include="Tests\08_ResponsibilityCenters.sql" />
+    <None Include="Tests\12_Purchasing.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BSharp.Database.Application.refactorlog" />

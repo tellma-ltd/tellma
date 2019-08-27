@@ -15,11 +15,11 @@ BEGIN
 	WITH
 	Ifrs_RM AS (
 		SELECT [Node] 
-		FROM dbo.[IfrsAccounts] WHERE [Id] IN(N'RawMaterials')
+		FROM dbo.[IfrsAccountClassifications] WHERE [Id] IN(N'RawMaterials')
 	),
 	RawMaterialAccounts AS (
 		SELECT A.[Id] FROM dbo.Accounts A
-		JOIN dbo.[IfrsAccounts] I ON A.[IfrsAccountId] = I.[Id]
+		JOIN dbo.[IfrsAccountClassifications] I ON A.[IfrsClassificationId] = I.[Id]
 		WHERE I.[Node].IsDescendantOf((SELECT * FROM Ifrs_RM))	= 1
 	),
 	OpeningBalances AS (

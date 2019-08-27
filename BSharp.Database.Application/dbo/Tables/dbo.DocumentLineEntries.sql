@@ -9,9 +9,10 @@
 --	It will be presented ORDER BY IsSystem, Direction, AccountId.Code, IfrsAccountId.Node, IfrsNoteId.Node, ResponsibilityCenterId.Node
 	[Direction]				SMALLINT			NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
  -- Account selection enforces additional filters on the other columns
-	[AccountId]				INT	NOT NULL,
+	[AccountId]				INT					NOT NULL CONSTRAINT [FK_DocumentLineEntries__Accounts]	FOREIGN KEY ([AccountId])	REFERENCES [dbo].[Accounts] ([Id]),
 -- Analysis of accounts including: cash, non current assets, equity, and expenses. Can be updated after posting
-	[IfrsNoteId]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
+	-- Note that the responsibility center might define the Ifrs Note
+	[IfrsNoteId]			NVARCHAR (255)		CONSTRAINT [FK_DocumentLineEntries__IfrsNotes]	FOREIGN KEY ([IfrsNoteId])	REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),	
 -- The business segment that "owns" the asset/liablity, and whose performance is assessed by the revenue/expense
 -- I propose making it part of the account, especially to track budget. Jiad complained about opening accounts
 -- also, smart sales posting is easier since a resource can tell the nature of expense, but not the responsibility center
@@ -67,8 +68,6 @@
 	[ModifiedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__ModifiedById] FOREIGN KEY ([ModifiedById])REFERENCES [dbo].[Users] ([Id]),
 
 	CONSTRAINT [FK_DocumentLineEntries__DocumentLineId]	FOREIGN KEY ([DocumentLineId])	REFERENCES [dbo].[DocumentLines] ([Id]) ON DELETE CASCADE,
-	CONSTRAINT [FK_DocumentLineEntries__Accounts]	FOREIGN KEY ([AccountId])	REFERENCES [dbo].[Accounts] ([Id]),
-	CONSTRAINT [FK_DocumentLineEntries__IfrsNotes]	FOREIGN KEY ([IfrsNoteId])	REFERENCES [dbo].[IfrsNotes] ([Id]),
 	CONSTRAINT [FK_DocumentLineEntries__ResponsibilityCenters]	FOREIGN KEY ([ResponsibilityCenterId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 	CONSTRAINT [FK_DocumentLineEntries__Resources]	FOREIGN KEY ([ResourceId])	REFERENCES [dbo].[Resources] ([Id]),
 	CONSTRAINT [FK_DocumentLineEntries__ResourceInstances] FOREIGN KEY ([InstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),

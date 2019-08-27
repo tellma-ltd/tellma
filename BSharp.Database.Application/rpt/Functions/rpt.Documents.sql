@@ -47,7 +47,7 @@ RETURN
 		(CASE WHEN [SortKey] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
 		CAST([SortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineTypeId],
-		[EntryNumber], [Account], [IfrsNoteId],[Resource], [Unit], [InstanceId],
-		[Direction], [Quantity], [Value]
+		[EntryNumber], [Account], [IfrsNoteId],[Resource], [InstanceId],
+		[Direction], [Quantity], [Unit], [Value]
 	FROM Docs;
 GO

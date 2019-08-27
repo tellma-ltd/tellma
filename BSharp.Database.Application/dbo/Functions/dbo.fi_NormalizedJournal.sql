@@ -28,7 +28,7 @@ RETURN
 		J.[LineTypeId],
 		J.[Direction],
 		J.[AccountId],
-		J.[IfrsAccountId],
+		J.[IfrsClassificationId],
 		J.[AgentId],
 		J.[IfrsNoteId],
 		J.[ResponsibilityCenterId],

@@ -17,6 +17,7 @@ BEGIN -- Cleanup & Declarations
 	DECLARE @Camry2018 int, @Cotton int, @TeddyBear int, @Car1 int, @Car2 int;
 	DECLARE @HOvertime int, @ROvertime int, @Basic int, @Transportation int, 
 			@LaborHourly int, @LaborDaily int, @Car1Svc int, @GOff int;
+	DECLARE @HR1000x1_9 INT, @CR1000x1_4 INT;
 END
 BEGIN -- Inserting
 	INSERT INTO @R1
@@ -47,7 +48,8 @@ INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code]) VALUES
 				(@ToyotaYarisIndex,	N'2017.10.01',		N'201');
 INSERT INTO @R1 
 	([ResourceType],		[Name],					[Code],		 [ValueMeasure], [MassUnitId], [Uniqueness]) VALUES
-	(N'raw-materials',		N'HR 1000MMx1.9MM',		N'HR1000x1.9',	N'Mass',		@KgUnit,		0);
+	(N'raw-materials',		N'HR 1000MMx1.9MM',		N'HR1000x1.9',	N'Mass',		@KgUnit,		0),
+	(N'raw-materials',		N'CR 1000MMx1.4MM',		N'CR1000x1.4',	N'Mass',		@KgUnit,		0);
 DECLARE @HotRollIndex INT =  (SELECT [Index] FROM @R1 WHERE [Name] = N'HR 1000MMx1.9MM');
 INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code], [Mass]) VALUES
 				(@HotRollIndex,		N'2017.10.01',	N'54001', 7891),
@@ -173,4 +175,6 @@ SELECT
 	@Basic = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Basic'),
 	@Transportation = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Transportation'),
 	@LaborHourly = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborHourly'),
-	@LaborDaily = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborDaily');
+	@LaborDaily = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborDaily'),
+	@HR1000x1_9 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'HR1000x1.9'),
+	@CR1000x1_4 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'CR1000x1.4');

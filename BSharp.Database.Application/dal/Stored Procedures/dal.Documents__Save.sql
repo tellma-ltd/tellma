@@ -92,13 +92,24 @@ BEGIN
 	USING (
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResponsibilityCenterId],
-				[ResourceId], [InstanceId], [BatchCode], [DueDate], [Quantity],
-				[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value], [Memo],
+				[ResourceId], [InstanceId], [BatchCode], [DueDate], 
+				(CASE
+					WHEN R.[ValueMeasure] = N'Currency' THEN E.[MoneyAmount]
+					WHEN R.[ValueMeasure] = N'Mass' THEN E.[Mass]
+					WHEN R.[ValueMeasure] = N'Volume' THEN E.[Volume]
+					WHEN R.[ValueMeasure] = N'Area' THEN E.[Area]
+					WHEN R.[ValueMeasure] = N'Length' THEN E.[Length]
+					WHEN R.[ValueMeasure] = N'Time' THEN E.[Time]
+					WHEN R.[ValueMeasure] = N'Count' THEN E.[Count]
+					ELSE NULL END
+				) AS [Quantity],
+				[MoneyAmount], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value], E.[Memo],
 				[ExternalReference], [AdditionalReference], 
 				[RelatedResourceId], [RelatedAgentId], [RelatedMoneyAmount], [SortKey]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[DocumentLineIndex] = LI.[Index]
+		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET

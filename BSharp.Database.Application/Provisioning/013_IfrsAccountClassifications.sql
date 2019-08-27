@@ -1,12 +1,11 @@
-﻿DECLARE @IfrsAccounts AS TABLE (
+﻿DECLARE @IfrsAccountClassifications AS TABLE (
 	[Id]			NVARCHAR (255) PRIMARY KEY NONCLUSTERED,
 	[Node]			HIERARCHYID NOT NULL UNIQUE CLUSTERED,
-	-- To be ignored for now
 	[IfrsType]		NVARCHAR (255),
 	[Label]			NVARCHAR (1024),
 	[IsActive]		BIT
 );
-INSERT INTO @IfrsAccounts([IfrsType], [IsActive], [Node], [Id], [Label]) VALUES
+INSERT INTO @IfrsAccountClassifications([IfrsType], [IsActive], [Node], [Id], [Label]) VALUES
 
 (N'Regulatory', 1, N'/1/', N'Assets', N'Assets')
 ,(N'Regulatory', 1, N'/1/1/', N'NoncurrentAssets', N'Non-current assets')
@@ -194,14 +193,13 @@ INSERT INTO @IfrsAccounts([IfrsType], [IsActive], [Node], [Id], [Label]) VALUES
 ,(N'Regulatory', 1, N'/2/5/18/', N'CapitalRedemptionReserve', N'Capital redemption reserve')
 ,(N'Regulatory', 1, N'/2/5/19/', N'MergerReserve', N'Merger reserve')
 ,(N'Regulatory', 1, N'/2/5/20/', N'ReserveOfEquityComponentOfConvertibleInstruments', N'Reserve of equity component of convertible instruments')
-,(N'Amendment', 1, N'/2/5/21/', N'AccumulatedOtherComprehensiveIncome', N'Accumulated other comprehensive income')
-,(N'Amendment', 1, N'/2/5/22/', N'CapitalReserve', N'Capital reserve')
-,(N'Amendment', 1, N'/2/5/23/', N'AdditionalPaidinCapital', N'Additional paid-in capital')
+,(N'Regulatory', 1, N'/2/5/21/', N'AccumulatedOtherComprehensiveIncome', N'Accumulated other comprehensive income')
+,(N'Regulatory', 1, N'/2/5/22/', N'CapitalReserve', N'Capital reserve')
+,(N'Regulatory', 1, N'/2/5/23/', N'AdditionalPaidinCapital', N'Additional paid-in capital')
 ,(N'Amendment', 1, N'/2/5/24/', N'MiscellaneousOtherReserves', N'Miscellaneous other reserves')
 ,(N'Regulatory', 1, N'/2/6/', N'RetainedEarnings', N'Retained earnings')
 ,(N'Extension', 1, N'/2/9/', N'BalancesMigration', N'Balances Migration')
 
--- Needs to insert /
 ,(N'Regulatory', 1, N'/3/', N'Liabilities', N'Liabilities')
 ,(N'Regulatory', 1, N'/3/1/', N'NoncurrentLiabilities', N'Non-current liabilities')
 ,(N'Regulatory', 1, N'/3/1/1/', N'NoncurrentProvisions', N'Non-current provisions')
@@ -386,24 +384,47 @@ INSERT INTO @IfrsAccounts([IfrsType], [IsActive], [Node], [Id], [Label]) VALUES
 ,(N'Regulatory', 1, N'/5/2/7/3/', N'AmountsRemovedFromEquityAndAdjustedAgainstFairValueOfFinancialAssetsOnReclassificationOutOfFairValueThroughOtherComprehensiveIncomeMeasurementCategoryNetOfTax', N'Amounts removed from equity and adjusted against fair value of financial assets on reclassification out of fair value through other comprehensive income measurement category, net of tax')
 ,(N'Regulatory', 1, N'/5/2/8/', N'ShareOfOtherComprehensiveIncomeOfAssociatesAndJointVenturesAccountedForUsingEquityMethodThatWillBeReclassifiedToProfitOrLossNetOfTax', N'Share of other comprehensive income of associates and joint ventures accounted for using equity method that will be reclassified to profit or loss, net of tax');
 
-MERGE [dbo].[IfrsConcepts] AS t
-USING @IfrsAccounts AS s
+-- The IfrsType is determined from the IfrsAccountClassifications and IfrsEntryClassifications tables
+MERGE [dbo].[IfrsConcepts] As t
+USING (SELECT  [Id], [IfrsType], [Label] FROM @IfrsAccountClassifications) AS s
 ON s.[Id] = t.[Id]
-WHEN MATCHED THEN
-UPDATE SET
-  t.[IsActive]	=	s.[IsActive]
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Id], [IfrsType], [IsActive], [Label])
-    VALUES (s.[Id], [IfrsType], [IsActive], [Label]);
+WHEN MATCHED AND
+(
+	t.[IfrsType]		<> s.[IfrsType]
 
-MERGE [dbo].[IfrsAccounts] AS t
-USING @IfrsAccounts AS s
-ON s.[Id] = t.[Id]
-WHEN MATCHED THEN
+) THEN
 UPDATE SET
-  t.[Node]		=	s.[Node]
+	t.[IfrsType]		= s.[IfrsType]
+WHEN NOT MATCHED THEN
+	INSERT ([Id], [IfrsType], [Label])
+	VALUES (s.[Id], s.[IfrsType], s.[Label]);
+
+MERGE [dbo].[IfrsAccountClassifications] AS t
+USING (
+	SELECT  AC.[Id], AC.[Node], AC.[IsActive], C.[Label], C.[Documentation]
+	FROM @IfrsAccountClassifications AC
+	JOIN dbo.IfrsConcepts C ON AC.[Id] = C.[Id]
+) AS s
+ON s.[Id] = t.[Id]
+WHEN MATCHED AND
+(
+	t.[Node]			<>	s.[Node]		OR
+	t.[IsActive]		<>	s.[IsActive]	OR
+	t.[Label]			<>	s.[Label]
+) THEN
+UPDATE SET
+	t.[Node]			=	s.[Node],
+	t.[IsActive]		=	s.[IsActive],
+	t.[Label]			=	s.[Label],
+	t.[Documentation]	=	s.[Documentation]
 WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
+    DELETE -- to delete Ifrs Account Classifications extension concepts we added erroneously
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Id], [Node])
-    VALUES (s.[Id], s.[Node]);
+    INSERT ([Id],	[Node],		[IsActive],	[Label], [Documentation])
+    VALUES (s.[Id], s.[Node], s.[IsActive], s.[Label], s.[Documentation]);
+
+UPDATE dbo.[IfrsAccountClassifications] SET [IsLeaf] = 0
+WHERE [Isleaf] = 1 AND [Node] IN (SELECT [ParentNode] FROM dbo.[IfrsAccountClassifications]);
+
+UPDATE dbo.[IfrsAccountClassifications] SET [IsLeaf] = 1
+WHERE [Isleaf] = 0 AND [Node] NOT IN (SELECT [ParentNode] FROM dbo.[IfrsAccountClassifications]);

@@ -682,4 +682,151 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[Uniqueness]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7eddbaea-65be-4c47-aa8f-34c0457501ed" ChangeDateTime="08/22/2019 19:30:04">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[CustomClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3dd041bc-3ffe-4ab8-84ea-8138b49bc902" ChangeDateTime="08/24/2019 20:25:46">
+    <Property Name="ElementName" Value="[dbo].[AccountIfrsConcepts]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountsDisclosures]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3fbb328f-fa2c-47bd-9ff0-97dff5f2a34e" ChangeDateTime="08/25/2019 11:08:00">
+    <Property Name="ElementName" Value="[dbo].[IfrsAccounts]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypes]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="902bfbcd-ba31-4ecc-afad-185f4bf207a0" ChangeDateTime="08/25/2019 11:25:18">
+    <Property Name="ElementName" Value="[dbo].[AccountTypes]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a9df42db-40db-4d78-9f7a-5a0213f3f9d9" ChangeDateTime="08/25/2019 11:29:43">
+    <Property Name="ElementName" Value="[dbo].[AccountClassifications].[IsAggregate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IsLeaf]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d43b20ed-aacc-4ad9-ba65-dc791cde6f44" ChangeDateTime="08/26/2019 12:28:01">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[ClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4e015f1f-bcb3-4262-b2d9-583ee81165c3" ChangeDateTime="08/26/2019 12:30:17">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[AccountTypeId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustomClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="34574904-5f10-4e59-a4a6-69d7e138075c" ChangeDateTime="08/26/2019 12:30:50">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[IfrsAccountId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="df3019e0-0c29-4ff0-8fab-574689632295" ChangeDateTime="08/26/2019 12:32:13">
+    <Property Name="ElementName" Value="[dbo].[AccountClassifications]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsAccounts]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="26101a5e-6ed6-4bd0-867a-41b154868dad" ChangeDateTime="08/26/2019 12:33:13">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[AccountTypeId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IfrsClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c4ba78ae-f7ec-4a57-bdee-3c5c538c6061" ChangeDateTime="08/26/2019 12:33:35">
+    <Property Name="ElementName" Value="[dbo].[IfrsAccounts]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d0b8edb4-6f66-49c3-aa58-07ca6a5462b8" ChangeDateTime="08/26/2019 13:43:40">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DefaultIfrsNoteId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultDebitIfrsNoteId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f2a11aef-7c6e-42ff-95c4-9746ddd2e15b" ChangeDateTime="08/26/2019 13:52:47">
+    <Property Name="ElementName" Value="[dbo].[IfrsClassifications]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsAccountClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="343671be-1b1a-4321-adf8-469604685f75" ChangeDateTime="08/26/2019 14:15:25">
+    <Property Name="ElementName" Value="[dbo].[IfrsNotes]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsNoteClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="321d343c-136b-4e0e-906e-febf3e72574a" ChangeDateTime="08/26/2019 14:20:06">
+    <Property Name="ElementName" Value="[dbo].[IfrsNoteClassifications]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsEntryClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="55192d4d-138c-4680-af10-b6e70849211a" ChangeDateTime="08/26/2019 14:39:52">
+    <Property Name="ElementName" Value="[dbo].[IfrsEntryClassifications].[IsAggregate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[IfrsEntryClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IsLeaf]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="dc2505ad-1894-432d-826b-c1772a710eca" ChangeDateTime="08/26/2019 14:41:07">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DefaultDebitIfrsNoteId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultDebitIfrsEntryClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a027e8eb-d05b-49f4-a5df-076fc6c53ee1" ChangeDateTime="08/26/2019 14:41:28">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DefaultCreditIfrsNoteId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultCreditIfrsEntryClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1f3a6bac-419f-4255-a7dd-6321b47c1fe3" ChangeDateTime="08/26/2019 14:46:18">
+    <Property Name="ElementName" Value="[dbo].[IfrsAccountsIfrsNotes]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[IfrsAccountClassificationsEntryClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="945ded19-6a37-434b-9fd6-631482ace30c" ChangeDateTime="08/26/2019 14:46:46">
+    <Property Name="ElementName" Value="[dbo].[IfrsAccountClassificationsEntryClassifications].[IfrsAccountId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[IfrsAccountClassificationsEntryClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IfrsAccountClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e55d4fc0-ad4f-4623-91aa-e74718b747ba" ChangeDateTime="08/26/2019 14:47:00">
+    <Property Name="ElementName" Value="[dbo].[IfrsAccountClassificationsEntryClassifications].[IfrsNoteId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[IfrsAccountClassificationsEntryClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IfrsEntryClassificationId]" />
+  </Operation>
 </Operations>

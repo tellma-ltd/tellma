@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[ResourceTypes] (
--- table managed by developer
+-- flat table, corresponds to leaves of the account classification tree.
 	[Id]						NVARCHAR (255) PRIMARY KEY,
 	[Code]						NVARCHAR (255)	NOT NULL,
 	[Description]				NVARCHAR (255)	NOT NULL,

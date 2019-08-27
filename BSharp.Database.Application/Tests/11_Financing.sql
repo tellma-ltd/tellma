@@ -15,11 +15,11 @@ BEGIN -- Inserting
 		(0,					N'ManualLine', 2);
 
 	INSERT INTO @E1 (
-		[DocumentIndex], [DocumentLineIndex], [Direction], [AccountId], [IfrsNoteId],				[ResourceId], [Quantity], [Count], [MoneyAmount],	[Value]) VALUES
-		(0,					0,					+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		200000,		0,			200000,			4700000),
-		(0,					1,					-1,			@CapitalMA,N'IssueOfEquity',		@CommonStock,		1000,		1000,			0,				2350000),
-		(0,					2,					-1,			@CapitalAA,N'IssueOfEquity',		@CommonStock,		1000,		1000,			0,				2350000),
-		(0,					3,					+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		100,		0,			100,			2000);
+		[DocumentIndex], [DocumentLineIndex], [Direction], [AccountId], [IfrsNoteId],				[ResourceId], [Count], [MoneyAmount],	[Value]) VALUES
+		(0,					0,					+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			200000,			4700000),
+		(0,					1,					-1,			@CapitalMA,N'IssueOfEquity',		@CommonStock,		1000,			0,				2350000),
+		(0,					2,					-1,			@CapitalAA,N'IssueOfEquity',		@CommonStock,		1000,			0,				2350000),
+		(0,					3,					+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			100,			2000);
 
 	EXEC [api].[Documents__Save]
 		@DocumentTypeId = N'manual-journals',
@@ -47,15 +47,15 @@ BEGIN -- Updating document and deleting lines/entries
 	FROM dbo.DocumentLines DL
 	JOIN @D2 D2 ON D2.[Id] = DL.[DocumentId];
 
-	INSERT INTO @E2([Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResourceId], [Quantity], [Count], [MoneyAmount], [Value])
-	SELECT DLE.[Id], L2.[Id], L2.DocumentIndex, L2.[Index], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResourceId], [Quantity], [Count], [MoneyAmount], [Value]
+	INSERT INTO @E2([Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResourceId], [Count], [MoneyAmount], [Value])
+	SELECT DLE.[Id], L2.[Id], L2.DocumentIndex, L2.[Index], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResourceId], [Count], [MoneyAmount], [Value]
 	FROM dbo.DocumentLineEntries DLE
 	JOIN @L2 L2 ON L2.[Id] = DLE.[DocumentLineId];
 
 	--SELECT * FROM @D2; SELECT * FROM @L2; SELECT * FROM @E2;
 
-	UPDATE @E2 SET [Quantity] = [Quantity]/2, [Count] = [Count] / 2, [Value] = [Value] / 2 WHERE [Index] = 1;
-	UPDATE @E2 SET [Quantity] = [Quantity] * 1.5, [Count] = [Count] * 1.5, [Value] = [Value] * 1.5 + 1175000 WHERE [Index] = 2;
+	UPDATE @E2 SET [Count] = [Count] / 2, [Value] = [Value] / 2 WHERE [Index] = 1;
+	UPDATE @E2 SET [Count] = [Count] * 1.5, [Value] = [Value] * 1.5 + 1175000 WHERE [Index] = 2;
 	UPDATE @L2 SET [ScalingFactor] = 3 WHERE [ScalingFactor] = 1;
 	DELETE FROM @L2 WHERE [Index] = 1;
 	DELETE FROM @L2 WHERE [Index] = 3;

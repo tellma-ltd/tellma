@@ -20,7 +20,7 @@ SET NOCOUNT ON;
 	-- (FE Check) If Resource = functional currency, the value must match the money amount
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
-		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].TransactionWideLines[' +
+		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].Amount' + CAST([EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheAmount0DoesNotMatchTheValue1',
 		[MoneyAmount],
@@ -46,57 +46,57 @@ SET NOCOUNT ON;
 	FROM @Documents FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	WHERE (BE.[State] <> N'Draft')
-	
+/* TODO: Revisit after the design is stable
 	-- Note Id is missing when required
-	-- TODO: Add the condition that Ifrs Note is enforced
+	-- TODO: Add the condition that Ifrs Entry Classification is enforced
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
-		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].TransactionWideLines[' +
-			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].IfrsNoteId' + CAST([EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheIfrsNoteIsRequired'
+		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
+			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].IfrsEntryClassificationId' + CAST([EntryNumber] AS NVARCHAR(255)),
+		N'Error_TheIfrsEntryClassificationIsRequired'
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE (E.[IfrsNoteId] IS NULL)
-	AND A.[IfrsAccountId] IN (
-		SELECT [IfrsAccountId] FROM dbo.[IfrsAccountsIfrsNotes]
+	AND A.[IfrsClassificationId] IN (
+		SELECT [IfrsAccountClassificationId] FROM dbo.[IfrsAccountClassificationsEntryClassifications]
 	);
 
 	-- Invalid Note Id
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].TransactionWideLines[' +
-			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].IfrsNoteId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheIfrsNoteIsIncompatibleWithAccountClassification0',
-		A.[IfrsAccountId]
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
+			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].IfrsEntryClassificationId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		N'Error_TheIfrsEntryClassificationIdIsIncompatibleWithAccountClassification0',
+		A.[IfrsClassificationId]
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	LEFT JOIN dbo.[IfrsAccountsIfrsNotes] AN ON A.[IfrsAccountId] = AN.[IfrsAccountId] AND E.Direction = AN.Direction AND E.IfrsNoteId = AN.[IfrsNoteId]
+	LEFT JOIN dbo.[IfrsAccountClassificationsEntryClassifications] AN ON A.[IfrsClassificationId] = AN.[IfrsAccountClassificationId] AND E.Direction = AN.Direction AND E.IfrsNoteId = AN.[IfrsEntryClassificationId]
 	WHERE (E.[IfrsNoteId] IS NOT NULL)
-	AND (AN.[IfrsNoteId] IS NULL);
+	AND (AN.[IfrsEntryClassificationId] IS NULL);
 
 	-- No expired Ifrs Account
 	-- No expired Ifrs Note
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].TransactionWideLines[' +
-			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].IfrsNoteId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheIfrsNoteId0HasExpired',
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
+			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].IfrsEntryClassificationId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		N'Error_TheIfrsEntryClassificationId0HasExpired',
 		IC.[Label]
 	FROM @Entries E
 	JOIN @Documents T ON E.[DocumentIndex] = T.[Index]
-	JOIN dbo.[IfrsNotes] N ON E.[IfrsNoteId] = N.Id
+	JOIN dbo.[IfrsEntryClassifications] N ON E.[IfrsNoteId] = N.Id
 	JOIN dbo.[IfrsConcepts] IC ON N.Id = IC.Id
 	WHERE (IC.ExpiryDate < T.[DocumentDate]);
 	
 	-- External Reference is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].TransactionWideLines[' +
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].ExternalReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheReferenceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	JOIN dbo.[IfrsAccounts] IA ON A.IfrsAccountId = IA.Id
+	JOIN dbo.[IfrsAccountClassifications] IA ON A.[IfrsClassificationId] = IA.Id
 	WHERE (E.ExternalReference IS NULL)
 	AND (E.[Direction] = 1 AND IA.[DebitExternalReferenceSetting] = N'Required' OR
 		E.[Direction] = -1 AND IA.[CreditExternalReferenceSetting] = N'Required');
@@ -104,12 +104,12 @@ SET NOCOUNT ON;
 	-- Additional Reference is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].TransactionWideLines[' +
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].RelatedReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheRelatedReferenceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	JOIN dbo.[IfrsAccounts] IA ON A.IfrsAccountId = IA.Id
+	JOIN dbo.[IfrsAccountClassifications] IA ON A.[IfrsClassificationId] = IA.Id
 	WHERE (E.[AdditionalReference] IS NULL)
 	AND (E.[Direction] = 1 AND IA.[DebitAdditionalReferenceSetting] = N'Required' OR
 		E.[Direction] = -1 AND IA.[CreditAdditionalReferenceSetting] = N'Required');
@@ -117,25 +117,25 @@ SET NOCOUNT ON;
 	-- RelatedAgent is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].TransactionWideLines[' +
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].RelatedAgentId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheRelatedAgentIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	JOIN dbo.[IfrsAccounts] IA ON A.IfrsAccountId = IA.Id
+	JOIN dbo.[IfrsAccountClassifications] IA ON A.[IfrsClassificationId] = IA.Id
 	WHERE (E.[RelatedAgentId] IS NULL)
 	AND (IA.[RelatedAgentAccountSetting] = N'Required');
 	
 	-- RelatedResource is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].TransactionWideLines[' +
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].RelatedResourceId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheRelatedResourceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	JOIN dbo.[IfrsAccounts] IA ON A.IfrsAccountId = IA.Id
+	JOIN dbo.[IfrsAccountClassifications] IA ON A.[IfrsClassificationId] = IA.Id
 	WHERE (E.[RelatedResourceId] IS NULL)
 	AND (IA.[RelatedResourceSetting] = N'Required');
-
+*/
 	SELECT TOP (@Top) * FROM @ValidationErrors;
