@@ -2,14 +2,12 @@
 @using Microsoft.AspNetCore.Http.Extensions
 @using Microsoft.Extensions.Options
 @using BSharp.Services.EmbeddedIdentityServer
-@using BSharp.Services.GlobalSettings
 @using BSharp.Services.Utilities
 
-@inject IGlobalSettingsCache GlobalSettingsCache
 @inject IViewLocalizer Localizer
-@inject UserManager<User> UserManager
-@inject IOptions<ClientStoreConfiguration> Config
-@inject SignInManager<User> SignInManager
+@inject UserManager<EmbeddedIdentityServerUser> UserManager
+@inject IOptions<WebClientOptions> Config
+@inject SignInManager<EmbeddedIdentityServerUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 
@@ -17,10 +15,8 @@
     var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
 
-    var cultures = GlobalSettingsCache.GetGlobalSettings().Data.ActiveCultures.Values;
-
-    // var appUri = Config.Value.WebClientUri.WithTrailingSlash() + "root/companies?ui-culture=" + currentCulture;
-    var appUri = Config.Value.WebClientUri.WithoutTrailingSlash() + "?ui-culture=" + currentCulture;
+    var cultures = Startup.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
+    var appUri = (Config.Value.WebClientUri.WithoutTrailingSlash() ?? "/") + "?ui-culture=" + currentCulture;
 }
 
 <!DOCTYPE html>
@@ -91,7 +87,7 @@
                             @if (cultures.Count() > 1)
                             {
                                 <form method="post" asp-area="" asp-page="/SetCulture" asp-route-currentUrl="@currentUrl">
-                                    @foreach (var culture in cultures.Where(e => e.Id != currentCulture.Name))
+                                    @foreach (var culture in cultures)
                                     {
                                         <button type="submit" class="dropdown-item btn-light" name="culture" value="@culture.Id">
                                             @culture.Name

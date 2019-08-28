@@ -3,6 +3,7 @@ using BSharp.Services.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
@@ -344,7 +345,7 @@ namespace BSharp.Data.Queries
                         {
                             foreach (var propInfo in type.GetProperties())
                             {
-                                var fkName = propInfo.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
+                                var fkName = propInfo.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
                                 if (!string.IsNullOrWhiteSpace(fkName) && dynamicPropsHash.TryGetValue((path, fkName), out DynamicPropInfo fkProp))
                                 {
                                     dynamicEntity.Properties.Add(new DynamicPropInfo(
@@ -428,7 +429,7 @@ namespace BSharp.Data.Queries
                     }
                 }
 
-                // Here we populate the collection navigation properties after the simple properties have been populated
+                // Here we populate the collection navigation properties after the navigation properties have been populated
                 foreach (var (query, list) in results)
                 {
                     if (query.IsAncestorExpand)

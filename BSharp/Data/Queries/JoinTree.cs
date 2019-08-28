@@ -1,6 +1,7 @@
 ﻿using BSharp.Controllers.Misc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using System.Text;
 
@@ -13,7 +14,7 @@ namespace BSharp.Data.Queries
     /// IMPORTANT: This class is used internally in <see cref="QueryInternal"/> and <see cref="AggregateQueryInternal"/>
     /// and is not to be used directly anywhere else in the solution
     /// </summary>
-    internal class JoinTree : Dictionary<string, JoinTree>
+    public class JoinTree : Dictionary<string, JoinTree>
     {
         /// <summary>
         /// Creates a new <see cref="JoinTree"/>
@@ -154,7 +155,7 @@ namespace BSharp.Data.Queries
 
                     if (!currentTree.ContainsKey(step))
                     {
-                        string foreignKeyName = prop.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
+                        string foreignKeyName = prop.GetCustomAttribute<ForeignKeyAttribute>()?.Name;
                         if (string.IsNullOrWhiteSpace(foreignKeyName))
                         {
                             // Programmer mistake

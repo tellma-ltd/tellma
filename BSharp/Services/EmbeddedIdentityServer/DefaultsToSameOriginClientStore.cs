@@ -35,12 +35,12 @@ namespace BSharp.Services.EmbeddedIdentityServer
         private IEnumerable<Client> GetClients()
         {
             // Determine the ClientApp's URI from the config file
-            var webClientUri = _config?.WebClientUri.WithTrailingSlash();
-            if (string.IsNullOrWhiteSpace(webClientUri))
+            var webClientOrigin = _config?.WebClientUri.WithoutTrailingSlash();
+            if (string.IsNullOrWhiteSpace(webClientOrigin))
             {
                 // IF it is not defined, then use the same origin as IdentityServer by default
                 var request = _accessor?.HttpContext?.Request;
-                webClientUri = $"https://{request?.Host}/{request?.PathBase}";
+                webClientOrigin = $"https://{request?.Host}/{request?.PathBase}".WithoutTrailingSlash();
             }
 
             // return the Application Client Web App
@@ -50,9 +50,9 @@ namespace BSharp.Services.EmbeddedIdentityServer
                 AllowedGrantTypes = GrantTypes.Implicit,
                 AllowAccessTokensViaBrowser = true,
 
-                RedirectUris = { $"{webClientUri}sign-in-callback", $"{webClientUri}assets/silent-refresh-callback.html" },
-                PostLogoutRedirectUris = { $"{webClientUri}welcome" },
-                AllowedCorsOrigins = { webClientUri },
+                RedirectUris = { $"{webClientOrigin}/sign-in-callback", $"{webClientOrigin}/assets/silent-refresh-callback.html" },
+                PostLogoutRedirectUris = { $"{webClientOrigin}/welcome" },
+                AllowedCorsOrigins = { webClientOrigin },
 
                 RequireConsent = false,
                 AccessTokenLifetime = 60 * 60 * 24 * (_config?.WebClientAccessTokenLifetimeInDays ?? ClientApplicationsOptions.DEFAULT_ACCESS_TOKEN_LIFETIME_IN_DAYS),

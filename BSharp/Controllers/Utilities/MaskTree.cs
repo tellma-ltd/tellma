@@ -1,4 +1,5 @@
-﻿using BSharp.Services.Utilities;
+﻿using BSharp.EntityModel;
+using BSharp.Services.Utilities;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
@@ -280,7 +281,7 @@ namespace BSharp.Controllers.Misc
                     throw new InvalidOperationException($"The property {key} does not exist on type {type.Name}");
                 }
 
-                if (prop.GetCustomAttributes(inherit: true).OfType<BasicFieldAttribute>().Any())
+                if (prop.GetCustomAttributes(inherit: true).OfType<AlwaysAccessibleAttribute>().Any())
                 {
                     toRemove.Add(key);
                 }

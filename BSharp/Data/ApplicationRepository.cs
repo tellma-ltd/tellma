@@ -75,7 +75,7 @@ namespace BSharp.Data
             }
 
             _conn = new SqlConnection(connectionString);
-            _conn.Open();
+            await _conn.OpenAsync();
 
             // Always call OnConnect SP as soon as you create the connection
             var externalUserId = _externalUserAccessor.GetUserId();
@@ -129,6 +129,14 @@ namespace BSharp.Data
         }
 
         /// <summary>
+        /// Loads a <see cref="UserInfo"/> object from the cache, or throws an exception if it's not available
+        /// </summary>
+        public UserInfo GetUserInfo()
+        {
+            return _userInfo ?? throw new InvalidOperationException("UserInfo are not initialized, call GetConnectionAsync() first or just use GetUserInfoAsync()");
+        }
+
+        /// <summary>
         /// Loads a <see cref="TenantInfo"/> object from the database, this occurs once per <see cref="ApplicationRepository"/> 
         /// instance, subsequent calls are satisfied from a scoped cache
         /// </summary>
@@ -136,6 +144,14 @@ namespace BSharp.Data
         {
             await GetConnectionAsync(); // This automatically initializes the tenant info
             return _tenantInfo;
+        }
+
+        /// <summary>
+        /// Loads a <see cref="TenantInfo"/> object from the cache, or throws an exception if it's not available
+        /// </summary>
+        public TenantInfo GetTenantInfo()
+        {
+            return _tenantInfo ?? throw new InvalidOperationException("TenantInfo are not initialized, call GetConnectionAsync() first or just use GetTenantInfoAsync()");
         }
 
         /// <summary>
@@ -151,7 +167,9 @@ namespace BSharp.Data
 
         #region Queries
 
+        public Query<Settings> Settings => Query<Settings>();
         public Query<User> Users => Query<User>();
+        public Query<Agent> Agents => Query<Agent>();
 
 
         /// <summary>
@@ -199,9 +217,9 @@ namespace BSharp.Data
             var lang2 = info.SecondaryLanguageId;
             var lang3 = info.TernaryLanguageId;
 
-            var loc1 = lang1 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang1));
-            var loc2 = lang2 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang2));
-            var loc3 = lang3 == null ? null : localizer.WithCulture(CultureInfo.CreateSpecificCulture(lang3));
+            var loc1 = lang1 == null ? null : localizer.WithCulture(new CultureInfo(lang1));
+            var loc2 = lang2 == null ? null : localizer.WithCulture(new CultureInfo(lang2));
+            var loc3 = lang3 == null ? null : localizer.WithCulture(new CultureInfo(lang3));
 
             // TODO Do something about SQL injection risk
             string localize1(string s) => loc1 == null ? "NULL" : $"N'{loc1[s]?.ToString().Replace("'", "''")}'";
@@ -214,6 +232,9 @@ namespace BSharp.Data
             {
                 switch (t.Name)
                 {
+                    case nameof(Settings):
+                        return new SqlSource("[dbo].[Settings]");
+
                     case nameof(User):
                         return new SqlSource("(SELECT *, IIF(ExternalId IS NULL, 'New', 'Confirmed') As [State] FROM [dbo].[Users])");
 
@@ -361,17 +382,14 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             using (SqlCommand cmd = _conn.CreateCommand()) // Use the private field _conn to avoid infinite recursion
             {
                 // Parameters
-                cmd.Parameters.AddWithValue("@ExternalUserId", externalUserId);
-                cmd.Parameters.AddWithValue("@UserEmail", userEmail);
-                cmd.Parameters.AddWithValue("@Culture", culture);
-                cmd.Parameters.AddWithValue("@NeutralCulture", neutralCulture);
+                cmd.Parameters.Add("@ExternalUserId", externalUserId);
+                cmd.Parameters.Add("@UserEmail", userEmail);
+                cmd.Parameters.Add("@Culture", culture);
+                cmd.Parameters.Add("@NeutralCulture", neutralCulture);
 
                 // Command
-                cmd.CommandText = @"EXEC [dal].[OnConnect] 
-@ExternalUserId = @ExternalUserId, 
-@UserEmail      = @UserEmail, 
-@Culture        = @Culture, 
-@NeutralCulture = @NeutralCulture";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(OnConnect)}]";
 
                 // Execute and Load
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -419,18 +437,42 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             return (userInfo, tenantInfo);
         }
 
-        public Task SetUserExternalId(int userId, string externalId)
+        public async Task Users__SetExternalIdByUserId(int userId, string externalId)
         {
             // Finds the user with the given id and sets its ExternalId to the one supplied only if it's null
-            // $"UPDATE [dbo].[Users] SET ExternalId = {externalId} WHERE Id = {userId}";
 
-            throw new NotImplementedException();
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("UserId", userId);
+                cmd.Parameters.Add("ExternalId", externalId);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SetExternalIdByUserId)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
-        public Task SetUserEmail(int userId, string email)
+        public async Task Users__SetEmailByUserId(int userId, string externalEmail)
         {
-            // Finds the user with the given id and sets its Email to the one supplied
-            throw new NotImplementedException();
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("UserId", userId);
+                cmd.Parameters.Add("ExternalEmail", externalEmail);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SetEmailByUserId)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task<IEnumerable<AbstractPermission>> Action_Views__Permissions(string action, IEnumerable<string> viewIds)
@@ -449,12 +491,11 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 };
 
                 cmd.Parameters.Add(viewIdsTvp);
-                cmd.Parameters.AddWithValue("@Action", action);
+                cmd.Parameters.Add("@Action", action);
 
-                cmd.CommandText = $@"EXEC [dal].[{nameof(Action_Views__Permissions)}]
-@Action = @Action,
-@ViewIds = @ViewIds
-";
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Action_Views__Permissions)}]";
 
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
@@ -473,6 +514,61 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             }
 
             return result;
+        }
+
+        public async Task<IEnumerable<AbstractPermission>> GetUserPermissions()
+        {
+            var result = new List<AbstractPermission>();
+
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(GetUserPermissions)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new AbstractPermission
+                        {
+                            ViewId = reader.GetString(i++),
+                            Action = reader.GetString(i++),
+                            Criteria = reader.GetString(i++),
+                            Mask = reader.GetString(i++)
+                        });
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<Guid> GetUserPermissionsVersion()
+        {
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(GetUserPermissionsVersion)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        return reader.GetGuid(0);
+                    }
+                    else
+                    {
+                        return Guid.Empty;
+                    }
+                }
+            }
         }
 
         #endregion
@@ -514,6 +610,7 @@ FROM @Entities [E]";
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
+                // Parameters
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
@@ -522,13 +619,13 @@ FROM @Entities [E]";
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.AddWithValue("@Top", top);
+                cmd.Parameters.Add("@Top", top);
 
-                cmd.CommandText = $@"EXEC [bll].[{nameof(MeasurementUnits_Validate__Save)}]
-@Entities = @Entities,
-@Top = @Top
-";
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(MeasurementUnits_Validate__Save)}]";
 
+                // Execute
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
@@ -566,12 +663,10 @@ FROM @Entities [E]";
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.AddWithValue("@ReturnIds", returnIds);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
 
-                cmd.CommandText = $@"EXEC [dal].[{nameof(MeasurementUnits__Save)}]
-@Entities = @Entities,
-@ReturnIds = @ReturnIds
-";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Save)}]";
 
                 if (returnIds)
                 {
@@ -595,10 +690,13 @@ FROM @Entities [E]";
             }
 
             // Return ordered result
-            return result
-                .OrderBy(e => e.Index)
-                .Select(e => e.Id)
-                .ToList();
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
         }
 
         public async Task MeasurementUnits__Activate(List<int> ids, bool isActive)
@@ -606,6 +704,7 @@ FROM @Entities [E]";
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
+                // Parameters
                 var isActiveParam = new SqlParameter("@IsActive", isActive);
 
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
@@ -616,13 +715,13 @@ FROM @Entities [E]";
                 };
 
                 cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.AddWithValue("@IsActive", isActive);
+                cmd.Parameters.Add("@IsActive", isActive);
 
-                cmd.CommandText = $@"EXEC [dal].[{nameof(MeasurementUnits__Activate)}]
-@IdList = @IdList,
-@IsActive = @IsActive
-";
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Activate)}]";
 
+                // Execute
                 await cmd.ExecuteNonQueryAsync();
             }
         }
@@ -643,13 +742,11 @@ FROM @Entities [E]";
                 };
 
                 cmd.Parameters.Add(idsTvp);
-                cmd.Parameters.AddWithValue("@Top", top);
+                cmd.Parameters.Add("@Top", top);
 
                 // Command
-                cmd.CommandText = $@"EXEC [bll].[{nameof(MeasurementUnits_Validate__Delete)}]
-@Ids = @Ids,
-@Top = @Top
-";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(MeasurementUnits_Validate__Delete)}]";
 
                 // Execute
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -674,11 +771,12 @@ FROM @Entities [E]";
             return result;
         }
 
-        public async Task MeasurementUnits__Delete(List<int> ids)
+        public async Task MeasurementUnits__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
+                // Parameters
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -688,9 +786,11 @@ FROM @Entities [E]";
 
                 cmd.Parameters.Add(idsTvp);
 
-                cmd.CommandText = $@"EXEC [dal].[{nameof(MeasurementUnits__Delete)}]
-@IdList = @IdList
-";
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(MeasurementUnits__Delete)}]";
+
+                // Execute
                 try
                 {
                     await cmd.ExecuteNonQueryAsync();
@@ -704,7 +804,212 @@ FROM @Entities [E]";
 
         #endregion
 
+        #region Agents
+
+        public Query<Agent> Agents__AsQuery(List<AgentForSave> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<int>> Agents__Save(List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<ValidationError>> Agents_Validate__Save(List<AgentForSave> entities, int top)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Agents__Delete(IEnumerable<int> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<ValidationError>> Agents_Validate__Delete(List<int> ids, int top)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Agents__Activate(List<int> ids, bool isActive)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #region Users
+
+        public async Task<UserSettings> Users__SettingsForClient()
+        {
+            var result = new UserSettings()
+            {
+                CustomSettings = new Dictionary<string, string>()
+            };
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SettingsForClient)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    // User Settings
+                    if (await reader.ReadAsync())
+                    {
+                        int i = 0;
+
+                        result.UserId = reader.GetInt32(i++);
+                        result.Name = reader.GetString(i++);
+                        result.Name2 = reader.GetString(i++);
+                        result.Name3 = reader.GetString(i++);
+                        result.ImageId = reader.GetString(i++);
+                        result.UserSettingsVersion = reader.GetGuid(i++);
+                    }
+                    else
+                    {
+                        // Developer mistake
+                        throw new InvalidOperationException("No settings for client were found");
+                    }
+
+                    // Custom settings
+                    await reader.NextResultAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        string key = reader.GetString(0);
+                        string val = reader.GetString(1);
+
+                        result.CustomSettings[key] = val;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public async Task Users__SaveSettings(string key, string value)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("Key", key);
+                cmd.Parameters.Add("Value", value);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__SaveSettings)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public Query<User> Users__AsQuery(List<UserForSave> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<ValidationError>> Users_Validate__Save(List<UserForSave> entities, int top)
+        {
+            /*
+             
+                DataTable UsersTable = UsersDataTable(entities);
+                var UsersTvp = new SqlParameter("Users", UsersTable) { TypeName = $"dbo.{nameof(UserForSave)}List", SqlDbType = SqlDbType.Structured };
+
+                var rolesHeaderIndices = indices.Keys.Select(User => (User.Roles, indices[User]));
+                DataTable rolesTable = ControllerUtilities.DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
+                var rolesTvp = new SqlParameter("Roles", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
+
+            */
+
+            throw new NotImplementedException();
+        }
+
+        public Task<(IEnumerable<string> newEmails, IEnumerable<string> oldEmails)> Users__Save(List<UserForSave> entities)
+        {
+            // Any user with a different email should have ExternalId cleared
+            // Return all
+
+            throw new NotImplementedException();
+
+        }
+
+        public Task<IEnumerable<ValidationError>> Users_Validate__Delete(List<int> ids, int top)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<string>> Users__Delete(IEnumerable<int> ids)
+        {
+            // Returns old emails
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Blobs
+
+        public Task Blobs__Delete(IEnumerable<string> blobNames)
+        {
+            // DELETE FROM [dbo].[Blobs] WHERE Id IN (SELECT VALUE FROM STRING_SPLIT({blobNamesString}, ','))
+            throw new NotImplementedException();
+        }
+
+        public Task Blobs__Save(string name, byte[] blob)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<byte[]> Blobs__Get(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Settings
+
+        public async Task Settings__Save(SettingsForSave settingsForSave)
+        {
+            if (settingsForSave is null)
+            {
+                return;
+            }
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Arguments
+                var mappedProps = typeof(SettingsForSave).GetMappedProperties();
+
+                var sqlBuilder = new System.Text.StringBuilder();
+                sqlBuilder.AppendLine("UPDATE [dbo].[Settings] SET");
+
+                foreach (var prop in mappedProps)
+                {
+                    var propName = prop.Name;
+                    var key = $"@{propName}";
+                    var value = prop.GetValue(settingsForSave);
+
+                    cmd.Parameters.Add(key, value);
+                    sqlBuilder.AppendLine($"{propName} = {key},");
+                }
+
+                sqlBuilder.AppendLine($"ModifiedAt = SYSDATETIMEOFFSET(),");
+                sqlBuilder.AppendLine($"ModifiedById = CONVERT(INT, SESSION_CONTEXT(N'UserId')),");
+                sqlBuilder.AppendLine($"SettingsVersion = NEWID()");
+
+                // Command
+                cmd.CommandText = sqlBuilder.ToString();
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
 
         #endregion
     }

@@ -18,7 +18,6 @@ namespace BSharp.Data
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0067:Dispose objects before losing scope", Justification = "To maintain the SESSION_CONTEXT we keep a hold of the SqlConnection object for the lifetime of the repository")]
     public class AdminRepository : IRepository, IDisposable
     {
-
         private readonly IExternalUserAccessor _externalUserAccessor;
         private readonly IClientInfoAccessor _clientInfoAccessor;
         private readonly IStringLocalizer _localizer;
@@ -26,7 +25,7 @@ namespace BSharp.Data
 
         private SqlConnection _conn;
         private Transaction _transactionOverride;
-        private GlobalUserInfo _userInfo;
+        private AdminUserInfo _userInfo;
 
         #region Lifecycle
 
@@ -61,7 +60,7 @@ namespace BSharp.Data
             if (_conn == null)
             {
                 _conn = new SqlConnection(_connectionString);
-                _conn.Open();
+                await _conn.OpenAsync();
 
                 // Always call OnConnect SP as soon as you create the connection
                 var externalUserId = _externalUserAccessor.GetUserId();
@@ -78,11 +77,12 @@ namespace BSharp.Data
             return _conn;
         }
 
+
         /// <summary>
-        /// Loads a <see cref="GlobalUserInfo"/> object from the database, this occurs once per <see cref="ApplicationRepository"/> 
+        /// Loads a <see cref="AdminUserInfo"/> object from the database, this occurs once per <see cref="ApplicationRepository"/> 
         /// instance, subsequent calls are satisfied from a scoped cache
         /// </summary>
-        public async Task<GlobalUserInfo> GetGlobalUserInfoAsync()
+        public async Task<AdminUserInfo> GetAdminUserInfoAsync()
         {
             await GetConnectionAsync(); // This automatically initializes the user info
             return _userInfo;
@@ -117,7 +117,7 @@ namespace BSharp.Data
             {
                 var conn = await GetConnectionAsync();
                 var sources = GetSources();
-                var userInfo = await GetGlobalUserInfoAsync();
+                var userInfo = await GetAdminUserInfoAsync();
                 var userId = userInfo.UserId ?? 0;
                 var userTimeZone = _clientInfoAccessor.GetInfo().TimeZone;
 
@@ -133,7 +133,7 @@ namespace BSharp.Data
             {
                 switch (t.Name)
                 {
-                    case nameof(GlobalUser):
+                    case nameof(AdminUser):
                         return new SqlSource("[dbo].[GlobalUsers]");
 
                     case nameof(SqlDatabase):
@@ -155,24 +155,22 @@ namespace BSharp.Data
 
         #region Stored Procedures
 
-        private async Task<GlobalUserInfo> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture)
+        private async Task<AdminUserInfo> OnConnect(string externalUserId, string userEmail, string culture, string neutralCulture)
         {
-            GlobalUserInfo result = null;
+            AdminUserInfo result = null;
 
             using (SqlCommand cmd = _conn.CreateCommand()) // Use the private field _conn to avoid infinite recursion
             {
+
                 // Parameters
-                cmd.Parameters.AddWithValue("@ExternalUserId", externalUserId);
-                cmd.Parameters.AddWithValue("@UserEmail", userEmail);
-                cmd.Parameters.AddWithValue("@Culture", culture);
-                cmd.Parameters.AddWithValue("@NeutralCulture", neutralCulture);
+                cmd.Parameters.Add("@ExternalUserId", externalUserId);
+                cmd.Parameters.Add("@UserEmail", userEmail);
+                cmd.Parameters.Add("@Culture", culture);
+                cmd.Parameters.Add("@NeutralCulture", neutralCulture);
 
                 // Command
-                cmd.CommandText = @"EXEC [dal].[OnConnect] 
-@ExternalUserId = @ExternalUserId, 
-@UserEmail      = @UserEmail, 
-@Culture        = @Culture, 
-@NeutralCulture = @NeutralCulture";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(OnConnect)}]";
 
                 // Execute and Load
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -182,7 +180,7 @@ namespace BSharp.Data
                         int i = 0;
 
                         // The user Info
-                        result = new GlobalUserInfo
+                        result = new AdminUserInfo
                         {
                             UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++),
                             ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++),
@@ -199,74 +197,6 @@ namespace BSharp.Data
             return result;
         }
 
-        public Task SetUserExternalIdByUserIdAsync(int userId, string externalId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetUserEmailByUserIdAsync(int userId, string externalEmail)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SetUserExternalIdByEmailAsync(string email, string externalId)
-        {
-            // Finds the user with the given email and sets its externalId as specified
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<string>> GlobalUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
-        {
-            var result = new List<string>();
-
-            var conn = await GetConnectionAsync();
-            using(var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                var newEmailsTable = RepositoryUtilities.DataTable(newEmails.Select(e => new StringListItem { Id = e }));
-                var newEmailsTvp = new SqlParameter("@NewEmails", newEmailsTable)
-                {
-                    TypeName = $"dbo.StringList",
-                    SqlDbType = SqlDbType.Structured
-                };
-                
-                var oldEmailsTable = RepositoryUtilities.DataTable(oldEmails.Select(e => new StringListItem { Id = e }));
-                var oldEmailsTvp = new SqlParameter("@OldEmails", oldEmailsTable)
-                {
-                    TypeName = $"dbo.StringList",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.AddWithValue("@DatabaseId", databaseId);
-                cmd.Parameters.AddWithValue("@ReturnEmailsForCreation", returnEmailsForCreation);
-
-                // Command
-                cmd.CommandText = $@"EXEC [dbo].[{nameof(GlobalUsers__Save)}] 
-@NewEmails = @NewEmails, 
-@OldEmails = @OldEmails, 
-@DatabaseId = @DatabaseId, 
-@ReturnEmailsForCreation = @ReturnEmailsForCreation";
-
-                // Execute and load
-                if(returnEmailsForCreation)
-                {
-                    using(var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        while(await reader.ReadAsync())
-                        {
-                            result.Add(reader.GetString(0));
-                        }
-                    }
-                }
-                else
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-            }
-
-            return result;
-        }
-
         public async Task<DatabaseConnectionInfo> GetDatabaseConnectionInfo(int databaseId)
         {
             DatabaseConnectionInfo result = null;
@@ -275,10 +205,11 @@ namespace BSharp.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                cmd.Parameters.AddWithValue("@DatabaseId", databaseId);
+                cmd.Parameters.Add("@DatabaseId", databaseId);
 
                 // Command
-                cmd.CommandText = $@"EXEC [dal].[{nameof(GetDatabaseConnectionInfo)}] @DatabaseId = @DatabaseId";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(GetDatabaseConnectionInfo)}]";
 
                 // Execute and Load
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -310,7 +241,8 @@ namespace BSharp.Data
             using (var cmd = conn.CreateCommand())
             {
                 // Command
-                cmd.CommandText = $"EXEC [dal].[{nameof(GetAccessibleDatabaseIds)}]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(GetAccessibleDatabaseIds)}]";
 
                 // Execute and Load
                 using (var reader = await cmd.ExecuteReaderAsync())
@@ -323,6 +255,176 @@ namespace BSharp.Data
             }
 
             return result;
+        }
+
+        #endregion
+
+        #region GlobalUsers
+
+        public async Task GlobalUsers__SetExternalIdByUserId(int userId, string externalId)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("UserId", userId);
+                cmd.Parameters.Add("ExternalId", externalId);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetExternalIdByUserId)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task GlobalUsers__SetEmailByUserId(int userId, string externalEmail)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("UserId", userId);
+                cmd.Parameters.Add("ExternalEmail", externalEmail);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetEmailByUserId)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task GlobalUsers__SetExternalIdByEmail(string email, string externalId)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("Email", email);
+                cmd.Parameters.Add("ExternalId", externalId);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(GlobalUsers__SetExternalIdByEmail)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<IEnumerable<string>> GlobalUsers__Save(IEnumerable<string> newEmails, IEnumerable<string> oldEmails, int databaseId, bool returnEmailsForCreation = false)
+        {
+            var result = new List<string>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                var newEmailsTable = RepositoryUtilities.DataTable(newEmails.Select(e => new StringListItem { Id = e }));
+                var newEmailsTvp = new SqlParameter("@NewEmails", newEmailsTable)
+                {
+                    TypeName = $"dbo.StringList",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var oldEmailsTable = RepositoryUtilities.DataTable(oldEmails.Select(e => new StringListItem { Id = e }));
+                var oldEmailsTvp = new SqlParameter("@OldEmails", oldEmailsTable)
+                {
+                    TypeName = $"dbo.StringList",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DatabaseId", databaseId);
+                cmd.Parameters.Add("@ReturnEmailsForCreation", returnEmailsForCreation);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(GlobalUsers__Save)}]";
+
+                // Execute and load
+                if (returnEmailsForCreation)
+                {
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            result.Add(reader.GetString(0));
+                        }
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        #region AdminUsers
+
+        public async Task AdminUsers__CreateAdmin(string email, string fullName, string password)
+        {
+            // 1 - Adds the given user to AdminUsers (if it does not exist)
+            // 2 - Gives that user access to the admin database
+            // 3 - Gives that user universal permissions (if not already)
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("Email", email);
+                cmd.Parameters.Add("FullName", fullName);
+                cmd.Parameters.Add("Password", password);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;              
+                cmd.CommandText = $"[dal].[{nameof(AdminUsers__CreateAdmin)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task AdminUsers__SetEmailByUserId(int userId, string externalEmail)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("UserId", userId);
+                cmd.Parameters.Add("ExternalEmail", externalEmail);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(AdminUsers__SetEmailByUserId)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task AdminUsers__SetExternalIdByUserId(int userId, string externalId)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("UserId", userId);
+                cmd.Parameters.Add("ExternalId", externalId);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(AdminUsers__SetExternalIdByUserId)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         #endregion

@@ -3,7 +3,7 @@
 --		and then returns the ones that are present and have an ExternalId so that their ExternalId can
 --		be set in the tenant database as well
 
-CREATE PROCEDURE [dbo].[GlobalUsers__Save]
+CREATE PROCEDURE [dal].[GlobalUsers__Save]
 	@NewEmails [dbo].[StringList] READONLY,
 	@OldEmails [dbo].[StringList] READONLY,
 	@DatabaseId INT,

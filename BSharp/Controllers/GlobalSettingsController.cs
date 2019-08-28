@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BSharp.Controllers.Dto;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.GlobalSettings;
@@ -15,7 +14,6 @@ namespace BSharp.Controllers
 {
     [Route("api/global-settings")]
     [ApiController]
-    [AdminApi]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class GlobalSettingsController : ControllerBase
     {
@@ -59,8 +57,9 @@ namespace BSharp.Controllers
             }
         }
 
+        [AdminApi]
         [HttpPost]
-        public async Task<ActionResult<SaveGlobalSettingsResponse>> Save([FromBody] GlobalSettingsForSave settingsForSave, [FromQuery] SaveArguments args)
+        public Task<ActionResult<SaveGlobalSettingsResponse>> Save([FromBody] GlobalSettingsForSave settingsForSave, [FromQuery] SaveArguments args)
         {
             // Authorized access (Criteria are not supported here)
             // TODO Authorize
@@ -156,7 +155,7 @@ namespace BSharp.Controllers
 
         // Helper methods
 
-        private async Task<GetByIdResponse<GlobalSettings>> GetImpl(GetByIdArguments args)
+        private Task<GetByIdResponse<GlobalSettings>> GetImpl(GetByIdArguments args)
         {
             //M.GlobalSettings mSettings = await _repo.GlobalSettings.FirstOrDefaultAsync();
             //if (mSettings == null)
@@ -179,11 +178,11 @@ namespace BSharp.Controllers
 
             // TODO
 
-            return new GetByIdResponse<GlobalSettings>
+            return Task.FromResult(new GetByIdResponse<GlobalSettings>
             {
                 CollectionName = "Settings",
                 Result = new GlobalSettings { SettingsVersion = Guid.Parse("aafc6590-cadf-45fe-8c4a-045f4d6f73b3") }
-            };
+            });
         }
 
         private DataWithVersion<GlobalSettingsForClient> GetForClientImpl()

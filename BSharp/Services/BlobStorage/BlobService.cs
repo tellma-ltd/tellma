@@ -12,9 +12,9 @@ namespace BSharp.Services.BlobStorage
             _blobService = factory.Create();
         }
 
-        public async Task DeleteBlobs(IEnumerable<string> blobNames)
+        public async Task DeleteBlobsAsync(IEnumerable<string> blobNames)
         {
-            await _blobService.DeleteBlobs(blobNames);
+            await _blobService.DeleteBlobsAsync(blobNames);
         }
 
         public async Task<byte[]> LoadBlob(string blobName)
@@ -22,9 +22,9 @@ namespace BSharp.Services.BlobStorage
             return await _blobService.LoadBlob(blobName);
         }
 
-        public async Task SaveBlobs(IEnumerable<(string blobName, byte[] content)> blobs)
+        public async Task SaveBlobsAsync(IEnumerable<(string blobName, byte[] content)> blobs)
         {
-            await _blobService.SaveBlobs(blobs);
+            await _blobService.SaveBlobsAsync(blobs);
         }
     }
 }

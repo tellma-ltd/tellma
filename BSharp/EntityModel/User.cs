@@ -28,10 +28,6 @@ namespace BSharp.EntityModel
         [Display(Name = "State")]
         public string State { get; set; }
 
-        [Display(Name = "IsActive")]
-        [AlwaysAccessible]
-        public bool? IsActive { get; set; }
-
         [Display(Name = "User_LastActivity")]
         public DateTimeOffset? LastAccess { get; set; }
 

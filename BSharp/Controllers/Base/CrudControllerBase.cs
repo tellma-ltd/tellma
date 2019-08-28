@@ -45,7 +45,7 @@ namespace BSharp.Controllers
             // Note here we use lists https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=netcore-2.1
             // since the order is symantically relevant for reporting validation errors on the entities
 
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var result = await SaveImplAsync(entities, args);
                 return Ok(result);
@@ -55,7 +55,7 @@ namespace BSharp.Controllers
         [HttpDelete]
         public virtual async Task<ActionResult> Delete([FromBody] List<TKey> ids)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 await DeleteImplAsync(ids);
                 return Ok();
@@ -89,7 +89,7 @@ namespace BSharp.Controllers
             decimal attributeValidationInCSharp = 0;
             decimal validatingAndSaving = 0;
 
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Parse the file into Entities + map back to row numbers (The way source code is compiled into machine code + symbols file)
                 var (entities, rowNumberFromErrorKeyMap) = await ParseImplAsync(args); // This should check for primary code consistency!
@@ -214,9 +214,15 @@ namespace BSharp.Controllers
             }
         }
 
-        protected abstract Task<(List<TEntityForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid grid, ParseArguments args);
+        protected Task<(List<TEntityForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid grid, ParseArguments args)
+        {
+            throw new NotImplementedException();
+        }
 
-        protected abstract AbstractDataGrid GetImportTemplate();
+        protected AbstractDataGrid GetImportTemplate()
+        {
+            throw new NotImplementedException();
+        }
 
         private async Task<List<TEntityForSave>> ApplyUpdatePermissionsMask(List<TEntityForSave> entities)
         {
@@ -429,56 +435,77 @@ return the entities
         /// <returns>Optionally returns the same entities in their persisted READ form.</returns>
         protected virtual async Task<EntitiesResponse<TEntity>> SaveImplAsync(List<TEntityForSave> entities, SaveArguments args)
         {
-            // Parse arguments
-            var expand = ExpandExpression.Parse(args.Expand);
-            var returnEntities = args.ReturnEntities ?? false;
-
-            // Trim all strings as a preprocessing step
-            entities.ForEach(e => TrimStringProperties(e));
-
-            // This implements field level security
-            entities = await ApplyUpdatePermissionsMask(entities);
-
-            // Start a transaction scope for save since it causes data modifications
-            using (var trx = new TransactionScope(
-                scopeOption: TransactionScopeOption.Required,
-                transactionOptions: GetSaveTransactionOptions(),
-                asyncFlowOption: TransactionScopeAsyncFlowOption.Enabled))
+            try
             {
-                // Validate
-                await SaveValidateAsync(entities);
-                if (!ModelState.IsValid)
+                // Parse arguments
+                var expand = ExpandExpression.Parse(args.Expand);
+                var returnEntities = args.ReturnEntities ?? false;
+
+                // Trim all strings as a preprocessing step
+                entities.ForEach(e => TrimStringProperties(e));
+
+                // This implements field level security
+                entities = await ApplyUpdatePermissionsMask(entities);
+
+                // Optional preprocessing
+                await PreprocessSavedEntitiesAsync(entities);
+
+                // Basic validation that applies to all entities
+                ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
+
+                // Start a transaction scope for save since it causes data modifications
+                using (var trx = ControllerUtilities.CreateTransaction(null, GetSaveTransactionOptions()))
                 {
-                    throw new UnprocessableEntityException(ModelState);
+                    // Validate
+                    await SaveValidateAsync(entities);
+                    if (!ModelState.IsValid)
+                    {
+                        throw new UnprocessableEntityException(ModelState);
+                    }
+
+                    // Save and retrieve Ids
+                    var ids = await SaveExecuteAsync(entities, expand, returnEntities);
+
+                    // Use the Ids to retrieve the items
+                    EntitiesResponse<TEntity> result = null;
+                    if (returnEntities && ids != null)
+                    {
+                        result = await GetByIdListAsync(ids.ToArray(), expand);
+                    }
+
+                    await PostProcess(result);
+
+                    // Commit and return
+                    await OnSaveCompleted();
+                    trx.Complete();
+                    return result;
                 }
-
-                // Save and retrieve Ids
-                var ids = await SaveExecuteAsync(entities, expand, returnEntities);
-
-                // Use the Ids to retrieve the items
-                EntitiesResponse<TEntity> result = null;
-                if (returnEntities && ids != null)
-                {
-                    result = await GetByIdListAsync(ids.ToArray(), expand);
-                }
-
-                // Commit and return
-                trx.Complete();
-                return result;
             }
+            catch (Exception ex)
+            {
+                await OnSaveError(ex);
+                throw ex;
+            }
+        }
+
+        // Optional preprocessing of entities before they are validated and saved
+        protected virtual Task PreprocessSavedEntitiesAsync(List<TEntityForSave> entities)
+        {
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Performs server side validation on the entities, this method is expected to 
         /// call AddModelError on the controller's ModelState if there is a validation problem,
-        /// the method should NOT do validation that is already handled by validation attributes
+        /// the method should NOT do validation that is already handled by validation attributes.
+        /// Note: Don't check for unique Ids as this is already taken care of
         /// </summary>
         protected abstract Task SaveValidateAsync(List<TEntityForSave> entities);
 
         /// <summary>
-        /// Persists the entities in the database, either creating them or updating them depending on the EntityState
+        /// Persists the entities in the database, either creating them or updating, the call to this method is already wrapped inside a transaction
         /// </summary>
-        protected abstract Task<List<TKey>> SaveExecuteAsync(List<TEntityForSave> entitiesAndMasks, ExpandExpression expand, bool returnIds);
+        protected abstract Task<List<TKey>> SaveExecuteAsync(List<TEntityForSave> entities, ExpandExpression expand, bool returnIds);
 
         /// <summary>
         /// Retrieves the <see cref="TransactionOptions"/> that are used in <see cref="Save(List{TEntityForSave}, SaveArguments)"/>,
@@ -489,17 +516,32 @@ return the entities
             return new TransactionOptions
             {
                 IsolationLevel = IsolationLevel.ReadCommitted,
-                Timeout = GetTransactionTimeout()
+                Timeout = ControllerUtilities.DefaultTransactionTimeout()
             };
         }
 
         /// <summary>
-        /// Returns the universal default timeout of 5 minutes, if every transaction used this method
-        /// it makes it easier to change the timeout when necessary
+        /// Gives an opportunity for inheriting controllers to post process the result before it is served
         /// </summary>
-        protected virtual TimeSpan GetTransactionTimeout()
+        protected virtual Task PostProcess(EntitiesResponse<TEntity> result)
         {
-            return TimeSpan.FromMinutes(5);
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked just before committing the Save transaction and returning the result, errors thrown here will roll back the save transactions
+        /// </summary>
+        protected virtual Task OnSaveCompleted()
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when an error occurs in the save pipleline, good place to perform cleaning up of resources
+        /// </summary>
+        protected virtual Task OnSaveError(Exception ex)
+        {
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -528,9 +570,7 @@ return the entities
         }
 
         /// <summary>
-        /// Deletes the entities specified by the list of Ids
-        /// Assumes that the view does not allow 'Create' permission level, if it does
-        /// ignore this method and override <see cref="DeleteImplAsync(List{TKey})"/> instead
+        /// Deletes the entities specified by the list of Ids, call to this method is NOT wrapped inside a transaction
         /// </summary>
         protected abstract Task DeleteExecuteAsync(List<TKey> ids);
 

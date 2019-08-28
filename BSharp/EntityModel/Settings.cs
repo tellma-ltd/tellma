@@ -1,41 +1,51 @@
-﻿using BSharp.EntityModel;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BSharp.Controllers.Dto
+namespace BSharp.EntityModel
 {
-    // TODO: delete (Not the ForClient part)
-
+    [StrongEntity]
     public class SettingsForSave : Entity
     {
+        [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Primary)]
         public string ShortCompanyName { get; set; }
 
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Secondary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string ShortCompanyName2 { get; set; }
 
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "Settings_PrimaryLanguage")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        [Culture]
         public string PrimaryLanguageId { get; set; }
 
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "Settings_PrimaryLanguageSymbol")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string PrimaryLanguageSymbol { get; set; }
 
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "Settings_SecondaryLanguage")]
+        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        [Culture]
         public string SecondaryLanguageId { get; set; }
 
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [Display(Name = "Settings_SecondaryLanguageSymbol")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string SecondaryLanguageSymbol { get; set; }
 
+        [Display(Name = "Settings_TernaryLanguage")]
+        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        [Culture]
+        public string TernaryLanguageId { get; set; }
+
+        [Display(Name = "Settings_TernaryLanguageSymbol")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        public string TernaryLanguageSymbol { get; set; }
+
         [Display(Name = "Settings_BrandColor")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string BrandColor { get; set; } // e.g. #0284AB
     }
 
@@ -57,40 +67,25 @@ namespace BSharp.Controllers.Dto
         [Display(Name = "Settings_ProvisionedAt")]
         public DateTimeOffset ProvisionedAt { get; set; }
 
-        /// <summary>
-        /// Audit Info
-        /// </summary>
+        [Display(Name = "CreatedAt")]
+        public DateTimeOffset CreatedAt { get; set; }
+
+        [Display(Name = "CreatedBy")]
+        public int CreatedById { get; set; }
+
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset ModifiedAt { get; set; }
 
-        /// <summary>
-        /// Audit Info
-        /// </summary>
         [Display(Name = "ModifiedBy")]
         public int ModifiedById { get; set; }
-    }
 
+        // For Query
 
-    public class SettingsForClient
-    {
-        public string ShortCompanyName { get; set; }
+        [Display(Name = "CreatedBy")]
+        public User CreatedBy { get; set; }
 
-        public string ShortCompanyName2 { get; set; }
-
-        public string PrimaryLanguageId { get; set; }
-
-        public string PrimaryLanguageName { get; set; }
-
-        public string PrimaryLanguageSymbol { get; set; }
-
-        public string SecondaryLanguageId { get; set; }
-
-        public string SecondaryLanguageName { get; set; }
-
-        public string SecondaryLanguageSymbol { get; set; }
-
-        public string BrandColor { get; set; }
-               
-        public DateTimeOffset ProvisionedAt { get; set; }
+        [Display(Name = "ModifiedBy")]
+        [ForeignKey(nameof(ModifiedById))]
+        public User ModifiedBy { get; set; }
     }
 }

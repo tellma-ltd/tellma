@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var config = configSection.Get<EmbeddedIdentityServerOptions>();
 
             // Register the identity context
-            string connString = config?.ConnectionString ?? throw new Exception("To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider");
+            string connString = config?.ConnectionString ?? throw new InvalidOperationException("To enable the embedded IdentityServer, the connection string to the database of IdentityServer must be specified in a configuration provider");
             services.AddDbContext<EmbeddedIdentityServerContext>(opt =>
                     opt.UseSqlServer(connString));
 

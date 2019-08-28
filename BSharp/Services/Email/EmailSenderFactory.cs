@@ -20,10 +20,10 @@ namespace BSharp.Services.Email
 
         public IEmailSender Create()
         {
-            if(_globalConfig.Online)
+            if(_globalConfig.EmailEnabled)
             {
                 // Scream for missing yet required stuff
-                if (string.IsNullOrWhiteSpace(_config.SendGrid.ApiKey))
+                if (string.IsNullOrWhiteSpace(_config?.SendGrid?.ApiKey))
                 {
                     throw new InvalidOperationException(
                         $"A SendGrid API Key must be in a configuration provider under the key 'Email:SendGrid:ApiKey', you can get a free key on https://sendgrid.com/");

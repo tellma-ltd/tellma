@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[SqlServers]
 (
-	[Id] INT NOT NULL PRIMARY KEY,
+	[Id] INT PRIMARY KEY IDENTITY,
 	[ServerName] NVARCHAR (255) NOT NULL,
 	[UserName] NVARCHAR (255) NOT NULL, 
 	-- For enhanced security we don't store the password itself in the database,

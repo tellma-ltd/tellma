@@ -326,7 +326,7 @@
     <value>الملف المحمل ليس فيه بيانات</value>
   </data>
   <data name="Error_ErrorFromExternalProvider0" xml:space="preserve">
-    <value>رسالة خطأ من مسجل الدخول الخارجي</value>
+    <value>رسالة خطأ من مسجل الدخول الخارجي: {0}</value>
   </data>
   <data name="Error_ExcelContainsMultipleSheetsNameOne0" xml:space="preserve">
     <value>ملف الإكسل الذي رفعته يحتوي على أوراق متعدده، سم إحداهن بالاسم ({0})</value>

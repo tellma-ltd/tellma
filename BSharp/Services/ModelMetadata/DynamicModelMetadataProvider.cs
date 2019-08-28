@@ -1,6 +1,5 @@
-﻿using BSharp.Controllers.Dto;
-using BSharp.Controllers.Misc;
-using BSharp.Services.MultiTenancy;
+﻿using BSharp.Data;
+using BSharp.EntityModel;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,103 +20,103 @@ namespace BSharp.Services.ModelMetadata
     public class DynamicModelMetadataProvider : DefaultModelMetadataProvider
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly ITenantInfoAccessor _tenantInfo;
+        //private readonly ITenantInfoAccessor _tenantInfo;
         private readonly IStringLocalizer _localizer;
 
         public DynamicModelMetadataProvider(ICompositeMetadataDetailsProvider detailsProvider, IHttpContextAccessor contextAccessor,
-            ITenantInfoAccessor tenantInfo, IStringLocalizer<Strings> localizer) : base(detailsProvider)
+            IStringLocalizer<Strings> localizer) : base(detailsProvider)
         {
             _contextAccessor = contextAccessor;
-            _tenantInfo = tenantInfo;
+         //   _tenantInfo = tenantInfo;
             _localizer = localizer;
         }
 
-        public DynamicModelMetadataProvider(ICompositeMetadataDetailsProvider detailsProvider, IOptions<MvcOptions> optionsAccessor,
-            IHttpContextAccessor contextAccessor, ITenantUserInfoAccessor tenantInfo, IStringLocalizer<Strings> localizer) : base(detailsProvider, optionsAccessor)
-        {
-            _contextAccessor = contextAccessor;
-            _tenantInfo = tenantInfo;
-            _localizer = localizer;
-        }
+        //public DynamicModelMetadataProvider(ICompositeMetadataDetailsProvider detailsProvider, IOptions<MvcOptions> optionsAccessor,
+        //    IHttpContextAccessor contextAccessor, ITenantUserInfoAccessor tenantInfo, IStringLocalizer<Strings> localizer) : base(detailsProvider, optionsAccessor)
+        //{
+        //    _contextAccessor = contextAccessor;
+        //    _tenantInfo = tenantInfo;
+        //    _localizer = localizer;
+        //}
 
-        protected override DefaultMetadataDetails[] CreatePropertyDetails(ModelMetadataIdentity key)
-        {
-            // Call the base implementation
-            var propsDetails = base.CreatePropertyDetails(key);
+        //protected override DefaultMetadataDetails[] CreatePropertyDetails(ModelMetadataIdentity key)
+        //{
+        //    // Call the base implementation
+        //    var propsDetails = base.CreatePropertyDetails(key);
 
-            foreach (var propDetails in propsDetails)
-            {
-                var att = propDetails.ModelAttributes.PropertyAttributes
-                    .OfType<MultilingualDisplayAttribute>().FirstOrDefault();
+        //    foreach (var propDetails in propsDetails)
+        //    {
+        //        var att = propDetails.ModelAttributes.PropertyAttributes
+        //            .OfType<MultilingualDisplayAttribute>().FirstOrDefault();
 
-                if (att != null)
-                {
-                    propDetails.DisplayMetadata = new DisplayMetadata
-                    {
-                        DisplayName = () =>
-                        {
-                            var name = att.Name ?? "";
-                            var lang = att.Language;
-                            var info = _tenantInfo.GetCurrentInfo();
-                            string result;
+        //        if (att != null)
+        //        {
+        //            propDetails.DisplayMetadata = new DisplayMetadata
+        //            {
+        //                DisplayName = () =>
+        //                {
+        //                    var name = att.Name ?? "";
+        //                    var lang = att.Language;
+        //                    var info = _tenantInfo.GetCurrentInfo();
+        //                    string result;
 
-                            switch (lang)
-                            {
-                                case Language.Primary:
-                                    result = _localizer[name] + PrimaryPostfix(info);
-                                    break;
+        //                    switch (lang)
+        //                    {
+        //                        case Language.Primary:
+        //                            result = _localizer[name] + PrimaryPostfix(info);
+        //                            break;
 
-                                case Language.Secondary:
-                                    // A null name indicates a hidden column in Excel templates
-                                    result = string.IsNullOrWhiteSpace(info.SecondaryLanguageId) ?
-                                    Constants.Hidden : _localizer[name] + SecondaryPostfix(info);
-                                    break;
+        //                        case Language.Secondary:
+        //                            // A null name indicates a hidden column in Excel templates
+        //                            result = string.IsNullOrWhiteSpace(info.SecondaryLanguageId) ?
+        //                            Constants.Hidden : _localizer[name] + SecondaryPostfix(info);
+        //                            break;
 
-                                case Language.Ternary:
-                                    // A null name indicates a hidden column in Excel templates
-                                    result = string.IsNullOrWhiteSpace(info.TernaryLanguageId) ?
-                                    Constants.Hidden : _localizer[name] + TernaryPostfix(info);
-                                    break;
+        //                        case Language.Ternary:
+        //                            // A null name indicates a hidden column in Excel templates
+        //                            result = string.IsNullOrWhiteSpace(info.TernaryLanguageId) ?
+        //                            Constants.Hidden : _localizer[name] + TernaryPostfix(info);
+        //                            break;
 
-                                default:
-                                    result = _localizer[name];
-                                    break;
-                            };
+        //                        default:
+        //                            result = _localizer[name];
+        //                            break;
+        //                    };
 
-                            return result;
-                        }
-                    };
-                }
-            }
+        //                    return result;
+        //                }
+        //            };
+        //        }
+        //    }
 
-            ///// Below are types which have dynamic properties
-            if (IsSameOrSubclass<AgentForSave>(key.ModelType))
-            {
-                // Get the route data from http context
-                // Loop over the properties and special treatment to the dynamic ones
-                foreach (var propDetails in propsDetails)
-                {
-                    string propertyName = propDetails.Key.Name;
-                    if (propertyName == nameof(AgentForSave.BirthDateTime))
-                    {
-                        propDetails.DisplayMetadata = new DisplayMetadata
-                        {
-                            DisplayName = () =>
-                            {
-                                var routeData = _contextAccessor.HttpContext.GetRouteData();
-                                string agentType = routeData.Values["agentType"]?.ToString();
-                                string displayName = $"Agent_{agentType}_BirthDateTime";
-                                return _localizer[displayName];
-                            }
-                        };
-                    }
-                }
-            }
+        //    ///// Below are types which have dynamic properties
+        //    //if (IsSameOrSubclass<AgentForSave>(key.ModelType))
+        //    //{
+        //    //    // Get the route data from http context
+        //    //    // Loop over the properties and special treatment to the dynamic ones
+        //    //    foreach (var propDetails in propsDetails)
+        //    //    {
+        //    //        string propertyName = propDetails.Key.Name;
+        //    //        if (propertyName == nameof(AgentForSave.BirthDateTime))
+        //    //        {
+        //    //            propDetails.DisplayMetadata = new DisplayMetadata
+        //    //            {
+        //    //                DisplayName = () =>
+        //    //                {
+        //    //                    var routeData = _contextAccessor.HttpContext.GetRouteData();
+        //    //                    string agentType = routeData.Values["agentType"]?.ToString();
+        //    //                    string displayName = $"Agent_{agentType}_BirthDateTime";
+        //    //                    return _localizer[displayName];
+        //    //                }
+        //    //            };
+        //    //        }
+        //    //    }
+        //    //}
 
-            return propsDetails;
-        }
+        //    return propsDetails;
+        //}
 
-        private string PrimaryPostfix(TenantUserInfo info)
+        private string PrimaryPostfix(TenantInfo info)
         {
             if (info != null && info.SecondaryLanguageId != null && info.TernaryLanguageId != null)
             {
@@ -128,7 +127,7 @@ namespace BSharp.Services.ModelMetadata
         }
 
 
-        private string SecondaryPostfix(TenantUserInfo info)
+        private string SecondaryPostfix(TenantInfo info)
         {
             if (info != null && info.SecondaryLanguageId != null)
             {
@@ -137,7 +136,7 @@ namespace BSharp.Services.ModelMetadata
 
             return "";
         }
-        private string TernaryPostfix(TenantUserInfo info)
+        private string TernaryPostfix(TenantInfo info)
         {
             if (info != null && info.TernaryLanguageId != null)
             {
@@ -145,20 +144,6 @@ namespace BSharp.Services.ModelMetadata
             }
 
             return "";
-        }
-
-        public bool IsSameOrSubclass<TBase>(Type potentialDescendant)
-        {
-            var potentialBase = typeof(TBase);
-            return potentialDescendant.IsSubclassOf(potentialBase)
-                   || potentialDescendant == potentialBase;
-        }
-
-        // TODO: Delete
-        public bool IsSameOrSubclass(Type potentialBase, Type potentialDescendant)
-        {
-            return potentialDescendant.IsSubclassOf(potentialBase)
-                   || potentialDescendant == potentialBase;
         }
     }
 }

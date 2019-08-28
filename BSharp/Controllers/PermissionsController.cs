@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BSharp.Controllers.Dto;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Services.ApiAuthentication;
@@ -19,29 +18,18 @@ namespace BSharp.Controllers
     [Route("api/permissions")]
     [ApiController]
     [AuthorizeAccess]
-    [LoadTenantInfo]
+    [ApplicationApi]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class PermissionsController : ControllerBase
     {
-        // Private fields
-
-        private readonly ApplicationContext _db;
+        private readonly ApplicationRepository _repo;
         private readonly ILogger _logger;
-        private readonly ITenantUserInfoAccessor _tenantInfo;
 
-
-        // Constructor
-
-        public PermissionsController(ApplicationContext db, ILogger<PermissionsController> logger,
-            ITenantUserInfoAccessor tenantInfo)
+        public PermissionsController(ApplicationRepository repo, ILogger<PermissionsController> logger)
         {
-            _db = db;
+            _repo = repo;
             _logger = logger;
-            _tenantInfo = tenantInfo;
         }
-
-
-        // API
 
         [HttpGet("client")]
         public virtual async Task<ActionResult<DataWithVersion<PermissionsForClient>>> GetForClient()
@@ -49,38 +37,24 @@ namespace BSharp.Controllers
             try
             {
                 // Retrieve the current version of the permissions
-                int userId = _tenantInfo.UserId();
-                Guid version = await _db.LocalUsers.Where(e => e.Id == userId).Select(e => e.PermissionsVersion).FirstOrDefaultAsync();
+                Guid version = await _repo.GetUserPermissionsVersion();
                 if (version == null)
                 {
-                    // This should never happen
+                    // Programmer mistake
                     return BadRequest("No user in the system");
                 }
 
                 // Retrieve all the permissions
-                var allPermissions = await _db.AbstractPermissions.FromSql($@"
-    DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-
-    SELECT ViewId, Criteria, Level As Action, Mask 
-    FROM [dbo].[Permissions] P
-    JOIN [dbo].[Roles] R ON P.RoleId = R.Id
-    JOIN [dbo].[RoleMemberships] RM ON R.Id = RM.RoleId
-    WHERE R.IsActive = 1 
-    AND RM.UserId = @UserId
-    UNION
-    SELECT ViewId, Criteria, Level As Action, Mask 
-    FROM [dbo].[Permissions] P
-    JOIN [dbo].[Roles] R ON P.RoleId = R.Id
-    WHERE R.IsPublic = 1 
-    AND R.IsActive = 1
-").ToListAsync();
+                IEnumerable<AbstractPermission> allPermissions = await _repo.GetUserPermissions();
 
                 // Arrange the permission in a DTO that is easy for clients to consume
                 var permissions = new PermissionsForClient();
                 foreach (var gViewIds in allPermissions.GroupBy(e => e.ViewId))
                 {
                     string viewId = gViewIds.Key;
-                    Dictionary<string, bool> viewActions = gViewIds.GroupBy(e => e.Action).ToDictionary(g => g.Key, g => true);
+                    Dictionary<string, bool> viewActions = gViewIds
+                        .GroupBy(e => e.Action)
+                        .ToDictionary(g => g.Key, g => true);
 
                     permissions[viewId] = viewActions;
                 }
@@ -101,6 +75,5 @@ namespace BSharp.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
     }
 }

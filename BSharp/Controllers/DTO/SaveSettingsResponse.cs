@@ -1,4 +1,6 @@
-﻿namespace BSharp.Controllers.Dto
+﻿using BSharp.EntityModel;
+
+namespace BSharp.Controllers.Dto
 {
     public class SaveSettingsResponse : GetEntityResponse<Settings>
     {

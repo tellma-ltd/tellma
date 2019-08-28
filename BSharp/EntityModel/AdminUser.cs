@@ -5,8 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.EntityModel
 {
     [StrongEntity]
-    public class GlobalUserForSave : EntityWithKey<int>
+    public class AdminUserForSave : EntityWithKey<int>
     {
+        [Display(Name = "Name")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Name { get; set; }
+
         [Display(Name = "User_Email")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
@@ -14,7 +20,7 @@ namespace BSharp.EntityModel
         public string Email { get; set; }
     }
 
-    public class GlobalUser : GlobalUserForSave
+    public class AdminUser : AdminUserForSave
     {
         public string ExternalId { get; set; }
 
@@ -34,10 +40,10 @@ namespace BSharp.EntityModel
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
+        public AdminUser CreatedBy { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
+        public AdminUser ModifiedBy { get; set; }
     }
 }

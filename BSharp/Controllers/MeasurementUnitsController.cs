@@ -78,10 +78,7 @@ namespace BSharp.Controllers
             await CheckActionPermissions("IsActive", idsArray);
 
             // Execute and return
-            using (var trx = new TransactionScope(
-                scopeOption: TransactionScopeOption.Required,
-                transactionOptions: new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted, Timeout = GetTransactionTimeout() },
-                asyncFlowOption: TransactionScopeAsyncFlowOption.Enabled))
+            using (var trx = ControllerUtilities.CreateTransaction())
             {
                 await _repo.MeasurementUnits__Activate(ids, isActive);
 
@@ -102,7 +99,7 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.GetUserPermissions(action, VIEW);
+            return await _repo.UserPermissions(action, VIEW);
         }
 
         protected override IRepository GetRepository()
@@ -131,8 +128,23 @@ namespace BSharp.Controllers
 
         protected override async Task SaveValidateAsync(List<MeasurementUnitForSave> entities)
         {
-            // C# validation
-            ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
+            // Check that codes are not duplicated within the arriving collection
+            var duplicateCodes = entities.Where(e => e.Code != null).GroupBy(e => e.Code).Where(g => g.Count() > 1);
+            if (duplicateCodes.Any())
+            {
+                // Hash the entities' indices for performance
+                Dictionary<MeasurementUnitForSave, int> indices = entities.ToIndexDictionary();
+
+                foreach (var groupWithDuplicateCodes in duplicateCodes)
+                {
+                    foreach (var entity in groupWithDuplicateCodes)
+                    {
+                        // This error indicates a bug
+                        var index = indices[entity];
+                        ModelState.AddModelError($"[{index}].Id", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
+                    }
+                }
+            }
 
             // No need to invoke SQL if the model state is full of errors
             if (ModelState.HasReachedMaxErrors)
@@ -178,121 +190,6 @@ namespace BSharp.Controllers
         protected override Query<MeasurementUnit> GetAsQuery(List<MeasurementUnitForSave> entities)
         {
             return _repo.MeasurementUnits__AsQuery(entities);
-        }
-
-        protected override AbstractDataGrid GetImportTemplate()
-        {
-            // Get the properties of the DTO for Save, excluding Id or EntityState
-            var type = typeof(MeasurementUnitForSave);
-            var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-
-            // The result that will be returned
-            var result = new AbstractDataGrid(props.Length, 1);
-
-            // Add the header
-            var header = result[result.AddRow()];
-            int i = 0;
-            foreach (var prop in props)
-            {
-                var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
-                if (display != Constants.Hidden)
-                {
-                    header[i++] = AbstractDataCell.Cell(display);
-                }
-            }
-
-            return result;
-        }
-
-        protected override AbstractDataGrid EntitiesToAbstractGrid(GetResponse<MeasurementUnit> response, ExportArguments args)
-        {
-            // Get all the properties without Id and EntityState
-            var type = typeof(MeasurementUnit);
-            var readProps = typeof(MeasurementUnit).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            var saveProps = typeof(MeasurementUnitForSave).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            var props = saveProps.Union(readProps).ToArray();
-
-            // The result that will be returned
-            var result = new AbstractDataGrid(props.Length, response.Result.Count() + 1);
-
-            // Add the header
-            List<PropertyInfo> addedProps = new List<PropertyInfo>(props.Length);
-            {
-                var header = result[result.AddRow()];
-                int i = 0;
-                foreach (var prop in props)
-                {
-                    var display = _metadataProvider.GetMetadataForProperty(type, prop.Name)?.DisplayName ?? prop.Name;
-                    if (display != Constants.Hidden)
-                    {
-                        header[i] = AbstractDataCell.Cell(display);
-
-                        // Add the proper styling for DateTime and DateTimeOffset
-                        if (prop.PropertyType.IsDateOrTime())
-                        {
-                            var att = prop.GetCustomAttribute<DataTypeAttribute>();
-                            var isDateOnly = att != null && att.DataType == DataType.Date;
-                            header[i].NumberFormat = ExportDateTimeFormat(dateOnly: isDateOnly);
-                        }
-
-                        addedProps.Add(prop);
-                        i++;
-                    }
-                }
-            }
-
-            //// Add the rows
-            //foreach (var entity in response.Ids)
-            //{
-            //    var metadata = entity.EntityMetadata;
-            //    var row = result[result.AddRow()];
-            //    int i = 0;
-            //    foreach (var prop in addedProps)
-            //    {
-            //        metadata.TryGetValue(prop.Name, out FieldMetadata meta);
-            //        if (meta == FieldMetadata.Loaded)
-            //        {
-            //            var content = prop.GetValue(entity);
-
-            //            // Special handling for choice lists
-            //            var choiceListAttr = prop.GetCustomAttribute<ChoiceListAttribute>();
-            //            if (choiceListAttr != null)
-            //            {
-            //                var choiceIndex = Array.FindIndex(choiceListAttr.Choices, e => e.Equals(content));
-            //                if (choiceIndex != -1)
-            //                {
-            //                    string displayName = choiceListAttr.DisplayNames[choiceIndex];
-            //                    content = _localizer[displayName];
-            //                }
-            //            }
-
-            //            // Special handling for DateTimeOffset
-            //            if (prop.PropertyType.IsDateTimeOffset() && content != null)
-            //            {
-            //                content = ToExportDateTime((DateTimeOffset)content);
-            //            }
-
-            //            row[i] = AbstractDataCell.Cell(content);
-            //        }
-            //        else if (meta == FieldMetadata.Restricted)
-            //        {
-            //            row[i] = AbstractDataCell.Cell(Constants.Restricted);
-            //        }
-            //        else
-            //        {
-            //            row[i] = AbstractDataCell.Cell("-");
-            //        }
-
-            //        i++;
-            //    }
-            //}
-
-            return result;
-        }
-
-        protected override Task<(List<MeasurementUnitForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid grid, ParseArguments args)
-        {
-            throw new NotImplementedException();
         }
     }
 }

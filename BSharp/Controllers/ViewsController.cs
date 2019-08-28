@@ -1,9 +1,9 @@
 ﻿using BSharp.Controllers.Dto;
 using BSharp.Controllers.Misc;
 using BSharp.Data;
+using BSharp.Data.Queries;
+using BSharp.EntityModel;
 using BSharp.Services.ImportExport;
-using BSharp.Services.MultiTenancy;
-using BSharp.Services.OData;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -16,44 +16,33 @@ using System.Threading.Tasks;
 namespace BSharp.Controllers
 {
     [Route("api/views")]
-    [LoadTenantInfo]
+    [ApplicationApi]
     public class ViewsController : ReadEntitiesControllerBase<View, string>
     {
-        private readonly ApplicationContext _db;
+        private readonly ApplicationRepository _repo;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger<ViewsController> _logger;
         private readonly IStringLocalizer _localizer;
 
-        private readonly ITenantUserInfoAccessor _tenantInfo;
+        private string VIEW => "views";
 
-        public ViewsController(ApplicationContext db, IModelMetadataProvider metadataProvider, ILogger<ViewsController> logger,
-            IStringLocalizer<Strings> localizer, IServiceProvider serviceProvider, ITenantUserInfoAccessor tenantInfoAccessor) : base(logger, localizer, serviceProvider)
+        public ViewsController(ApplicationRepository repo, IModelMetadataProvider metadataProvider, 
+            ILogger<ViewsController> logger,
+            IStringLocalizer<Strings> localizer) : base(logger, localizer)
         {
-            _db = db;
+            _repo = repo;
             _metadataProvider = metadataProvider;
             _logger = logger;
             _localizer = localizer;
 
-            _tenantInfo = tenantInfoAccessor;
         }
 
-        protected override AbstractDataGrid EntitiesToAbstractGrid(GetResponse<View> response, ExportArguments args)
+        protected override IRepository GetRepository()
         {
-            throw new NotImplementedException();
+            return _repo;
         }
 
-        protected override DbContext GetRepository()
-        {
-            return _db;
-        }
-
-        protected override Func<Type, string> GetSources()
-        {
-            var info = _tenantInfo.GetCurrentInfo();
-            return ControllerUtilities.GetApplicationSources(_localizer, info.PrimaryLanguageId, info.SecondaryLanguageId, info.TernaryLanguageId);
-        }
-
-        protected override ODataQuery<View> Search(ODataQuery<View> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<View> Search(Query<View> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
@@ -62,10 +51,11 @@ namespace BSharp.Controllers
 
                 var name = nameof(View.Name);
                 var name2 = nameof(View.Name2);
-                // var name3 = nameof(MeasurementUnitForQuery.Name3); // TODO
+                var name3 = nameof(View.Name3);
                 var code = nameof(View.Code);
+                var cs = Ops.contains;
 
-                query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
+                query = query.Filter($"{name} {cs} '{search}' or {name2} {cs} '{search}' or {name3} {cs} '{search}' or {code} {cs} '{search}'");
             }
 
             return query;
@@ -73,7 +63,7 @@ namespace BSharp.Controllers
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return ControllerUtilities.GetPermissions(_db.AbstractPermissions, action, "views");
+            return _repo.UserPermissions(action, VIEW);
         }
     }
 }

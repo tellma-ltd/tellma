@@ -39,7 +39,7 @@ namespace BSharp.Data.Queries
             return _cacheGetMappedProperties.GetOrAdd(type, (t) =>
             {
                 return t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(e => e.GetCustomAttribute<NotMappedAttribute>() == null && !e.PropertyType.IsList() && !e.PropertyType.IsSubclassOf(typeof(Entity)));
+                .Where(e => e.GetCustomAttribute<NotMappedAttribute>() == null && !e.PropertyType.IsList() && !e.PropertyType.IsEntity());
             });
         }
 

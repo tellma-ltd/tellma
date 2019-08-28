@@ -49,7 +49,7 @@ namespace BSharp.Services.GlobalSettings
                     {
                         using (var scope = _serviceProvider.CreateScope())
                         {
-                            using (var db = scope.ServiceProvider.GetRequiredService<AdminContext>())
+                            using (var db = scope.ServiceProvider.GetRequiredService<AdminRepository>())
                             {
                                 var dbVersion = LoadGlobalSettingsVersion(db);
 
@@ -78,29 +78,19 @@ namespace BSharp.Services.GlobalSettings
             };
         }
 
-        private string LoadGlobalSettingsVersion(AdminContext db)
+        private string LoadGlobalSettingsVersion(AdminRepository _)
         {
-            var dbSettings = db.GlobalSettings.FirstOrDefault();
-            var version = dbSettings?.SettingsVersion ?? Guid.Empty;
+            //var dbSettings = db.GlobalSettings.FirstOrDefault();
+            //var version = dbSettings?.SettingsVersion ?? Guid.Empty;
 
+            var version = Guid.Empty;
             return version.ToString();
         }
 
-        private GlobalSettingsForClient LoadGlobalSettings(AdminContext db)
+        private GlobalSettingsForClient LoadGlobalSettings(AdminRepository _)
         {
             var result = new GlobalSettingsForClient
             {
-                ActiveCultures = db.Cultures
-                    .AsNoTracking()
-                    .Where(e => e.IsActive)
-                    .ToDictionary(e => e.Id, e => new Culture
-                    {
-                        Id = e.Id,
-                        Name = e.Name,
-                        EnglishName = e.EnglishName,
-                        NeutralName = e.NeutralName,
-                        IsActive = e.IsActive
-                    })
             };
 
             return result;

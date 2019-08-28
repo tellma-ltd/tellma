@@ -9,7 +9,7 @@
 
     public class GlobalUserMembership : GlobalUserMembershipForSave
     {
-        public GlobalUser User { get; set; }
+        public AdminUser User { get; set; }
 
         public SqlDatabase Database { get; set; }
     }

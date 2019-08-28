@@ -24,7 +24,7 @@ namespace BSharp.Controllers
         [HttpDelete("with-descendants")]
         public virtual async Task<ActionResult> DeleteWithDescendants([FromBody] List<TKey> ids)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 await DeleteWithDescendantsImplAsync(ids);
                 return Ok();

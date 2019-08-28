@@ -199,7 +199,7 @@ namespace BSharp.Services.Utilities
 
             if (!str.EndsWith("/"))
             {
-                str = str + "/";
+                str += "/";
             }
 
             return str;

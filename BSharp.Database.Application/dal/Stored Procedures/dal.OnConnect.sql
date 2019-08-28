@@ -6,8 +6,8 @@
 AS
 BEGIN
     -- Set the global values of the session context
-    EXEC [sys].[sp_set_session_context] @key = N'Culture', @value = @Culture;
-    EXEC [sys].[sp_set_session_context] @key = N'NeutralCulture', @value = @NeutralCulture;
+    EXEC sp_set_session_context @key = N'Culture', @value = @Culture;
+    EXEC sp_set_session_context @key = N'NeutralCulture', @value = @NeutralCulture;
 
     -- Get the User Id
     DECLARE 
@@ -41,7 +41,7 @@ BEGIN
         @PermissionsVersion = U.[PermissionsVersion],
         @UserSettingsVersion = U.[UserSettingsVersion]
     FROM [dbo].[Users] U
-	JOIN dbo.Agents A ON U.[Id] = A.[Id]
+	JOIN [dbo].[Agents] A ON U.[Id] = A.[Id]
     WHERE U.[IsActive] = 1
 	AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
 
@@ -50,17 +50,17 @@ BEGIN
 
     -- Get hashes
     SELECT 
-		@ShortCompanyName = [ShortCompanyName],
-		@ShortCompanyName2 = [ShortCompanyName2],
-		@ShortCompanyName3 = [ShortCompanyName3],
+		@ShortCompanyName		= [ShortCompanyName],
+		@ShortCompanyName2		= [ShortCompanyName2],
+		@ShortCompanyName3		= [ShortCompanyName3],
 		@SettingsVersion		= [SettingsVersion],
         @ViewsAndSpecsVersion	= [ViewsAndSpecsVersion],
         @PrimaryLanguageId		= [PrimaryLanguageId],
         @PrimaryLanguageSymbol	= [PrimaryLanguageSymbol],
         @SecondaryLanguageId	= [SecondaryLanguageId],
         @SecondaryLanguageSymbol= [SecondaryLanguageSymbol],
-        @TernaryLanguageId	= [TernaryLanguageId],
-        @TernaryLanguageSymbol= [TernaryLanguageSymbol]
+        @TernaryLanguageId		= [TernaryLanguageId],
+        @TernaryLanguageSymbol	= [TernaryLanguageSymbol]
     FROM [dbo].[Settings]
 
     -- Set the User Id

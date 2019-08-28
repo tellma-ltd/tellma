@@ -9,7 +9,7 @@ namespace BSharp.Data.Queries
     /// A collection containing a bunch of <see cref="SqlParameter"/>s, contains a
     /// method that lets you add parameters with auto-names: "Param_1", "Param_2" etc...
     /// </summary>
-    internal class SqlStatementParameters : IEnumerable<SqlParameter>
+    public class SqlStatementParameters : IEnumerable<SqlParameter>
     {
         private static readonly string _prefix = "Param__";
         private readonly HashSet<SqlParameter> _params = new HashSet<SqlParameter>();

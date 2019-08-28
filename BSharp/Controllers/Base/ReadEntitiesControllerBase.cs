@@ -31,7 +31,7 @@ namespace BSharp.Controllers
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<GetByIdResponse<TEntity>>> GetById(TKey id, [FromQuery] GetByIdArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var result = await GetByIdImplAsync(id, args);
                 return Ok(result);
@@ -148,7 +148,7 @@ namespace BSharp.Controllers
         /// This is a utility method for permission actions that do not have a mask, it checks that the
         /// user has enough permissions to cover the entire list of Ids affected by the action
         /// </summary>
-        protected virtual async Task CheckActionPermissions(string action, TKey[] ids)
+        protected virtual async Task CheckActionPermissions(string action, params TKey[] ids)
         {
             var permissions = await UserPermissions(action);
             if (!permissions.Any())

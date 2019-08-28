@@ -45,10 +45,10 @@ namespace BSharp.EntityModel
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
-        public GlobalUser CreatedBy { get; set; }
+        public AdminUser CreatedBy { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(ModifiedById))]
-        public GlobalUser ModifiedBy { get; set; }
+        public AdminUser ModifiedBy { get; set; }
     }
 }

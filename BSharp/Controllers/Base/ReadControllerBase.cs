@@ -17,8 +17,8 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [ApiController]
     [AuthorizeAccess]
+    [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public abstract class ReadControllerBase<TEntity> : ControllerBase
         where TEntity : Entity
@@ -50,7 +50,7 @@ namespace BSharp.Controllers
         [HttpGet]
         public virtual async Task<ActionResult<GetResponse<TEntity>>> Get([FromQuery] GetArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var result = await GetImplAsync(args);
                 return Ok(result);
@@ -60,7 +60,7 @@ namespace BSharp.Controllers
         [HttpGet("aggregate")]
         public virtual async Task<ActionResult<GetAggregateResponse>> GetAggregate([FromQuery] GetAggregateArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 var result = await GetAggregateImplAsync(args);
                 return Ok(result);
@@ -70,7 +70,7 @@ namespace BSharp.Controllers
         [HttpGet("export")]
         public virtual async Task<ActionResult> Export([FromQuery] ExportArguments args)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Get abstract grid
                 var response = await GetImplAsync(args);
@@ -528,7 +528,10 @@ namespace BSharp.Controllers
         /// <summary>
         /// Transforms an Entity response into an abstract grid that can be transformed into an file
         /// </summary>
-        protected abstract AbstractDataGrid EntitiesToAbstractGrid(GetResponse<TEntity> response, ExportArguments args);
+        protected AbstractDataGrid EntitiesToAbstractGrid(GetResponse<TEntity> response, ExportArguments args)
+        {
+            throw new NotImplementedException();
+        }
 
 
         // Maybe we should move these to ControllerUtilities

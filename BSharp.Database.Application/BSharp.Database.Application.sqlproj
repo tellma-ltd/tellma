@@ -291,7 +291,7 @@
     <Build Include="bll\Stored Procedures\bll.IfrsDisclosureDetails_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentRoleList.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Assign.sql" />
-    <Build Include="dal\Stored Procedures\dbo.Action_Views__Permissions.sql" />
+    <Build Include="dal\Stored Procedures\dal.Action_Views__Permissions.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Assign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Assign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Sign.sql" />
@@ -307,6 +307,14 @@
     <Build Include="rpt\Functions\rpt.Documents_ToState_Roles__Missing.sql" />
     <Build Include="rpt\Functions\rpt.Documents_ToState_Roles__MissingConditional.sql" />
     <Build Include="rpt\Functions\rpt.DocumentsWithNoDefinedWorkflows.sql" />
+    <Build Include="dal\Stored Procedures\dal.GetUserPermissions.sql" />
+    <Build Include="dal\Stored Procedures\dal.Users__SetExternalIdByUserId.sql" />
+    <Build Include="dal\Stored Procedures\dal.Users__SetEmailByUserId.sql" />
+    <Build Include="dal\Stored Procedures\dal.AddUserPermissionsVersion.sql" />
+    <Build Include="dal\Stored Procedures\dal.GetUserPermissionsVersion.sql" />
+    <Build Include="dal\Stored Procedures\dal.Users__SaveSettings.sql" />
+    <Build Include="dbo\Tables\dbo.UserSettings.sql" />
+    <Build Include="dal\Stored Procedures\dal.Users__SettingsForClient.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

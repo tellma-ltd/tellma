@@ -1,5 +1,4 @@
-using AutoMapper;
-using BSharp.Controllers;
+﻿using BSharp.Controllers;
 using BSharp.Services.ModelMetadata;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Builder;
@@ -18,7 +17,7 @@ namespace BSharp
 {
     public class Startup
     {
-        // The UI cultures currently supported by the backend
+        // The UI cultures currently supported by the system
         public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar" };
 
         private readonly IConfiguration _config;
@@ -30,7 +29,13 @@ namespace BSharp
         /// here. If the middlewhere finds this error it returns it immediately as plaintext and ignores
         /// everything else. This is a convenient way to report configuration errors
         /// </summary>
-        public string ConfigureServicesError { get; private set; }
+        public string ConfigurationError { get; private set; }
+
+        /// <summary>
+        /// If there is an error when starting up the application, or seeding the database etc.
+        /// It is added here, and served as plain text to any web request
+        /// </summary>
+        public static string GlobalError { get; set; }
 
         /// <summary>
         /// Used in both <see cref="ConfigureServices(IServiceCollection)"/> and <see cref="Configure(IApplicationBuilder)"/>
@@ -68,6 +73,9 @@ namespace BSharp
                 services.Configure<GlobalOptions>(_config);
                 GlobalOptions = _config.Get<GlobalOptions>();
 
+                // Access to caller information
+                services.AddClientInfo();
+
                 // Register the admin repo
                 var connString = _config.GetConnectionString(Constants.AdminConnection);
                 services.AddAdminRepository(connString);
@@ -83,7 +91,7 @@ namespace BSharp
                 // More custom services
                 services.AddBlobService(_config);
                 services.AddDynamicModelMetadata();
-                services.AddGlobalSettingsCache(_config);
+                services.AddGlobalSettingsCache(_config.GetSection("GlobalSettingsCache"));
 
                 // Add the default localization that relies on resource files in /Resources
                 services.AddLocalization(opt =>
@@ -137,8 +145,7 @@ namespace BSharp
                 services.AddApiAuthentication(apiAuthConfig);
 
                 // Add Email
-                var emailConfig = _config.GetSection("Email");
-                services.AddEmail(emailConfig);
+                services.AddEmail(_config.GetSection("Email"));
 
                 // Configure some custom behavior for API controllers
                 services.Configure<ApiBehaviorOptions>(opt =>
@@ -153,9 +160,9 @@ namespace BSharp
                             return new UnprocessableEntityObjectResult(ctx.ModelState);
                         };
                 });
-                
+
                 // Embedded Client Application
-                if(GlobalOptions.EmbeddedClientApplicationEnabled)
+                if (GlobalOptions.EmbeddedClientApplicationEnabled)
                 {
                     services.AddSpaStaticFiles(opt =>
                     {
@@ -166,54 +173,55 @@ namespace BSharp
 
                 // Giving access to clients that are hosted on another domain
                 services.AddCors();
-
-                // AutoMapper https://automapper.org/
-                services.AddAutoMapper(typeof(Startup).Assembly); // Otherwise unit tests don't run
             }
             catch (Exception ex)
             {
                 // The configuration encountered a fatal error, usually a required yet missing configuration
-                // Setting this property instructs the middleware to short-circuit and just return this error in plain text
-                ConfigureServicesError = ex.Message;
+                // Setting this property instructs the middleware to short-circuit and just return this error in plain text                
+                ConfigurationError = ex.Message;
+
             }
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            // Configuration Errors
-            app.Use(async (context, next) =>
+            try
             {
-                if (ConfigureServicesError != null)
+                // Configuration Errors
+                app.Use(async (context, next) =>
                 {
+                    string error = ConfigurationError ?? GlobalError;
+                    if (error != null)
+                    {
                     // This means the application was not configured correctly and should not be running
                     // We cut the pipeline short and report the error message in plain text
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    await context.Response.WriteAsync(ConfigureServicesError);
+                        await context.Response.WriteAsync(error);
+                    }
+                    else
+                    {
+                    // All is good, continue the normal pipeline
+                    await next.Invoke();
+                    }
+                });
+
+                // Regular Errors
+                if (_env.IsDevelopment())
+                {
+                    app.UseDeveloperExceptionPage();
                 }
                 else
                 {
-                    // All is good, continue the normal pipeline
-                    await next.Invoke();
+                    app.UseExceptionHandler("/Error");
+                    app.UseHsts();
                 }
-            });
 
-            // Regular Errors
-            if (_env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
-
-            // Localization
-            // Extract the culture from the request string and set it in the execution thread
-            var defaultUiCulture = GlobalOptions.Localization?.DefaultUICulture ?? "en";
-            var defaultCulture = GlobalOptions.Localization?.DefaultCulture ?? "en-GB";
-            app.UseRequestLocalization(opt =>
-            {
+                // Localization
+                // Extract the culture from the request string and set it in the execution thread
+                var defaultUiCulture = GlobalOptions.Localization?.DefaultUICulture ?? "en";
+                var defaultCulture = GlobalOptions.Localization?.DefaultCulture ?? "en-GB";
+                app.UseRequestLocalization(opt =>
+                {
                 // When no culture is specified in the request, use these
                 opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUiCulture);
 
@@ -222,55 +230,66 @@ namespace BSharp
 
                 // UI strings that we have localized
                 opt.AddSupportedUICultures(SUPPORTED_CULTURES);
-            });
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
-            // CORS
-            string webClientUri = GlobalOptions.ClientApplications?.WebClientUri.WithoutTrailingSlash();
-            if (!string.IsNullOrWhiteSpace(webClientUri))
-            {
-                // If a web client is listed in the configurations, add it to CORS
-                app.UseCors(builder =>
-                {
-                    builder.WithOrigins(webClientUri)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .WithExposedHeaders("x-image-id")
-                    .WithExposedHeaders("x-settings-version")
-                    .WithExposedHeaders("x-permissions-version")
-                    .WithExposedHeaders("x-user-settings-version")
-                    .WithExposedHeaders("x-global-settings-version");
                 });
-            }
 
-            // IdentityServer
-            if (GlobalOptions.EmbeddedIdentityServerEnabled)
-            {
-                app.UseEmbeddedIdentityServer();
-            }
+                app.UseHttpsRedirection();
+                app.UseStaticFiles();
 
-            // The API
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
-            });
-
-            // The Angular client
-            if (GlobalOptions.EmbeddedClientApplicationEnabled)
-            {
-                app.UseSpa(spa =>
+                if (GlobalOptions.EmbeddedClientApplicationEnabled)
                 {
-                    spa.Options.SourcePath = "ClientApp";
-                    if (_env.IsDevelopment())
+                    app.UseSpaStaticFiles();
+                }
+
+                // CORS
+                string webClientUri = GlobalOptions.ClientApplications?.WebClientUri.WithoutTrailingSlash();
+                if (!string.IsNullOrWhiteSpace(webClientUri))
+                {
+                    // If a web client is listed in the configurations, add it to CORS
+                    app.UseCors(builder =>
                     {
-                        spa.UseAngularCliServer(npmScript: "start");
-                    }
+                        builder.WithOrigins(webClientUri)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithExposedHeaders("x-image-id")
+                        .WithExposedHeaders("x-settings-version")
+                        .WithExposedHeaders("x-permissions-version")
+                        .WithExposedHeaders("x-user-settings-version")
+                        .WithExposedHeaders("x-global-settings-version");
+                    });
+                }
+
+                // IdentityServer
+                if (GlobalOptions.EmbeddedIdentityServerEnabled)
+                {
+                    app.UseEmbeddedIdentityServer();
+                }
+
+                // The API
+                app.UseMvc(routes =>
+                {
+                    routes.MapRoute(
+                        name: "default",
+                        template: "{controller}/{action=Index}/{id?}");
                 });
+
+                // The Angular client
+                if (GlobalOptions.EmbeddedClientApplicationEnabled)
+                {
+                    app.UseSpa(spa =>
+                    {
+                        spa.Options.SourcePath = "ClientApp";
+                        if (_env.IsDevelopment())
+                        {
+                            spa.UseAngularCliServer(npmScript: "start");
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // The configuration encountered a fatal error, usually a required yet missing configuration
+                // Setting this property instructs the middleware to short-circuit and just return this error in plain text
+                ConfigurationError = ex.Message;
             }
         }
     }

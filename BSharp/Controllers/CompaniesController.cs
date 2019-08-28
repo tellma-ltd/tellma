@@ -24,7 +24,6 @@ namespace BSharp.Controllers
 
         private readonly AdminRepository _repo;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer _localizer;
         private readonly IShardResolver _shardResolver;
         private readonly IExternalUserAccessor _externalUserAccessor;
         private readonly IClientInfoAccessor _clientInfoAccessor;
@@ -33,12 +32,10 @@ namespace BSharp.Controllers
         // Constructor
 
         public CompaniesController(AdminRepository db, ILogger<CompaniesController> logger,
-            IStringLocalizer<Strings> localizer, IShardResolver shardResolver,
-            IExternalUserAccessor externalUserAccessor, IClientInfoAccessor clientInfoAccessor)
+            IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor, IClientInfoAccessor clientInfoAccessor)
         {
             _repo = db;
             _logger = logger;
-            _localizer = localizer;
             _shardResolver = shardResolver;
             _externalUserAccessor = externalUserAccessor;
             _clientInfoAccessor = clientInfoAccessor;
@@ -69,24 +66,32 @@ namespace BSharp.Controllers
             var result = new List<UserCompany>();
 
             var databaseIds = await _repo.GetAccessibleDatabaseIds();
+            var globalUserInfo = await _repo.GetAdminUserInfoAsync();
             foreach (var databaseId in databaseIds)
             {
-                var connString = _shardResolver.GetConnectionString(databaseId);
-                using (var appRepo = new ApplicationRepository(null, _externalUserAccessor, _clientInfoAccessor, null))
+                try
                 {
-                    await appRepo.InitConnectionAsync(connString);
-                    var userInfo = await appRepo.GetUserInfoAsync();
-                    if (userInfo.UserId != null)
+                    var connString = _shardResolver.GetConnectionString(databaseId);
+                    using (var appRepo = new ApplicationRepository(null, _externalUserAccessor, _clientInfoAccessor, null))
                     {
-                        var tenantInfo = await appRepo.GetTenantInfoAsync();
-                        result.Add(new UserCompany
+                        await appRepo.InitConnectionAsync(connString);
+                        var userInfo = await appRepo.GetUserInfoAsync();
+                        if (userInfo.UserId != null)
                         {
-                            Id = databaseId,
-                            Name = tenantInfo.ShortCompanyName,
-                            Name2 = tenantInfo.ShortCompanyName2,
-                            Name3 = tenantInfo.ShortCompanyName3
-                        });
+                            var tenantInfo = await appRepo.GetTenantInfoAsync();
+                            result.Add(new UserCompany
+                            {
+                                Id = databaseId,
+                                Name = tenantInfo.ShortCompanyName,
+                                Name2 = tenantInfo.ShortCompanyName2,
+                                Name3 = tenantInfo.ShortCompanyName3
+                            });
+                        }
                     }
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError($"Exception while loading user companies: DatabaseId: {databaseId}, UserId: {globalUserInfo?.UserId}, {ex.GetType().Name}: {ex.Message}");
                 }
             }
 

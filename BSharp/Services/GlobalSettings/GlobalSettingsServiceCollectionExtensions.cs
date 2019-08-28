@@ -7,19 +7,19 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class GlobalSettingsServiceCollectionExtensions
     {
         /// <summary>
-        /// The global settings (e.g. active cultures) are application-wide, and they live in the manager database, in large installations
-        /// the manager database will become a bottle-neck, so here we introduce memory caching to relieve the congestion
+        /// The global settings are application-wide, and they live in the admin database, in large SAAS installations
+        /// the admin database will become a bottle-neck, so here we introduce memory caching to relieve the congestion
         /// </summary>
-        public static IServiceCollection AddGlobalSettingsCache(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddGlobalSettingsCache(this IServiceCollection services, IConfiguration configSection)
         {
             if(services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if(config != null)
+            if(configSection != null)
             {
-                services.Configure<GlobalSettingsCacheOptions>(config.GetSection("GlobalSettingsCache"));
+                services.Configure<GlobalSettingsCacheOptions>(configSection);
             }
 
             // Register DI service

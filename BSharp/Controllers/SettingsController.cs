@@ -1,53 +1,42 @@
-﻿using AutoMapper;
-using BSharp.Controllers.Dto;
-using BSharp.Controllers.Misc;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Data;
+using BSharp.Data.Queries;
+using BSharp.EntityModel;
 using BSharp.Services.ApiAuthentication;
-using BSharp.Services.GlobalSettings;
-using BSharp.Services.MultiTenancy;
+using BSharp.Services.ImportExport;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using M = BSharp.Data.Model;
 
 namespace BSharp.Controllers
 {
     [Route("api/settings")]
-    [ApiController]
-    [AuthorizeAccess]
-    [LoadTenantInfo]
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public class SettingsController : ControllerBase
+    [ApplicationApi]
+    public class SettingsController : ReadControllerBase<Settings>
     {
         // Private fields
 
-        private readonly ApplicationContext _db;
+        private readonly ApplicationRepository _repo;
         private readonly ILogger<SettingsController> _logger;
-        private readonly IGlobalSettingsCache _globalSettingsCache;
         private readonly IStringLocalizer _localizer;
-        private readonly IMapper _mapper;
-        private readonly ITenantUserInfoAccessor _tenantInfo;
 
+        private string VIEW => "settings";
 
-        // Constructor
-
-        public SettingsController(ApplicationContext db, ILogger<SettingsController> logger, IGlobalSettingsCache globalSettingsCache,
-            IStringLocalizer<Strings> localizer, IMapper mapper, ITenantUserInfoAccessor tenantInfo)
+        public SettingsController(ApplicationRepository repo,
+            ILogger<SettingsController> logger,
+            IStringLocalizer<Strings> localizer) : base(logger, localizer)
         {
-            _db = db;
+            _repo = repo;
             _logger = logger;
-            _globalSettingsCache = globalSettingsCache;
             _localizer = localizer;
-            _mapper = mapper;
-            _tenantInfo = tenantInfo;
         }
 
 
@@ -57,7 +46,7 @@ namespace BSharp.Controllers
         public async Task<ActionResult<GetEntityResponse<Settings>>> Get([FromQuery] GetByIdArguments args)
         {
             // Authorized access (Criteria are not supported here)
-            var readPermissions = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, Constants.Read, "settings");
+            var readPermissions = await _repo.UserPermissions(Constants.Read, "settings");
             if (!readPermissions.Any())
             {
                 return StatusCode(403);
@@ -82,7 +71,7 @@ namespace BSharp.Controllers
         public async Task<ActionResult<SaveSettingsResponse>> Save([FromBody] SettingsForSave settingsForSave, [FromQuery] SaveArguments args)
         {
             // Authorized access (Criteria are not supported here)
-            var updatePermissions = await ControllerUtilities.GetPermissions(_db.AbstractPermissions, Constants.Update, "settings");
+            var updatePermissions = await _repo.UserPermissions(Constants.Update, "settings");
             if (!updatePermissions.Any())
             {
                 return StatusCode(403);
@@ -102,20 +91,7 @@ namespace BSharp.Controllers
                 }
 
                 // Persist
-                M.Settings mSettings = await _db.Settings.FirstOrDefaultAsync();
-                if (mSettings == null)
-                {
-                    // This should never happen
-                    return BadRequest("Settings have not been initialized");
-                }
-
-                _mapper.Map(settingsForSave, mSettings);
-
-                mSettings.ModifiedAt = DateTimeOffset.Now;
-                mSettings.ModifiedById = _tenantInfo.GetCurrentInfo().UserId.Value;
-                mSettings.SettingsVersion = Guid.NewGuid(); // prompts clients to refresh
-
-                await _db.SaveChangesAsync();
+                await _repo.Settings__Save(settingsForSave);
 
                 // If requested, return the updated entity
                 if (args.ReturnEntities ?? false)
@@ -176,48 +152,55 @@ namespace BSharp.Controllers
 
         private async Task<GetEntityResponse<Settings>> GetImpl(GetByIdArguments args)
         {
-            M.Settings mSettings = await _db.Settings.FirstOrDefaultAsync();
-            if (mSettings == null)
+            var settings = await _repo.Settings
+                .Select(args.Select)
+                .Expand(args.Expand)
+                .FirstOrDefaultAsync();
+
+            if (settings == null)
             {
-                // This should never happen
+                // Programmer mistake
                 throw new BadRequestException("Settings have not been initialized");
             }
 
-            var settings = _mapper.Map<Settings>(mSettings);
             var result = new GetEntityResponse<Settings>
             {
                 Result = settings,
             };
-
-            if (!string.IsNullOrWhiteSpace(args.Expand))
-            {
-                Expand(args.Expand, settings, result);
-            }
 
             return result;
         }
 
         private async Task<DataWithVersion<SettingsForClient>> GetForClientImpl()
         {
-            M.Settings mSettings = await _db.Settings.FirstOrDefaultAsync();
-            if (mSettings == null)
+            Settings settings = await _repo.Settings.FirstOrDefaultAsync();
+            if (settings == null)
             {
                 // This should never happen
                 throw new BadRequestException("Settings have not been initialized");
             }
 
             // Prepare the settings for client
-            var settings = _mapper.Map<SettingsForClient>(mSettings);
-            var activeCulures = _globalSettingsCache.GetGlobalSettings().Data.ActiveCultures;
-
-            settings.PrimaryLanguageName = GetCultureDisplayName(settings.PrimaryLanguageId);
-            settings.SecondaryLanguageName = GetCultureDisplayName(settings.SecondaryLanguageId);
+            SettingsForClient settingsForClient = new SettingsForClient();
+            foreach(var forClientProp in typeof(SettingsForClient).GetProperties())
+            {
+                var settingsProp = typeof(Settings).GetProperty(forClientProp.Name);
+                if(settingsProp != null)
+                {
+                    var value = settingsProp.GetValue(settings);
+                    forClientProp.SetValue(settingsForClient, value);
+                }
+            }
+            
+            settingsForClient.PrimaryLanguageName = GetCultureDisplayName(settingsForClient.PrimaryLanguageId);
+            settingsForClient.SecondaryLanguageName = GetCultureDisplayName(settingsForClient.SecondaryLanguageId);
+            settingsForClient.TernaryLanguageName = GetCultureDisplayName(settingsForClient.TernaryLanguageId);
 
             // Tag the settings for client with their current version
             var result = new DataWithVersion<SettingsForClient>
             {
-                Version = mSettings.SettingsVersion.ToString(),
-                Data = settings
+                Version = settings.SettingsVersion.ToString(),
+                Data = settingsForClient
             };
 
             return result;
@@ -225,56 +208,16 @@ namespace BSharp.Controllers
 
         private string GetCultureDisplayName(string cultureName)
         {
-            if (string.IsNullOrWhiteSpace(cultureName))
+            if (cultureName is null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(cultureName));
             }
 
-            var activeCulures = _globalSettingsCache.GetGlobalSettings().Data.ActiveCultures;
-            activeCulures.TryGetValue(cultureName, out Culture culture);
-
-            if (culture != null)
-            {
-                return culture.Name;
-            }
-            else
-            {
-                try
-                {
-                    var c = new CultureInfo(cultureName);
-                    return c.NativeName;
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-        }
-
-        private void Expand(string expand, Settings settings, GetEntityResponse<Settings> result)
-        {
+            return CultureInfo.GetCultureInfo(cultureName)?.DisplayName;
         }
 
         private void ValidateAndPreprocessSettings(SettingsForSave entity)
         {
-            var activeCulures = _globalSettingsCache.GetGlobalSettings().Data.ActiveCultures;
-            {
-                if (!activeCulures.ContainsKey(entity.PrimaryLanguageId))
-                {
-                    ModelState.AddModelError(nameof(entity.PrimaryLanguageId),
-                        _localizer["Error_InvalidLanguageId0", entity.PrimaryLanguageId]);
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(entity.SecondaryLanguageId))
-            {
-                if (!activeCulures.ContainsKey(entity.SecondaryLanguageId))
-                {
-                    ModelState.AddModelError(nameof(entity.PrimaryLanguageId),
-                        _localizer["Error_InvalidLanguageId0", entity.SecondaryLanguageId]);
-                }
-            }
-
             if (string.IsNullOrWhiteSpace(entity.SecondaryLanguageId))
             {
                 entity.SecondaryLanguageSymbol = null;
@@ -308,6 +251,29 @@ namespace BSharp.Controllers
                 ModelState.AddModelError(nameof(entity.BrandColor),
                     _localizer["Error_TheField0MustBeAValidColorFormat", _localizer["Settings_BrandColor"]]);
             }
+        }
+
+
+        // Implementation of ReadControllerBase<Settings>
+
+        protected override IRepository GetRepository()
+        {
+            return _repo;
+        }
+
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        {
+            return _repo.UserPermissions(action, VIEW);
+        }
+
+        protected override Query<Settings> Search(Query<Settings> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        {
+            return query;
+        }
+
+        protected override OrderByExpression DefaultOrderBy()
+        {
+            return OrderByExpression.Parse(nameof(Settings.ShortCompanyName));
         }
     }
 }

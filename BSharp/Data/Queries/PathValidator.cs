@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.Misc;
+﻿using BSharp.Controllers;
 using BSharp.Services.Utilities;
 using Microsoft.Extensions.Localization;
 using System;

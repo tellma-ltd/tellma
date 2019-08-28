@@ -84,12 +84,12 @@ namespace BSharp.Controllers
                 if (userInfo.ExternalId == null)
                 {
                     // Update external Id in this tenant database
-                    await _appRepo.SetUserExternalId(userId, externalId);
+                    await _appRepo.Users__SetExternalIdByUserId(userId, externalId);
 
                     // Update external Id in the central Admin database too (To avoid an awkward situation
                     // where a user exists on the tenant but not on the Admin db, if they change their email in between)
                     var adminApp = _serviceProvider.GetRequiredService<AdminRepository>();
-                    await adminApp.SetUserExternalIdByEmailAsync(externalEmail, externalId);
+                    await adminApp.GlobalUsers__SetExternalIdByEmail(externalEmail, externalId);
                 }
 
                 else if(userInfo.ExternalId != externalId)
@@ -105,7 +105,7 @@ namespace BSharp.Controllers
                 // (4) If the user's email address has changed at the identity server, update it locally
                 else if (userInfo.Email != externalEmail)
                 {
-                    await _appRepo.SetUserEmail(userId, externalEmail);
+                    await _appRepo.Users__SetEmailByUserId(userId, externalEmail);
                 }
 
 

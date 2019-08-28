@@ -1,4 +1,5 @@
-﻿using BSharp.Data;
+﻿using BSharp.Controllers.Misc;
+using BSharp.Data;
 using BSharp.Services.ApiAuthentication;
 using BSharp.Services.Identity;
 using BSharp.Services.Utilities;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace BSharp.Controllers
 {
     /// <summary>
-    /// 1. Ensures that the authenticated user has a valid global user otherwise the request is aborted with a 403
+    /// 1. Ensures that the authenticated user has a valid admin user otherwise the request is aborted with a 403
     /// 2. If the user is new it updates his/her ExternalId in the admin database
     /// 3. If the user has a new email it updates his/her Email in the admin database
     /// 4. If version headers are provided, it also checks their freshness and adds appropriate response headers
@@ -37,7 +38,7 @@ namespace BSharp.Controllers
             public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
             {
                 // (1) Make sure the user has an active user 
-                GlobalUserInfo userInfo = await _adminRepo.GetUserInfoAsync();
+                AdminUserInfo userInfo = await _adminRepo.GetAdminUserInfoAsync();
 
                 if (userInfo.UserId == null)
                 {
@@ -60,7 +61,13 @@ namespace BSharp.Controllers
                 // (3) If the user exists but new, set the External Id
                 if (userInfo.ExternalId == null)
                 {
-                    await _adminRepo.SetUserExternalIdByUserIdAsync(userId, externalId);
+                    using (var trx = ControllerUtilities.CreateTransaction())
+                    {
+                        await _adminRepo.AdminUsers__SetExternalIdByUserId(userId, externalId);
+                        await _adminRepo.GlobalUsers__SetExternalIdByUserId(userId, externalId);
+
+                        trx.Complete();
+                    }
                 }
 
                 else if (userInfo.ExternalId != externalId)
@@ -76,7 +83,13 @@ namespace BSharp.Controllers
                 // (4) If the user's email address has changed at the identity server, update it locally
                 else if (userInfo.Email != externalEmail)
                 {
-                    await _adminRepo.SetUserEmailByUserIdAsync(userId, externalEmail);
+                    using (var trx = ControllerUtilities.CreateTransaction())
+                    {
+                        await _adminRepo.AdminUsers__SetEmailByUserId(userId, externalEmail);
+                        await _adminRepo.GlobalUsers__SetEmailByUserId(userId, externalEmail);
+
+                        trx.Complete();
+                    }
                 }
 
 

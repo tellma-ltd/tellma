@@ -4,7 +4,6 @@ using BSharp.Data;
 using BSharp.Data.Queries;
 using BSharp.EntityModel;
 using BSharp.Services.ApiAuthentication;
-using BSharp.Services.BlobStorage;
 using BSharp.Services.Email;
 using BSharp.Services.EmbeddedIdentityServer;
 using BSharp.Services.ImportExport;
@@ -25,7 +24,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-
+using System.Transactions;
 
 namespace BSharp.Controllers
 {
@@ -41,10 +40,15 @@ namespace BSharp.Controllers
         private readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
         private readonly EmailTemplatesProvider _emailTemplates;
-        private readonly GlobalOptions _config;
+        private readonly GlobalOptions _options;
         private readonly IStringLocalizer _localizer;
-        private readonly IBlobService _blobService;
         private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+
+        // This is created and disposed across multiple methods
+        private TransactionScope _adminTrxScope;
+
+        public string VIEW => "users";
+
 
         public UsersController(
             ApplicationRepository appRepo,
@@ -56,8 +60,7 @@ namespace BSharp.Controllers
             IEmailSender emailSender,
             EmailTemplatesProvider emailTemplates,
             IStringLocalizer<Strings> localizer,
-            ITenantIdAccessor tenantIdProvider,
-            IBlobService blobService) : base(logger, localizer)
+            ITenantIdAccessor tenantIdProvider) : base(logger, localizer)
         {
             _appRepo = appRepo;
             _adminRepo = adminRepo;
@@ -66,87 +69,35 @@ namespace BSharp.Controllers
             _logger = logger;
             _emailSender = emailSender;
             _emailTemplates = emailTemplates;
-            _config = options.Value;
+            _options = options.Value;
             _localizer = localizer;
-            _blobService = blobService;
 
             // we use this trick since this is an optional dependency, it will resolve to null if 
             // the embedded identity server is not enabled
             _userManager = (UserManager<EmbeddedIdentityServerUser>)serviceProvider.GetService(typeof(UserManager<EmbeddedIdentityServerUser>));
         }
 
-        [HttpGet("{id}/image")]
-        public async Task<ActionResult> GetImage(int id)
-        {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
-            {
-                // Retrieve the user whose image we're about to return (This also checks the read permissions of the caller)
-                var dbUserResponse = await GetByIdImplAsync(id, new GetByIdArguments { Select = nameof(EntityModel.User.ImageId), Expand = null });
-
-                // Get the blob name
-                var imageId = dbUserResponse.Result?.ImageId;
-                //var imageId = dbUserResponse.RelatedEntities[dbUserResponse.CollectionName].Cast<User>().SingleOrDefault(e => e.Id == dbUserResponse.Result?.Id)?.ImageId;
-                if (imageId != null)
-                {
-                    // Get the bytes
-                    string blobName = BlobName(imageId);
-                    var imageBytes = await _blobService.LoadBlob(blobName);
-
-                    Response.Headers.Add("x-image-id", imageId);
-                    return File(imageBytes, "image/jpeg");
-                }
-                else
-                {
-                    return NotFound("This user does not have a picture");
-                }
-            }, _logger);
-        }
-
-        [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
-        {
-            return await ControllerUtilities.InvokeActionImpl(() =>
-                ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: true)
-            , _logger);
-        }
-
-        [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<User>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-                {
-                    var currentUserId = (await _appRepo.GetUserInfoAsync()).UserId;
-                    if (ids.Any(id => id == currentUserId))
-                    {
-                        return BadRequest(_localizer["Error_CannotDeactivateYourOwnUser"].Value);
-                    }
-
-                    return await ActivateDeactivate(ids, args.ReturnEntities ?? false, args.Expand, isActive: false);
-                }
-            , _logger);
-        }
-
         [HttpGet("client")]
         public async Task<ActionResult<DataWithVersion<UserSettingsForClient>>> UserSettingsForClient()
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var user = await _appRepo.Users.Select("").Expand(e => e.Settings).Filter("Id eq me").FirstOrDefaultAsync();
+                UserSettings userSettings = await _appRepo.Users__SettingsForClient();
 
                 // prepare the result
                 var forClient = new UserSettingsForClient
                 {
-                    UserId = user.Id,
-                    Name = user.Name,
-                    Name2 = user.Name2,
-                    Name3 = user.Name3,
-                    ImageId = user.ImageId,
-                    CustomSettings = user.Settings.ToDictionary(e => e.Key, e => e.Value),
+                    UserId = userSettings.UserId,
+                    Name = userSettings.Name,
+                    Name2 = userSettings.Name2,
+                    Name3 = userSettings.Name3,
+                    ImageId = userSettings.ImageId,
+                    CustomSettings = userSettings.CustomSettings
                 };
 
                 var result = new DataWithVersion<UserSettingsForClient>
                 {
-                    Version = user.UserSettingsVersion.ToString(),
+                    Version = userSettings.UserSettingsVersion.ToString(),
                     Data = forClient
                 };
 
@@ -159,96 +110,84 @@ namespace BSharp.Controllers
             [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))] [Required(ErrorMessage = nameof(RequiredAttribute))] string key,
             [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))] string value)
         {
-            var userId = _tenantInfo.UserId();
-            var setting = await _appRepo.UserSettings.FirstOrDefaultAsync(e => e.UserId == userId && e.Key == key);
-            bool hasChanged = false;
+            await _appRepo.Users__SaveSettings(key, value);
 
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                if (setting != null)
-                {
-                    // DELETE
-                    _appRepo.UserSettings.Remove(setting);
-                    hasChanged = true;
-                }
-            }
-            else if (setting != null)
-            {
-                // UPDATE
-                if(setting.Value != value)
-                {
-                    setting.Value = value;
-                    hasChanged = true;
-                }
-            }
-            else
-            {
-                // INSERT
-                setting = new M.UserSetting
-                {
-                    UserId = userId,
-                    Key = key,
-                    Value = value
-                };
-
-                               
-                _appRepo.UserSettings.Add(setting);
-                _appRepo.Entry(setting).Property(nameof(M.ModelBase.TenantId)).CurrentValue = _tenantIdProvider.GetTenantId().Value;
-                hasChanged = true;
-            }
-
-            if(hasChanged)
-            {
-                // Update the version
-                var user = await _appRepo.Users.FirstOrDefaultAsync(e => e.Id == userId);
-                user.UserSettingsVersion = Guid.NewGuid();
-
-                // Save all changes
-                await _appRepo.SaveChangesAsync();
-            }
             return await UserSettingsForClient();
         }
 
         [HttpPut("invite")]
         public async Task<ActionResult> ResendInvitationEmail(int id)
         {
-            return await ControllerUtilities.ExecuteAndHandleErrorsAsync(async () =>
+            return await ControllerUtilities.InvokeActionImpl((Func<Task<ActionResult>>)(async () =>
             {
-                await CheckActionPermissions(new List<int?> { id });
-
-                var User = await _appRepo.Users.FirstOrDefaultAsync(e => e.Id == id);
-                if (User == null)
+                if (!_options.EmailEnabled)
                 {
-                    return NotFound(id);
+                    // Developer mistake
+                    throw new BadRequestException("Email is not enabled in this installation");
                 }
 
-                string toEmail = User.Email;
-                var identityUser = await _userManager.FindByEmailAsync(toEmail);
-                if (identityUser == null)
+                if (!this._options.EmbeddedIdentityServerEnabled)
                 {
-                    return NotFound(toEmail);
+                    // Developer mistake
+                    throw new BadRequestException("Embedded identity is not enabled in this installation");
                 }
 
-                var (subject, htmlMessage) = await MakeInvitationEmailAsync(identityUser, User);
+                // Check if the user has permission
+                await base.CheckActionPermissions("ResendInvitationEmail", id);
+
+                // Load the user
+                var user = await _appRepo.Users.Expand(nameof(EntityModel.User.Agent)).FilterByIds(id).FirstOrDefaultAsync();
+                if (user == null)
+                {
+                    throw new NotFoundException<int>(id);
+                }
+
+                if (!string.IsNullOrWhiteSpace(user.ExternalId))
+                {
+                    throw new BadRequestException("Error_User0HasAlreadyAcceptedTheInvitation");
+                }
+
+                string toEmail = user.Email;
+                var idUser = await _userManager.FindByEmailAsync(toEmail);
+                if (idUser == null)
+                {
+                    throw new NotFoundException<string>(toEmail);
+                }
+
+                if (idUser.EmailConfirmed)
+                {
+                    throw new BadRequestException("Error_User0HasAlreadyAcceptedTheInvitation");
+                }
+
+                var (subject, htmlMessage) = await MakeInvitationEmailAsync(idUser, user.Agent);
                 await _emailSender.SendEmailAsync(toEmail, subject, htmlMessage);
-                return Ok();
-            }, _logger);
+                return base.Ok();
+
+            }), _logger);
         }
 
-        private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(M.User recipient, IMultilingualName recipientName)
+        private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, Agent recipient)
         {
             // Load the info
-            var info = _tenantInfo.GetCurrentInfo();
+            var info = await _appRepo.GetTenantInfoAsync();
 
-            // TODO: Get the preferred culture of the recipient user
-            CultureInfo culture = CultureInfo.CurrentUICulture;
+            // Use the recipient's preferred Language
+            CultureInfo culture = new CultureInfo(recipient.PreferredLanguage);
             var localizer = _localizer.WithCulture(culture);
 
             // Prepare the parameters
-            string userId = recipient.Id;
-            string emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(recipient);
-            string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(recipient);
-            string nameOfInvitor = info.SecondaryLanguageId == culture.Name ? info.Name2 ?? info.Name : info.Name;
+            string userId = identityRecipient.Id;
+            string emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(identityRecipient);
+            string passwordToken = await _userManager.GeneratePasswordResetTokenAsync(identityRecipient);
+            string nameOfInvitor =
+                info.SecondaryLanguageId == culture.Name ? info.ShortCompanyName2 ?? info.ShortCompanyName :
+                info.TernaryLanguageId == culture.Name ? info.ShortCompanyName3 ?? info.ShortCompanyName :
+                info.ShortCompanyName;
+
+            string nameOfRecipient =
+                info.SecondaryLanguageId == culture.Name ? recipient.Name2 ?? recipient.Name :
+                info.TernaryLanguageId == culture.Name ? recipient.Name3 ?? recipient.Name :
+                recipient.Name;
 
             string callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
@@ -257,156 +196,17 @@ namespace BSharp.Controllers
                     protocol: Request.Scheme);
 
             // Prepare the email
-            string invitationEmail = _emailTemplates.MakeInvitationEmail(
-                 nameOfRecipient: info.SecondaryLanguageId == culture.Name ? recipientName.Name2 ?? recipientName.Name : recipientName.Name,
+            string emailSubject = localizer["InvitationEmailSubject0", localizer["AppName"]];
+            string emailBody = _emailTemplates.MakeInvitationEmail(
+                 nameOfRecipient: nameOfRecipient,
                  nameOfInvitor: nameOfInvitor,
                  validityInDays: Constants.TokenExpiryInDays,
                  userId: userId,
                  callbackUrl: callbackUrl,
-                 culture: culture
-                 );
+                 culture: culture);
 
-            string subject = localizer["InvitationEmailSubject0", localizer["AppName"]];
-            return (subject, invitationEmail);
+            return (emailSubject, emailBody);
         }
-
-        private async Task<ActionResult<EntitiesResponse<User>>> ActivateDeactivate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
-        {
-            var nullableIds = ids.Cast<int?>().ToArray();
-            await CheckActionPermissions(nullableIds);
-
-            var isActiveParam = new SqlParameter("@IsActive", isActive);
-
-            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: false);
-            var idsTvp = new SqlParameter("@Ids", idsTable)
-            {
-                TypeName = $"dbo.IdList",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            string sql = @"
-    SET NOCOUNT ON;
-    DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-    DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-    DECLARE @Emails [dbo].[CodeList];
-
-    INSERT INTO @Emails([Code])
-    SELECT x.[Email]
-    FROM
-    (
-        MERGE INTO [dbo].[Users] AS t
-	        USING (
-		        SELECT [Id]
-		        FROM @Ids
-	        ) AS s ON (t.Id = s.Id)
-	        WHEN MATCHED AND (t.IsActive <> @IsActive)
-	        THEN
-		        UPDATE SET 
-			    t.[IsActive]	= @IsActive,
-			    t.[ModifiedAt]	= @Now,
-			    t.[ModifiedById]= @UserId
-                OUTPUT inserted.[Email]
-    ) As x;
-
-    SELECT [Code] AS [Value] FROM @Emails;
-";
-
-            // Tenant Id
-            var tenantId = new SqlParameter("TenantId", _tenantIdProvider.GetTenantId());
-
-            using (var trxApp = await _appRepo.Database.BeginTransactionAsync())
-            {
-                try
-                {
-                    // Update the entities and retrieve the emails of the entities that were updated
-                    List<string> emails = await _appRepo.Strings.FromSql(sql, idsTvp, isActiveParam).Select(e => e.Value).ToListAsync();
-
-                    // Prepare the TVP of emails to update from the manager
-                    DataTable emailsTable = ControllerUtilities.DataTable(emails.Select(e => new { Code = e }), addIndex: false);
-                    var emailsTvp = new SqlParameter("Emails", emailsTable)
-                    {
-                        TypeName = $"dbo.CodeList",
-                        SqlDbType = SqlDbType.Structured
-                    };
-
-                    using (var trxAdmin = await _adminRepo.Database.BeginTransactionAsync())
-                    {
-                        try
-                        {
-                            if (isActive)
-                            {
-                                // Insert efficiently with a SQL query
-                                await _adminRepo.Database.ExecuteSqlCommandAsync($@"
-    INSERT INTO dbo.[TenantMemberships] 
-    SELECT Id, @TenantId FROM [dbo].[GlobalUsers] WHERE Email IN (SELECT Code from @Emails);
-", emailsTvp, tenantId);
-
-                            }
-                            else
-                            {
-                                // Delete efficiently with a SQL query
-                                await _adminRepo.Database.ExecuteSqlCommandAsync($@"
-    DELETE FROM dbo.[TenantMemberships] 
-    WHERE TenantId = @TenantId AND UserId IN (
-        SELECT Id FROM [dbo].[GlobalUsers] WHERE Email IN (SELECT Code from @Emails)
-    );
-", emailsTvp, tenantId);
-                            }
-
-                            // Commit both
-                            trxAdmin.Commit();
-                            trxApp.Commit();
-                        }
-                        catch (Exception ex)
-                        {
-                            trxApp.Rollback();
-                            trxAdmin.Rollback();
-                            throw ex;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    trxApp.Rollback();
-                    throw ex;
-                }
-            }
-
-            // Determine whether entities should be returned
-            if (returnEntities)
-            {
-                // Return results
-                var response = await GetByIdListAsync(nullableIds, expand);
-                return Ok(response);
-            }
-            else
-            {
-                // IF no returned items are expected, simply return 200 OK
-                return Ok();
-            }
-        }
-
-        //protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
-        //{
-        //    var result = await UserPermissions(_appRepo.AbstractPermissions, action, "users");
-
-        //    // This gives every user the ability to view their User object
-        //    if (action == Constants.Read)
-        //    {
-        //        var readMyUser = new AbstractPermission
-        //        {
-        //            Action = "Read",
-        //            Criteria = "Id eq me",
-        //            ViewId = "users"
-        //        };
-
-        //        return Enumerable.Repeat(readMyUser, 1).Union(result);
-        //    }
-        //    else
-        //    {
-        //        return result;
-        //    }
-        //}
 
         protected override IRepository GetRepository()
         {
@@ -420,12 +220,14 @@ namespace BSharp.Controllers
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(EntityModel.User.Name);
-                var name2 = nameof(EntityModel.User.Name2);
-                var name3 = nameof(EntityModel.User.Name3);
                 var email = nameof(EntityModel.User.Email);
+                var agent = nameof(EntityModel.User.Agent);
+                var name = nameof(Agent.Name);
+                var name2 = nameof(Agent.Name2);
+                var name3 = nameof(Agent.Name3);
+                var cs = Ops.contains;
 
-                query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {email} {Ops.contains} '{search}'");
+                query = query.Filter($"{agent}/{name} {cs} '{search}' or {agent}/{name2} {cs} '{search}' or {agent}/{name3} {cs} '{search}' or {email} {cs} '{search}'");
             }
 
             return query;
@@ -433,45 +235,17 @@ namespace BSharp.Controllers
 
         protected override async Task SaveValidateAsync(List<UserForSave> entities)
         {
-            // For changing pictures, only one user at a time is allowed
-            var usersWithUpdatedImgIds = entities.Where(e => e.Image != null);
-            if (usersWithUpdatedImgIds.Count() > 1)
-            {
-                throw new BadRequestException("This API does not support changing pictures for more than one employee at a time");
-            }
-
             // Hash the indices for performance
             var indices = entities.ToIndexDictionary();
 
-            // Check that Ids make sens {e in relation to EntityState, and that no entity is DELETED
-            // All these errors indicate a bug
-            foreach (var entity in entities)
-            {
-                if (entity.EntityState == EntityStates.Deleted)
-                {
-                    // Won't be supported for this API
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.EntityState)}", _localizer["Error_Deleting0IsNotSupportedFromThisAPI", _localizer["Users"]]);
-                }
-            }
-
-            // Check that Ids are unique
-            var duplicateIds = entities.Where(e => e.Id != null).GroupBy(e => e.Id.Value).Where(g => g.Count() > 1);
-            foreach (var groupWithDuplicateIds in duplicateIds)
-            {
-                foreach (var entity in groupWithDuplicateIds)
-                {
-                    // This error indicates a bug
-                    var index = indices[entity];
-                    ModelState.AddModelError($"[{index}].{nameof(entity.Id)}",
-                        _localizer["Error_TheEntityWithId0IsSpecifiedMoreThanOnce", entity.Id]);
-                }
-            }
-
             // Check that line ids are unique and that they have supplied a RoleId
-            var duplicateLineIds = entities.SelectMany(e => e.Roles) // All lines
-                .Where(e => e.Id != null).GroupBy(e => e.Id.Value).Where(g => g.Count() > 1) // Duplicate Ids
-                .SelectMany(g => g).ToDictionary(e => e, e => e.Id.Value); // to dictionary
+            var duplicateLineIds = entities
+                .SelectMany(e => e.Roles) // All lines
+                .Where(e => e.Id != 0)
+                .GroupBy(e => e.Id)
+                .Where(g => g.Count() > 1) // Duplicate Ids
+                .SelectMany(g => g)
+                .ToDictionary(e => e, e => e.Id); // to dictionary
 
             foreach (var entity in entities)
             {
@@ -506,603 +280,200 @@ namespace BSharp.Controllers
                 return;
             }
 
-            // Perform SQL-side validation
-            DataTable UsersTable = UsersDataTable(entities);
-            var UsersTvp = new SqlParameter("Users", UsersTable) { TypeName = $"dbo.{nameof(UserForSave)}List", SqlDbType = SqlDbType.Structured };
-
-            var rolesHeaderIndices = indices.Keys.Select(User => (User.Roles, indices[User]));
-            DataTable rolesTable = ControllerUtilities.DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
-            var rolesTvp = new SqlParameter("Roles", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
-
+            // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            var sqlErrors = await _appRepo.Users_Validate__Save(entities, top: remainingErrorCount);
 
-            // (1) Code must be unique
-            var sqlErrors = await _appRepo.Validation.FromSql($@"
-    SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-
-    INSERT INTO @ValidationErrors([Key], [ErrorName])
-    SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_CannotModifyInactiveItem' As [ErrorName]
-    FROM @Users
-    WHERE Id IN (SELECT Id from [dbo].[Users] WHERE IsActive = 0)
-	OPTION(HASH JOIN);
-
-    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1])
-    SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Id' As [Key], N'Error_TheId0WasNotFound' As [ErrorName], CAST([Id] As NVARCHAR(255)) As [Argument1]
-    FROM @Users
-    WHERE Id Is NOT NULL
-	AND Id NOT IN (SELECT Id from [dbo].[Users])
-	OPTION(HASH JOIN);
-		
-	-- Email must not be already in the back end
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Email' As [Key], N'Error_TheEmail0IsUsed' As [ErrorName],
-		FE.Email AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @Users FE 
-	JOIN [dbo].Users BE ON FE.Email = BE.Email
-	AND ((FE.[EntityState] = N'Inserted') OR (FE.Id <> BE.Id))
-	OPTION(HASH JOIN);
-
-	-- Email must not be duplicated in the uploaded list
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST([Index] AS NVARCHAR(255)) + '].Email' As [Key], N'Error_TheEmail0IsDuplicated' As [ErrorName],
-		[Email] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @Users
-	WHERE [Email] IN (
-		SELECT [Email]
-		FROM @Users
-		WHERE [Email] IS NOT NULL
-		GROUP BY [Email]
-		HAVING COUNT(*) > 1
-	) OPTION(HASH JOIN);
-
-    -- No email can change 
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST(FE.[Index] AS NVARCHAR(255)) + '].Email' As [Key], N'Error_TheEmailCannotBeModified' As [ErrorName],
-		NULL AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @Users FE 
-	JOIN [dbo].Users BE ON FE.Id = BE.Id
-	AND ((FE.[EntityState] = N'Updated') AND (FE.Email <> BE.Email))
-	OPTION(HASH JOIN);
-
-	-- No inactive role
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1], [Argument2], [Argument3], [Argument4], [Argument5]) 
-	SELECT '[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Roles[' + 
-				CAST(P.[Index] AS NVARCHAR(255)) + '].RoleId' As [Key], N'Error_TheView0IsInactive' As [ErrorName],
-				P.[RoleId] AS Argument1, NULL AS Argument2, NULL AS Argument3, NULL AS Argument4, NULL AS Argument5
-	FROM @Roles P
-	WHERE P.RoleId NOT IN (
-		SELECT [Id] FROM dbo.[Roles] WHERE IsActive = 1
-		)
-	AND (P.[EntityState] IN (N'Inserted', N'Updated'));
-    SELECT TOP {remainingErrorCount} * FROM @ValidationErrors;
-", UsersTvp, rolesTvp).ToListAsync();
-
-            // Loop over the errors returned from SQL and add them to ModelState
-            foreach (var sqlError in sqlErrors)
-            {
-                var formatArguments = sqlError.ToFormatArguments();
-
-                string key = sqlError.Key;
-                string errorMessage = _localizer[sqlError.ErrorName, formatArguments];
-
-                ModelState.AddModelError(key: key, errorMessage: errorMessage);
-            }
+            // Add errors to model state
+            ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        private DataTable UsersDataTable(List<UserForSave> entities, Dictionary<string, M.GlobalUsersMatch> matches = null)
-        {
-            DataTable table = new DataTable();
-
-            table.Columns.Add(new DataColumn("Index", typeof(int)));
-            table.Columns.Add(new DataColumn(nameof(UserForSave.Id), typeof(int)));
-            table.Columns.Add(new DataColumn(nameof(UserForSave.EntityState), typeof(string)));
-            table.Columns.Add(new DataColumn(nameof(UserForSave.Name), typeof(string)));
-            table.Columns.Add(new DataColumn(nameof(UserForSave.Name2), typeof(string)));
-            table.Columns.Add(new DataColumn(nameof(UserForSave.Email), typeof(string)));
-            table.Columns.Add(new DataColumn(nameof(User.ExternalId), typeof(string)));
-            table.Columns.Add(new DataColumn(nameof(UserForSave.AgentId), typeof(int)));
-
-            int index = 0;
-            foreach (var entity in entities)
-            {
-                DataRow row = table.NewRow();
-
-                row["Index"] = index++;
-                row[nameof(UserForSave.Id)] = (object)entity.Id ?? DBNull.Value;
-                row[nameof(UserForSave.EntityState)] = entity.EntityState;
-                row[nameof(UserForSave.Name)] = (object)entity.Name ?? DBNull.Value;
-                row[nameof(UserForSave.Name2)] = (object)entity.Name2 ?? DBNull.Value;
-                row[nameof(UserForSave.Email)] = (object)entity.Email ?? DBNull.Value;
-                row[nameof(User.ExternalId)] = matches != null && matches.ContainsKey(entity.Email) ? (object)matches[entity.Email].ExternalId : DBNull.Value;
-                row[nameof(UserForSave.AgentId)] = (object)entity.AgentId ?? DBNull.Value;
-
-                table.Rows.Add(row);
-            }
-
-            return table;
-        }
-
-        protected override Task<List<int>> SaveExecuteAsync(List<UserForSave> entitiesAndMasks, ExpandExpression expand, bool returnIds)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override async Task<List<int?>> SaveExecuteAsync(List<UserForSave> entities, SaveArguments args)
+        protected override Task PreprocessSavedEntitiesAsync(List<UserForSave> entities)
         {
             // Make all the emails small case
             entities.ForEach(e => e.Email = e.Email.ToLower());
+            return Task.CompletedTask;
+        }
 
-            // Get the inserted users
-            var insertedEntities = entities.Where(e => e.EntityState == EntityStates.Inserted);
+        protected override async Task<List<int>> SaveExecuteAsync(List<UserForSave> entities, ExpandExpression expand, bool returnIds)
+        {
+            // NOTE: this method is not optimized for massive bulk (e.g. 1,000+ users), since it relies
+            // on querying identity through UserManager one email at a time but it should be acceptable
+            // with the usual workloads, customers with more than 200 users are rare anyways
 
-            using (var trx = await _adminRepo.Database.BeginTransactionAsync())
+            // Step (1): If Embedded Identity Server is enabled, create any emails that don't already exist there
+            var usersToInvite = new List<(EmbeddedIdentityServerUser IdUser, UserForSave User)>();
+            if (_options.EmbeddedIdentityServerEnabled)
             {
-                try
+                foreach (var entity in entities)
                 {
-                    // Query the manager DB for matching emails, here I use the CodeList user-defined table type 
-                    // of the manager DB, since I only want to pass a list of strings, no need to defined a new type
-                    var insertedEmails = insertedEntities.Select(e => new { Code = e.Email });
-                    var emailsTable = ControllerUtilities.DataTable(insertedEmails);
-                    var emailsTvp = new SqlParameter("Emails", emailsTable)
+                    var email = entity.Email;
+
+                    // In case the user was added in a previous failed transaction
+                    // or something, we always try to be forgiving in the code
+                    var identityUser = await _userManager.FindByNameAsync(email) ??
+                         await _userManager.FindByEmailAsync(email);
+
+                    // This is truly a new user, create it
+                    if (identityUser == null)
                     {
-                        TypeName = $"dbo.MCodeList",
-                        SqlDbType = SqlDbType.Structured
-                    };
-
-                    var tenantId = new SqlParameter("TenantId", _tenantIdProvider.GetTenantId());
-
-                    var globalMatches = await _adminRepo.GlobalUsersMatches.FromSql($@"
-            DECLARE @IndexedIds [dbo].[IdList];
-
-            -- Insert new users
-            INSERT INTO @IndexedIds([Id])
-            SELECT x.[Id]
-            FROM
-            (
-        	    MERGE INTO [dbo].[GlobalUsers] AS t
-        	    USING (
-        		    SELECT [Code] as [Email] FROM @Emails 
-        	    ) AS s ON (t.Email = s.Email)
-        	    WHEN NOT MATCHED THEN
-        		    INSERT ([Email]) VALUES (s.[Email])
-        		    OUTPUT inserted.[Id] 
-            ) As x;
-
-            -- Insert memberships
-            INSERT INTO [dbo].[TenantMemberships] (UserId, TenantId)
-            SELECT Id, @TenantId FROM @IndexedIds;
-
-            -- Return existing users
-            SELECT E.[Code] AS [Email], 
-                   GU.[ExternalId] AS [ExternalId] 
-            FROM [dbo].[GlobalUsers] GU JOIN @Emails E ON GU.Email = E.Code
-            WHERE GU.ExternalId IS NOT NULL",
-                    emailsTvp, tenantId).ToDictionaryAsync(e => e.Email);
-
-                    // Add created entities
-                    var UsersIndices = entities.ToIndexDictionary();
-                    var UsersTable = UsersDataTable(entities, globalMatches);
-                    var UsersTvp = new SqlParameter("Users", UsersTable)
-                    {
-                        TypeName = $"dbo.{nameof(UserForSave)}List",
-                        SqlDbType = SqlDbType.Structured
-                    };
-
-                    // Filter out roles that haven't changed for performance
-                    var rolesHeaderIndices = UsersIndices.Keys.Select(User => (User.Roles, HeaderIndex: UsersIndices[User]));
-                    DataTable rolesTable = ControllerUtilities.DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
-                    var rolesTvp = new SqlParameter("RoleMemberships", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
-
-                    string saveSql = $@"
-        -- Procedure: Users__Save
-            DECLARE @IndexedIds [dbo].[IndexedIdList];
-        	DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
-        	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-        	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-
-        	DELETE FROM [dbo].[RoleMemberships]
-        	WHERE [Id] IN (SELECT [Id] FROM @RoleMemberships WHERE [EntityState] = N'Deleted');
-
-        	INSERT INTO @IndexedIds([Index], [Id])
-        	SELECT x.[Index], x.[Id]
-        	FROM
-        	(
-        		MERGE INTO [dbo].[Users] AS t
-        		USING (
-        			SELECT 
-        				[Index], [Id], [Name], [Name2], [Email], [ExternalId], [AgentId]
-        			FROM @Users 
-        			WHERE [EntityState] IN (N'Inserted', N'Updated')
-        		) AS s ON (t.Id = s.Id)
-        		WHEN MATCHED 
-        		THEN
-        			UPDATE SET
-        				t.[Name]		    = s.[Name],
-        				t.[Name2]		    = s.[Name2],
-        				-- t.[Email]		    = s.[Email],
-        				-- t.[ExternalId]		= s.[ExternalId],
-        				t.[AgentId]	        = s.[AgentId],
-        				t.[ModifiedAt]	    = @Now,
-        				t.[ModifiedById]    = @UserId,
-                        t.[PermissionsVersion] = NEWID(), -- in case the permissions have changed
-                        t.[UserSettingsVersion] = NEWID() -- in case the permissions have changed
-        		WHEN NOT MATCHED THEN
-        			INSERT (
-        				[TenantId], [Name], [Name2],	[Email],	[ExternalId],    [AgentId], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById]
-        			)
-        			VALUES (
-        				@TenantId, s.[Name], s.[Name2], s.[Email], s.[ExternalId], s.[AgentId], @Now,		@UserId,		@Now,		@UserId
-        			)
-        			OUTPUT s.[Index], inserted.[Id] 
-        	) As x;
-
-            MERGE INTO [dbo].[RoleMemberships] AS t
-        		USING (
-        			SELECT L.[Index], L.[Id], II.[Id] AS [UserId], [RoleId], [Memo]
-        			FROM @RoleMemberships L
-        			JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
-        			WHERE L.[EntityState] IN (N'Inserted', N'Updated')
-        		) AS s ON t.Id = s.Id
-        		WHEN MATCHED THEN
-        			UPDATE SET 
-        				t.[UserId]		    = s.[UserId], 
-        				t.[RoleId]		    = s.[RoleId],
-        				t.[Memo]		    = s.[Memo],
-        				t.[ModifiedAt]	    = @Now,
-        				t.[ModifiedById]	= @UserId
-        		WHEN NOT MATCHED THEN
-        			INSERT ([TenantId], [UserId],	[RoleId],	 [Memo], [CreatedAt], [CreatedById], [ModifiedAt], [ModifiedById])
-        			VALUES (@TenantId, s.[UserId], s.[RoleId], s.[Memo], @Now,		@UserId,		@Now,		@UserId);
-        ";
-
-                    // Prepare the list of users whose profile picture has changed:
-                    var usersWithModifiedImgs = entities.Where(e => e.Image != null);
-                    bool newPictures = usersWithModifiedImgs.Any();
-                    bool returnEntities = (args.ReturnEntities ?? false);
-
-                    // Optimization
-                    if (!returnEntities && !newPictures)
-                    {
-                        // IF no returned items are expected, simply execute a non-Query and return an empty list;
-                        await _appRepo.Database.ExecuteSqlCommandAsync(saveSql, UsersTvp, rolesTvp);
-                        return null;
-                    }
-                    else
-                    {
-                        // If returned items are expected, append a select statement to the SQL command
-                        saveSql = saveSql += "SELECT * FROM @IndexedIds;";
-
-                        // Retrieve the map from Indexes to Ids
-                        var indexedIds = await _appRepo.Saving.FromSql(saveSql, UsersTvp, rolesTvp).ToListAsync();
-
-                        // return the Ids in the same order they came
-                        var result = indexedIds.OrderBy(e => e.Index).Select(e => (int?)e.Id).ToList();
-
-
-                        // Hmmmmmmmmmmmmmmmmmmmmmmm
-
-                        var idsString = string.Join(",", indexedIds.Select(e => e.Id));
-                        var q = _appRepo.VW_Users.FromSql($"SELECT * FROM [dbo].[VW_Users] WHERE Id IN (SELECT CONVERT(INT, VALUE) AS Id FROM STRING_SPLIT({idsString}, ','))");
-                        q = Expand(q, args.Expand); // includes
-                        var savedEntities = await q.AsNoTracking().ToListAsync();
-
-                        // SQL Server does not guarantee order, so make sure the result is sorted according to the initial index
-                        Dictionary<int, int> indices = indexedIds.ToDictionary(e => e.Id, e => e.Index);
-                        var sortedSavedEntities = new UserForQuery[savedEntities.Count];
-                        foreach (var item in savedEntities)
+                        // Create the identity user
+                        identityUser = new EmbeddedIdentityServerUser
                         {
-                            int index = indices[item.Id.Value];
-                            sortedSavedEntities[index] = item;
-                        }
+                            UserName = email,
+                            Email = email,
+                            EmailConfirmed = !_options.EmailEnabled
 
-                        // The code inside here is not optimized for bulk, we assume for now
-                        // that users will be entering images one at a time
-                        if (newPictures)
+                            // Note: If the system is integrated with an email service, user emails
+                            // are automatically confirmed, otherwise users must confirm their 
+                        };
+
+                        var result = await _userManager.CreateAsync(identityUser);
+                        if (!result.Succeeded)
                         {
-                            var entitiesDic = entities.ToIndexDictionary();
-                            // Retrieve blobs to delete
-                            var blobsToDelete = usersWithModifiedImgs.Where(e => e.EntityState == EntityStates.Updated)
-                                .Select(u => sortedSavedEntities[entitiesDic[u]].ImageId).Where(e => e != null).Select(e => BlobName(e)).ToList();
+                            string msg = string.Join(", ", result.Errors.Select(e => e.Description));
+                            _logger.LogError(msg);
 
-
-                            var blobsToSave = new List<(string name, byte[] content)>();
-                            foreach (var user in usersWithModifiedImgs)
-                            {
-                                // Get the Id of the user
-                                int index = entitiesDic[user];
-                                var savedEntity = sortedSavedEntities[entitiesDic[user]];
-                                int id = savedEntity.Id.Value;
-                                if (user.Image.Length == 0)
-                                {
-                                    // We simply NULL image Id
-                                    await _appRepo.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[Users] SET ImageId = NULL WHERE [Id] = {id}");
-                                    savedEntity.ImageId = null;
-                                }
-                                else
-                                {
-                                    // We create a new Image Id
-                                    string imageId = Guid.NewGuid().ToString();
-                                    await _appRepo.Database.ExecuteSqlCommandAsync($@"UPDATE [dbo].[Users] SET ImageId = {imageId} WHERE [Id] = {id}");
-                                    savedEntity.ImageId = imageId;
-
-                                    // We make the image smaller and turn it into JPEG
-                                    var imageBytes = user.Image;
-                                    using (var image = Image.Load(imageBytes))
-                                    {
-                                        // Resize to 128x128px
-                                        image.Mutate(c => c.Resize(new ResizeOptions
-                                        {
-                                            // 'Max' mode maintains the aspect ratio and keeps the entire image
-                                            Mode = ResizeMode.Max,
-                                            Size = new Size(128),
-                                            Position = AnchorPositionMode.Center
-                                        }));
-
-                                        // some image formats that support transparent regions
-                                        // these regions will turn black in JPEG format unless we do this
-                                        image.Mutate(c => c.BackgroundColor(Rgba32.White)); ;
-
-                                        // Save as JPEG
-                                        var memoryStream = new MemoryStream();
-                                        image.SaveAsJpeg(memoryStream);
-                                        imageBytes = memoryStream.ToArray();
-
-                                        // Note: JPEG is the format of choice for photography
-                                        // for such pictures it provides better quality at a lower size
-                                        // Since these pictures are expected to be mostly photographs
-                                        // we save them as JPEGs
-                                    }
-
-                                    // Add it to blobs to save
-                                    blobsToSave.Add((BlobName(imageId), imageBytes));
-                                }
-                            }
-
-                            // Delete the blobs retrieved earlier
-                            if (blobsToDelete.Any())
-                            {
-                                await _blobService.DeleteBlobs(blobsToDelete);
-                            }
-
-                            // Save new blobs if any
-                            if (blobsToSave.Any())
-                            {
-                                await _blobService.SaveBlobs(blobsToSave);
-                            }
-
-                            // Note: Since the blob service is not a transactional resource it is good to do the blob calls
-                            // near the end to minimize the chance of modifying blobs first only to have the transaction roll back later
-                        }
-
-                        // Send invitation emails, sending emails is also a non transactional resource, so we keep it till the end
-                        var newUsers = insertedEntities.Where(e => !globalMatches.ContainsKey(e.Email)).ToList();
-                        int count = newUsers.Count;
-                        if (count > 0 && _config.EmbeddedIdentityServerEnabled)
-                        {
-                            // NOTE: the section below is not optimized for massive bulk (e.g. 1,000+ users), but it should be 
-                            // acceptable with the usual workloads, customers with more than 200 users are rare anyways
-
-                            // The email sender parameters
-                            var tos = new string[count];
-                            var subjects = new string[count];
-                            var substitutions = new Dictionary<string, string>[count];
-
-                            // this loop adds the users to the identity database and prepares the invitation email parameters
-                            for (int i = 0; i < count; i++)
-                            {
-                                var User = newUsers[i];
-                                var email = User.Email;
-
-                                // in case the user was added in a previous failed transaction, we try to load the email from the DB first
-                                var identityUser = await _userManager.FindByNameAsync(email) ??
-                                     await _userManager.FindByNameAsync(email);
-
-                                // this is truly a new user, create it
-                                if (identityUser == null)
-                                {
-                                    // create the identity user
-                                    identityUser = new M.User
-                                    {
-                                        UserName = email,
-                                        Email = email,
-
-                                        // if the system is offline, emails are automatically confirmed
-                                        EmailConfirmed = !_config.Online
-                                    };
-
-                                    var result = await _userManager.CreateAsync(identityUser);
-                                    if (!result.Succeeded)
-                                    {
-                                        string msg = string.Join(", ", result.Errors.Select(e => e.Description));
-                                        throw new BadRequestException($"An unexpected error occurred while creating an account for '{User.Name}': {msg}");
-                                    }
-                                }
-
-                                // if the system is online: prepare an invitation email that contains an email confirmation link
-                                if (_config.Online)
-                                {
-                                    // Add the email sender parameters
-                                    var (subject, body) = await MakeInvitationEmailAsync(identityUser, User);
-                                    tos[i] = email;
-                                    subjects[i] = subject;
-                                    substitutions[i] = new Dictionary<string, string> { { "-message-", body } };
-                                }
-                            }
-
-                            // send all the inviation emails en masse
-                            if (_config.Online)
-                            {
-                                await _emailSender.SendEmailBulkAsync(
-                                    tos: tos.ToList(),
-                                    subjects: subjects.ToList(),
-                                    htmlMessage: $"-message-",
-                                    substitutions: substitutions.ToList()
-                                    );
-                            }
-                        }
-
-                        trx.Commit();
-
-                        // Return the saved entities if requested
-                        if (!returnEntities)
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            // Return the sorted collection
-                            return (sortedSavedEntities.ToList(), q);
+                            throw new BadRequestException($"An unexpected error occurred while creating an account for '{email}'");
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    trx.Rollback();
-                    throw ex;
+
+                    // Mark for invitation later 
+                    if (!identityUser.EmailConfirmed)
+                    {
+                        usersToInvite.Add((identityUser, entity));
+                    }
                 }
             }
+
+            // Step (2): Save the users in the app database
+            _appRepo.EnlistTransaction(Transaction.Current); // So that it is not affected by admin trx scope later
+            var (newEmails, oldEmails) = await _appRepo.Users__Save(entities);
+
+            // Step (3) Same the emails in the admin database
+            var tenantId = _tenantIdProvider.GetTenantId();
+            _adminTrxScope = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
+            _adminRepo.EnlistTransaction(Transaction.Current);
+            await _adminRepo.GlobalUsers__Save(newEmails, oldEmails, tenantId);
+
+            // Step (4): Send the invitation emails
+            if (usersToInvite.Any()) // This will be empty if email is disabled
+            {
+                var userIds = usersToInvite.Select(e => e.User.Id).ToArray();
+                var agents = await _appRepo.Agents
+                    .Select($"{nameof(Agent.Id)},{nameof(Agent.Name)},{nameof(Agent.Name2)},{nameof(Agent.Name3)},{nameof(Agent.PreferredLanguage)}")
+                    .FilterByIds(userIds)
+                    .ToListAsync();
+
+                var agentsDic = agents.ToDictionary(e => e.Id);
+                var tos = new List<string>();
+                var subjects = new List<string>();
+                var substitutions = new List<Dictionary<string, string>>();
+                foreach (var (idUser, user) in usersToInvite)
+                {
+                    if (!agentsDic.TryGetValue(user.Id, out Agent agent))
+                    {
+                        // Programmer mistake
+                        throw new InvalidOperationException($"User with id {user.Id} was saved but its corresponding Agent was not found");
+                    }
+
+                    // Add the email sender parameters
+                    var (subject, body) = await MakeInvitationEmailAsync(idUser, agent);
+                    tos.Add(idUser.Email);
+                    subjects.Add(subject);
+                    substitutions.Add(new Dictionary<string, string> { { "-message-", body } });
+                }
+
+                await _emailSender.SendEmailBulkAsync(
+                    tos: tos,
+                    subjects: subjects,
+                    htmlMessage: $"-message-",
+                    substitutions: substitutions.ToList()
+                    );
+            }
+
+            // Return the same Ids that came
+            return entities
+                .Select(e => e.Id)
+                .ToList();
         }
 
-        private string BlobName(string guid)
+        protected override Task OnSaveCompleted()
         {
-            int tenantId = _tenantIdProvider.GetTenantId().Value;
-            return $"{tenantId}/Users/{guid}";
+            if (_adminTrxScope != null)
+            {
+                _adminTrxScope.Complete();
+                _adminTrxScope.Dispose();
+            }
+
+            return Task.CompletedTask;
         }
 
-        protected override async Task DeleteExecuteAsync(List<int?> ids)
+        protected override Task OnSaveError(Exception ex)
+        {
+            if (_adminTrxScope != null)
+            {
+                _adminTrxScope.Dispose();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // Make sure the user is not deleting his/her own account
             var userInfo = await _appRepo.GetUserInfoAsync();
-            var currentUserId = userInfo.UserId;
-            if (ids.Any(id => id == currentUserId))
+            var index = ids.IndexOf(userInfo.UserId.Value);
+            if (index >= 0)
             {
-                throw new BadRequestException(_localizer["Error_CannotDeleteYourOwnUser"].Value);
+                ModelState.AddModelError($"[{index}]", _localizer["Error_CannotDeleteYourOwnUser"].Value);
             }
 
-            // It's unfortunate that EF Core does not support distributed transactions, so there is no
-            // guarantee that deletes to both the shard and the manager will run one without the other
+            // SQL validation
+            int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
+            var sqlErrors = await _appRepo.Users_Validate__Delete(ids, top: remainingErrorCount);
 
-            // Prepare a list of Ids to delete
-            DataTable idsTable = ControllerUtilities.DataTable(ids.Select(e => new { Id = e }), addIndex: false);
-            var idsTvp = new SqlParameter("Ids", idsTable)
+            // Add errors to model state
+            ModelState.AddLocalizedErrors(sqlErrors, _localizer);
+        }
+
+        protected override async Task DeleteExecuteAsync(List<int> ids)
+        {
+            try
             {
-                TypeName = $"dbo.IdList",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            var tenantId = new SqlParameter("TenantId", _tenantIdProvider.GetTenantId());
-
-            using (var trxApp = await _appRepo.Database.BeginTransactionAsync())
-            {
-                try
+                // It's unfortunate that EF Core does not support distributed transactions, so there is no
+                // guarantee that deletes to both the application and the admin will run one without the other
+                using (var appTrx = ControllerUtilities.CreateTransaction())
                 {
-                    // Retrieve the deleted Image Ids, and delete them near the end when we are as sure as we can
-                    // that the transaction will commit, since Azure blob storage is not a transactional resource
-                    var deletedImages = await _appRepo.Strings.FromSql($@"
-    SELECT [ImageId] AS Value FROM [dbo].[Users] WHERE [ImageId] IS NOT NULL AND [Id] IN (SELECT [Id] FROM @Ids)
-", idsTvp).Select(e => e.Value).ToListAsync();
+                    _appRepo.EnlistTransaction(Transaction.Current);
+                    var oldEmails = await _appRepo.Users__Delete(ids);
 
-
-                    // Delete efficiently with a SQL query and return the emails of the deleted users
-                    var deletedEmails = await _appRepo.Strings.FromSql($@"
-    DECLARE @Emails [dbo].[CodeList];
-
-    INSERT INTO @Emails SELECT Email FROM [dbo].[Users] WHERE Id IN (SELECT Id FROM @Ids);
-
-    DELETE FROM dbo.[Users] WHERE Id IN (SELECT Id FROM @Ids);
-
-    SELECT Code AS Value from @Emails;
-", idsTvp).Select(e => e.Value).ToListAsync();
-
-                    // Prepare the TVP of emails to delete from the manager
-                    DataTable emailsTable = ControllerUtilities.DataTable(deletedEmails.Select(e => new { Code = e }), addIndex: false);
-                    var emailsTvp = new SqlParameter("Emails", emailsTable)
+                    using (var adminTrx = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew))
                     {
-                        TypeName = $"dbo.CodeList",
-                        SqlDbType = SqlDbType.Structured
-                    };
+                        var newEmails = new List<string>();
+                        var tenantId = _tenantIdProvider.GetTenantId();
 
-                    using (var trxAdmin = await _adminRepo.Database.BeginTransactionAsync())
-                    {
-                        try
-                        {
-                            // Delete efficiently with a SQL query
-                            await _adminRepo.Database.ExecuteSqlCommandAsync($@"
-    DELETE FROM dbo.[TenantMemberships] 
-    WHERE TenantId = @TenantId AND UserId IN (
-        SELECT Id FROM [dbo].[GlobalUsers] WHERE Email IN (SELECT Code from @Emails)
-    );
-", emailsTvp, tenantId);
+                        await _adminRepo.GlobalUsers__Save(newEmails, oldEmails, tenantId);
 
-                            // Delete the blobs just before committing the transaction
-                            await _blobService.DeleteBlobs(deletedImages.Select(e => BlobName(e)));
-
-                            // Commit and return
-                            trxAdmin.Commit();
-                            trxApp.Commit();
-                        }
-                        catch (Exception ex)
-                        {
-                            trxApp.Rollback();
-                            trxAdmin.Rollback();
-                            throw ex;
-                        }
+                        appTrx.Complete();
+                        adminTrx.Complete();
                     }
                 }
-                catch (SqlException ex) when (IsForeignKeyViolation(ex))
-                {
-                    throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["User"]]);
-                }
-                catch (Exception ex)
-                {
-                    trxApp.Rollback();
-                    throw ex;
-                }
+            }
+            catch (ForeignKeyViolationException)
+            {
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["User"]]);
             }
         }
 
-        protected override AbstractDataGrid GetImportTemplate()
+        protected override Query<User> GetAsQuery(List<UserForSave> entities)
         {
-            throw new NotImplementedException();
+            return _appRepo.Users__AsQuery(entities);
         }
 
-        protected override AbstractDataGrid EntitiesToAbstractGrid(GetResponse<User> response, ExportArguments args)
+        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override Task<(List<UserForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid grid, ParseArguments args)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override (string PreambleSql, string ComposableSql, List<SqlParameter> Parameters) GetAsQuery(IEnumerable<UserForSave> entities)
-        {
-            var preambleSql =
-@"DECLARE @TenantId int = CONVERT(INT, SESSION_CONTEXT(N'TenantId'));
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-	DECLARE @True BIT = 1;";
-
-            var sql =
-@"SELECT  @TenantId AS TenantId, ISNULL(E.Id, 0) AS Id, E.Name, E.Name2, E.Email, E.ExternalId, E.AgentId, NULL AS LastAccess, NEWID() AS PermissionsVersion, NEWID() AS UserSettingsVersion, NULL AS ImageId,
-@True AS IsActive, @Now AS CreatedAt, @UserId AS CreatedById, @UserId AS CreatedById1, @TenantId AS CreatedByTenantId , @Now AS ModifiedAt, @UserId AS ModifiedById 
-FROM @Entities E";
-
-            // Add created entities
-            DataTable entitiesTable = UsersDataTable(entities.ToList());
-            var entitiesTvp = new SqlParameter("Entities", entitiesTable)
-            {
-                TypeName = $"dbo.{nameof(UserForSave)}List",
-                SqlDbType = SqlDbType.Structured
-            };
-
-            var ps = new List<SqlParameter>() { entitiesTvp };
-
-            // Return the result
-            return (preambleSql, sql, ps);
+            return _appRepo.UserPermissions(action, VIEW);
         }
     }
 }

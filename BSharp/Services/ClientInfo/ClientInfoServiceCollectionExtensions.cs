@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using BSharp.Services.ClientInfo;
 using System;
 
-namespace BSharp.Services.ClientInfo
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ClientInfoServiceCollectionExtensions
     {
-        public static IServiceCollection AddEmail(this IServiceCollection services)
+        public static IServiceCollection AddClientInfo(this IServiceCollection services)
         {
             if (services is null)
             {

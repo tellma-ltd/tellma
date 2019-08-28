@@ -5,9 +5,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 import { AuthService } from '~/app/data/auth.service';
 import { appconfig } from '~/app/data/appconfig';
-import { SettingsForClient } from '~/app/data/dto/settings';
 import { Culture } from '~/app/data/dto/culture';
 import { DOCUMENT } from '@angular/platform-browser';
+import { supportedCultures } from '~/app/data/supported-cultures';
 
 @Component({
   selector: 'b-root-shell',
@@ -19,7 +19,6 @@ export class RootShellComponent implements OnInit, OnDestroy {
   // For the menu on small screens
   public isCollapsed = true;
 
-  private _oldActiveLanguages: { [key: string]: Culture };
   private _activeLanguages: Culture[];
 
   constructor(public workspace: WorkspaceService, public nav: NavigationService, @Inject(DOCUMENT) private document: Document,
@@ -59,10 +58,9 @@ export class RootShellComponent implements OnInit, OnDestroy {
   }
 
   get activeLanguages() {
-    const activeCultures = this.workspace.globalSettings.ActiveCultures;
-    if  (this._oldActiveLanguages !== activeCultures) {
-      const keys = Object.keys(activeCultures);
-      this._activeLanguages = keys.map(key => activeCultures[key]);
+    if  (!this._activeLanguages) {
+      const keys = Object.keys(supportedCultures);
+      this._activeLanguages = keys.map(key => supportedCultures[key]);
     }
     return this._activeLanguages;
   }
@@ -83,7 +81,7 @@ export class RootShellComponent implements OnInit, OnDestroy {
 
   get currentLanguageDisplay(): string {
     const cultureName = this.currentLanguage;
-    const culture = this.workspace.globalSettings.ActiveCultures[this.currentLanguage];
+    const culture = supportedCultures[this.currentLanguage];
     return !!culture ? culture.Name : cultureName;
   }
 

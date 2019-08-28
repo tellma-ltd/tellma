@@ -23,6 +23,16 @@ namespace BSharp.EntityModel
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
+        [Display(Name = "Code")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Code { get; set; }
+
+        [Display(Name = "Agent_PreferredLanguage")]
+        [Culture]
+        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        public string PreferredLanguage { get; set; }
+
         [NotMapped]
         [Display(Name = "Image")]
         public byte[] Image { get; set; }
