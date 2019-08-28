@@ -92,14 +92,14 @@ BEGIN
 
 	-- Not allowed to cause negative inventory balance
 	WITH IfrsAssetAccounts AS (
-		SELECT Id FROM dbo.[IfrsAccounts]
+		SELECT Id FROM dbo.[IfrsAccountClassifications]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.IfrsAccounts WHERE Id = N'Assets')
+			(SELECT [Node] FROM dbo.[IfrsAccountClassifications] WHERE Id = N'Assets')
 		) = 1
 	),
 	AssetAccounts AS (
 		SELECT [Id] FROM dbo.Accounts A
-		WHERE A.IfrsAccountId IN (
+		WHERE A.[IfrsClassificationId] IN (
 			SELECT [Id] FROM IfrsAssetAccounts
 		)
 	),

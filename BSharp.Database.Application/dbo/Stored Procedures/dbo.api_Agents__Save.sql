@@ -21,6 +21,6 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dbo].[dal_Agents__Save]
+	EXEC [dal].[Agents__Save]
 		@Entities = @Entities, @ReturnIds = @ReturnIds;
 END

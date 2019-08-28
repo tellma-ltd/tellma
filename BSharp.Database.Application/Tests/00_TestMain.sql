@@ -19,21 +19,24 @@
 	Documents, -- screen shows Lines, LineEntries, Signatures, StatesHistory(?)
 */
 BEGIN -- reset Identities
-	DBCC CHECKIDENT ('[dbo].[Accounts]', RESEED, 1) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[Agents]', RESEED, 2) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 1) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[DocumentLines]', RESEED, 1) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[DocumentLineEntries]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Accounts]', RESEED, 0) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Agents]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 0) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[DocumentLines]', RESEED, 0) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[DocumentLineEntries]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[MeasurementUnits]', RESEED, 100) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Permissions]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ProductCategories]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[ResourceInstances]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ResponsibilityCenters]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Roles]', RESEED, 1) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[Workflows]', RESEED, 1) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[WorkflowSignatures]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[RoleMemberships]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Workflows]', RESEED, 0) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[WorkflowSignatures]', RESEED, 0) WITH NO_INFOMSGS;
 
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
-	DECLARE @ValidationErrorsJson nvarchar(max), @ResultsJson nvarchar(max);
+	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @DebugIfrsConcepts bit = 0, @DebugMeasurementUnits bit = 0;
 	DECLARE @DebugProductCategories bit = 0, @DebugOperations bit = 1, @DebugResources bit = 0;
 	DECLARE @DebugAgents bit = 0, @DebugPlaces bit = 0;
@@ -44,19 +47,27 @@ BEGIN -- reset Identities
 
 	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = N'support@banan-it.com';
 
-	EXEC sp_set_session_context 'UserId', @UserId;
+	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 END
 
 BEGIN TRY
 	BEGIN TRANSACTION
-		:r .\01_IfrsConcepts.sql
-		:r .\02_MeasurementUnits.sql
-		--:r .\03_ProductCategories.sql
-		--:r .\03_Operations.sql
-		--:r .\04_Resources.sql
+		:r .\01_RolesPermissions.sql		
+		:r .\02_Workflows.sql
+		:r .\03_MeasurementUnits.sql
+		:r .\04_IfrsConcepts.sql
 		--:r .\05_Agents.sql
-		:r .\10_Documents.sql
+		:r .\06_Accounts.sql
+		:r .\07_Resources.sql
+		:r .\08_ResponsibilityCenters.sql
+		:r .\10_JournalVouchers.sql
+
+		--:r .\71_Operations.sql
+		--:r .\72_ProductCategories.sql
+		--:r .\73_Places.sql
+		
+
 	--	select * from entries;
 	--SELECT @fromDate = '2017.01.01', @toDate = '2024.03.01'
 	--SELECT * from dbo.[fi_Journal](@fromDate, @toDate);
@@ -95,11 +106,11 @@ ERR_LABEL:
 	WITH (
 		[Key] NVARCHAR (255) '$.Key',
 		[ErrorName] NVARCHAR (255) '$.ErrorName',
+		[Argument0] NVARCHAR (255) '$.Argument0',
 		[Argument1] NVARCHAR (255) '$.Argument1',
 		[Argument2] NVARCHAR (255) '$.Argument2',
 		[Argument3] NVARCHAR (255) '$.Argument3',
-		[Argument4] NVARCHAR (255) '$.Argument4',
-		[Argument5] NVARCHAR (255) '$.Argument5'	
+		[Argument4] NVARCHAR (255) '$.Argument4'
 	);
 	ROLLBACK;
 RETURN;

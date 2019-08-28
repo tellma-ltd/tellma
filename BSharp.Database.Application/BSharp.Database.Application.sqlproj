@@ -91,8 +91,8 @@
     <Build Include="dbo\Tables\dbo.Users.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignments.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLines.sql" />
-    <Build Include="dbo\Tables\dbo.IfrsAccounts.sql" />
-    <Build Include="dbo\Tables\dbo.IfrsNotes.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsAccountClassifications.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsEntryClassifications.sql" />
     <Build Include="dbo\Tables\dbo.Reconciliation.sql" />
     <Build Include="dbo\Tables\dbo.Resources.sql" />
     <Build Include="dbo\Tables\dbo.Settings.sql" />
@@ -104,7 +104,6 @@
     <Build Include="dbo\Functions\dbo.fn_CurrencyExchange.sql" />
     <Build Include="dbo\Functions\dbo.fi_Journal.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Notes__Update.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Accounts__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ValidationErrorList.sql" />
     <Build Include="Security\api.sql" />
     <Build Include="Security\dal.sql" />
@@ -113,10 +112,8 @@
     <Build Include="dbo\User Defined Types\dbo.IndexedIdList.sql" />
     <Build Include="dbo\Tables\dbo.Translations.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_ResponsibilityCenters__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Resources__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Agents_Validate__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Agents__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Activate.sql" />
@@ -126,8 +123,6 @@
     <Build Include="dbo\User Defined Types\dbo.SettingList.sql" />
     <Build Include="dbo\User Defined Types\dbo.StringList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Resources__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Resources_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentWideLineList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
@@ -136,23 +131,23 @@
     <Build Include="dbo\Tables\dbo.IfrsAccountsIfrsNotes.sql" />
     <Build Include="dbo\User Defined Types\dbo.VType.sql" />
     <None Include="Tests\00_TestMain.sql" />
-    <None Include="Tests\01_IfrsConcepts.sql" />
-    <None Include="Tests\02_MeasurementUnits.sql" />
-    <None Include="Tests\03_Operations.sql" />
-    <None Include="Tests\04_Resources.sql" />
+    <None Include="Tests\04_IfrsConcepts.sql" />
+    <None Include="Tests\03_MeasurementUnits.sql" />
+    <None Include="Tests\71_Operations.sql" />
+    <None Include="Tests\07_Resources.sql" />
     <None Include="Tests\05_Agents.sql" />
-    <None Include="Tests\05_Places.sql" />
-    <None Include="Tests\10_Documents.sql" />
+    <None Include="Tests\73_Places.sql" />
+    <None Include="Tests\10_JournalVouchers.sql" />
     <None Include="Tests\30_HRCycle.sql" />
     <None Include="Tests\40_PurchasingCycle.sql" />
     <None Include="Tests\50_ProductionCycle.sql" />
     <None Include="Tests\60_SalesCycle.sql" />
-    <None Include="Tests\11W_Financing.sql" />
+    <None Include="Tests\21_Financing.sql" />
     <None Include="Tests\TestingToBeCleaned.sql" />
-    <None Include="Provisioning\013_IfrsAccounts.sql" />
+    <None Include="Provisioning\013_IfrsAccountClassifications.sql" />
     <None Include="Provisioning\04_AccountsNotes.sql" />
     <None Include="Provisioning\02_MeasurementUnits.sql" />
-    <None Include="Provisioning\012_IfrsNotes.sql" />
+    <None Include="Provisioning\012_IfrsEntryClassifications.sql" />
     <PostDeploy Include="Provisioning\00_Main.sql" />
     <None Include="Provisioning\05_LineTypeSpecifications.sql" />
     <None Include="Provisioning\06_DocumentTypes.sql" />
@@ -184,7 +179,6 @@
     <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Roles_Validate__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Roles__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Roles__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ViewList.sql" />
@@ -207,7 +201,6 @@
     <Build Include="dbo\Tables\dbo.TemplateLines.sql" />
     <Build Include="dbo\Views\dbo.Employees.sql" />
     <Build Include="dbo\Functions\dbo.fi_Agents.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Accounts__Save.sql" />
     <Build Include="dbo\Views\dbo.InventoriesFact.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_NegativeInventories.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_SalesDetails.sql" />
@@ -307,6 +300,22 @@
     <Build Include="rpt\Functions\rpt.Documents_ToState_Roles__Missing.sql" />
     <Build Include="rpt\Functions\rpt.Documents_ToState_Roles__MissingConditional.sql" />
     <Build Include="rpt\Functions\rpt.DocumentsWithNoDefinedWorkflows.sql" />
+    <Build Include="rpt\Functions\rpt.Resources.sql" />
+    <Build Include="dal\Stored Procedures\dal.Resources__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Resources__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.Resources__Save.sql" />
+    <Build Include="api\Stored Procedures\api.Resources__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.Resources_Validate__Delete.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ResourceInstanceList.sql" />
+    <Build Include="bll\Stored Procedures\bll.Resources_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents__Save.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.sp_ResourcesInstances.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IndexedImageIdList.sql" />
+    <Build Include="dal\Stored Procedures\dal.Roles__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Accounts__Activate.sql" />
+    <Build Include="dbo\Tables\dbo.IfrsStatements.sql" />
+    <Build Include="dbo\Tables\dbo.AccountsDisclosures.sql" />
     <Build Include="dal\Stored Procedures\dal.GetUserPermissions.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SetExternalIdByUserId.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SetEmailByUserId.sql" />
@@ -324,14 +333,19 @@
     </ArtifactReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Tests\11M_Financing.sql" />
+    <None Include="Tests\11_Financing.sql" />
     <None Include="Tests\12_ManualMisc.sql" />
     <None Include="Provisioning\07_AccountSpecifications.sql" />
     <None Include="BSharp.publish.xml" />
     <None Include="Provisioning\01_IfrsConcepts.sql" />
     <None Include="Provisioning\011_IfrsDisclosures.sql" />
-    <None Include="Tests\03_ProductCategories.sql" />
+    <None Include="Tests\72_ProductCategories.sql" />
     <None Include="BSharp.Database.Application.publish.xml" />
+    <None Include="Tests\01_RolesPermissions.sql" />
+    <None Include="Tests\02_Workflows.sql" />
+    <None Include="Tests\06_Accounts.sql" />
+    <None Include="Tests\08_ResponsibilityCenters.sql" />
+    <None Include="Tests\12_Purchasing.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BSharp.Database.Application.refactorlog" />

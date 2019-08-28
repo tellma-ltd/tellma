@@ -1,6 +1,7 @@
-﻿CREATE PROCEDURE [dbo].[dal_Roles__Save]
+﻿CREATE PROCEDURE [dal].[Roles__Save]
 	@Roles [dbo].[RoleList] READONLY, 
 	@Permissions [dbo].[PermissionList] READONLY,
+	-- RoleMembership
 	@ReturnIds BIT = 0
 AS
 BEGIN
@@ -34,25 +35,28 @@ BEGIN
 			)
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
-
-	MERGE INTO [dbo].[Permissions] AS t
+	
+	WITH BE AS (
+		SELECT * FROM dbo.[Permissions]
+		WHERE [RoleId] IN (SELECT [Id] FROM @IndexedIds)
+	)
+	MERGE INTO BE AS t
 	USING (
-		SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [ViewId], [Level], [Criteria], [Memo]
+		SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [ViewId], [Action], [Criteria], [Memo]
 		FROM @Permissions L
 		JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
 			t.[ViewId]		= s.[ViewId], 
-			t.[Action]		= s.[Level],
+			t.[Action]		= s.[Action],
 			t.[Criteria]	= s.[Criteria],
 			t.[Memo]		= s.[Memo]
 	WHEN NOT MATCHED THEN
 		INSERT ([RoleId],	[ViewId],	[Action],	[Criteria], [Memo])
-		VALUES (s.[RoleId], s.[ViewId], s.[Level], s.[Criteria], s.[Memo])
+		VALUES (s.[RoleId], s.[ViewId], s.[Action], s.[Criteria], s.[Memo])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
-
 
 	IF (@ReturnIds = 1)
 		SELECT * FROM @IndexedIds;

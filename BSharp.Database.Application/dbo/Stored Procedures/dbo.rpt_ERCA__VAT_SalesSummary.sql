@@ -11,7 +11,7 @@ BEGIN
 		J.DocumentDate As [Invoice Date], J.[DocumentLineId]
 	FROM dbo.[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN dbo.Agents A ON J.[RelatedAccountId] = A.Id
-	WHERE IfrsAccountId = N'CurrentValueAddedTaxPayables'
+	WHERE [IfrsClassificationId] = N'CurrentValueAddedTaxPayables'
 	AND J.Direction = -1
 	GROUP BY
 		A.[Name],

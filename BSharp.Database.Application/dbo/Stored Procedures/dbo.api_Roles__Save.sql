@@ -24,7 +24,7 @@ BEGIN
 
 	-- Validate business rules (read from the table)
 
-	EXEC [dbo].[dal_Roles__Save]
+	EXEC [dal].[Roles__Save]
 		@Roles = @Roles,
 		@Permissions = @Permissions
 END;

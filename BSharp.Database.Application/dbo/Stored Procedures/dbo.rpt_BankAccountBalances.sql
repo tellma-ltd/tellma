@@ -13,7 +13,7 @@ BEGIN
 	JOIN dbo.Accounts AC ON J.AccountId = AC.Id
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN dbo.Agents AG ON AC.AgentId = AG.Id
-	WHERE AC.[IfrsAccountId] = N'BalancesWithBanks'
+	WHERE AC.[IfrsClassificationId] = N'BalancesWithBanks'
 	GROUP BY
 		AC.[Id], AC.[Code],
 		AC.[Name], AC.[Name2], AC.[Name3],

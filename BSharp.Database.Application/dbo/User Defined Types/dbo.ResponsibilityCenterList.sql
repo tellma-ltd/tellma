@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[ResponsibilityCenterList] AS TABLE (
-	[Index]					INT	PRIMARY KEY	IDENTITY(0, 1),
-	[Id]					INT NOT NULL DEFAULT 0,
+	[Index]					INT					PRIMARY KEY	IDENTITY(0, 1),
+	[Id]					INT					NOT NULL DEFAULT 0,
 	[ResponsibilityDomain]	NVARCHAR (255)		NOT NULL, -- Investment, Profit, Revenue, Cost
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),

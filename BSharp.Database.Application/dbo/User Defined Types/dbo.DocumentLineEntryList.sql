@@ -30,6 +30,7 @@
 	[RelatedAgentId]		INT,
 	[RelatedQuantity]		MONEY ,			-- used in Tax accounts, to store the quantiy of taxable item
 	[RelatedMoneyAmount]	MONEY 				NOT NULL DEFAULT 0, -- e.g., amount subject to tax
+	[SortKey]				DECIMAL (9,4)
 
 	INDEX IX_DocumentEntryList_DocumentLineIndex ([DocumentLineIndex]),
 	CHECK ([Direction] IN (-1, 1))

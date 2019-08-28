@@ -6,7 +6,6 @@
 	- Extension: Added for business logic in B#. Is ignored by the iXBRL tool 
 */
 	[IfrsType]					NVARCHAR (255)	DEFAULT (N'Regulatory') NOT NULL CONSTRAINT [CK_IfrsConcepts__IfrsType] CHECK ([IfrsType] IN (N'Amendment', N'Extension', N'Regulatory')),
-	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	[Label]						NVARCHAR (1024)		NOT NULL,
 	[Label2]					NVARCHAR (1024),
 	[Label3]					NVARCHAR (1024),

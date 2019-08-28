@@ -20,7 +20,7 @@ AS
 		E.[Direction],
 		E.[AccountId],
 		A.[CustomClassificationId],
-		A.[IfrsAccountId],
+		A.[IfrsClassificationId],
 		A.[AgentId],
 		E.[IfrsNoteId],
 		E.[ResponsibilityCenterId],

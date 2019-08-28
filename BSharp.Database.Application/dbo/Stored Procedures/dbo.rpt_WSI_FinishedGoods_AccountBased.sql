@@ -17,11 +17,11 @@ AS
 	WITH
 	Ifrs_FG AS ( -- Typically, there is ONE such node only.
 		SELECT [Node] 
-		FROM dbo.[IfrsAccounts] WHERE [Id] IN(N'FinishedGoods')
+		FROM dbo.[IfrsAccountClassifications] WHERE [Id] IN(N'FinishedGoods')
 	),
 	FinishedGoodsAccounts AS (
 		SELECT A.[Id] FROM dbo.Accounts A
-		JOIN dbo.[IfrsAccounts] I ON A.[IfrsAccountId] = I.[Id]
+		JOIN dbo.[IfrsAccountClassifications] I ON A.[IfrsClassificationId] = I.[Id]
 		WHERE I.[Node].IsDescendantOf((SELECT * FROM Ifrs_FG))	= 1
 	),
 	OpeningBalances AS (

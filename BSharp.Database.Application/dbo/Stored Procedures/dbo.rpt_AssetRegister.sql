@@ -9,14 +9,15 @@ If we want each computer to appear on a separate line, we need to replace Resour
 */
 BEGIN
 	WITH IfrsFixedAssetAccounts	AS (
-		SELECT Id FROM dbo.[IfrsAccounts]
+		SELECT Id FROM dbo.[IfrsAccountClassifications]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.IfrsAccounts WHERE Id = N'PropertyPlandAndEquipment')
+			(SELECT [Node] FROM dbo.[IfrsAccountClassifications] WHERE Id = N'PropertyPlandAndEquipment')
 		) = 1
 	),
 	FixedAssetAccounts AS (
-		SELECT Id FROM dbo.[Accounts]
-		WHERE IfrsAccountId IN
+		SELECT [AccountId] FROM dbo.[AccountsDisclosures]
+		WHERE [IfrsDisclosureId] = N'StatementOfFinancialPositionAbstract'
+		AND [IfrsConceptId] IN
 			(SELECT [Id] FROM IfrsFixedAssetAccounts)
 	),
 	OpeningBalances AS (

@@ -29,8 +29,8 @@ EXEC [dal].[Settings__Save]
 
 :r .\01_IfrsConcepts.sql
 :r .\011_IfrsDisclosures.sql
-:r .\012_IfrsNotes.sql
-:r .\013_IfrsAccounts.sql
+:r .\012_IfrsEntryClassifications.sql
+:r .\013_IfrsAccountClassifications.sql
 :r .\02_MeasurementUnits.sql
 --:r .\02_Accounts.sql
 --EXEC [dbo].[adm_Accounts_Notes__Update];

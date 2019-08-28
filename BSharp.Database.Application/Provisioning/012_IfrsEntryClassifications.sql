@@ -1,8 +1,7 @@
-﻿DECLARE @IfrsNotes AS TABLE (
+﻿DECLARE @IfrsEntryClassifications AS TABLE (
 	[Id]						NVARCHAR (255), -- Ifrs Concept
 	[Node]						HIERARCHYID,
 	[IfrsType]					NVARCHAR (255),
-	[IsAggregate]				BIT					NOT NULL DEFAULT 0,
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 	[Label]						NVARCHAR (1024)		NOT NULL,
 	[ForDebit]					BIT					NOT NULL DEFAULT 1,
@@ -10,8 +9,7 @@
 	PRIMARY KEY NONCLUSTERED ([Id])
 );
 
-INSERT INTO @IfrsNotes([IfrsType], IsActive, [ForDebit], [ForCredit], [Node], [Id], [Label]) VALUES
---('Extension', 0, 1, 1, '/0/', '', '')
+INSERT INTO @IfrsEntryClassifications([IfrsType], IsActive, [ForDebit], [ForCredit], [Node], [Id], [Label]) VALUES
 ('Regulatory', 1, 1, 1, '/1/', 'ChangesInPropertyPlantAndEquipment', 'Increase (decrease) in property, plant and equipment')
 ,('Regulatory', 1, 1, 0, '/1/1/', 'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment', 'Additions other than through business combinations, property, plant and equipment')
 ,('Regulatory', 1, 1, 0, '/1/2/', 'AcquisitionsThroughBusinessCombinationsPropertyPlantAndEquipment', 'Acquisitions through business combinations, property, plant and equipment')
@@ -182,42 +180,59 @@ INSERT INTO @IfrsNotes([IfrsType], IsActive, [ForDebit], [ForCredit], [Node], [I
 ,('Regulatory', 1, 1, 0, '/9/2/', 'DistributionCosts', 'Distribution costs')
 ,('Regulatory', 1, 1, 0, '/9/3/', 'AdministrativeExpense', 'Administrative expenses')
 ,('Regulatory', 1, 1, 0, '/9/4/', 'OtherExpenseByFunction', 'Other expense, by function')
--- TODO: Add extension describing the issue and receipt of inventory items.
--- purchase, production, sales, consumption, loss, transfer
-MERGE [dbo].[IfrsNotes] AS t
+,('Extension', 1, 1, 0, '/10/1/', 'InventoryPurchaseExtension', 'Inventory purchase')
+,('Extension', 1, 0, 1, '/10/2/', 'InventoryProductionExtension', 'Inventory production')
+,('Extension', 1, 0, 1, '/10/3/', 'InventorySalesExtension', 'Inventory sales')
+,('Extension', 1, 0, 1, '/10/4/', 'InventoryConsumptionExtension', 'Inventory consumption')
+,('Extension', 1, 0, 1, '/10/5/', 'InventoryLossExtension', 'Inventory loss')
+,('Extension', 1, 1, 1, '/10/9/', 'InventoryTransferExtension', 'Inventory transfer')
+
+-- The IfrsType is determined from the IfrsAccountClassifications and IfrsEntryClassifications tables
+MERGE [dbo].[IfrsConcepts] As t
+USING (SELECT  [Id], [IfrsType], [Label] FROM @IfrsEntryClassifications) AS s
+ON s.[Id] = t.[Id]
+WHEN MATCHED AND
+(
+	t.[IfrsType]		<> s.[IfrsType]
+
+) THEN
+UPDATE SET
+	t.[IfrsType]		= s.[IfrsType]
+WHEN NOT MATCHED THEN
+	INSERT ([Id], [IfrsType], [Label])
+	VALUES (s.[Id], s.[IfrsType], s.[Label]);
+
+MERGE [dbo].[IfrsEntryClassifications] AS t
 USING (
-	SELECT  [Id], [Node], [IsAggregate], [ForDebit], [ForCredit]
-	FROM @IfrsNotes --WHERE Id IN (SELECT [Id] FROM dbo.IfrsConcepts)
+	SELECT  EC.[Id], EC.[Node], EC.[IsActive], EC.[ForDebit], EC.[ForCredit], C.[Label], C.[Documentation]
+	FROM @IfrsEntryClassifications EC
+	JOIN dbo.IfrsConcepts C ON EC.[Id] = C.[Id]
 ) AS s
 ON s.[Id] = t.[Id]
 WHEN MATCHED AND
 (
-	t.[Node]			<>	s.[Node]			OR
-	t.[IsAggregate]		<>	s.[IsAggregate]		OR
-	t.[ForDebit]		<>	s.[ForDebit]		OR
-	t.[ForCredit]		<>	s.[ForCredit]
+	t.[Node]			<>	s.[Node]		OR
+	t.[IsActive]		<>	s.[IsActive]	OR
+	t.[ForDebit]		<>	s.[ForDebit]	OR
+	t.[ForCredit]		<>	s.[ForCredit]	OR
+	t.[Label]			<>	s.[Label]
 ) THEN
 UPDATE SET
-	t.[Node]			=	s.[Node], 
-	t.[IsAggregate]		=	s.[IsAggregate],
+	t.[Node]			=	s.[Node],
+	t.[IsActive]		=	s.[IsActive],
 	t.[ForDebit]		=	s.[ForDebit],
-	t.[ForCredit]		=	s.[ForCredit]
+	t.[ForCredit]		=	s.[ForCredit],
+	t.[Label]			=	s.[Label],
+	t.[Documentation]	=	s.[Documentation]
 WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
+    DELETE -- to delete Ifrs Entry Classifications extension concepts we added erroneously
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Id], [Node],		[IsAggregate],	[ForDebit],		[ForCredit])
-    VALUES (s.[Id], s.[Node], s.[IsAggregate], s.[ForDebit], s.[ForCredit])
+    INSERT ([Id],	[Node],	[IsActive],		[ForDebit],	[ForCredit],	[Label], [Documentation])
+    VALUES (s.[Id], s.[Node], s.[IsActive], s.[ForDebit], s.[ForCredit], s.[Label], s.[Documentation]);
 --OUTPUT deleted.*, $action, inserted.*; -- Does not work with triggers
 ;
-MERGE [dbo].[IfrsConcepts] As t
-USING (SELECT  [Id], [IsActive], [IfrsType]	FROM @IfrsNotes) AS s
-ON s.[Id] = t.[Id]
-WHEN MATCHED AND
-(
-	t.[IfrsType]		<> s.[IfrsType]	OR
-	t.[IsActive]		<>	s.[IsActive]
+UPDATE dbo.[IfrsEntryClassifications] SET [IsLeaf] = 0 
+WHERE [Isleaf] = 1 AND [Node] IN (SELECT [ParentNode] FROM dbo.[IfrsEntryClassifications]);
 
-) THEN
-UPDATE SET
-	t.[IfrsType]		= s.[IfrsType],
-	t.[IsActive]		= s.[IsActive];
+UPDATE dbo.[IfrsEntryClassifications] SET [IsLeaf] = 1
+WHERE [Isleaf] = 0 AND [Node] NOT IN (SELECT [ParentNode] FROM dbo.[IfrsEntryClassifications]);

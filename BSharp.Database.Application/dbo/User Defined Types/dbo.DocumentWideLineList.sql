@@ -1,11 +1,11 @@
 ﻿CREATE TYPE [dbo].[DocumentWideLineList] AS TABLE (
 	[Index]					INT PRIMARY KEY,
-	[DocumentLineIndex]		INT,
-	[DocumentIndex]			INT				NOT NULL,
-	[Id]					INT NOT NULL,
-	[DocumentLineId]		INT NOT NULL,
-	[DocumentId]			INT NOT NULL,
-	[LineTypeId]			NVARCHAR (255)	NOT NULL,
+	[DocumentLineIndex]		INT					NOT NULL,
+	[DocumentIndex]			INT					NOT NULL,
+	[Id]					INT					NOT NULL,
+	[DocumentLineId]		INT					NOT NULL,
+	[DocumentId]			INT					NOT NULL,
+	[LineTypeId]			NVARCHAR (255)		NOT NULL,
 	[TemplateLineId]		INT,
 	[ScalingFactor]			FLOAT,
 	
