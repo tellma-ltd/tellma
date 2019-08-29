@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
-import { IfrsConcept_IfrsType } from '~/app/data/dto/ifrs-note';
+import { IfrsConcept_IfrsType } from '~/app/data/entities/ifrs-note';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';

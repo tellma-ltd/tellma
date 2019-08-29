@@ -5,7 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
+import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 import { EntitiesResponse } from '~/app/data/dto/get-response';
 import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
@@ -54,15 +54,15 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   sidebarTemplate: TemplateRef<any>;
 
   @Input()
-  savePreprocessing: (mode: DtoForSaveKeyBase) => void;
+  savePreprocessing: (mode: EntityForSave) => void;
 
   @Input()
   actions: {
     template: TemplateRef<any>,
-    action: (model: DtoForSaveKeyBase) => void,
-    canAction?: (model: DtoForSaveKeyBase) => boolean,
-    actionTooltip?: (model: DtoForSaveKeyBase) => string,
-    showAction?: (model: DtoForSaveKeyBase) => boolean
+    action: (model: EntityForSave) => void,
+    canAction?: (model: EntityForSave) => boolean,
+    actionTooltip?: (model: EntityForSave) => string,
+    showAction?: (model: EntityForSave) => boolean
   }[] = [];
 
   @Input() // popup: only the title and the document are visible
@@ -134,7 +134,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   private alreadyInit: boolean;
   private _idString: string;
   private _apiEndpoint: string;
-  private _editModel: DtoForSaveKeyBase;
+  private _editModel: EntityForSave;
   private notifyFetch$: Subject<void>;
   private notifyDestruct$ = new Subject<void>();
   private localState = new MasterDetailsStore();  // Used in popup mode
@@ -148,18 +148,17 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   // Moved below the fields to keep tslint happy
   @Input()
-  createFunc: () => DtoForSaveKeyBase = () => ({ Id: null, EntityState: 'Inserted' })
+  createFunc: () => EntityForSave = () => ({ Id: null, EntityState: 'Inserted' })
 
   @Input()
-  isInactive: (model: DtoForSaveKeyBase) => string = (model: DtoForSaveKeyBase) => !!model &&
+  isInactive: (model: EntityForSave) => string = (model: EntityForSave) => !!model &&
     (model['IsActive'] == null || model['IsActive'] === false) ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
 
   @Input()
-  cloneFunc: (item: DtoForSaveKeyBase) => DtoForSaveKeyBase = (item: DtoForSaveKeyBase) => {
+  cloneFunc: (item: EntityForSave) => EntityForSave = (item: EntityForSave) => {
     if (!!item) {
-      const clone = <DtoForSaveKeyBase>JSON.parse(JSON.stringify(item));
+      const clone = <EntityForSave>JSON.parse(JSON.stringify(item));
       clone.Id = null;
-      clone.EntityState = 'Inserted';
 
       if (clone['ImageId']) {
         delete clone['ImageId'];
@@ -389,7 +388,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.modalService.open(this.successModal);
   }
 
-  get viewModel(): DtoForSaveKeyBase {
+  get viewModel(): EntityForSave {
     // view data is always directly referencing the global workspace
     // this way, un update to a record in the global workspace automatically
     // updates all places where this record is displayed... nifty
@@ -433,7 +432,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return this._unboundServerErrors;
   }
 
-  get activeModel(): DtoForSaveKeyBase {
+  get activeModel(): EntityForSave {
     return this.isEdit ? this._editModel : this.viewModel;
   }
 
@@ -608,9 +607,6 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
       // we need the original value for when the save API call returns
       const isNew = this.isNew;
-
-      // TODO: some screens may wish to customize this behavior for e.g. line item DTOs
-      this._editModel.EntityState = isNew ? 'Inserted' : 'Updated';
 
       if (this.savePreprocessing) {
         this.savePreprocessing(this._editModel);
@@ -810,7 +806,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   public canAction(action: {
-    canAction?: (model: DtoForSaveKeyBase) => boolean,
+    canAction?: (model: EntityForSave) => boolean,
   }): boolean {
 
     if (!!action.canAction) {
@@ -822,7 +818,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   public showAction(action: {
-    showAction?: (model: DtoForSaveKeyBase) => boolean
+    showAction?: (model: EntityForSave) => boolean
   }): boolean {
 
     if (!!action.showAction) {
@@ -834,7 +830,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   public actionTooltip(action: {
-    actionTooltip?: (model: DtoForSaveKeyBase) => string
+    actionTooltip?: (model: EntityForSave) => string
   }): string {
 
     if (!!action.actionTooltip) {
@@ -846,7 +842,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 }
 
-export function applyServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[],
+export function applyServerErrors(entity: EntityForSave | EntityForSave[],
   errors: { [key: string]: string[] }): { [key: string]: string[] } {
 
   if (!entity) {
@@ -913,7 +909,7 @@ export function applyServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[
   return leftovers;
 }
 
-export function clearServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[]): void {
+export function clearServerErrors(entity: EntityForSave | EntityForSave[]): void {
   if (!entity) {
     // nothing to clear
     return;
@@ -931,7 +927,7 @@ export function clearServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[
       const item = entity[i];
       clearServerErrors(item);
     }
-  } else if (!!entity.EntityState || !!entity.Id) {
+  } else if (!!entity.Id || 'Id' in entity) {
     // if the property is a DTO loop over the navigation properties and recursively clear their errors
     const props = Object.keys(entity);
     for (let i = 0; i < props.length; i++) {
@@ -940,5 +936,4 @@ export function clearServerErrors(entity: DtoForSaveKeyBase | DtoForSaveKeyBase[
       clearServerErrors(item);
     }
   }
-
 }

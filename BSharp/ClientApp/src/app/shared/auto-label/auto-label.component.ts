@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { propDescriptorImpl, dtoDescriptorImpl } from '~/app/data/dto/metadata';
+import { propDescriptorImpl, dtoDescriptorImpl } from '~/app/data/entities/base/metadata';
 
 @Component({
   selector: 'b-auto-label',

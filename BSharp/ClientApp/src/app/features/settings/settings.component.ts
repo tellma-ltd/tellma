@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
-import { Settings } from '~/app/data/dto/settings';
+import { Settings } from '~/app/data/entities/settings';
 import { Subject, Observable, of } from 'rxjs';
 import { WorkspaceService, DetailsStatus } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
@@ -262,15 +262,14 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   public cultureName(culture: string): string {
-    const c = supportedCultures[culture];
-    return !!c ? c.Name : null;
+    return supportedCultures[culture];
   }
 
   get cultures(): { name: string, value: any }[] {
 
     if (!this._cultures) {
       this._cultures = Object.keys(supportedCultures)
-        .map(key => ({ name: supportedCultures[key].Name, value: key }));
+        .map(key => ({ name: supportedCultures[key], value: key }));
     }
 
     return this._cultures;

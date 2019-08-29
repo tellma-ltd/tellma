@@ -1,5 +1,5 @@
 ﻿using BSharp.Data.Queries;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using BSharp.Services.ClientInfo;
 using BSharp.Services.Identity;
 using BSharp.Services.MultiTenancy;
@@ -236,10 +236,10 @@ namespace BSharp.Data
                         return new SqlSource("[dbo].[Settings]");
 
                     case nameof(User):
-                        return new SqlSource("(SELECT *, IIF(ExternalId IS NULL, 'New', 'Confirmed') As [State] FROM [dbo].[Users])");
+                        return new SqlSource("[rpt].[Users]()");
 
                     case nameof(MeasurementUnit):
-                        return new SqlSource("(SELECT * FROM [dbo].[MeasurementUnits] WHERE UnitType <> 'Money')");
+                        return new SqlSource("[rpt].[MeasurementUnits]()");
 
                     case nameof(Permission):
                         return new SqlSource("[dbo].[Permissions]");
@@ -271,7 +271,7 @@ FROM [dbo].[ProductCategories] As [Q])");
 FROM [dbo].[IfrsConcepts] As [C] JOIN [dbo].[IfrsNotes] As [N] ON [C].[Id] = [N].[Id])");
 
                     case nameof(View):
-                        var builtInValuesCollection = _builtInViews.Select(e => $"('{e.Id}', {localize(e.Name)})");
+                        var builtInValuesCollection = Views.BUILT_IN.Select(e => $"('{e.Id}', {localize(e.Name)})");
                         var builtInValuesString = builtInValuesCollection.Aggregate((s1, s2) => $@"{s1},
 {s2}");
                         var viewParameters = new List<SqlParameter>();
@@ -294,7 +294,7 @@ LEFT JOIN [dbo].[Views] AS T ON V.Id = T.Id)", viewParameters);
 
                         // This takes the original list and transforms it into a friendly format, adding the very common "Read", "Update" and "Delete" permissions if they are needed
                         int i = 1;
-                        var builtInValueActionsCollections = _builtInViews.SelectMany(x =>
+                        var builtInValueActionsCollections = Views.BUILT_IN.SelectMany(x =>
                              x.Levels.Select(y => new { Id = i++, ViewId = x.Id, y.Action, SupportsCriteria = y.Criteria, SupportsMask = false })
                             .Concat(Enumerable.Repeat(new { Id = i++, ViewId = x.Id, Action = Constants.Delete, SupportsCriteria = true, SupportsMask = false }, x.Delete ? 1 : 0))
                             .Concat(Enumerable.Repeat(new { Id = i++, ViewId = x.Id, Action = Constants.Update, SupportsCriteria = true, SupportsMask = true }, x.Update ? 1 : 0))
@@ -323,51 +323,6 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 throw new InvalidOperationException($"The requested type {t.Name} is not supported in {nameof(ApplicationRepository)} queries");
             };
-        }
-
-        private static readonly ViewInfo[] _builtInViews = new ViewInfo[]
-        {
-            new ViewInfo { Id = "all", Name = "View_All", Levels = new LevelInfo[] { Li("Read", false) } },
-            new ViewInfo { Id = "measurement-units", Name = "MeasurementUnits", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "roles", Name = "Roles", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "local-users", Name = "Users", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive"), Li("ResendInvitationEmail") } },
-            new ViewInfo { Id = "views", Name = "Views", Read = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "ifrs-notes", Name = "IfrsNotes", Read = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "product-categories", Name = "ProductCategories", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "settings", Name = "Settings", Levels = new LevelInfo[] { Li("Read", false), Li("Update", false) } },
-        };
-
-        private static LevelInfo Li(string name, bool criteria = true)
-        {
-            return new LevelInfo { Action = name, Criteria = criteria };
-        }
-
-        private class ViewInfo
-        {
-            public string Id { get; set; }
-
-            public string Name { get; set; }
-
-            /// <summary>
-            /// Indicates that this view is an endpoint that supports read level, both with Mask and Criteria: OData style
-            /// </summary>
-            public bool Read { get; set; }
-
-            /// <summary>
-            /// Indicates that this view is an endpoint that supports read level, both with Mask and Criteria: OData style
-            /// </summary>
-            public bool Update { get; set; }
-
-            public bool Delete { get; set; }
-
-            public LevelInfo[] Levels { get; set; }
-        }
-
-        private class LevelInfo
-        {
-            public string Action { get; set; }
-
-            public bool Criteria { get; set; }
         }
 
         #endregion
@@ -486,7 +441,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 var viewIdsTable = RepositoryUtilities.DataTable(viewIds.Select(e => new StringListItem { Id = e }));
                 var viewIdsTvp = new SqlParameter("@ViewIds", viewIdsTable)
                 {
-                    TypeName = $"dbo.StringList",
+                    TypeName = $"[dbo].[StringList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -577,11 +532,10 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
         public Query<MeasurementUnit> MeasurementUnits__AsQuery(List<MeasurementUnitForSave> entities)
         {
-            // TODO: Move to a function in the database
-
             // This method returns the provided entities as a Query that can be selected, filtered etc...
             // The Ids in the result are always the indices of the original collection, even when the entity has a string key
 
+            // Parameters
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
@@ -589,18 +543,9 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 SqlDbType = SqlDbType.Structured
             };
 
-            string preambleSql =
-                $@"DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-DECLARE @True BIT = 1;";
-
-            string sql =
-                $@"SELECT [E].[Index] AS [Id], [E].[Name], [E].[Name2], [E].[Name3], [E].[Code], [E].[UnitType], [E].[UnitAmount], [E].[BaseAmount],
-@True AS [IsActive], @Now AS [CreatedAt], @UserId AS [CreatedById], @Now AS [ModifiedAt], @UserId AS [ModifiedById] 
-FROM @Entities [E]";
-
+            // Query
             var query = Query<MeasurementUnit>();
-            return query.FromSql(sql, preambleSql, entitiesTvp);
+            return query.FromSql($"[bll].[{nameof(MeasurementUnits__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
         public async Task<IEnumerable<ValidationError>> MeasurementUnits_Validate__Save(List<MeasurementUnitForSave> entities, int top)
@@ -910,32 +855,121 @@ FROM @Entities [E]";
 
         public Query<User> Users__AsQuery(List<UserForSave> entities)
         {
-            throw new NotImplementedException();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[UserList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // Query
+            var query = Query<User>();
+            return query.FromSql($"[bll].[{nameof(Users__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
-        public Task<IEnumerable<ValidationError>> Users_Validate__Save(List<UserForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Users_Validate__Save(List<UserForSave> entities, int top)
         {
-            /*
-             
-                DataTable UsersTable = UsersDataTable(entities);
-                var UsersTvp = new SqlParameter("Users", UsersTable) { TypeName = $"dbo.{nameof(UserForSave)}List", SqlDbType = SqlDbType.Structured };
+            var result = new List<ValidationError>();
 
-                var rolesHeaderIndices = indices.Keys.Select(User => (User.Roles, indices[User]));
-                DataTable rolesTable = ControllerUtilities.DataTableWithHeaderIndex(rolesHeaderIndices, e => e.EntityState != null);
-                var rolesTvp = new SqlParameter("Roles", rolesTable) { TypeName = $"dbo.{nameof(RoleMembershipForSave)}List", SqlDbType = SqlDbType.Structured };
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[MeasurementUnitList]",
+                    SqlDbType = SqlDbType.Structured
+                };
 
-            */
+                DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+                var rolesTvp = new SqlParameter("@Roles", rolesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(RoleMembership)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
 
-            throw new NotImplementedException();
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(rolesTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Users_Validate__Save)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new ValidationError
+                        {
+                            Key = reader.GetString(i++),
+                            ErrorName = reader.GetString(i++),
+                            Argument1 = reader.GetString(i++),
+                            Argument2 = reader.GetString(i++),
+                            Argument3 = reader.GetString(i++),
+                            Argument4 = reader.GetString(i++),
+                            Argument5 = reader.GetString(i++)
+                        });
+                    }
+                }
+            }
+
+            return result;
         }
 
-        public Task<(IEnumerable<string> newEmails, IEnumerable<string> oldEmails)> Users__Save(List<UserForSave> entities)
+        public async Task<(IEnumerable<string> newEmails, IEnumerable<string> oldEmails)> Users__Save(List<UserForSave> entities)
         {
-            // Any user with a different email should have ExternalId cleared
-            // Return all
+            var newEmails = new List<string>();
+            var oldEmails = new List<string>();
 
-            throw new NotImplementedException();
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[UserList]",
+                    SqlDbType = SqlDbType.Structured
+                };
 
+                DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
+                var rolesTvp = new SqlParameter("@Roles", rolesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(RoleMembership)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(rolesTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__Save)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        newEmails.Add(reader.GetString(0));
+                    }
+
+                    await reader.NextResultAsync();
+
+                    while (await reader.ReadAsync())
+                    {
+                        oldEmails.Add(reader.GetString(0));
+                    }
+                }
+            }
+
+            // Return result
+            return (newEmails, oldEmails);
         }
 
         public Task<IEnumerable<ValidationError>> Users_Validate__Delete(List<int> ids, int top)
@@ -964,9 +998,31 @@ FROM @Entities [E]";
             throw new NotImplementedException();
         }
 
-        public Task<byte[]> Blobs__Get(string name)
+        public async Task<byte[]> Blobs__Get(string name)
         {
-            throw new NotImplementedException();
+            byte[] result = null;
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("@Name", name);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"{nameof(Blobs__Get)}";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        result = (byte[])reader[0];
+                    }
+                }
+            }
+
+            return result;
         }
 
         #endregion

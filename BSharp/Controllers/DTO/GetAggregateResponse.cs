@@ -1,4 +1,4 @@
-﻿using BSharp.EntityModel;
+﻿using BSharp.Entities;
 
 namespace BSharp.Controllers.Dto
 {

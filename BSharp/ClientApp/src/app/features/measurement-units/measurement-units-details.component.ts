@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { MeasurementUnit, MeasurementUnitForSave, MeasurementUnit_UnitType } from '~/app/data/dto/measurement-unit';
+import { MeasurementUnit, MeasurementUnitForSave, MeasurementUnit_UnitType } from '~/app/data/entities/measurement-unit';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';

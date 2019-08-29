@@ -6,7 +6,7 @@ AS
 
 	UPDATE [dbo].[Users] SET UserSettingsVersion = NEWID();
 
-	IF(@VALUE IS NULL)
+	IF(@Value IS NULL)
 		DELETE FROM [dbo].[UserSettings] WHERE [UserId] = @UserId AND [Key] = @Key;
 	ELSE
 		MERGE INTO [dbo].[UserSettings] AS t

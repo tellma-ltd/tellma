@@ -4,11 +4,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, finalize, takeUntil, tap, map } from 'rxjs/operators';
 import { ActivateArguments } from './dto/activate-arguments';
-import { DtoForSaveKeyBase } from './dto/dto-for-save-key-base';
+import { EntityForSave } from './entities/base/entity-for-save';
 import { GetArguments } from './dto/get-arguments';
 import { GetByIdArguments } from './dto/get-by-id-arguments';
 import { GetResponse, EntitiesResponse } from './dto/get-response';
-import { MeasurementUnit } from './dto/measurement-unit';
+import { MeasurementUnit } from './entities/measurement-unit';
 import { TemplateArguments } from './dto/template-arguments';
 import { ImportArguments } from './dto/import-arguments';
 import { ImportResult } from './dto/import-result';
@@ -16,18 +16,18 @@ import { ExportArguments } from './dto/export-arguments';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { SaveArguments } from './dto/save-arguments';
 import { appconfig } from './appconfig';
-import { Agent } from './dto/agent';
-import { Role } from './dto/role';
-import { View } from './dto/view';
-import { Settings, SettingsForClient } from './dto/settings';
+import { Agent } from './entities/agent';
+import { Role } from './entities/role';
+import { View } from './entities/view';
+import { Settings, SettingsForClient } from './entities/settings';
 import { DataWithVersion } from './dto/data-with-version';
-import { PermissionsForClient } from './dto/permission';
+import { PermissionsForClient } from './entities/permission';
 import { SaveSettingsResponse } from './dto/save-settings-response';
-import { UserSettingsForClient } from './dto/local-user';
+import { UserSettingsForClient } from './entities/user';
 import { GlobalSettingsForClient } from './dto/global-settings';
-import { UserCompany } from './dto/tenant';
-import { IfrsNote } from './dto/ifrs-note';
-import { ProductCategory } from './dto/product-category';
+import { UserCompany } from './dto/user-company';
+import { IfrsNote } from './entities/ifrs-note';
+import { ProductCategory } from './entities/product-category';
 import { GetEntityResponse } from './dto/get-entity-response';
 
 @Injectable({
@@ -82,7 +82,7 @@ export class ApiService {
     };
   }
 
-  public localUsersApi(cancellationToken$: Observable<void>) {
+  public usersApi(cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<View>('local-users', cancellationToken$),
       deactivate: this.deactivateFactory<View>('local-users', cancellationToken$),
@@ -284,7 +284,7 @@ export class ApiService {
     };
   }
 
-  public crudFactory<TDto extends DtoForSaveKeyBase = DtoForSaveKeyBase, TDtoForSave extends DtoForSaveKeyBase = DtoForSaveKeyBase>(
+  public crudFactory<TDto extends EntityForSave = EntityForSave, TDtoForSave extends EntityForSave = EntityForSave>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
       get: (args: GetArguments) => {
@@ -482,7 +482,7 @@ export class ApiService {
     return obs$;
   }
 
-  private activateFactory<TDto extends DtoForSaveKeyBase>(endpoint: string, cancellationToken$: Observable<void>) {
+  private activateFactory<TDto extends EntityForSave>(endpoint: string, cancellationToken$: Observable<void>) {
     return (ids: (string | number)[], args: ActivateArguments) => {
       args = args || {};
 
@@ -517,7 +517,7 @@ export class ApiService {
     };
   }
 
-  private deactivateFactory<TDto extends DtoForSaveKeyBase>(endpoint: string, cancellationToken$: Observable<void>) {
+  private deactivateFactory<TDto extends EntityForSave>(endpoint: string, cancellationToken$: Observable<void>) {
     return (ids: (string | number)[], args: ActivateArguments) => {
       args = args || {};
 

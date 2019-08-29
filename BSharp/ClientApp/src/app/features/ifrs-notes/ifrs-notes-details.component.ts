@@ -3,7 +3,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { Subject } from 'rxjs';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
-import { IfrsNote, IfrsConcept_IfrsType } from '~/app/data/dto/ifrs-note';
+import { IfrsNote, IfrsConcept_IfrsType } from '~/app/data/entities/ifrs-note';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';

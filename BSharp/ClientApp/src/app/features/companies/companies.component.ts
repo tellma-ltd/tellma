@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, Inje
 import { ApiService } from '~/app/data/api.service';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { WorkspaceService, MasterStatus } from '~/app/data/workspace.service';
-import { UserCompany } from '~/app/data/dto/tenant';
+import { UserCompany } from '~/app/data/dto/user-company';
 import { DOCUMENT } from '@angular/platform-browser';
 import { Key, toString } from '~/app/data/util';
 

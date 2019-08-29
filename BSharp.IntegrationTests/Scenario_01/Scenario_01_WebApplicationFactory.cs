@@ -1,4 +1,4 @@
-﻿using BSharp.EntityModel;
+﻿using BSharp.Entities;
 using BSharp.IntegrationTests.Utilities;
 using BSharp.Services.Sharding;
 using Microsoft.AspNetCore.Hosting;

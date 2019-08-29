@@ -1,5 +1,5 @@
 ﻿using BSharp.Controllers.Misc;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;

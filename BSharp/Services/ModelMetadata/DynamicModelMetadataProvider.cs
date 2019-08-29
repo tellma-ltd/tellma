@@ -1,5 +1,5 @@
 ﻿using BSharp.Data;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

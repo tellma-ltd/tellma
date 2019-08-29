@@ -2,25 +2,21 @@
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Data.Queries;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using BSharp.Services.ApiAuthentication;
 using BSharp.Services.Email;
 using BSharp.Services.EmbeddedIdentityServer;
-using BSharp.Services.ImportExport;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -136,7 +132,7 @@ namespace BSharp.Controllers
                 await base.CheckActionPermissions("ResendInvitationEmail", id);
 
                 // Load the user
-                var user = await _appRepo.Users.Expand(nameof(EntityModel.User.Agent)).FilterByIds(id).FirstOrDefaultAsync();
+                var user = await _appRepo.Users.Expand(nameof(Entities.User.Agent)).FilterByIds(id).FirstOrDefaultAsync();
                 if (user == null)
                 {
                     throw new NotFoundException<int>(id);
@@ -220,8 +216,8 @@ namespace BSharp.Controllers
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var email = nameof(EntityModel.User.Email);
-                var agent = nameof(EntityModel.User.Agent);
+                var email = nameof(Entities.User.Email);
+                var agent = nameof(Entities.User.Agent);
                 var name = nameof(Agent.Name);
                 var name2 = nameof(Agent.Name2);
                 var name3 = nameof(Agent.Name3);

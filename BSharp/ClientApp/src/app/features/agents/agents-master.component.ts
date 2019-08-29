@@ -5,9 +5,8 @@ import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
-import { Agent_Gender } from '~/app/data/dto/agent';
 import { ParamMap, ActivatedRoute, Router } from '@angular/router';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
+import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 
 @Component({
   selector: 'b-agents-master',
@@ -84,16 +83,16 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   }
 
   public get c() {
-    return this.workspace.current.Custodies;
+    return this.workspace.current.Agent;
   }
 
   public get ws() {
     return this.workspace.current;
   }
 
-  public genderLookup(value: string): string {
-    return Agent_Gender[value];
-  }
+  // public genderLookup(value: string): string {
+  //   return Agent_Gender[value];
+  // }
 
   public get masterCrumb(): string {
     // TODO After implementing configuration

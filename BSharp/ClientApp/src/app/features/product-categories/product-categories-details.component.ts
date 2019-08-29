@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { Subject } from 'rxjs';
-import { ProductCategoryForSave, ProductCategory } from '~/app/data/dto/product-category';
+import { ProductCategoryForSave, ProductCategory } from '~/app/data/entities/product-category';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';

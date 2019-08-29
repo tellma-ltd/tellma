@@ -829,4 +829,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[IfrsEntryClassificationId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="9b0eda2c-6303-449a-bc5f-a9311f42659c" ChangeDateTime="08/28/2019 14:57:32">
+    <Property Name="ElementName" Value="[rpt].[MeasurementUnits]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[MeasurementUnits__Select]" />
+  </Operation>
 </Operations>

@@ -83,6 +83,7 @@
     <Folder Include="rpt\Functions" />
     <Folder Include="rpt\Stored Procedures" />
     <Folder Include="bll\Functions" />
+    <Folder Include="Mapping" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -290,7 +291,7 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Sign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_State_Role__MissingSignatures.sql" />
     <Build Include="Security\rpt.sql" />
-    <Build Include="rpt\Functions\rpt.MeasurementUnits.sql" />
+    <Build Include="rpt\Functions\rpt.MeasurementUnits__Select.sql" />
     <Build Include="rpt\Stored Procedures\rpt.sp_TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.sp_Ifrs.sql" />
     <Build Include="rpt\Functions\dbo.rpt_Account__Statement.sql" />
@@ -324,6 +325,12 @@
     <Build Include="dal\Stored Procedures\dal.Users__SaveSettings.sql" />
     <Build Include="dbo\Tables\dbo.UserSettings.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SettingsForClient.sql" />
+    <Build Include="Mapping\MeasurementUnits__AsQuery.sql" />
+    <Build Include="Mapping\MeasurementUnits.sql" />
+    <Build Include="Mapping\Users__AsQuery.sql" />
+    <Build Include="dbo\User Defined Types\dbo.UserList.sql" />
+    <Build Include="Mapping\Users.sql" />
+    <Build Include="bll\Stored Procedures\bll.Users_Validate__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -340,7 +347,7 @@
     <None Include="Provisioning\01_IfrsConcepts.sql" />
     <None Include="Provisioning\011_IfrsDisclosures.sql" />
     <None Include="Tests\72_ProductCategories.sql" />
-    <None Include="BSharp.Database.Application.publish.xml" />
+    <None Include="Dev.publish.xml" />
     <None Include="Tests\01_RolesPermissions.sql" />
     <None Include="Tests\02_Workflows.sql" />
     <None Include="Tests\06_Accounts.sql" />

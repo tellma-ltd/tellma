@@ -1,4 +1,4 @@
-﻿using BSharp.EntityModel;
+﻿using BSharp.Entities;
 using BSharp.Services.Utilities;
 using System;
 using System.Collections.Concurrent;
@@ -38,9 +38,31 @@ namespace BSharp.Data.Queries
         {
             return _cacheGetMappedProperties.GetOrAdd(type, (t) =>
             {
-                return t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                return t.GetPropertiesBaseFirst(BindingFlags.Public | BindingFlags.Instance)
                 .Where(e => e.GetCustomAttribute<NotMappedAttribute>() == null && !e.PropertyType.IsList() && !e.PropertyType.IsEntity());
             });
+        }
+
+        /// <summary>
+        /// This is alternative for <see cref="Type.GetProperties"/>
+        /// that returns base class properties before inherited class properties
+        /// Credit: https://bit.ly/2UGAkKj
+        /// </summary>
+        public static PropertyInfo[] GetPropertiesBaseFirst(this Type type, BindingFlags bindingAttr)
+        {
+            var orderList = new List<Type>();
+            var iteratingType = type;
+            do
+            {
+                orderList.Insert(0, iteratingType);
+                iteratingType = iteratingType.BaseType;
+            } while (iteratingType != null);
+
+            var props = type.GetProperties(bindingAttr)
+                .OrderBy(x => orderList.IndexOf(x.DeclaringType))
+                .ToArray();
+
+            return props;
         }
 
         /// <summary>

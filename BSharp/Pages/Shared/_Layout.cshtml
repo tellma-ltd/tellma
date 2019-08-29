@@ -3,7 +3,7 @@
 @using BSharp.Services.GlobalSettings
 
 @inject IGlobalSettingsCache GlobalSettingsCache
-@inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<Strings> Localizer
 
 @{
     var httpContext = ViewContext.HttpContext;

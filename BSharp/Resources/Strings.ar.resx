@@ -1009,4 +1009,22 @@
   <data name="SqlDatabase_Server" xml:space="preserve">
     <value>المخدم</value>
   </data>
+  <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
+    <value>البريد الإلكتروني ({0}) مكرر</value>
+  </data>
+  <data name="Agent_User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="Agent_PreferredLanguage" xml:space="preserve">
+    <value>اللغة المفضلة</value>
+  </data>
+  <data name="Settings_TernaryLanguage" xml:space="preserve">
+    <value>اللغة الثالثة</value>
+  </data>
+  <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
+    <value>رمز اللغة الثالثة</value>
+  </data>
+  <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
+    <value>المستخدم ({0}) قد قبل الدعوة</value>
+  </data>
 </root>

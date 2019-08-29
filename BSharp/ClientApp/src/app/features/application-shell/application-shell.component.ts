@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
-import { SettingsForClient } from '~/app/data/dto/settings';
+import { SettingsForClient } from '~/app/data/entities/settings';
 import { AuthService } from '~/app/data/auth.service';
 import { appconfig } from '~/app/data/appconfig';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';

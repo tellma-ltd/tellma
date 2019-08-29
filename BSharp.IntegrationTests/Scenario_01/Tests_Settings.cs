@@ -1,5 +1,5 @@
 ﻿using BSharp.Controllers.Dto;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

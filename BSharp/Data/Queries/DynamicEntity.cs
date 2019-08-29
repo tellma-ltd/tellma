@@ -1,4 +1,4 @@
-﻿using BSharp.EntityModel;
+﻿using BSharp.Entities;
 using System.Collections;
 using System.Collections.Generic;
 

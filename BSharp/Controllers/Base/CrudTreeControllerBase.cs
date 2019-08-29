@@ -1,5 +1,5 @@
 ﻿using BSharp.Controllers.Misc;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;

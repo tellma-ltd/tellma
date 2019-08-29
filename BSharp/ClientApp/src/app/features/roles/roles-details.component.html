@@ -151,7 +151,6 @@
       </ng-template>
     </ngb-tab>
 
-
     <!-- Members -->
     <ngb-tab *ngIf="showMembersTab(model)">
       <ng-template ngbTabTitle><span class="small">{{ 'Members' | translate }}<span *ngIf="model?.EntityMetadata?.Members == 2"> ({{ membersCount(model) }})</span></span>
@@ -181,18 +180,18 @@
             <!-- The User Details Modal -->
             <ng-template #localUsersDetails let-modal="modal" let-update="update" let-initialText="initialText">
               <div class="modal-body">
-                <b-local-users-details mode="popup" idString="new" [initialText]="initialText"
+                <b-users-details mode="popup" idString="new" [initialText]="initialText"
                   (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);" [showRoles]="false">
-                </b-local-users-details>
+                </b-users-details>
               </div>
             </ng-template>
 
             <!-- The Users Master Modal -->
             <ng-template #localUsersMaster let-modal="modal" let-update="update" let-create="create">
               <div class="modal-body">
-                <b-local-users-master mode="popup" (cancel)="modal.close(false);"
+                <b-users-master mode="popup" (cancel)="modal.close(false);"
                   (select)="modal.close(true); update($event);" (create)="modal.close(false); create()">
-                </b-local-users-master>
+                </b-users-master>
               </div>
             </ng-template>
           </b-form-group>

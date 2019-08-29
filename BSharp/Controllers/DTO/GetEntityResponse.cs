@@ -1,4 +1,4 @@
-﻿using BSharp.EntityModel;
+﻿using BSharp.Entities;
 using System.Collections.Generic;
 
 namespace BSharp.Controllers.Dto

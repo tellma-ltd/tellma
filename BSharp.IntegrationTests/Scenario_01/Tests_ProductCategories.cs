@@ -1,5 +1,5 @@
 ﻿using BSharp.Controllers.Dto;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using BSharp.IntegrationTests.Utilities;
 using BSharp.Services.Utilities;
 using System.Collections.Generic;

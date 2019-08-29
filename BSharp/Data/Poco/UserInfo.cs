@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// A class for storing basic information about the currently authenticated user, information
-    /// that is retrieved from the matching <see cref="EntityModel.User"/> in the tenant database
+    /// that is retrieved from the matching <see cref="Entities.User"/> in the tenant database
     /// </summary>
     public class UserInfo
     {

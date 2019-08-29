@@ -1,18 +1,17 @@
-import { MeasurementUnit } from './dto/measurement-unit';
+import { MeasurementUnit } from './entities/measurement-unit';
 import { Injectable } from '@angular/core';
-import { Custody } from './dto/custody';
-import { Role } from './dto/role';
-import { View } from './dto/view';
-import { LocalUser, UserSettingsForClient } from './dto/local-user';
-import { Culture } from './dto/culture';
-import { DtoKeyBase } from './dto/dto-key-base';
-import { SettingsForClient } from './dto/settings';
-import { PermissionsForClient } from './dto/permission';
+import { Role } from './entities/role';
+import { View } from './entities/view';
+import { User, UserSettingsForClient } from './entities/user';
+import { EntityWithKey } from './entities/base/entity-with-key';
+import { SettingsForClient } from './entities/settings';
+import { PermissionsForClient } from './entities/permission';
 import { GlobalSettingsForClient } from './dto/global-settings';
-import { UserCompany } from './dto/tenant';
-import { IfrsNote } from './dto/ifrs-note';
-import { ProductCategory } from './dto/product-category';
+import { UserCompany } from './dto/user-company';
+import { IfrsNote } from './entities/ifrs-note';
+import { ProductCategory } from './entities/product-category';
 import { Subject } from 'rxjs';
+import { Agent } from './entities/agent';
 
 export enum MasterStatus {
 
@@ -51,7 +50,7 @@ export enum DetailsStatus {
 }
 
 // Represents a collection of savable entities, indexed by their IDs
-export class EntityWorkspace<T extends DtoKeyBase> {
+export class EntityWorkspace<T extends EntityWithKey> {
   [id: string]: T;
 }
 
@@ -73,11 +72,10 @@ export class TenantWorkspace {
   mdState: { [key: string]: MasterDetailsStore };
 
   MeasurementUnit: EntityWorkspace<MeasurementUnit>;
-  Custodies: EntityWorkspace<Custody>;
   Role: EntityWorkspace<Role>;
   View: EntityWorkspace<View>;
-  LocalUser: EntityWorkspace<LocalUser>;
-  Culture: EntityWorkspace<Culture>;
+  User: EntityWorkspace<User>;
+  Agent: EntityWorkspace<Agent>;
   IfrsNote: EntityWorkspace<IfrsNote>;
   ProductCategory: EntityWorkspace<ProductCategory>;
 
@@ -90,11 +88,10 @@ export class TenantWorkspace {
     this.mdState = {};
 
     this.MeasurementUnit = new EntityWorkspace<MeasurementUnit>();
-    this.Custodies = new EntityWorkspace<Custody>();
     this.Role = new EntityWorkspace<Role>();
     this.View = new EntityWorkspace<View>();
-    this.LocalUser = new EntityWorkspace<LocalUser>();
-    this.Culture = new EntityWorkspace<Culture>();
+    this.User = new EntityWorkspace<User>();
+    this.Agent = new EntityWorkspace<Agent>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
     this.ProductCategory = new EntityWorkspace<ProductCategory>();
   }

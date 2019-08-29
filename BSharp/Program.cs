@@ -5,9 +5,11 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 
 namespace BSharp
 {
@@ -37,8 +39,8 @@ namespace BSharp
                     // (1) Retrieve the admin credentials from configurations
                     var opt = scope.ServiceProvider.GetRequiredService<IOptions<GlobalOptions>>().Value;
                     string email = opt?.Admin?.Email ?? "admin@bsharp.online";
-                    string fullName = opt?.Admin?.Email ?? "Administrator";
-                    string password = opt?.Admin?.Email ?? "Admin@123";
+                    string fullName = opt?.Admin?.FullName ?? "Administrator";
+                    string password = opt?.Admin?.Password ?? "Admin@123";
 
                     // (2) Create the user in the admin database
                     var adminRepo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
@@ -59,7 +61,12 @@ namespace BSharp
                                 EmailConfirmed = true
                             };
 
-                            userManager.CreateAsync(admin, password).Wait();
+                            var result = userManager.CreateAsync(admin, password).GetAwaiter().GetResult();
+                            if (!result.Succeeded)
+                            {
+                                string msg = string.Join(", ", result.Errors.Select(e => e.Description));
+                                throw new Exception($"Failed to create the administrator account. Message: {msg}");
+                            }
                         }
                     }
                 }

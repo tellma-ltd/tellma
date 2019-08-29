@@ -1,5 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[GetAccessibleDatabaseIds]
-	@ExternalId NVARCHAR(450)
+﻿CREATE PROCEDURE [dal].[GetAccessibleDatabaseIds]
 AS
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 

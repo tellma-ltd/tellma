@@ -4,9 +4,9 @@
 @using BSharp.Services.EmbeddedIdentityServer
 @using BSharp.Services.Utilities
 
-@inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<Strings> Localizer
 @inject UserManager<EmbeddedIdentityServerUser> UserManager
-@inject IOptions<WebClientOptions> Config
+@inject IOptions<GlobalOptions> Config
 @inject SignInManager<EmbeddedIdentityServerUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
@@ -16,7 +16,7 @@
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
 
     var cultures = Startup.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
-    var appUri = (Config.Value.WebClientUri.WithoutTrailingSlash() ?? "/") + "?ui-culture=" + currentCulture;
+    var appUri = (Config.Value?.ClientApplications?.WebClientUri.WithoutTrailingSlash() ?? "/") + "?ui-culture=" + currentCulture;
 }
 
 <!DOCTYPE html>

@@ -16,7 +16,6 @@ namespace BSharp.Controllers
     [Route("api/companies")]
     [ApiController]
     [AuthorizeAccess]
-    [AdminApi]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class CompaniesController : ControllerBase
     {

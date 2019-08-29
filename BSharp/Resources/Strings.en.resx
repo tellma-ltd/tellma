@@ -1029,4 +1029,22 @@
   <data name="SqlDatabase_Server" xml:space="preserve">
     <value>Server</value>
   </data>
+  <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
+    <value>The email '{0}' is duplicated</value>
+  </data>
+  <data name="Agent_User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Agent_PreferredLanguage" xml:space="preserve">
+    <value>Preferred Language</value>
+  </data>
+  <data name="Settings_TernaryLanguage" xml:space="preserve">
+    <value>Ternary Language</value>
+  </data>
+  <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
+    <value>Ternary Language Symbol</value>
+  </data>
+  <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
+    <value>The user '{0}' has already accepted the invitation</value>
+  </data>
 </root>

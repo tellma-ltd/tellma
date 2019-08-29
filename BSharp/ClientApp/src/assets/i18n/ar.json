@@ -255,5 +255,11 @@
     "SqlServer_UserName" :"اسم الحساب",
     "SqlServer_PasswordKey" :"مفتاح كلمة المرور",
     "SqlDatabase_DatabaseName" :"اسم قاعدة البيانات",
-    "SqlDatabase_Server" :"المخدم"
+    "SqlDatabase_Server" :"المخدم",
+    "NoMemberships": "أنت لست عضوا في أي شركة.",
+    "Agent_User" : "المستخدم",
+    "Agent_PreferredLanguage" : "اللغة المفضلة",
+    "Settings_TernaryLanguage" : "اللغة الثالثة",
+    "Settings_TernaryLanguageSymbol": "رمز اللغة الثالثة"
+
 }

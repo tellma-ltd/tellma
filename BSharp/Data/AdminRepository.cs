@@ -1,5 +1,5 @@
 ﻿using BSharp.Data.Queries;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using BSharp.Services.ClientInfo;
 using BSharp.Services.Identity;
 using Microsoft.Extensions.Localization;
@@ -326,14 +326,14 @@ namespace BSharp.Data
                 var newEmailsTable = RepositoryUtilities.DataTable(newEmails.Select(e => new StringListItem { Id = e }));
                 var newEmailsTvp = new SqlParameter("@NewEmails", newEmailsTable)
                 {
-                    TypeName = $"dbo.StringList",
+                    TypeName = $"[dbo].[StringList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 var oldEmailsTable = RepositoryUtilities.DataTable(oldEmails.Select(e => new StringListItem { Id = e }));
                 var oldEmailsTvp = new SqlParameter("@OldEmails", oldEmailsTable)
                 {
-                    TypeName = $"dbo.StringList",
+                    TypeName = $"[dbo].[StringList]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -368,7 +368,7 @@ namespace BSharp.Data
 
         #region AdminUsers
 
-        public async Task AdminUsers__CreateAdmin(string email, string fullName, string password)
+        public async Task AdminUsers__CreateAdmin(string email, string fullName, string password, string adminServerDescription = null)
         {
             // 1 - Adds the given user to AdminUsers (if it does not exist)
             // 2 - Gives that user access to the admin database

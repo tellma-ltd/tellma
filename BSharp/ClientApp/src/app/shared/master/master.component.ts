@@ -18,7 +18,7 @@ import {
   DEFAULT_PAGE_SIZE as DEFAULT_PAGE_SIZE
 } from '~/app/data/workspace.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { metadata, DtoDescriptor, dtoDescriptorImpl } from '~/app/data/dto/metadata';
+import { metadata, DtoDescriptor, dtoDescriptorImpl } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 enum SearchView {
@@ -653,7 +653,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       settings.CustomSettings = {};
     }
     settings.CustomSettings[this.selectKey] = v;
-    this.api.localUsersApi(this.notifyDestruct$).saveForClient(this.selectKey, v)
+    this.api.usersApi(this.notifyDestruct$).saveForClient(this.selectKey, v)
       .pipe(
         tap(x => {
           this.workspace.current.userSettings = x.Data;

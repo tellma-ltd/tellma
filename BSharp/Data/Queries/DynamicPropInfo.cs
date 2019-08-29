@@ -4,7 +4,7 @@ namespace BSharp.Data.Queries
 {
     /// <summary>
     /// Reflection cannot be used to retrieve the properties of a <see cref="DynamicEntity"/> in
-    /// the same manner as other types <see cref="EntityModel.Entity"/>, since they are
+    /// the same manner as other types <see cref="Entities.Entity"/>, since they are
     /// stored as dictionary entries. Therefore several algorithms that rely on reflection
     /// use <see cref="IPropInfo"/> instead to support both types of entities fixed and dynamic
     /// </summary>
@@ -51,7 +51,7 @@ namespace BSharp.Data.Queries
 
         /// <summary>
         /// Even though the properties of a <see cref="DynamicEntity"/> are dynamic, they always have their origins
-        /// from a real property on a real <see cref="EntityModel.Entity"/> that was subject of a group by or an
+        /// from a real property on a real <see cref="Entities.Entity"/> that was subject of a group by or an
         /// aggregation, this is the declaring type of that property
         /// </summary>
         public Type DeclaringType { get; }

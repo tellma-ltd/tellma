@@ -255,5 +255,10 @@
     "SqlServer_UserName" :"User Name",
     "SqlServer_PasswordKey" :"Password Key",
     "SqlDatabase_DatabaseName" :"Database Name",
-    "SqlDatabase_Server" :"Server"
+    "SqlDatabase_Server" :"Server",
+    "NoMemberships": "You are not currently a member of any company.",
+    "Agent_User" : "User",
+    "Agent_PreferredLanguage" : "Preferred Language",
+    "Settings_TernaryLanguage" : "Ternary Language",
+    "Settings_TernaryLanguageSymbol": "Ternary Language Symbol"
 }

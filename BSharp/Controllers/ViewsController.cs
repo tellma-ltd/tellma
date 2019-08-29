@@ -2,7 +2,7 @@
 using BSharp.Controllers.Misc;
 using BSharp.Data;
 using BSharp.Data.Queries;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using BSharp.Services.ImportExport;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

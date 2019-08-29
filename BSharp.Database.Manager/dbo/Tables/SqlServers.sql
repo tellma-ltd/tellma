@@ -12,6 +12,6 @@
 	[CreatedById]	INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	[ModifiedAt]	DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
 	[ModifiedById]	INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')), 
-    CONSTRAINT [FK_SqlServers_GlobalUsers_CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [GlobalUsers]([Id]),
-    CONSTRAINT [FK_SqlServers_GlobalUsers_ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [GlobalUsers]([Id]),
+    CONSTRAINT [FK_SqlServers_AdminUsers_CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [AdminUsers]([Id]),
+    CONSTRAINT [FK_SqlServers_AdminUsers_ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [AdminUsers]([Id]),
 )

@@ -1,6 +1,6 @@
 ﻿using BSharp.Controllers.Dto;
 using BSharp.Data;
-using BSharp.EntityModel;
+using BSharp.Entities;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

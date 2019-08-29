@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, TemplateRef, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
-import { DtoForSaveKeyBase } from '~/app/data/dto/dto-for-save-key-base';
+import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 @Component({
@@ -18,9 +18,9 @@ export class TableComponent implements OnInit {
   private PH = 'PH';
 
   private _isEdit = false;
-  private _filter: (item: DtoForSaveKeyBase) => boolean;
-  private _dataSource: DtoForSaveKeyBase[] = [];
-  private _dataSourceCopy: DtoForSaveKeyBase[] = [];
+  private _filter: (item: EntityForSave) => boolean;
+  private _dataSource: EntityForSave[] = [];
+  private _dataSourceCopy: EntityForSave[] = [];
   private _indexMap: number[] = [];
 
   @Input()
@@ -41,14 +41,14 @@ export class TableComponent implements OnInit {
   }
 
   @Input()
-  set dataSource(v: DtoForSaveKeyBase[]) {
+  set dataSource(v: EntityForSave[]) {
     if (this._dataSource !== v) {
       this._dataSource = v;
       this.cloneAndMap();
     }
   }
 
-  get dataSource(): DtoForSaveKeyBase[] {
+  get dataSource(): EntityForSave[] {
     return this._dataSource;
   }
 
@@ -65,17 +65,17 @@ export class TableComponent implements OnInit {
   } = {};
 
   @Input()
-  onNewItem: (item: DtoForSaveKeyBase) => DtoForSaveKeyBase;
+  onNewItem: (item: EntityForSave) => EntityForSave;
 
   @Input()
-  set filter(v: (item: DtoForSaveKeyBase) => boolean) {
+  set filter(v: (item: EntityForSave) => boolean) {
     if (this._filter !== v) {
       this._filter = v;
       this.cloneAndMap();
     }
   }
 
-  get filter(): (item: DtoForSaveKeyBase) => boolean {
+  get filter(): (item: EntityForSave) => boolean {
     return this._filter;
   }
 
@@ -107,7 +107,7 @@ export class TableComponent implements OnInit {
 
   private addPlaceholder(updateArray: boolean): void {
 
-    let placeholder: DtoForSaveKeyBase = { Id: null, EntityState: 'Inserted' };
+    let placeholder: EntityForSave = { Id: null };
     if (this.onNewItem) {
       placeholder = this.onNewItem(placeholder);
     }
@@ -138,7 +138,7 @@ export class TableComponent implements OnInit {
   ngOnInit() {
   }
 
-  trackBy(item: DtoForSaveKeyBase) {
+  trackBy(item: EntityForSave) {
     return item.Id || item;
   }
 
@@ -146,7 +146,7 @@ export class TableComponent implements OnInit {
     const item = this._dataSourceCopy[index];
     if (item[this.PH]) {
       // Placeholders don't do anything
-    } else if (item.EntityState === 'Inserted') {
+    } else {
 
       // remove from original
       const originalIndex = this.mapIndex(index);
@@ -164,23 +164,11 @@ export class TableComponent implements OnInit {
         // one to account for the deleted item
         this._indexMap[i]--;
       }
-    } else {
-      item['OS'] = item.EntityState; // remember original state
-      item.EntityState = 'Deleted';
     }
   }
 
-  onUndoDelete(index: number) {
-    const item = this._dataSourceCopy[index];
-    item.EntityState = item['OS'];
-    delete item['OS'];
-  }
-
-  onUpdateLine = (item: DtoForSaveKeyBase) => {
-    if (!item.EntityState) {
-      item.EntityState = 'Updated';
-
-    } else if (!!item[this.PH]) {
+  onUpdateLine = (item: EntityForSave) => {
+    if (!!item[this.PH]) {
       // This is the add-new placeholder which appears as an extra line in edit mode
       // mark it as a proper item by deleting the PH flag
       delete item[this.PH];

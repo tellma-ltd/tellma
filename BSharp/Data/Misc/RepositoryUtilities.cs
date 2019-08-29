@@ -1,5 +1,4 @@
-﻿using BSharp.EntityModel;
-using BSharp.Services.Utilities;
+﻿using BSharp.Data.Queries;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,7 +25,7 @@ namespace BSharp.Data
                 table.Columns.Add(new DataColumn("Index", typeof(int)));
             }
 
-            var props = GetPropertiesBaseFirst(typeof(T)).Where(e => !e.PropertyType.IsList() && !e.PropertyType.IsEntity() && e.Name != nameof(Entity.EntityMetadata));
+            var props = typeof(T).GetMappedProperties();
             foreach (var prop in props)
             {
                 var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
@@ -69,29 +68,58 @@ namespace BSharp.Data
             return table;
         }
 
-
-        /// <summary>
-        /// This is alternative for <see cref="Type.GetProperties"/>
-        /// that returns base class properties before inherited class properties
-        /// Credit: https://bit.ly/2UGAkKj
-        /// </summary>
-        public static PropertyInfo[] GetPropertiesBaseFirst(Type type)
+        public static DataTable DataTableWithHeaderIndex<THeader, TLines>(IEnumerable<THeader> entities, Func<THeader, List<TLines>> linesFunc)
         {
-            var orderList = new List<Type>();
-            var iteratingType = type;
-            do
+            DataTable table = new DataTable();
+
+            // The column order MUST match the column order in the user-defined table type
+            table.Columns.Add(new DataColumn("Index", typeof(int)));
+            table.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
+
+            var props = typeof(TLines).GetMappedProperties();
+            foreach (var prop in props)
             {
-                orderList.Insert(0, iteratingType);
-                iteratingType = iteratingType.BaseType;
-            } while (iteratingType != null);
+                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                var column = new DataColumn(prop.Name, propType);
+                if (propType == typeof(string))
+                {
+                    // For string columns, it is more performant to explicitly specify the maximum column size
+                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
+                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
+                    if (stringLengthAttribute != null)
+                    {
+                        column.MaxLength = stringLengthAttribute.MaximumLength;
+                    }
+                }
 
-            var props = type.GetProperties()
-                .OrderBy(x => orderList.IndexOf(x.DeclaringType))
-                .ToArray();
+                table.Columns.Add(column);
+            }
 
-            return props;
+            int headerIndex = 0;
+            foreach (var entity in entities)
+            {
+                int index = 0;
+                foreach(var line in linesFunc(entity))
+                {
+                    DataRow row = table.NewRow();
+
+                    // We add an index property since SQL works with un-ordered sets
+                    row["Index"] = index++;
+                    row["HeaderIndex"] = headerIndex++;
+
+                    // Add the remaining properties
+                    foreach (var prop in props)
+                    {
+                        var propValue = prop.GetValue(entity);
+                        row[prop.Name] = propValue ?? DBNull.Value;
+                    }
+
+                    table.Rows.Add(row);
+                }
+            }
+
+            return table;
         }
-
 
         /// <summary>
         /// Determines whether the given exception is a foreign key violation on delete

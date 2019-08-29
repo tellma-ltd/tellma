@@ -26,7 +26,7 @@ namespace BSharp.Data
         }
 
         /// <summary>
-        /// The SQL script to load a certain <see cref="EntityModel.Entity"/> from the database.
+        /// The SQL script to load a certain <see cref="Entities.Entity"/> from the database.
         /// The script must be such that it can be included as a subquery inside another query (therefore no EXEC sp)
         /// </summary>
         public string SQL { get; }
