@@ -35,7 +35,7 @@ BEGIN
 			SUM(J.Direction * J.[Count]) AS [Count]
 		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
-		WHERE J.IfrsNoteId = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
+		WHERE J.[IfrsEntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		AND R.ResourceType = N'FinishedGoods'
 		GROUP BY J.ResponsibilityCenterId, R.ResourceLookup1Id
 	),

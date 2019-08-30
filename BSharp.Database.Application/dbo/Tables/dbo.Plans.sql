@@ -3,7 +3,7 @@
 	[Activity]					NVARCHAR(255), -- Sale, Production, Consumption, 
 	[FromDate]					DATE				NOT NULL,
 	[ToDate]					DATE				NOT NULL,
-	[ResponsibilityCenterId]	INT	NOT NULL,
+	[ResponsibilityCenterId]	INT					NOT NULL,
 	[ResourceLookup1Id]			INT,			-- UDL 
 	[ResourceLookup2Id]			INT,			-- UDL 
 	[ResourceLookup3Id]			INT,			-- UDL 

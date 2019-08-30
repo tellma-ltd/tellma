@@ -9,11 +9,18 @@ AS
 BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
+	DECLARE @FilledEntries [dbo].[DocumentLineEntryList]
+	INSERT INTO @FilledEntries
+	EXEC bll.DocumentLineEntries__Fill
+		@Documents = @Documents,
+		@Lines = @Lines,
+		@Entries = @Entries;
+	SELECT * FROM @FilledEntries;
 	--INSERT INTO @ValidationErrors
 	--EXEC [bll].[Documents_Validate__Save]
 	--	@Documents = @Documents,
 	--	@Lines = @Lines,
-	--	@Entries = @Entries;
+	--	@Entries = @FilledEntries;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -29,6 +36,6 @@ BEGIN
 		@DocumentTypeId = @DocumentTypeId,
 		@Documents = @Documents,
 		@Lines = @Lines,
-		@Entries = @Entries,
+		@Entries = @FilledEntries,
 		@ReturnIds = @ReturnIds;
 END;

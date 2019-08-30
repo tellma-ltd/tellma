@@ -7,7 +7,7 @@
 	[Name3]						NVARCHAR (255),
 	[Uniqueness]				TINYINT				NOT NULL DEFAULT 0,
 	[IsBatch]					BIT					NOT NULL DEFAULT 0,
-	[ValueMeasure]				NVARCHAR (255) NOT NULL, -- Currency, Mass, Volumne, Length, Count, Time, 
+	[ValueMeasure]				NVARCHAR (255)		NOT NULL, -- Currency, Mass, Volumne, Length, Count, Time, 
 	[UnitId]					INT,
 	[CurrencyId]				INT,			-- the unit If the resource has a financial meaure assigned to it.
 	[UnitMoney]					DECIMAL,		-- if not null, it specifies the Cost per Unit

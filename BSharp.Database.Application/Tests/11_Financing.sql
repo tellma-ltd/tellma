@@ -1,29 +1,29 @@
-﻿DECLARE @D1 [dbo].[DocumentList], @L1 [dbo].DocumentLineList, @E1 [dbo].DocumentLineEntryList;
-DECLARE @D2 [dbo].[DocumentList], @L2 [dbo].DocumentLineList, @E2 [dbo].DocumentLineEntryList;
-DECLARE @D1Ids dbo.[IdList], @D2Ids dbo.[IdList], @D3Ids dbo.[IdList];
+﻿DECLARE @D11 [dbo].[DocumentList], @L11 [dbo].DocumentLineList, @E11 [dbo].DocumentLineEntryList;
+DECLARE @D12 [dbo].[DocumentList], @L12 [dbo].DocumentLineList, @E12 [dbo].DocumentLineEntryList;
+DECLARE @D11Ids dbo.[IdList], @D12Ids dbo.[IdList], @D13Ids dbo.[IdList];
 
 BEGIN -- Inserting
-	INSERT INTO @D1(
+	INSERT INTO @D11(
 	[DocumentDate],	[Memo], [EvidenceTypeId]) VALUES (
 	'2017.01.01',		N'Capital investment', N'Attachment'
 	);
-	INSERT INTO @L1(
+	INSERT INTO @L11(
 		[DocumentIndex], [LineTypeId], [SortKey]) VALUES
 		(0,					N'ManualLine', 1),
 		(0,					N'ManualLine', 3),
 		(0,					N'ManualLine', 4),
 		(0,					N'ManualLine', 2);
 
-	INSERT INTO @E1 (
-		[DocumentIndex], [DocumentLineIndex], [Direction], [AccountId], [IfrsNoteId],				[ResourceId], [Count], [MoneyAmount],	[Value]) VALUES
-		(0,					0,					+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			200000,			4700000),
-		(0,					1,					-1,			@CapitalMA,N'IssueOfEquity',		@CommonStock,		1000,			0,				2350000),
-		(0,					2,					-1,			@CapitalAA,N'IssueOfEquity',		@CommonStock,		1000,			0,				2350000),
-		(0,					3,					+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			100,			2000);
+	INSERT INTO @E11 (
+		[DocumentIndex], [DocumentLineIndex], [Index], [Direction], [AccountId], [IfrsEntryClassificationId],				[ResourceId], [Count], [MoneyAmount],	[Value]) VALUES
+		(0,					0,					0,+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			200000,			4700000),
+		(0,					1,					1,-1,			@CapitalMA,N'IssueOfEquity',		@CommonStock,		1000,			0,				2350000),
+		(0,					2,					2,-1,			@CapitalAA,N'IssueOfEquity',		@CommonStock,		1000,			0,				2350000),
+		(0,					3,					3,+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			100,			2000);
 
 	EXEC [api].[Documents__Save]
 		@DocumentTypeId = N'manual-journals',
-		@Documents = @D1, @Lines = @L1, @Entries = @E1,
+		@Documents = @D11, @Lines = @L11, @Entries = @E11,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -32,39 +32,40 @@ BEGIN -- Inserting
 		GOTO Err_Label;
 	END;
 
-	INSERT INTO @D1Ids([Id]) SELECT [Id] FROM dbo.Documents;
-	SELECT * FROM rpt.Documents(@D1Ids) ORDER BY [SortKey], [EntryNumber];
+	INSERT INTO @D11Ids([Id]) SELECT [Id] FROM dbo.Documents;
+	SELECT * FROM rpt.Documents(@D11Ids) ORDER BY [SortKey], [EntryNumber];
 END
 
 BEGIN -- Updating document and deleting lines/entries
-	INSERT INTO @D2([Id], [DocumentDate],	[Memo], [EvidenceTypeId])
+	INSERT INTO @D12([Id], [DocumentDate],	[Memo], [EvidenceTypeId])
 	SELECT [Id], [DocumentDate],	[Memo], [EvidenceTypeId] 
 	FROM dbo.Documents
 	WHERE [DocumentTypeId] = N'manual-journals' AND [SerialNumber] = 1;
 
-	INSERT INTO @L2([Id], [DocumentId], [DocumentIndex], [LineTypeId], [ScalingFactor], [SortKey])
-	SELECT DL.[Id], DL.[DocumentId], D2.[Index], DL.[LineTypeId], [ScalingFactor], [SortKey]
+	INSERT INTO @L12([Id], [DocumentId], [DocumentIndex], [LineTypeId], [ScalingFactor], [SortKey])
+	SELECT DL.[Id], DL.[DocumentId], D12.[Index], DL.[LineTypeId], [ScalingFactor], [SortKey]
 	FROM dbo.DocumentLines DL
-	JOIN @D2 D2 ON D2.[Id] = DL.[DocumentId];
+	JOIN @D12 D12 ON D12.[Id] = DL.[DocumentId];
 
-	INSERT INTO @E2([Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResourceId], [Count], [MoneyAmount], [Value])
-	SELECT DLE.[Id], L2.[Id], L2.DocumentIndex, L2.[Index], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResourceId], [Count], [MoneyAmount], [Value]
+	INSERT INTO @E12([Index], [Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value])
+	SELECT ROW_NUMBER() OVER (ORDER BY DLE.[Id]), DLE.[Id], L12.[Id], L12.DocumentIndex, L12.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value]
 	FROM dbo.DocumentLineEntries DLE
-	JOIN @L2 L2 ON L2.[Id] = DLE.[DocumentLineId];
+	JOIN @L12 L12 ON L12.[Id] = DLE.[DocumentLineId]
+	;
 
-	--SELECT * FROM @D2; SELECT * FROM @L2; SELECT * FROM @E2;
+	--SELECT * FROM @D12; SELECT * FROM @L12; SELECT * FROM @E12;
 
-	UPDATE @E2 SET [Count] = [Count] / 2, [Value] = [Value] / 2 WHERE [Index] = 1;
-	UPDATE @E2 SET [Count] = [Count] * 1.5, [Value] = [Value] * 1.5 + 1175000 WHERE [Index] = 2;
-	UPDATE @L2 SET [ScalingFactor] = 3 WHERE [ScalingFactor] = 1;
-	DELETE FROM @L2 WHERE [Index] = 1;
-	DELETE FROM @L2 WHERE [Index] = 3;
+	UPDATE @E12 SET [Count] = [Count] / 2, [Value] = [Value] / 2 WHERE [Index] = 1;
+	UPDATE @E12 SET [Count] = [Count] * 1.5, [Value] = [Value] * 1.5 + 1175000 WHERE [Index] = 2;
+	UPDATE @L12 SET [ScalingFactor] = 3 WHERE [ScalingFactor] = 1;
+	DELETE FROM @L12 WHERE [Index] = 1;
+	DELETE FROM @L12 WHERE [Index] = 3;
 
-	--SELECT * FROM @D2; SELECT * FROM @L2; SELECT * FROM @E2;
+	--SELECT * FROM @D12; SELECT * FROM @L12; SELECT * FROM @E12;
 
 	EXEC [api].[Documents__Save]
 		@DocumentTypeId = N'manual-journals',
-		@Documents = @D2, @Lines = @L2, @Entries = @E2,
+		@Documents = @D12, @Lines = @L12, @Entries = @E12,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -73,8 +74,8 @@ BEGIN -- Updating document and deleting lines/entries
 		GOTO Err_Label;
 	END;
 
-	INSERT INTO @D2Ids([Id]) SELECT [Id] FROM dbo.Documents;
-	SELECT * FROM rpt.Documents(@D2Ids) ORDER BY [SortKey], [EntryNumber];
+	INSERT INTO @D12Ids([Id]) SELECT [Id] FROM dbo.Documents;
+	SELECT * FROM rpt.Documents(@D12Ids) ORDER BY [SortKey], [EntryNumber];
 END
 
 BEGIN -- signing
@@ -85,9 +86,9 @@ BEGIN -- signing
 		@DocsIndexedIds = @DocsToSign, @ToState = N'Posted', @ReasonDetails = N'seems ok',
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-	INSERT INTO @D3Ids([Id]) SELECT [Id] FROM dbo.Documents;
-	SELECT * FROM rpt.Documents(@D3Ids) ORDER BY [SortKey], [EntryNumber];
-	SELECT * FROM [rpt].[Documents__Signatures](@D3Ids);
+	INSERT INTO @D13Ids([Id]) SELECT [Id] FROM dbo.Documents;
+	SELECT * FROM rpt.Documents(@D13Ids) ORDER BY [SortKey], [EntryNumber];
+	SELECT * FROM [rpt].[Documents__Signatures](@D13Ids);
 
 	--select *, ValidFrom AT TIME ZONE 'UTC' AS [SavedAt]  from RoleMemberships;
 	--select *, ValidFrom AT TIME ZONE 'UTC' AS [SavedAt] from RoleMembershipsHistory;

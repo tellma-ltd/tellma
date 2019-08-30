@@ -25,8 +25,8 @@ AS
 					SUM(E.[Direction] * E.[Value]) > 0
 			THEN 1 ELSE -1 END AS [Direction],
 		E.[AccountId],
-		E.[IfrsNoteId],
-		E.[ResponsibilityCenterId],
+		E.[IfrsEntryClassificationId],
+		A.[ResponsibilityCenterId],
 		E.[ResourceId],
 		E.[InstanceId],
 		E.[BatchCode],
@@ -51,6 +51,7 @@ AS
 		JOIN [dbo].[DocumentLines] L ON E.[DocumentLineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.[DocumentTypes] DT ON D.[DocumentTypeId] = DT.[Id]
+		JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 	WHERE
 		D.[State] = N'Posted'
 	GROUP BY
@@ -72,8 +73,8 @@ AS
 		D.[ModifiedAt],
 		D.[ModifiedById],
 		E.[AccountId],
-		E.[IfrsNoteId],
-		E.[ResponsibilityCenterId],
+		E.[IfrsEntryClassificationId],
+		A.[ResponsibilityCenterId],
 		E.[ResourceId],
 		E.[InstanceId],
 		E.[BatchCode],

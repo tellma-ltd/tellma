@@ -56,7 +56,7 @@ SET NOCOUNT ON;
 		N'Error_TheIfrsEntryClassificationIsRequired'
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE (E.[IfrsNoteId] IS NULL)
+	WHERE (E.[IfrsEntryClassificationId] IS NULL)
 	AND A.[IfrsClassificationId] IN (
 		SELECT [IfrsAccountClassificationId] FROM dbo.[IfrsAccountClassificationsEntryClassifications]
 	);
@@ -70,8 +70,8 @@ SET NOCOUNT ON;
 		A.[IfrsClassificationId]
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	LEFT JOIN dbo.[IfrsAccountClassificationsEntryClassifications] AN ON A.[IfrsClassificationId] = AN.[IfrsAccountClassificationId] AND E.Direction = AN.Direction AND E.IfrsNoteId = AN.[IfrsEntryClassificationId]
-	WHERE (E.[IfrsNoteId] IS NOT NULL)
+	LEFT JOIN dbo.[IfrsAccountClassificationsEntryClassifications] AN ON A.[IfrsClassificationId] = AN.[IfrsAccountClassificationId] AND E.Direction = AN.Direction AND E.IfrsEntryClassificationId = AN.[IfrsEntryClassificationId]
+	WHERE (E.[IfrsEntryClassificationId] IS NOT NULL)
 	AND (AN.[IfrsEntryClassificationId] IS NULL);
 
 	-- No expired Ifrs Account
@@ -84,7 +84,7 @@ SET NOCOUNT ON;
 		IC.[Label]
 	FROM @Entries E
 	JOIN @Documents T ON E.[DocumentIndex] = T.[Index]
-	JOIN dbo.[IfrsEntryClassifications] N ON E.[IfrsNoteId] = N.Id
+	JOIN dbo.[IfrsEntryClassifications] N ON E.[IfrsEntryClassificationId] = N.Id
 	JOIN dbo.[IfrsConcepts] IC ON N.Id = IC.Id
 	WHERE (IC.ExpiryDate < T.[DocumentDate]);
 	

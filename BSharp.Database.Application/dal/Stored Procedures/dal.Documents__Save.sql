@@ -91,7 +91,7 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResponsibilityCenterId],
+			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
 				[ResourceId], [InstanceId], [BatchCode], [DueDate], 
 				(CASE
 					WHEN R.[ValueMeasure] = N'Currency' THEN E.[MoneyAmount]
@@ -115,8 +115,7 @@ BEGIN
 		UPDATE SET
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
-			t.[IfrsNoteId]				= s.[IfrsNoteId],
-			t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
+			t.[IfrsEntryClassificationId]				= s.[IfrsEntryClassificationId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[InstanceId]				= s.[InstanceId],
 			t.[BatchCode]				= s.[BatchCode],
@@ -139,11 +138,11 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsNoteId], [ResponsibilityCenterId],
+		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
 				[ResourceId], [InstanceId], [BatchCode], [Quantity],
 				[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value], [Memo],
 				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount], [SortKey])
-		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IfrsNoteId], s.[ResponsibilityCenterId],
+		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IfrsEntryClassificationId],
 				s.[ResourceId], s.[InstanceId], s.[BatchCode], s.[Quantity],
 				s.[MoneyAmount], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value], s.[Memo],
 				s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount], s.[SortKey])

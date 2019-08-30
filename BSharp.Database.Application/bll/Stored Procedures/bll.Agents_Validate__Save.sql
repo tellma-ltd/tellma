@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[bll_Agents_Validate__Save]
+﻿CREATE PROCEDURE [bll].[Agents_Validate__Save]
 	@Entities [AgentList] READONLY,
 	@Top INT = 10
 AS
@@ -12,7 +12,7 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id Is NOT NULL
+    WHERE Id <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[Agents])
 	OPTION(HASH JOIN);
 

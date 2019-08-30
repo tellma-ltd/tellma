@@ -1,5 +1,5 @@
 ﻿CREATE TYPE [dbo].[AgentList] AS TABLE (
-	[Index]						INT					IDENTITY(0, 1),
+	[Index]						INT					IDENTITY (0, 1),
 	[Id]						INT					NOT NULL DEFAULT 0,
 	[IsActive]					BIT					NOT NULL DEFAULT 1, -- 0 means the person is dead or the organization is close
 	[Name]						NVARCHAR (255)		NOT NULL,
@@ -23,6 +23,7 @@
 --	Individuals only
 --	--	Personal
 	[BirthDate]					DATE,
+	[Title]						NVARCHAR (50),		-- LKT
 	[TitleId]					TINYINT,		-- LKT
 	[Gender]					TINYINT,		-- ISO/IEC 5218. 0=unknown, 1=Male, 2=Female, 9=N/A
 	[ResidentialAddress]		NVARCHAR (1024), -- in the country language

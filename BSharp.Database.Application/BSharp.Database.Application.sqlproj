@@ -109,13 +109,11 @@
     <Build Include="Security\api.sql" />
     <Build Include="Security\dal.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Agents__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexedIdList.sql" />
     <Build Include="dbo\Tables\dbo.Translations.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_ResponsibilityCenters__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Agents_Validate__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Agents__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
@@ -331,6 +329,9 @@
     <Build Include="dbo\User Defined Types\dbo.UserList.sql" />
     <Build Include="Mapping\Users.sql" />
     <Build Include="bll\Stored Procedures\bll.Users_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.DocumentLineEntries__Fill.sql" />
+    <Build Include="api\Stored Procedures\api.Agents__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.Agents_Validate__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -350,9 +351,10 @@
     <None Include="Dev.publish.xml" />
     <None Include="Tests\01_RolesPermissions.sql" />
     <None Include="Tests\02_Workflows.sql" />
-    <None Include="Tests\06_Accounts.sql" />
-    <None Include="Tests\08_ResponsibilityCenters.sql" />
+    <None Include="Tests\08_Accounts.sql" />
+    <None Include="Tests\06_ResponsibilityCenters.sql" />
     <None Include="Tests\12_Purchasing.sql" />
+    <None Include="Tests\14_Sales.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BSharp.Database.Application.refactorlog" />

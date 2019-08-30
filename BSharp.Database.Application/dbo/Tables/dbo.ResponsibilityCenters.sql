@@ -33,7 +33,7 @@ Produced = Sold + Closing - Opening
 
 */
 -- some operations are used in the line corresponding to production event
-	[Id]					INT PRIMARY KEY IDENTITY,
+	[Id]					INT					CONSTRAINT [PK_ResponsibilityCenters] PRIMARY KEY IDENTITY,
 	[ResponsibilityDomain]	NVARCHAR (255)		NOT NULL, -- Investment, Profit, Revenue, Cost
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),
@@ -44,20 +44,18 @@ Produced = Sold + Closing - Opening
 	[ParentId]				INT, -- Only leaves can have data. Parents are represented by an extra leaf.
 	[Code]					NVARCHAR (255),
 -- Optional. used for convenient reporting
-	[OperationId]			INT, -- e.g., general, admin, S&M, HR, finance, production, maintenance
+	[OperationId]			INT, -- e.g., general, admin, S&M, HR, finance, production, maintenance. FK to Agents (Departments)
 	[ProductCategoryId]		INT, -- e.g., general, sales, services OR, Steel, Real Estate, Coffee, ..
 	[GeographicRegionId]	INT, -- e.g., general, Oromia, Merkato, Kersa
 	[CustomerSegmentId]		INT, -- e.g., general, then corporate, individual or M, F or Adult youth, etc...
 	[TaxSegmentId]			INT, -- e.g., general, existing (30%), expansion (0%)
 
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ResponsibilityCenters__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[ModifiedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ResponsibilityCenters__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),
 	CONSTRAINT [CK_ResponsibilityCenters__ResponsibilityDomain] CHECK ([ResponsibilityDomain] IN (N'Investment', N'Profit', N'Revenue', N'Cost')),
-	CONSTRAINT [FK_ResponsibilityCenters__ParentId] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
-	CONSTRAINT [FK_ResponsibilityCenters__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_ResponsibilityCenters__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	CONSTRAINT [FK_ResponsibilityCenters__ParentId] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id])
 );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_ResponsibilityCenters__Name]

@@ -3,9 +3,6 @@
 	-- However, it can also be used to generate several other notes as well such as PPE, Intangible, Biological, Expenses by function
 	[Id]						NVARCHAR (255) PRIMARY KEY NONCLUSTERED CONSTRAINT [FK_IfrsEntryClassifications__IfrsConcepts]	FOREIGN KEY ([Id])	REFERENCES [dbo].[IfrsConcepts] ([Id]),
 	[ParentId]					NVARCHAR (255),
-
-	-- UPDATE [IfrsNoteClassifications]
-	-- SET IsLeaf = 1 WHERE [Node] NOT IN (SELECT DISTINCT [ParentNode] FROM [AccountClassifications])
 	[IsActive]					BIT					NOT NULL DEFAULT 1, -- update to 0 those who do appear as ancestors
 	[IsLeaf]					BIT					NOT NULL DEFAULT 1, -- update to 0 those who do appear as ancestors
 	-- helpful for aggregating all children into parent, or some into catch all "Other"

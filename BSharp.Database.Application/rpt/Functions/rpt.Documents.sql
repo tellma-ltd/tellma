@@ -20,7 +20,7 @@ RETURN
 			DL.[SortKey],
 			DL.[LineTypeId],
 			DLE.[Direction],
-			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[IfrsNoteId], 
+			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[IfrsEntryClassificationId], 
 			R.[Name] AS [Resource], MU.[Name] AS [Unit], DLE.[InstanceId],
 			CAST(DLE.[Quantity] AS MONEY) AS [Quantity],
 			CAST(DLE.[Value] AS MONEY) AS [Value]
@@ -47,7 +47,7 @@ RETURN
 		(CASE WHEN [SortKey] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
 		CAST([SortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineTypeId],
-		[EntryNumber], [Account], [IfrsNoteId],[Resource], [InstanceId],
+		[EntryNumber], [Account], [IfrsEntryClassificationId],[Resource], [InstanceId],
 		[Direction], [Quantity], [Unit], [Value]
 	FROM Docs;
 GO

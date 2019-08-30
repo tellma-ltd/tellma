@@ -2,9 +2,6 @@
 	[Id]						NVARCHAR (255) CONSTRAINT [PK_IfrsClassifications] PRIMARY KEY NONCLUSTERED CONSTRAINT [FK_IfrsClassifications__Id] FOREIGN KEY ([Id]) REFERENCES [dbo].[IfrsConcepts] ([Id]) ON DELETE CASCADE,
 	[Node]						HIERARCHYID CONSTRAINT [CK_IfrsClassifications__Node] UNIQUE INDEX [IX_IfrsClassifications__Node] CLUSTERED,
 	[ParentNode]				AS [Node].GetAncestor(1),
-
-	-- UPDATE IfrsAccountClassifications]
-	-- SET IsLeaf = 1 WHERE [Node] NOT IN (SELECT DISTINCT [ParentNode] FROM [IfrsAccountClassifications])
 	[IsLeaf]					BIT					NOT NULL DEFAULT 1, -- update to 0 those who do appear as ancestors
 	-- classifications of childen of same parent can all be aggregated to the parent,
 	-- or can some be combined into catchall "other", like Other Inventories, Other property plant and equipment, etc.

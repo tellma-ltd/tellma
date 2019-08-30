@@ -11,8 +11,7 @@
 	
 	[Direction1]			SMALLINT			NOT NULL,
 	[AccountId1]			INT	NOT NULL,
-	[IfrsNoteId1]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
-	[ResponsibilityCenterId1]INT,	-- called SegmentId in B10. When not needed, we use the entity itself.
+	[IfrsEntryClassificationId1]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
 	[ResourceId1]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')),
 	[InstanceId1]			INT,
 	[BatchCode1]			NVARCHAR (255),
@@ -36,8 +35,7 @@
 
 	[Direction2]			SMALLINT			NOT NULL,
 	[AccountId2]			INT					NOT NULL,
-	[IfrsNoteId2]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
-	[ResponsibilityCenterId2]INT,				-- called SegmentId in B10. When not needed, we use the entity itself.
+	[IfrsEntryClassificationId2]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
 	[ResourceId2]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')),
 	[InstanceId2]			INT,
 	[BatchCode2]			NVARCHAR (255),

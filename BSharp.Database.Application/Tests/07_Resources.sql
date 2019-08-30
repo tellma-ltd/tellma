@@ -18,11 +18,12 @@ BEGIN -- Cleanup & Declarations
 	DECLARE @HOvertime int, @ROvertime int, @Basic int, @Transportation int, 
 			@LaborHourly int, @LaborDaily int, @Car1Svc int, @GOff int;
 	DECLARE @HR1000x1_9 INT, @CR1000x1_4 INT;
+	DECLARE @Oil INT, @Diesel INT;
 END
 BEGIN -- Inserting
 	INSERT INTO @R1
 	([ResourceType],		[Name],					[Code],		[SystemCode], [ValueMeasure], [CurrencyId], [Uniqueness]) VALUES
-	(N'money',				N'ETB',					N'ETB',		N'Functional',	N'Currency',	@ETBUnit,		0),
+	(N'money',				N'ETB',					N'ETB',		NULL,			N'Currency',	@ETBUnit,		0),
 	(N'money',				N'USD',					N'USD',		NULL,			N'Currency',	@USDUnit,		0),
 	(N'money',				N'ETB Incoming Checks',	N'ICKETB',	NULL,			N'Currency',	@ETBUnit,		1);
 DECLARE @ICKETBIndex INT = (SELECT [Index] FROM @R1 WHERE [Code] = N'ICKETB');
@@ -59,6 +60,12 @@ INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code], [Mass]) VALUES
 INSERT INTO @R1
 	([ResourceType],		[Name],					[Code],		[SystemCode], [ValueMeasure], [MassUnitId]) VALUES
 	(N'general-goods',		N'Cotton',				NULL,		NULL,			N'Mass',		@KgUnit);
+
+INSERT INTO @R1
+	([ResourceType],		[Name],					[Code],		[SystemCode], [ValueMeasure], [VolumeUnitId]) VALUES
+	(N'general-goods',		N'Oil',					NULL,		NULL,			N'Volume',		@LiterUnit),
+	(N'general-goods',		N'Diesel',				NULL,		NULL,			N'Volume',		@LiterUnit);
+
 INSERT INTO @R1
 	([ResourceType],		[Name],					[Code],		[SystemCode], [ValueMeasure], [TimeUnitId]) VALUES
 	(N'wages-and-salaries',	N'Basic',				NULL,		N'Basic',		N'Time',		@moUnit),
@@ -177,4 +184,6 @@ SELECT
 	@LaborHourly = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborHourly'),
 	@LaborDaily = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborDaily'),
 	@HR1000x1_9 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'HR1000x1.9'),
-	@CR1000x1_4 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'CR1000x1.4');
+	@CR1000x1_4 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'CR1000x1.4'),
+	@Oil = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Oil'),
+	@Diesel = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Diesel');

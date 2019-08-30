@@ -28,7 +28,7 @@ WITH IfrsInventoryAccounts AS (
 		J.[Area],
 		J.[Length],
 		J.[Count],
-		J.[IfrsNoteId],
+		J.[IfrsEntryClassificationId],
 		J.[VoucherNumericReference],
 		J.[Memo],
 		J.[RelatedResourceId],

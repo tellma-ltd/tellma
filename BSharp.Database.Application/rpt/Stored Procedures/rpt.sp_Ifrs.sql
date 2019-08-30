@@ -61,10 +61,10 @@ BEGIN
 		)
 	)
 	INSERT INTO #Ifrs([Field], [Value])
-	SELECT [IfrsNoteId], SUM([Value] * [Direction])
+	SELECT [IfrsEntryClassificationId], SUM([Value] * [Direction])
 	FROM dbo.[fi_Journal](@fromDate, @toDate)
 	WHERE [IfrsClassificationId] IN (SELECT [Id] FROM ExpenseByFunctionAccounts)
-	GROUP BY [IfrsNoteId];
+	GROUP BY [IfrsEntryClassificationId];
 
 	SELECT * FROM #Ifrs;
 	DROP TABLE #Ifrs;

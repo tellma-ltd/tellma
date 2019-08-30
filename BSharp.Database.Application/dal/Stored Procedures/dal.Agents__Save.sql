@@ -19,11 +19,10 @@ SET NOCOUNT ON;
 				[Name], [Name2], [Name3], [Code], [AgentType], [IsRelated], [TaxIdentificationNumber],
 				[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
-				[BirthDate], [TitleId], [Gender], [ResidentialAddress], [MaritalStatus], [NumberOfChildren],
+				[BirthDate], [Title], [TitleId], [Gender], [ResidentialAddress], [MaritalStatus], [NumberOfChildren],
 				[Religion], [Race],  [TribeId], [RegionId],  
 				[EducationLevelId], [EducationSublevelId], [BankId], [BankAccountNumber],
 				[OrganizationType], [WebSite], [ContactPerson], [RegisteredAddress], [OwnershipType], [OwnershipPercent]
-
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
@@ -48,6 +47,7 @@ SET NOCOUNT ON;
 				t.[PreferredContactAddress2] = s.[PreferredContactAddress2],
 
 				t.[BirthDate]				= s.[BirthDate],
+				t.[Title]					= s.[Title],
 				t.[TitleId]					= s.[TitleId],
 				t.[Gender]					= s.[Gender],
 				t.[ResidentialAddress]		= s.[ResidentialAddress],
@@ -78,7 +78,7 @@ SET NOCOUNT ON;
 				[Name], [Name2], [Name3], [Code], [AgentType], [IsRelated], [TaxIdentificationNumber],
 				[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
-				[BirthDate], [TitleId], [Gender], [ResidentialAddress], [MaritalStatus], [NumberOfChildren],
+				[BirthDate], [Title], [TitleId], [Gender], [ResidentialAddress], [MaritalStatus], [NumberOfChildren],
 				[Religion], [Race],  [TribeId], [RegionId],  
 				[EducationLevelId], [EducationSublevelId], [BankId], [BankAccountNumber],
 				[OrganizationType], [WebSite], [ContactPerson], [RegisteredAddress], [OwnershipType], [OwnershipPercent])
@@ -86,7 +86,7 @@ SET NOCOUNT ON;
 				s.[Name], s.[Name2], s.[Name3], s.[Code], s.[AgentType], s.[IsRelated], s.[TaxIdentificationNumber],
 				s.[IsLocal], s.[Citizenship], s.[Facebook], s.[Instagram], s.[Twitter],
 				s.[PreferredContactChannel1], s.[PreferredContactAddress1], s.[PreferredContactChannel2], s.[PreferredContactAddress2],
-				s.[BirthDate], s.[TitleId], s.[Gender], s.[ResidentialAddress], s.[MaritalStatus], s.[NumberOfChildren], s.[Religion], s.[Race], s.[TribeId], s.[RegionId], 
+				s.[BirthDate], s.[Title], s.[TitleId], s.[Gender], s.[ResidentialAddress], s.[MaritalStatus], s.[NumberOfChildren], s.[Religion], s.[Race], s.[TribeId], s.[RegionId], 
 				s.[EducationLevelId], s.[EducationSublevelId], s.[BankId], s.[BankAccountNumber],
 				s.[OrganizationType], s.[WebSite], s.[ContactPerson], s.[RegisteredAddress], s.[OwnershipType], s.[OwnershipPercent])
 		OUTPUT s.[Index], inserted.[Id]

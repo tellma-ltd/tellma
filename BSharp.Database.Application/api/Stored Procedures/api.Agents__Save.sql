@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[api_Agents__Save]
+﻿CREATE PROCEDURE [api].[Agents__Save]
 	@Entities [AgentList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [dbo].[bll_Agents_Validate__Save]
+	EXEC [bll].[Agents_Validate__Save]
 		@Entities = @Entities;
 
 	SELECT @ValidationErrorsJson = 

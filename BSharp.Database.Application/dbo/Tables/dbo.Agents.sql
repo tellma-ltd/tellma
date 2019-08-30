@@ -24,6 +24,7 @@
 --	Individuals only
 --	--	Personal
 	[BirthDate]					DATE,
+	[Title]						NVARCHAR(50),		-- To be deleted
 	[TitleId]					TINYINT,		-- LKT
 	[Gender]					TINYINT,		-- ISO/IEC 5218. 0=unknown, 1=Male, 2=Female, 9=N/A
 	[ResidentialAddress]		NVARCHAR (1024), -- in the country language

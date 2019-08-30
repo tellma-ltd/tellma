@@ -25,7 +25,8 @@ EXEC [dal].[Settings__Save]
 	@ShortCompanyName = @ShortCompanyName,
 	@PrimaryLanguageId = @PrimaryLanguageId,
 	@ViewsAndSpecsVersion = @ViewsAndSpecsVersion,
-	@SettingsVersion = @SettingsVersion;
+	@SettingsVersion = @SettingsVersion,
+	@FunctionalCurrency = @FunctionalCurrency;
 
 :r .\01_IfrsConcepts.sql
 :r .\011_IfrsDisclosures.sql
