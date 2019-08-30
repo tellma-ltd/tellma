@@ -5,7 +5,6 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -19,7 +18,7 @@ namespace BSharp
         {
             var host = CreateWebHostBuilder(args).Build();
 
-            CreateAdministrator(host);
+            InitDatabase(host.Services);
 
             host.Run();
         }
@@ -29,12 +28,17 @@ namespace BSharp
             .UseStartup<Startup>()
             .ConfigureLogging((hostingContext, logging) => logging.AddDebug());
 
-        private static void CreateAdministrator(IWebHost host)
+        /// <summary>
+        /// Database initialization is performed here, after the web host is configured but before it is run
+        /// this way the initialization has access to environment variables in configuration providers, but it
+        /// only runs once when the web app loads
+        /// </summary>
+        public static void InitDatabase(IServiceProvider provider)
         {
             try
             {
                 // If missing, the default admin user is added here
-                using (var scope = host.Services.CreateScope())
+                using (var scope = provider.CreateScope())
                 {
                     // (1) Retrieve the admin credentials from configurations
                     var opt = scope.ServiceProvider.GetRequiredService<IOptions<GlobalOptions>>().Value;

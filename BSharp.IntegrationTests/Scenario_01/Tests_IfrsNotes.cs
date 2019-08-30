@@ -20,10 +20,10 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "000 - Getting all IFRS notes before granting permissions returns a 403 Forbidden response")]
         public async Task Test3400()
         {
-            var response = await _client.GetAsync($"/api/ifrs-notes");
+            var response = await Client.GetAsync($"/api/ifrs-notes");
 
             // Call the API
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 403 OK
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -36,8 +36,8 @@ namespace BSharp.IntegrationTests.Scenario_01
             await GrantPermissionToSecurityAdministrator("ifrs-notes", Constants.Read, null);
 
             // Call the API
-            var response = await _client.GetAsync($"/api/ifrs-notes");
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            var response = await Client.GetAsync($"/api/ifrs-notes");
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -57,9 +57,9 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3402()
         {
             string nonExistentId = "doesnt_exist";
-            var response = await _client.GetAsync($"/api/ifrs-notes/{nonExistentId}");
+            var response = await Client.GetAsync($"/api/ifrs-notes/{nonExistentId}");
 
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 

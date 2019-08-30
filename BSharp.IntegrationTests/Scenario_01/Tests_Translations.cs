@@ -17,10 +17,10 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Translations001()
         {
             var lang = "en";
-            var response = await _client.GetAsync($"/api/translations/client/{lang}");
+            var response = await Client.GetAsync($"/api/translations/client/{lang}");
 
             // Call the API
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
