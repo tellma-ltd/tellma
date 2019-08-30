@@ -66,18 +66,6 @@ BEGIN
 	JOIN dbo.[Accounts] A ON A.[Id] = DLE.[AccountId]
 	WHERE (A.[IsActive] = 0);
 
-	-- No inactive responsibility center
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
-		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
-		N'Error_TheResponsibilityCenter0IsInactive',
-		RC.[Name]
-	FROM @Ids FE
-	JOIN dbo.[DocumentLines] DL ON FE.[Id] = DL.[DocumentId]
-	JOIN dbo.[DocumentLineEntries] DLE ON DL.[Id] = DLE.[DocumentLineId]
-	JOIN dbo.[ResponsibilityCenters] RC ON RC.[Id] = DLE.[ResponsibilityCenterId]
-	WHERE (RC.[IsActive] = 0);
-
 	-- No inactive Resource
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT

@@ -18,7 +18,6 @@ RETURN
 
 		[Direction1]			SMALLINT,
 		[AccountId1]			INT,
-		[ResponsibilityCenterId1]INT,
 		[NoteId1]				NVARCHAR (255),
 		[AgentAccountId1]		INT,
 		[ResourceId1]			INT,
@@ -43,7 +42,6 @@ RETURN
 
 		[Direction2]			SMALLINT,
 		[AccountId2]			INT,
-		[ResponsibilityCenterId2]INT,
 		[NoteId2]				NVARCHAR (255),
 		[AgentAccountId2]		INT,
 		[ResourceId2]			INT,
@@ -68,7 +66,6 @@ RETURN
 
 		[Direction3]			SMALLINT,
 		[AccountId3]			INT,
-		[ResponsibilityCenterId3]INT,
 		[NoteId3]				NVARCHAR (255),
 		[AgentAccountId3]		INT,
 		[ResourceId3]			INT,
@@ -93,7 +90,6 @@ RETURN
 
 		[Direction4]			SMALLINT,
 		[AccountId4]			INT,
-		[ResponsibilityCenterId4]INT,
 		[NoteId4]				NVARCHAR (255),
 		[AgentAccountId4]		INT,
 		[ResourceId4]			INT,

@@ -30,7 +30,7 @@ So, we have:
 -- IsBatch = 1 <=> BatchNumber is REQUIRED in table TransactionEntries when Document in Completed state
 -- HasBatch, IsTrackable, 
 	[IsBatch]					BIT					NOT NULL DEFAULT 0,
-	[ValueMeasure]				NVARCHAR (255)		NOT NULL CONSTRAINT [CK_Resources__ValueMeasure] CHECK ([ValueMeasure] IN (N'Currency', N'Mass', N'Volumne', N'Area', N'Length', N'Count', N'Time')),
+	[ValueMeasure]				NVARCHAR (255)		NOT NULL CONSTRAINT [CK_Resources__ValueMeasure] CHECK ([ValueMeasure] IN (N'Currency', N'Mass', N'Volume', N'Area', N'Length', N'Count', N'Time')),
 	[UnitId]					AS (
 									CASE
 										WHEN [ValueMeasure] = N'Currency'	THEN [CurrencyId]

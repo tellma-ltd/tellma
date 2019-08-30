@@ -1,7 +1,7 @@
 ﻿BEGIN -- Cleanup & Declarations
 	DECLARE @MU1 [dbo].MeasurementUnitList, @MU2 [dbo].MeasurementUnitList, @MU3 [dbo].MeasurementUnitList,
 			@MUIndexedIds dbo.[IndexedIdList];
-	DECLARE @ETBUnit INT, @USDUnit INT, @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT,
+	DECLARE @ETBUnit INT, @USDUnit INT, @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT, @LiterUnit INT,
 			@wmoUnit INT, @hrUnit INT, @yrUnit INT, @dayUnit INT, @moUnit INT;
 END
 BEGIN -- Inserting
@@ -82,6 +82,7 @@ SELECT
 	@ETBUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ETB'),
 	@USDUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'USD'),
 	@KgUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'Kg'),
+	@LiterUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ltr'),
 	@pcsUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'pcs'),
 	@eaUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ea'),
 	@shareUnit = (SELECT [Id] FROM [dbo].MeasurementUnits WHERE [Name] = N'share'),

@@ -88,14 +88,10 @@ DECLARE @WideLineTypesSpecifications TABLE (
 	[AccountIdExpression1]			NVARCHAR (255),
 	[AccountIdEntryNumber1]			INT,
 
-	[IfrsNoteIdIsVisible1]			BIT				NOT NULL DEFAULT 0,
-	[IfrsNoteIdExpression1]			NVARCHAR (255),
-	[IfrsNoteIdEntryNumber1]		INT,
-	[IfrsNoteId1]					NVARCHAR (255),
-
-	[ResponsibilityCenterIdIsVisible1]BIT			NOT NULL DEFAULT 0,
-	[ResponsibilityCenterIdExpression1]NVARCHAR (255),
-	[ResponsibilityCenterIdEntryNumber1]INT,
+	[IfrsEntryClassificationIdIsVisible1]			BIT				NOT NULL DEFAULT 0,
+	[IfrsEntryClassificationIdExpression1]			NVARCHAR (255),
+	[IfrsEntryClassificationIdEntryNumber1]		INT,
+	[IfrsEntryClassificationId1]					NVARCHAR (255),
 
 	[ResourceIdIsVisible1]			BIT				NOT NULL DEFAULT 0,
 	[ResourceIdExpression1]			NVARCHAR (255),
@@ -183,14 +179,10 @@ DECLARE @WideLineTypesSpecifications TABLE (
 	[AccountIdExpression2]			NVARCHAR (255),
 	[AccountIdEntryNumber2]			INT,
 
-	[IfrsNoteIdIsVisible2]			BIT				NOT NULL DEFAULT 0,
-	[IfrsNoteIdExpression2]			NVARCHAR (255),
-	[IfrsNoteIdEntryNumber2]		INT,
-	[IfrsNoteId2]					NVARCHAR (255),
-
-	[ResponsibilityCenterIdIsVisible2]BIT			NOT NULL DEFAULT 0,
-	[ResponsibilityCenterIdExpression2]NVARCHAR (255),
-	[ResponsibilityCenterIdEntryNumber2]INT,
+	[IfrsEntryClassificationIdIsVisible2]			BIT				NOT NULL DEFAULT 0,
+	[IfrsEntryClassificationIdExpression2]			NVARCHAR (255),
+	[IfrsEntryClassificationIdEntryNumber2]		INT,
+	[IfrsEntryClassificationId2]					NVARCHAR (255),
 
 	[ResourceIdIsVisible2]			BIT				NOT NULL DEFAULT 0,
 	[ResourceIdExpression2]			NVARCHAR (255),
@@ -273,8 +265,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId], 
 	[DirectionIsVisible1], [DirectionExpression1], 
 	[AccountIdIsVisible1], [AccountIdExpression1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1],
 	[QuantityIsVisible1], [QuantityExpression1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1],
@@ -285,7 +276,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	1, N'Specified',
 	1, N'Specified',
 	NULL, N'Specified', -- Ifrs Note, depends on Account
-	1, N'Specified',
 	1, N'Specified',
 	1, N'Specified',
 	-- additional resource properties (money amount, mass, volume, area, length, ...)
@@ -301,8 +291,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
@@ -314,7 +303,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	0, N'Constant', +1,
 	1, N'Specified', N'CashOnHand',
 	1, N'Specified', -- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 
 	0, N'Constant', dbo.fn_FunctionalCurrency(), -- Currency
 	1, N'Specified', -- Quantity
 	0, N'!Quantity', 1,
@@ -327,8 +315,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1], [ResponsibilityCenterIdEntryNumber1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[InstanceIdIsVisible1], [InstanceIdExpression1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
@@ -343,7 +330,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	0, N'Constant', 1, -- Direction
 	1, N'Specified', N'BalancesWithBanks', -- Account
 	1, N'Specified', -- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 1,  -- RC
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'SpecifiedNew', -- Check details
 	0, N'!Instance.Amount', 1, -- Quantity
@@ -359,8 +345,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1], [ResponsibilityCenterIdEntryNumber1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
@@ -373,7 +358,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	0, N'Constant', 1,
 	1, N'Specified', N'BalancesWithBanks',
 	1, N'Specified', -- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 1,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'Specified', -- Quantity
 	0, N'!Quantity', 1,
@@ -387,8 +371,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
@@ -401,7 +384,6 @@ VALUES (
 	0, N'Constant', -1,
 	1, N'Specified', N'CashOnHand',
 	1, N'Specified', -- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 
 	0, N'Constant', dbo.fn_FunctionalCurrency(), -- Currency
 	1, N'Specified', -- Quantity
 	0, N'!Quantity', 1,
@@ -416,8 +398,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1], [ResponsibilityCenterIdEntryNumber1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
@@ -431,7 +412,6 @@ VALUES (
 	0, N'Constant', -1, -- Direction
 	1, N'Specified', N'BalancesWithBanks', -- Account
 	1, N'Specified', -- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 1, 
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'Specified', -- Quantity: Amount
 	0, N'!Quantity', 1, -- Money Quantity
@@ -445,8 +425,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1], [ResponsibilityCenterIdEntryNumber1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
@@ -460,7 +439,6 @@ VALUES (
 	0, N'Constant', -1,
 	1, N'Specified', N'BalancesWithBanks',
 	1, N'Specified', -- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 1,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'Specified', -- Quantity
 	0, N'!Quantity', 1,
@@ -474,8 +452,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1], [IfrsNoteId1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1],[ResponsibilityCenterIdEntryNumber1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
@@ -485,8 +462,7 @@ INSERT INTO @WideLineTypesSpecifications (
 
 	[DirectionIsVisible2], [DirectionExpression2], [Direction2],
 	[AccountIdIsVisible2], [AccountIdExpression2], [AccountIdFilter2],
-	[IfrsNoteIdIsVisible2], [IfrsNoteIdExpression2], [IfrsNoteId2],
-	[ResponsibilityCenterIdIsVisible2], [ResponsibilityCenterIdExpression2],[ResponsibilityCenterIdEntryNumber2],
+	[IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationId2],
 	[ResourceIdIsVisible2], [ResourceIdExpression2], [ResourceId2],
 	[QuantityIsVisible2], [QuantityExpression2], [QuantityEntryNumber2],
 	[MoneyAmountIsVisible2], [MoneyAmountExpression2], [MoneyAmountEntryNumber2],
@@ -499,7 +475,6 @@ VALUES (
 	0, N'Constant', 1, -- Direction
 	1, N'Specified', N'BalancesWithBanks', -- Account
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 1,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'Specified', -- Quantity
 	0, N'!Quantity', 1, -- Money Amount
@@ -510,7 +485,6 @@ VALUES (
 	0, N'Constant', -1, --  Direction
 	1, N'Specified', N'CashOnHand', -- Account
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 2,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	0, N'!Quantity', 1,
 	0, N'!Quantity', 1,
@@ -523,8 +497,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1], [IfrsNoteId1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1],[ResponsibilityCenterIdEntryNumber1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
@@ -534,8 +507,7 @@ INSERT INTO @WideLineTypesSpecifications (
 
 	[DirectionIsVisible2], [DirectionExpression2], [Direction2],
 	[AccountIdIsVisible2], [AccountIdExpression2], [AccountIdFilter2],
-	[IfrsNoteIdIsVisible2], [IfrsNoteIdExpression2], [IfrsNoteId2],
-	[ResponsibilityCenterIdIsVisible2], [ResponsibilityCenterIdExpression2],[ResponsibilityCenterIdEntryNumber2],
+	[IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationId2],
 	[ResourceIdIsVisible2], [ResourceIdExpression2], [ResourceId2],
 	[QuantityIsVisible2], [QuantityExpression2], [QuantityEntryNumber2],
 	[MoneyAmountIsVisible2], [MoneyAmountExpression2], [MoneyAmountEntryNumber2],
@@ -548,7 +520,6 @@ VALUES (
 	0, N'Constant', 1,
 	1, N'Specified', N'BalancesWithBanks', -- Destination
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 1,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'Specified', -- Amount
 	0, N'!Quantity', 1,
@@ -559,7 +530,6 @@ VALUES (
 	0, N'Constant', -1,
 	1, N'Specified', N'BalancesWithBanks', -- Source
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 2,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	0, N'!Quantity', 1,
 	0, N'!Quantity', 1,
@@ -572,8 +542,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1], [IfrsNoteId1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1], [ResponsibilityCenterIdEntryNumber1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
@@ -584,8 +553,7 @@ INSERT INTO @WideLineTypesSpecifications (
 
 	[DirectionIsVisible2], [DirectionExpression2], [Direction2],
 	[AccountIdIsVisible2], [AccountIdExpression2], [AccountIdFilter2],
-	[IfrsNoteIdIsVisible2], [IfrsNoteIdExpression2], [IfrsNoteId2],
-	[ResponsibilityCenterIdIsVisible2], [ResponsibilityCenterIdExpression2], [ResponsibilityCenterIdEntryNumber2],
+	[IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationId2],
 	[ResourceIdIsVisible2], [ResourceIdExpression2], [ResourceId2],
 	[InstanceIdIsVisible2], [InstanceIdExpression2],
 	[QuantityIsVisible2], [QuantityExpression2], [QuantityEntryNumber2],
@@ -600,7 +568,6 @@ VALUES (
 	0, N'Constant', 1,
 	1, N'Specified', N'BalancesWithBanks', -- Destination
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 1,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	0, N'!Instance.Amount', 2, -- Amount
 	0, N'!Instance.Amount', 2,
@@ -612,7 +579,6 @@ VALUES (
 	0, N'Constant', -1,
 	1, N'Specified', N'CashOnHand', -- Source
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 2,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'SpecifiedExisting',
 	0, N'!Instance.Amount', 2,
@@ -627,8 +593,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1], [IfrsNoteId1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1], [ResponsibilityCenterIdEntryNumber1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[InstanceIdIsVisible1], [InstanceIdExpression1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
@@ -640,8 +605,7 @@ INSERT INTO @WideLineTypesSpecifications (
 
 	[DirectionIsVisible2], [DirectionExpression2], [Direction2],
 	[AccountIdIsVisible2], [AccountIdExpression2], [AccountIdFilter2],
-	[IfrsNoteIdIsVisible2], [IfrsNoteIdExpression2], [IfrsNoteId2],
-	[ResponsibilityCenterIdIsVisible2], [ResponsibilityCenterIdExpression2],[ResponsibilityCenterIdEntryNumber2],
+	[IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationId2],
 	[ResourceIdIsVisible2], [ResourceIdExpression2], [ResourceId2],
 	[QuantityIsVisible2], [QuantityExpression2], [QuantityEntryNumber2],
 	[MoneyAmountIsVisible2], [MoneyAmountExpression2], [MoneyAmountEntryNumber2],
@@ -654,7 +618,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	0, N'Constant', 1,
 	1, N'Specified', N'CashOnHand', -- Destination
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 1,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'SpecifiedNew',
 	0, N'!Instance.Amount', 1, -- Quantity
@@ -667,7 +630,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	0, N'Constant', -1,
 	1, N'Specified', N'BalancesWithBanks', -- Source
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
-	0, N'!Account.ResponsibilityCenterId', 2,
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	0, N'!Instance.Amount', 1,
 	0, N'!Instance.Amount', 1,
@@ -681,8 +643,7 @@ INSERT INTO @WideLineTypesSpecifications(
 	[LineTypeId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
-	[IfrsNoteIdIsVisible1], [IfrsNoteIdExpression1], [IfrsNoteId1],
-	[ResponsibilityCenterIdIsVisible1], [ResponsibilityCenterIdExpression1], [ResponsibilityCenterIdEntryNumber1],
+	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[InstanceIdIsVisible1], [InstanceIdExpression1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
@@ -696,7 +657,6 @@ INSERT INTO @WideLineTypesSpecifications(
 	0, N'Constant', 1, -- Direction, Dr. COGS
 	0, N'!Resource.ExpenseAccountId', 1, -- COGS Account
 	0, N'Constant', N'CostOfSales',-- IfrsNote
-	NULL, N'Document!ResponsibilityCenterId', -- Responsibility Center
 	0, N'!ResourceId', 2,-- Item
 	0, N'!Quantity', 2, -- Quantity
 	-- Other measures depends on resource.
@@ -712,7 +672,6 @@ INSERT INTO @WideLineTypesSpecifications(
 	0, N'Constant', -1, -- Direction, Cr. Warehouse
 	NULL, N'!Document.SourceCustodianAccountId', N'FinishedGoods', -- Warehouse Account
 	0, N'Constant', N'InventoryIssueToSaleExtension',-- IfrsNote, extension useful to generate reports
-	0, N'!Account.ResponsibilityCenterId', 2,
 	1, N'Specified', -- Item
 	1, N'Specified', -- Quantity
 -- Other measures depend on resource, and they affect the debit line
@@ -727,7 +686,6 @@ INSERT INTO @WideLineTypesSpecifications(
 
 	0, N'Constant', -1, -- Direction, Cr. VAT
 	1, N'Specified', N'CurrentValueAddedTaxPayables', -- VAT Account
-	0, N'!Account.ResponsibilityCenterId', 3,
 	0, N'Constant', dbo.fn_FunctionalCurrency(), -- Resource
 	1, N'Specified', -- Quantity: VAT
 	0, N'!Quantity', 3, -- Value,d
@@ -740,7 +698,6 @@ INSERT INTO @WideLineTypesSpecifications(
 
 	0, N'Constant', -1, -- Direction, Cr. Revenues
 	0, N'!Resource.RevenueAccountId', 1, -- Sales Account
-	0, N'!ResponsibilityCenterId', 1,
 	0, N'Constant', dbo.fn_FunctionalCurrency(), -- Resource
 	1, N'Specified', -- Quantity: Price (VAT excl.)
 	0, N'!Quantity', 3, -- Value,d
@@ -772,11 +729,8 @@ SELECT
 	[DirectionEntryNumber1] AS [DirectionEntryNumber], [Direction1] AS [Direction],
 	[AccountIdIsVisible1] AS [AccountIdIsVisible], [AccountIdFilter1] AS [AccountIdIfrsFilter],
 	[AccountIdExpression1] AS [AccountIdExpression], [AccountIdEntryNumber1] AS [AccountIdEntryNumber],
-	[IfrsNoteIdIsVisible1] AS [IfrsNoteIdIsVisible], [IfrsNoteIdExpression1] AS [IfrsNoteIdExpression],
-	[IfrsNoteIdEntryNumber1] AS [IfrsNoteIdEntryNumber], [IfrsNoteId1] AS [IfrsNoteId],
-	[ResponsibilityCenterIdIsVisible1] AS [ResponsibilityCenterIdIsVisible],
-	[ResponsibilityCenterIdExpression1] AS [ResponsibilityCenterIdExpression],
-	[ResponsibilityCenterIdEntryNumber1] AS [ResponsibilityCenterIdEntryNumber],
+	[IfrsEntryClassificationIdIsVisible1] AS [IfrsEntryClassificationIdIsVisible], [IfrsEntryClassificationIdExpression1] AS [IfrsEntryClassificationIdExpression],
+	[IfrsEntryClassificationIdEntryNumber1] AS [IfrsEntryClassificationIdEntryNumber], [IfrsEntryClassificationId1] AS [IfrsEntryClassificationId],
 	[ResourceIdIsVisible1] AS [ResourceIdIsVisible], [ResourceIdExpression1] AS [ResourceIdExpression],
 	[ResourceIdEntryNumber1] AS [ResourceIdEntryNumber], [ResourceId1] AS [ResourceId],
 	[InstanceIdIsVisible1] AS [InstanceIdIsVisible], [InstanceIdExpression1] AS [InstanceIdExpression],
@@ -812,9 +766,8 @@ UNION ALL
 SELECT
 	[LineTypeId], 2, [DirectionIsVisible2], [DirectionExpression2], [DirectionEntryNumber2],
 	[Direction2], [AccountIdIsVisible2], [AccountIdFilter2], [AccountIdExpression2],
-	[AccountIdEntryNumber2], [IfrsNoteIdIsVisible2], [IfrsNoteIdExpression2], [IfrsNoteIdEntryNumber2],
-	[IfrsNoteId2], [ResponsibilityCenterIdIsVisible2], [ResponsibilityCenterIdExpression2],
-	[ResponsibilityCenterIdEntryNumber2], [ResourceIdIsVisible2], [ResourceIdExpression2],
+	[AccountIdEntryNumber2], [IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationIdEntryNumber2],
+	[IfrsEntryClassificationId2], [ResourceIdIsVisible2], [ResourceIdExpression2],
 	[ResourceIdEntryNumber2], [ResourceId2], [InstanceIdIsVisible2], [InstanceIdExpression2],
 	[InstanceIdEntryNumber2], [BatchCodeIsVisible2], [BatchCodeExpression2], [BatchCodeEntryNumber2],
 	[DueDateIsVisible2], [DueDateExpression2], [DueDateEntryNumber2], [QuantityIsVisible2],
@@ -842,13 +795,10 @@ UPDATE SET
 	t.[AccountIdIfrsFilter] = s.[AccountIdIfrsFilter],
 	t.[AccountIdExpression] = s.[AccountIdExpression],
 	t.[AccountIdEntryNumber] = s.[AccountIdEntryNumber],
-	t.[IfrsNoteIdIsVisible] = s.[IfrsNoteIdIsVisible],
-	t.[IfrsNoteIdExpression] = s.[IfrsNoteIdExpression],
-	t.[IfrsNoteIdEntryNumber] = s.[IfrsNoteIdEntryNumber],
-	t.[IfrsNoteId] = s.[IfrsNoteId],
-	t.[ResponsibilityCenterIdIsVisible] = s.[ResponsibilityCenterIdIsVisible],
-	t.[ResponsibilityCenterIdExpression] = s.[ResponsibilityCenterIdExpression],
-	t.[ResponsibilityCenterIdEntryNumber] = s.[ResponsibilityCenterIdEntryNumber],
+	t.[IfrsEntryClassificationIdIsVisible] = s.[IfrsEntryClassificationIdIsVisible],
+	t.[IfrsEntryClassificationIdExpression] = s.[IfrsEntryClassificationIdExpression],
+	t.[IfrsEntryClassificationIdEntryNumber] = s.[IfrsEntryClassificationIdEntryNumber],
+	t.[IfrsEntryClassificationId] = s.[IfrsEntryClassificationId],
 	t.[ResourceIdIsVisible] = s.[ResourceIdIsVisible],
 	t.[ResourceIdExpression] = s.[ResourceIdExpression],
 	t.[ResourceIdEntryNumber] = s.[ResourceIdEntryNumber],
@@ -909,9 +859,8 @@ WHEN NOT MATCHED BY SOURCE THEN
 WHEN NOT MATCHED BY TARGET THEN
 INSERT ([LineTypeId], [EntryNumber], [DirectionIsVisible], [DirectionExpression], [DirectionEntryNumber],
 	[Direction], [AccountIdIsVisible], [AccountIdIfrsFilter], [AccountIdExpression],
-	[AccountIdEntryNumber], [IfrsNoteIdIsVisible], [IfrsNoteIdExpression], [IfrsNoteIdEntryNumber],
-	[IfrsNoteId], [ResponsibilityCenterIdIsVisible], [ResponsibilityCenterIdExpression],
-	[ResponsibilityCenterIdEntryNumber], [ResourceIdIsVisible], [ResourceIdExpression],
+	[AccountIdEntryNumber], [IfrsEntryClassificationIdIsVisible], [IfrsEntryClassificationIdExpression], [IfrsEntryClassificationIdEntryNumber],
+	[IfrsEntryClassificationId], [ResourceIdIsVisible], [ResourceIdExpression],
 	[ResourceIdEntryNumber], [ResourceId], [InstanceIdIsVisible], [InstanceIdExpression],
 	[InstanceIdEntryNumber], [BatchCodeIsVisible], [BatchCodeExpression], [BatchCodeEntryNumber],
 	[DueDateIsVisible], [DueDateExpression], [DueDateEntryNumber], [QuantityIsVisible],
@@ -928,9 +877,8 @@ INSERT ([LineTypeId], [EntryNumber], [DirectionIsVisible], [DirectionExpression]
 	)
 VALUES(s.[LineTypeId], s.[EntryNumber], s.[DirectionIsVisible], s.[DirectionExpression], s.[DirectionEntryNumber],
 	s.[Direction], s.[AccountIdIsVisible], s.[AccountIdIfrsFilter], s.[AccountIdExpression],
-	s.[AccountIdEntryNumber], s.[IfrsNoteIdIsVisible], s.[IfrsNoteIdExpression], s.[IfrsNoteIdEntryNumber],
-	s.[IfrsNoteId], s.[ResponsibilityCenterIdIsVisible], s.[ResponsibilityCenterIdExpression],
-	s.[ResponsibilityCenterIdEntryNumber], s.[ResourceIdIsVisible], s.[ResourceIdExpression],
+	s.[AccountIdEntryNumber], s.[IfrsEntryClassificationIdIsVisible], s.[IfrsEntryClassificationIdExpression], s.[IfrsEntryClassificationIdEntryNumber],
+	s.[IfrsEntryClassificationId], s.[ResourceIdIsVisible], s.[ResourceIdExpression],
 	s.[ResourceIdEntryNumber], s.[ResourceId], s.[InstanceIdIsVisible], s.[InstanceIdExpression],
 	s.[InstanceIdEntryNumber], s.[BatchCodeIsVisible], s.[BatchCodeExpression], s.[BatchCodeEntryNumber],
 	s.[DueDateIsVisible], s.[DueDateExpression], s.[DueDateEntryNumber], s.[QuantityIsVisible],

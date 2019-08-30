@@ -2,7 +2,8 @@
 	@ShortCompanyName NVARCHAR(255),
 	@PrimaryLanguageId NVARCHAR(255),
 	@ViewsAndSpecsVersion UNIQUEIDENTIFIER,
-	@SettingsVersion UNIQUEIDENTIFIER
+	@SettingsVersion UNIQUEIDENTIFIER,
+	@FunctionalCurrency NCHAR(3)
 AS
 SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
@@ -15,8 +16,9 @@ IF Exists(SELECT * FROM dbo.Settings)
 		[PrimaryLanguageId]		= @PrimaryLanguageId,
 		[ViewsAndSpecsVersion]	= @ViewsAndSpecsVersion,
 		[SettingsVersion]		= @SettingsVersion,
+		[FunctionalCurrency]	= @FunctionalCurrency,
 		[ModifiedAt]			= @Now,
 		[ModifiedById]			= @UserId
 ELSE
-	INSERT dbo.[Settings] ([ShortCompanyName], [PrimaryLanguageId], [ViewsAndSpecsVersion], [SettingsVersion])
-	VALUES(@ShortCompanyName, @PrimaryLanguageId, @ViewsAndSpecsVersion, @SettingsVersion);
+	INSERT dbo.[Settings] ([ShortCompanyName], [PrimaryLanguageId], [ViewsAndSpecsVersion], [SettingsVersion], [FunctionalCurrency])
+	VALUES(@ShortCompanyName, @PrimaryLanguageId, @ViewsAndSpecsVersion, @SettingsVersion, @FunctionalCurrency);

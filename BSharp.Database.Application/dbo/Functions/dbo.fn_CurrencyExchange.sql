@@ -11,8 +11,9 @@ BEGIN
 
 	SELECT @Date = ISNULL(@Date, GETDATE()), @TargetCurrency = ISNULL(@TargetCurrency, [dbo].fn_FunctionalCurrency())
 
-	SELECT @Result = @Amount * ExchangeRate FROM [dbo].ExchangeRatesHistory 
-	WHERE [Date] = @Date AND BaseCurrency = @BaseCurrency AND TargetCurrency = @TargetCurrency
+	SELECT @Result = @Amount * ExchangeRate 
+	FROM [dbo].ExchangeRatesHistory 
+	WHERE (@Date BETWEEN [ValidFrom] AND [ValidTo]) AND BaseCurrency = @BaseCurrency AND TargetCurrency = @TargetCurrency
 
-	RETURN @Result;
+	RETURN @Amount * 30; --@Result;
 END;

@@ -13,15 +13,15 @@ AS
 
 	INSERT INTO @Entries(
 	[DocumentLineIndex], [DocumentIndex], [Id],
-	[DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsNoteId],
-	[ResponsibilityCenterId], [ResourceId], [InstanceId], [BatchCode], [DueDate], [Quantity],
+	[DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
+	[ResourceId], [InstanceId], [BatchCode], [DueDate], [Quantity],
 	[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value], [Memo],
 	[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId],
 	[RelatedQuantity], [RelatedMoneyAmount])
 	SELECT
 	[DocumentLineIndex], [DocumentIndex], [Id],
-	[DocumentLineId], 1, [Direction1], [AccountId1], [IfrsNoteId1],
-	[ResponsibilityCenterId1], [ResourceId1], [InstanceId1], [BatchCode1], [DueDate1], [Quantity1],
+	[DocumentLineId], 1, [Direction1], [AccountId1], [IfrsEntryClassificationId1],
+	[ResourceId1], [InstanceId1], [BatchCode1], [DueDate1], [Quantity1],
 	[MoneyAmount1], [Mass1], [Volume1], [Area1], [Length1], [Time1], [Count1], [Value1], [Memo1],
 	[ExternalReference1], [AdditionalReference1], [RelatedResourceId1], [RelatedAgentId1],
 	[RelatedQuantity1], [RelatedMoneyAmount1]
@@ -29,8 +29,8 @@ AS
 	UNION
 	SELECT
 	[DocumentLineIndex], [DocumentIndex], [Id],
-	[DocumentLineId], 2, [Direction2], [AccountId2], [IfrsNoteId2],
-	[ResponsibilityCenterId2], [ResourceId2], [InstanceId2], [BatchCode2], [DueDate2], [Quantity2],
+	[DocumentLineId], 2, [Direction2], [AccountId2], [IfrsEntryClassificationId2],
+	[ResourceId2], [InstanceId2], [BatchCode2], [DueDate2], [Quantity2],
 	[MoneyAmount2], [Mass2], [Volume2], [Area2], [Length2], [Time2], [Count2], [Value2], [Memo2],
 	[ExternalReference2], [AdditionalReference2], [RelatedResourceId2], [RelatedAgentId2],
 	[RelatedQuantity2], [RelatedMoneyAmount2]

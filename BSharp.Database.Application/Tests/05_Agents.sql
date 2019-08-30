@@ -1,105 +1,86 @@
 ﻿BEGIN -- Cleanup & Declarations
-	DECLARE @AgentsDTO [dbo].[AgentList];
+	DECLARE @Agents1 [dbo].[AgentList], @Agents2 [dbo].[AgentList];
 
 	DECLARE @MohamadAkra int, @AhmadAkra int, @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakTegene int,
 			@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
 			@MesfinWolde int;
 	DECLARE @BananIT int, @WaliaSteel int, @Lifan int, @Sesay int, @ERCA int, @Paint int, @Plastic int, @CBE int, @AWB int,
-			@NIB int, @Regus int;
+			@NIB int, @Regus int, @NocJimma INT;
 	DECLARE @ExecutiveOffice int, @Production int, @SalesAndMarketing int, @Finance int, @HR int,
 			@MaterialsAndPurchasing int;
 END
 BEGIN -- Insert individuals and organizations
-	INSERT INTO @AgentsDTO
-	([AgentType],		[Name],		[IsRelated],[TaxIdentificationNumber], [Address], [Title], [Gender], [BirthDateTime]) VALUES
-	(N'Individual',	N'Mohamad Akra',	0,		NULL,						NULL,				N'Dr.',		'M',	'1966.02.19'),
-	(N'Individual',	N'Ahmad Akra',		0,		NULL,						NULL,				N'Mr.',		'M',	'1992.09.21'),
-	(N'Individual',	N'Badege Kebede',	1,		NULL,						NULL,				N'ATO',		'M',	NULL),
-	(N'Individual',	N'Tizita Nigussie',	0,		NULL,						NULL,				N'Ms.', 	'F',	NULL),
-	(N'Individual',	N'Ashenafi Fantahun',0,		NULL,						NULL,				N'Mr.',		'M',	NULL),
-	(N'Individual',	N'Yisak Tegene',	0,		NULL,						NULL,				N'Mr.',		'M',	NULL),
-	(N'Individual',	N'Zewdinesh Hora',	0,		NULL,						NULL,				N'Ms.',		'F',	NULL),
-	(N'Individual',	N'Tigist Negash',	0,		NULL,						NULL,				N'Ms.',		'F',	NULL),
-	(N'Individual',	N'Roman Zenebe',	0,		NULL,						NULL,				N'Ms.',		'F',	NULL),
-	(N'Individual',	N'Mestawet G/Egziyabhare',	0,NULL,						NULL,				N'Ms.',		'F',	NULL),
-	(N'Individual',	N'Ayelech Hora',	0,		NULL,						NULL,				N'Ms.',		'F',	NULL),
-	(N'Individual',	N'Yigezu Legesse',	0,		NULL,						NULL,				N'ATO',		'F',	NULL),
-	(N'Individual',	N'Mesfin Wolde',	0,		N'0059603732',				NULL,				N'Eng.',	'M',	NULL),
+	INSERT INTO @Agents1
+	([AgentType],		[Name],		[IsRelated],[TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate]) VALUES
+	(N'Individual',	N'Mohamad Akra',	0,		NULL,						NULL,				N'Dr.',		1,	'1966.02.19'),
+	(N'Individual',	N'Ahmad Akra',		0,		NULL,						NULL,				N'Mr.',		1,	'1992.09.21'),
+	(N'Individual',	N'Badege Kebede',	1,		NULL,						NULL,				N'ATO',		1,	NULL),
+	(N'Individual',	N'Tizita Nigussie',	0,		NULL,						NULL,				N'Ms.', 	2,	NULL),
+	(N'Individual',	N'Ashenafi Fantahun',0,		NULL,						NULL,				N'Mr.',		1,	NULL),
+	(N'Individual',	N'Yisak Tegene',	0,		NULL,						NULL,				N'Mr.',		1,	NULL),
+	(N'Individual',	N'Zewdinesh Hora',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
+	(N'Individual',	N'Tigist Negash',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
+	(N'Individual',	N'Roman Zenebe',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
+	(N'Individual',	N'Mestawet G/Egziyabhare',	0,NULL,						NULL,				N'Ms.',		2,	NULL),
+	(N'Individual',	N'Ayelech Hora',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
+	(N'Individual',	N'Yigezu Legesse',	0,		NULL,						NULL,				N'ATO',		2,	NULL),
+	(N'Individual',	N'Mesfin Wolde',	0,		N'0059603732',				NULL,				N'Eng.',	1,	NULL),
 
-	(N'Organization', N'Banan Information technologies, plc', 1,N'0054901530', N'AA, Bole, 316/3/203 A',NULL,NULL,	'2017.08.09'),
-	(N'Organization', N'Walia Steel Industry, plc', 1,N'0001656462',			NULL,			NULL,		NULL,	NULL),
-	(N'Organization', N'Yangfan Motors, PLC', 0,N'0005306731',				N'AA, Bole, 06, New',NULL,		NULL,	NULL),
-	(N'Organization', N'Sisay Tesfaye, PLC', 0,	N'',						NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Ethiopian Revenues and Customs Authority', 0,NULL,	NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Best Paint Industry', 0,NULL,						NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Best Plastic Industry', 0,NULL,						NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Commercial Bank of Ethiopia', 0,NULL,				NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Awash Bank',	0,		NULL,						NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'NIB',			0,		NULL,						NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Regus',			0,		N'0008895353',		N'AA, Girgi, 22, New',		NULL,		NULL,	NULL),
+	(N'Organization', N'Banan Information technologies, plc', 1,N'0054901530', N'AA, Bole, 316/3/203 A',NULL,9,	'2017.08.09'),
+	(N'Organization', N'Walia Steel Industry, plc', 1,N'0001656462',		NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Yangfan Motors, PLC', 0,N'0005306731',				N'AA, Bole, 06, New',NULL,		9,	NULL),
+	(N'Organization', N'Sisay Tesfaye, PLC', 0,	N'',						NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Ethiopian Revenues and Customs Authority', 0,NULL,	NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Best Paint Industry', 0,NULL,						NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Best Plastic Industry', 0,NULL,						NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Commercial Bank of Ethiopia', 0,NULL,				NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Awash Bank',	0,		NULL,						NULL,				NULL,		9,	NULL),
+	(N'Organization', N'NIB',			0,		NULL,						NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Regus',			0,		N'0008895353',		N'AA, Girgi, 22, New',		NULL,		9,	NULL),
 	
-	(N'Organization', N'Executive Office',1,	NULL,						NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Production Department',0,NULL,						NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Sales & Marketing Department',0,NULL,				NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Finance Department',0,	NULL,						NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Human Resources Department',0,NULL,					NULL,				NULL,		NULL,	NULL),
-	(N'Organization', N'Materials & Purchasing Department',0,NULL,			NULL,				NULL,		NULL,	NULL);
+	(N'Organization', N'Noc Jimma Ber Service Station',	0,NULL,				NULL,				NULL,		9,	NULL),
 
-	EXEC [dbo].[api_Agents__Save]
-		@Entities = @AgentsDTO,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-		@ResultsJson = @ResultsJson OUTPUT
+	(N'Organization', N'Executive Office',1,	NULL,						NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Production Department',0,NULL,						NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Sales & Marketing Department',0,NULL,				NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Finance Department',0,	NULL,						NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Human Resources Department',0,NULL,					NULL,				NULL,		9,	NULL),
+	(N'Organization', N'Materials & Purchasing Department',0,NULL,			NULL,				NULL,		9,	NULL);
+
+	EXEC [api].[Agents__Save]
+		@Entities = @Agents1,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
 		Print 'Agents: Place 1'
 		GOTO Err_Label;
 	END;
-
-	IF @DebugAgents = 1
-		SELECT * FROM [dbo].[fr_Agents__Json](@ResultsJson);
 END
 
 -- Inserting
-DELETE FROM @AgentsDTO;
-INSERT INTO @AgentsDTO (
-	[Id], [AgentType], [Name], [Code], [IsRelated], [TaxIdentificationNumber], [Address], [Title], [Gender], [BirthDateTime], [EntityState])
+INSERT INTO @Agents2 (
+	[Id], [AgentType], [Name], [Code], [IsRelated], [TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate])
 SELECT
-	[Id], [AgentType], [Name], [Code], [IsRelated], [TaxIdentificationNumber], [Address], [Title], [Gender], [BirthDateTime], N'Unchanged'
+	[Id], [AgentType], [Name], [Code], [IsRelated], [TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate]
 FROM [dbo].[Agents]
 WHERE [Name] Like N'%Akra' OR [Name] Like N'Y%';
 
 -- Updating MA TIN
-	UPDATE @AgentsDTO
+	UPDATE @Agents2
 	SET 
-		[TaxIdentificationNumber] = N'0059603732',
-		[EntityState] = N'Updated'
+		[TaxIdentificationNumber] = N'0059603732'
 	WHERE [Name] = N'Ahmad Akra';
 
-	--UPDATE @AgentsDTO 
-	--SET 
-	--	[Code] = N'MA',
-	--	[EntityState] = N'Updated'
-	--WHERE [Name] Like N'%Akra';
-
--- Deleting Legesse record
-	UPDATE @AgentsDTO
-	SET [EntityState] = N'Deleted' 
-	WHERE [Name] = N'Yigezu Legesse';
-
-	EXEC [dbo].[api_Agents__Save]
-		@Entities = @AgentsDTO,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-		@ResultsJson = @ResultsJson OUTPUT
+	EXEC [api].[Agents__Save]
+		@Entities = @Agents2,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
 		Print 'Agents: Place 2'
 		GOTO Err_Label;
 	END;
-	
-	IF @DebugAgents = 1
-		SELECT * FROM [dbo].[fr_Agents__Json](@ResultsJson);
 
 	IF @DebugAgents = 1
 		SELECT * FROM [dbo].[Agents];
@@ -129,6 +110,7 @@ SELECT
 	@AWB = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Awash Bank'),
 	@NIB = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'NIB'),
 	@Regus = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Regus'),
+	@NocJimma = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Noc Jimma Ber Service Station'),
 
 	@ExecutiveOffice = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Executive Office'),
 	@Production = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Production Department'),
@@ -136,7 +118,7 @@ SELECT
 	@Finance = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Finance Department'),
 	@HR = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Human Resources Department'),
 	@MaterialsAndPurchasing = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Materials & Purchasing Department');
-
+/*
 INSERT INTO dbo.AgentsResources(
 	[AgentId], [RelationType],	[ResourceId], [UnitCost], CreatedAt, CreatedById, ModifiedAt, ModifiedById) VALUES
 	(@MohamadAkra, N'Employee',		@HOvertime,		450,		@Now,		@UserId, @Now,		@UserId),
@@ -170,5 +152,5 @@ INSERT INTO @AgentSettingSave
 
 EXEC [dbo].[api_Settings__Save]
 		@Settings = @AgentSettingSave,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-		@ResultsJson = @AgentSettingResultJson OUTPUT;
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+*/

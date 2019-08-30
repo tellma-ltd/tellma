@@ -21,16 +21,11 @@
 	[AccountIdExpression]			NVARCHAR (255),
 	[AccountIdEntryNumber]			INT,
 
-	[IfrsNoteIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[IfrsNoteIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Posted',
-	[IfrsNoteIdExpression]			NVARCHAR (255),
-	[IfrsNoteIdEntryNumber]			INT,
-	[IfrsNoteId]					NVARCHAR (255),
-
-	[ResponsibilityCenterIdIsVisible]BIT			NOT NULL DEFAULT 0,
-	[ResponsibilityCenterIdIsEditableTill]NVARCHAR (255)	NOT NULL DEFAULT N'Posted',
-	[ResponsibilityCenterIdExpression]NVARCHAR (255),
-	[ResponsibilityCenterIdEntryNumber]INT,
+	[IfrsEntryClassificationIdIsVisible]			BIT				NOT NULL DEFAULT 0,
+	[IfrsEntryClassificationIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Posted',
+	[IfrsEntryClassificationIdExpression]			NVARCHAR (255),
+	[IfrsEntryClassificationIdEntryNumber]			INT,
+	[IfrsEntryClassificationId]					NVARCHAR (255),
 
 	[ResourceIdIsVisible]			BIT				NOT NULL DEFAULT 0,
 	[ResourceIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Posted',

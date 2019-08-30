@@ -1,14 +1,13 @@
 ﻿CREATE TYPE [dbo].DocumentLineEntryList AS TABLE (
-	[Index]					INT					PRIMARY KEY IDENTITY (0,1),
+	[Index]					INT					PRIMARY KEY,-- IDENTITY (0,1),
 	[DocumentLineIndex]		INT					NOT NULL DEFAULT 0,
 	[DocumentIndex]			INT					NOT NULL DEFAULT 0,
 	[Id]					INT					NOT NULL DEFAULT 0,
 	[DocumentLineId]		INT					NOT NULL DEFAULT 0,
 	[EntryNumber]			INT					NOT NULL DEFAULT 1,
 	[Direction]				SMALLINT			NOT NULL,
-	[AccountId]				INT		NOT NULL,
-	[IfrsNoteId]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
-	[ResponsibilityCenterId]INT,				-- called SegmentId in B10. When not needed, we use the entity itself.
+	[AccountId]				INT					NOT NULL,
+	[IfrsEntryClassificationId]					NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
 	[ResourceId]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')), -- because it may be specified by Account				
 	[InstanceId]			INT,
 	[BatchCode]				NVARCHAR (255),

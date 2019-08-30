@@ -30,7 +30,7 @@ RETURN
 		J.[AccountId],
 		J.[IfrsClassificationId],
 		J.[AgentId],
-		J.[IfrsNoteId],
+		J.[IfrsEntryClassificationId],
 		J.[ResponsibilityCenterId],
 		J.[ResourceId],
 		J.[InstanceId],

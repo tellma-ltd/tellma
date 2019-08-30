@@ -5,16 +5,16 @@
 	CustomAccountClassifications -- screen shows list of accounts
 	IfrsDisclosures
 	MeasurementUnits
-	IfrsNotes
-	IfrsAccounts -- screen shows list of accounts
+	IfrsEntryClassifications
+	IfrsAccountClassifications -- screen shows list of accounts
 	AgentRelationTypes
 	JobTitles
 	Titles, MaritalStatuses, Tribes, Regions, EducationLevels, EducationSublevels, OrganizationTypes, 
 -- Critical screens for making a journal entry
-	Accounts
+	Roles
 	Agents, -- screen shows list of relations with Agents
 	Resources, -- screen for each ifrs type. Detail shows ResourceInstances
-	Roles
+	Accounts
 	Workflows, -- screen 
 	Documents, -- screen shows Lines, LineEntries, Signatures, StatesHistory(?)
 */
@@ -46,8 +46,13 @@ BEGIN -- reset Identities
 	DECLARE @UserId INT, @RowCount INT;
 
 	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = N'support@banan-it.com';
-
 	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
+
+	DECLARE @FunctionalCurrency NCHAR(3), @FunctionalCurrencyId INT;
+	SELECT @FunctionalCurrency = [FunctionalCurrency] FROM dbo.Settings;
+	SELECT @FunctionalCurrencyId = [Id] FROM dbo.[MeasurementUnits] WHERE [Name] = @FunctionalCurrency;
+	EXEC sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;
+
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 END
 
@@ -57,11 +62,11 @@ BEGIN TRY
 		:r .\02_Workflows.sql
 		:r .\03_MeasurementUnits.sql
 		:r .\04_IfrsConcepts.sql
-		--:r .\05_Agents.sql
-		:r .\06_Accounts.sql
+		:r .\05_Agents.sql
+		:r .\06_ResponsibilityCenters.sql
 		:r .\07_Resources.sql
-		:r .\08_ResponsibilityCenters.sql
-		:r .\10_JournalVouchers.sql
+		:r .\08_Accounts.sql
+		--:r .\10_JournalVouchers.sql
 
 		--:r .\71_Operations.sql
 		--:r .\72_ProductCategories.sql

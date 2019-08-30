@@ -9,7 +9,6 @@ AS
 	)
 	SELECT
 			[AccountId],
-			[ResponsibilityCenterId],
 			[ResourceId],
 			[InstanceId],
 			[BatchCode],
@@ -23,7 +22,6 @@ AS
 	WHERE [IfrsClassificationId] IN (SELECT Id FROM IfrsInventoryAccounts)
 	GROUP BY
 			[AccountId],
-			[ResponsibilityCenterId],
 			[ResourceId],
 			[InstanceId],
 			[BatchCode]
