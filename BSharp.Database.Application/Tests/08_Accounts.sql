@@ -22,8 +22,9 @@ INSERT INTO dbo.Accounts([Name], [Code], [IfrsClassificationId]) VALUES
 INSERT INTO dbo.Accounts([Name], [Code], [IfrsClassificationId], [AgentId]) VALUES
 (N'Noc Jimma', N'2102',  N'TradeAndOtherCurrentPayablesToTradeSuppliers', @NocJimma);
 
-INSERT INTO dbo.Accounts([Name], [Code], [IfrsClassificationId], [DefaultDebitIfrsEntryClassificationId], [ResponsibilityCenterId]) VALUES
-(N'fuel - HR', N'5101', N'AdministrativeExpense', N'TransportationExpense', N'TransportationExpense',@HR),
+INSERT INTO dbo.Accounts([Name], [Code], [IfrsClassificationId], [DefaultDebitIfrsEntryClassificationId],
+ [DefaultCreditIfrsEntryClassificationId], [ResponsibilityCenterId]) VALUES
+(N'fuel - HR', N'5101', N'AdministrativeExpense', N'TransportationExpense', N'TransportationExpense',@HROps),
 (N'fuel - Sales - admin - AG', N'5102', N'AdministrativeExpense', N'TransportationExpense', N'TransportationExpense', @SalesOpsAG),
 (N'fuel - Production', N'5103', N'AdministrativeExpense', N'TransportationExpense', N'TransportationExpense', @ProductionOps),
 (N'fuel - Sales - distribution - AG', N'5201', N'DistributionCosts', N'TransportationExpense', N'TransportationExpense', @SalesOpsAG)

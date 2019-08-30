@@ -8,8 +8,8 @@ BEGIN -- Inserting
 		(0,	'2017.01.05',	N'Purchase of hot and cold coils', N'Attachment');
 	INSERT INTO @L21([Index], [DocumentIndex],
 				[LineTypeId],				[SortKey]) VALUES
-		(0,0,	N'GoodReceiptInWithInvoice',	1),
-		(1,0,	N'GoodReceiptInWithInvoice',	2),
+		(0,0,	N'GoodReceiptWithInvoice',	1),
+		(1,0,	N'GoodReceiptWithInvoice',	2),
 		(2,0,	N'CashIssue',					1);
 	INSERT INTO @E21 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber],
 					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MoneyAmount],[Mass], [Value]) VALUES
@@ -25,8 +25,8 @@ BEGIN -- Inserting
 		(1,	'2017.01.06',	N'Purchase of fuel On Credit', N'Attachment');
 	INSERT INTO @L21([Index], [DocumentIndex],
 				[LineTypeId],				[SortKey]) VALUES
-		(3,1,	 N'GoodReceiptInWithInvoice', 1),
-		(4,1,	 N'GoodReceiptInWithInvoice', 2);
+		(3,1,	 N'GoodReceiptWithInvoice', 1),
+		(4,1,	 N'GoodReceiptWithInvoice', 2);
 
 	INSERT INTO @E21 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber],
 					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MoneyAmount],[Volume], [Value]) VALUES

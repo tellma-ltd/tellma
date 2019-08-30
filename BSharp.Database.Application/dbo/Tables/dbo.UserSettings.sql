@@ -2,7 +2,7 @@
 (
 	[UserId] INT, 
     [Key] NVARCHAR(255), 
-    [Value] NVARCHAR(4096) NOT NULL
+    [Value] NVARCHAR(MAX) NOT NULL
 	
 	 CONSTRAINT [PK_UserSettings] PRIMARY KEY CLUSTERED 
 	(

@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Users__SaveSettings]
 	@Key NVARCHAR(255),
-	@Value NVARCHAR(4096)
+	@Value NVARCHAR(MAX)
 AS
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 

@@ -66,7 +66,7 @@ BEGIN TRY
 		:r .\06_ResponsibilityCenters.sql
 		:r .\07_Resources.sql
 		:r .\08_Accounts.sql
-		--:r .\10_JournalVouchers.sql
+		:r .\10_JournalVouchers.sql
 
 		--:r .\71_Operations.sql
 		--:r .\72_ProductCategories.sql
