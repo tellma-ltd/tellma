@@ -4,15 +4,15 @@ import { WorkspaceService, MasterStatus } from './workspace.service';
 import { tap, exhaustMap, retry, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { DataWithVersion } from './dto/data-with-version';
-import { SettingsForClient } from './dto/settings';
-import { PermissionsForClient } from './dto/permission';
+import { SettingsForClient } from './entities/settings';
+import { PermissionsForClient } from './entities/permission';
 import { StorageService } from './storage.service';
 import {
   handleFreshPermissions, versionStorageKey,
   storageKey, SETTINGS_PREFIX, PERMISSIONS_PREFIX, USER_SETTINGS_PREFIX, handleFreshUserSettings, handleFreshSettings
 } from './tenant-resolver.guard';
 import { Router } from '@angular/router';
-import { UserSettingsForClient } from './dto/local-user';
+import { UserSettingsForClient } from './entities/user';
 import { OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './cleaner.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -83,7 +83,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     this.translationsApi = this.api.tranlationsApi(this.cancellationToken$).getForClient;
     this.settingsApi = this.api.settingsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
-    this.userSettingsApi = this.api.localUsersApi(this.cancellationToken$).getForClient;
+    this.userSettingsApi = this.api.usersApi(this.cancellationToken$).getForClient;
 
 
     // Monitor local storage for changes to translations

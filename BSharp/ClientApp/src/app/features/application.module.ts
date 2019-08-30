@@ -15,9 +15,9 @@ import { AgentsDetailsComponent } from './agents/agents-details.component';
 import { RolesMasterComponent } from './roles/roles-master.component';
 import { RolesImportComponent } from './roles/roles-import.component';
 import { RolesDetailsComponent } from './roles/roles-details.component';
-import { LocalUsersDetailsComponent } from './local-users/local-users-details.component';
-import { LocalUsersMasterComponent } from './local-users/local-users-master.component';
-import { LocalUsersImportComponent } from './local-users/local-users-import.component';
+import { UsersDetailsComponent } from './users/users-details.component';
+import { UsersMasterComponent } from './users/users-master.component';
+import { UsersImportComponent } from './users/users-import.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TenantResolverGuard } from '../data/tenant-resolver.guard';
 import { AuthGuard } from '../data/auth.guard';
@@ -88,17 +88,17 @@ const routes: Routes = [
       // Local Users
       {
         path: 'local-users',
-        component: LocalUsersMasterComponent,
+        component: UsersMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
         path: 'local-users/import',
-        component: LocalUsersImportComponent,
+        component: UsersImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
         path: 'local-users/:id',
-        component: LocalUsersDetailsComponent,
+        component: UsersDetailsComponent,
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
@@ -166,9 +166,9 @@ const routes: Routes = [
     RolesMasterComponent,
     RolesImportComponent,
     RolesDetailsComponent,
-    LocalUsersDetailsComponent,
-    LocalUsersMasterComponent,
-    LocalUsersImportComponent,
+    UsersDetailsComponent,
+    UsersMasterComponent,
+    UsersImportComponent,
     SettingsComponent,
     IfrsNotesMasterComponent,
     IfrsNotesDetailsComponent,

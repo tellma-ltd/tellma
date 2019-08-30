@@ -73,8 +73,8 @@
 <ng-template #header_TaxIdentificationNumber>{{ 'Agent_TaxIdentificationNumber' | translate }}</ng-template>
 <ng-template #row_TaxIdentificationNumber let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.TaxIdentificationNumber"> {{ c[id].TaxIdentificationNumber }} </b-restricted> </ng-template>
 
-<ng-template #header_Gender>{{ 'Agent_Gender' | translate }}</ng-template>
-<ng-template #row_Gender let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.Gender"> {{ genderLookup(c[id].Gender) | translate }}  </b-restricted></ng-template>
+<!-- <ng-template #header_Gender>{{ 'Agent_Gender' | translate }}</ng-template>
+<ng-template #row_Gender let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.Gender"> {{ genderLookup(c[id].Gender) | translate }}  </b-restricted></ng-template> -->
 
 <ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
 <ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }}</ng-template>
@@ -88,5 +88,5 @@
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
-<ng-template #male> {{ genderLookup('M') | translate }}</ng-template>
-<ng-template #female> {{ genderLookup('F') | translate }}</ng-template>
+<!-- <ng-template #male> {{ genderLookup('M') | translate }}</ng-template>
+<ng-template #female> {{ genderLookup('F') | translate }}</ng-template> -->

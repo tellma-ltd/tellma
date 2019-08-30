@@ -24,7 +24,7 @@ namespace BSharp.Data.Model
                 {
                     Id = 1,
                     Name = "Shard Manager",
-                    ConnectionString = ShardResolver.SHARD_MANAGER_PLACEHOLDER
+                    ConnectionString = ShardResolver.ADMIN_SERVER_PLACEHOLDER
                 });
         }
     }

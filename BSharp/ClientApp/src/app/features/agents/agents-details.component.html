@@ -88,12 +88,12 @@
   </b-form-group>
 
   <!-- Gender -->
-  <ng-container *ngIf="isIndividual">
+  <!-- <ng-container *ngIf="isIndividual">
     <b-form-group class="b-form-group" [label]="'Agent_Gender' | translate" [serverErrors]="model?.serverErrors?.Gender">
       <div *ngIf="!isEdit"><b-restricted [metadata]="model?.EntityMetadata?.Gender"> {{ genderLookup(model?.Gender) | translate }}</b-restricted></div>
       <b-selector *ngIf="isEdit" [(ngModel)]="model.Gender" [choices]="genderChoices" required></b-selector>
     </b-form-group>
-  </ng-container>
+  </ng-container> -->
 
   <!-- IsRelated -->
   <b-form-group class="b-form-group" [label]="'Agent_IsRelated' | translate" [serverErrors]="model?.serverErrors?.IsRelated">

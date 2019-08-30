@@ -3,13 +3,13 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/ro
 import { Observable, Subject, forkJoin, of } from 'rxjs';
 import { WorkspaceService, TenantWorkspace } from './workspace.service';
 import { StorageService } from './storage.service';
-import { SettingsForClient } from './dto/settings';
+import { SettingsForClient } from './entities/settings';
 import { ApiService } from './api.service';
 import { DataWithVersion } from './dto/data-with-version';
-import { PermissionsForClient } from './dto/permission';
+import { PermissionsForClient } from './entities/permission';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
 import { CanActivate } from '@angular/router';
-import { UserSettingsForClient } from './dto/local-user';
+import { UserSettingsForClient } from './entities/user';
 import { ProgressOverlayService } from './progress-overlay.service';
 
 export const SETTINGS_PREFIX = 'settings';
@@ -80,7 +80,7 @@ export class TenantResolverGuard implements CanActivate {
     this.settingsApi = settingsApi.getForClient;
     this.ping = settingsApi.ping;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
-    this.userSettingsApi = this.api.localUsersApi(this.cancellationToken$).getForClient;
+    this.userSettingsApi = this.api.usersApi(this.cancellationToken$).getForClient;
   }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> {

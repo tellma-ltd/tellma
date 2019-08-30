@@ -2,10 +2,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import {
   metadata, BooleanPropDescriptor,
   ChoicePropDescriptor, StatePropDescriptor, NumberPropDescriptor, propDescriptorImpl, dtoDescriptorImpl
-} from '~/app/data/dto/metadata';
+} from '~/app/data/entities/base/metadata';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
+import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 
 @Component({
   selector: 'b-switch',
@@ -53,7 +53,7 @@ export class SwitchComponent implements OnInit {
     return propDescriptorImpl(this.pathArray, this.baseCollection, this.subtype, this.ws.current, this.translate);
   }
 
-  private entity(meta: { meta: 0 | 1 | 2 } = null): DtoKeyBase {
+  private entity(meta: { meta: 0 | 1 | 2 } = null): EntityWithKey {
 
     if (!this.baseCollection) {
       throw new Error(`The baseCollection is not specified, therefore cannot retrieve the value`);

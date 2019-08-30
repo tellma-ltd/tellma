@@ -1,4 +1,5 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
+using BSharp.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

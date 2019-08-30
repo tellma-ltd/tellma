@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BSharp.Data.Model;
+using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,13 +13,13 @@ namespace BSharp.Areas.Identity.Pages.Account.Manage
 {
     public class ExternalLoginsModel : PageModel
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IStringLocalizer<ExternalLoginsModel> _localizer;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+        private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
+        private readonly IStringLocalizer _localizer;
 
         public ExternalLoginsModel(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager, IStringLocalizer<ExternalLoginsModel> localizer)
+            UserManager<EmbeddedIdentityServerUser> userManager,
+            SignInManager<EmbeddedIdentityServerUser> signInManager, IStringLocalizer<Strings> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;

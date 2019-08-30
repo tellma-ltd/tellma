@@ -1,16 +1,15 @@
 ﻿using BSharp.Data;
-using BSharp.Data.Model;
-using BSharp.Services.Sharding;
+using BSharp.Services.EmbeddedIdentityServer;
+using BSharp.Services.Utilities;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using static BSharp.Data.ApplicationContext;
 
 namespace BSharp
 {
@@ -20,7 +19,7 @@ namespace BSharp
         {
             var host = CreateWebHostBuilder(args).Build();
 
-            MigrateAndSeedDatabasesInDevelopment(host);
+            CreateAdministrator(host);
 
             host.Run();
         }
@@ -30,179 +29,51 @@ namespace BSharp
             .UseStartup<Startup>()
             .ConfigureLogging((hostingContext, logging) => logging.AddDebug());
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            CreateWebHostBuilder(args).Build();
-
-        /// <summary>
-        /// Migrates and seeds the database in development environment, 
-        /// calling this method in production doesn't do anything
-        /// </summary>
-        /// <param name="host"></param>
-        private static void MigrateAndSeedDatabasesInDevelopment(IWebHost host)
+        private static void CreateAdministrator(IWebHost host)
         {
-            // In development mode, apply migrations and seed the database
-            using (var scope = host.Services.CreateScope())
+            try
             {
-                var env = scope.ServiceProvider.GetRequiredService<IHostingEnvironment>();
-                if (env.IsDevelopment())
+                // If missing, the default admin user is added here
+                using (var scope = host.Services.CreateScope())
                 {
-                    try
+                    // (1) Retrieve the admin credentials from configurations
+                    var opt = scope.ServiceProvider.GetRequiredService<IOptions<GlobalOptions>>().Value;
+                    string email = opt?.Admin?.Email ?? "admin@bsharp.online";
+                    string fullName = opt?.Admin?.FullName ?? "Administrator";
+                    string password = opt?.Admin?.Password ?? "Admin@123";
+
+                    // (2) Create the user in the admin database
+                    var adminRepo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
+                    adminRepo.AdminUsers__CreateAdmin(email, fullName, password).Wait();
+
+                    // (3) Create the user in the embedded identity server (if enabled)
+                    if (opt.EmbeddedIdentityServerEnabled)
                     {
-                        string adminEmail = "support@banan-it.com";
-                        var idContext = scope.ServiceProvider.GetService<IdentityContext>();
-                        var userManager = scope.ServiceProvider.GetService<UserManager<User>>();
-                        string externalId = null;
-                        if (idContext != null && userManager != null)
+                        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<EmbeddedIdentityServerUser>>();
+                        var admin = userManager.FindByEmailAsync(email).GetAwaiter().GetResult();
+
+                        if (admin == null)
                         {
-                            idContext.Database.Migrate();
-                            var adminTask = userManager.FindByEmailAsync(adminEmail);
-                            adminTask.Wait();
-                            var admin = adminTask.Result;
-
-                            if (admin == null)
+                            admin = new EmbeddedIdentityServerUser
                             {
-                                admin = new User
-                                {
-                                    UserName = adminEmail,
-                                    Email = adminEmail,
-                                    EmailConfirmed = true
-                                };
-                                userManager.CreateAsync(admin, "Banan@123").Wait();
-                            }
-
-                            externalId = admin.Id;
-                        }
-
-
-                        int[] tenantIds = new[] { 101, 102 };
-
-                        // (1) Admin Context migrated the usual way, add one tenant for dev and all translations
-                        var adminContext = scope.ServiceProvider.GetRequiredService<AdminContext>();
-                        adminContext.Database.Migrate();
-                        if (!adminContext.Tenants.Any())
-                        {
-                            adminContext.Tenants.Add(new Tenant
-                            {
-                                Id = tenantIds[0],
-                                Name = "Contoso, Inc.",
-                                ShardId = 1
-                            });
-
-                            adminContext.Tenants.Add(new Tenant
-                            {
-                                Id = tenantIds[1],
-                                Name = "Fabrikam & Co.",
-                                ShardId = 1
-                            });
-
-                            adminContext.SaveChanges();
-                        }
-
-                        var globalUser = adminContext.GlobalUsers.FirstOrDefault(e => e.Email == adminEmail);
-                        if (globalUser == null)
-                        {
-                            globalUser = new GlobalUser
-                            {
-                                Email = adminEmail,
-                                ExternalId = externalId,
+                                UserName = email,
+                                Email = email,
+                                EmailConfirmed = true
                             };
 
-                            globalUser.Memberships = new List<TenantMembership> {
-                                new TenantMembership {  TenantId = tenantIds[0] }
-                            };
-
-                            adminContext.GlobalUsers.Add(globalUser);
-                            adminContext.SaveChanges();
+                            var result = userManager.CreateAsync(admin, password).GetAwaiter().GetResult();
+                            if (!result.Succeeded)
+                            {
+                                string msg = string.Join(", ", result.Errors.Select(e => e.Description));
+                                throw new Exception($"Failed to create the administrator account. Message: {msg}");
+                            }
                         }
-
-                        // Translations are seeded here for a better development experience since they change 
-                        // frequently, in the future this seeding will be moved to migrations instead
-                        adminContext.Database.ExecuteSqlCommand("DELETE FROM [dbo].[Translations]");
-
-                        adminContext.Translations.AddRange(Translation.TRANSLATIONS);
-                        adminContext.SaveChanges();
-
-                        // To trigger the client to refresh
-                        adminContext.Database.ExecuteSqlCommand("UPDATE [dbo].[Cultures] SET TranslationsVersion = NEWID()");
-
-                        foreach (var tenantId in tenantIds.Take(1))
-                        {
-                            // (2) Application Context requires special handling in development, don't resolve it with DI
-                            var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
-                            var appContext = new ApplicationContext(shardResolver,
-                                new DesignTimeTenantIdProvider(tenantId),
-                                new DesignTimeUserIdProvider(),
-                                new DesignTimeTenantUserInfoAccessor());
-
-                            appContext.Database.Migrate();
-
-
-                            // Add the views
-                            appContext.Database.ExecuteSqlCommand($"DELETE FROM [dbo].[Views] WHERE TenantId = {tenantId}");
-                            string[] viewIds = { "measurement-units", "individuals", "organizations", "roles", "local-users", "views", "settings" };
-
-                            foreach (var viewId in viewIds)
-                            {
-                                var view = new View
-                                {
-                                    Id = viewId,
-                                    IsActive = true
-                                };
-
-                                appContext.Views.Add(view);
-                                appContext.Entry(view).Property("TenantId").CurrentValue = tenantId;
-                            }
-
-                            // Add settings
-                            var now = DateTimeOffset.Now;
-                            if (!appContext.Settings.Any())
-                            {
-                                // Add the settings
-                                var settings = new Settings
-                                {
-                                    PrimaryLanguageId = "en",
-                                    SecondaryLanguageId = "ar",
-                                    PrimaryLanguageSymbol = "En",
-                                    SecondaryLanguageSymbol = "ع",
-                                    ShortCompanyName2 = "كونتوسو المحدودة",
-                                    ProvisionedAt = now,
-                                    ModifiedAt = now,
-                                    ModifiedById = 1,
-                                    ShortCompanyName = "Contoso, Inc."
-                                };
-                                appContext.Settings.Add(settings);
-                                appContext.Entry(settings).Property("TenantId").CurrentValue = tenantId;
-                            }
-
-                            appContext.SaveChanges();
-
-
-                            // Add first user
-                            try
-                            {
-                                var cmd = appContext.Database.GetDbConnection().CreateCommand();
-                                appContext.Database.ExecuteSqlCommand(
-                                    @"
-DECLARE @NextId INT = IDENT_CURRENT('[dbo].[LocalUsers]') + 1;
-INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, Name2, CreatedById, ModifiedById, TenantId)
-                            VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, {5})",
-                                    adminEmail, // {0}
-                                    externalId, // {1}
-                                    now, // {2}
-                                    "Banan IT Support", // {3}
-                                    "فريق مساندة بنان",
-                                    tenantId); // {4}
-
-                            }
-                            catch { }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                        logger.LogError(ex, "An error occurred while migrating or seeding the databases.");
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Startup.GlobalError = $"{ex.GetType().Name}: {ex.Message}";
             }
         }
     }

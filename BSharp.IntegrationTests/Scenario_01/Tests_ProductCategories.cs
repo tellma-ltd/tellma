@@ -1,4 +1,5 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
+using BSharp.Entities;
 using BSharp.IntegrationTests.Utilities;
 using BSharp.Services.Utilities;
 using System.Collections.Generic;
@@ -69,7 +70,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Prepare a well formed entity
             var dtoForSave = new ProductCategoryForSave
             {
-                EntityState = "Inserted",
                 Name = "All",
                 Name2 = "الجميع",
                 Name3 = "tout",
@@ -92,7 +92,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal("ProductCategory", responseData.CollectionName);
 
             var responseDto = responseData.Result.FirstOrDefault();
-            Assert.NotNull(responseDto?.Id);
+            Assert.NotEqual(0, responseDto.Id);
             Assert.Equal(dtoForSave.Name, responseDto.Name);
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
             Assert.Equal(dtoForSave.Name3, responseDto.Name3);
@@ -135,7 +135,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             var list = new List<ProductCategoryForSave> {
                 new ProductCategoryForSave
                 {
-                    EntityState = "Inserted",
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Name3 = "Another Name",
@@ -170,7 +169,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             // trailing spaces in some string properties
             var dtoForSave = new ProductCategoryForSave
             {
-                EntityState = "Inserted",
                 Name = "  Personal Care", // Leading space
                 Name2 = "العناية الشخصية",
                 Name3 = "soins personnels",
@@ -185,7 +183,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.FirstOrDefault();
 
             // Confirm the entity was saved
-            Assert.NotNull(responseDto.Id);
+            Assert.NotEqual(0, responseDto.Id);
 
             // Confirm that the leading and trailing spaces have been trimmed
             Assert.Equal(dtoForSave.Name?.Trim(), responseDto.Name);
@@ -201,7 +199,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<ProductCategory>("ProductCategory_pc");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             // Query the delete API
             var msg = new HttpRequestMessage(HttpMethod.Delete, $"/api/product-categories");
@@ -218,7 +216,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<ProductCategory>("ProductCategory_pc");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
             var getResponse = await _client.GetAsync($"/api/product-categories/{id}");
@@ -234,7 +232,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<ProductCategory>("ProductCategory_all");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             // Call the API
             var response = await _client.PutAsJsonAsync($"/api/product-categories/deactivate", new List<int>() { id });
@@ -258,7 +256,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<ProductCategory>("ProductCategory_all");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             // Call the API
             var response = await _client.PutAsJsonAsync($"/api/product-categories/activate", new List<int>() { id });
@@ -282,7 +280,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<ProductCategory>("ProductCategory_all");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             var response = await _client.GetAsync($"/api/product-categories/{id}?select=Name");
 

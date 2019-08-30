@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using BSharp.Data.Model;
-using BSharp.Services.Email;
+﻿using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace BSharp.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IStringLocalizer<IndexModel> _localizer;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+        private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
+        private readonly IStringLocalizer _localizer;
 
         public IndexModel(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
-            IStringLocalizer<IndexModel> localizer)
+            UserManager<EmbeddedIdentityServerUser> userManager,
+            SignInManager<EmbeddedIdentityServerUser> signInManager,
+            IStringLocalizer<Strings> localizer)
         {
             _userManager = userManager;
             _signInManager = signInManager;

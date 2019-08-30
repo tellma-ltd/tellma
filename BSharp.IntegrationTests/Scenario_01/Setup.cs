@@ -1,4 +1,5 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
+using BSharp.Entities;
 using BSharp.IntegrationTests.Utilities;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -41,13 +42,11 @@ namespace BSharp.IntegrationTests.Scenario_01
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Role>>();
             var role = getByIdResponse.Result;
 
-            role.EntityState = "Updated";
             role.Permissions.Add(new Permission
             {
                 ViewId = viewId,
                 Action = level,
-                Criteria = criteria,
-                EntityState = "Inserted"
+                Criteria = criteria
             });
 
 

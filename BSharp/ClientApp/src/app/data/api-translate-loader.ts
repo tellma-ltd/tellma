@@ -6,6 +6,8 @@ import { ApiService } from './api.service';
 import { saveTranslationsInStorage, translationStorageKey } from './root-http-interceptor';
 import { ProgressOverlayService } from './progress-overlay.service';
 
+// TODO: Remove
+
 // A custom loader for ngx-translate that loads the translation from the API
 export class ApiTranslateLoader implements TranslateLoader {
 

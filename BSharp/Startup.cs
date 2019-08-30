@@ -1,37 +1,50 @@
-using AutoMapper;
-using BSharp.Controllers.Misc;
-using BSharp.Data;
-using BSharp.Services.EmbeddedIdentityServer;
-using BSharp.Services.Migrations;
+﻿using BSharp.Controllers;
 using BSharp.Services.ModelMetadata;
-using BSharp.Services.SqlLocalization;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Globalization;
-using System.Reflection;
 
 namespace BSharp
 {
     public class Startup
     {
+        // The UI cultures currently supported by the system
+        public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar" };
+
         private readonly IConfiguration _config;
         private readonly IHostingEnvironment _env;
 
+        /// <summary>
+        /// If there is an error in <see cref="ConfigureServices(IServiceCollection)"/>, usually
+        /// due to a required configuration value that was not provided, the error message is recorded
+        /// here. If the middlewhere finds this error it returns it immediately as plaintext and ignores
+        /// everything else. This is a convenient way to report configuration errors
+        /// </summary>
+        public string ConfigurationError { get; private set; }
+
+        /// <summary>
+        /// If there is an error when starting up the application, or seeding the database etc.
+        /// It is added here, and served as plain text to any web request
+        /// </summary>
+        public static string GlobalError { get; set; }
+
+        /// <summary>
+        /// Used in both <see cref="ConfigureServices(IServiceCollection)"/> and <see cref="Configure(IApplicationBuilder)"/>
+        /// </summary>
+        public GlobalOptions GlobalOptions { get; private set; }
+
+        /// <summary>
+        /// Create a new instance of <see cref="Startup"/>
+        /// </summary>
         public Startup(IConfiguration config, IHostingEnvironment env)
         {
             _config = config;
@@ -42,196 +55,247 @@ namespace BSharp
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // For some reason the integration tests are calling configure services 
-            // twice, which is causing exceptions, this is a workaround until we
-            // figure out the reason
-            if (_alreadyConfigured)
+            try
             {
-                return;
-            }
-            else
-            {
-                _alreadyConfigured = true;
-            }
-
-            // Global configurations maybe used in many places
-            services.Configure<GlobalConfiguration>(_config);
-
-            // Register the admin context
-            services.AddDbContext<AdminContext>(builder =>
-                builder.UseSqlServer(_config.GetConnectionString(Constants.AdminConnection))
-                .ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>());
-
-
-            // The application context contains the shardlets, and unlike the other contexts it acquires its connection
-            // string dynamically using IShardResolver when it is constructed, therefore this context cannot be
-            // be registered in the DI the usual way with AddDbContext<T>()
-            services.AddScoped<ApplicationContext>();
-
-            // Add all our custom services
-            services.AddMultiTenancy();
-            services.AddSharding();
-            services.AddBlobService(_config);
-            services.AddSqlLocalization(_config);
-            services.AddDynamicModelMetadata();
-            services.AddGlobalSettingsCache(_config);
-            services.AddOData();
-
-            // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
-            services.AddEmbeddedIdentityServerIfEnabled(_config, _env);
-
-            // Add services for authenticating API calls against an OIDC authority, and helper services for accessing claims
-            services.AddApiAuthentication(_config);
-
-            // Register MVC using the most up to date version
-            services.AddMvc(opt =>
-            {
-                // This filter checks version headers (e.g. x-translations-version) supplied by the client and efficiently
-                // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
-                opt.Filters.Add(typeof(CheckGlobalVersionsFilter));
-            })
-                .AddViewLocalization()
-                .AddDataAnnotationsLocalization()
-                .AddJsonOptions(options =>
+                // For some reason the integration tests are calling configure services 
+                // twice, which is causing exceptions, this is a workaround until we
+                // figure out the reason
+                if (_alreadyConfigured)
                 {
-                    // The JSON options below instruct the serializer to keep property names in PascalCase, 
-                    // even though this violates convention, it makes a few things easier since both client and server
-                    // sides get to see and communicate identical property names, for example 'api/customers?orderby='Name'
-                    options.SerializerSettings.ContractResolver = new DefaultContractResolver
-                    {
-                        NamingStrategy = new DefaultNamingStrategy(),
-                    };
-                    // To reduce response size, some of the DTOs we use are humongously wide
-                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-
-                // TODO: Only when using embedded identity
-                .AddRazorPagesOptions(opt =>
+                    return;
+                }
+                else
                 {
-                    opt.AllowAreas = true;
-                    opt.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
-                    opt.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+                    _alreadyConfigured = true;
+                }
 
+                // Global configurations maybe used in many places
+                services.Configure<GlobalOptions>(_config);
+                GlobalOptions = _config.Get<GlobalOptions>();
+
+                // Access to caller information
+                services.AddClientInfo();
+
+                // Register the admin repo
+                var connString = _config.GetConnectionString(Constants.AdminConnection);
+                services.AddAdminRepository(connString);
+
+                // Custom services
+                services.AddMultiTenancy();
+                services.AddSharding();
+
+                // The application repository contains the tenant specific data, it acquires the
+                // connection string dynamically, therefore it depends on multitenancy and sharding
+                services.AddApplicationRepository();
+
+                // More custom services
+                services.AddBlobService(_config);
+                services.AddDynamicModelMetadata();
+                services.AddGlobalSettingsCache(_config.GetSection("GlobalSettingsCache"));
+
+                // Add the default localization that relies on resource files in /Resources
+                services.AddLocalization(opt =>
+                {
+                    opt.ResourcesPath = "Resources";
                 });
 
-            // TODO: Only when using embedded identity
-            services.ConfigureApplicationCookie(opt =>
-            {
-                opt.ExpireTimeSpan = TimeSpan.FromDays(Constants.TokenExpiryInDays);
-                opt.SlidingExpiration = true;
-                opt.LoginPath = $"/identity/sign-in";
-                opt.LogoutPath = $"/identity/sign-out";
-                opt.AccessDeniedPath = $"/identity/access-denied";
-            });
-
-            // TODO: Only when using embedded identity
-            services.AddEmail(_config.GetSection("Email"));
-
-            // To allow a client that is hosted on another server
-            services.AddCors();
-
-            // Configure some custom behavior for API controllers
-            services.Configure<ApiBehaviorOptions>(opt =>
-            {
-                // This overrides the default behavior, when there are validation
-                // errors we return a 422 unprocessable entity, instead of the default
-                // 400 bad request, this makes it easier for clients to distinguish 
-                // such kind of errors and handle them in a special way, for example:
-                // by showing them on the fields with a red color
-                opt.InvalidModelStateResponseFactory = ctx =>
+                // Register MVC using the most up to date version
+                var mvcBuilder = services.AddMvc(opt =>
                 {
-                    return new UnprocessableEntityObjectResult(ctx.ModelState);
-                };
-            });
+                    // This filter checks version headers (e.g. x-translations-version) supplied by the client and efficiently
+                    // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
+                    opt.Filters.Add(typeof(CheckGlobalVersionsFilter));
+                })
+                    .AddDataAnnotationsLocalization(opt =>
+                    {
+                        // This allows us to have a single RESX file for all classes and namespaces
+                        opt.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(Strings));
+                    })
+                    .AddJsonOptions(opt =>
+                    {
+                        // The JSON options below instruct the serializer to keep property names in PascalCase, 
+                        // even though this violates convention, it makes a few things easier since both client and server
+                        // sides get to see and communicate identical property names, for example 'api/customers?orderby='Name'
+                        opt.SerializerSettings.ContractResolver = new DefaultContractResolver
+                        {
+                            NamingStrategy = new DefaultNamingStrategy(),
+                        };
 
-            // In production, the Angular files will be served from this directory
-            services.AddSpaStaticFiles(opt =>
+                        // To reduce response size, since some of the Entities we use are humongously wide
+                        // and the API allows selecting a small subset of the columns
+                        opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    })
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+                // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
+                if (GlobalOptions.EmbeddedIdentityServerEnabled)
+                {
+                    var idServerConfig = _config.GetSection("EmbeddedIdentityServer");
+                    var clientAppsConfig = _config.GetSection(nameof(Services.Utilities.GlobalOptions.ClientApplications));
+
+                    services.AddEmbeddedIdentityServer(
+                        configSection: idServerConfig,
+                        clientsConfigSection: clientAppsConfig,
+                        mvcBuilder: mvcBuilder,
+                        isDevelopment: _env.IsDevelopment());
+                }
+
+                // Add services for authenticating API calls against an OIDC authority, and helper services for accessing claims
+                var apiAuthConfig = _config.GetSection("ApiAuthentication");
+                services.AddApiAuthentication(apiAuthConfig);
+
+                // Add Email
+                services.AddEmail(_config.GetSection("Email"));
+
+                // Configure some custom behavior for API controllers
+                services.Configure<ApiBehaviorOptions>(opt =>
+                {
+                    // This overrides the default behavior, when there are validation
+                    // errors we return a 422 unprocessable entity, instead of the default
+                    // 400 bad request, this makes it easier for clients to distinguish 
+                    // such kinds of errors and handle them in a special way, for example:
+                    // by showing them on the fields with a red color
+                    opt.InvalidModelStateResponseFactory = ctx =>
+                        {
+                            return new UnprocessableEntityObjectResult(ctx.ModelState);
+                        };
+                });
+
+                // Embedded Client Application
+                if (GlobalOptions.EmbeddedClientApplicationEnabled)
+                {
+                    services.AddSpaStaticFiles(opt =>
+                    {
+                        // In production, the Angular files will be served from this directory
+                        opt.RootPath = "ClientApp/dist";
+                    });
+                }
+
+                // Giving access to clients that are hosted on another domain
+                services.AddCors();
+            }
+            catch (Exception ex)
             {
-                opt.RootPath = "ClientApp/dist";
-            });
+                // The configuration encountered a fatal error, usually a required yet missing configuration
+                // Setting this property instructs the middleware to short-circuit and just return this error in plain text                
+                ConfigurationError = ex.Message;
 
-            // AutoMapper https://automapper.org/
-            services.AddAutoMapper(typeof(Startup).Assembly); // Otherwise unit tests don't run
-
+            }
         }
 
-        public void Configure(IApplicationBuilder app, ILogger<Startup> logger, IServiceProvider services)
+        public void Configure(IApplicationBuilder app)
         {
-            var globalConfig = services.GetService<IOptions<GlobalConfiguration>>()?.Value;
-            var localizationConfig = services.GetService<IOptions<SqlLocalizationConfiguration>>()?.Value;
-            var clientStoreConfig = services.GetService<IOptions<ClientStoreConfiguration>>()?.Value;
-
-            if (_env.IsDevelopment())
+            try
             {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
+                // Configuration Errors
+                app.Use(async (context, next) =>
+                {
+                    string error = ConfigurationError ?? GlobalError;
+                    if (error != null)
+                    {
+                    // This means the application was not configured correctly and should not be running
+                    // We cut the pipeline short and report the error message in plain text
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                        await context.Response.WriteAsync(error);
+                    }
+                    else
+                    {
+                    // All is good, continue the normal pipeline
+                    await next.Invoke();
+                    }
+                });
 
-            // Picks out the culture from the request string and sets it in the current thread
-            app.UseRequestLocalization(opt =>
-            {
-                var defaultUICulture = localizationConfig?.DefaultUICulture ?? "en";
-                var defaultCulture = localizationConfig?.DefaultCulture ?? "en-GB";
+                // Regular Errors
+                if (_env.IsDevelopment())
+                {
+                    app.UseDeveloperExceptionPage();
+                }
+                else
+                {
+                    app.UseExceptionHandler("/Error");
+                    app.UseHsts();
+                }
 
-                opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUICulture);
+                // Localization
+                // Extract the culture from the request string and set it in the execution thread
+                var defaultUiCulture = GlobalOptions.Localization?.DefaultUICulture ?? "en";
+                var defaultCulture = GlobalOptions.Localization?.DefaultCulture ?? "en-GB";
+                app.UseRequestLocalization(opt =>
+                {
+                // When no culture is specified in the request, use these
+                opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUiCulture);
 
                 // Formatting numbers, dates, etc.
                 opt.AddSupportedCultures(defaultCulture);
 
-                // UI strings that we have localized.
-                opt.SupportedUICultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
-            });
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
-            // CORS
-            string webClientUri = clientStoreConfig?.WebClientUri.WithoutTrailingSlash();
-            if (!string.IsNullOrWhiteSpace(webClientUri))
-            {
-                app.UseCors(builder =>
-                {
-                    builder.WithOrigins(webClientUri)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .WithExposedHeaders("x-image-id")
-                    .WithExposedHeaders("x-settings-version")
-                    .WithExposedHeaders("x-permissions-version")
-                    .WithExposedHeaders("x-user-settings-version")
-                    .WithExposedHeaders("x-translations-version")
-                    .WithExposedHeaders("x-global-settings-version");
+                // UI strings that we have localized
+                opt.AddSupportedUICultures(SUPPORTED_CULTURES);
                 });
-            }
 
-            // Serves the identity server
-            if (globalConfig.EmbeddedIdentityServerEnabled)
-            {
-                app.UseIdentityServer();
-            }
+                app.UseHttpsRedirection();
+                app.UseStaticFiles();
 
-            // Serves the API
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
-            });
-
-            // Serves the Angular client
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
-                if (_env.IsDevelopment())
+                if (GlobalOptions.EmbeddedClientApplicationEnabled)
                 {
-                    spa.UseAngularCliServer(npmScript: "start");
+                    app.UseSpaStaticFiles();
                 }
-            });
+
+                // CORS
+                string webClientUri = GlobalOptions.ClientApplications?.WebClientUri.WithoutTrailingSlash();
+                if (!string.IsNullOrWhiteSpace(webClientUri))
+                {
+                    // If a web client is listed in the configurations, add it to CORS
+                    app.UseCors(builder =>
+                    {
+                        builder.WithOrigins(webClientUri)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithExposedHeaders("x-image-id")
+                        .WithExposedHeaders("x-settings-version")
+                        .WithExposedHeaders("x-permissions-version")
+                        .WithExposedHeaders("x-user-settings-version")
+                        .WithExposedHeaders("x-global-settings-version");
+                    });
+                }
+
+                // IdentityServer
+                if (GlobalOptions.EmbeddedIdentityServerEnabled)
+                {
+                    app.UseEmbeddedIdentityServer();
+                }
+
+                // The API
+                app.UseMvc(routes =>
+                {
+                    routes.MapRoute(
+                        name: "default",
+                        template: "{controller}/{action=Index}/{id?}");
+                });
+
+                // The Angular client
+                if (GlobalOptions.EmbeddedClientApplicationEnabled)
+                {
+                    app.UseSpa(spa =>
+                    {
+                        spa.Options.SourcePath = "ClientApp";
+                        if (_env.IsDevelopment())
+                        {
+                            spa.UseAngularCliServer(npmScript: "start");
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // The configuration encountered a fatal error, usually a required yet missing configuration
+                // Setting this property instructs the middleware to short-circuit and just return this error in plain text
+                ConfigurationError = ex.Message;
+            }
         }
     }
+
+    /// <summary>
+    /// Only here to allow us to have a single shared resource file, as per the official docs https://bit.ly/2Z1fH0k
+    /// </summary>
+    public class Strings { }
 }

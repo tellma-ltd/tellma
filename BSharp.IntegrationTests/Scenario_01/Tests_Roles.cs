@@ -1,4 +1,5 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
+using BSharp.Entities;
 using BSharp.IntegrationTests.Utilities;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +56,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Prepare a well formed entity
             var dtoForSave = new RoleForSave
             {
-                EntityState = "Inserted",
                 Name = "Sales Manager",
                 Name2 = "مدير المبيعات",
                 Code = "SM",
@@ -64,13 +64,11 @@ namespace BSharp.IntegrationTests.Scenario_01
                 {
                     new PermissionForSave
                     {
-                        EntityState = "Inserted",
                         ViewId = "individuals",
                         Action = "Read"
                     },
                     new PermissionForSave
                     {
-                        EntityState = "Inserted",
                         ViewId = "organizations",
                         Action = "Update"
                     }
@@ -79,7 +77,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 {
                     new RoleMembershipForSave
                     {
-                        EntityState = "Inserted",
                         UserId = 1,
                         Memo = "So Good"
                     }
@@ -112,13 +109,13 @@ namespace BSharp.IntegrationTests.Scenario_01
                     {
                         Assert.Equal(dtoForSave.Permissions[0].Action, p.Action);
                         Assert.Equal(dtoForSave.Permissions[0].ViewId, p.ViewId);
-                        Assert.NotNull(p.Id);
+                        Assert.NotEqual(0, p.Id);
                     },
                     p =>
                     {
                         Assert.Equal(dtoForSave.Permissions[1].Action, p.Action);
                         Assert.Equal(dtoForSave.Permissions[1].ViewId, p.ViewId);
-                        Assert.NotNull(p.Id);
+                        Assert.NotEqual(0, p.Id);
                     }
                 );
 
@@ -127,7 +124,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                     {
                         Assert.Equal(dtoForSave.Members[0].UserId, m.UserId);
                         Assert.Equal(dtoForSave.Members[0].Memo, m.Memo);
-                        Assert.NotNull(m.Id);
+                        Assert.NotEqual(0, m.Id);
                     }
                 );
 
@@ -161,13 +158,13 @@ namespace BSharp.IntegrationTests.Scenario_01
                     {
                         Assert.Equal(entity.Permissions[0].Action, p.Action);
                         Assert.Equal(entity.Permissions[0].ViewId, p.ViewId);
-                        Assert.NotNull(p.Id);
+                        Assert.NotEqual(0, p.Id);
                     },
                     p =>
                     {
                         Assert.Equal(entity.Permissions[1].Action, p.Action);
                         Assert.Equal(entity.Permissions[1].ViewId, p.ViewId);
-                        Assert.NotNull(p.Id);
+                        Assert.NotEqual(0, p.Id);
                     }
                 );
 
@@ -177,7 +174,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                     {
                         Assert.Equal(entity.Members[0].UserId, m.UserId);
                         Assert.Equal(entity.Members[0].Memo, m.Memo);
-                        Assert.NotNull(m.Id);
+                        Assert.NotEqual(0, m.Id);
                     }
                 );
         }
@@ -189,7 +186,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Prepare a unit with the same code as one that has been saved already
             var dtoForSave = new RoleForSave
             {
-                EntityState = "Inserted",
                 Name = "HR Manager",
                 Name2 = "مدير الموارد البشرية",
                 Code = "HR",
@@ -198,7 +194,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 {
                     new PermissionForSave
                     {
-                        EntityState = "Inserted",
                         ViewId = "DoesntExist", // Doesn't exist
                         Action = "Read"
                     }
@@ -235,12 +230,10 @@ namespace BSharp.IntegrationTests.Scenario_01
             var dto = (await response1.Content.ReadAsAsync<GetByIdResponse<Role>>()).Result;
 
             // Modify it slightly
-            dto.EntityState = "Updated";
-            dto.Permissions[0].Action = "Create";
-            dto.Permissions[0].EntityState = "Updated";
-            dto.Permissions[1].EntityState = "Deleted";
+            dto.Permissions[0].Action = "Update";
+            dto.Permissions.RemoveAt(1);
 
-            dto.Members[0].EntityState = "Deleted";
+            dto.Members.RemoveAt(0);
 
             // Save it and get the result back
             var dtosForSave = new List<Role> { dto };
@@ -270,7 +263,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3006()
         {
             // Get the Id
-            var id = _shared.GetItem<Role>("Role_SalesManager").Id.Value;
+            var id = _shared.GetItem<Role>("Role_SalesManager").Id;
 
             // Call the API
             var response = await _client.PutAsJsonAsync($"{rolesURL}/deactivate", new List<int>() { id });
@@ -293,7 +286,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3007()
         {
             // Get the Id
-            var id = _shared.GetItem<Role>("Role_SalesManager").Id.Value;
+            var id = _shared.GetItem<Role>("Role_SalesManager").Id;
 
             // Call the API
             var response = await _client.PutAsJsonAsync($"{rolesURL}/activate", new List<int>() { id });
@@ -316,7 +309,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3008()
         {
             // Get the Id
-            var id = _shared.GetItem<Role>("Role_SalesManager").Id.Value;
+            var id = _shared.GetItem<Role>("Role_SalesManager").Id;
 
             // Query the delete API
             var msg = new HttpRequestMessage(HttpMethod.Delete, rolesURL);
@@ -332,7 +325,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3009()
         {
             // Get the Id
-            var id = _shared.GetItem<Role>("Role_SalesManager").Id.Value;
+            var id = _shared.GetItem<Role>("Role_SalesManager").Id;
 
             // Verify that the id was deleted by calling get        
             var getResponse = await _client.GetAsync($"{rolesURL}/{id}");

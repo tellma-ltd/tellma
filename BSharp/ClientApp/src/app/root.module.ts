@@ -5,9 +5,9 @@ import { RootRoutingModule, PlaceholderComponent } from './root-routing.module';
 import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { apiTranslateLoaderFactory } from './data/api-translate-loader';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import { WorkspaceService } from './data/workspace.service';
 import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { StorageService } from './data/storage.service';
@@ -33,6 +33,11 @@ import { ErrorComponent } from './features/error/error.component';
 library.add(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronRight,
    faSyncAlt, faSearch, faCube, faCogs, faHands, faSignInAlt, faExclamationTriangle, faHome, faRedoAlt);
 
+   // AoT requires an exported function for factories
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
+
 @NgModule({
   declarations: [
     RootComponent,
@@ -54,8 +59,8 @@ library.add(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronR
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: apiTranslateLoaderFactory,
-        deps: [ApiService, ProgressOverlayService, StorageService]
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
       }
     }),
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })

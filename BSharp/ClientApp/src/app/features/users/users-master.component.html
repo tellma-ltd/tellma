@@ -1,0 +1,71 @@
+<b-master collection="User" viewId="users"
+  [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
+  [tableDescriptionColumnTemplate]="descriptionColumn"
+  selectDefault="Email,State,LastAccess,IsActive" selectForTiles="ImageId,Email,State"
+  [multiselectActions]="[
+            { template : activate, action: onActivate, requiresUpdatePermission: true },
+            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedById eq me'}
+            ],
+            'ExternalId' : [
+              { template: new, expression: 'ExternalId eq null'},
+              { template: confirmed, expression: 'ExternalId ne null'}
+            ],
+            'ImageId' : [
+              { template: withPicture, expression: 'ImageId ne null'},
+              { template: withoutPicture, expression: 'ImageId eq null'}
+            ]
+          }">
+</b-master>
+
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <div class="d-flex">
+    <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
+    <div class="border b-dp-wrapper2">
+      <b-image [src]="'users/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></b-image>
+    </div>
+    &nbsp;&nbsp;&nbsp;
+  </ng-container>
+    <div class="flex-grow-1 d-inline-block b-mw-0">
+      <div class="d-flex justify-content-between">
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('User', id, 'Name') }}</span>
+      </div>
+      <div class="d-flex justify-content-between mt-1 small">
+        <b-restricted [metadata]="c[id].EntityMetadata?.Email"><span class="text-truncate">{{ c[id].Email }}</span></b-restricted>
+        <ng-container *ngTemplateOutlet="stateTemplate; context: { id: id }"></ng-container>
+      </div>
+    </div>
+  </div>
+
+</ng-template>
+
+
+<!-- Description Column -->
+<ng-template #descriptionColumn let-id="id">
+    <span class="text-truncate">{{ ws.getMultilingualValue('User', id, 'Name') }}</span>
+</ng-template>
+
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+
+<ng-template #new> {{ 'User_New' | translate }} </ng-template>
+<ng-template #confirmed> {{ 'User_Confirmed' | translate }} </ng-template>
+
+<ng-template #withPicture> {{ 'WithPicture' | translate }} </ng-template>
+<ng-template #withoutPicture> {{ 'WithoutPicture' | translate }} </ng-template>
+
+
+<!-- Templeate for a colorful state -->
+<ng-template #stateTemplate let-id="id">
+  <b-switch baseCollection="User" path="State" [entityId]="id"></b-switch>
+</ng-template>

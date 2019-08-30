@@ -21,7 +21,7 @@
       <!-- Body -->
       <tbody>
         <ng-container *cdkVirtualFor="let item of dataSourceCopy; let i = index; trackBy: trackBy">
-          <tr style="height:31px" *ngIf="item.EntityState !== 'Deleted' || item.PH">
+          <tr style="height:31px">
             <td class="text-muted">
               <div class="text-center">
                 <span *ngIf="!item.PH"> {{ i + 1 | number }} </span>
@@ -37,18 +37,6 @@
               <button class="btn btn-light text-primary b-white-button btn-sm p-0 pl-1 pr-1" (click)="onDeleteLine(i)"
                 *ngIf="isEdit">
                 <fa-icon icon="trash" [class.b-transparent]="item.PH" [title]="item.PH ? '' : ('Delete' | translate)"></fa-icon>
-              </button>
-            </td>
-          </tr>
-
-          <tr style="height:31px" *ngIf="item.EntityState === 'Deleted' && !item.PH">
-            <td colspan="1000">&nbsp;&nbsp;
-              <span class="font-italic font-weight-light text-muted">
-                {{ 'Deleted' | translate }}
-              </span>&nbsp;&nbsp;
-              <button class="btn btn-light text-primary b-white-button btn-sm p-0 pl-1 pr-1" [title]="'UndoDelete' | translate"
-                (click)="onUndoDelete(i)">
-                <fa-icon icon="undo"></fa-icon>
               </button>
             </td>
           </tr>

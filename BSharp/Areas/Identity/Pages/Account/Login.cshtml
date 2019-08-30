@@ -2,8 +2,8 @@
 
 @using Microsoft.Extensions.Options
 @using BSharp.Services.Utilities
-@inject IViewLocalizer Localizer
-@inject IOptions<GlobalConfiguration> Config
+@inject IHtmlLocalizer<Strings> Localizer
+@inject IOptions<GlobalOptions> Config
 @model LoginModel
 
 @{
@@ -37,7 +37,7 @@
                     <i class="fas fa-sign-in-alt @(CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "fa-flip-horizontal": "")"></i>&nbsp;&nbsp;@Localizer["SignIn"]
                 </button>
             </div>
-            @if (Config.Value.Online)
+            @if (Config.Value.EmailEnabled)
             {
                 <div class="form-group">
                     <p>

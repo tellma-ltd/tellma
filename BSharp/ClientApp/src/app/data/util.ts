@@ -1,7 +1,7 @@
 import { EntitiesResponse } from './dto/get-response';
 import { WorkspaceService } from './workspace.service';
 import { GetByIdResponse } from './dto/get-by-id-response';
-import { DtoKeyBase } from './dto/dto-key-base';
+import { EntityWithKey } from './entities/base/entity-with-key';
 
 // This handy function takes the entities from the response and all their related entities
 // adds them to the workspace indexed by their IDs and returns the IDs of the entities
@@ -36,7 +36,7 @@ export function addSingleToWorkspace(response: GetByIdResponse, workspace: Works
   return response.Result.Id;
 }
 
-export function mergeEntitiesInWorkspace(entities: { [key: string]: DtoKeyBase[] }, workspace: WorkspaceService) {
+export function mergeEntitiesInWorkspace(entities: { [key: string]: EntityWithKey[] }, workspace: WorkspaceService) {
   if (!!entities) {
     const collectionNames = Object.keys(entities);
     for (let c = 0; c < collectionNames.length; c++) {
@@ -61,7 +61,7 @@ export function mergeEntitiesInWorkspace(entities: { [key: string]: DtoKeyBase[]
   }
 }
 
-function apply(freshItem: DtoKeyBase, staleItem: DtoKeyBase, wsCollection: any) {
+function apply(freshItem: EntityWithKey, staleItem: EntityWithKey, wsCollection: any) {
   if (!!staleItem) {
     wsCollection[freshItem.Id] = JSON.parse(JSON.stringify(merge(freshItem, staleItem)));
   } else {
@@ -69,7 +69,7 @@ function apply(freshItem: DtoKeyBase, staleItem: DtoKeyBase, wsCollection: any) 
   }
 }
 
-function merge(freshItem: DtoKeyBase, staleItem: DtoKeyBase): DtoKeyBase {
+function merge(freshItem: EntityWithKey, staleItem: EntityWithKey): EntityWithKey {
 
   // every property in the DTO tree is tagged with metadata, either loaded = 2, restricted = 1 or not loaded = 0
   // this method merges two DTOs the stale on the client and the fresh one from the server, it recursively
@@ -115,9 +115,9 @@ function merge(freshItem: DtoKeyBase, staleItem: DtoKeyBase): DtoKeyBase {
   return result;
 }
 
-function mergeArrays(freshArray: DtoKeyBase[], staleArray: DtoKeyBase[]): DtoKeyBase[] {
+function mergeArrays(freshArray: EntityWithKey[], staleArray: EntityWithKey[]): EntityWithKey[] {
   // to efficiently retrieve the lines in the stale array, this pays off for huge arrays
-  const staleArrayHash: { [id: string]: DtoKeyBase } = {};
+  const staleArrayHash: { [id: string]: EntityWithKey } = {};
   staleArray.forEach(staleLine => {
     staleArrayHash[staleLine.Id] = staleLine;
   });

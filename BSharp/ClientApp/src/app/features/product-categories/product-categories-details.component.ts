@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { Subject } from 'rxjs';
-import { ProductCategoryForSave, ProductCategory } from '~/app/data/dto/product-category';
+import { ProductCategoryForSave, ProductCategory } from '~/app/data/entities/product-category';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -54,7 +54,7 @@ export class ProductCategoriesDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: ProductCategory) => !!model && !model.IsActive;
   public showDeactivate = (model: ProductCategory) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: ProductCategory) => this.ws.canUpdate('product-categories', model.Id);
+  public canActivateDeactivateItem = (model: ProductCategory) => this.ws.canDo('product-categories', 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: ProductCategory) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

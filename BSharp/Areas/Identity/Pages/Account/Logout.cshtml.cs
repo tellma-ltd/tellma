@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Authorization;
-using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,10 +11,10 @@ namespace BSharp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LogoutModel : PageModel
     {
-        private readonly SignInManager<User> _signInManager;
+        private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
         private readonly ILogger<LogoutModel> _logger;
 
-        public LogoutModel(SignInManager<User> signInManager, ILogger<LogoutModel> logger)
+        public LogoutModel(SignInManager<EmbeddedIdentityServerUser> signInManager, ILogger<LogoutModel> logger)
         {
             _signInManager = signInManager;
             _logger = logger;

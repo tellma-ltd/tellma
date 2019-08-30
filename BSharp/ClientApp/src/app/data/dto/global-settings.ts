@@ -1,7 +1,6 @@
-import { DtoBase } from './dto-base';
-import { Culture } from './culture';
+import { Entity } from '../entities/base/entity';
 
-export class GlobalSettingsForSave extends DtoBase {
+export class GlobalSettingsForSave extends Entity {
 
 }
 
@@ -9,6 +8,5 @@ export class GlobalSettings extends GlobalSettingsForSave {
     SettingsVersion: string;
 }
 
-export class GlobalSettingsForClient extends DtoBase {
-    ActiveCultures: { [key: string]: Culture};
+export class GlobalSettingsForClient extends Entity {
 }

@@ -3,7 +3,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { Subject } from 'rxjs';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
-import { IfrsNote, IfrsConcept_IfrsType } from '~/app/data/dto/ifrs-note';
+import { IfrsNote, IfrsConcept_IfrsType } from '~/app/data/entities/ifrs-note';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
@@ -53,7 +53,7 @@ export class IfrsNotesDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: IfrsNote) => !!model && !model.IsActive;
   public showDeactivate = (model: IfrsNote) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: IfrsNote) => this.ws.canUpdate('ifrs-notes', model.Id);
+  public canActivateDeactivateItem = (model: IfrsNote) => this.ws.canDo('ifrs-notes', 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: IfrsNote) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

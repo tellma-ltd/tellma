@@ -1,6 +1,7 @@
 ﻿using BSharp.Controllers.Misc;
+using BSharp.Entities;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Controllers.Dto
 {
     public class ExportArguments : GetArguments
     {

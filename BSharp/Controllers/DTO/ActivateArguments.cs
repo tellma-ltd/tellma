@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Controllers.Dto
 {
     public class ActivateArguments
     {

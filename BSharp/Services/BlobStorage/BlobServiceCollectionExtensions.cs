@@ -6,6 +6,10 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class BlobServiceCollectionExtensions
     {
+        /// <summary>
+        /// Registers the <see cref="IBlobService"/> which allows saving and retrieving of
+        /// binary blobs either to Azure Blob Storage or to SQL Server table depending on configuration
+        /// </summary>
         public static IServiceCollection AddBlobService(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
@@ -15,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if(config != null)
             {
-                services.Configure<BlobServiceConfiguration>(config);
+                services.Configure<BlobServiceOptions>(config);
             }
 
             services.AddScoped<IBlobServiceFactory, BlobServiceFactory>();

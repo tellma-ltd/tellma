@@ -1,6 +1,6 @@
-import { DtoKeyBase } from './dto-key-base';
+import { EntityWithKey } from '../entities/base/entity-with-key';
 
 export class GetEntityResponse<TDto> {
   Result: TDto;
-  Entities: { [key: string]: DtoKeyBase[]; };
+  Entities: { [key: string]: EntityWithKey[]; };
 }

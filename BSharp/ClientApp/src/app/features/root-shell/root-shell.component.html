@@ -55,9 +55,9 @@
             </button>
             <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action">
               <ng-container *ngFor="let lang of activeLanguages">
-                <button type="button" class="dropdown-item btn-light" *ngIf="lang.Id !== currentLanguage"
-                  (click)="onSetLanguage(lang.Id)">
-                  {{ lang.Name }}
+                <button type="button" class="dropdown-item btn-light" *ngIf="lang !== currentLanguage"
+                  (click)="onSetLanguage(lang)">
+                  {{ languageName(lang) }}
                 </button>
               </ng-container>
 

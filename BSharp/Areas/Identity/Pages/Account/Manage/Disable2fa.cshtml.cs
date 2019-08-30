@@ -1,26 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BSharp.Data.Model;
+﻿using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace BSharp.Areas.Identity.Pages.Account.Manage
 {
     public class Disable2faModel : PageModel
     {
-        private readonly UserManager<User> _userManager;
-        private readonly ILogger<Disable2faModel> _logger;
-        private readonly IStringLocalizer<Disable2faModel> _localizer;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer _localizer;
 
         public Disable2faModel(
-            UserManager<User> userManager,
+            UserManager<EmbeddedIdentityServerUser> userManager,
             ILogger<Disable2faModel> logger,
-            IStringLocalizer<Disable2faModel> localizer)
+            IStringLocalizer<Strings> localizer)
         {
             _userManager = userManager;
             _logger = logger;

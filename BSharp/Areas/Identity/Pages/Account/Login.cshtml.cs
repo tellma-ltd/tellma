@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using BSharp.Data.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +18,13 @@ namespace BSharp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<User> _signInManager;
-        private readonly ILogger<LoginModel> _logger;
-        private readonly IStringLocalizer<LoginModel> _localizer;
-        private readonly ClientStoreConfiguration _config;
+        private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer _localizer;
+        private readonly ClientApplicationsOptions _config;
 
-        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger, IStringLocalizer<LoginModel> localizer, IOptions<ClientStoreConfiguration> options)
+        public LoginModel(SignInManager<EmbeddedIdentityServerUser> signInManager, 
+            ILogger<LoginModel> logger, IStringLocalizer<Strings> localizer, IOptions<ClientApplicationsOptions> options)
         {
             _signInManager = signInManager;
             _logger = logger;
@@ -88,7 +88,7 @@ namespace BSharp.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");

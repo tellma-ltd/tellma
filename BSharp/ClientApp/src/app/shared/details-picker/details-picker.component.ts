@@ -6,7 +6,7 @@ import { fromEvent, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, map, switchMap, tap, expand } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
-import { DtoKeyBase } from '~/app/data/dto/dto-key-base';
+import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { addToWorkspace, Key, toString } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';

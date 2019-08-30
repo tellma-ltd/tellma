@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace BSharp.Services.Email
 {
     /// <summary>
-    /// All this implementation does is shout and scream whenever we attempt to send an email
-    /// in offline mode, to make such bugs go down with a loud bang
+    /// This implementation simply logs emails to the debugger
     /// </summary>
     public class OfflineEmailSender : IEmailSender
     {

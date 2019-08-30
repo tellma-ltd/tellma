@@ -1,5 +1,5 @@
-﻿using BSharp.Data.Model;
-using BSharp.Services.Email;
+﻿using BSharp.Services.Email;
+using BSharp.Services.EmbeddedIdentityServer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +14,11 @@ namespace BSharp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ForgotPasswordModel : PageModel
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
         private readonly IEmailSender _emailSender;
-        private readonly IStringLocalizer<ForgotPasswordModel> _localizer;
+        private readonly IStringLocalizer _localizer;
 
-        public ForgotPasswordModel(UserManager<User> userManager, IEmailSender emailSender, IStringLocalizer<ForgotPasswordModel> localizer)
+        public ForgotPasswordModel(UserManager<EmbeddedIdentityServerUser> userManager, IEmailSender emailSender, IStringLocalizer<Strings> localizer)
         {
             _userManager = userManager;
             _emailSender = emailSender;
@@ -41,7 +41,7 @@ namespace BSharp.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return RedirectToPage("./ForgotPasswordConfirmation");

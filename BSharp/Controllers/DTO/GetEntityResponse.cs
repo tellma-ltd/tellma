@@ -1,14 +1,12 @@
-﻿using System;
+﻿using BSharp.Entities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Controllers.Dto
 {
-    public class GetEntityResponse<TDto>
+    public class GetEntityResponse<TEntity>
     {
-        public TDto Result { get; set; }
+        public TEntity Result { get; set; }
 
-        public Dictionary<string, IEnumerable<DtoBase>> Entities { get; set; }
+        public Dictionary<string, IEnumerable<Entity>> Entities { get; set; }
     }
 }

@@ -1,5 +1,0 @@
-﻿CREATE TABLE [mgr].[Abbas]
-(
-	[Id] INT NOT NULL PRIMARY KEY, 
-    [Yo] NVARCHAR(50) NULL
-)

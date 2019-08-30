@@ -1,11 +1,11 @@
-import { DtoKeyBase } from './dto-key-base';
-import { DtoBase } from './dto-base';
+import { EntityWithKey } from '../entities/base/entity-with-key';
+import { Entity } from '../entities/base/entity';
 
-export class EntitiesResponse<TDto extends DtoBase = DtoKeyBase> {
+export class EntitiesResponse<TDto extends Entity = EntityWithKey> {
   Bag: { [key: string]: any; };
   Result: TDto[];
   CollectionName: string;
-  RelatedEntities: { [key: string]: DtoKeyBase[]; };
+  RelatedEntities: { [key: string]: EntityWithKey[]; };
 }
 
 export class GetResponse extends EntitiesResponse {

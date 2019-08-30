@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BSharp.Entities;
 
-namespace BSharp.Controllers.DTO
+namespace BSharp.Controllers.Dto
 {
     public class SaveSettingsResponse : GetEntityResponse<Settings>
     {

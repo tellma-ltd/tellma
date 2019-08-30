@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BSharp.Controllers.DTO
+﻿namespace BSharp.Controllers.Dto
 {
     /// <summary>
     /// This DTO carries data with a version (etag) associated with it,
@@ -12,7 +7,7 @@ namespace BSharp.Controllers.DTO
     /// headers of EVERY API request, and the API returns in the headers whether each 
     /// version is fresh or stale. 
     /// This pattern is used when a piece of data is required before client startup
-    /// (because it affects the UI for example), and we want to achieve near instantaneous
+    /// (because it affects the UI for example), and we want to achieve instantaneous
     /// startup for clients that rely on backend data to manipulate their UI
     /// 
     /// Examples of such data are:

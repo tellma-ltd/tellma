@@ -5,9 +5,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 import { AuthService } from '~/app/data/auth.service';
 import { appconfig } from '~/app/data/appconfig';
-import { SettingsForClient } from '~/app/data/dto/settings';
-import { Culture } from '~/app/data/dto/culture';
 import { DOCUMENT } from '@angular/platform-browser';
+import { supportedCultures } from '~/app/data/supported-cultures';
 
 @Component({
   selector: 'b-root-shell',
@@ -19,8 +18,7 @@ export class RootShellComponent implements OnInit, OnDestroy {
   // For the menu on small screens
   public isCollapsed = true;
 
-  private _oldActiveLanguages: { [key: string]: Culture };
-  private _activeLanguages: Culture[];
+  private _activeLanguages: string[];
 
   constructor(public workspace: WorkspaceService, public nav: NavigationService, @Inject(DOCUMENT) private document: Document,
     private translate: TranslateService, private progress: ProgressOverlayService, private auth: AuthService) {
@@ -58,11 +56,9 @@ export class RootShellComponent implements OnInit, OnDestroy {
     return this.isRtl ? 'bottom-left' : 'bottom-right';
   }
 
-  get activeLanguages() {
-    const activeCultures = this.workspace.globalSettings.ActiveCultures;
-    if  (this._oldActiveLanguages !== activeCultures) {
-      const keys = Object.keys(activeCultures);
-      this._activeLanguages = keys.map(key => activeCultures[key]);
+  get activeLanguages(): string[] {
+    if  (!this._activeLanguages) {
+      this._activeLanguages = Object.keys(supportedCultures);
     }
     return this._activeLanguages;
   }
@@ -70,6 +66,10 @@ export class RootShellComponent implements OnInit, OnDestroy {
   public onSetLanguage(lang: string) {
     this.onCollapse();
     this.translate.use(lang);
+  }
+
+  public languageName(id: string): string {
+    return supportedCultures[id];
   }
 
   get isRtl(): boolean {
@@ -83,8 +83,8 @@ export class RootShellComponent implements OnInit, OnDestroy {
 
   get currentLanguageDisplay(): string {
     const cultureName = this.currentLanguage;
-    const culture = this.workspace.globalSettings.ActiveCultures[this.currentLanguage];
-    return !!culture ? culture.Name : cultureName;
+    const culture = supportedCultures[this.currentLanguage];
+    return !!culture ? culture : cultureName;
   }
 
   public onMySystemAccount(): void {

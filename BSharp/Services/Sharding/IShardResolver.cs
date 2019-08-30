@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BSharp.Services.Sharding
+﻿namespace BSharp.Services.Sharding
 {
     public interface IShardResolver
     {
-        string GetShardConnectionString();
+        string GetConnectionString(int? tenantId = null);
     }
 }

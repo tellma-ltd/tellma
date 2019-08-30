@@ -1,4 +1,5 @@
-﻿using BSharp.Controllers.DTO;
+﻿using BSharp.Controllers.Dto;
+using BSharp.Entities;
 using BSharp.IntegrationTests.Utilities;
 using BSharp.Services.Utilities;
 using System.Collections.Generic;
@@ -69,7 +70,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Prepare a well formed entity
             var dtoForSave = new MeasurementUnitForSave
             {
-                EntityState = "Inserted",
                 Name = "KG",
                 Name2 = "كج",
                 Code = "kg",
@@ -142,7 +142,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             var list = new List<MeasurementUnitForSave> {
                 new MeasurementUnitForSave
                 {
-                    EntityState = "Inserted",
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "kg",
@@ -179,7 +178,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             // trailing spaces in some string properties
             var dtoForSave = new MeasurementUnitForSave
             {
-                EntityState = "Inserted",
                 Name = "  KM", // Leading space
                 Name2 = "كم",
                 Code = "km  ", // Trailing space
@@ -196,7 +194,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.FirstOrDefault();
 
             // Confirm the entity was saved
-            Assert.NotNull(responseDto.Id);
+            Assert.NotEqual(0, responseDto.Id);
 
             // Confirm that the leading and trailing spaces have been trimmed
             Assert.Equal(dtoForSave.Name?.Trim(), responseDto.Name);
@@ -212,7 +210,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_km");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             // Query the delete API
             var msg = new HttpRequestMessage(HttpMethod.Delete, $"/api/measurement-units");
@@ -229,7 +227,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_km");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
             var getResponse = await _client.GetAsync($"/api/measurement-units/{id}");
@@ -245,7 +243,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_kg");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             // Call the API
             var response = await _client.PutAsJsonAsync($"/api/measurement-units/deactivate", new List<int>() { id });
@@ -269,7 +267,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_kg");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             // Call the API
             var response = await _client.PutAsJsonAsync($"/api/measurement-units/activate", new List<int>() { id });
@@ -293,7 +291,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the Id
             var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_kg");
-            var id = entity.Id.Value;
+            var id = entity.Id;
 
             var response = await _client.GetAsync($"/api/measurement-units/{id}?select=Name");
 

@@ -1,18 +1,18 @@
 import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
-import { Settings } from '~/app/data/dto/settings';
+import { Settings } from '~/app/data/entities/settings';
 import { Subject, Observable, of } from 'rxjs';
 import { WorkspaceService, DetailsStatus } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { switchMap, catchError, tap } from 'rxjs/operators';
-import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 import { mergeEntitiesInWorkspace } from '~/app/data/util';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { SaveSettingsResponse } from '~/app/data/dto/save-settings-response';
 import { handleFreshSettings } from '~/app/data/tenant-resolver.guard';
 import { StorageService } from '~/app/data/storage.service';
 import { GetEntityResponse } from '~/app/data/dto/get-entity-response';
+import { supportedCultures } from '~/app/data/supported-cultures';
 
 @Component({
   selector: 'b-settings',
@@ -262,15 +262,14 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 
   public cultureName(culture: string): string {
-    const c = this.workspace.globalSettings.ActiveCultures[culture];
-    return !!c ? c.Name : null;
+    return supportedCultures[culture];
   }
 
   get cultures(): { name: string, value: any }[] {
 
     if (!this._cultures) {
-      this._cultures = Object.keys(this.workspace.globalSettings.ActiveCultures)
-        .map(key => ({ name: this.workspace.globalSettings.ActiveCultures[key].Name, value: key }));
+      this._cultures = Object.keys(supportedCultures)
+        .map(key => ({ name: supportedCultures[key], value: key }));
     }
 
     return this._cultures;

@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input, HostListener, Inject } from '@angular/core';
-import { AuthService } from '~/app/data/auth.service';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, Inject } from '@angular/core';
 import { ApiService } from '~/app/data/api.service';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { WorkspaceService, MasterStatus } from '~/app/data/workspace.service';
-import { TenantForClient } from '~/app/data/dto/tenant';
+import { UserCompany } from '~/app/data/dto/user-company';
 import { DOCUMENT } from '@angular/platform-browser';
 import { Key, toString } from '~/app/data/util';
 
@@ -28,12 +27,12 @@ export class CompaniesComponent implements OnInit, OnDestroy {
   private _oldSearchTerm: string;
   private _oldTop: number;
   private _oldSkip: number;
-  private _oldCompanies: TenantForClient[];
-  private _oldFilteredCompanies: TenantForClient[];
+  private _oldCompanies: UserCompany[];
+  private _oldFilteredCompanies: UserCompany[];
 
   // after applying the filter criteria
-  private _filteredCompanies: TenantForClient[] = [];
-  private _pagedCompanies: TenantForClient[] = [];
+  private _filteredCompanies: UserCompany[] = [];
+  private _pagedCompanies: UserCompany[] = [];
 
 
   @ViewChild('input')
@@ -231,7 +230,7 @@ export class CompaniesComponent implements OnInit, OnDestroy {
     return this.workspace.ws.isRtl ? 'horizontal' : null;
   }
 
-  trackById(_: any, company: TenantForClient) {
+  trackById(_: any, company: UserCompany) {
     return company.Id;
   }
 

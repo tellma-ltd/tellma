@@ -3,14 +3,14 @@
 @using BSharp.Services.GlobalSettings
 
 @inject IGlobalSettingsCache GlobalSettingsCache
-@inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<Strings> Localizer
 
 @{
     var httpContext = ViewContext.HttpContext;
     var currentCulture = httpContext.Features.Get<IRequestCultureFeature>().RequestCulture.UICulture;
     var currentUrl = UriHelper.BuildRelative(httpContext.Request.PathBase, httpContext.Request.Path, httpContext.Request.QueryString);
 
-    var cultures = GlobalSettingsCache.GetGlobalSettings().Data.ActiveCultures.Values;
+    var cultures = Startup.SUPPORTED_CULTURES.Select(c => new { Id = c, Name = new CultureInfo(c)?.NativeName });
     var culturesList = cultures.Select(e => new SelectListItem
     {
         Value = e.Id,
@@ -64,7 +64,7 @@
                         <span>&nbsp;|&nbsp;</span>
                         <a asp-area="" asp-page="/TermsOfService">@Localizer["TermsOfService"]</a>
 
-                        @if (cultures.Count > 1)
+                        @if (cultures.Count() > 1)
                         {
                             <span>&nbsp;|</span>
 

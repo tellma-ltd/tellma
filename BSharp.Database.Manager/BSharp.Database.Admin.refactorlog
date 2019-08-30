@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="931e7595-a7cd-4f60-87f7-00a2fdc439d8" ChangeDateTime="08/08/2019 16:55:50">
+    <Property Name="ElementName" Value="[dbo].[SqlServers].[Password]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[SqlServers]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="PasswordKey" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b7914eac-e84a-400e-b1c9-a489c8af3d9d" ChangeDateTime="08/14/2019 13:49:39">
+    <Property Name="ElementName" Value="[dbo].[AdminUser]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AdminUsers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="078ac3b2-9aab-481e-b038-f0fe93d77d23" ChangeDateTime="08/14/2019 13:57:49">
+    <Property Name="ElementName" Value="[dbo].[GlobalUsers__AddAndMatch]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[GlobalUsers__Save]" />
+  </Operation>
+</Operations>

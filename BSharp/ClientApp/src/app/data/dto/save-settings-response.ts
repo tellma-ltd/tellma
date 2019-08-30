@@ -1,4 +1,4 @@
-import { Settings, SettingsForClient } from './settings';
+import { Settings, SettingsForClient } from '../entities/settings';
 import { DataWithVersion } from './data-with-version';
 import { GetEntityResponse } from './get-entity-response';
 

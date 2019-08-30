@@ -1,14 +1,11 @@
-﻿using BSharp.Controllers.DTO;
-using BSharp.Controllers.Misc;
-using BSharp.Data.Model;
-using BSharp.Services.MultiTenancy;
-using BSharp.Services.OData;
+﻿using BSharp.Entities;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
@@ -48,14 +45,6 @@ namespace BSharp.Services.Utilities
         }
 
         /// <summary>
-        /// Returns the internal user Id of the currently signed in user according to the tenant database
-        /// </summary>
-        public static int UserId(this ITenantUserInfoAccessor @this)
-        {
-            return @this.GetCurrentInfo().UserId.Value;
-        }
-
-        /// <summary>
         /// Extracts all errors inside an IdentityResult and concatenates them together, 
         /// falling back to a default message if no errors were found in the IdentityResult object
         /// </summary>
@@ -91,7 +80,11 @@ namespace BSharp.Services.Utilities
             return result;
         }
 
-        public static void TrimStringProperties(this DtoBase entity)
+        /// <summary>
+        /// Traverses the <see cref="Entity"/> tree trimming all string properties
+        /// or setting them to null if they are just empty spaces
+        /// </summary>
+        public static void TrimStringProperties(this Entity entity)
         {
             var dtoType = entity.GetType();
             foreach (var prop in dtoType.GetProperties())
@@ -99,34 +92,40 @@ namespace BSharp.Services.Utilities
                 if (prop.PropertyType == typeof(string))
                 {
                     var originalValue = prop.GetValue(entity)?.ToString();
-                    if (originalValue != null)
+                    if(string.IsNullOrWhiteSpace(originalValue))
                     {
+                        // No empty strings or white spaces allowed
+                        prop.SetValue(entity, null);
+                    }
+                    else
+                    {
+                        // Trim
                         var trimmed = originalValue.Trim();
                         prop.SetValue(entity, trimmed);
                     }
                 }
-                else if (prop.PropertyType.IsSubclassOf(typeof(DtoBase)))
+                else if (prop.PropertyType.IsEntity())
                 {
                     var dtoForSave = prop.GetValue(entity);
                     if (dtoForSave != null)
                     {
-                        (dtoForSave as DtoBase).TrimStringProperties();
+                        (dtoForSave as Entity).TrimStringProperties();
                     }
                 }
                 else
                 {
                     var propType = prop.PropertyType;
                     var isDtoList = propType.IsList() &&
-                        propType.GenericTypeArguments[0].IsSubclassOf(typeof(DtoBase));
+                        propType.GenericTypeArguments[0].IsEntity();
 
                     if (isDtoList)
                     {
                         var dtoList = prop.GetValue(entity);
                         if (dtoList != null)
                         {
-                            foreach (var dto in dtoList.Enumerate<DtoBase>())
+                            foreach (var row in dtoList.Enumerate<Entity>())
                             {
-                                dto.TrimStringProperties();
+                                row.TrimStringProperties();
                             }
                         }
                     }
@@ -146,40 +145,6 @@ namespace BSharp.Services.Utilities
         public static bool IsParent(this PropertyInfo @this)
         {
             return @this.Name == "Parent" && @this.DeclaringType.GetProperty("Node")?.PropertyType == typeof(HierarchyId);
-        }
-
-        public static object[] ToFormatArguments(this SqlValidationResult @this)
-        {
-            /// <summary>
-            /// SQL validation may return error message names (for localization) as well as some arguments 
-            /// this method parses those arguments into objects based on their prefix for example date:2019-01-13
-            /// will be parsed to datetime object suitable for formatting in C# into the error message
-            /// </summary>
-            object Parse(string str)
-            {
-                // TODO Implement properly
-                if (string.IsNullOrWhiteSpace(str))
-                {
-                    return str;
-                }
-
-                if (DateTime.TryParse(str, out DateTime dResult))
-                {
-                    return dResult;
-                }
-
-                return str;
-            }
-
-            object[] formatArguments = {
-                    Parse(@this.Argument1),
-                    Parse(@this.Argument2),
-                    Parse(@this.Argument3),
-                    Parse(@this.Argument4),
-                    Parse(@this.Argument5)
-                };
-
-            return formatArguments;
         }
 
         /// <summary>
@@ -234,7 +199,7 @@ namespace BSharp.Services.Utilities
 
             if (!str.EndsWith("/"))
             {
-                str = str + "/";
+                str += "/";
             }
 
             return str;
@@ -357,13 +322,13 @@ namespace BSharp.Services.Utilities
         }
 
         /// <summary>
-        /// Retrieves all the properties that are adorned with <see cref="BasicFieldAttribute"/>s
+        /// Retrieves all the properties that are adorned with the <see cref="AlwaysAccessibleAttribute"/>s
         /// </summary>
-        public static IEnumerable<PropertyInfo> BasicFields(this Type dtoType)
+        public static IEnumerable<PropertyInfo> AlwaysAccessibleFields(this Type dtoType)
         {
             foreach (var prop in dtoType.GetProperties())
             {
-                if (prop.GetCustomAttribute<BasicFieldAttribute>() != null)
+                if (prop.GetCustomAttribute<AlwaysAccessibleAttribute>() != null)
                 {
                     yield return prop;
                 }
@@ -376,35 +341,14 @@ namespace BSharp.Services.Utilities
         /// </summary>
         public static bool IsNavigationField(this PropertyInfo prop)
         {
-            return prop.GetCustomAttribute<NavigationPropertyAttribute>() != null;
-        }
-
-        /// <summary>
-        /// Indicates whether the property is adorned with the <see cref="ForeignKeyAttribute"/> which means that
-        /// this is a foreign key and it has an associated navigation property
-        /// </summary>
-        /// <param name="prop"></param>
-        /// <returns></returns>
-        public static bool IsForeignKey(this PropertyInfo prop)
-        {
             return prop.GetCustomAttribute<ForeignKeyAttribute>() != null;
-        }
-
-        /// <summary>
-        /// Determines if the property is adorned with the <see cref="IgnoreInMetadataAttribute"/> which indicates that 
-        /// the property should not be included in the DTO metadata
-        /// </summary>
-        public static bool IsIgnored(this PropertyInfo prop)
-        {
-            return prop.GetCustomAttribute<IgnoreInMetadataAttribute>() != null;
         }
 
         /// <summary>
         /// Useful for reflection, allows you to iterate over a collection that is typed as an object
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="collection"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">The type of the resulting <see cref="IEnumerable{T}"/></typeparam>
+        /// <param name="collection">A collection object typically retrieved via reflection</param>
         public static IEnumerable<T> Enumerate<T>(this object collection)
         {
             foreach (var item in collection.Enumerate())
@@ -430,47 +374,6 @@ namespace BSharp.Services.Utilities
             }
         }
 
-        public static async Task<T> ExecuteScalarSqlCommandAsync<T>(this DatabaseFacade db, string sql, params SqlParameter[] ps)
-        {
-            DbConnection connection = db.GetDbConnection();
-            bool ownsConnection = false;
-            T result;
-
-            using (DbCommand cmd = connection.CreateCommand())
-            {
-                cmd.CommandText = sql;
-
-                foreach (var p in ps)
-                {
-                    cmd.Parameters.Add(p);
-                }
-
-                if (connection.State != System.Data.ConnectionState.Open)
-                {
-                    ownsConnection = true;
-                    connection.Open();
-                }
-
-                var dbValue = await cmd.ExecuteScalarAsync();
-
-                if (dbValue == DBNull.Value)
-                {
-                    result = default(T);
-                }
-                else
-                {
-                    result = (T)dbValue;
-                }
-            }
-
-            if (ownsConnection)
-            {
-                connection.Close();
-            }
-
-            return result;
-        }
-
         public static bool IsPrefixOf(this string[] potentialPrefix, ArraySegment<string> segment)
         {
             if (potentialPrefix.Length > segment.Count)
@@ -490,11 +393,11 @@ namespace BSharp.Services.Utilities
         }
 
         /// <summary>
-        /// Determines if this type derives from <see cref="DtoBase"/>
+        /// Determines if this type derives from <see cref="Entity"/>
         /// </summary>
-        public static bool IsDto(this Type type)
+        public static bool IsEntity(this Type type)
         {
-            return type.IsSubclassOf(typeof(DtoBase));
+            return type.IsSubclassOf(typeof(Entity));
         }
 
         /// <summary>
@@ -511,69 +414,6 @@ namespace BSharp.Services.Utilities
         public static Type GetRootType(this Type type)
         {
             return type.GetCustomAttribute<StrongEntityAttribute>()?.Type ?? type;
-        }
-
-        /// <summary>
-        /// Retrieves the value of the property either directly from the dto or from the strongIdEntities
-        /// </summary>
-        /// <param name="prop"></param>
-        /// <param name="dto"></param>
-        /// <param name="strongIdEntities"></param>
-        /// <returns></returns>
-        public static DtoBase GetDto(this PropertyInfo prop, DtoBase dto, IndexedEntities strongIdEntities)
-        {
-            if (prop == null)
-            {
-                throw new ArgumentNullException(nameof(prop));
-            }
-
-            if (dto == null)
-            {
-                throw new ArgumentNullException(nameof(dto));
-            }
-
-            if (strongIdEntities == null)
-            {
-                throw new ArgumentNullException(nameof(strongIdEntities));
-            }
-
-            var dtoType = dto.GetType();
-            var propType = prop.PropertyType;
-
-            if (!dtoType.IsStrongEntity())
-            {
-                return prop.GetValue(dto) as DtoBase;
-            }
-
-
-            // This is a navigation with a strong type
-            // Get the root type of the entity
-            Type propRootType = prop.PropertyType.GetRootType();
-
-            // Get the id of the entity
-            string fkName = prop.GetCustomAttribute<NavigationPropertyAttribute>()?.ForeignKey;
-            if (fkName == null)
-            {
-                // Programmer mistake
-                throw new InvalidOperationException($"The property {prop.Name} on type {dtoType.Name} has a strong type {propType.Name} but it the property is not adorned with a foreign key");
-            }
-
-            var fkProp = dtoType.GetProperty(fkName);
-            if (fkProp == null)
-            {
-                // Programmer mistake
-                throw new InvalidOperationException($"The property {prop.Name} on type {dtoType.Name} is adorened with a foreign key that doesn't exist");
-            }
-            var fkValue = fkProp.GetValue(dto);
-
-            if(!strongIdEntities.ContainsKey(propRootType))
-            {
-                // Programmer mistake
-                throw new InvalidOperationException($"The type {propRootType} was not found in the strong Id entities collection");
-            }
-
-            // return the result
-            return strongIdEntities[propRootType][fkValue] as DtoBase;
         }
     }
 }

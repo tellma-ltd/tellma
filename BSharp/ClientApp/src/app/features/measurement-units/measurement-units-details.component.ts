@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { MeasurementUnit, MeasurementUnitForSave, MeasurementUnit_UnitType } from '~/app/data/dto/measurement-unit';
+import { MeasurementUnit, MeasurementUnitForSave, MeasurementUnit_UnitType } from '~/app/data/entities/measurement-unit';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
@@ -76,7 +76,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: MeasurementUnit) => !!model && !model.IsActive;
   public showDeactivate = (model: MeasurementUnit) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: MeasurementUnit) => this.ws.canUpdate('measurement-units', model.Id);
+  public canActivateDeactivateItem = (model: MeasurementUnit) => this.ws.canDo('measurement-units', 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: MeasurementUnit) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

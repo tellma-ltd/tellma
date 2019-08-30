@@ -13,8 +13,6 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Registers the services that retrieve the tenant Id from the 
         /// request headers
         /// </summary>
-        /// <param name="services"></param>
-        /// <returns></returns>
         public static IServiceCollection AddMultiTenancy(this IServiceCollection services)
         {
             if (services == null)
@@ -24,8 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services
                 .AddHttpContextAccessor()
-                .AddSingleton<ITenantIdProvider, TenantIdProvider>()
-                .AddSingleton<ITenantUserInfoAccessor, TenantUserInfoAccessor>();
+                .AddSingleton<ITenantIdAccessor, TenantIdAccessor>();
 
             return services;
         }

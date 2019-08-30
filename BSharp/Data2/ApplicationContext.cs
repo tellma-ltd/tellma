@@ -197,10 +197,10 @@ namespace BSharp.Data
         #region Constructor
 
         // Private fields
-        private readonly ITenantIdProvider _tenantIdProvider;
+        private readonly ITenantIdAccessor _tenantIdProvider;
 
         // Constructor
-        public ApplicationContext(IShardResolver shardResolver, ITenantIdProvider tenantIdProvider, IUserProvider userProvider, ITenantUserInfoAccessor accessor) :
+        public ApplicationContext(IShardResolver shardResolver, ITenantIdAccessor tenantIdProvider, IExternalUserAccessor userProvider, ITenantUserInfoAccessor accessor) :
             base(CreateDbContextOptions(shardResolver, tenantIdProvider, userProvider, accessor))
         {
             _tenantIdProvider = tenantIdProvider;
@@ -214,12 +214,12 @@ namespace BSharp.Data
         /// <param name="tenantIdProvider">The service that retrieves tenants Ids from the headers</param>
         /// <returns></returns>
         private static DbContextOptions<ApplicationContext> CreateDbContextOptions(
-            IShardResolver shardResolver, ITenantIdProvider tenantIdProvider,
-            IUserProvider userService, ITenantUserInfoAccessor accessor)
+            IShardResolver shardResolver, ITenantIdAccessor tenantIdProvider,
+            IExternalUserAccessor userService, ITenantUserInfoAccessor accessor)
         {
             // Prepare the options based on the connection created with the shard manager
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
-            string connectionString = shardResolver.GetShardConnectionString();
+            string connectionString = shardResolver.GetConnectionString();
             if (tenantIdProvider is DesignTimeTenantIdProvider)
             {
                 // Only for design time when running "ef migrations" command from the CLI
@@ -388,13 +388,13 @@ namespace BSharp.Data
 
         public class DesignTimeShardResolver : IShardResolver
         {
-            public string GetShardConnectionString()
+            public string GetConnectionString()
             {
                 return "Server=(localdb)\\MSSQLLocalDB;Database=BSharp;Trusted_Connection=true;MultipleActiveResultSets=true";
             }
         }
 
-        public class DesignTimeTenantIdProvider : ITenantIdProvider
+        public class DesignTimeTenantIdProvider : ITenantIdAccessor
         {
             private readonly int? _tenantId;
 
@@ -409,7 +409,7 @@ namespace BSharp.Data
             }
         }
 
-        public class DesignTimeUserIdProvider : IUserProvider
+        public class DesignTimeUserIdProvider : IExternalUserAccessor
         {
             public string GetUserEmail()
             {

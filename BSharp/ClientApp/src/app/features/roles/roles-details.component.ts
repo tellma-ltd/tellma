@@ -2,13 +2,13 @@ import { Component, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { Role, RoleForSave } from '~/app/data/dto/role';
-import { Permission, Permission_Level as Permission_Action } from '~/app/data/dto/permission';
+import { Role, RoleForSave } from '~/app/data/entities/role';
+import { Permission, Permission_Level as Permission_Action } from '~/app/data/entities/permission';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { View } from '~/app/data/dto/view';
+import { View } from '~/app/data/entities/view';
 
 @Component({
   selector: 'b-roles-details',
@@ -41,7 +41,6 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     }
     result.IsPublic = false;
     result.Permissions = [];
-    result.Signatures = [];
     result.Members = [];
     return result;
   }
@@ -50,24 +49,15 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     if (!!item) {
       const clone = <Role>JSON.parse(JSON.stringify(item));
       clone.Id = null;
-      clone.EntityState = 'Inserted';
 
       if (!!clone.Permissions) {
         clone.Permissions.forEach(e => {
           e.Id = null;
-          e.EntityState = 'Inserted';
-        });
-      }
-      if (!!clone.Signatures) {
-        clone.Signatures.forEach(e => {
-          e.Id = null;
-          e.EntityState = 'Inserted';
         });
       }
       if (!!clone.Members) {
         clone.Members.forEach(e => {
           e.Id = null;
-          e.EntityState = 'Inserted';
         });
       }
 
@@ -181,7 +171,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: Role) => !!model && !model.IsActive;
   public showDeactivate = (model: Role) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: Role) => this.ws.canUpdate('roles', model.Id);
+  public canActivateDeactivateItem = (model: Role) => this.ws.canDo('roles', 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: Role) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
@@ -194,12 +184,8 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     return !!model && !!model.Permissions ? model.Permissions.length : 0;
   }
 
-  signaturesCount(model: Role): number | string {
-    return !!model && !!model.Signatures ? model.Signatures.length : 0;
-  }
-
   membersCount(model: Role): number | string {
-    return !!model && !!model.Members ? model.Members.filter(e => e.EntityState !== 'Deleted').length : 0;
+    return !!model && !!model.Members ? model.Members.length : 0;
   }
 
   showMembersTab(model: Role) {
@@ -212,10 +198,6 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
   showPermissionsError(model: Role) {
     return !!model && !!model.Permissions && model.Permissions.some(e => !!e.serverErrors);
-  }
-
-  showSignaturesError(model: Role) {
-    return !!model && !!model.Signatures && model.Signatures.some(e => !!e.serverErrors);
   }
 
   showMembersError(model: Role) {

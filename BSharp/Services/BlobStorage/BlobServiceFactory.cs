@@ -1,31 +1,34 @@
 ﻿using BSharp.Data;
-using BSharp.Services.MultiTenancy;
 using Microsoft.Extensions.Options;
 
 namespace BSharp.Services.BlobStorage
 {
+    /// <summary>
+    /// Generated an appropriate implementation of <see cref="IBlobService"/> depending on the environment
+    /// </summary>
     public class BlobServiceFactory : IBlobServiceFactory
     {
-        private readonly BlobServiceConfiguration _config;
-        private readonly ApplicationContext _db;
-        private readonly ITenantIdProvider _tenantIdProvider;
+        private readonly BlobServiceOptions _config;
+        private readonly ApplicationRepository _repo;
 
-        public BlobServiceFactory(IOptions<BlobServiceConfiguration> options, ApplicationContext db, ITenantIdProvider tenantIdProvider)
+        public BlobServiceFactory(IOptions<BlobServiceOptions> options, ApplicationRepository repo)
         {
             _config = options.Value;
-            _db = db;
-            _tenantIdProvider = tenantIdProvider;
+            _repo = repo;
         }
 
+        /// <summary>
+        /// Returns either a <see cref="AzureBlobStorageService"/> or a <see cref="SqlTableBlobService"/> depending on the environment
+        /// </summary>
         public IBlobService Create()
         {
-            if (!string.IsNullOrWhiteSpace(_config.AzureBlobStorage.ConnectionString))
+            if (!string.IsNullOrWhiteSpace(_config?.AzureBlobStorage?.ConnectionString))
             {
                 return new AzureBlobStorageService(_config.AzureBlobStorage);
             }
             else
             {
-                return new SqlTableBlobService(_db, _tenantIdProvider);
+                return new SqlTableBlobService(_repo);
             }
         }
     }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using BSharp.Data.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -19,18 +18,18 @@ namespace BSharp.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
-        private readonly ILogger<ExternalLoginModel> _logger;
-        private readonly IStringLocalizer<ExternalLoginModel> _localizer;
-        private readonly ClientStoreConfiguration _config;
+        private readonly SignInManager<EmbeddedIdentityServerUser> _signInManager;
+        private readonly UserManager<EmbeddedIdentityServerUser> _userManager;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer _localizer;
+        private readonly ClientApplicationsOptions _config;
 
         public ExternalLoginModel(
-            SignInManager<User> signInManager,
-            UserManager<User> userManager,
+            SignInManager<EmbeddedIdentityServerUser> signInManager,
+            UserManager<EmbeddedIdentityServerUser> userManager,
             ILogger<ExternalLoginModel> logger,
-            IStringLocalizer<ExternalLoginModel> localizer,
-            IOptions<ClientStoreConfiguration> options)
+            IStringLocalizer<Strings> localizer,
+            IOptions<ClientApplicationsOptions> options)
         {
             _signInManager = signInManager;
             _userManager = userManager;

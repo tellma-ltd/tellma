@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using BSharp.Controllers.DTO;
-using BSharp.Controllers.Misc;
+﻿using BSharp.Controllers.Dto;
 using BSharp.Data;
 using BSharp.Services.ApiAuthentication;
-using Microsoft.AspNetCore.Http;
+using BSharp.Services.ClientInfo;
+using BSharp.Services.Identity;
+using BSharp.Services.Sharding;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using BSharp.Services.Utilities;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
@@ -24,26 +21,28 @@ namespace BSharp.Controllers
     {
         // Private fields
 
-        private readonly AdminContext _db;
-        private readonly ILogger<CompaniesController> _logger;
-        private readonly IStringLocalizer<CompaniesController> _localizer;
-        private readonly IMapper _mapper;
+        private readonly AdminRepository _repo;
+        private readonly ILogger _logger;
+        private readonly IShardResolver _shardResolver;
+        private readonly IExternalUserAccessor _externalUserAccessor;
+        private readonly IClientInfoAccessor _clientInfoAccessor;
 
 
         // Constructor
 
-        public CompaniesController(AdminContext db, ILogger<CompaniesController> logger,
-            IStringLocalizer<CompaniesController> localizer, IMapper mapper)
+        public CompaniesController(AdminRepository db, ILogger<CompaniesController> logger,
+            IShardResolver shardResolver, IExternalUserAccessor externalUserAccessor, IClientInfoAccessor clientInfoAccessor)
         {
-            _db = db;
+            _repo = db;
             _logger = logger;
-            _localizer = localizer;
-            _mapper = mapper;
+            _shardResolver = shardResolver;
+            _externalUserAccessor = externalUserAccessor;
+            _clientInfoAccessor = clientInfoAccessor;
         }
 
 
         [HttpGet("client")]
-        public async Task<ActionResult<IEnumerable<TenantForClient>>> GetForClient()
+        public async Task<ActionResult<IEnumerable<UserCompany>>> GetForClient()
         {
             try
             {
@@ -61,28 +60,41 @@ namespace BSharp.Controllers
             }
         }
 
-        private async Task<IEnumerable<TenantForClient>> GetForClientImpl()
+        private async Task<IEnumerable<UserCompany>> GetForClientImpl()
         {
-            var externalId = User.ExternalUserId();
-            var dbUser = await _db.GlobalUsers
-                .Where(e => e.ExternalId == externalId)
-                .Include(user => user.Memberships)
-                .ThenInclude(membership => membership.Tenant)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+            var result = new List<UserCompany>();
 
-            if(dbUser != null)
+            var databaseIds = await _repo.GetAccessibleDatabaseIds();
+            var globalUserInfo = await _repo.GetAdminUserInfoAsync();
+            foreach (var databaseId in databaseIds)
             {
-                var dbCompanies = dbUser.Memberships.Select(e => e.Tenant);
-                var companies = _mapper.Map<IEnumerable<TenantForClient>>(dbCompanies);
+                try
+                {
+                    var connString = _shardResolver.GetConnectionString(databaseId);
+                    using (var appRepo = new ApplicationRepository(null, _externalUserAccessor, _clientInfoAccessor, null))
+                    {
+                        await appRepo.InitConnectionAsync(connString);
+                        var userInfo = await appRepo.GetUserInfoAsync();
+                        if (userInfo.UserId != null)
+                        {
+                            var tenantInfo = await appRepo.GetTenantInfoAsync();
+                            result.Add(new UserCompany
+                            {
+                                Id = databaseId,
+                                Name = tenantInfo.ShortCompanyName,
+                                Name2 = tenantInfo.ShortCompanyName2,
+                                Name3 = tenantInfo.ShortCompanyName3
+                            });
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError($"Exception while loading user companies: DatabaseId: {databaseId}, UserId: {globalUserInfo?.UserId}, {ex.GetType().Name}: {ex.Message}");
+                }
+            }
 
-                // Prepare the settings for client
-                return companies;
-            }
-            else
-            {
-                return new List<TenantForClient>();
-            }
+            return result;
         }
     }
 }

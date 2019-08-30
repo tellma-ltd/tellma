@@ -6,33 +6,18 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class EmailServiceCollectionExtensions
     {
-        public static IServiceCollection AddEmail(this IServiceCollection services, Action<EmailConfiguration> action)
+        public static IServiceCollection AddEmail(this IServiceCollection services, IConfiguration configSection = null)
         {
+
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
-            services.Configure(action);
-            return services.AddEmail(config: null);
-        }
-
-        public static IServiceCollection AddEmail(this IServiceCollection services, IConfiguration config = null)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (config != null)
+            if (configSection != null)
             {
                 // Add configuration
-                services.Configure<EmailConfiguration>(config);
+                services.Configure<EmailOptions>(configSection);
             }
 
             // Register the services
