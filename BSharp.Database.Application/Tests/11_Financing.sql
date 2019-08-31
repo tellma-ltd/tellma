@@ -37,13 +37,13 @@ BEGIN -- Inserting
 END
 
 BEGIN -- Updating document and deleting lines/entries
-	INSERT INTO @D12([Id], [DocumentDate],	[Memo], [EvidenceTypeId])
-	SELECT [Id], [DocumentDate],	[Memo], [EvidenceTypeId] 
+	INSERT INTO @D12([Index], [Id], [DocumentDate],	[Memo], [EvidenceTypeId])
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id], [DocumentDate],	[Memo], [EvidenceTypeId] 
 	FROM dbo.Documents
 	WHERE [DocumentTypeId] = N'manual-journals' AND [SerialNumber] = 1;
 
-	INSERT INTO @L12([Id], [DocumentId], [DocumentIndex], [LineTypeId], [ScalingFactor], [SortKey])
-	SELECT DL.[Id], DL.[DocumentId], D12.[Index], DL.[LineTypeId], [ScalingFactor], [SortKey]
+	INSERT INTO @L12([Index], [DocumentIndex],					[Id], [DocumentId], [LineTypeId], [ScalingFactor], [SortKey])
+	SELECT ROW_NUMBER() OVER(ORDER BY DL.[Id]), D12.[Index], DL.[Id], DL.[DocumentId],  DL.[LineTypeId], [ScalingFactor], [SortKey]
 	FROM dbo.DocumentLines DL
 	JOIN @D12 D12 ON D12.[Id] = DL.[DocumentId];
 
@@ -74,7 +74,7 @@ BEGIN -- Updating document and deleting lines/entries
 		GOTO Err_Label;
 	END;
 
-	INSERT INTO @D12Ids([Id]) SELECT [Id] FROM dbo.Documents;
+	INSERT INTO @D12Ids([Id]) SELECT  [Id] FROM dbo.Documents;
 	SELECT * FROM rpt.Documents(@D12Ids) ORDER BY [SortKey], [EntryNumber];
 END
 
@@ -90,12 +90,10 @@ BEGIN -- signing
 	SELECT * FROM rpt.Documents(@D13Ids) ORDER BY [SortKey], [EntryNumber];
 	SELECT * FROM [rpt].[Documents__Signatures](@D13Ids);
 
-	--select *, ValidFrom AT TIME ZONE 'UTC' AS [SavedAt]  from RoleMemberships;
-	--select *, ValidFrom AT TIME ZONE 'UTC' AS [SavedAt] from RoleMembershipsHistory;
-
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
 		Print 'Capital Investment (M): Sign'
 		GOTO Err_Label;
 	END;
 END
+

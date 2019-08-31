@@ -45,7 +45,7 @@ BEGIN -- reset Identities
 	EXEC sp_set_session_context 'Debug', 1;
 	DECLARE @UserId INT, @RowCount INT;
 
-	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = N'support@banan-it.com';
+	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = '$(DeployEmail)';-- N'support@banan-it.com';
 	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
 
 	DECLARE @FunctionalCurrency NCHAR(3), @FunctionalCurrencyId INT;

@@ -3,6 +3,7 @@
 	DECLARE @ShortCompanyName NVARCHAR(255)				= '$(ShortCompanyName)'; --N'ACME International';
 	DECLARE @PrimaryLanguageId NVARCHAR(255)			= '$(PrimaryLanguageId)'; --N'en';
 	DECLARE @FunctionalCurrency NCHAR(3)				= '$(FunctionalCurrency)'; --N'ETB'
+	DECLARE @intTest INT	= '$(I)';
 	DECLARE @ViewsAndSpecsVersion UNIQUEIDENTIFIER		= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER			= NEWID();
 END
@@ -11,8 +12,8 @@ DECLARE @UserId INT, @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET(), @FunctionalCu
 -- Add the support account
 IF NOT EXISTS(SELECT * FROM [dbo].[Users] WHERE [Email] = @DeployEmail)
 BEGIN
-	INSERT INTO dbo.Agents([Name],[AgentType], CreatedById, ModifiedById)
-	VALUES (N'Banan IT', N'Organization', IDENT_CURRENT('dbo.Agents'), IDENT_CURRENT('dbo.Agents'))
+	INSERT INTO dbo.Agents([Name],[AgentType], CreatedById, ModifiedById, TitleId)
+	VALUES (N'Banan IT', N'Organization', IDENT_CURRENT('dbo.Agents'), IDENT_CURRENT('dbo.Agents'), @intTest);
 	SET @UserId= SCOPE_IDENTITY();
 	INSERT INTO [dbo].[Users]([Id], [Email], CreatedById, ModifiedById)
 	VALUES (@UserId, @DeployEmail, @UserId, @UserId);
