@@ -40,4 +40,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[MeasurementUnits__Select]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="60001ba6-c884-43c0-b035-1085394b8aea" ChangeDateTime="08/31/2019 12:50:23">
+    <Property Name="ElementName" Value="[dbo].[FK_Users__AgentId]" />
+    <Property Name="ElementType" Value="SqlForeignKeyConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Users]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FK_Users__Id]" />
+  </Operation>
 </Operations>

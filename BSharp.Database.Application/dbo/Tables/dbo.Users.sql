@@ -18,7 +18,7 @@
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[ModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	-- ??
-	CONSTRAINT [FK_Users__AgentId] FOREIGN KEY ([Id]) REFERENCES [dbo].[Agents] ([Id]),
+	CONSTRAINT [FK_Users__Id] FOREIGN KEY ([Id]) REFERENCES [dbo].[Agents] ([Id]),
 	CONSTRAINT [FK_Users__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	CONSTRAINT [FK_Users__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 );

@@ -362,15 +362,15 @@
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
-      <DefaultValue>"support@banan-it.com"</DefaultValue>
+      <DefaultValue>support@banan-it.com</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="FunctionalCurrency">
-      <DefaultValue>"ETB"</DefaultValue>
+      <DefaultValue>ETB</DefaultValue>
       <Value>$(SqlCmdVar__4)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="PrimaryLanguageId">
-      <DefaultValue>"en"</DefaultValue>
+      <DefaultValue>en</DefaultValue>
       <Value>$(SqlCmdVar__3)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="ShortCompanyName">
