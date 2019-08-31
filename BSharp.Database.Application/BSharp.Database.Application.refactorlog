@@ -47,4 +47,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[FK_Users__Id]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="43efd8eb-d5b7-4f64-a3b1-02cc2ab712ce" ChangeDateTime="08/31/2019 16:01:15">
+    <Property Name="ElementName" Value="[dbo].[CK_Documents__Duration]" />
+    <Property Name="ElementType" Value="SqlCheckConstraint" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CK_Documents__Frequency]" />
+  </Operation>
 </Operations>
