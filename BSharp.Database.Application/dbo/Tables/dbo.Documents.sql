@@ -5,13 +5,13 @@
 -- Kimbirly suggestion: [Id]: PRIMARY KEY NONCLUSTERED, ([DocumentDate], [Id]): Clustered index
 	[Id]									INT PRIMARY KEY IDENTITY,
 	-- Common to all document types
-	[DocumentTypeId]						NVARCHAR (50)	NOT NULL,	
+	[DocumentTypeId]						NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DocumentTypeId] FOREIGN KEY ([DocumentTypeId]) REFERENCES [dbo].[DocumentTypes] ([Id]) ON UPDATE CASCADE,
 	[SerialNumber]							INT				NOT NULL,	-- auto generated, copied to paper if needed.
-	[DocumentDate]							DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()),
+	[DocumentDate]							DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()) CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())),
 	[State]									NVARCHAR (30)	NOT NULL DEFAULT N'Draft' CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
 	
 	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
-	[EvidenceTypeId]						NVARCHAR(30)		NOT NULL,
+	[EvidenceTypeId]						NVARCHAR(30)	NOT NULL CONSTRAINT [CK_Documents__EvidenceTypeId] CHECK ([EvidenceTypeId] IN (N'Authentication', N'SourceDocument', N'Attachment', N'Trust')),
 	-- When evidence type = source document
 	[VoucherBookletId]						INT, -- each range might be dedicated for a special purpose
 	[VoucherNumericReference]				INT, -- must fall between RangeStarts and RangeEnds of the booklet
@@ -44,8 +44,8 @@
 	[InvoiceReferenceIsCommon]				BIT				DEFAULT 1,
 	-- Transaction specific, to record the acquisition or loss of goods and services
 	-- Orders that are not negotiables, are assumed to happen, and hence are journalized, even we are verifying it later.
-	
-	[Frequency]								NVARCHAR (30)	NOT NULL DEFAULT (N'OneTime'), -- an easy way to define a recurrent document
+	-- an easy way to define a recurrent document	
+	[Frequency]								NVARCHAR (30)	NOT NULL DEFAULT (N'OneTime') CONSTRAINT [CK_Documents__Frequency] CHECK ([Frequency] IN (N'OneTime', N'Daily', N'Weekly', N'Monthly', N'Quarterly', N'Yearly')),
 	[Repetitions]							INT				NOT NULL DEFAULT 0, -- time unit is function of frequency
 	[EndDate] AS (
 					CASE 
@@ -58,22 +58,14 @@
 					END
 	) PERSISTED,
 	-- Request specific: purchase requisition, payment requesition, production request, maintenance request
-	[NeededBy]								DATE, -- 
+	[NeededBy]								DATE, -- here or in lines (?)
 	-- Offer expiry date can be put on the generated template (expires in two weeks from above date)
 	[CreatedAt]								DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]							INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]							INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Documents__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]							DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]							INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[ModifiedById]							INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Documents__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 	-- If the company is in Alofi, and the server is hosted in Apia, the server time will be one day behind
-	-- So, the user will not be able to enter transactions unless DocumentDate is allowed 1d future 
-	
-	CONSTRAINT [CK_Documents__Duration] CHECK ([Frequency] IN (N'OneTime', N'Daily', N'Weekly', N'Monthly', N'Quarterly', N'Yearly')),
-	CONSTRAINT [FK_Documents__DocumentTypeId] FOREIGN KEY ([DocumentTypeId]) REFERENCES [dbo].[DocumentTypes] ([Id]) ON UPDATE CASCADE, 
-	CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())) ,
-	
-	CONSTRAINT [CK_Documents__EvidenceTypeId] CHECK ([EvidenceTypeId] IN (N'Authentication', N'SourceDocument', N'Attachment', N'Trust')),
-	CONSTRAINT [FK_Documents__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_Documents__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	-- So, the user will not be able to enter transactions unless DocumentDate is allowed 1d future 	
  );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Documents__VoucherBooklet_VoucherNumericReference]

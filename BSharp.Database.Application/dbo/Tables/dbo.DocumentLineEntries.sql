@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[DocumentLineEntries] (
 --	These are for transactions only. If there are entries from requests or inquiries, etc=> other tables
 	[Id]						INT				CONSTRAINT [PK_DocumentLineEntries] PRIMARY KEY IDENTITY,
-	[DocumentLineId]			INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__DocumentLineId]	FOREIGN KEY ([DocumentLineId])	REFERENCES [dbo].[DocumentLines] ([Id]) ON DELETE CASCADE,
+	[DocumentLineId]			INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__DocumentLineId] FOREIGN KEY ([DocumentLineId])	REFERENCES [dbo].[DocumentLines] ([Id]) ON DELETE CASCADE,
 	[EntryNumber]				INT				NOT NULL DEFAULT 1,
 --	Upon posting the document, the auto generated entries will be MERGED with the present ones
 --	based on AccountId, IfrsAccountId, IfrsEntryClassificationId, ResourceId
@@ -39,9 +39,8 @@
 	[Value]						VTYPE			NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- Additional information to satisfy reporting requirements
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
--- While Voucher Number referes to the voucher representing the transaction, if any,
--- this refers to any other identifying string that we may need to store, such as Check number
--- deposit slip reference, invoice number, etc...
+-- While Voucher Number referes to the source document, this refers to any other identifying string 
+-- for support documents, such as deposit slip reference, invoice number, etc...
 	[ExternalReference]			NVARCHAR (255),
 -- The following are sort of dynamic properties that capture information for reporting purposes
 	[AdditionalReference]		NVARCHAR (255),

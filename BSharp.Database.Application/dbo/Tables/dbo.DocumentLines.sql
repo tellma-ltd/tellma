@@ -2,7 +2,6 @@
 --	These are for transactions only. If there are Lines from requests or inquiries, etc=> other tables
 	[Id]					INT					PRIMARY KEY IDENTITY,
 	[DocumentId]			INT					NOT NULL CONSTRAINT [FK_DocumentLines__DocumentId]	FOREIGN KEY ([DocumentId])	REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
-
 	[LineTypeId]			NVARCHAR (50)		NOT NULL CONSTRAINT [FK_DocumentLines__LineTypeId]	FOREIGN KEY ([LineTypeId])	REFERENCES [dbo].[LineTypes] ([Id]),
 	[TemplateLineId]		INT, -- depending on the line type, the user may/may not be allowed to edit
 	[ScalingFactor]			FLOAT, -- Qty sold for Price list, Qty produced for BOM
