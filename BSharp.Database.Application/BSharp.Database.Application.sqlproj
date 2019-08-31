@@ -369,16 +369,12 @@
       <DefaultValue>ETB</DefaultValue>
       <Value>$(SqlCmdVar__4)</Value>
     </SqlCmdVariable>
-    <SqlCmdVariable Include="I">
-      <DefaultValue>5</DefaultValue>
-      <Value>$(SqlCmdVar__5)</Value>
-    </SqlCmdVariable>
     <SqlCmdVariable Include="PrimaryLanguageId">
       <DefaultValue>en</DefaultValue>
       <Value>$(SqlCmdVar__3)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="ShortCompanyName">
-      <DefaultValue>'ACME International'</DefaultValue>
+      <DefaultValue>ACME International</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
     </SqlCmdVariable>
   </ItemGroup>

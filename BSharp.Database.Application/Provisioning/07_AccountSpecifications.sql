@@ -1,4 +1,4 @@
-﻿DECLARE @AccountSpecifications AS TABLE (
+﻿ DECLARE @AccountSpecifications AS TABLE (
 	[AccountId]				NVARCHAR (255),
 	[Direction]				SMALLINT,
 	[CustodyLabel]			NVARCHAR (50), -- Needed when hovering over the column.
