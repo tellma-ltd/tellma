@@ -51,24 +51,10 @@ namespace BSharp
             _env = env;
         }
 
-        private static bool _alreadyConfigured = false;
-
         public void ConfigureServices(IServiceCollection services)
         {
             try
             {
-                // For some reason the integration tests are calling configure services 
-                // twice, which is causing exceptions, this is a workaround until we
-                // figure out the reason
-                if (_alreadyConfigured)
-                {
-                    return;
-                }
-                else
-                {
-                    _alreadyConfigured = true;
-                }
-
                 // Global configurations maybe used in many places
                 services.Configure<GlobalOptions>(_config);
                 GlobalOptions = _config.Get<GlobalOptions>();

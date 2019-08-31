@@ -5,7 +5,6 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -19,7 +18,12 @@ namespace BSharp
         {
             var host = CreateWebHostBuilder(args).Build();
 
-            CreateAdministrator(host);
+            // Initialize the database
+            try { InitDatabase(host.Services); }
+            catch (Exception ex)
+            {
+                Startup.GlobalError = $"{ex.GetType().Name}: {ex.Message}";
+            }
 
             host.Run();
         }
@@ -29,51 +33,49 @@ namespace BSharp
             .UseStartup<Startup>()
             .ConfigureLogging((hostingContext, logging) => logging.AddDebug());
 
-        private static void CreateAdministrator(IWebHost host)
+        /// <summary>
+        /// Database initialization is performed here, after the web host is configured but before it is run
+        /// this way the initialization has access to environment variables in configuration providers, but it
+        /// only runs once when the web app loads
+        /// </summary>
+        public static void InitDatabase(IServiceProvider provider)
         {
-            try
+            // If missing, the default admin user is added here
+            using (var scope = provider.CreateScope())
             {
-                // If missing, the default admin user is added here
-                using (var scope = host.Services.CreateScope())
+                // (1) Retrieve the admin credentials from configurations
+                var opt = scope.ServiceProvider.GetRequiredService<IOptions<GlobalOptions>>().Value;
+                string email = opt?.Admin?.Email ?? "admin@bsharp.online";
+                string fullName = opt?.Admin?.FullName ?? "Administrator";
+                string password = opt?.Admin?.Password ?? "Admin@123";
+
+                // (2) Create the user in the admin database
+                var adminRepo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
+                adminRepo.AdminUsers__CreateAdmin(email, fullName, password).Wait();
+
+                // (3) Create the user in the embedded identity server (if enabled)
+                if (opt.EmbeddedIdentityServerEnabled)
                 {
-                    // (1) Retrieve the admin credentials from configurations
-                    var opt = scope.ServiceProvider.GetRequiredService<IOptions<GlobalOptions>>().Value;
-                    string email = opt?.Admin?.Email ?? "admin@bsharp.online";
-                    string fullName = opt?.Admin?.FullName ?? "Administrator";
-                    string password = opt?.Admin?.Password ?? "Admin@123";
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<EmbeddedIdentityServerUser>>();
+                    var admin = userManager.FindByEmailAsync(email).GetAwaiter().GetResult();
 
-                    // (2) Create the user in the admin database
-                    var adminRepo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-                    adminRepo.AdminUsers__CreateAdmin(email, fullName, password).Wait();
-
-                    // (3) Create the user in the embedded identity server (if enabled)
-                    if (opt.EmbeddedIdentityServerEnabled)
+                    if (admin == null)
                     {
-                        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<EmbeddedIdentityServerUser>>();
-                        var admin = userManager.FindByEmailAsync(email).GetAwaiter().GetResult();
-
-                        if (admin == null)
+                        admin = new EmbeddedIdentityServerUser
                         {
-                            admin = new EmbeddedIdentityServerUser
-                            {
-                                UserName = email,
-                                Email = email,
-                                EmailConfirmed = true
-                            };
+                            UserName = email,
+                            Email = email,
+                            EmailConfirmed = true
+                        };
 
-                            var result = userManager.CreateAsync(admin, password).GetAwaiter().GetResult();
-                            if (!result.Succeeded)
-                            {
-                                string msg = string.Join(", ", result.Errors.Select(e => e.Description));
-                                throw new Exception($"Failed to create the administrator account. Message: {msg}");
-                            }
+                        var result = userManager.CreateAsync(admin, password).GetAwaiter().GetResult();
+                        if (!result.Succeeded)
+                        {
+                            string msg = string.Join(", ", result.Errors.Select(e => e.Description));
+                            throw new Exception($"Failed to create the administrator account. Message: {msg}");
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Startup.GlobalError = $"{ex.GetType().Name}: {ex.Message}";
             }
         }
     }

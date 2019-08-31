@@ -18,7 +18,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (!string.IsNullOrWhiteSpace(authorityUri))
             {
-
                 // Add the default scheme for the embedded IdentityServer
                 services.AddAuthentication()
 
@@ -27,7 +26,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     {
                         options.Authority = authorityUri;
                         options.ApiName = Constants.ApiResourceName;
-                        options.JwtValidationClockSkew = TimeSpan.FromSeconds(0);
                     });
             }
             else
@@ -36,7 +34,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 // IF Authority URI is not supplied assume the embedded identity server instance is enabled and used
                 authorityUri = "https://localhost:44368";
             }
-
 
             // Add helper service that provides access to the authenticated user's email and external Id 
             services.AddSingleton<IExternalUserAccessor, ExternalUserAccessor>();

@@ -85,19 +85,19 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
-      // Local Users
+      // Users
       {
-        path: 'local-users',
+        path: 'users',
         component: UsersMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'local-users/import',
+        path: 'users/import',
         component: UsersImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'local-users/:id',
+        path: 'users/:id',
         component: UsersDetailsComponent,
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },

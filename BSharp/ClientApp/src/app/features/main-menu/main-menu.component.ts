@@ -41,7 +41,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units' },
     { label: 'IfrsNotes', icon: 'clipboard', background: 'b-cyan', link: '../ifrs-notes', viewId: 'ifrs-notes' },
     { label: 'ProductCategories', icon: 'list', background: 'b-cyan', link: '../product-categories', viewId: 'product-categories' },
-    { label: 'Users', icon: 'users', background: 'b-green', link: '../local-users', viewId: 'local-users' },
+    { label: 'Users', icon: 'users', background: 'b-green', link: '../users', viewId: 'users' },
     { label: 'Roles', icon: 'tasks', background: 'b-green', link: '../roles', viewId: 'roles' },
     { label: 'Settings', icon: 'cog', background: 'b-blue', link: '../settings', viewId: 'settings' },
   ];
@@ -68,7 +68,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     label: 'Administration',
     background: 'b-blue',
     items: [
-      { label: 'Users', icon: 'users', background: 'b-green', link: '../local-users', viewId: 'local-users' },
+      { label: 'Users', icon: 'users', background: 'b-green', link: '../users', viewId: 'users' },
       { label: 'Roles', icon: 'tasks', background: 'b-green', link: '../roles', viewId: 'roles' },
       { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units' },
       { label: 'Settings', icon: 'cog', background: 'b-blue', link: '../settings', viewId: 'settings' },

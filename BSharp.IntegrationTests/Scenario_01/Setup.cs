@@ -12,17 +12,31 @@ namespace BSharp.IntegrationTests.Scenario_01
     [TestCaseOrderer(TestOrderer.TypeName, TestOrderer.AssemblyName)]
     public partial class Scenario_01 : IClassFixture<Scenario_01_WebApplicationFactory>
     {
-        private readonly HttpClient _client;
-        private readonly SharedCollection _shared;
-        private readonly ITestOutputHelper _output;
+        /// <summary>
+        /// The <see cref="HttpClient"/> used by all test methods
+        /// </summary>
+        private HttpClient Client { set; get; }
 
+        /// <summary>
+        /// A dictionary-like collection shared across test methods
+        /// </summary>
+        private SharedCollection Shared { set; get; }
+
+        /// <summary>
+        /// Output for the test methods to do some logging
+        /// </summary>
+        private ITestOutputHelper Output { set; get; }
+
+        /// <summary>
+        /// The default trait used to group the results in the Test Explorer window
+        /// </summary>
         public const string Testing = TestOrderer.Testing;
 
         public Scenario_01(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output)
         {
-            _client = factory.GetClient();
-            _shared = factory.GetSharedCollection();
-            _output = output;
+            Client = factory.GetClient();
+            Shared = factory.GetSharedCollection();
+            Output = output;
         }
 
         [Trait(Testing, "00 - Setup")]
@@ -38,7 +52,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         protected async Task GrantPermissionToSecurityAdministrator(string viewId, string level, string criteria)
         {
             // Query the API for the Id that was just returned from the Save
-            var response = await _client.GetAsync($"/api/roles/{1}?expand=Permissions/View,Members/User");
+            var response = await Client.GetAsync($"/api/roles/{1}?expand=Permissions/View,Members/User");
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Role>>();
             var role = getByIdResponse.Result;
 
@@ -51,8 +65,8 @@ namespace BSharp.IntegrationTests.Scenario_01
 
 
             var dtosForSave = new List<Role> { role };
-            var postResponse = await _client.PostAsJsonAsync($"/api/roles?expand=Permissions/View,Members/User", dtosForSave);
-            var postResponseText = await response.Content.ReadAsStringAsync();
+            var postResponse = await Client.PostAsJsonAsync($"/api/roles?expand=Permissions/View,Members/User", dtosForSave);
+            Output.WriteLine(await postResponse.Content.ReadAsStringAsync());
         }
     }
 }

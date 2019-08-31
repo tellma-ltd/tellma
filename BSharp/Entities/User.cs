@@ -15,7 +15,7 @@ namespace BSharp.Entities
         public string Email { get; set; }
 
         [Display(Name = "User_Roles")]
-        [ForeignKey(nameof(RoleMembership.UserId))]
+        [ForeignKey(nameof(RoleMembership.AgentId))]
         public List<TRoleMembership> Roles { get; set; }
     }
 

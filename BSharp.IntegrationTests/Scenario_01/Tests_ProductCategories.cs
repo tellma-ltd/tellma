@@ -20,10 +20,10 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "000 - Getting all product categories before granting permissions returns a 403 Forbidden response")]
         public async Task Test35000()
         {
-            var response = await _client.GetAsync($"/api/product-categories");
+            var response = await Client.GetAsync($"/api/product-categories");
 
             // Call the API
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 403 OK
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -36,8 +36,8 @@ namespace BSharp.IntegrationTests.Scenario_01
             await GrantPermissionToSecurityAdministrator("product-categories", Constants.Update, "Id lt 100000");
 
             // Call the API
-            var response = await _client.GetAsync($"/api/product-categories");
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            var response = await Client.GetAsync($"/api/product-categories");
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -57,9 +57,9 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3501()
         {
             int nonExistentId = 1;
-            var response = await _client.GetAsync($"/api/product-categories/{nonExistentId}");
+            var response = await Client.GetAsync($"/api/product-categories/{nonExistentId}");
 
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
@@ -78,10 +78,10 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<ProductCategoryForSave> { dtoForSave };
-            var response = await _client.PostAsJsonAsync($"/api/product-categories", dtosForSave);
+            var response = await Client.PostAsJsonAsync($"/api/product-categories", dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Assert that the response is well-formed singleton of ProductCategory
@@ -99,7 +99,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code, responseDto.Code);
             Assert.Equal(dtoForSave.ParentId, responseDto.ParentId);
 
-            _shared.SetItem("ProductCategory_all", responseDto);
+            Shared.Set("ProductCategory_all", responseDto);
         }
 
         [Trait(Testing, ProductCategories)]
@@ -107,11 +107,11 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3503()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = _shared.GetItem<ProductCategory>("ProductCategory_all");
+            var entity = Shared.Get<ProductCategory>("ProductCategory_all");
             var id = entity.Id;
-            var response = await _client.GetAsync($"/api/product-categories/{id}");
+            var response = await Client.GetAsync($"/api/product-categories/{id}");
 
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response is a well formed GetByIdResponse of product category
@@ -143,10 +143,10 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await _client.PostAsJsonAsync($"/api/product-categories", list);
+            var response = await Client.PostAsJsonAsync($"/api/product-categories", list);
 
             // Assert that the response status code is 422 unprocessable entity (validation errors)
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
 
             // Confirm that the result is a well-formed validation errors structure
@@ -176,7 +176,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await _client.PostAsJsonAsync($"/api/product-categories", new List<ProductCategoryForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync($"/api/product-categories", new List<ProductCategoryForSave> { dtoForSave });
 
             // Confirm that the response is well-formed
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<ProductCategory>>();
@@ -190,7 +190,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code?.Trim(), responseDto.Code);
 
             // share the entity, for the subsequent delete test
-            _shared.SetItem("ProductCategory_pc", responseDto);
+            Shared.Set("ProductCategory_pc", responseDto);
         }
 
         [Trait(Testing, ProductCategories)]
@@ -198,15 +198,15 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3506()
         {
             // Get the Id
-            var entity = _shared.GetItem<ProductCategory>("ProductCategory_pc");
+            var entity = Shared.Get<ProductCategory>("ProductCategory_pc");
             var id = entity.Id;
 
             // Query the delete API
             var msg = new HttpRequestMessage(HttpMethod.Delete, $"/api/product-categories");
             msg.Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter());
-            var deleteResponse = await _client.SendAsync(msg);
+            var deleteResponse = await Client.SendAsync(msg);
 
-            _output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
+            Output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
 
@@ -215,14 +215,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3507()
         {
             // Get the Id
-            var entity = _shared.GetItem<ProductCategory>("ProductCategory_pc");
+            var entity = Shared.Get<ProductCategory>("ProductCategory_pc");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
-            var getResponse = await _client.GetAsync($"/api/product-categories/{id}");
+            var getResponse = await Client.GetAsync($"/api/product-categories/{id}");
 
             // Assert that the response is correct
-            _output.WriteLine(await getResponse.Content.ReadAsStringAsync());
+            Output.WriteLine(await getResponse.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
@@ -231,14 +231,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3508()
         {
             // Get the Id
-            var entity = _shared.GetItem<ProductCategory>("ProductCategory_all");
+            var entity = Shared.Get<ProductCategory>("ProductCategory_all");
             var id = entity.Id;
 
             // Call the API
-            var response = await _client.PutAsJsonAsync($"/api/product-categories/deactivate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"/api/product-categories/deactivate", new List<int>() { id });
 
             // Assert that the response status code is correct
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
@@ -255,14 +255,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3509()
         {
             // Get the Id
-            var entity = _shared.GetItem<ProductCategory>("ProductCategory_all");
+            var entity = Shared.Get<ProductCategory>("ProductCategory_all");
             var id = entity.Id;
 
             // Call the API
-            var response = await _client.PutAsJsonAsync($"/api/product-categories/activate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"/api/product-categories/activate", new List<int>() { id });
 
             // Assert that the response status code is correct
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
@@ -279,12 +279,12 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3510()
         {
             // Get the Id
-            var entity = _shared.GetItem<ProductCategory>("ProductCategory_all");
+            var entity = Shared.Get<ProductCategory>("ProductCategory_all");
             var id = entity.Id;
 
-            var response = await _client.GetAsync($"/api/product-categories/{id}?select=Name");
+            var response = await Client.GetAsync($"/api/product-categories/{id}?select=Name");
 
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response is a well formed GetByIdResponse of product category

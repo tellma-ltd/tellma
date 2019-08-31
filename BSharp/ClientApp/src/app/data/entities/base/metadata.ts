@@ -1,7 +1,7 @@
 import { metadata_MeasurementUnit } from '../measurement-unit';
 import { TenantWorkspace } from '../../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { metadata_LocalUser } from '../user';
+import { metadata_User as metadata_User } from '../user';
 import { EntityWithKey } from './entity-with-key';
 import { metadata_Role } from '../role';
 import { metadata_ProductCategory } from '../product-category';
@@ -9,7 +9,7 @@ import { metadata_IfrsNote } from '../ifrs-note';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => DtoDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
-    LocalUser: metadata_LocalUser,
+    User: metadata_User,
     Role: metadata_Role,
     ProductCategory: metadata_ProductCategory,
     IfrsNote: metadata_IfrsNote

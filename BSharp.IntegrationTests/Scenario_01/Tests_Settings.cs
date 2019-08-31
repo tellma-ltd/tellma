@@ -19,10 +19,10 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "001 - Getting settings before granting permissions returns a 403 Forbidden response")]
         public async Task Test3300()
         {
-            var response = await _client.GetAsync(settingsURL);
+            var response = await Client.GetAsync(settingsURL);
 
             // Call the API
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 403 OK
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -35,8 +35,8 @@ namespace BSharp.IntegrationTests.Scenario_01
             await GrantPermissionToSecurityAdministrator("settings", "Update", criteria: null);
 
             // Call the API
-            var response = await _client.GetAsync(settingsURL);
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            var response = await Client.GetAsync(settingsURL);
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -50,7 +50,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Contains("Contoso", settings.ShortCompanyName);
             Assert.Equal("en", settings.PrimaryLanguageId);
 
-            _shared.SetItem("Settings", responseData.Result);
+            Shared.Set("Settings", responseData.Result);
         }
 
         [Trait(Testing, settings)]
@@ -58,7 +58,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3302()
         {
             // Prepare a well formed entity
-            var settings = _shared.GetItem<Settings>("Settings");
+            var settings = Shared.Get<Settings>("Settings");
 
             settings.ShortCompanyName2 = "كونتوسو المحدودة";
             settings.PrimaryLanguageSymbol = "En";
@@ -66,10 +66,10 @@ namespace BSharp.IntegrationTests.Scenario_01
             settings.SecondaryLanguageSymbol = "ع";
             settings.BrandColor = "#123456";
 
-            var response = await _client.PostAsJsonAsync($"{settingsURL}?returnEntities=true", settings);
+            var response = await Client.PostAsJsonAsync($"{settingsURL}?returnEntities=true", settings);
 
             // Assert that the response status code is a happy 200 OK
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
@@ -93,8 +93,8 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test3303()
         {
             // Call the API
-            var response = await _client.GetAsync($"{settingsURL}/client");
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            var response = await Client.GetAsync($"{settingsURL}/client");
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

@@ -28,6 +28,6 @@ namespace BSharp.Controllers.Dto
 
         public string BrandColor { get; set; }
                
-        public DateTimeOffset ProvisionedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
     }
 }

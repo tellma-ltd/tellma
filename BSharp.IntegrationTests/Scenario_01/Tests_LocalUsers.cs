@@ -1,5 +1,5 @@
 ﻿//using BSharp.Controllers.Dto;
-//using BSharp.EntityModel;
+//using BSharp.Entities;
 //using BSharp.IntegrationTests.Utilities;
 //using System.Collections.Generic;
 //using System.Linq;
@@ -20,10 +20,10 @@
 //        [Fact(DisplayName = "001 - Getting all Users before creating any returns a 200 OK singleton collection")]
 //        public async Task Test3100()
 //        {
-//            var response = await _client.GetAsync(UsersURL);
+//            var response = await Client.GetAsync(UsersURL);
 
 //            // Call the API
-//            _output.WriteLine(await response.Content.ReadAsStringAsync());
+//            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
 //            // Assert the result is 200 OK
 //            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -41,9 +41,9 @@
 //        public async Task Test3101()
 //        {
 //            int nonExistentId = 9999999;
-//            var response = await _client.GetAsync($"{UsersURL}/{nonExistentId}");
+//            var response = await Client.GetAsync($"{UsersURL}/{nonExistentId}");
 
-//            _output.WriteLine(await response.Content.ReadAsStringAsync());
+//            Output.WriteLine(await response.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 //        }
 
@@ -52,7 +52,7 @@
 //        public async Task Test3102()
 //        {
 //            await CreateNewRole(); // To create a new role
-//            int salesManagerId = _shared.GetItem<Role>("Role_SalesManager").Id;
+//            int salesManagerId = Shared.Get<Role>("Role_SalesManager").Id;
 
 //            // Prepare a well formed entity
 //            var dtoForSave = new UserForSave
@@ -73,10 +73,10 @@
 
 //            // Save it
 //            var dtosForSave = new List<UserForSave> { dtoForSave };
-//            var response = await _client.PostAsJsonAsync($"{UsersURL}?expand=Roles/Role", dtosForSave);
+//            var response = await Client.PostAsJsonAsync($"{UsersURL}?expand=Roles/Role", dtosForSave);
 
 //            // Assert that the response status code is a happy 200 OK
-//            _output.WriteLine(await response.Content.ReadAsStringAsync());
+//            Output.WriteLine(await response.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
 //            // Assert that the response is well-formed singleton
@@ -101,7 +101,7 @@
 //                    }
 //                );
 
-//            _shared.SetItem("Users_AhmadAkra", responseDto);
+//            Shared.Set("Users_AhmadAkra", responseDto);
 //        }
 
 //        [Trait(Testing, Users)]
@@ -109,11 +109,11 @@
 //        public async Task Test3103()
 //        {
 //            // Query the API for the Id that was just returned from the Save
-//            var entity = _shared.GetItem<User>("Users_AhmadAkra");
+//            var entity = Shared.Get<User>("Users_AhmadAkra");
 //            var id = entity.Id;
-//            var response = await _client.GetAsync($"{UsersURL}/{id}?expand=Roles/Role");
+//            var response = await Client.GetAsync($"{UsersURL}/{id}?expand=Roles/Role");
 
-//            _output.WriteLine(await response.Content.ReadAsStringAsync());
+//            Output.WriteLine(await response.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
 //            // Confirm that the response is a well formed GetByIdResponse
@@ -140,7 +140,7 @@
 //        [Fact(DisplayName = "005 - Saving a user with a non existent role Id returns a 422 Unprocessable Entity")]
 //        public async Task Test3104()
 //        {
-//            int salesManagerId = _shared.GetItem<Role>("Role_SalesManager").Id.Value;
+//            int salesManagerId = Shared.Get<Role>("Role_SalesManager").Id.Value;
 
 //            // Prepare a unit with the same code as one that has been saved already
 //            var dtoForSave = new UserForSave
@@ -162,10 +162,10 @@
 //            };
 
 //            // Call the API
-//            var response = await _client.PostAsJsonAsync(UsersURL, new List<UserForSave> { dtoForSave });
+//            var response = await Client.PostAsJsonAsync(UsersURL, new List<UserForSave> { dtoForSave });
 
 //            // Assert that the response status code is 422 unprocessable entity (validation errors)
-//            _output.WriteLine(await response.Content.ReadAsStringAsync());
+//            Output.WriteLine(await response.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
 
 //            // Confirm that the result is a well-formed validation errors structure
@@ -183,10 +183,10 @@
 
 //            // Fix the email
 //            dtoForSave.Email = "abdullah.ulber@ulber.com";
-//            response = await _client.PostAsJsonAsync(UsersURL, new List<UserForSave> { dtoForSave });
+//            response = await Client.PostAsJsonAsync(UsersURL, new List<UserForSave> { dtoForSave });
 
 //            // Assert that the response status code is 422 unprocessable entity (validation errors)
-//            _output.WriteLine(await response.Content.ReadAsStringAsync());
+//            Output.WriteLine(await response.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
 
 //            // Confirm that the result is a well-formed validation errors structure
@@ -208,8 +208,8 @@
 //        public async Task Test3105()
 //        {
 //            // Get the entity we just saved
-//            var id = _shared.GetItem<User>("Users_AhmadAkra").Id;
-//            var response1 = await _client.GetAsync($"{UsersURL}/{id}?expand=Roles/Role");
+//            var id = Shared.Get<User>("Users_AhmadAkra").Id;
+//            var response1 = await Client.GetAsync($"{UsersURL}/{id}?expand=Roles/Role");
 //            var dto = (await response1.Content.ReadAsAsync<GetByIdResponse<User>>()).Result;
 
 //            // Modify it slightly
@@ -220,8 +220,8 @@
 
 //            // Save it and get the result back
 //            var dtosForSave = new List<User> { dto };
-//            var response2 = await _client.PostAsJsonAsync($"{UsersURL}?expand=Roles/Role", dtosForSave);
-//            _output.WriteLine(await response2.Content.ReadAsStringAsync());
+//            var response2 = await Client.PostAsJsonAsync($"{UsersURL}?expand=Roles/Role", dtosForSave);
+//            Output.WriteLine(await response2.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 //            var dto2 = (await response2.Content.ReadAsAsync<EntitiesResponse<User>>()).Result.FirstOrDefault();
 
@@ -244,13 +244,13 @@
 //        public async Task Test3106()
 //        {
 //            // Get the Id
-//            var id = _shared.GetItem<User>("Users_AhmadAkra").Id.Value;
+//            var id = Shared.Get<User>("Users_AhmadAkra").Id.Value;
 
 //            // Call the API
-//            var response = await _client.PutAsJsonAsync($"{UsersURL}/deactivate", new List<int>() { id });
+//            var response = await Client.PutAsJsonAsync($"{UsersURL}/deactivate", new List<int>() { id });
 
 //            // Assert that the response status code is correct
-//            _output.WriteLine(await response.Content.ReadAsStringAsync());
+//            Output.WriteLine(await response.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
 //            // Confirm that the response content is well formed singleton
@@ -267,13 +267,13 @@
 //        public async Task Test3107()
 //        {
 //            // Get the Id
-//            var id = _shared.GetItem<User>("Users_AhmadAkra").Id.Value;
+//            var id = Shared.Get<User>("Users_AhmadAkra").Id.Value;
 
 //            // Call the API
-//            var response = await _client.PutAsJsonAsync($"{UsersURL}/activate", new List<int>() { id });
+//            var response = await Client.PutAsJsonAsync($"{UsersURL}/activate", new List<int>() { id });
 
 //            // Assert that the response status code is correct
-//            _output.WriteLine(await response.Content.ReadAsStringAsync());
+//            Output.WriteLine(await response.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
 //            // Confirm that the response content is well formed singleton
@@ -291,14 +291,14 @@
 //        public async Task Test3108()
 //        {
 //            // Get the Id
-//            var id = _shared.GetItem<User>("Users_AhmadAkra").Id.Value;
+//            var id = Shared.Get<User>("Users_AhmadAkra").Id.Value;
 
 //            // Query the delete API
 //            var msg = new HttpRequestMessage(HttpMethod.Delete, UsersURL);
 //            msg.Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter());
-//            var deleteResponse = await _client.SendAsync(msg);
+//            var deleteResponse = await Client.SendAsync(msg);
 
-//            _output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
+//            Output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
 //        }
 
@@ -307,13 +307,13 @@
 //        public async Task Test3109()
 //        {
 //            // Get the Id
-//            var id = _shared.GetItem<User>("Users_AhmadAkra").Id.Value;
+//            var id = Shared.Get<User>("Users_AhmadAkra").Id.Value;
 
 //            // Verify that the id was deleted by calling get        
-//            var getResponse = await _client.GetAsync($"{UsersURL}/{id}");
+//            var getResponse = await Client.GetAsync($"{UsersURL}/{id}");
 
 //            // Assert that the response is correct
-//            _output.WriteLine(await getResponse.Content.ReadAsStringAsync());
+//            Output.WriteLine(await getResponse.Content.ReadAsStringAsync());
 //            Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
 //        }
 

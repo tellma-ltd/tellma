@@ -238,6 +238,9 @@ namespace BSharp.Data
                     case nameof(User):
                         return new SqlSource("[rpt].[Users]()");
 
+                    case nameof(Agent):
+                        return new SqlSource("[dbo].[Agents]");
+
                     case nameof(MeasurementUnit):
                         return new SqlSource("[rpt].[MeasurementUnits]()");
 
@@ -356,30 +359,30 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                         // The user Info
                         userInfo = new UserInfo
                         {
-                            UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++),
-                            Name = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            Name2 = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            Name3 = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            Email = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            PermissionsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
-                            UserSettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
+                            UserId = reader.Int32(i++),
+                            Name = reader.String(i++),
+                            Name2 = reader.String(i++),
+                            Name3 = reader.String(i++),
+                            ExternalId = reader.String(i++),
+                            Email = reader.String(i++),
+                            PermissionsVersion = reader.Guid(i++)?.ToString(),
+                            UserSettingsVersion = reader.Guid(i++)?.ToString(),
                         };
 
                         // The tenant Info
                         tenantInfo = new TenantInfo
                         {
-                            ShortCompanyName = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            ShortCompanyName2 = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            ShortCompanyName3 = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            ViewsAndSpecsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
-                            SettingsVersion = reader.IsDBNull(i) ? null : reader.GetGuid(i++).ToString(),
-                            PrimaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            PrimaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            SecondaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            SecondaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            TernaryLanguageId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            TernaryLanguageSymbol = reader.IsDBNull(i) ? null : reader.GetString(i++)
+                            ShortCompanyName = reader.String(i++),
+                            ShortCompanyName2 = reader.String(i++),
+                            ShortCompanyName3 = reader.String(i++),
+                            ViewsAndSpecsVersion = reader.Guid(i++)?.ToString(),
+                            SettingsVersion = reader.Guid(i++)?.ToString(),
+                            PrimaryLanguageId = reader.String(i++),
+                            PrimaryLanguageSymbol = reader.String(i++),
+                            SecondaryLanguageId = reader.String(i++),
+                            SecondaryLanguageSymbol = reader.String(i++),
+                            TernaryLanguageId = reader.String(i++),
+                            TernaryLanguageSymbol = reader.String(i++)
                         };
                     }
                     else
@@ -461,8 +464,8 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                         {
                             ViewId = reader.GetString(i++),
                             Action = reader.GetString(i++),
-                            Criteria = reader.GetString(i++),
-                            Mask = reader.GetString(i++)
+                            Criteria = reader.String(i++),
+                            Mask = reader.String(i++)
                         });
                     }
                 }
@@ -490,10 +493,10 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                         int i = 0;
                         result.Add(new AbstractPermission
                         {
-                            ViewId = reader.GetString(i++),
-                            Action = reader.GetString(i++),
-                            Criteria = reader.GetString(i++),
-                            Mask = reader.GetString(i++)
+                            ViewId = reader.String(i++),
+                            Action = reader.String(i++),
+                            Criteria = reader.String(i++),
+                            Mask = reader.String(i++)
                         });
                     }
                 }
@@ -578,13 +581,13 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                         int i = 0;
                         result.Add(new ValidationError
                         {
-                            Key = reader.GetString(i++),
-                            ErrorName = reader.GetString(i++),
-                            Argument1 = reader.GetString(i++),
-                            Argument2 = reader.GetString(i++),
-                            Argument3 = reader.GetString(i++),
-                            Argument4 = reader.GetString(i++),
-                            Argument5 = reader.GetString(i++)
+                            Key = reader.String(i++),
+                            ErrorName = reader.String(i++),
+                            Argument1 = reader.String(i++),
+                            Argument2 = reader.String(i++),
+                            Argument3 = reader.String(i++),
+                            Argument4 = reader.String(i++),
+                            Argument5 = reader.String(i++)
                         });
                     }
                 }
@@ -701,13 +704,13 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                         int i = 0;
                         result.Add(new ValidationError
                         {
-                            Key = reader.GetString(i++),
-                            ErrorName = reader.GetString(i++),
-                            Argument1 = reader.GetString(i++),
-                            Argument2 = reader.GetString(i++),
-                            Argument3 = reader.GetString(i++),
-                            Argument4 = reader.GetString(i++),
-                            Argument5 = reader.GetString(i++)
+                            Key = reader.String(i++),
+                            ErrorName = reader.String(i++),
+                            Argument1 = reader.String(i++),
+                            Argument2 = reader.String(i++),
+                            Argument3 = reader.String(i++),
+                            Argument4 = reader.String(i++),
+                            Argument5 = reader.String(i++)
                         });
                     }
                 }
@@ -808,10 +811,10 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                         int i = 0;
 
                         result.UserId = reader.GetInt32(i++);
-                        result.Name = reader.GetString(i++);
-                        result.Name2 = reader.GetString(i++);
-                        result.Name3 = reader.GetString(i++);
-                        result.ImageId = reader.GetString(i++);
+                        result.Name = reader.String(i++);
+                        result.Name2 = reader.String(i++);
+                        result.Name3 = reader.String(i++);
+                        result.ImageId = reader.String(i++);
                         result.UserSettingsVersion = reader.GetGuid(i++);
                     }
                     else
@@ -906,13 +909,13 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                         int i = 0;
                         result.Add(new ValidationError
                         {
-                            Key = reader.GetString(i++),
-                            ErrorName = reader.GetString(i++),
-                            Argument1 = reader.GetString(i++),
-                            Argument2 = reader.GetString(i++),
-                            Argument3 = reader.GetString(i++),
-                            Argument4 = reader.GetString(i++),
-                            Argument5 = reader.GetString(i++)
+                            Key = reader.String(i++),
+                            ErrorName = reader.String(i++),
+                            Argument1 = reader.String(i++),
+                            Argument2 = reader.String(i++),
+                            Argument3 = reader.String(i++),
+                            Argument4 = reader.String(i++),
+                            Argument5 = reader.String(i++)
                         });
                     }
                 }

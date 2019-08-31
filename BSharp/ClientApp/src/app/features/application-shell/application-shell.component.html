@@ -52,7 +52,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./local-users"
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./users"
             (click)="onCollapse()">
             {{ 'Users' | translate }}
           </a>
@@ -71,7 +71,7 @@
             <div class="align-self-center">
               <div class="b-dp-wrapper b-dp-dark bg-white mx-1">
                 <b-image
-                  [src]="'local-users/' + ws?.userSettings?.UserId + '/image'"
+                  [src]="'users/' + ws?.userSettings?.UserId + '/image'"
                   [imageId]="ws?.userSettings?.ImageId"
                   shape="circle" [size]="28"></b-image>
               </div>

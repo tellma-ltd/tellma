@@ -1,14 +1,11 @@
-﻿using BSharp.Entities;
-using BSharp.IntegrationTests.Utilities;
-using BSharp.Services.Sharding;
+﻿using BSharp.IntegrationTests.Utilities;
+using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Data.SqlClient;
+using System.IO;
 using System.Net.Http;
 
 namespace BSharp.IntegrationTests.Scenario_01
@@ -18,191 +15,82 @@ namespace BSharp.IntegrationTests.Scenario_01
     /// </summary>
     public class Scenario_01_WebApplicationFactory : WebApplicationFactory<Startup>
     {
-        //private ServiceProvider _provider;
 
-//        protected override void ConfigureWebHost(IWebHostBuilder builder)
-//        {
-//            builder.ConfigureServices(services =>
-//            {
-//                // Keep all the configuration the same except for the manager DB connection string
-//                using (var scope = services.BuildServiceProvider().CreateScope())
-//                {
-//                    var config = new CustomConnectionStringConfiguration(
-//                        scope.ServiceProvider.GetRequiredService<IConfiguration>(), adminDbName: "BSharp-Scenario-01");
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+            // This instructs the web host to use the appsettings.json file in the
+            // test project not the one in the original project being tested
+            var projectDir = Directory.GetCurrentDirectory();
+            var configPath = Path.Combine(projectDir, "appsettings.tests.json");
+            builder.ConfigureAppConfiguration((_, cfg) =>
+            {
+                cfg.AddJsonFile(configPath);
+            });
 
-//                    services.AddSingleton<IConfiguration>(config);
-//                    var env = scope.ServiceProvider.GetRequiredService<IHostingEnvironment>();
-//                    new Startup(config, env).ConfigureServices(services);
-//                }
+            // Here we do database seeding and arranging
+            bool alreadyConfigured = false;
+            builder.ConfigureServices(services =>
+            {
+                if (!alreadyConfigured)
+                {
+                    // configure services
+                    string connString = null;
+                    GlobalOptions globalOptions = null;
+                    var provider = services.BuildServiceProvider();
+                    using (var scope = provider.CreateScope())
+                    {
+                        var env = scope.ServiceProvider.GetRequiredService<IHostingEnvironment>();
+                        var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-//                //////////// Setup
-//                _provider = services.BuildServiceProvider();
-//                using (var scope = _provider.CreateScope())
-//                {
-//                    // Note: The goal is to eventually trim this down to just provisioning the databases
-//                    // and have the remainder of the setup and configuratio done in the tests through the API, when the API is ready
+                        new Startup(config, env).ConfigureServices(services);
 
-//                    // (1) Admin Context migrated the usual way, add one tenant for dev and all translations
-//                    var adminContext = scope.ServiceProvider.GetRequiredService<AdminContext>();
-//                    adminContext.Database.EnsureDeleted();
-//                    adminContext.Database.Migrate();
-//                    if (!adminContext.Tenants.Any())
-//                    {
-//                        adminContext.Tenants.Add(new Tenant
-//                        {
-//                            Id = 101,
-//                            Name = "Contoso, Inc.",
-//                            ShardId = 1
-//                        });
+                        connString = config.GetConnectionString(Constants.AdminConnection);
+                        globalOptions = config.Get<GlobalOptions>();
+                        
+                    }
 
-//                        adminContext.Tenants.Add(new Tenant
-//                        {
-//                            Id = 102,
-//                            Name = "Fabrikam & Co.",
-//                            ShardId = 1
-//                        });
+                    // InitDatabase (It won't run automatically when using WebApplicationFactory)
+                    provider = services.BuildServiceProvider();
+                    Program.InitDatabase(provider);
 
-//                        adminContext.SaveChanges();
-//                    }
+                    // Arrange
+                    string adminEmail = globalOptions?.Admin?.Email ?? "admin@bsharp.online";
+                    ArrangeDatabaseForTests(connString, adminEmail);
 
-//                    adminContext.GlobalUsers.Add(new GlobalUser
-//                    {
-//                        Email = "support@banan-it.com",
-//                        ExternalId = "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35",
-//                        Memberships = new List<TenantMembership> {
-//                            new TenantMembership { TenantId = 101 },
-//                            new TenantMembership { TenantId = 102 }
-//                        }
-//                    });
+                    alreadyConfigured = true;
+                }
+            });
+        }
 
-//                    adminContext.SaveChanges();
+        private void ArrangeDatabaseForTests(string connString, string adminEmail)
+        {
+            var projectDir = Directory.GetCurrentDirectory();
+            var seedAdminPath = Path.Combine(projectDir, "SeedAdmin.sql");
+            var seedAdminSql = File.ReadAllText(seedAdminPath);
 
-//                    // (2) Application Context requires special handling in development, don't resolve it with DI
-//                    var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
-//                    using (var appContext = new ApplicationContext(shardResolver,
-//                        new DesignTimeTenantIdProvider(), 
-//                        new DesignTimeUserIdProvider(), 
-//                        new DesignTimeTenantUserInfoAccessor()))
-//                    {
+            using (var conn = new SqlConnection(connString))
+            {
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.Parameters.AddWithValue("@Email", adminEmail);
+                    cmd.Parameters.AddWithValue("@DatabaseName", "BSharp.IntegrationTests.101");
+                    cmd.CommandText = seedAdminSql;
 
-//                        appContext.Database.Migrate();
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
 
-//                        // Add first user
-//                        var now = DateTimeOffset.Now;
-//                        appContext.Database.ExecuteSqlCommand(
-//                            @"
-//DECLARE @NextId INT = IDENT_CURRENT('[dbo].[LocalUsers]') + 1;
-//INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, Name2, CreatedById, ModifiedById, TenantId)
-//                            VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, 101)",
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
 
-//                            "support@banan-it.com", // {0}
-//                            "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
-//                            now, // {2}
-//                            "Banan IT Support", // {3}
-//                            "فريق مساندة بنان"); // {4}
-
-//                        // The security administrator role
-//                        int userId = 1;
-//                        var saRole = new Role
-//                        {
-//                            Name = "Security Administrator",
-//                            Name2 = "مدير الأمان",
-//                            Code = "SA",
-//                            IsActive = true,
-//                            CreatedById = userId,
-//                            ModifiedById = userId,
-//                            CreatedAt = now,
-//                            ModifiedAt = now,
-//                            Permissions = new List<Permission>
-//                            {
-//                                new Permission {
-//                                    ViewId = "local-users",
-//                                    Action = "Update",
-//                                    Criteria = "Id lt 100000",
-//                                    CreatedById = userId,
-//                                    ModifiedById = userId,
-//                                    CreatedAt = now,
-//                                    ModifiedAt = now,
-//                                },
-//                                new Permission {
-//                                    ViewId = "roles",
-//                                    Action = "Update",
-//                                    Criteria = "Id lt 100000",
-//                                    CreatedById = userId,
-//                                    ModifiedById = userId,
-//                                    CreatedAt = now,
-//                                    ModifiedAt = now,
-//                                },
-//                                new Permission {
-//                                    ViewId = "views",
-//                                    Action = "Read",
-//                                    Criteria = null,
-//                                    CreatedById = userId,
-//                                    ModifiedById = userId,
-//                                    CreatedAt = now,
-//                                    ModifiedAt = now,
-//                                }
-//                            },
-//                            Members = new List<RoleMembership>
-//                            {
-//                                new RoleMembership {
-//                                    UserId = 1,
-//                                    CreatedById = userId,
-//                                    ModifiedById = userId,
-//                                    CreatedAt = now,
-//                                    ModifiedAt = now,
-//                                }
-//                            }
-//                        };
-
-//                        appContext.Roles.Add(saRole);
-
-//                        appContext.Entry(saRole).Property("TenantId").CurrentValue = 101;
-//                        appContext.Entry(saRole.Permissions.First()).Property("TenantId").CurrentValue = 101;
-//                        appContext.Entry(saRole.Permissions.Last()).Property("TenantId").CurrentValue = 101;
-//                        appContext.Entry(saRole.Members.Last()).Property("TenantId").CurrentValue = 101;
-
-//                        // Add the views
-//                        appContext.Views.Add(new View { Id = "local-users", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "roles", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "measurement-units", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "individuals", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "organizations", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "views", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "settings", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "ifrs-notes", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "product-categories", IsActive = true });
-
-//                        // Add the settings
-//                        var settings = new Settings
-//                        {
-//                            PrimaryLanguageId = "en",
-//                            ProvisionedAt = now,
-//                            ModifiedAt = now,
-//                            ModifiedById = userId,
-//                            ShortCompanyName = "Contoso, Inc."
-//                        };
-//                        appContext.Settings.Add(settings);
-//                        appContext.Entry(settings).Property("TenantId").CurrentValue = 101;
-
-//                        // Save all of the above
-//                        appContext.SaveChanges();
-//                    }
-//                }
-//            });
-//        }
-
-//        protected override void Dispose(bool disposing)
-//        {
-//            base.Dispose(disposing);
-
-//            //////////// Cleanup
-//            using (var scope = _provider.CreateScope())
-//            {
-//                var adminContext = scope.ServiceProvider.GetRequiredService<AdminContext>();
-//                adminContext.Database.EnsureDeleted();
-//            }
-//        }
+            if (_client != null)
+            {
+                _client.Dispose();
+            }
+        }
 
         private HttpClient _client;
         public HttpClient GetClient()
@@ -212,8 +100,8 @@ namespace BSharp.IntegrationTests.Scenario_01
                 _client = CreateClient();
                 _client.DefaultRequestHeaders.Add("X-Tenant-Id", "101");
 
-                // This extremely long lived access token (life time of 6 years) was specifically generated for the integration tests
-                _client.DefaultRequestHeaders.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjJiOGY5ZmU3NzQ3ZTA3YzA2NzlkNjMzYzg4ZDM3MmMxIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTA2MTI2ODcsImV4cCI6MTczOTgyODY4NywiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMzkiLCJhdWQiOlsiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMzkvcmVzb3VyY2VzIiwiYnNoYXJwIl0sImNsaWVudF9pZCI6IldlYkNsaWVudCIsInN1YiI6IjU1NTIyN2FiLWQ0N2MtNDY1OS1iMWJjLTYyOGIyODMzMGFlNCIsImF1dGhfdGltZSI6MTU1MDYxMjY4NSwiaWRwIjoibG9jYWwiLCJlbWFpbCI6InN1cHBvcnRAYmFuYW4taXQuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJlbWFpbCIsImJzaGFycCJdLCJhbXIiOlsicHdkIl19.po4g7c59T56X4WaqXkUUNmxsZp6t0Wu8dj_AfTG1bkLze_6XV-W_eKRKY6XUiZ9kKvwNzQ4dyQExbV_tN8I63NBWQnoqHHRB1Mw1_PDHTK-MrGzSIyLx40AtsI6-KJAyw8v74dr-71alx29Ccnvf59NJMP1uW-z-Ma945ePF5SvaY-BpRVWEhTuqO_fkS7DdxTWvPAt-cXTQ9zeREQfi9KC8eNZU6efqBXlueE5zxLKc458-aNa2PX7pmyyWJk_YupMVLzHBvu7KDT0e0M4JYkevFyRHr2742UX8G4SeHxT0-2VeYx5iA1dMMFrSKaF4c-vPNvJbccnU60b3zAdE5g");
+                // This extremely long-lived access token (life time of 6 years) was specifically generated for the integration tests
+                _client.DefaultRequestHeaders.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjJiOGY5ZmU3NzQ3ZTA3YzA2NzlkNjMzYzg4ZDM3MmMxIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NjcxNzgyMjQsImV4cCI6MTgwOTA5ODIyNCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzNjgiLCJhdWQiOlsiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzNjgvcmVzb3VyY2VzIiwiYnNoYXJwIl0sImNsaWVudF9pZCI6IldlYkNsaWVudCIsInN1YiI6ImFlNDcyYTUwLWEyYzAtNGE1ZC04ZjI3LTk2ZDhiMTk4MTkzMyIsImF1dGhfdGltZSI6MTU2NzA4MzkyMywiaWRwIjoibG9jYWwiLCJlbWFpbCI6ImFkbWluQGJzaGFycC5vbmxpbmUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImVtYWlsIiwiYnNoYXJwIl0sImFtciI6WyJwd2QiXX0.jUiXEZe36NBoWzwVVkLyM_FPgHqAmxiotPZbGZqr9nFxAwERiQ0qc8iSwUhZZon73Iq9ITL9gDijDGF4txvtopgPlpbn94d5FycjlZKD4azgXHtdIfwWAK0N0qRkZD0W9-Wxcdl-sZJjAlbYSeWCRAcx2i-_3Je_79dRf3wQvqgX4v8Wti6snt85Blgz2kazJ80o9NLpFxBwliU09MXqpH6PblcSUMd3EaO7GTw7LFt5eoB_MucqDg-8puUzYETC-9oy14XDKqeT7LmyNBwy3GI70rCHKknEJSmmsAY1QcdpxXAJtiNcHrZfHK3FYQf7Fjb51w9AMXNHrmKama1Z4g");
             }
 
             return _client;
@@ -231,3 +119,5 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
     }
 }
+
+

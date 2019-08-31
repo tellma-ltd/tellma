@@ -21,7 +21,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   private notifyDestruct$ = new Subject<void>();
   private usersApi = this.api.usersApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Roles/Role';
+  public expand = 'Roles/Role,Agent';
 
   create = () => {
     const result = new UserForSave();
@@ -97,4 +97,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   public showInvitationInfo(model: UserForSave): boolean {
     return !!model && (!!model.Email && !model.Id);
   }
+
+  isInactive: (model: User) => string = (model: User) => !!model && !!model.Id && !!this.ws.Agent[model.Id] &&
+    !this.ws.Agent[model.Id].IsActive ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
 }

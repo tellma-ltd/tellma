@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 
 namespace BSharp.IntegrationTests.Utilities
 {
-    // A simple data structure to store a shared collection of items across test methods
+    /// <summary>
+    /// A simple data structure to store a shared collection of items across test methods
+    /// </summary>
     public class SharedCollection
     {
-        private Dictionary<string, object> _sharedItems = new Dictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> _sharedItems = new ConcurrentDictionary<string, object>();
 
-        public T GetItem<T>(string name)
+        public T Get<T>(string name)
         {
             return (T)_sharedItems[name];
         }
 
-        public void SetItem<T>(string name, T item)
+        public void Set<T>(string name, T item)
         {
             _sharedItems[name] = item;
         }

@@ -20,10 +20,10 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "000 - Getting all measurement units before granting permissions returns a 403 Forbidden response")]
         public async Task Test00000()
         {
-            var response = await _client.GetAsync($"/api/measurement-units");
+            var response = await Client.GetAsync($"/api/measurement-units");
 
             // Call the API
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 403 OK
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -36,8 +36,8 @@ namespace BSharp.IntegrationTests.Scenario_01
             await GrantPermissionToSecurityAdministrator("measurement-units", Constants.Update, "Id lt 100000");
 
             // Call the API
-            var response = await _client.GetAsync($"/api/measurement-units");
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            var response = await Client.GetAsync($"/api/measurement-units");
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -57,9 +57,9 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test0001()
         {
             int nonExistentId = 1;
-            var response = await _client.GetAsync($"/api/measurement-units/{nonExistentId}");
+            var response = await Client.GetAsync($"/api/measurement-units/{nonExistentId}");
 
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
@@ -80,10 +80,10 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<MeasurementUnitForSave> { dtoForSave };
-            var response = await _client.PostAsJsonAsync($"/api/measurement-units", dtosForSave);
+            var response = await Client.PostAsJsonAsync($"/api/measurement-units", dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Assert that the response is well-formed singleton of MeasurementUnit
@@ -105,7 +105,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.UnitAmount, responseDto.UnitAmount);
             
 
-            _shared.SetItem("MeasurementUnit_kg", responseDto);
+            Shared.Set("MeasurementUnit_kg", responseDto);
         }
 
         [Trait(Testing, MeasurementUnits)]
@@ -113,11 +113,11 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test0003()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_kg");
+            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
             var id = entity.Id;
-            var response = await _client.GetAsync($"/api/measurement-units/{id}");
+            var response = await Client.GetAsync($"/api/measurement-units/{id}");
 
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response is a well formed GetByIdResponse of measurement unit
@@ -152,10 +152,10 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await _client.PostAsJsonAsync($"/api/measurement-units", list);
+            var response = await Client.PostAsJsonAsync($"/api/measurement-units", list);
 
             // Assert that the response status code is 422 unprocessable entity (validation errors)
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
 
             // Confirm that the result is a well-formed validation errors structure
@@ -187,7 +187,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await _client.PostAsJsonAsync($"/api/measurement-units", new List<MeasurementUnitForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync($"/api/measurement-units", new List<MeasurementUnitForSave> { dtoForSave });
 
             // Confirm that the response is well-formed
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<MeasurementUnit>>();
@@ -201,7 +201,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code?.Trim(), responseDto.Code);
 
             // share the entity, for the subsequent delete test
-            _shared.SetItem("MeasurementUnit_km", responseDto);
+            Shared.Set("MeasurementUnit_km", responseDto);
         }
 
         [Trait(Testing, MeasurementUnits)]
@@ -209,15 +209,15 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test0006()
         {
             // Get the Id
-            var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_km");
+            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_km");
             var id = entity.Id;
 
             // Query the delete API
             var msg = new HttpRequestMessage(HttpMethod.Delete, $"/api/measurement-units");
             msg.Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter());
-            var deleteResponse = await _client.SendAsync(msg);
+            var deleteResponse = await Client.SendAsync(msg);
 
-            _output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
+            Output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
 
@@ -226,14 +226,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test0007()
         {
             // Get the Id
-            var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_km");
+            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_km");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
-            var getResponse = await _client.GetAsync($"/api/measurement-units/{id}");
+            var getResponse = await Client.GetAsync($"/api/measurement-units/{id}");
 
             // Assert that the response is correct
-            _output.WriteLine(await getResponse.Content.ReadAsStringAsync());
+            Output.WriteLine(await getResponse.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
@@ -242,14 +242,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test0008()
         {
             // Get the Id
-            var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_kg");
+            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
             var id = entity.Id;
 
             // Call the API
-            var response = await _client.PutAsJsonAsync($"/api/measurement-units/deactivate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"/api/measurement-units/deactivate", new List<int>() { id });
             
             // Assert that the response status code is correct
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
@@ -266,14 +266,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test0009()
         {
             // Get the Id
-            var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_kg");
+            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
             var id = entity.Id;
 
             // Call the API
-            var response = await _client.PutAsJsonAsync($"/api/measurement-units/activate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"/api/measurement-units/activate", new List<int>() { id });
 
             // Assert that the response status code is correct
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
@@ -290,12 +290,12 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test0010()
         {
             // Get the Id
-            var entity = _shared.GetItem<MeasurementUnit>("MeasurementUnit_kg");
+            var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
             var id = entity.Id;
 
-            var response = await _client.GetAsync($"/api/measurement-units/{id}?select=Name");
+            var response = await Client.GetAsync($"/api/measurement-units/{id}?select=Name");
 
-            _output.WriteLine(await response.Content.ReadAsStringAsync());
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response is a well formed GetByIdResponse of measurement unit
