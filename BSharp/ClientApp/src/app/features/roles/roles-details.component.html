@@ -158,27 +158,27 @@
           </span></ng-template>
       <ng-template ngbTabContent>
         <b-restricted [metadata]="model?.EntityMetadata?.Members" [class.p-4]="model?.EntityMetadata?.Members !== 2">
-          <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['UserId', 'Memo']" [columnTemplates]="{
-            'UserId' : { headerTemplate : header_UserId, rowTemplate : row_UserId, weight : 1 },
+          <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['AgentId', 'Memo']" [columnTemplates]="{
+            'AgentId' : { headerTemplate : header_AgentId, rowTemplate : row_AgentId, weight : 1 },
             'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
           }">
           </b-table>
         </b-restricted>
 
-        <!-- UserId -->
-        <ng-template #header_UserId>{{ 'RoleMembership_User' | translate }}</ng-template>
-        <ng-template #row_UserId let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.UserId">
-            <b-view-link *ngIf="!isEdit" link="../../local-users" [itemId]="item?.UserId">
-              {{ ws.getMultilingualValue('LocalUser', item.UserId, 'Name') }}
+        <!-- Agent -->
+        <ng-template #header_AgentId>{{ 'RoleMembership_User' | translate }}</ng-template>
+        <ng-template #row_AgentId let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.AgentId">
+            <b-view-link *ngIf="!isEdit" link="../../users" [itemId]="item?.AgentId">
+              {{ ws.User[item.AgentId]?.Email }}
             </b-view-link>
-            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.UserId" (ngModelChange)="update(item)"
-              apiEndpoint="local-users" [detailsOptions]="[{ id: 'local-users', name: '- not important -' }]"
-              [masterTemplate]="localUsersMaster" [detailsTemplate]="localUsersDetails" collection="LocalUser">
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.AgentId" (ngModelChange)="update(item)"
+              apiEndpoint="users" [detailsOptions]="[{ id: 'users', name: '- not important -' }]"
+              [masterTemplate]="usersMaster" [detailsTemplate]="usersDetails" collection="User">
             </b-details-picker>
 
             <!-- The User Details Modal -->
-            <ng-template #localUsersDetails let-modal="modal" let-update="update" let-initialText="initialText">
+            <ng-template #usersDetails let-modal="modal" let-update="update" let-initialText="initialText">
               <div class="modal-body">
                 <b-users-details mode="popup" idString="new" [initialText]="initialText"
                   (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);" [showRoles]="false">
@@ -187,7 +187,7 @@
             </ng-template>
 
             <!-- The Users Master Modal -->
-            <ng-template #localUsersMaster let-modal="modal" let-update="update" let-create="create">
+            <ng-template #usersMaster let-modal="modal" let-update="update" let-create="create">
               <div class="modal-body">
                 <b-users-master mode="popup" (cancel)="modal.close(false);"
                   (select)="modal.close(true); update($event);" (create)="modal.close(false); create()">

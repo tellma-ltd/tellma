@@ -77,7 +77,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 {
                     new RoleMembershipForSave
                     {
-                        UserId = 1,
+                        AgentId = 1,
                         Memo = "So Good"
                     }
                 }
@@ -122,7 +122,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Members,
                     m =>
                     {
-                        Assert.Equal(dtoForSave.Members[0].UserId, m.UserId);
+                        Assert.Equal(dtoForSave.Members[0].AgentId, m.AgentId);
                         Assert.Equal(dtoForSave.Members[0].Memo, m.Memo);
                         Assert.NotEqual(0, m.Id);
                     }
@@ -172,7 +172,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Members,
                     m =>
                     {
-                        Assert.Equal(entity.Members[0].UserId, m.UserId);
+                        Assert.Equal(entity.Members[0].AgentId, m.AgentId);
                         Assert.Equal(entity.Members[0].Memo, m.Memo);
                         Assert.NotEqual(0, m.Id);
                     }

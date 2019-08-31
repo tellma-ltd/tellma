@@ -238,6 +238,9 @@ namespace BSharp.Data
                     case nameof(User):
                         return new SqlSource("[rpt].[Users]()");
 
+                    case nameof(Agent):
+                        return new SqlSource("[dbo].[Agents]");
+
                     case nameof(MeasurementUnit):
                         return new SqlSource("[rpt].[MeasurementUnits]()");
 

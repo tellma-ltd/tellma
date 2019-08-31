@@ -1,7 +1,8 @@
 <b-master collection="User" viewId="users"
   [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
   [tableDescriptionColumnTemplate]="descriptionColumn"
-  selectDefault="Email,State,LastAccess,IsActive" selectForTiles="ImageId,Email,State"
+  selectDefault="Email,State,LastAccess,IsActive" selectForTiles="Email,State"
+  inactiveFilter="Agent/IsActive eq true"
   [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
@@ -46,7 +47,7 @@
 
 <!-- Description Column -->
 <ng-template #descriptionColumn let-id="id">
-    <span class="text-truncate">{{ ws.getMultilingualValue('User', id, 'Name') }}</span>
+    <span class="text-truncate">{{ ws.User[id]?.Email }}</span>
 </ng-template>
 
 

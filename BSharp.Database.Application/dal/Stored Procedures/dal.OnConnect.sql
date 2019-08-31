@@ -42,7 +42,7 @@ BEGIN
         @UserSettingsVersion = U.[UserSettingsVersion]
     FROM [dbo].[Users] U
 	JOIN [dbo].[Agents] A ON U.[Id] = A.[Id]
-    WHERE U.[IsActive] = 1
+    WHERE A.[IsActive] = 1
 	AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
 
     -- Set LastAccess (Works only when @UserId IS NOT NULL)

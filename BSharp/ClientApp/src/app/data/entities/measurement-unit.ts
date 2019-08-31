@@ -75,9 +75,9 @@ export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateServ
         BaseAmount: { control: 'number', label: trx.instant('MU_BaseAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9 },
         IsActive: { control: 'boolean', label: trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'LocalUser', foreignKeyName: 'CreatedById' },
+        CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
         ModifiedAt: { control: 'datetime', label: trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'LocalUser', foreignKeyName: 'ModifiedById' }
+        ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
       }
     };
   }

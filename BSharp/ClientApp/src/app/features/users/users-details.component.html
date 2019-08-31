@@ -1,6 +1,6 @@
 <b-details apiEndpoint="users" viewId="users" [expand]="expand" [idString]="idString"
   collection="User" [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [masterCrumb]="'Users' | translate"
-  [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
+  [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [isInactive]="isInactive"
   [documentHeaderTemplate]="documentHeader" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canAction, actionTooltip: actionTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canAction, actionTooltip: actionTooltip },
@@ -11,7 +11,7 @@
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
-  <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
+  <span>{{ model?.Email }}</span>
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit">
@@ -30,21 +30,12 @@
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
-  <!-- Header Name -->
-  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" *ngIf="ws.isPrimaryLanguage"
-    [serverErrors]="model?.serverErrors?.Name">
-    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Name }}</h2>
-    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }"
-      [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
-  </b-form-group>
-
-  <!-- Header Name2 -->
-  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" *ngIf="ws.isSecondaryLanguage"
-    [serverErrors]="model?.serverErrors?.Name2">
-    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
-    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
-      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
-    </b-text-editor>
+  <!-- Header Email -->
+  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2"
+    [serverErrors]="model?.serverErrors?.Email">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Email }}</h2>
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Email" [ngModelOptions]="{ updateOn: 'blur' }"
+      [placeholder]="('User_Email' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
   </b-form-group>
 
   <div class="col-12 col-md-4 b-details-image-container">
@@ -55,42 +46,41 @@
   </div>
 
   <!-- Email -->
-  <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="model?.serverErrors?.Email">
+  <!-- <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="model?.serverErrors?.Email">
     <div *ngIf="!isEdit || !!model.Id">
       <b-restricted [metadata]="model?.EntityMetadata?.Email"> {{ model?.Email }} </b-restricted>
     </div>
     <b-text-editor *ngIf="isEdit && !model.Id" [(ngModel)]="model.Email" [ngModelOptions]="{ updateOn: 'blur' }" email
       required></b-text-editor>
-  </b-form-group>
+  </b-form-group> -->
 
   <ng-container *ngIf="ws.settings.SecondaryLanguageId">
     <!-- Name -->
-    <b-form-group class="b-form-group" *ngIf="ws.isSecondaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+    <!-- <b-form-group class="b-form-group" *ngIf="ws.isSecondaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
       [serverErrors]="model?.serverErrors?.Name">
       <div *ngIf="!isEdit">{{ model?.Name }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
       </b-text-editor>
-    </b-form-group>
+    </b-form-group> -->
 
     <!-- Name2 -->
-    <b-form-group class="b-form-group" *ngIf="ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
+    <!-- <b-form-group class="b-form-group" *ngIf="ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
       [serverErrors]="model?.serverErrors?.Name2">
       <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
       <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-    </b-form-group>
+    </b-form-group> -->
   </ng-container>
 
   <!-- Agent -->
   <b-form-group class="b-form-group d-none" [label]="'User_Agent' | translate">
     <b-restricted [metadata]="model?.EntityMetadata?.Agent">
-      <b-view-link *ngIf="!isEdit" link="../../agents/{{ ws.get('Custodies', model?.AgentId)?.AgentType }}"
-        [itemId]="model?.AgentId">
-        {{ ws.getMultilingualValue('Custodies', model?.AgentId, 'Name') }}
+      <b-view-link *ngIf="!isEdit" link="../../agents"
+        [itemId]="model?.Id">
+        {{ ws.getMultilingualValue('Agent', model?.Id, 'Name') }}
       </b-view-link>
     </b-restricted>
-    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" apiEndpoint="agents/all" collection="Custodies"
-      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" [detailsOptions]="[{ id: 'individuals', 
-        name: ('Individual' | translate) }, { id: 'organizations', name: ('Organization' | translate) }]">
+    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.Id" apiEndpoint="agents" collection="Agent"
+      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails">
     </b-details-picker>
 
     <!-- The Agents Details Modal -->
@@ -121,9 +111,9 @@
   </b-form-group>
 
   <!-- Is Active -->
-  <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
+  <!-- <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
-  </b-form-group>
+  </b-form-group> -->
 
   <!-- Email Notice -->
   <div class="col-12 alert-primary p-2 px-3 mt-3 mt-sm-4" *ngIf="showInvitationInfo(model)">

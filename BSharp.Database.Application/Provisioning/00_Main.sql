@@ -12,7 +12,7 @@ DECLARE @UserId INT, @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET(), @FunctionalCu
 IF NOT EXISTS(SELECT * FROM [dbo].[Users] WHERE [Email] = @DeployEmail)
 BEGIN
 	INSERT INTO dbo.Agents([Name],[AgentType], CreatedById, ModifiedById)
-	VALUES (N'Banan IT', N'Organization', NULL, NULL)
+	VALUES (N'Banan IT', N'Organization', IDENT_CURRENT('dbo.Agents'), IDENT_CURRENT('dbo.Agents'))
 	SET @UserId= SCOPE_IDENTITY();
 	INSERT INTO [dbo].[Users]([Id], [Email], CreatedById, ModifiedById)
 	VALUES (@UserId, @DeployEmail, @UserId, @UserId);
