@@ -3,23 +3,23 @@ DECLARE @D12 [dbo].[DocumentList], @L12 [dbo].DocumentLineList, @E12 [dbo].Docum
 DECLARE @D11Ids dbo.[IdList], @D12Ids dbo.[IdList], @D13Ids dbo.[IdList];
 
 BEGIN -- Inserting
-	INSERT INTO @D11(
+	INSERT INTO @D11([Index],
 	[DocumentDate],	[Memo], [EvidenceTypeId]) VALUES (
-	'2017.01.01',		N'Capital investment', N'Attachment'
+	0, '2017.01.01',		N'Capital investment', N'Attachment'
 	);
-	INSERT INTO @L11(
-		[DocumentIndex], [LineTypeId], [SortKey]) VALUES
-		(0,					N'ManualLine', 1),
-		(0,					N'ManualLine', 3),
-		(0,					N'ManualLine', 4),
-		(0,					N'ManualLine', 2);
+	INSERT INTO @L11([Index], [DocumentIndex],
+				[LineTypeId], [SortKey]) VALUES
+		(0,0,	N'ManualLine', 1),
+		(1,0,	N'ManualLine', 3),
+		(2,0,	N'ManualLine', 4),
+		(3,0,	N'ManualLine', 2);
 
-	INSERT INTO @E11 (
-		[DocumentIndex], [DocumentLineIndex], [Index], [Direction], [AccountId], [IfrsEntryClassificationId],				[ResourceId], [Count], [MoneyAmount],	[Value]) VALUES
-		(0,					0,					0,+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			200000,			4700000),
-		(0,					1,					1,-1,			@CapitalMA,N'IssueOfEquity',		@CommonStock,		1000,			0,				2350000),
-		(0,					2,					2,-1,			@CapitalAA,N'IssueOfEquity',		@CommonStock,		1000,			0,				2350000),
-		(0,					3,					3,+1,			@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,		0,			100,			2000);
+	INSERT INTO @E11 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber],
+				[Direction], [AccountId], [IfrsEntryClassificationId],		[ResourceId], [Count], [MoneyAmount],	[Value]) VALUES
+		(0,0,0,1,+1,		@CBEUSD,		N'ProceedsFromIssuingShares', 	@USD,			0,			200000,			4700000),
+		(1,1,0,1,-1,		@CapitalMA,		N'IssueOfEquity',		@CommonStock,			1000,		0,				2350000),
+		(2,2,0,1,-1,		@CapitalAA,		N'IssueOfEquity',		@CommonStock,			1000,		0,				2350000),
+		(3,3,0,1,+1,		@CBEUSD,		N'ProceedsFromIssuingShares', 	@USD,			0,			100,			2000);
 
 	EXEC [api].[Documents__Save]
 		@DocumentTypeId = N'manual-journals',

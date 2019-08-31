@@ -10,7 +10,7 @@ BEGIN -- Inserting
 				[LineTypeId],				[SortKey]) VALUES
 		(0,0,	N'GoodReceiptWithInvoice',	1),
 		(1,0,	N'GoodReceiptWithInvoice',	2),
-		(2,0,	N'CashIssue',					1);
+		(2,0,	N'CashIssue',				1);
 	INSERT INTO @E21 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber],
 					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MoneyAmount],[Mass], [Value]) VALUES
 		(0,0,0,1,	+1,			@ESL,			N'InventoryPurchaseExtension', 		@HR1000x1_9,	0,			500000, 0),
