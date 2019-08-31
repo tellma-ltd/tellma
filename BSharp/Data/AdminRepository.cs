@@ -182,9 +182,9 @@ namespace BSharp.Data
                         // The user Info
                         result = new AdminUserInfo
                         {
-                            UserId = reader.IsDBNull(i) ? (int?)null : reader.GetInt32(i++),
-                            ExternalId = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            Email = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            UserId = reader.Int32(i++),
+                            ExternalId = reader.String(i++),
+                            Email = reader.String(i++),
                         };
                     }
                     else
@@ -221,10 +221,10 @@ namespace BSharp.Data
                         // The user Info
                         result = new DatabaseConnectionInfo
                         {
-                            ServerName = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            DatabaseName = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            UserName = reader.IsDBNull(i) ? null : reader.GetString(i++),
-                            PasswordKey = reader.IsDBNull(i) ? null : reader.GetString(i++),
+                            ServerName = reader.String(i++),
+                            DatabaseName = reader.String(i++),
+                            UserName = reader.String(i++),
+                            PasswordKey = reader.String(i++),
                         };
                     }
                 }
@@ -351,7 +351,7 @@ namespace BSharp.Data
                     {
                         while (await reader.ReadAsync())
                         {
-                            result.Add(reader.GetString(0));
+                            result.Add(reader.String(0));
                         }
                     }
                 }

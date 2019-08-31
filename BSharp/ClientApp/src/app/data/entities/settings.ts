@@ -13,7 +13,6 @@ export class SettingsForSave extends Entity {
 export class Settings extends SettingsForSave {
     ViewsAndSpecsVersion: string;
     SettingsVersion: string;
-    ProvisionedAt: string;
     ModifiedAt: string;
     ModifiedById: number | string;
 }
@@ -31,5 +30,5 @@ export class SettingsForClient extends Entity {
     TernaryLanguageName: string;
     TernaryLanguageSymbol: string;
     BrandColor: string;
-    ProvisionedAt: string;
+    CreatedAt: string;
 }

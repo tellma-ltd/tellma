@@ -69,7 +69,7 @@ BEGIN
     -- Return the user information
     SELECT 
 		-- User Info
-        @UserId AS userId, 
+        @UserId AS [UserId], 
         @Name AS [Name],
         @Name2 AS [Name2],
 		@Name3 As [Name3],

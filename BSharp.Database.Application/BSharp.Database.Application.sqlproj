@@ -355,6 +355,7 @@
     <None Include="Tests\06_ResponsibilityCenters.sql" />
     <None Include="Tests\12_Purchasing.sql" />
     <None Include="Tests\14_Sales.sql" />
+    <None Include="IntegrationTests.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BSharp.Database.Application.refactorlog" />

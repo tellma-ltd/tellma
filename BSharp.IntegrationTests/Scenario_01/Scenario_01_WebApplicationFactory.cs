@@ -15,6 +15,7 @@ namespace BSharp.IntegrationTests.Scenario_01
     /// </summary>
     public class Scenario_01_WebApplicationFactory : WebApplicationFactory<Startup>
     {
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             // This instructs the web host to use the appsettings.json file in the
@@ -27,34 +28,55 @@ namespace BSharp.IntegrationTests.Scenario_01
             });
 
             // Here we do database seeding and arranging
+            bool alreadyConfigured = false;
             builder.ConfigureServices(services =>
             {
-                var provider = services.BuildServiceProvider();
-                Program.InitDatabase(provider); // This won't run automatically when using WebApplicationFactory
-
-                using(var scope = provider.CreateScope())
+                if (!alreadyConfigured)
                 {
-                    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-                    var connString = config.GetConnectionString(Constants.AdminConnection);
+                    // configure services
+                    string connString = null;
+                    GlobalOptions globalOptions = null;
+                    var provider = services.BuildServiceProvider();
+                    using (var scope = provider.CreateScope())
+                    {
+                        var env = scope.ServiceProvider.GetRequiredService<IHostingEnvironment>();
+                        var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-                    ArrangeDatabaseForTests(connString);
+                        new Startup(config, env).ConfigureServices(services);
+
+                        connString = config.GetConnectionString(Constants.AdminConnection);
+                        globalOptions = config.Get<GlobalOptions>();
+                        
+                    }
+
+                    // InitDatabase (It won't run automatically when using WebApplicationFactory)
+                    provider = services.BuildServiceProvider();
+                    Program.InitDatabase(provider);
+
+                    // Arrange
+                    string adminEmail = globalOptions?.Admin?.Email ?? "admin@bsharp.online";
+                    ArrangeDatabaseForTests(connString, adminEmail);
+
+                    alreadyConfigured = true;
                 }
             });
         }
 
-        private void ArrangeDatabaseForTests(string connString)
+        private void ArrangeDatabaseForTests(string connString, string adminEmail)
         {
             var projectDir = Directory.GetCurrentDirectory();
             var seedAdminPath = Path.Combine(projectDir, "SeedAdmin.sql");
-            var seedAdminSql = System.IO.File.ReadAllText(seedAdminPath);
+            var seedAdminSql = File.ReadAllText(seedAdminPath);
 
             using (var conn = new SqlConnection(connString))
             {
-                using(var cmd = conn.CreateCommand())
+                using (var cmd = conn.CreateCommand())
                 {
+                    cmd.Parameters.AddWithValue("@Email", adminEmail);
+                    cmd.Parameters.AddWithValue("@DatabaseName", "BSharp.IntegrationTests.101");
                     cmd.CommandText = seedAdminSql;
-                    conn.Open();
 
+                    conn.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -64,7 +86,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             base.Dispose(disposing);
 
-            if(_client != null)
+            if (_client != null)
             {
                 _client.Dispose();
             }
@@ -99,160 +121,3 @@ namespace BSharp.IntegrationTests.Scenario_01
 }
 
 
-//            builder.ConfigureServices(services =>
-//            {
-//                //////////// Setup
-//                _provider = services.BuildServiceProvider();
-//                using (var scope = _provider.CreateScope())
-//                {
-//                    // Note: The goal is to eventually trim this down to just provisioning the databases
-//                    // and have the remainder of the setup and configuratio done in the tests through the API, when the API is ready
-
-//                    // (1) Admin Context migrated the usual way, add one tenant for dev and all translations
-//                    var repo = scope.ServiceProvider.GetRequiredService<AdminRepository>();
-//                    repo.Database.EnsureDeleted();
-//                    repo.Database.Migrate();
-//                    if (!repo.Tenants.Any())
-//                    {
-//                        repo.Tenants.Add(new Tenant
-//                        {
-//                            Id = 101,
-//                            Name = "Contoso, Inc.",
-//                            ShardId = 1
-//                        });
-
-//                        repo.Tenants.Add(new Tenant
-//                        {
-//                            Id = 102,
-//                            Name = "Fabrikam & Co.",
-//                            ShardId = 1
-//                        });
-
-//                        repo.SaveChanges();
-//                    }
-
-//                    repo.GlobalUsers.Add(new GlobalUser
-//                    {
-//                        Email = "support@banan-it.com",
-//                        ExternalId = "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35",
-//                        Memberships = new List<TenantMembership> {
-//                            new TenantMembership { TenantId = 101 },
-//                            new TenantMembership { TenantId = 102 }
-//                        }
-//                    });
-
-//                    repo.SaveChanges();
-
-//                    // (2) Application Context requires special handling in development, don't resolve it with DI
-//                    var shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
-//                    using (var appContext = new ApplicationContext(shardResolver,
-//                        new DesignTimeTenantIdProvider(),
-//                        new DesignTimeUserIdProvider(),
-//                        new DesignTimeTenantUserInfoAccessor()))
-//                    {
-
-//                        appContext.Database.Migrate();
-
-//                        // Add first user
-//                        var now = DateTimeOffset.Now;
-//                        appContext.Database.ExecuteSqlCommand(
-//                            @"
-//DECLARE @NextId INT = IDENT_CURRENT('[dbo].[LocalUsers]') + 1;
-//INSERT INTO [dbo].[LocalUsers] (Email, ExternalId, CreatedAt, ModifiedAt, Name, Name2, CreatedById, ModifiedById, TenantId)
-//                            VALUES ({0}, {1}, {2}, {2}, {3}, {4}, @NextId, @NextId, 101)",
-
-//                            "support@banan-it.com", // {0}
-//                            "4F7785F2-5942-4CFB-B5AD-85AB72F7EB35", // {1}
-//                            now, // {2}
-//                            "Banan IT Support", // {3}
-//                            "فريق مساندة بنان"); // {4}
-
-//                        // The security administrator role
-//                        int userId = 1;
-//                        var saRole = new Role
-//                        {
-//                            Name = "Security Administrator",
-//                            Name2 = "مدير الأمان",
-//                            Code = "SA",
-//                            IsActive = true,
-//                            CreatedById = userId,
-//                            ModifiedById = userId,
-//                            CreatedAt = now,
-//                            ModifiedAt = now,
-//                            Permissions = new List<Permission>
-//                            {
-//                                new Permission {
-//                                    ViewId = "local-users",
-//                                    Action = "Update",
-//                                    Criteria = "Id lt 100000",
-//                                    CreatedById = userId,
-//                                    ModifiedById = userId,
-//                                    CreatedAt = now,
-//                                    ModifiedAt = now,
-//                                },
-//                                new Permission {
-//                                    ViewId = "roles",
-//                                    Action = "Update",
-//                                    Criteria = "Id lt 100000",
-//                                    CreatedById = userId,
-//                                    ModifiedById = userId,
-//                                    CreatedAt = now,
-//                                    ModifiedAt = now,
-//                                },
-//                                new Permission {
-//                                    ViewId = "views",
-//                                    Action = "Read",
-//                                    Criteria = null,
-//                                    CreatedById = userId,
-//                                    ModifiedById = userId,
-//                                    CreatedAt = now,
-//                                    ModifiedAt = now,
-//                                }
-//                            },
-//                            Members = new List<RoleMembership>
-//                            {
-//                                new RoleMembership {
-//                                    UserId = 1,
-//                                    CreatedById = userId,
-//                                    ModifiedById = userId,
-//                                    CreatedAt = now,
-//                                    ModifiedAt = now,
-//                                }
-//                            }
-//                        };
-
-//                        appContext.Roles.Add(saRole);
-
-//                        appContext.Entry(saRole).Property("TenantId").CurrentValue = 101;
-//                        appContext.Entry(saRole.Permissions.First()).Property("TenantId").CurrentValue = 101;
-//                        appContext.Entry(saRole.Permissions.Last()).Property("TenantId").CurrentValue = 101;
-//                        appContext.Entry(saRole.Members.Last()).Property("TenantId").CurrentValue = 101;
-
-//                        // Add the views
-//                        appContext.Views.Add(new View { Id = "local-users", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "roles", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "measurement-units", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "individuals", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "organizations", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "views", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "settings", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "ifrs-notes", IsActive = true });
-//                        appContext.Views.Add(new View { Id = "product-categories", IsActive = true });
-
-//                        // Add the settings
-//                        var settings = new Settings
-//                        {
-//                            PrimaryLanguageId = "en",
-//                            ProvisionedAt = now,
-//                            ModifiedAt = now,
-//                            ModifiedById = userId,
-//                            ShortCompanyName = "Contoso, Inc."
-//                        };
-//                        appContext.Settings.Add(settings);
-//                        appContext.Entry(settings).Property("TenantId").CurrentValue = 101;
-
-//                        // Save all of the above
-//                        appContext.SaveChanges();
-//                    }
-//                }
-//            });

@@ -1,7 +1,8 @@
 ﻿BEGIN -- Setup Configuration
 	DECLARE @DeployEmail NVARCHAR(255)					= N'support@banan-it.com';
 	DECLARE @ShortCompanyName NVARCHAR(255)				= N'ACME International';
-	DECLARE @PrimaryLanguageId NVARCHAR(255)			= N'Amharic';
+	DECLARE @PrimaryLanguageId NVARCHAR(255)			= N'en';
+	DECLARE @SecondaryLanguageId NVARCHAR(255)			= N'ar';
 	DECLARE @FunctionalCurrency NCHAR(3)				= N'ETB'
 	DECLARE @ViewsAndSpecsVersion UNIQUEIDENTIFIER		= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER			= NEWID();

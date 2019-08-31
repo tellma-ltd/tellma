@@ -61,12 +61,6 @@ namespace BSharp.Entities
         /// </summary>
         public Guid SettingsVersion { get; set; }
 
-        /// <summary>
-        /// When was this tenant provisioned
-        /// </summary>
-        [Display(Name = "Settings_ProvisionedAt")]
-        public DateTimeOffset ProvisionedAt { get; set; }
-
         [Display(Name = "CreatedAt")]
         public DateTimeOffset CreatedAt { get; set; }
 

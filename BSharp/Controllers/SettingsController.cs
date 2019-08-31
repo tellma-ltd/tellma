@@ -19,8 +19,11 @@ using System.Threading.Tasks;
 namespace BSharp.Controllers
 {
     [Route("api/settings")]
+    [AuthorizeAccess]
     [ApplicationApi]
-    public class SettingsController : ReadControllerBase<Settings>
+    [ApiController]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public class SettingsController : ControllerBase
     {
         // Private fields
 
@@ -28,11 +31,9 @@ namespace BSharp.Controllers
         private readonly ILogger<SettingsController> _logger;
         private readonly IStringLocalizer _localizer;
 
-        private string VIEW => "settings";
-
         public SettingsController(ApplicationRepository repo,
             ILogger<SettingsController> logger,
-            IStringLocalizer<Strings> localizer) : base(logger, localizer)
+            IStringLocalizer<Strings> localizer)
         {
             _repo = repo;
             _logger = logger;
@@ -155,6 +156,7 @@ namespace BSharp.Controllers
             var settings = await _repo.Settings
                 .Select(args.Select)
                 .Expand(args.Expand)
+                .OrderBy("PrimaryLanguageId")
                 .FirstOrDefaultAsync();
 
             if (settings == null)
@@ -173,7 +175,7 @@ namespace BSharp.Controllers
 
         private async Task<DataWithVersion<SettingsForClient>> GetForClientImpl()
         {
-            Settings settings = await _repo.Settings.FirstOrDefaultAsync();
+            Settings settings = await _repo.Settings.OrderBy("PrimaryLanguageId").FirstOrDefaultAsync();
             if (settings == null)
             {
                 // This should never happen
@@ -210,7 +212,7 @@ namespace BSharp.Controllers
         {
             if (cultureName is null)
             {
-                throw new ArgumentNullException(nameof(cultureName));
+                return null;
             }
 
             return CultureInfo.GetCultureInfo(cultureName)?.DisplayName;
@@ -254,26 +256,26 @@ namespace BSharp.Controllers
         }
 
 
-        // Implementation of ReadControllerBase<Settings>
+        //// Implementation of ReadControllerBase<Settings>
 
-        protected override IRepository GetRepository()
-        {
-            return _repo;
-        }
+        //protected override IRepository GetRepository()
+        //{
+        //    return _repo;
+        //}
 
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
-        {
-            return _repo.UserPermissions(action, VIEW);
-        }
+        //protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        //{
+        //    return _repo.UserPermissions(action, VIEW);
+        //}
 
-        protected override Query<Settings> Search(Query<Settings> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
-        {
-            return query;
-        }
+        //protected override Query<Settings> Search(Query<Settings> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        //{
+        //    return query;
+        //}
 
-        protected override OrderByExpression DefaultOrderBy()
-        {
-            return OrderByExpression.Parse(nameof(Settings.ShortCompanyName));
-        }
+        //protected override OrderByExpression DefaultOrderBy()
+        //{
+        //    return OrderByExpression.Parse(nameof(Settings.ShortCompanyName));
+        //}
     }
 }

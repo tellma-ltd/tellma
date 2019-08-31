@@ -143,5 +143,29 @@ namespace BSharp.Data
                 conn.EnlistTransaction(Transaction.Current);
             }
         }
+
+        /// <summary>
+        /// Equivalent to <see cref="SqlDataReader.GetInt32(int)"/> but also handles the null case
+        /// </summary
+        public static int? Int32(this SqlDataReader reader, int index)
+        {
+            return reader.IsDBNull(index) ? (int?)null : reader.GetInt32(index);
+        }
+
+        /// <summary>
+        /// Equivalent to <see cref="SqlDataReader.GetString(int)"/> but also handles the null case
+        /// </summary
+        public static string String(this SqlDataReader reader, int index)
+        {
+            return reader.IsDBNull(index) ? null : reader.GetString(index);
+        }
+
+        /// <summary>
+        /// Equivalent to <see cref="SqlDataReader.GetGuid(int)"/> but also handles the null case
+        /// </summary
+        public static Guid? Guid(this SqlDataReader reader, int index)
+        {
+            return reader.IsDBNull(index) ? (Guid?)null : reader.GetGuid(index);
+        }
     }
 }

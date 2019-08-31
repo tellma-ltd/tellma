@@ -3,7 +3,7 @@
 	@ViewIds [dbo].[StringList] READONLY
 AS
 DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
-SELECT [ViewId], [Criteria], [Mask], [Action] FROM (
+SELECT [ViewId], [Action], [Criteria], [Mask] FROM (
 
 	-- Permissions in private roles that are assigned to the current user
 	SELECT [ViewId], [Criteria], [Mask], [Action]

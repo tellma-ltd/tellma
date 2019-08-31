@@ -118,6 +118,7 @@ namespace BSharp.Data.Queries
             var clone = Clone();
             if (condition != null)
             {
+                clone._filterConditions = clone._filterConditions ?? new List<FilterExpression>();
                 clone._filterConditions.Add(condition);
             }
 
@@ -530,7 +531,7 @@ namespace BSharp.Data.Queries
             var rawSources = QueryTools.RawSources(sources, ps);
 
             // Prepare the SqlStatements
-            List<(IQueryInternal, SqlStatement)> queries = segments.Cast<IQueryInternal>().Select(q =>
+            List<(IQueryInternal, SqlStatement)> queries = segments.Values.Cast<IQueryInternal>().Select(q =>
                 (q, q.PrepareStatement(rawSources, ps, userId, userTimeZone))).ToList(); // The order matters for the Entity loader
 
             // Load the entities

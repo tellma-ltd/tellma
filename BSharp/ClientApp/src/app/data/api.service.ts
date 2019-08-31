@@ -84,10 +84,10 @@ export class ApiService {
 
   public usersApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<View>('local-users', cancellationToken$),
-      deactivate: this.deactivateFactory<View>('local-users', cancellationToken$),
+      activate: this.activateFactory<View>('users', cancellationToken$),
+      deactivate: this.deactivateFactory<View>('users', cancellationToken$),
       getForClient: () => {
-        const url = appconfig.apiAddress + `api/local-users/client`;
+        const url = appconfig.apiAddress + `api/users/client`;
         const obs$ = this.http.get<DataWithVersion<UserSettingsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
@@ -101,7 +101,7 @@ export class ApiService {
       saveForClient: (key: string, value: string) => {
         const keyParam = `key=${encodeURIComponent(key)}`;
         const valueParam = !!value ? `&value=${encodeURIComponent(value)}` : '';
-        const url = appconfig.apiAddress + `api/local-users/client?` + keyParam + valueParam;
+        const url = appconfig.apiAddress + `api/users/client?` + keyParam + valueParam;
         const obs$ = this.http.post<DataWithVersion<UserSettingsForClient>>(url, null).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
@@ -114,7 +114,7 @@ export class ApiService {
       },
       invite: (id: number | string) => {
         this.showRotator = true;
-        const url = appconfig.apiAddress + `api/local-users/invite?id=${id}`;
+        const url = appconfig.apiAddress + `api/users/invite?id=${id}`;
         const obs$ = this.http.put(url, null).pipe(
           tap(() => this.showRotator = false),
           catchError(error => {
@@ -128,23 +128,6 @@ export class ApiService {
 
         return obs$;
       }
-    };
-  }
-
-  public tranlationsApi(cancellationToken$: Observable<void>) {
-    return {
-      getForClient: (cultureName: string) => {
-        const url = appconfig.apiAddress + `api/translations/client/${cultureName}`;
-        const obs$ = this.http.get<DataWithVersion<any>>(url).pipe(
-          catchError(error => {
-            const friendlyError = this.friendly(error);
-            return throwError(friendlyError);
-          }),
-          takeUntil(cancellationToken$)
-        );
-
-        return obs$;
-      },
     };
   }
 

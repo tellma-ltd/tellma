@@ -21,16 +21,6 @@ import { handleFreshGlobalSettings } from './global-resolver.guard';
 
 type VersionStatus = 'Fresh' | 'Stale' | 'Unauthorized';
 
-export function translationStorageKey(cultureName: string) { return `translations_${cultureName}`; }
-export function translationVersionStorageKey(cultureName: string) { return `translations_${cultureName}_version`; }
-
-export function saveTranslationsInStorage(cultureName: string, version: string, translations: any, storage: StorageService) {
-  const key = translationStorageKey(cultureName);
-  const versionKey = translationVersionStorageKey(cultureName);
-  storage.setItem(key, JSON.stringify(translations));
-  storage.setItem(versionKey, version);
-}
-
 export class RootHttpInterceptor implements HttpInterceptor {
 
   private notifyRefreshGlobalSettings$: Subject<void>;
@@ -40,7 +30,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
   private notifyRefreshUserSettings$: Subject<void>;
   private cancellationToken$: Subject<void>;
   private globalSettingsApi: () => Observable<DataWithVersion<GlobalSettingsForClient>>;
-  private translationsApi: (cultureName: string) => Observable<DataWithVersion<any>>;
+  // private translationsApi: (cultureName: string) => Observable<DataWithVersion<any>>;
   private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
   private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
@@ -55,11 +45,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
     this.notifyRefreshGlobalSettings$ = new Subject<void>();
     this.notifyRefreshGlobalSettings$.pipe(
       exhaustMap(() => this.doRefreshGlobalSettings())
-    ).subscribe();
-
-    this.notifyRefreshTranslations$ = new Subject<string>();
-    this.notifyRefreshTranslations$.pipe(
-      exhaustMap(cultureName => this.doRefreshTranslations(cultureName))
     ).subscribe();
 
     this.notifyRefreshSettings$ = new Subject<void>();
@@ -80,7 +65,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     this.cancellationToken$ = new Subject<void>();
 
     this.globalSettingsApi = this.api.globalSettingsApi(this.cancellationToken$).getForClient;
-    this.translationsApi = this.api.tranlationsApi(this.cancellationToken$).getForClient;
+    // this.translationsApi = this.api.tranlationsApi(this.cancellationToken$).getForClient;
     this.settingsApi = this.api.settingsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
     this.userSettingsApi = this.api.usersApi(this.cancellationToken$).getForClient;
@@ -143,12 +128,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
       }
 
       // global versions
-      const translationsKey = translationVersionStorageKey(culture);
-      const translationsVersion = this.storage.getItem(translationsKey);
-      if (!!translationsVersion) {
-        headers['X-Translations-Version'] = translationsVersion || '???';
-      }
-
       if (!!this.workspace.globalSettingsVersion) {
         headers['X-Global-Settings-Version'] = this.workspace.globalSettingsVersion;
       }
@@ -161,9 +140,9 @@ export class RootHttpInterceptor implements HttpInterceptor {
     });
 
     return next.handle(req).pipe(
-      tap(e => this.handleServerVersions(e, tenantId, culture)),
+      tap(e => this.handleServerVersions(e, tenantId)),
       catchError(e => {
-        this.handleServerVersions(e, tenantId, culture);
+        this.handleServerVersions(e, tenantId);
         // If it's a 401 then quickly delete the app state and challenge user
         if (e instanceof HttpErrorResponse && e.status === 401) {
           this.router.navigateByUrl('/welcome?error=401').then(() => {
@@ -175,7 +154,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     );
   }
 
-  handleServerVersions = (e: any, tenantId: number, culture: string) => {
+  handleServerVersions = (e: any, tenantId: number) => {
 
     if (!!e && !!e.headers) {
 
@@ -185,15 +164,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
         const v = <VersionStatus>e.headers.get('x-global-settings-version');
         if (v === 'Stale') {
           this.refreshGlobalSettings();
-        }
-      }
-
-      if (!!culture) {
-
-        // translations
-        const v = <VersionStatus>e.headers.get('x-translations-version');
-        if (v === 'Stale') {
-          this.refreshTranslations(culture);
         }
       }
 
@@ -258,26 +228,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
       tap(result => {
         // Cache the permissions and set them in the workspace
         handleFreshGlobalSettings(result, ws, this.storage);
-      }),
-      retry(2)
-    );
-
-    return obs$;
-  }
-
-  refreshTranslations(cultureName: string) {
-    this.notifyRefreshTranslations$.next(cultureName);
-  }
-
-  private doRefreshTranslations = (cultureName: string) => {
-
-    const obs$ = this.translationsApi(cultureName).pipe(
-      tap(dwv => {
-        // cache the translations in local storage
-        saveTranslationsInStorage(cultureName, dwv.Version, dwv.Data, this.storage);
-
-        // notify the translate service in order to update the UI
-        this.translate.setTranslation(cultureName, dwv.Data);
       }),
       retry(2)
     );
