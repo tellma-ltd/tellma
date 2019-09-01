@@ -913,8 +913,8 @@ export function clearServerErrors(entity: EntityForSave | EntityForSave[]): void
   if (!entity) {
     // nothing to clear
     return;
-
   }
+
   // if errors exist remove them, they can exist even on arrays
   if (!!entity['serverErrors']) {
     delete entity['serverErrors'];
@@ -927,7 +927,7 @@ export function clearServerErrors(entity: EntityForSave | EntityForSave[]): void
       const item = entity[i];
       clearServerErrors(item);
     }
-  } else if (!!entity.Id || 'Id' in entity) {
+  } else if (!!entity.Id || entity.Id === null) {
     // if the property is a DTO loop over the navigation properties and recursively clear their errors
     const props = Object.keys(entity);
     for (let i = 0; i < props.length; i++) {

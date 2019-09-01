@@ -215,7 +215,7 @@ namespace BSharp.Controllers
                 return null;
             }
 
-            return CultureInfo.GetCultureInfo(cultureName)?.DisplayName;
+            return CultureInfo.GetCultureInfo(cultureName)?.NativeName;
         }
 
         private void ValidateAndPreprocessSettings(SettingsForSave entity)

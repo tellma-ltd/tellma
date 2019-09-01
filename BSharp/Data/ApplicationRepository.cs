@@ -682,10 +682,10 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
-                    TypeName = $"[dbo].[IdList]",
+                    TypeName = $"[dbo].[IndexedIdList]",
                     SqlDbType = SqlDbType.Structured
                 };
 

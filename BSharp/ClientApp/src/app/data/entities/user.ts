@@ -48,9 +48,6 @@ export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subty
       format: (item: EntityWithKey) => item['Email'], // ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
         Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        // Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
-        // Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
-        // Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
         Email: { control: 'text', label: trx.instant('User_Email') },
         Agent: { control: 'navigation', label: trx.instant('User_Agent'), type: 'Agent', foreignKeyName: 'Id' },
         State: {

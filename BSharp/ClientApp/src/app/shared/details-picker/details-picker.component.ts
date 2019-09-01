@@ -80,7 +80,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   private _isDisabled = false;
   private _searchResults: (string | number)[] = [];
   private _highlightedIndex = 0;
-  private chosenItem: string | number;
+  private chosenItem: string | number = null;
   private _errorMessage: string;
   private _initialText: string;
   private _viewId: string;
@@ -203,13 +203,17 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   private chooseItem(item: string | number) {
 
-    this.chosenItem = item;
+    item = item || null; // Standardise empty value
 
-    // Signal ControlValueAccessor
-    this.onChange(item);
+    if (this.chosenItem !== item) {
+      this.chosenItem = item;
 
-    // Show the selection in the input box
-    this.updateUI(item);
+      // Signal ControlValueAccessor
+      this.onChange(item);
+
+      // Show the selection in the input box
+      this.updateUI(item);
+    }
 
     // Restart input stream
     this.cancelRunningCall$.next(null);
@@ -225,10 +229,13 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   ///////////////// Implementation of ControlValueAccessor
-  private onChange = (e: any) => { };
+  private onChange = (_: any) => { };
   private onTouched = () => { };
 
   writeValue(item: any): void {
+
+    item = item || null;
+
     // Restart input stream
     this.cancelRunningCall$.next(null);
 

@@ -25,12 +25,11 @@
     </b-text-editor>
 
     <b-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
-      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'"
-      required>
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
     </b-text-editor>
 
     <b-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
-      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'" required>
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
     </b-text-editor>
   </b-form-group>
 

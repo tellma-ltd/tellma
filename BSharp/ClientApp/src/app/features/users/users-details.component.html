@@ -72,7 +72,7 @@
   </ng-container>
 
   <!-- Agent -->
-  <b-form-group class="b-form-group d-none" [label]="'User_Agent' | translate">
+  <b-form-group class="b-form-group" [label]="'User_Agent' | translate">
     <b-restricted [metadata]="model?.EntityMetadata?.Agent">
       <b-view-link *ngIf="!isEdit" link="../../agents"
         [itemId]="model?.Id">
