@@ -84,10 +84,10 @@
     </b-details-picker>
 
     <!-- The Agents Details Modal -->
-    <ng-template #agentDetails let-modal="modal" let-update="update" let-initialText="initialText" let-viewId="viewId">
+    <ng-template #agentDetails let-modal="modal" let-update="update" let-initialText="initialText">
       <div class="modal-body">
         <b-agents-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);"
-          (saved)="modal.close(true); update($event);" [agentType]="viewId">
+          (saved)="modal.close(true); update($event);">
         </b-agents-details>
       </div>
     </ng-template>
@@ -96,7 +96,7 @@
     <ng-template #agentMaster let-modal="modal" let-update="update" let-create="create">
       <div class="modal-body">
         <b-agents-master mode="popup" (cancel)="modal.close(false);" (select)="modal.close(true); update($event); "
-          (create)="modal.close(false); create()" agentType="all">
+          (create)="modal.close(false); create()">
         </b-agents-master>
       </div>
     </ng-template>

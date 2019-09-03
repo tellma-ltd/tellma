@@ -47,10 +47,10 @@ export class ApiService {
     };
   }
 
-  public agentsApi(agentType: string, cancellationToken$: Observable<void>) {
+  public agentsApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<Agent>(`agents/${agentType}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Agent>(`agents/${agentType}`, cancellationToken$)
+      activate: this.activateFactory<Agent>(`agents`, cancellationToken$),
+      deactivate: this.deactivateFactory<Agent>(`agents`, cancellationToken$)
     };
   }
 

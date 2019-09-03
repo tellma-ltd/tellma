@@ -51,23 +51,6 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
-      // Agents
-      {
-        path: 'agents/:agentType',
-        component: AgentsMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'agents/:agentType/import',
-        component: AgentsImportComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'agents/:agentType/:id',
-        component: AgentsDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
-      },
-
       // Roles
       {
         path: 'roles',
@@ -102,34 +85,51 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
-      // IFRS Notes
+      // Agents
       {
-        path: 'ifrs-notes',
-        component: IfrsNotesMasterComponent,
+        path: 'agents',
+        component: AgentsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'ifrs-notes/:id',
-        component: IfrsNotesDetailsComponent,
+        path: 'agents/import',
+        component: AgentsImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'agents/:id',
+        component: AgentsDetailsComponent,
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
-      // Product Categories
-      {
-        path: 'product-categories',
-        component: ProductCategoriesMasterComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'product-categories/import',
-        component: ProductCategoriesImportComponent,
-        canDeactivate: [SaveInProgressGuard]
-      },
-      {
-        path: 'product-categories/:id',
-        component: ProductCategoriesDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
-      },
+      // // IFRS Notes
+      // {
+      //   path: 'ifrs-notes',
+      //   component: IfrsNotesMasterComponent,
+      //   canDeactivate: [SaveInProgressGuard]
+      // },
+      // {
+      //   path: 'ifrs-notes/:id',
+      //   component: IfrsNotesDetailsComponent,
+      //   canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      // },
+
+      // // Product Categories
+      // {
+      //   path: 'product-categories',
+      //   component: ProductCategoriesMasterComponent,
+      //   canDeactivate: [SaveInProgressGuard]
+      // },
+      // {
+      //   path: 'product-categories/import',
+      //   component: ProductCategoriesImportComponent,
+      //   canDeactivate: [SaveInProgressGuard]
+      // },
+      // {
+      //   path: 'product-categories/:id',
+      //   component: ProductCategoriesDetailsComponent,
+      //   canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      // },
 
       // Settings
       {

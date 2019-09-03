@@ -1,4 +1,4 @@
-import { DtoDescriptor } from './base/metadata';
+import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
@@ -22,7 +22,7 @@ export class IfrsConcept extends EntityForSave {
 }
 
 const _select = ['', '2', '3'].map(pf => 'Label' + pf);
-export function metadata_IfrsConceptInner(ws: TenantWorkspace, trx: TranslateService, _subtype: string): DtoDescriptor {
+export function metadata_IfrsConceptInner(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     return {
         select: _select,

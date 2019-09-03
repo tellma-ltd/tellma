@@ -10,6 +10,7 @@ import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { addToWorkspace, Key, toString } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
+import { metadata } from '~/app/data/entities/base/metadata';
 
 enum SearchStatus {
   showSpinner = 'showSpinner',
@@ -57,6 +58,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   collection: string;
 
   @Input()
+  subtype: string;
+
+  @Input()
   filter: string;
 
   @Input()
@@ -88,8 +92,10 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   private api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$); // for intellisense
 
   @Input()
-  formatter: (id: number | string) => string = (id: number | string) =>
-    this.workspace.current.getMultilingualValue(this.collection, id, 'Name')
+  formatter: (id: number | string) => string = (id: number | string) => {
+    const item = this.workspace.current.get(this.collection, id);
+    return metadata[this.collection](this.workspace.current, this.translate, this.subtype).format(item);
+  }
 
   ///////////////// Lifecycle Hooks
   constructor(private apiService: ApiService, private workspace: WorkspaceService,

@@ -18,7 +18,7 @@ import {
   DEFAULT_PAGE_SIZE as DEFAULT_PAGE_SIZE
 } from '~/app/data/workspace.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { metadata, DtoDescriptor, dtoDescriptorImpl } from '~/app/data/entities/base/metadata';
+import { metadata, EntityDescriptor, dtoDescriptorImpl } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 enum SearchView {
@@ -579,7 +579,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   // Calculated screen properties
 
-  get dtoDescriptor(): DtoDescriptor {
+  get dtoDescriptor(): EntityDescriptor {
     const coll = this.collectionPart;
     return !!coll ? metadata[coll](this.workspace.current, this.translate, this.subtypePart) : null;
   }

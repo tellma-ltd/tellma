@@ -239,7 +239,7 @@ namespace BSharp.Data
                         return new SqlSource("[rpt].[Users]()");
 
                     case nameof(Agent):
-                        return new SqlSource("[dbo].[Agents]");
+                        return new SqlSource("[rpt].[Agents]()");
 
                     case nameof(MeasurementUnit):
                         return new SqlSource("[rpt].[MeasurementUnits]()");
@@ -756,32 +756,227 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
         public Query<Agent> Agents__AsQuery(List<AgentForSave> entities)
         {
-            throw new NotImplementedException();
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[AgentList]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // Query
+            var query = Query<Agent>();
+            return query.FromSql($"[bll].[{nameof(Agents__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
-        public Task<List<int>> Agents__Save(List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<List<int>> Agents__Save(List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
-            throw new NotImplementedException();
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[AgentList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
+                var imageIdsTvp = new SqlParameter("@Entities", imageIdsTable)
+                {
+                    TypeName = $"[dbo].[IndexedImageIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(imageIdsTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Agents__Save)}]";
+
+                // Execute
+                if (returnIds)
+                {
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            int i = 0;
+                            result.Add(new IndexedId
+                            {
+                                Index = reader.GetInt32(i++),
+                                Id = reader.GetInt32(i++)
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
         }
 
-        public Task<IEnumerable<ValidationError>> Agents_Validate__Save(List<AgentForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(List<AgentForSave> entities, int top)
         {
-            throw new NotImplementedException();
+            var result = new List<ValidationError>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[AgentList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Save)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new ValidationError
+                        {
+                            Key = reader.String(i++),
+                            ErrorName = reader.String(i++),
+                            Argument1 = reader.String(i++),
+                            Argument2 = reader.String(i++),
+                            Argument3 = reader.String(i++),
+                            Argument4 = reader.String(i++),
+                            Argument5 = reader.String(i++)
+                        });
+                    }
+                }
+            }
+
+            return result;
         }
 
-        public Task Agents__Delete(IEnumerable<int> ids)
+        public async Task Agents__Delete(IEnumerable<int> ids)
         {
-            throw new NotImplementedException();
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Agents__Delete)}]";
+
+                // Execute
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+                {
+                    throw new ForeignKeyViolationException();
+                }
+            }
         }
 
-        public Task<IEnumerable<ValidationError>> Agents_Validate__Delete(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(List<int> ids, int top)
         {
-            throw new NotImplementedException();
+            var result = new List<ValidationError>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Delete)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new ValidationError
+                        {
+                            Key = reader.String(i++),
+                            ErrorName = reader.String(i++),
+                            Argument1 = reader.String(i++),
+                            Argument2 = reader.String(i++),
+                            Argument3 = reader.String(i++),
+                            Argument4 = reader.String(i++),
+                            Argument5 = reader.String(i++)
+                        });
+                    }
+                }
+            }
+
+            return result;
         }
 
-        public Task Agents__Activate(List<int> ids, bool isActive)
+        public async Task Agents__Activate(List<int> ids, bool isActive)
         {
-            throw new NotImplementedException();
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                var isActiveParam = new SqlParameter("@IsActive", isActive);
+
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Agents__Activate)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         #endregion
@@ -882,7 +1077,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[MeasurementUnitList]",
+                    TypeName = $"[dbo].[UserList]",
                     SqlDbType = SqlDbType.Structured
                 };
 

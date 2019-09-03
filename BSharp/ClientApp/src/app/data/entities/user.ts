@@ -1,6 +1,6 @@
 import { RoleMembership, RoleMembershipForSave } from './role-membership';
 import { SettingsForClient } from './settings';
-import { DtoDescriptor } from './base/metadata';
+import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
@@ -34,9 +34,9 @@ export class UserSettingsForClient {
 const _select = ['', '2', '3'].map(pf => 'Agent/Name' + pf);
 let _currentLang: string;
 let _settings: SettingsForClient;
-let _cache: DtoDescriptor;
+let _cache: EntityDescriptor;
 
-export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subtype: string): DtoDescriptor {
+export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
     _currentLang = trx.currentLang;

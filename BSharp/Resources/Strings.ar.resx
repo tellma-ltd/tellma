@@ -121,23 +121,17 @@
   <data name="Agent_AgentType" xml:space="preserve">
     <value>نوع الذمة</value>
   </data>
-  <data name="Agent_Female" xml:space="preserve">
+  <data name="Agent_Gender_Female" xml:space="preserve">
     <value>أنثى</value>
   </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>الجنس</value>
   </data>
-  <data name="Agent_individuals_BirthDateTime" xml:space="preserve">
-    <value>تاريخ الميلاد</value>
-  </data>
   <data name="Agent_IsRelated" xml:space="preserve">
     <value>ذو علاقة</value>
   </data>
-  <data name="Agent_Male" xml:space="preserve">
+  <data name="Agent_Gender_Male" xml:space="preserve">
     <value>ذكر</value>
-  </data>
-  <data name="Agent_organizations_BirthDateTime" xml:space="preserve">
-    <value>تاريخ التأسيس</value>
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>رقم السجل الضريبي</value>
@@ -487,11 +481,8 @@
   <data name="Inactive" xml:space="preserve">
     <value>غير منشط</value>
   </data>
-  <data name="Individual" xml:space="preserve">
+  <data name="Agent_AgentType_Individual" xml:space="preserve">
     <value>فرد</value>
-  </data>
-  <data name="Individuals" xml:space="preserve">
-    <value>أفراد</value>
   </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>الكود غير سليم.</value>
@@ -625,11 +616,8 @@
   <data name="Or" xml:space="preserve">
     <value>أو</value>
   </data>
-  <data name="Organization" xml:space="preserve">
+  <data name="Agent_AgentType_Organization" xml:space="preserve">
     <value>مؤسسة</value>
-  </data>
-  <data name="Organizations" xml:space="preserve">
-    <value>مؤسسات</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
@@ -1026,5 +1014,8 @@
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>المستخدم ({0}) قد قبل الدعوة</value>
+  </data>
+  <data name="Agent_AgentType_System" xml:space="preserve">
+    <value>System</value>
   </data>
 </root>

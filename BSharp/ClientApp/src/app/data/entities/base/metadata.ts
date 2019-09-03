@@ -6,16 +6,18 @@ import { EntityWithKey } from './entity-with-key';
 import { metadata_Role } from '../role';
 import { metadata_ProductCategory } from '../product-category';
 import { metadata_IfrsNote } from '../ifrs-note';
+import { metadata_Agent } from '../agent';
 
-export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => DtoDescriptor } = {
+export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
     User: metadata_User,
+    Agent: metadata_Agent,
     Role: metadata_Role,
     ProductCategory: metadata_ProductCategory,
     IfrsNote: metadata_IfrsNote
 };
 
-export interface DtoDescriptor {
+export interface EntityDescriptor {
 
     /**
      * The DTO properties that need to be selected from the server for the format function to succeed
@@ -150,7 +152,7 @@ export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
     | NumberPropDescriptor | DatePropDscriptor | DatetimePropDscriptor | NavigationPropDescriptor | StatePropDescriptor;
 
 export function dtoDescriptorImpl(pathArray: string[], baseCollection: string, baseSubtype: string,
-    ws: TenantWorkspace, trx: TranslateService, ignoreLast = false, labels: string[] = null): DtoDescriptor {
+    ws: TenantWorkspace, trx: TranslateService, ignoreLast = false, labels: string[] = null): EntityDescriptor {
 
     if (!baseCollection) {
         throw new Error(`The baseCollection is not specified, therefore cannot retrieve the DTO descriptor`);

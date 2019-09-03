@@ -1,12 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
-import { ParamMap, ActivatedRoute, Router } from '@angular/router';
-import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
+import { metadata_Agent } from '~/app/data/entities/agent';
+import { TranslateService } from '@ngx-translate/core';
+import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
 @Component({
   selector: 'b-agents-master',
@@ -15,68 +16,15 @@ import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 })
 export class AgentsMasterComponent extends MasterBaseComponent implements OnInit {
 
-  @Input()
-  public set agentType(t: 'individuals' | 'organizations' | 'all') {
-    if (this._agentType !== t) {
-      this._agentType = t;
-      this.agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$);
-      this.birthDateTimeName = `Agent_${t}_BirthDateTime`;
 
-      if (t === 'individuals') {
-        this.tableColumnPaths = [
-          'Name', 'Name2', 'Title', 'Title2',
-          'Code', 'Address', 'BirthDateTime',
-          'IsRelated', 'TaxIdentificationNumber',
-          'Gender', 'IsActive'
-        ];
-      }
-
-      if (t === 'organizations') {
-        this.tableColumnPaths = [
-          'Name', 'Name2', 'Code', 'Address', 'BirthDateTime',
-          'IsRelated', 'TaxIdentificationNumber', 'IsActive'
-        ];
-      }
-
-      if (t === 'all') {
-        this.tableColumnPaths = [
-          'Name', 'Name2', 'Code', 'Address',
-          'IsRelated', 'TaxIdentificationNumber', 'IsActive'
-        ];
-      }
-    }
-  }
-
-  public get agentType(): 'individuals' | 'organizations' | 'all' {
-    return this._agentType;
-  }
-
-  private agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$); // for intellisense
-  private _agentType: 'individuals' | 'organizations' | 'all';
+  private agentsApi = this.api.agentsApi(this.notifyDestruct$); // for intellisense
 
   public tableColumnPaths: string[];
-  public birthDateTimeName: string;
   public filterDefinition: any;
   public expand = '';
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute, private router: Router) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
-
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      // This triggers changes on the screen
-      if (params.has('agentType')) {
-        const agentType = params.get('agentType');
-
-        if (['individuals', 'organizations', 'all'].indexOf(agentType) === -1
-        || agentType === 'all' && this.mode === 'screen') {
-          this.router.navigate(['page-not-found']);
-        }
-
-        if (this.agentType !== agentType) {
-          this.agentType = <'individuals' | 'organizations' | 'all'>agentType;
-        }
-      }
-    });
   }
 
   ngOnInit(): void {
@@ -88,20 +36,6 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   public get ws() {
     return this.workspace.current;
-  }
-
-  // public genderLookup(value: string): string {
-  //   return Agent_Gender[value];
-  // }
-
-  public get masterCrumb(): string {
-    // TODO After implementing configuration
-    const agentType = this.agentType;
-    if (!!agentType) {
-      return agentType === 'all' ? 'Agents' : agentType.charAt(0).toUpperCase() + agentType.slice(1);
-    }
-
-    return agentType;
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
@@ -120,5 +54,10 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
     // The master template handles any errors
     return obs$;
+  }
+
+  public agentTypeLookup(value: string): string {
+    const descriptor = <ChoicePropDescriptor> metadata_Agent(this.ws, this.translate, null).properties.AgentType;
+    return descriptor.format(value);
   }
 }

@@ -1,92 +1,46 @@
-<!-- <b-master [apiEndpoint]="'agents/' + agentType" [viewId]="agentType" [mode]="mode" [masterCrumb]="masterCrumb | translate"
-  [tileTemplate]="tile" [tableColumnPaths]="adjustForMultilingual(tableColumnPaths, ['Name', 'Title'], ws)" [tableColumnTemplates]="{
-            'Name' : { headerTemplate : header_Name, rowTemplate : row_Name, weight : 1.5 },
-            'Name2' : { headerTemplate : header_Name2, rowTemplate : row_Name2, weight : 1.5 },
-            'Title' : { headerTemplate : header_Title, rowTemplate : row_Title, weight : 1 },
-            'Title2' : { headerTemplate : header_Title2, rowTemplate : row_Title2, weight : 1 },
-            'Code' : { headerTemplate : header_Code, rowTemplate : row_Code, weight : 1 },
-            'Address' : { headerTemplate : header_Address, rowTemplate : row_Address, weight : 2 },
-            'BirthDateTime' : { headerTemplate : header_BirthDateTime, rowTemplate : row_BirthDateTime, weight : 1 },
-            'IsRelated' : { headerTemplate : header_IsRelated, rowTemplate : row_IsRelated, weight : 1 },
-            'TaxIdentificationNumber' : { headerTemplate : header_TaxIdentificationNumber, rowTemplate : row_TaxIdentificationNumber, weight : 1 },
-            'Gender' : { headerTemplate : header_Gender, rowTemplate : row_Gender, weight : 1 },            
-            'IsActive' : { headerTemplate : header_IsActive, rowTemplate : row_IsActive, weight : 1 }
-          }"
+<b-master collection="Agent" viewId="agents" [mode]="mode"
+  [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
+  [tableDescriptionColumnTemplate]="descriptionColumn"
+  selectDefault="Code,AgentType,IsRelated" selectForTiles="Code"
   [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
-          ]"
-  [includeInactiveLabel]="'IncludeInactive' | translate" 
-  [filterDefinition]="agentType === 'individuals' ? {
-              'CreatedBy' : [
-                { template: createdByMe, expression: 'CreatedById eq me'}
-              ],
-              'Gender' : [
-                { template: male, expression: 'Gender eq \'M\''},
-                { template: female, expression: 'Gender eq \'F\''}
-              ] 
-            }
-            :
-            {
-              'CreatedBy' : [
-                { template: createdByMe, expression: 'CreatedById eq me'}
-              ]
-            }">
-</b-master> -->
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedById eq me'}
+            ],
+            'AgentType' : [
+              { template: individual, expression: 'AgentType eq \'Individual\''},
+              { template: organization, expression: 'AgentType eq \'Organization\''},
+              { template: system, expression: 'AgentType eq \'System\''}
+            ]
+          }">
+</b-master>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Custodies', id, 'Name') }}</span>
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Agent', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
     <span>{{ c[id].Code }}</span>
   </div>
 </ng-template>
 
-
-<!-- Table Templates -->
-<ng-template #header_Name>{{ ('Name' | translate) + ws.primaryPostfix }}</ng-template>
-<ng-template #row_Name let-id="id"> {{ c[id].Name }} </ng-template>
-
-<ng-template #header_Name2>{{ ('Name' | translate) + ws.secondaryPostfix }}</ng-template>
-<ng-template #row_Name2 let-id="id"> {{ c[id].Name2 }}  </ng-template>
-
-<ng-template #header_Title>{{ ('Agent_Title' | translate) + ws.primaryPostfix }}</ng-template>
-<ng-template #row_Title let-id="id"> {{ c[id].Title }} </ng-template>
-
-<ng-template #header_Title2>{{ ('Agent_Title' | translate) + ws.secondaryPostfix }}</ng-template>
-<ng-template #row_Title2 let-id="id"> {{ c[id].Title2 }} </ng-template>
-
-<ng-template #header_Code>{{ 'Code' | translate }}</ng-template>
-<ng-template #row_Code let-id="id"> {{ c[id].Code }}  </ng-template>
-
-<ng-template #header_Address>{{ 'Custody_Address' | translate }}</ng-template>
-<ng-template #row_Address let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.Address"> {{ c[id].Address }} </b-restricted> </ng-template>
-
-<ng-template #header_BirthDateTime>{{ birthDateTimeName | translate }}</ng-template>
-<ng-template #row_BirthDateTime let-id="id"><b-restricted [metadata]="c[id].EntityMetadata?.BirthDateTime"> {{ c[id].BirthDateTime | date:'yyyy-MM-dd' }} </b-restricted></ng-template>
-
-<ng-template #header_IsRelated>{{ 'Agent_IsRelated' | translate }}</ng-template>
-<ng-template #row_IsRelated let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.IsRelated"> {{ (c[id].IsRelated ? 'Yes' : 'No') | translate }}  </b-restricted></ng-template>
-
-<ng-template #header_TaxIdentificationNumber>{{ 'Agent_TaxIdentificationNumber' | translate }}</ng-template>
-<ng-template #row_TaxIdentificationNumber let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.TaxIdentificationNumber"> {{ c[id].TaxIdentificationNumber }} </b-restricted> </ng-template>
-
-<!-- <ng-template #header_Gender>{{ 'Agent_Gender' | translate }}</ng-template>
-<ng-template #row_Gender let-id="id"> <b-restricted [metadata]="c[id].EntityMetadata?.Gender"> {{ genderLookup(c[id].Gender) | translate }}  </b-restricted></ng-template> -->
-
-<ng-template #header_IsActive>{{ 'IsActive' | translate }}</ng-template>
-<ng-template #row_IsActive let-id="id"> {{ (c[id].IsActive ? 'Active' : 'Inactive') | translate }}</ng-template>
-
+<!-- Description Column -->
+<ng-template #descriptionColumn let-id="id">
+  <span class="text-truncate">
+    <b-switch baseCollection="Agent" [entityId]="id"></b-switch>
+  </span>
+</ng-template>
 
 <!-- Multiselect Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
 
-
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
 
-<!-- <ng-template #male> {{ genderLookup('M') | translate }}</ng-template>
-<ng-template #female> {{ genderLookup('F') | translate }}</ng-template> -->
+<ng-template #individual> {{ agentTypeLookup('Individual') | translate }}</ng-template>
+<ng-template #organization> {{ agentTypeLookup('Organization') | translate }}</ng-template>
+<ng-template #system> {{ agentTypeLookup('System') | translate }}</ng-template>

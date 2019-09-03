@@ -24,9 +24,21 @@ namespace BSharp.Entities
         public string Name3 { get; set; }
 
         [Display(Name = "Code")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [StringLength(30, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Code { get; set; }
+
+        [Display(Name = "Agent_AgentType")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [StringLength(30, ErrorMessage = nameof(StringLengthAttribute))]
+        [ChoiceList(new object[] { "Individual", "Organization", "System" },
+            new string[] { "Agent_AgentType_Individual", "Agent_AgentType_Organization", "Agent_AgentType_System" })]
+        [AlwaysAccessible]
+        public string AgentType { get; set; }
+
+        [Display(Name = "Agent_IsRelated")]
+        [AlwaysAccessible]
+        public bool? IsRelated { get; set; }
 
         [Display(Name = "Agent_PreferredLanguage")]
         [Culture]

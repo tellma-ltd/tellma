@@ -332,6 +332,10 @@
     <Build Include="bll\Stored Procedures\bll.DocumentLineEntries__Fill.sql" />
     <Build Include="api\Stored Procedures\api.Agents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Save.sql" />
+    <Build Include="Mapping\Agents.sql" />
+    <Build Include="Mapping\Agents__AsQuery.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.Agents_Validate__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

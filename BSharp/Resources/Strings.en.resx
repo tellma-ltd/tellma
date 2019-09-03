@@ -141,23 +141,17 @@
   <data name="Agent_AgentType" xml:space="preserve">
     <value>Agent Type</value>
   </data>
-  <data name="Agent_Female" xml:space="preserve">
+  <data name="Agent_Gender_Female" xml:space="preserve">
     <value>Female</value>
   </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>Gender</value>
   </data>
-  <data name="Agent_individuals_BirthDateTime" xml:space="preserve">
-    <value>Date of Birth</value>
-  </data>
   <data name="Agent_IsRelated" xml:space="preserve">
     <value>Is Related</value>
   </data>
-  <data name="Agent_Male" xml:space="preserve">
+  <data name="Agent_Gender_Male" xml:space="preserve">
     <value>Male</value>
-  </data>
-  <data name="Agent_organizations_BirthDateTime" xml:space="preserve">
-    <value>Date of Establishment</value>
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>Tax ID Number</value>
@@ -507,11 +501,8 @@
   <data name="Inactive" xml:space="preserve">
     <value>Inactive</value>
   </data>
-  <data name="Individual" xml:space="preserve">
+  <data name="Agent_AgentType_Individual" xml:space="preserve">
     <value>Individual</value>
-  </data>
-  <data name="Individuals" xml:space="preserve">
-    <value>Individuals</value>
   </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>Invalid authenticator code.</value>
@@ -645,11 +636,8 @@
   <data name="Or" xml:space="preserve">
     <value>Or</value>
   </data>
-  <data name="Organization" xml:space="preserve">
+  <data name="Agent_AgentType_Organization" xml:space="preserve">
     <value>Organization</value>
-  </data>
-  <data name="Organizations" xml:space="preserve">
-    <value>Organizations</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>Two-Factor Authentication (2FA)</value>
@@ -1046,5 +1034,8 @@
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>The user '{0}' has already accepted the invitation</value>
+  </data>
+  <data name="Agent_AgentType_System" xml:space="preserve">
+    <value>آلة</value>
   </data>
 </root>
