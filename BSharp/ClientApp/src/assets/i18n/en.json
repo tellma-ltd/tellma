@@ -258,5 +258,6 @@
     "Agent_AgentType_Individual": "Individual",
     "Agent_AgentType_System": "System",
     "Settings_TernaryLanguage" : "Ternary Language",
-    "Settings_TernaryLanguageSymbol": "Ternary Language Symbol"
+    "Settings_TernaryLanguageSymbol": "Ternary Language Symbol",
+    "CreateUser" : "Create User..."
 }

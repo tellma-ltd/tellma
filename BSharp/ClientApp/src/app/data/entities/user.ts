@@ -31,7 +31,7 @@ export class UserSettingsForClient {
     CustomSettings: { [key: string]: string };
 }
 
-const _select = ['', '2', '3'].map(pf => 'Agent/Name' + pf);
+const _select = ['Email'];
 let _currentLang: string;
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;

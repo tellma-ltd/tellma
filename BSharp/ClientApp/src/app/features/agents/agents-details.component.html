@@ -15,8 +15,7 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Name -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2"
-    [serverErrors]="model?.serverErrors?.Name">
+  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Name">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
     <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
@@ -31,6 +30,16 @@
       [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
     </b-text-editor>
   </b-form-group>
+
+  <!-- Image -->
+  <div class="col-12 col-md-4 b-details-image-container">
+    <b-restricted [metadata]="model?.EntityMetadata?.ImageId">
+      <div class="border">
+        <b-image *ngIf="!!model" [src]="model.Id ? 'agents/' + model.Id + '/image' : null" [imageId]="model?.ImageId"
+          [(ngModel)]="model.Image" [isEdit]="isEdit"></b-image>
+      </div>
+    </b-restricted>
+  </div>
 
   <!-- Name -->
   <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
@@ -94,39 +103,20 @@
     </div>
   </b-form-group>
 
-  <!-- User -->
-  <b-form-group class="b-form-group" [label]="'Agent_User' | translate">
-    <b-restricted [metadata]="model?.EntityMetadata?.User">
-      <b-view-link *ngIf="!isEdit" link="../../users" [itemId]="model?.Id">
-        {{ ws.get('User', model?.Id)?.Email }}
-      </b-view-link>
-    </b-restricted>
-    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.Id" apiEndpoint="users" collection="User"
-      [masterTemplate]="userMaster" [detailsTemplate]="userDetails">
-    </b-details-picker>
-
-    <!-- The Users Details Modal -->
-    <ng-template #userDetails let-modal="modal" let-update="update" let-initialText="initialText" let-viewId="viewId">
-      <div class="modal-body">
-        <b-users-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);"
-          (saved)="modal.close(true); update($event);">
-        </b-users-details>
-      </div>
-    </ng-template>
-
-    <!-- The Users Master Modal -->
-    <ng-template #userMaster let-modal="modal" let-update="update" let-create="create">
-      <div class="modal-body">
-        <b-users-master mode="popup" (cancel)="modal.close(false);" (select)="modal.close(true); update($event); "
-          (create)="modal.close(false); create()">
-        </b-users-master>
-      </div>
-    </ng-template>
-  </b-form-group>
-
   <!-- Is Active -->
   <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+  </b-form-group>
+
+  <!-- User -->
+  <b-form-group class="b-form-group" [label]="'Agent_User' | translate" *ngIf="!isEdit">
+    <b-restricted [metadata]="model?.EntityMetadata?.User">
+      <b-view-link link="../../users" [itemId]="model?.Id" *ngIf="showUser(model)">
+        {{ ws.get('User', model?.Id)?.Email }}
+      </b-view-link>
+      <button class="btn btn-link p-0 font-weight-normal font-italic" *ngIf="!showUser(model)"
+        (click)="createUser(model)">{{ 'CreateUser' | translate }}</button>
+    </b-restricted>
   </b-form-group>
 </ng-template>
 

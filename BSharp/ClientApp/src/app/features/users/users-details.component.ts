@@ -7,6 +7,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'b-users-details',
@@ -25,6 +26,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
 
   create = () => {
     const result = new UserForSave();
+    result.Id = parseInt(this.route.snapshot.paramMap.get('agent_id'), null) || null;
     result.Email = this.initialText;
     result.Roles = [];
     return result;
@@ -49,7 +51,8 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  constructor(public workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
+  constructor(public workspace: WorkspaceService, private api: ApiService,
+    private translate: TranslateService, private route: ActivatedRoute) {
     super();
 
     this.usersApi = this.api.usersApi(this.notifyDestruct$);
@@ -100,4 +103,8 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
 
   isInactive: (model: User) => string = (model: User) => !!model && !!model.Id && !!this.ws.Agent[model.Id] &&
     !this.ws.Agent[model.Id].IsActive ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
+
+  public get isNew(): boolean {
+    return this.route.snapshot.paramMap.get('id') === 'new';
+  }
 }

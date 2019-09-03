@@ -110,7 +110,7 @@ namespace BSharp.Data
                     // Add the remaining properties
                     foreach (var prop in props)
                     {
-                        var propValue = prop.GetValue(entity);
+                        var propValue = prop.GetValue(line);
                         row[prop.Name] = propValue ?? DBNull.Value;
                     }
 

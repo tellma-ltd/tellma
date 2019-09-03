@@ -11,6 +11,8 @@ export class AgentForSave extends EntityWithKey {
   Name2: string;
   Name3: string;
   Code: string;
+  AgentType: string;
+  IsRelated: boolean;
   PreferredLanguage: string;
   Image: string;
 }

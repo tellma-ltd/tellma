@@ -1,7 +1,7 @@
 <b-master collection="Agent" viewId="agents" [mode]="mode"
   [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
   [tableDescriptionColumnTemplate]="descriptionColumn"
-  selectDefault="Code,AgentType,IsRelated" selectForTiles="Code"
+  selectDefault="Code,AgentType,IsRelated" selectForTiles="Code,ImageId"
   [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
@@ -19,11 +19,21 @@
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
-  <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Agent', id, 'Name') }}</span>
-  </div>
-  <div class="d-flex justify-content-between mt-1 small">
-    <span>{{ c[id].Code }}</span>
+  <div class="d-flex">
+    <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
+      <div class="border b-dp-wrapper2">
+        <b-image [src]="'agents/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></b-image>
+      </div>
+      &nbsp;&nbsp;&nbsp;
+    </ng-container>
+    <div class="flex-grow-1 d-inline-block b-mw-0">
+      <div class="d-flex justify-content-between">
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('Agent', id, 'Name') }}</span>
+      </div>
+      <div class="d-flex justify-content-between mt-1 small">
+        <span>{{ c[id].Code }}</span>
+      </div>
+    </div>
   </div>
 </ng-template>
 

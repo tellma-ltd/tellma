@@ -10,7 +10,8 @@ AS
 		[A].[Name3], 
 		[A].[ImageId], 
 		[U].[UserSettingsVersion]
-	FROM [dbo].[Users] AS [U] JOIN [dbo].[Agents] AS [A] ON [U].[Id] = [A].[Id];
+	FROM [dbo].[Users] AS [U] JOIN [dbo].[Agents] AS [A] ON [U].[Id] = [A].[Id]
+	WHERE [U].[Id] = @UserId
 
 	-- Return the Custom Settings
 	SELECT [Key], [Value] FROM [dbo].[UserSettings]

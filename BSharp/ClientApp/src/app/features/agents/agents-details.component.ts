@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
@@ -9,6 +9,7 @@ import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.com
 import { TranslateService } from '@ngx-translate/core';
 import { supportedCultures } from '~/app/data/supported-cultures';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 @Component({
   selector: 'b-agents-details',
@@ -27,12 +28,14 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
   create = () => {
     const result = new AgentForSave();
     result.Name = this.initialText;
+    result.AgentType = 'Individual';
+    result.IsRelated = false;
     result.PreferredLanguage = this.ws.settings.PrimaryLanguageId;
     return result;
   }
 
   constructor(private workspace: WorkspaceService, private api: ApiService,
-    private translate: TranslateService) {
+    private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
     super();
   }
 
@@ -105,5 +108,19 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
 
   public get ws() {
     return this.workspace.current;
+  }
+
+  public showUser(model: Agent): boolean {
+    return !!model && !!this.workspace.current.get('User', model.Id);
+  }
+
+  public createUser(model: Agent): void {
+    if (!!model && !!model.Id) {
+      const params: Params = {
+        agent_id : model.Id
+      };
+
+      this.router.navigate(['../../users/new', params], { relativeTo : this.route });
+    }
   }
 }

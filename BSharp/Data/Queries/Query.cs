@@ -323,11 +323,8 @@ namespace BSharp.Data.Queries
             var userTimeZone = args.UserTimeZone;
             var localizer = args.Localizer;
 
-            if (_orderby == null)
-            {
-                // Developer mistake
-                throw new InvalidOperationException($"Query<{typeof(T).Name}> was executed without an orderby clause");
-            }
+            _orderby = _orderby ?? (typeof(T).GetProperty("Id") != null ? OrderByExpression.Parse("Id desc") :
+                throw new InvalidOperationException($"Query<{typeof(T).Name}> was executed without an orderby clause"));
 
             // Prepare all the query parameters
             SelectExpression selectExp = _select;
@@ -469,7 +466,7 @@ namespace BSharp.Data.Queries
                             segments[fullPath] = flatQuery;
                         }
 
-                        if(previousFullPath != null)
+                        if (previousFullPath != null)
                         {
                             var flatQuery = segments[previousFullPath];
                             if (subPath.Count >= 2) // If there is more than just the collection property, then we add an expand

@@ -404,7 +404,7 @@ namespace BSharp.Data.Queries
                         foreach (var (navProp, fkProp) in GetNavAndFkProps(entity))
                         {
                             // The nav property can only be loaded if the FK property is loaded first
-                            if (isDynamic || entity.EntityMetadata.TryGetValue(fkProp.Name, out FieldMetadata meta) && meta == FieldMetadata.Loaded)
+                            if (isDynamic || fkProp.Name == "Id" || entity.EntityMetadata.TryGetValue(fkProp.Name, out FieldMetadata meta) && meta == FieldMetadata.Loaded)
                             {
                                 var fkValue = fkProp.GetValue(entity);
                                 if (fkValue == null)

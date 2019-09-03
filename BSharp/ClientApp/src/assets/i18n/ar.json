@@ -257,6 +257,6 @@
     "Agent_AgentType_Individual": "فرد",
     "Agent_AgentType_System": "آلة",
     "Settings_TernaryLanguage" : "اللغة الثالثة",
-    "Settings_TernaryLanguageSymbol": "رمز اللغة الثالثة"
-
+    "Settings_TernaryLanguageSymbol": "رمز اللغة الثالثة",
+    "CreateUser" : "مستخدم جديد..."
 }

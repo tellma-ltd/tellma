@@ -1,5 +1,5 @@
-<b-details apiEndpoint="users" viewId="users" [expand]="expand" [idString]="idString"
-  collection="User" [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [masterCrumb]="'Users' | translate"
+<b-details apiEndpoint="users" viewId="users" [expand]="expand" [idString]="idString" collection="User"
+  [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [masterCrumb]="'Users' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [isInactive]="isInactive"
   [documentHeaderTemplate]="documentHeader" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canAction, actionTooltip: actionTooltip },
@@ -15,14 +15,16 @@
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit">
-  <div class="w-100 b-document-header d-flex justify-content-end" *ngIf="model?.EntityMetadata?.ExternalId === 2">
-    <div class="b-flow-chart small">
-      <div [class.active]="!model?.ExternalId"><span>{{'User_New' | translate}}</span></div>
-      <div [class.active]="!!model?.ExternalId"><span>{{'User_Confirmed' | translate}}</span></div>
-    </div>
-    <div class="small b-lone-state active d-none">
-      <span>{{ (!!model?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span>
-    </div>
+  <div class="w-100 b-document-header d-flex justify-content-end">
+    <b-restricted [metadata]="model?.EntityMetadata?.ExternalId">
+      <div class="b-flow-chart small">
+        <div [class.active]="!model?.ExternalId"><span>{{'User_New' | translate}}</span></div>
+        <div [class.active]="!!model?.ExternalId"><span>{{'User_Confirmed' | translate}}</span></div>
+      </div>
+      <div class="small b-lone-state active d-none">
+        <span>{{ (!!model?.ExternalId ? 'User_Confirmed' : 'User_New') | translate }}</span>
+      </div>
+    </b-restricted>
   </div>
 </ng-template>
 
@@ -31,56 +33,22 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Email -->
-  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2"
-    [serverErrors]="model?.serverErrors?.Email">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Email">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Email }}</h2>
-    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Email" [ngModelOptions]="{ updateOn: 'blur' }"
-      [placeholder]="('User_Email' | translate) + ws.primaryPostfix + '...'" required></b-text-editor>
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Email"
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('User_Email' | translate) + '...'" required>
+    </b-text-editor>
   </b-form-group>
-
-  <div class="col-12 col-md-4 b-details-image-container">
-    <div class="border" *ngIf="model?.EntityMetadata?.ImageId === 2">
-      <b-image *ngIf="!!model" [src]="model.Id ? 'users/' + model.Id + '/image' : null"
-      [imageId]="model?.ImageId" [(ngModel)]="model.Image" [isEdit]="isEdit"></b-image>
-    </div>
-  </div>
-
-  <!-- Email -->
-  <!-- <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="model?.serverErrors?.Email">
-    <div *ngIf="!isEdit || !!model.Id">
-      <b-restricted [metadata]="model?.EntityMetadata?.Email"> {{ model?.Email }} </b-restricted>
-    </div>
-    <b-text-editor *ngIf="isEdit && !model.Id" [(ngModel)]="model.Email" [ngModelOptions]="{ updateOn: 'blur' }" email
-      required></b-text-editor>
-  </b-form-group> -->
-
-  <ng-container *ngIf="ws.settings.SecondaryLanguageId">
-    <!-- Name -->
-    <!-- <b-form-group class="b-form-group" *ngIf="ws.isSecondaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
-      [serverErrors]="model?.serverErrors?.Name">
-      <div *ngIf="!isEdit">{{ model?.Name }}</div>
-      <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
-      </b-text-editor>
-    </b-form-group> -->
-
-    <!-- Name2 -->
-    <!-- <b-form-group class="b-form-group" *ngIf="ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.secondaryPostfix"
-      [serverErrors]="model?.serverErrors?.Name2">
-      <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
-      <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-    </b-form-group> -->
-  </ng-container>
 
   <!-- Agent -->
   <b-form-group class="b-form-group" [label]="'User_Agent' | translate">
-    <b-restricted [metadata]="model?.EntityMetadata?.Agent">
-      <b-view-link *ngIf="!isEdit" link="../../agents"
-        [itemId]="model?.Id">
+    <b-restricted [metadata]="model?.EntityMetadata?.Agent" *ngIf="!isEdit">
+      <b-view-link link="../../agents" [itemId]="model?.Id">
         {{ ws.getMultilingualValue('Agent', model?.Id, 'Name') }}
       </b-view-link>
     </b-restricted>
     <b-details-picker *ngIf="isEdit" [(ngModel)]="model.Id" apiEndpoint="agents" collection="Agent"
-      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails">
+      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" required [disabled]="!isNew">
     </b-details-picker>
 
     <!-- The Agents Details Modal -->
@@ -131,7 +99,7 @@
         </span>
       </ng-template>
       <ng-template ngbTabContent>
-        <b-restricted [metadata]="model?.EntityMetadata?.Roles" [class.p-4]="model?.EntityMetadata?.Roles !== 2">
+        <b-restricted [metadata]="model?.EntityMetadata?.Roles" [class.p-4]="model?.EntityMetadata?.Roles === 1">
           <b-table [dataSource]="model?.Roles" [isEdit]="isEdit" [columnPaths]="['RoleId', 'Memo']" [columnTemplates]="{
             'RoleId' : { headerTemplate : header_RoleId, rowTemplate : row_RoleId, weight : 1 },
             'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }

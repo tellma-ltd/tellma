@@ -115,7 +115,7 @@
     <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Agents__Activate.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Activate.sql" />
+    <Build Include="dbo\Stored Procedures\dal.Agents__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_ResponsibilityCenters__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_ResponsibilityCenters_Validate__Save.sql" />
@@ -161,7 +161,6 @@
     <Build Include="dbo\User Defined Types\dbo.DocumentLineTypeList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountList.sql" />
     <Build Include="dbo\Functions\dbo.fn_User__Language.sql" />
-    <Build Include="dbo\User Defined Types\dbo.LocalUserList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Unpost.sql" />
     <Build Include="dbo\Tables\dbo.DocumentSignatures.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Unsign.sql" />
@@ -336,6 +335,12 @@
     <Build Include="Mapping\Agents__AsQuery.sql" />
     <Build Include="dal\Stored Procedures\dal.Agents__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Blobs__Get.sql" />
+    <Build Include="dbo\Tables\dbo.Blobs.sql" />
+    <Build Include="dal\Stored Procedures\dal.Blobs__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Blobs__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Users__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.RoleMembershipList.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

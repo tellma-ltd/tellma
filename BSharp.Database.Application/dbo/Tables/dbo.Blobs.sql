@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[Blobs]
+(
+	[Id] NVARCHAR(450) NOT NULL PRIMARY KEY, 
+    [Content] VARBINARY(MAX) NOT NULL
+)

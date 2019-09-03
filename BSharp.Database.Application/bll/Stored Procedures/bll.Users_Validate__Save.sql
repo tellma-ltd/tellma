@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Users_Validate__Save]
 	@Entities [UserList] READONLY,
+	@Roles [dbo].[RoleMembershipList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;

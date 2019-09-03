@@ -785,7 +785,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 };
 
                 DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
-                var imageIdsTvp = new SqlParameter("@Entities", imageIdsTable)
+                var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
                 {
                     TypeName = $"[dbo].[IndexedImageIdList]",
                     SqlDbType = SqlDbType.Structured
@@ -1131,7 +1131,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[UserList]",
+                    TypeName = $"[dbo].[{nameof(User)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -1185,15 +1185,46 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
         #region Blobs
 
-        public Task Blobs__Delete(IEnumerable<string> blobNames)
+        public async Task Blobs__Delete(IEnumerable<string> blobNames)
         {
-            // DELETE FROM [dbo].[Blobs] WHERE Id IN (SELECT VALUE FROM STRING_SPLIT({blobNamesString}, ','))
-            throw new NotImplementedException();
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable namesTable = RepositoryUtilities.DataTable(blobNames.Select(id => new { Id = id }));
+                var namesTvp = new SqlParameter("@BlobNames", namesTable)
+                {
+                    TypeName = $"[dbo].[StringList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(namesTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Blobs__Delete)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
-        public Task Blobs__Save(string name, byte[] blob)
+        public async Task Blobs__Save(string name, byte[] blob)
         {
-            throw new NotImplementedException();
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("@Name", name);
+                cmd.Parameters.Add("@Blob", blob);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Blobs__Save)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task<byte[]> Blobs__Get(string name)
@@ -1208,7 +1239,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"{nameof(Blobs__Get)}";
+                cmd.CommandText = $"[dal].[{nameof(Blobs__Get)}]";
 
                 // Execute
                 using (var reader = await cmd.ExecuteReaderAsync())

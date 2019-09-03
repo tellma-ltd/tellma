@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[dal_Agents__Activate]
+﻿CREATE PROCEDURE [dal].[Agents__Activate]
 	@Ids dbo.[IdList] READONLY,
 	@IsActive bit
 AS

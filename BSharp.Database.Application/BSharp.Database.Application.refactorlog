@@ -54,4 +54,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[CK_Documents__Frequency]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="86f91e20-6e20-42b8-8456-5da6311368e6" ChangeDateTime="09/03/2019 10:16:35">
+    <Property Name="ElementName" Value="[dbo].[dal_Agents__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Activate]" />
+  </Operation>
 </Operations>
