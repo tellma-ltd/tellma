@@ -11,15 +11,15 @@ namespace BSharp.Entities
 
     public class PermissionForSave : EntityWithKey<int>
     {
+        [Display(Name = "Permission_Role")]
+        [AlwaysAccessible]
+        public int? RoleId { get; set; }
+
         [Display(Name = "Permission_View")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string ViewId { get; set; }
-
-        [Display(Name = "Permission_Role")]
-        [AlwaysAccessible]
-        public int? RoleId { get; set; }
 
         [Display(Name = "Permission_Action")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -45,17 +45,8 @@ namespace BSharp.Entities
 
     public class Permission : PermissionForSave
     {
-        [Display(Name = "CreatedAt")]
-        public DateTimeOffset? CreatedAt { get; set; }
-
-        [Display(Name = "CreatedBy")]
-        public int? CreatedById { get; set; }
-
-        [Display(Name = "ModifiedAt")]
-        public DateTimeOffset? ModifiedAt { get; set; }
-
         [Display(Name = "ModifiedBy")]
-        public int? ModifiedById { get; set; }
+        public int? SavedById { get; set; }
 
         // For Query
 
@@ -68,12 +59,8 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public Role Role { get; set; }
 
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
-
         [Display(Name = "ModifiedBy")]
-        [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
+        [ForeignKey(nameof(SavedById))]
+        public User SavedBy { get; set; }
     }
 }

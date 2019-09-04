@@ -1,9 +1,6 @@
 <b-master collection="User" viewId="users" [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
   [tableDescriptionColumnTemplate]="descriptionColumn" selectDefault="State,LastAccess"
-  selectForTiles="State" inactiveFilter="Agent/IsActive eq true" [multiselectActions]="[
-            { template : activate, action: onActivate, requiresUpdatePermission: true },
-            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
-          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+  selectForTiles="State" inactiveFilter="Agent/IsActive eq true" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],

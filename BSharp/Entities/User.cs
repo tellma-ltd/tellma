@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class UserForSave<TRoleMembership> : EntityWithKey<int>
+    public class UserForSave<TRoleMembership> : EntityWithKey<int>, IValidatableObject
     {
         [Display(Name = "User_Email")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -17,6 +19,19 @@ namespace BSharp.Entities
         [Display(Name = "User_Roles")]
         [ForeignKey(nameof(RoleMembership.AgentId))]
         public List<TRoleMembership> Roles { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Id == 0)
+            {
+                // User is in a 0..1-1 relationship with Agents. So the User's Id is required
+                var localizer = validationContext.GetRequiredService<IStringLocalizer<Strings>>();
+                var errorMessage = localizer["RequiredAttribute", localizer["User_Agent"]];
+                var memberNames = new string[] { nameof(Id) };
+
+                yield return new ValidationResult(errorMessage, memberNames);
+            }
+        }
     }
 
     public class UserForSave : UserForSave<RoleMembershipForSave> { }

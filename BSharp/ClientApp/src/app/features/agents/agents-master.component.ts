@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
@@ -22,6 +22,9 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   public tableColumnPaths: string[];
   public filterDefinition: any;
   public expand = '';
+
+  @Input()
+  filterDefault: string;
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();

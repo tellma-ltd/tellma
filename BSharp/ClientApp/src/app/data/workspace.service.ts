@@ -417,8 +417,9 @@ export class MasterDetailsStore {
     } else {
 
       // adds a newly created item in memory and updates the stats
-      this.flatIds = ids.concat(this.flatIds); // add all ids in the beginning
-      this.total = this.total + ids.length;
+      const newIds = ids.filter(id => this.flatIds.indexOf(id) < 0);
+      this.flatIds = newIds.concat(this.flatIds); // add all ids in the beginning
+      this.total = this.total + newIds.length;
     }
   }
 

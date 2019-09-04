@@ -157,7 +157,7 @@
     "ProductCategories": "Product Categories",
     "ProductCategory": "Product Category",
     "Public": "Public",
-    "PublicRoleWarning": "Warning! This role is public, therefore the permissions and signatures here are granted to ALL users",
+    "PublicRoleWarning": "Warning! This role is public, therefore the permissions here are granted to ALL users",
     "QuickAccess": "Quick Access",
     "RedirectingToSignIn": "Redirecting to sign-in page",
     "RedirectingToSignOut": "Redirecting to sign-out page",

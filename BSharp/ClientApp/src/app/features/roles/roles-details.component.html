@@ -82,7 +82,7 @@
           </fa-icon></span>
       </ng-template>
       <ng-template ngbTabContent>
-        <b-restricted [metadata]="model?.EntityMetadata?.Permissions" [class.p-4]="model?.EntityMetadata?.Permissions !== 2">
+        <b-restricted [metadata]="model?.EntityMetadata?.Permissions" [class.p-4]="model?.EntityMetadata?.Permissions === 1">
           <b-table [dataSource]="model?.Permissions" [isEdit]="isEdit"
             [columnPaths]="['ViewId', 'Action', 'Criteria', 'Mask', 'Memo']" [columnTemplates]="{
               'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
@@ -157,7 +157,7 @@
         <span *ngIf="showMembersError(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle"></fa-icon>
           </span></ng-template>
       <ng-template ngbTabContent>
-        <b-restricted [metadata]="model?.EntityMetadata?.Members" [class.p-4]="model?.EntityMetadata?.Members !== 2">
+        <b-restricted [metadata]="model?.EntityMetadata?.Members" [class.p-4]="model?.EntityMetadata?.Members === 1">
           <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['AgentId', 'Memo']" [columnTemplates]="{
             'AgentId' : { headerTemplate : header_AgentId, rowTemplate : row_AgentId, weight : 1 },
             'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }

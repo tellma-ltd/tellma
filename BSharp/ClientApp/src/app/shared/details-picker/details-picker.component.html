@@ -49,7 +49,7 @@
 </ng-template>
 
 <ng-template #masterWrapperTemplate let-modal>
-  <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal }">
+  <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal, filter: filter }">
   </ng-container>
 </ng-template>
 

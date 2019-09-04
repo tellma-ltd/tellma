@@ -115,7 +115,6 @@
     <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Agents__Activate.sql" />
-    <Build Include="dbo\Stored Procedures\dal.Agents__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_ResponsibilityCenters__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_ResponsibilityCenters_Validate__Save.sql" />
@@ -176,9 +175,7 @@
     <Build Include="dbo\User Defined Types\dbo.RoleList.sql" />
     <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Roles_Validate__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Activate.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Roles__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ViewList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Views__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Views_Validate__Save.sql" />
@@ -341,6 +338,15 @@
     <Build Include="dal\Stored Procedures\dal.Blobs__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.RoleMembershipList.sql" />
+    <Build Include="bll\Stored Procedures\bll.Users_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Users__Delete.sql" />
+    <Build Include="Mapping\Roles.sql" />
+    <Build Include="Mapping\Roles__AsQuery.sql" />
+    <Build Include="bll\Stored Procedures\bll.Roles_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Roles__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Agents__Activate.sql" />
+    <Build Include="dal\Stored Procedures\dal.Roles__Activate.sql" />
+    <Build Include="bll\Stored Procedures\bll.Roles_Validate__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">

@@ -27,7 +27,7 @@
     <span class="d-block text-truncate">{{ ws.getMultilingualValue('MeasurementUnit', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <b-switch baseCollection="MeasurementUnit" path="Code" [entityId]="id"></b-switch>
+    <b-switch baseCollection="MeasurementUnit" path="Description" [entityId]="id"></b-switch>
   </div>
 </ng-template>
 

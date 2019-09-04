@@ -3,4 +3,4 @@
 	@IsActive BIT
 AS
 SET NOCOUNT ON;
-	EXEC [dbo].[dal_Roles__Activate] @Ids = @Ids, @IsActive = @IsActive;
+	EXEC [dal].[Roles__Activate] @Ids = @Ids, @IsActive = @IsActive;

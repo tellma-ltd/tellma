@@ -89,6 +89,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   selectForTiles: string;
 
   @Input()
+  filterDefault: string;
+
+  @Input()
   skipInput: number;
 
   @Input()
@@ -253,8 +256,15 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       // select
       const select = this.selectFromUserSettings || this.selectDefault || '';
-      if (this.state.select !== select) {
+      if (select !== this.state.select) {
         this.state.select = select;
+        hasChanged = true;
+      }
+
+      // filter
+      const filter = this.filterDefault || null;
+      if (filter !== this.state.customFilter) {
+        this.state.customFilter = filter;
         hasChanged = true;
       }
 

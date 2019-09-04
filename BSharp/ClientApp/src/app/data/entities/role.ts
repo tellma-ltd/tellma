@@ -25,7 +25,7 @@ export class Role extends RoleForSave<Permission, RoleMembership> {
     ModifiedById: number | string;
 }
 
-const _select = ['', '2'].map(pf => 'Name' + pf);
+const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _currentLang: string;
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;

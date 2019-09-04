@@ -23,7 +23,8 @@ AS
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-				t.[Email]			= s.[Email],
+				--t.[Email]			= s.[Email],
+				--t.[ExternalId]	    = (CASE WHEN (t.[Email] = s.[Email]) THEN t.[ExternalId] ELSE NULL END),
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
@@ -34,19 +35,26 @@ AS
 	OPTION (RECOMPILE);
 
 	-- Role Memberships
-	MERGE INTO [dbo].[RoleMemberships] AS t
-    USING (
-        SELECT [Id], [AgentId], [RoleId], [Memo] FROM @Roles
-    ) AS s ON t.[Id] = s.[Id]
-    WHEN MATCHED THEN
-        UPDATE SET 
-        	t.[AgentId]		    = s.[AgentId], 
-        	t.[RoleId]		    = s.[RoleId],
-        	t.[Memo]		    = s.[Memo],
-			t.[SavedById]		= @UserId
-    WHEN NOT MATCHED THEN
-        INSERT ([AgentId],	[RoleId], [Memo])
-        VALUES (s.[AgentId], s.[RoleId], s.[Memo]);
+	WITH BE AS (
+		SELECT * FROM [dbo].[RoleMemberships]
+		WHERE [RoleId] IN (SELECT [Id] FROM @Entities)
+	)
+	MERGE INTO BE AS t
+	USING (
+		SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [AgentId], [Memo]
+		FROM @Roles L
+		JOIN @Entities II ON L.[HeaderIndex] = II.[Index]
+	) AS s ON t.Id = s.Id
+	WHEN MATCHED THEN
+		UPDATE SET 
+			t.[AgentId]		= s.[AgentId], 
+			t.[Memo]		= s.[Memo],
+			t.[SavedById]	= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([RoleId],	[AgentId],	[Memo])
+		VALUES (s.[RoleId], s.[AgentId], s.[Memo])
+	WHEN NOT MATCHED BY SOURCE THEN
+		DELETE;
 
 	-- Return the new emails
 	SELECT [NewEmail] FROM #Emails WHERE [NewEmail] IS NOT NULL AND ([OldEmail] IS NULL OR [NewEmail] <> [OldEmail]);

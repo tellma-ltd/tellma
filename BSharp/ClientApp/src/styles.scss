@@ -186,6 +186,10 @@ ngb-tabset li.nav-item .small {
   background-color: transparent;
 }
 
+.form-control {
+  transition: none;
+}
+
 ///////////////////////////////// BSharp /////////////////////////////////
 
 $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something

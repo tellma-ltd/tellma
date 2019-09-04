@@ -2,9 +2,7 @@
   [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [masterCrumb]="'Users' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [isInactive]="isInactive"
   [documentHeaderTemplate]="documentHeader" [actions]="[
-            { template: activate, action: onActivate, showAction: showActivate, canAction: canAction, actionTooltip: actionTooltip },
-            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canAction, actionTooltip: actionTooltip },
-            { template: invite, action: onInvite, showAction: showInvite, canAction: canAction, actionTooltip: actionTooltip }
+            { template: invite, action: onInvite, showAction: showInvite, canAction: canInvite, actionTooltip: inviteTooltip }
            ]">
 
 </b-details>
@@ -28,7 +26,6 @@
   </div>
 </ng-template>
 
-
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
@@ -41,14 +38,14 @@
   </b-form-group>
 
   <!-- Agent -->
-  <b-form-group class="b-form-group" [label]="'User_Agent' | translate">
+  <b-form-group class="b-form-group" [label]="'User_Agent' | translate" [serverErrors]="model?.serverErrors?.Id">
     <b-restricted [metadata]="model?.EntityMetadata?.Agent" *ngIf="!isEdit">
       <b-view-link link="../../agents" [itemId]="model?.Id">
         {{ ws.getMultilingualValue('Agent', model?.Id, 'Name') }}
       </b-view-link>
     </b-restricted>
     <b-details-picker *ngIf="isEdit" [(ngModel)]="model.Id" apiEndpoint="agents" collection="Agent"
-      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" required [disabled]="!isNew">
+      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" required [disabled]="!isNew" filter="User/Id eq null">
     </b-details-picker>
 
     <!-- The Agents Details Modal -->
@@ -61,10 +58,10 @@
     </ng-template>
 
     <!-- The Agents Master Modal -->
-    <ng-template #agentMaster let-modal="modal" let-update="update" let-create="create">
+    <ng-template #agentMaster let-modal="modal" let-update="update" let-create="create" let-filter="filter">
       <div class="modal-body">
-        <b-agents-master mode="popup" (cancel)="modal.close(false);" (select)="modal.close(true); update($event); "
-          (create)="modal.close(false); create()">
+        <b-agents-master mode="popup" (cancel)="modal.close(false);" (select)="modal.close(true); update($event);"
+          (create)="modal.close(false); create()" [filterDefault]="filter">
         </b-agents-master>
       </div>
     </ng-template>
@@ -77,11 +74,6 @@
       </b-restricted>
     </div>
   </b-form-group>
-
-  <!-- Is Active -->
-  <!-- <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
-  </b-form-group> -->
 
   <!-- Email Notice -->
   <div class="col-12 alert-primary p-2 px-3 mt-3 mt-sm-4" *ngIf="showInvitationInfo(model)">

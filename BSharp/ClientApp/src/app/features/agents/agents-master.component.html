@@ -2,6 +2,7 @@
   [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
   [tableDescriptionColumnTemplate]="descriptionColumn"
   selectDefault="Code,AgentType,IsRelated" selectForTiles="Code,ImageId"
+  [filterDefault]="filterDefault"
   [multiselectActions]="[
             { template : activate, action: onActivate, requiresUpdatePermission: true },
             { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }

@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[RoleMemberships] (
 	[Id]				INT					CONSTRAINT [PK_RoleMemberships] PRIMARY KEY IDENTITY,
-	[AgentId]			INT	NOT NULL		CONSTRAINT [FK_RoleMemberships__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),	
-	[RoleId]			INT	NOT NULL		CONSTRAINT [FK_RoleMemberships__RoleId] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[Roles] ([Id]),
+	[AgentId]			INT	NOT NULL		CONSTRAINT [FK_RoleMemberships__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]) ON DELETE CASCADE,	
+	[RoleId]			INT	NOT NULL		CONSTRAINT [FK_RoleMemberships__RoleId] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[Roles] ([Id]) ON DELETE CASCADE,
 	[Memo]				NVARCHAR (255),
 	-- Computed columns require a workaround for Temporal tables:
 	--[SavedAt]			AS [ValidFrom] AT TIME ZONE 'UTC',

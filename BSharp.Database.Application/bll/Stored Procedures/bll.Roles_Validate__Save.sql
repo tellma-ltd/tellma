@@ -1,5 +1,6 @@
-﻿CREATE PROCEDURE [dbo].[bll_Roles_Validate__Save]
-	@Roles [dbo].[RoleList] READONLY,
+﻿CREATE PROCEDURE [bll].[Roles_Validate__Save]
+	@Entities [dbo].[RoleList] READONLY,
+	@Members [dbo].[RoleMembershipList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
 	@Top INT = 10
 AS
@@ -10,7 +11,7 @@ SET NOCOUNT ON;
     SELECT
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].IsActive',
 		N'Error_CannotModifyInactiveItem'
-    FROM @Roles
+    FROM @Entities
     WHERE Id IN (SELECT Id from [dbo].[Roles] WHERE IsActive = 0)
 	OPTION(HASH JOIN);
 
@@ -19,8 +20,8 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
-    FROM @Roles
-    WHERE Id Is NOT NULL
+    FROM @Entities
+    WHERE Id <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[Roles])
 	OPTION(HASH JOIN);
 		
@@ -30,7 +31,7 @@ SET NOCOUNT ON;
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsUsed',
 		FE.Code
-	FROM @Roles FE
+	FROM @Entities FE
 	JOIN [dbo].Roles BE ON FE.Code = BE.Code
 	WHERE FE.[Code] IS NOT NULL
 	AND (FE.Id <> BE.Id)
@@ -42,10 +43,10 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
 		N'Error_TheCode0IsDuplicated',
 		[Code]
-	FROM @Roles
+	FROM @Entities
 	WHERE [Code] IN (
 		SELECT [Code]
-		FROM @Roles
+		FROM @Entities
 		WHERE [Code] IS NOT NULL
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
@@ -57,7 +58,7 @@ SET NOCOUNT ON;
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsUsed',
 		FE.[Name]
-	FROM @Roles FE
+	FROM @Entities FE
 	JOIN [dbo].Roles BE ON FE.[Name] = BE.[Name]
 	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
@@ -68,7 +69,7 @@ SET NOCOUNT ON;
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
-	FROM @Roles FE
+	FROM @Entities FE
 	JOIN [dbo].Roles BE ON FE.[Name2] = BE.[Name2]
 	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
@@ -79,7 +80,7 @@ SET NOCOUNT ON;
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
-	FROM @Roles FE
+	FROM @Entities FE
 	JOIN [dbo].Roles BE ON FE.[Name3] = BE.[Name3]
 	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
@@ -90,10 +91,10 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name',
 		N'Error_TheName0IsDuplicated',
 		[Name]
-	FROM @Roles
+	FROM @Entities
 	WHERE [Name] IN (
 		SELECT [Name]
-		FROM @Roles
+		FROM @Entities
 		GROUP BY [Name]
 		HAVING COUNT(*) > 1
 	) OPTION(HASH JOIN);
@@ -104,10 +105,10 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name2',
 		N'Error_TheName0IsDuplicated',
 		[Name2]
-	FROM @Roles
+	FROM @Entities
 	WHERE [Name2] IN (
 		SELECT [Name2]
-		FROM @Roles
+		FROM @Entities
 		WHERE [Name2] IS NOT NULL
 		GROUP BY [Name2]
 		HAVING COUNT(*) > 1
@@ -119,14 +120,15 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Name3',
 		N'Error_TheName0IsDuplicated',
 		[Name3]
-	FROM @Roles
+	FROM @Entities
 	WHERE [Name3] IN (
 		SELECT [Name3]
-		FROM @Roles
+		FROM @Entities
 		WHERE [Name3] IS NOT NULL
 		GROUP BY [Name3]
 		HAVING COUNT(*) > 1
 	) OPTION(HASH JOIN);
+
 
 	-- No inactive view
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -137,8 +139,11 @@ SET NOCOUNT ON;
 		P.[ViewId]
 	FROM @Permissions P
 	WHERE (
-		P.ViewId NOT IN (SELECT [Id] FROM dbo.[Views] WHERE IsActive = 1) OR 
-		P.ViewId = N'All'
+		P.ViewId IN (SELECT [Id] FROM dbo.[Views] WHERE IsActive = 0) AND 
+		P.ViewId <> N'all'
 	);
+	
+	-- TODO: No Inactive user
 
+	-- Return
 	SELECT TOP (@Top) * FROM @ValidationErrors;

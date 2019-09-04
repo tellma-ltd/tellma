@@ -337,6 +337,8 @@ namespace BSharp.Data
                     SqlDbType = SqlDbType.Structured
                 };
 
+                cmd.Parameters.Add(newEmailsTvp);
+                cmd.Parameters.Add(oldEmailsTvp);
                 cmd.Parameters.Add("@DatabaseId", databaseId);
                 cmd.Parameters.Add("@ReturnEmailsForCreation", returnEmailsForCreation);
 

@@ -7,6 +7,7 @@ import { metadata_Role } from '../role';
 import { metadata_ProductCategory } from '../product-category';
 import { metadata_IfrsNote } from '../ifrs-note';
 import { metadata_Agent } from '../agent';
+import { metadata_View } from '../view';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -14,7 +15,8 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     Agent: metadata_Agent,
     Role: metadata_Role,
     ProductCategory: metadata_ProductCategory,
-    IfrsNote: metadata_IfrsNote
+    IfrsNote: metadata_IfrsNote,
+    View: metadata_View
 };
 
 export interface EntityDescriptor {
