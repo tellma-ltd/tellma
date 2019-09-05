@@ -260,6 +260,10 @@ $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
 .b-tile span:empty:before {
   content: "\200b";
 }
+// Empty fields in details occupy the same space as non-empty fields
+.form-group-container *:empty:before {
+  content: "\200b";
+}
 
 .b-tile {
   @extend .b-pointer;
@@ -1137,9 +1141,4 @@ $container-margin: 15px;
 /* Animate an item that has been dropped. */
 .cdk-drag-animating {
   transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-// Empty fields in details occupy the same space as non-empty fields
-.form-group-container *:empty:before {
-  content: "\200b";
 }

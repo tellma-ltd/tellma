@@ -47,7 +47,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Assert the result makes sense
             var settings = responseData.Result;
 
-            Assert.Contains("Contoso", settings.ShortCompanyName);
+            Assert.Contains("ACME", settings.ShortCompanyName);
             Assert.Equal("en", settings.PrimaryLanguageId);
 
             Shared.Set("Settings", responseData.Result);

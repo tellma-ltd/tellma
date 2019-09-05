@@ -18,7 +18,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "000 - Getting all measurement units before granting permissions returns a 403 Forbidden response")]
-        public async Task Test00000()
+        public async Task Test0000()
         {
             var response = await Client.GetAsync($"/api/measurement-units");
 
@@ -31,7 +31,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "001 - Getting all measurement units before creating any returns a 200 OK empty collection")]
-        public async Task Test0000()
+        public async Task Test0001()
         {
             await GrantPermissionToSecurityAdministrator("measurement-units", Constants.Update, "Id lt 100000");
 
@@ -54,7 +54,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "002 - Getting a non-existent measurement unit id returns a 404 Not Found")]
-        public async Task Test0001()
+        public async Task Test0002()
         {
             int nonExistentId = 1;
             var response = await Client.GetAsync($"/api/measurement-units/{nonExistentId}");
@@ -65,13 +65,15 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "003 - Saving a single well-formed MeasurementUnitForSave returns a 200 OK result")]
-        public async Task Test0002()
+        public async Task Test0003()
         {
             // Prepare a well formed entity
             var dtoForSave = new MeasurementUnitForSave
             {
                 Name = "KG",
                 Name2 = "كج",
+                Description = "Kilogram",
+                Description2 = "كيلوجرام",
                 Code = "kg",
                 UnitType = "Mass",
                 BaseAmount = 1,
@@ -110,7 +112,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "004 - Getting the Id of the MeasurementUnitForSave just saved returns a 200 OK result")]
-        public async Task Test0003()
+        public async Task Test0004()
         {
             // Query the API for the Id that was just returned from the Save
             var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
@@ -136,7 +138,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "005 - Saving a MeasurementUnitForSave with an existing code returns a 422 Unprocessable Entity")]
-        public async Task Test0004()
+        public async Task Test0005()
         {
             // Prepare a unit with the same code 'kg' as one that has been saved already
             var list = new List<MeasurementUnitForSave> {
@@ -145,6 +147,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "kg",
+                    Description = "Another Description",
                     UnitType = "Mass",
                     BaseAmount = 1,
                     UnitAmount = 1
@@ -172,7 +175,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "006 - Saving a MeasurementUnitForSave trims string fields with trailing or leading spaces")]
-        public async Task Test0005()
+        public async Task Test0006()
         {
             // Prepare a DTO for save, that contains leading and 
             // trailing spaces in some string properties
@@ -206,7 +209,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "007 - Deleting an existing measurement unit Id returns a 200 OK")]
-        public async Task Test0006()
+        public async Task Test0007()
         {
             // Get the Id
             var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_km");
@@ -223,7 +226,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "008 - Getting an Id that was just deleted returns a 404 Not Found")]
-        public async Task Test0007()
+        public async Task Test0008()
         {
             // Get the Id
             var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_km");
@@ -239,7 +242,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "009 - Deactivating an active measurement unit returns a 200 OK inactive entity")]
-        public async Task Test0008()
+        public async Task Test0009()
         {
             // Get the Id
             var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
@@ -263,7 +266,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "010 - Activating an inactive measurement unit returns a 200 OK active entity")]
-        public async Task Test0009()
+        public async Task Test0010()
         {
             // Get the Id
             var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");
@@ -287,7 +290,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         [Trait(Testing, MeasurementUnits)]
         [Fact(DisplayName = "011 - Using Select argument works as expected")]
-        public async Task Test0010()
+        public async Task Test0011()
         {
             // Get the Id
             var entity = Shared.Get<MeasurementUnit>("MeasurementUnit_kg");

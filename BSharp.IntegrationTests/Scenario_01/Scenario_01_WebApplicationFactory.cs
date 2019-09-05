@@ -1,12 +1,17 @@
 ﻿using BSharp.IntegrationTests.Utilities;
+using BSharp.Services.Sharding;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 
 namespace BSharp.IntegrationTests.Scenario_01
 {
@@ -15,7 +20,6 @@ namespace BSharp.IntegrationTests.Scenario_01
     /// </summary>
     public class Scenario_01_WebApplicationFactory : WebApplicationFactory<Startup>
     {
-
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             // This instructs the web host to use the appsettings.json file in the
@@ -26,60 +30,77 @@ namespace BSharp.IntegrationTests.Scenario_01
             {
                 cfg.AddJsonFile(configPath);
             });
-
-            // Here we do database seeding and arranging
-            bool alreadyConfigured = false;
-            builder.ConfigureServices(services =>
-            {
-                if (!alreadyConfigured)
-                {
-                    // configure services
-                    string connString = null;
-                    GlobalOptions globalOptions = null;
-                    var provider = services.BuildServiceProvider();
-                    using (var scope = provider.CreateScope())
-                    {
-                        var env = scope.ServiceProvider.GetRequiredService<IHostingEnvironment>();
-                        var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-
-                        new Startup(config, env).ConfigureServices(services);
-
-                        connString = config.GetConnectionString(Constants.AdminConnection);
-                        globalOptions = config.Get<GlobalOptions>();
-                        
-                    }
-
-                    // InitDatabase (It won't run automatically when using WebApplicationFactory)
-                    provider = services.BuildServiceProvider();
-                    Program.InitDatabase(provider);
-
-                    // Arrange
-                    string adminEmail = globalOptions?.Admin?.Email ?? "admin@bsharp.online";
-                    ArrangeDatabaseForTests(connString, adminEmail);
-
-                    alreadyConfigured = true;
-                }
-            });
         }
 
-        private void ArrangeDatabaseForTests(string connString, string adminEmail)
+        protected override TestServer CreateServer(IWebHostBuilder builder)
         {
+            // Startup.ConfigureServices is called inside here
+            var server = base.CreateServer(builder);
+
+            // This won't run automatically when using WebApplicationFactory
+            Program.InitDatabase(server.Host.Services);
+
+            // Databases seeding and preparation
+            string connString;
+            string adminEmail;
+            IShardResolver shardResolver;
+
+            using (var scope = server.Host.Services.CreateScope())
+            {
+                var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+                connString = config.GetConnectionString(Constants.AdminConnection);
+                adminEmail = config.Get<GlobalOptions>()?.Admin?.Email ?? "admin@bsharp.online";
+                shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
+            }
+
+            ArrangeDatabasesForTests(connString, adminEmail, shardResolver);
+
+            // Return the server
+            return server;
+        }
+
+        private void ArrangeDatabasesForTests(string adminConnString, string adminEmail, IShardResolver shardResolver)
+        {
+            // Prepare the Admin database
+            var databaseId = 101; // from SqlDatabase.Id IDENTITY(101, 1)
             var projectDir = Directory.GetCurrentDirectory();
             var seedAdminPath = Path.Combine(projectDir, "SeedAdmin.sql");
             var seedAdminSql = File.ReadAllText(seedAdminPath);
 
-            using (var conn = new SqlConnection(connString))
+            using (var conn = new SqlConnection(adminConnString))
             {
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.Parameters.AddWithValue("@Email", adminEmail);
-                    cmd.Parameters.AddWithValue("@DatabaseName", "BSharp.IntegrationTests.101");
+                    cmd.Parameters.AddWithValue("@DatabaseName", $"BSharp.IntegrationTests.{databaseId}");
                     cmd.CommandText = seedAdminSql;
 
                     conn.Open();
                     cmd.ExecuteNonQuery();
                 }
             }
+
+            var appConnString = shardResolver.GetConnectionString(databaseId);
+            var seedAppPath = Path.Combine(projectDir, "SeedApplication.sql");
+            var seedAppSql = File.ReadAllText(seedAppPath);
+
+            using (var conn = new SqlConnection(appConnString))
+            {
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.Parameters.AddWithValue("@Email", adminEmail);
+                    cmd.CommandText = seedAppSql;
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        protected override void ConfigureClient(HttpClient client)
+        {
+            // TODO Configure the client here
         }
 
         protected override void Dispose(bool disposing)
