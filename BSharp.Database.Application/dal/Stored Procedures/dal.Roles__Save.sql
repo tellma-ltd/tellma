@@ -77,7 +77,7 @@ BEGIN
 	)
 	MERGE INTO BE AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [RoleId], [ViewId], [Action], [Criteria], [Memo]
+		SELECT L.[Index], L.[Id], H.[Id] AS [RoleId], [ViewId], [Action], [Criteria], [Mask], [Memo]
 		FROM @Permissions L
 		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
@@ -86,11 +86,12 @@ BEGIN
 			t.[ViewId]		= s.[ViewId], 
 			t.[Action]		= s.[Action],
 			t.[Criteria]	= s.[Criteria],
+			t.[Mask]		= s.[Mask],
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[ViewId],	[Action],	[Criteria], [Memo])
-		VALUES (s.[RoleId], s.[ViewId], s.[Action], s.[Criteria], s.[Memo])
+		INSERT ([RoleId],	[ViewId],	[Action],	[Criteria], [Mask], [Memo])
+		VALUES (s.[RoleId], s.[ViewId], s.[Action], s.[Criteria], s.[Mask], s.[Memo])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
