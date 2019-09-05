@@ -141,7 +141,7 @@ namespace BSharp.Controllers
 
                 if (!string.IsNullOrWhiteSpace(user.ExternalId))
                 {
-                    throw new BadRequestException("Error_User0HasAlreadyAcceptedTheInvitation");
+                    throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
                 }
 
                 string toEmail = user.Email;
@@ -153,7 +153,7 @@ namespace BSharp.Controllers
 
                 if (idUser.EmailConfirmed)
                 {
-                    throw new BadRequestException("Error_User0HasAlreadyAcceptedTheInvitation");
+                    throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
                 }
 
                 var (subject, htmlMessage) = await MakeInvitationEmailAsync(idUser, user.Agent);

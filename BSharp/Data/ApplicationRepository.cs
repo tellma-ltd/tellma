@@ -990,7 +990,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             {
                 e.Roles?.ForEach(r =>
                 {
-                    r.RoleId = e.Id;
+                    r.AgentId = e.Id;
                 });
             });
 
@@ -1031,7 +1031,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             {
                 e.Roles?.ForEach(r =>
                 {
-                    r.RoleId = e.Id;
+                    r.AgentId = e.Id;
                 });
             });
 

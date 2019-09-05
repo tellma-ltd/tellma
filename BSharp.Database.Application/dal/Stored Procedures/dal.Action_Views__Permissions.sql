@@ -10,20 +10,20 @@ SELECT [ViewId], [Action], [Criteria], [Mask] FROM (
     FROM [dbo].[Permissions] AS P
     JOIN [dbo].[Roles] R ON P.[RoleId] = R.[Id]
     JOIN [dbo].[RoleMemberships] AS RM ON R.[Id] = RM.[RoleId]
-    WHERE R.IsActive = 1 
+    WHERE R.[IsActive] = 1 
     AND RM.[AgentId] = @UserId
-    AND P.ViewId IN (SELECT [Code] FROM @ViewIds)
+    AND (P.ViewId = N'all' OR P.[ViewId] IN (SELECT [Id] FROM @ViewIds))
 
 	UNION
 	-- Permissions in public roles
     SELECT [ViewId], [Criteria], [Mask], [Action]
     FROM [dbo].[Permissions] P
-    JOIN [dbo].[Roles] R ON P.RoleId = R.Id
-    WHERE R.IsPublic = 1 
-    AND R.IsActive = 1
-    AND P.[ViewId] IN (SELECT [Code] FROM @ViewIds)
+    JOIN [dbo].[Roles] R ON P.[RoleId] = R.[Id]
+    WHERE R.[IsPublic] = 1 
+    AND R.[IsActive] = 1
+    AND (P.ViewId = N'all' OR P.[ViewId] IN (SELECT [Id] FROM @ViewIds))
 
 ) AS E 
 -- Any action implicitly includes the "Read" action,
 -- The "All" action includes every other action
-WHERE (@Action = N'Read' OR E.[Action] = @Action OR E.[Action] = 'All')
+WHERE (@Action = N'Read' OR E.[Action] = @Action OR E.[Action] = N'All')

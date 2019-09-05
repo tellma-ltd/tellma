@@ -32,7 +32,7 @@
   <!-- Header Email -->
   <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Email">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Email }}</h2>
-    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Email"
+    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Email" [disabled]="!isNew"
       [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('User_Email' | translate) + '...'" required>
     </b-text-editor>
   </b-form-group>

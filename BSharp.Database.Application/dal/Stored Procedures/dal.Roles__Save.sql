@@ -6,8 +6,17 @@
 AS
 BEGIN
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
+	DECLARE @ModifiedUserIds [dbo].[IdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+
+	-- This should include all User Ids whose permissions may have been modified
+	INSERT INTO @ModifiedUserIds ([Id]) SELECT DISTINCT X.[Id] FROM (
+			SELECT [AgentId] AS [Id] FROM [dbo].[RoleMemberships] WHERE [RoleId] IN (SELECT [Id] FROM @Entities)
+			UNION 
+			SELECT [AgentId] AS [Id] FROM @Members
+		) AS X;
+
 
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
@@ -46,9 +55,9 @@ BEGIN
 	)
 	MERGE INTO BE AS t
 	USING (
-		SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [AgentId], [Memo]
+		SELECT L.[Index], L.[Id], H.[Id] AS [RoleId], [AgentId], [Memo]
 		FROM @Members L
-		JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
@@ -61,17 +70,16 @@ BEGIN
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-
 	-- Permissions
 	WITH BE AS (
-		SELECT * FROM dbo.[Permissions]
+		SELECT * FROM [dbo].[Permissions]
 		WHERE [RoleId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BE AS t
 	USING (
-		SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [ViewId], [Action], [Criteria], [Memo]
+		SELECT L.[Index], L.[Id], H.[Id] AS [RoleId], [ViewId], [Action], [Criteria], [Memo]
 		FROM @Permissions L
-		JOIN @IndexedIds II ON L.[HeaderIndex] = II.[Index]
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
@@ -85,6 +93,9 @@ BEGIN
 		VALUES (s.[RoleId], s.[ViewId], s.[Action], s.[Criteria], s.[Memo])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
+
+	UPDATE [dbo].[Users] SET [PermissionsVersion] = NEWID()
+	WHERE [Id] IN (SELECT [Id] FROM @ModifiedUserIds);
 
 	-- Return
 	IF (@ReturnIds = 1)

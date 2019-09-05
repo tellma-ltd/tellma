@@ -17,7 +17,7 @@ AS
 		MERGE INTO [dbo].[Users] AS t
 		USING (
 			SELECT
-				[Index], [Id], [Email]
+				[Id], [Email]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -25,6 +25,7 @@ AS
 			UPDATE SET 
 				--t.[Email]			= s.[Email],
 				--t.[ExternalId]	    = (CASE WHEN (t.[Email] = s.[Email]) THEN t.[ExternalId] ELSE NULL END),
+				t.[PermissionsVersion] = NEWID(),
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
@@ -37,17 +38,17 @@ AS
 	-- Role Memberships
 	WITH BE AS (
 		SELECT * FROM [dbo].[RoleMemberships]
-		WHERE [RoleId] IN (SELECT [Id] FROM @Entities)
+		WHERE [AgentId] IN (SELECT [Id] FROM @Entities)
 	)
 	MERGE INTO BE AS t
 	USING (
-		SELECT L.[Index], L.[Id], II.[Id] AS [RoleId], [AgentId], [Memo]
+		SELECT L.[Id], [AgentId], [RoleId], [Memo]
 		FROM @Roles L
-		JOIN @Entities II ON L.[HeaderIndex] = II.[Index]
-	) AS s ON t.Id = s.Id
+		JOIN @Entities H ON L.[AgentId] = H.[Id]
+	) AS s ON t.[Id] = s.[Id]
 	WHEN MATCHED THEN
 		UPDATE SET 
-			t.[AgentId]		= s.[AgentId], 
+			t.[RoleId]		= s.[RoleId], 
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN

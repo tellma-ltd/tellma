@@ -12,4 +12,5 @@
 )
 WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.[RoleMembershipsHistory]));
 GO
-CREATE UNIQUE INDEX [IX_RoleMemberships__UserId_RoleId] ON [dbo].[RoleMemberships]([AgentId], RoleId)
+-- I don't think this is needed
+-- CREATE UNIQUE INDEX [IX_RoleMemberships__UserId_RoleId] ON [dbo].[RoleMemberships]([AgentId], RoleId)

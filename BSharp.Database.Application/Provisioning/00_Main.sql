@@ -19,7 +19,7 @@ BEGIN
 	VALUES (@UserId, @DeployEmail, @UserId, @UserId);
 	
 	INSERT INTO [dbo].[Roles] ([Name], [Name2], [Code], [IsPublic], [SavedById])
-	VALUES (N'Administrator', N'المشرف', 'All', 1, @UserId)
+	VALUES (N'Administrator', N'المشرف', 'All', 0, @UserId)
 	SET @RoleId= SCOPE_IDENTITY();
 
 	INSERT INTO [dbo].[Permissions] ([RoleId], [ViewId], [Action],  [SavedById])

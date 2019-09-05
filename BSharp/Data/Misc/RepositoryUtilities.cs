@@ -106,7 +106,7 @@ namespace BSharp.Data
 
                     // We add an index property since SQL works with un-ordered sets
                     row["Index"] = index++;
-                    row["HeaderIndex"] = headerIndex++;
+                    row["HeaderIndex"] = headerIndex;
 
                     // Add the remaining properties
                     foreach (var prop in props)
@@ -117,6 +117,8 @@ namespace BSharp.Data
 
                     table.Rows.Add(row);
                 }
+
+                headerIndex++;
             }
 
             return table;
