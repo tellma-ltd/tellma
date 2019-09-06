@@ -1,38 +1,36 @@
 ﻿using BSharp.Controllers.Dto;
-using BSharp.Data;
 using BSharp.Entities;
 using BSharp.IntegrationTests.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
+// To order the tests, as per https://bit.ly/2lFONcE
+[assembly: TestCollectionOrderer(TestCollectionOrderer.TypeName, TestCollectionOrderer.AssemblyName)]
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace BSharp.IntegrationTests.Scenario_01
 {
-    [TestCaseOrderer(TestOrderer.TypeName, TestOrderer.AssemblyName)]
-    public partial class Scenario_01 : IClassFixture<Scenario_01_WebApplicationFactory>
+    [Collection(nameof(Scenario_01))]
+    [TestCaseOrderer(TestCaseOrderer.TypeName, TestCaseOrderer.AssemblyName)]
+    public abstract class Scenario_01
     {
         /// <summary>
         /// The <see cref="HttpClient"/> used by all test methods
         /// </summary>
-        private HttpClient Client { set; get; }
+        protected HttpClient Client { set; get; }
 
         /// <summary>
         /// A dictionary-like collection shared across test methods
         /// </summary>
-        private SharedCollection Shared { set; get; }
+        protected SharedCollection Shared { set; get; }
 
         /// <summary>
         /// Output for the test methods to do some logging
         /// </summary>
-        private ITestOutputHelper Output { set; get; }
-
-        /// <summary>
-        /// The default trait used to group the results in the Test Explorer window
-        /// </summary>
-        public const string Testing = TestOrderer.Testing;
+        protected ITestOutputHelper Output { set; get; }
 
         public Scenario_01(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output)
         {
@@ -40,16 +38,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Shared = factory.GetSharedCollection();
             Output = output;
         }
-
-        [Trait(Testing, "00 - Setup")]
-        [Fact(DisplayName = "000 - Setting up the testing database and web host")]
-        public void Setup()
-        {
-            // This empty test takes the blame for the dozen seconds or so that are needed in the web app
-            // factory to provision the database and instantiate the web host at the beginning of the test
-            // run, with this empty test in place, the actual subsequent tests report reasonable durations
-        }
-
 
         protected async Task GrantPermissionToSecurityAdministrator(string viewId, string level, string criteria)
         {
@@ -65,7 +53,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Action = level,
                 Criteria = criteria
             });
-
 
             var dtosForSave = new List<Role> { role };
             var postResponse = await Client.PostAsJsonAsync($"/api/roles?expand=Permissions/View,Members/Agent", dtosForSave);

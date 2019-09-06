@@ -37,6 +37,7 @@ namespace BSharp.Entities
         public string AgentType { get; set; }
 
         [Display(Name = "Agent_IsRelated")]
+        [Required]
         [AlwaysAccessible]
         public bool? IsRelated { get; set; }
 

@@ -286,20 +286,11 @@
   <data name="Error_CannotDeleteNodeWithChildren" xml:space="preserve">
     <value>لا يمكن حذف بيان شجري تنحدر منه بيانات أخرى</value>
   </data>
-  <data name="Error_CannotDeleteWithoutId" xml:space="preserve">
-    <value>لا يمكن حذف بيان بدون تحديد المفتاح</value>
-  </data>
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>لا يمكنك حذف المستخدم خاصتك</value>
   </data>
-  <data name="Error_CannotInsertWhileSpecifyId" xml:space="preserve">
-    <value>لا يمكن إنشاء بيان مع تحديد المفتاح</value>
-  </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>لا يمكن تعديل بيان غير منشط</value>
-  </data>
-  <data name="Error_CannotUpdateWithoutId" xml:space="preserve">
-    <value>لا يمكن نعديل بيان بدون تحديد المفتاح</value>
   </data>
   <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
     <value>الكود مطلوب لوضع التعديل</value>
@@ -1017,5 +1008,11 @@
   </data>
   <data name="Agent_AgentType_System" xml:space="preserve">
     <value>System</value>
+  </data>
+  <data name="Error_TheRole0IsInactive" xml:space="preserve">
+    <value>الدور ({0}) غير منشط</value>
+  </data>
+  <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
+    <value>الدور ذو المفتاح ({0}) غير موجود أو لم يعد موجودا</value>
   </data>
 </root>

@@ -81,6 +81,7 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, _subt
           format: (c: string) => supportedCultures[c]
         },
         IsRelated: { control: 'boolean', label: trx.instant('Agent_IsRelated') },
+        IsActive: { control: 'boolean', label: trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
         ModifiedAt: { control: 'datetime', label: trx.instant('ModifiedAt') },

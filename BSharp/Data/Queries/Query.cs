@@ -635,7 +635,7 @@ namespace BSharp.Data.Queries
                 {
                     if (t == typeof(T))
                     {
-                        return new SqlSource($@"({_composableSql})", _parameters);
+                        return new SqlSource($@"{_composableSql}", _parameters);
                     }
                     else
                     {
