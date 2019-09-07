@@ -1,12 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { propDescriptorImpl, dtoDescriptorImpl } from '~/app/data/entities/base/metadata';
+import { propDescriptorImpl } from '~/app/data/entities/base/metadata';
 
 @Component({
   selector: 'b-auto-label',
-  templateUrl: './auto-label.component.html',
-  styleUrls: ['./auto-label.component.scss']
+  templateUrl: './auto-label.component.html'
 })
 export class AutoLabelComponent implements OnInit {
 

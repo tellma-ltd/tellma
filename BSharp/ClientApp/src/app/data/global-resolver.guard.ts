@@ -13,7 +13,8 @@ import { ProgressOverlayService } from './progress-overlay.service';
 export const GLOBAL_SETTINGS_KEY = 'global_settings';
 export const GLOBAL_SETTINGS_VERSION_KEY = 'global_settings_version';
 
-export function handleFreshGlobalSettings(result: DataWithVersion<GlobalSettingsForClient>,
+export function handleFreshGlobalSettings(
+  result: DataWithVersion<GlobalSettingsForClient>,
   tws: WorkspaceService, storage: StorageService) {
 
   const globalSettings = result.Data;
@@ -31,13 +32,12 @@ export function handleFreshGlobalSettings(result: DataWithVersion<GlobalSettings
 })
 export class GlobalResolverGuard implements CanActivate {
 
-
   private cancellationToken$: Subject<void>;
   private globalSettingsApi: () => Observable<DataWithVersion<GlobalSettingsForClient>>;
   private ping: () => Observable<any>;
 
   constructor(private workspace: WorkspaceService, private storage: StorageService,
-    private router: Router, private api: ApiService, private progress: ProgressOverlayService) {
+              private router: Router, private api: ApiService, private progress: ProgressOverlayService) {
 
     this.cancellationToken$ = new Subject<void>();
     const globalSettingsApi = this.api.globalSettingsApi(this.cancellationToken$);
@@ -57,7 +57,7 @@ export class GlobalResolverGuard implements CanActivate {
         // Try to retrieve the settings from local storage
         const key = GLOBAL_SETTINGS_KEY;
         const versionKey = GLOBAL_SETTINGS_VERSION_KEY;
-        const cachedGlobalSettings = <GlobalSettingsForClient>JSON.parse(this.storage.getItem(key));
+        const cachedGlobalSettings = JSON.parse(this.storage.getItem(key)) as GlobalSettingsForClient;
         const cachedGlobalSettingsVersion = this.storage.getItem(versionKey);
         if (!!cachedGlobalSettings) {
           wss.globalSettings = cachedGlobalSettings;

@@ -2,20 +2,37 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
-  "cli": {
-    "defaultCollection": "@nativescript/schematics"
-  },
   "projects": {
-    "BSharp": {
-      "root": "",
-      "sourceRoot": "src",
+    "bsharp": {
       "projectType": "application",
-      "prefix": "b",
       "schematics": {
-        "@nativescript/schematics:component": {
-          "styleext": "scss"
+        "@schematics/angular:component": {
+          "inlineStyle": true,
+          "style": "scss",
+          "skipTests": true
+        },
+        "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:directive": {
+          "skipTests": true
+        },
+        "@schematics/angular:guard": {
+          "skipTests": true
+        },
+        "@schematics/angular:module": {
+          "skipTests": true
+        },
+        "@schematics/angular:pipe": {
+          "skipTests": true
+        },
+        "@schematics/angular:service": {
+          "skipTests": true
         }
       },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "b",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -24,13 +41,10 @@
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json",
+            "tsConfig": "tsconfig.app.json",
+            "aot": false,
             "assets": [
               "src/favicon.ico",
-              "src/touch-icon-ipad.png",
-              "src/touch-icon-ipad-retina.png",
-              "src/touch-icon-iphone.png",
-              "src/touch-icon-iphone-retina.png",
               "src/assets",
               "src/manifest.webmanifest.json"
             ],
@@ -56,25 +70,38 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "serviceWorker": true
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json"
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "BSharp:build"
+            "browserTarget": "bsharp:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "BSharp:build:production"
+              "browserTarget": "bsharp:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "BSharp:build"
+            "browserTarget": "bsharp:build"
           }
         },
         "test": {
@@ -82,64 +109,45 @@
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              "src/manifest.webmanifest.json"
+            ],
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": [],
-            "assets": [
-              "src/favicon.ico",
-              "src/touch-icon-ipad.png",
-              "src/touch-icon-ipad-retina.png",
-              "src/touch-icon-iphone.png",
-              "src/touch-icon-iphone-retina.png",
-              "src/assets",
-              "src/manifest.webmanifest.json"
-            ]
+            "scripts": []
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
+              "tsconfig.app.json",
+              "tsconfig.spec.json",
+              "e2e/tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**"
             ]
           }
-        }
-      }
-    },
-    "BSharp-e2e": {
-      "root": "e2e/",
-      "projectType": "application",
-      "architect": {
+        },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "BSharp:serve"
+            "devServerTarget": "bsharp:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "BSharp:serve:production"
+              "devServerTarget": "bsharp:serve:production"
             }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
           }
         }
       }
-    }
-  },
-  "defaultProject": "BSharp"
+    }},
+  "defaultProject": "bsharp"
 }

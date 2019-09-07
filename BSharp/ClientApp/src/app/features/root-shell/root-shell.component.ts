@@ -5,13 +5,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 import { AuthService } from '~/app/data/auth.service';
 import { appconfig } from '~/app/data/appconfig';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 import { supportedCultures } from '~/app/data/supported-cultures';
 
 @Component({
   selector: 'b-root-shell',
-  templateUrl: './root-shell.component.html',
-  styleUrls: ['./root-shell.component.scss']
+  templateUrl: './root-shell.component.html'
 })
 export class RootShellComponent implements OnInit, OnDestroy {
 

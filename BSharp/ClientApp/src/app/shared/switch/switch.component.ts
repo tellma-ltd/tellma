@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import {
   metadata, BooleanPropDescriptor,
-  ChoicePropDescriptor, StatePropDescriptor, NumberPropDescriptor, propDescriptorImpl, dtoDescriptorImpl
+  ChoicePropDescriptor, StatePropDescriptor, NumberPropDescriptor, propDescriptorImpl, entityDescriptorImpl
 } from '~/app/data/entities/base/metadata';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -9,8 +9,7 @@ import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 
 @Component({
   selector: 'b-switch',
-  templateUrl: './switch.component.html',
-  styleUrls: ['./switch.component.scss']
+  templateUrl: './switch.component.html'
 })
 export class SwitchComponent implements OnInit {
 
@@ -46,7 +45,7 @@ export class SwitchComponent implements OnInit {
   }
 
   private dtoDescriptor(ignoreLast = false) {
-    return dtoDescriptorImpl(this.pathArray, this.baseCollection, this.subtype, this.ws.current, this.translate, ignoreLast);
+    return entityDescriptorImpl(this.pathArray, this.baseCollection, this.subtype, this.ws.current, this.translate, ignoreLast);
   }
 
   private propDescriptor() {

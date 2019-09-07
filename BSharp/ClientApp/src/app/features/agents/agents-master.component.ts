@@ -11,8 +11,7 @@ import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
 @Component({
   selector: 'b-agents-master',
-  templateUrl: './agents-master.component.html',
-  styleUrls: ['./agents-master.component.scss']
+  templateUrl: './agents-master.component.html'
 })
 export class AgentsMasterComponent extends MasterBaseComponent implements OnInit {
 

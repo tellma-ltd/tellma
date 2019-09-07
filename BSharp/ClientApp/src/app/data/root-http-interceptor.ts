@@ -1,6 +1,6 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse, HttpErrorResponse, HttpClient } from '@angular/common/http';
-import { Observable, Subject, of, throwError } from 'rxjs';
-import { WorkspaceService, MasterStatus } from './workspace.service';
+import { Observable, Subject, throwError } from 'rxjs';
+import { WorkspaceService } from './workspace.service';
 import { tap, exhaustMap, retry, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { DataWithVersion } from './dto/data-with-version';
@@ -35,7 +35,8 @@ export class RootHttpInterceptor implements HttpInterceptor {
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
   private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
 
-  constructor(private workspace: WorkspaceService, private api: ApiService,
+  constructor(
+    private workspace: WorkspaceService, private api: ApiService,
     private storage: StorageService, private router: Router,
     private authStorage: OAuthStorage, private cleaner: CleanerService,
     private translate: TranslateService) {
@@ -86,8 +87,8 @@ export class RootHttpInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     // we accumulate all the headers params in these objects
-    const headers = {};
-    const params = {};
+    const headers: {[key: string]: string} = {};
+    const params: {[key: string]: string} = {};
 
     // tenant ID
     const tenantId = this.workspace.ws.tenantId;
@@ -100,7 +101,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
       // Even though API response caching is disabled with server headers, this is a last defense
       // to absolutely guarantee that caching will never cause one tenant's data to show up while
       // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
-      params['tenantId'] = tenantId.toString();
+      params['tenant_id'] = tenantId.toString();
     }
 
     if (!!this.authStorage) {

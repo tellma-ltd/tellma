@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { ScrollingModule } from '@angular/cdk/scrolling';
@@ -19,7 +19,6 @@ import {
   NgbTooltipModule
 } from '@ng-bootstrap/ng-bootstrap';
 
-import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faExclamationTriangle,
   faSpinner,
@@ -93,35 +92,11 @@ import { NgbDateStringAdapter } from './date-picker/date-string-adapter';
 import { DatePickerLocalization } from './date-picker/date-picker-localization';
 import { TableComponent } from './table/table.component';
 import { DetailsPickerComponent } from './details-picker/details-picker.component';
-import { DropdownAppendToBodyDirective } from './details-picker/dropdown-append-to-body.directive';
 import { ViewLinkComponent } from './view-link/view-link.component';
 import { ImageComponent } from './image/image.component';
 import { RestrictedComponent } from './restricted/restricted.component';
 import { SwitchComponent } from './switch/switch.component';
 import { AutoLabelComponent } from './auto-label/auto-label.component';
-
-// Icons to be used in the web app
-library.add(
-  faExclamationTriangle, faSpinner, faSignInAlt, faSignOutAlt,
-  faCheck, faPlus, faSyncAlt, faAngleDoubleLeft,
-  faAngleLeft, faAngleRight, faThLarge, faTable, faPen, faTrash,
-  faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
-  faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
-  faSearch, faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
-  faTasks, faMale, faBuilding, faArrowLeft, faArrowRight, faBars,
-
-  faCodeBranch,
-  faList,
-  faListUl,
-  faMoneyCheck,
-  faMoneyCheckAlt,
-  faHandHoldingUsd,
-  faLandmark,
-  faFileContract,
-  faFileInvoiceDollar,
-  faMoneyBillWave,
-  faClipboard
-);
 
 @NgModule({
   declarations: [
@@ -142,7 +117,6 @@ library.add(
     DatePickerComponent,
     TableComponent,
     DetailsPickerComponent,
-    DropdownAppendToBodyDirective,
     ViewLinkComponent,
     ImageComponent,
     RestrictedComponent,
@@ -199,7 +173,6 @@ library.add(
     DetailsPickerComponent,
     ViewLinkComponent,
     ImageComponent,
-    DropdownAppendToBodyDirective,
     RestrictedComponent,
     SwitchComponent,
     AutoLabelComponent
@@ -209,4 +182,20 @@ library.add(
     { provide: NgbDatepickerI18n, useClass: DatePickerLocalization }
   ]
 })
-export class SharedModule { }
+export class SharedModule {
+  constructor(library: FaIconLibrary) {
+    // Icons to be used in the web app
+    library.addIcons(
+      faSignOutAlt, faCheck, faPlus, faAngleDoubleLeft,
+      faAngleLeft, faAngleRight, faThLarge, faTable, faPen, faTrash,
+      faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
+      faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
+      faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
+      faTasks, faMale, faBuilding, faBars,
+
+      // Main menu icons
+      faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
+      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard
+    );
+  }
+}

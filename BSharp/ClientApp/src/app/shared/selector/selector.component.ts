@@ -23,7 +23,7 @@ export class SelectorComponent implements ControlValueAccessor {
   public nullValue = null;
 
   ///////////////// Implementation of ControlValueAccessor
-  @ViewChild('selector')
+  @ViewChild('selector', { static : true })
   selector: ElementRef;
 
   public isDisabled = false;

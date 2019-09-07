@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { Subject } from 'rxjs';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -10,8 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-ifrs-notes-details',
-  templateUrl: './ifrs-notes-details.component.html',
-  styleUrls: ['./ifrs-notes-details.component.scss']
+  templateUrl: './ifrs-notes-details.component.html'
 })
 export class IfrsNotesDetailsComponent extends DetailsBaseComponent {
 

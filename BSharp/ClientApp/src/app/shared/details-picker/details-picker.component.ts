@@ -27,19 +27,19 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   ///////////////// Input and Other Fields
 
-  @ViewChild('input')
+  @ViewChild('input', { static: true })
   input: ElementRef;
 
-  @ViewChild(NgbDropdown)
+  @ViewChild(NgbDropdown, { static: true })
   resultsDropdown: NgbDropdown;
 
-  @ViewChild('detailsWrapperTemplate')
+  @ViewChild('detailsWrapperTemplate', { static: true })
   detailsWrapperTemplate: TemplateRef<any>;
 
-  @ViewChild('masterWrapperTemplate')
+  @ViewChild('masterWrapperTemplate', { static: true })
   masterWrapperTemplate: TemplateRef<any>;
 
-  @ViewChild('detailsOptionsTemplate')
+  @ViewChild('detailsOptionsTemplate', { static: true })
   detailsOptionsTemplate: TemplateRef<any>;
 
   @HostBinding('class.w-100')
@@ -99,7 +99,8 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   ///////////////// Lifecycle Hooks
-  constructor(private apiService: ApiService, private workspace: WorkspaceService,
+  constructor(
+    private apiService: ApiService, private workspace: WorkspaceService,
     public modalService: NgbModal, private translate: TranslateService) {
 
     this.notifyFethcUnloadedItemSubscription = this.notifyFetchUnloadedItem$.pipe(

@@ -2,6 +2,7 @@
 import { Component, HostBinding, ViewChild } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, Validator, ValidationErrors, AbstractControl, NG_VALIDATORS } from '@angular/forms';
 import { NgbInputDatepicker } from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'b-date-picker',
   templateUrl: './date-picker.component.html',
@@ -10,7 +11,7 @@ import { NgbInputDatepicker } from '@ng-bootstrap/ng-bootstrap';
 })
 export class DatePickerComponent implements ControlValueAccessor, Validator {
 
-  @ViewChild('d')
+  @ViewChild('d', { static: true })
   picker: NgbInputDatepicker;
 
   constructor() { }

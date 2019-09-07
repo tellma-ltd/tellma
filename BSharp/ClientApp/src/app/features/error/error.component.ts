@@ -6,8 +6,7 @@ import { StorageService } from '~/app/data/storage.service';
 
 @Component({
   selector: 'b-error',
-  templateUrl: './error.component.html',
-  styleUrls: ['./error.component.scss']
+  templateUrl: './error.component.html'
 })
 export class ErrorComponent implements OnInit {
 

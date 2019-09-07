@@ -18,7 +18,7 @@ import {
   DEFAULT_PAGE_SIZE as DEFAULT_PAGE_SIZE
 } from '~/app/data/workspace.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { metadata, EntityDescriptor, dtoDescriptorImpl } from '~/app/data/entities/base/metadata';
+import { metadata, EntityDescriptor, entityDescriptorImpl } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 enum SearchView {
@@ -28,8 +28,7 @@ enum SearchView {
 
 @Component({
   selector: 'b-master',
-  templateUrl: './master.component.html',
-  styleUrls: ['./master.component.scss']
+  templateUrl: './master.component.html'
 })
 export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -123,7 +122,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   cancel = new EventEmitter<void>();
 
-  @ViewChild('errorModal')
+  @ViewChild('errorModal', { static : true })
   public errorModal: TemplateRef<any>;
 
   private _collection: string;
@@ -619,7 +618,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       path = steps.join('/'); // to trim extra spaces
 
       try {
-        const currentDesc = dtoDescriptorImpl(steps, this.collectionPart,
+        const currentDesc = entityDescriptorImpl(steps, this.collectionPart,
           this.subtypePart, this.workspace.current, this.translate);
 
         currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
@@ -744,7 +743,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       } else {
 
         try {
-          const dtoDesc = dtoDescriptorImpl(result.split('/'),
+          const dtoDesc = entityDescriptorImpl(result.split('/'),
             this.collectionPart, this.subtypePart, this.workspace.current, this.translate);
 
           if (!!dtoDesc) {

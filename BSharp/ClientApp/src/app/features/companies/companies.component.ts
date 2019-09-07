@@ -3,13 +3,12 @@ import { ApiService } from '~/app/data/api.service';
 import { Subject, fromEvent, Subscription } from 'rxjs';
 import { WorkspaceService, MasterStatus } from '~/app/data/workspace.service';
 import { UserCompany } from '~/app/data/dto/user-company';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 import { Key, toString } from '~/app/data/util';
 
 @Component({
   selector: 'b-companies',
-  templateUrl: './companies.component.html',
-  styleUrls: ['./companies.component.scss']
+  templateUrl: './companies.component.html'
 })
 export class CompaniesComponent implements OnInit, OnDestroy {
 
@@ -35,7 +34,7 @@ export class CompaniesComponent implements OnInit, OnDestroy {
   private _pagedCompanies: UserCompany[] = [];
 
 
-  @ViewChild('input')
+  @ViewChild('input', { static: true })
   input: ElementRef;
 
   constructor(private api: ApiService, private workspace: WorkspaceService,

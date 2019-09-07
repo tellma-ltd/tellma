@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'b-users-import',
-  templateUrl: './users-import.component.html',
-  styleUrls: ['./users-import.component.scss']
+  templateUrl: './users-import.component.html'
 })
 export class UsersImportComponent implements OnInit {
 

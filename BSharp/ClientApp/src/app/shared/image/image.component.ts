@@ -21,7 +21,7 @@ enum ImageStatus {
 @Component({
   selector: 'b-image',
   templateUrl: './image.component.html',
-  styleUrls: ['./image.component.scss'],
+  styleUrls : ['./image.component.scss'],
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: ImageComponent }]
 })
 export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValueAccessor {
@@ -47,10 +47,10 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
   @Input()
   imageId: string;
 
-  @ViewChild('input')
+  @ViewChild('input', { static : true })
   input: ElementRef;
 
-  @ViewChild('errorModal')
+  @ViewChild('errorModal', { static : true })
   errorModal: ElementRef;
 
   private notifyCancel$ = new Subject<void>();

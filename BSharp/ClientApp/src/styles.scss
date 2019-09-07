@@ -1,10 +1,19 @@
-/* you can add global styles to this file, and also import other style files */
-
+// Override a few of the default variables of bootstrap before importing it
 $enable-rounded: false; // Square corners
 $font-size-base: 0.9rem; // The default font (1rem) is too big
 
+$primary: #17a2b8; // Classy cyan
+$dark-primary: #008784;
+$info: #007bff; // Bright blue
+
+$white: #ffffff;
+$whitish: #fafeff;
+$primary-disabled: #69c3d1;
+
+$gray-800: #343a40;
+$gray-900: #212529;
+
 // customize bootstrap colors and then import bootstrap
-@import "app-variables";
 @import "node_modules/bootstrap/scss/bootstrap";
 
 // Remove any other round corners
@@ -12,11 +21,6 @@ $font-size-base: 0.9rem; // The default font (1rem) is too big
 .dropdown-menu {
   border-radius: 0;
 }
-
-// change the striped
-/*.table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(0, 0, 0, 0.03);
-  }*/
 
 // this solves a problem in responsive tables that contain dropdowns
 @media only screen and (max-width: 767px) {
@@ -42,11 +46,6 @@ a {
 .navbar-brand {
   margin-right: 0;
 }
-
-// .nav.nav-tabs {
-//   padding-left: 0;
-//   padding-right: 0;
-// }
 
 .breadcrumb-item {
   font-size: 1.2rem;
@@ -195,7 +194,7 @@ ngb-tabset li.nav-item .small {
 $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
 
 .b-rtl {
-  direction: rtl!important;
+  direction: rtl !important;
   text-align: right;
 }
 
@@ -215,7 +214,6 @@ $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
 }
 
 .b-banner2 {
-
   @extend .b-background-image;
   background-image: url("/assets/background2.jpg");
 }
@@ -636,7 +634,7 @@ table.b-master-table th {
 th.cdk-drag-preview {
   font-size: 80%;
   border-bottom: 2px solid $gray-300;
-  background-color: rgba(255, 255, 255, 0.5)!important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
   padding: 0.3rem;
   display: flex;
   align-items: center;
@@ -649,10 +647,9 @@ th.cdk-drag-preview {
 
 // this is the placeholder area while dragging
 th.cdk-drag-placeholder {
-  background-color: $gray-200!important;
-  color:transparent;
+  background-color: $gray-200 !important;
+  color: transparent;
 }
-
 
 // disable those horrible select-unselect animations
 .custom-control-label::before,
@@ -865,12 +862,6 @@ tr.b-highlight {
   padding: 0;
 }
 
-// @media (min-width: 576px) {
-//   .b-document-header {
-//     padding: 2px;
-//   }
-// }
-
 .b-dark {
   background-color: $gray-800;
 }
@@ -975,11 +966,10 @@ tr.b-highlight {
   font-size: 1.2rem;
 }
 
-
 // Main Menu
 
 .b-menu-item {
-  color: white!important;
+  color: white !important;
   width: 135px;
   height: 130px;
   padding: 0px;
@@ -1042,7 +1032,7 @@ tr.b-highlight {
 
 // styling for the search input at the top of the screen
 .b-menu-search {
-  background-color: transparent!important;
+  background-color: transparent !important;
   border-width: 0px;
   margin: 0px;
 }
@@ -1052,7 +1042,7 @@ tr.b-highlight {
 }
 
 .b-menu-search-container {
-  color: #6c757d!important;
+  color: #6c757d !important;
   display: flex;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.05);
@@ -1096,12 +1086,12 @@ $container-margin: 15px;
 }
 
 .b-container {
-  max-width:  ($tile-width + (2 * $tile-margin)) * 6;
+  max-width: ($tile-width + (2 * $tile-margin)) * 6;
   margin: 0 auto;
 }
 
 .b-companies-search-container {
-  color: #6c757d!important;
+  color: #6c757d !important;
   display: flex;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.05);
@@ -1119,9 +1109,8 @@ $container-margin: 15px;
 }
 
 .b-tree-tile {
-  display: flex!important;
+  display: flex !important;
   align-items: stretch !important;
-
 }
 
 .b-tree-tile:hover {
@@ -1132,7 +1121,6 @@ $container-margin: 15px;
   content: "\200b";
 }
 
-
 /* Animate items as they're being sorted. */
 .cdk-drop-list-dragging .cdk-drag {
   transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
@@ -1141,4 +1129,9 @@ $container-margin: 15px;
 /* Animate an item that has been dropped. */
 .cdk-drag-animating {
   transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.b-navbar {
+  position: relative;
+  display: flex;
 }

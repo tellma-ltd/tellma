@@ -1,21 +1,19 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { AuthService } from '~/app/data/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DOCUMENT } from '@angular/platform-browser';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 
 @Component({
   selector: 'b-landing',
-  templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.scss']
+  templateUrl: './landing.component.html'
 })
 export class LandingComponent implements OnInit, OnDestroy {
 
   public error: string = null;
 
   constructor(private auth: AuthService, private route: ActivatedRoute, private router: Router,
-    private workspace: WorkspaceService, private progress: ProgressOverlayService) { }
+              private workspace: WorkspaceService, private progress: ProgressOverlayService) { }
 
   ngOnInit() {
 

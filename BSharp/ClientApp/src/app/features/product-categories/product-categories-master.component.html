@@ -28,18 +28,9 @@
     <span class="text-truncate">{{ ws.getMultilingualValue('ProductCategory', id, 'Name') }}</span>
 </ng-template>
 
-<!-- Tree Node Template -->
-<!-- <ng-template #node let-node="node">
-  <span class="text-truncate">{{ ws.getMultilingualValue('ProductCategory', node.id, 'Name') }}
-    <ng-container *ngIf="c[node.id]?.ChildCount">&nbsp;&nbsp;<span
-        class="badge bg-white border">{{ c[node.id]?.ChildCount }}</span></ng-container></span>
-</ng-template> -->
-
-
 <!-- Multiselect Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
-
 
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>

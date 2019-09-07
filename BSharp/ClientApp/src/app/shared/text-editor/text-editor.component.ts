@@ -21,7 +21,7 @@ export class TextEditorComponent implements ControlValueAccessor, AfterViewInit 
   w100 = true;
 
   ///////////////// Implementation of ControlValueAccessor
-  @ViewChild('input')
+  @ViewChild('input', { static: true })
   input: ElementRef;
 
   private triggerTouch = true;

@@ -4,15 +4,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { Key, toString } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 
 interface MenuSectionInfo { label: string; background: string; items: MenuItemInfo[]; }
 interface MenuItemInfo { icon: string; label: string; background?: string; link: string; viewId?: string; }
 
 @Component({
   selector: 'b-main-menu',
-  templateUrl: './main-menu.component.html',
-  styleUrls: ['./main-menu.component.scss']
+  templateUrl: './main-menu.component.html'
 })
 export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -33,7 +32,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   public initialized = false;
 
   // the search field
-  @ViewChild('searchInput')
+  @ViewChild('searchInput', { static: true })
   searchInput: ElementRef;
 
   // TODO: replace below with a dynamically constructed mainMenu
@@ -76,7 +75,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }];
 
   // constructor
-  constructor(private router: Router, private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document,
+  constructor(
+    private router: Router, private route: ActivatedRoute, @Inject(DOCUMENT) private document: Document,
     private translate: TranslateService, private workspace: WorkspaceService) { }
 
   // Angular lifecycle hooks

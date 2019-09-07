@@ -69,7 +69,7 @@ export class AuthService {
   private discoveryDocumentLoaded$ = new ReplaySubject<boolean>();
 
   constructor(private oauth: OAuthService, private storage: StorageService, private progress: ProgressOverlayService,
-    private cleaner: CleanerService, private appRef: ApplicationRef) {
+              private cleaner: CleanerService, private appRef: ApplicationRef) {
     this.init();
   }
 
@@ -96,7 +96,7 @@ export class AuthService {
     });
 
     // relay some events already provided by angular-oauth2-oidc
-    (<Observable<OAuthEvent>>this.oauth['events']).subscribe(e => {
+    (this.oauth.events as Observable<OAuthEvent>).subscribe(e => {
 
       if (e.type === 'session_terminated') {
         this._events$.next(AuthEvent.SignedOutFromAuthority);
@@ -122,7 +122,7 @@ export class AuthService {
         if (e.type === 'discovery_document_loaded') {
           // for some reason this event is fired twice, first with info = null
           // and second time with info = some stuff
-          if (!!e['info']) {
+          if (!!(e as any).info) {
             this.discoveryDocumentLoaded$.next(true);
           }
         }

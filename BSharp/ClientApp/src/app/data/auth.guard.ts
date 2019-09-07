@@ -3,9 +3,8 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivateChild, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { AuthService, AuthEvent } from './auth.service';
-import { tap, catchError, retry } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 import { CleanerService } from './cleaner.service';
-import { ApiService } from './api.service';
 import { ProgressOverlayService } from './progress-overlay.service';
 
 @Injectable({
@@ -13,7 +12,7 @@ import { ProgressOverlayService } from './progress-overlay.service';
 })
 export class AuthGuard implements CanActivate, CanActivateChild {
   constructor(private auth: AuthService, private cleaner: CleanerService,
-    private router: Router, private progress: ProgressOverlayService) {
+              private router: Router, private progress: ProgressOverlayService) {
     this.auth.setupAutomaticSilentRefresh();
     this.handleAuthEvents();
   }

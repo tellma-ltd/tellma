@@ -79,8 +79,8 @@ export class TableComponent implements OnInit {
     return this._filter;
   }
 
-  @ViewChild(CdkVirtualScrollViewport)
-  viewport: CdkVirtualScrollViewport;
+  // @ViewChild(CdkVirtualScrollViewport, { static: true })
+  // viewport: CdkVirtualScrollViewport;
 
   private cloneAndMap() {
     // To implement filter in a performant way and to support virtual scrolling and line numbering

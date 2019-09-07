@@ -15,8 +15,7 @@ import { Subject, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'b-details',
-  templateUrl: './details.component.html',
-  styleUrls: ['./details.component.scss']
+  templateUrl: './details.component.html'
 })
 export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
@@ -122,13 +121,13 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @Output()
   cancel = new EventEmitter<void>();
 
-  @ViewChild('errorModal')
+  @ViewChild('errorModal', { static : true })
   public errorModal: TemplateRef<any>;
 
-  @ViewChild('successModal')
+  @ViewChild('successModal', { static : true })
   public successModal: TemplateRef<any>;
 
-  @ViewChild('unsavedChangesModal')
+  @ViewChild('unsavedChangesModal', { static : true })
   public unsavedChangesModal: TemplateRef<any>;
 
   private alreadyInit: boolean;
@@ -148,7 +147,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   // Moved below the fields to keep tslint happy
   @Input()
-  createFunc: () => EntityForSave = () => ({ Id: null, EntityState: 'Inserted' })
+  createFunc: () => EntityForSave = () => ({ Id: null })
 
   @Input()
   isInactive: (model: EntityForSave) => string = (model: EntityForSave) => !!model &&

@@ -12,8 +12,7 @@ import { View } from '~/app/data/entities/view';
 
 @Component({
   selector: 'b-roles-details',
-  templateUrl: './roles-details.component.html',
-  styleUrls: ['./roles-details.component.scss']
+  templateUrl: './roles-details.component.html'
 })
 export class RolesDetailsComponent extends DetailsBaseComponent {
 

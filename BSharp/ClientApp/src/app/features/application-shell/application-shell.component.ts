@@ -16,7 +16,8 @@ export class ApplicationShellComponent implements OnInit {
   // For the menu on small screens
   public isCollapsed = true;
 
-  constructor(public workspace: WorkspaceService, public nav: NavigationService,
+  constructor(
+    public workspace: WorkspaceService, public nav: NavigationService,
     private translate: TranslateService, private progress: ProgressOverlayService, private auth: AuthService) {
   }
 
