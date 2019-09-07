@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Save]
 	@Resources [dbo].[ResourceList] READONLY,
-	@Instances [dbo].[ResourceInstanceList] READONLY,
+	@Picks [dbo].[ResourcePickList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -15,9 +15,9 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Resources] AS t
 		USING (
 			SELECT 	
-				[Index], [Id], [ResourceType], [Name], [Name2], [Name3], Uniqueness, [IsBatch], 
-				[ValueMeasure], [CurrencyId], [UnitMoney], [MassUnitId], [UnitMass], [VolumeUnitId], [UnitVolume],
-				[AreaUnitId], [UnitArea], [LengthUnitId], [UnitLength], [TimeUnitId], [UnitTime], [CountUnitId],
+				[Index], [Id], [ResourceType], [Name], [Name2], [Name3], [IsBatch], 
+				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
+				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
 				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id]
 			FROM @Resources 
@@ -29,19 +29,19 @@ SET NOCOUNT ON;
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
-				t.[Uniqueness]				= s.Uniqueness,
 				t.[IsBatch]					= s.[IsBatch],
-				t.[ValueMeasure]			= s.[ValueMeasure],
+				t.[UnitId]					= s.[UnitId],
+				t.[UnitMonetaryValue]		= s.[UnitMonetaryValue],
 				t.[CurrencyId]				= s.[CurrencyId],
-				t.[UnitMoney]				= s.[UnitMoney],
-				t.[MassUnitId]				= s.[MassUnitId],
 				t.[UnitMass]				= s.[UnitMass],
-				t.[VolumeUnitId]			= s.[VolumeUnitId],
+				t.[MassUnitId]				= s.[MassUnitId],
 				t.[UnitVolume]				= s.[UnitVolume],
-				t.[AreaUnitId]				= s.[AreaUnitId],
+				t.[VolumeUnitId]			= s.[VolumeUnitId],
 				t.[LengthUnitId]			= s.[LengthUnitId],
-				t.[TimeUnitId]				= s.[TimeUnitId],
+				t.[AreaUnitId]				= s.[AreaUnitId],
 				t.[UnitTime]				= s.[UnitTime],
+				t.[TimeUnitId]				= s.[TimeUnitId],
+				t.[UnitCount]				= s.[UnitCount],
 				t.[CountUnitId]				= s.[CountUnitId],
 				t.[Code]					= s.[Code],
 				t.[SystemCode]				= s.[SystemCode],
@@ -56,14 +56,14 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ResourceType], [Name], [Name2], [Name3], [Uniqueness], [IsBatch],
-				[ValueMeasure], [CurrencyId], [MassUnitId], [UnitMass], [VolumeUnitId], [UnitVolume],
-				[AreaUnitId], [UnitArea], [LengthUnitId], [UnitLength], [TimeUnitId], [UnitTime], [CountUnitId],
+			INSERT ([ResourceType], [Name], [Name2], [Name3], [IsBatch],
+				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
+				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
 				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id])
-			VALUES (s.[ResourceType], s.[Name], s.[Name2], s.[Name3], s.Uniqueness, s.[IsBatch],
-				s.[ValueMeasure], s.[CurrencyId], s.[MassUnitId], s.[UnitMass], s.[VolumeUnitId], s.[UnitVolume],
-				s.[AreaUnitId], s.[UnitArea], s.[LengthUnitId], s.[UnitLength], s.[TimeUnitId], s.[UnitTime], s.[CountUnitId],
+			VALUES (s.[ResourceType], s.[Name], s.[Name2], s.[Name3], s.[IsBatch],
+				s.[UnitId], s.[UnitMonetaryValue], s.[CurrencyId], s.[UnitMass], s.[MassUnitId], s.[UnitVolume], s.[VolumeUnitId],
+				s.[UnitArea], s.[AreaUnitId], s.[UnitLength], s.[LengthUnitId], s.[UnitTime], s.[TimeUnitId], s.[UnitCount], s.[CountUnitId],
 				s.[Code], s.[SystemCode], s.[Memo], s.[CustomsReference] ,s.[UniversalProductCode], s.[PreferredSupplierId],
 				s.[ResourceLookup1Id], s.[ResourceLookup2Id], s.[ResourceLookup3Id], s.[ResourceLookup4Id])
 			OUTPUT s.[Index], inserted.[Id]
@@ -71,14 +71,14 @@ SET NOCOUNT ON;
 	OPTION (RECOMPILE);
 
 	WITH BE AS (
-		SELECT * FROM dbo.[ResourceInstances]
+		SELECT * FROM dbo.[ResourcePicks]
 		WHERE ResourceId IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BE AS t
 	USING (
 		SELECT RI.[Id], II.[Id] As ResourceId, RI.[Code], RI.[ProductionDate],
 				[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time]
-		FROM @Instances RI
+		FROM @Picks RI
 		JOIN @IndexedIds II ON RI.[ResourceIndex] = II.[Index]
 	) AS s
 	ON (s.[Id] = t.[Id])
@@ -86,7 +86,7 @@ SET NOCOUNT ON;
 		UPDATE SET
 			t.[Code]			= s.[Code],
 			t.[ProductionDate]	= s.[ProductionDate],
-			t.[MoneyAmount]			= s.[MoneyAmount],
+			t.[MoneyAmount]		= s.[MoneyAmount],
 			t.[Mass]			= s.[Mass],
 			t.[Volume]			= s.[Volume],
 			t.[Area]			= s.[Area],

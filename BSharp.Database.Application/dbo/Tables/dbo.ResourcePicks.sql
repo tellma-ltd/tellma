@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[ResourceInstances] (
+﻿CREATE TABLE [dbo].[ResourcePicks] (
 	[Id]						INT					PRIMARY KEY IDENTITY(0, 1),
 	[ResourceId]				INT					NOT NULL,
 --	Tag #, Coil #, Check #, LC #

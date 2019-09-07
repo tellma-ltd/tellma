@@ -90,7 +90,7 @@ AS
 
 	UPDATE E
 	SET
-		E.Mass = E.[Count] * R.UnitMass,
-		E.Volume = E.[Count] * R.UnitVolume
+		E.Mass = E.[Quantity] * R.UnitMass,
+		E.Volume = E.[Quantity] * R.UnitVolume
 	FROM @Entries E JOIN dbo.Resources R ON E.ResourceId = R.Id
-	WHERE R.ValueMeasure = N'Count';
+	WHERE R.[UnitId] = R.[CountUnitId];

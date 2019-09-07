@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[ResourceInstanceList] AS TABLE
+﻿CREATE TYPE [dbo].[ResourcePickList] AS TABLE
 (
 	[Index]						INT					PRIMARY KEY IDENTITY (0,1),
 	[Id]						INT					NOT NULL DEFAULT 0,

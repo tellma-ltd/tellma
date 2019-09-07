@@ -28,7 +28,7 @@ BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[Permissions]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ProductCategories]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 1) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[ResourceInstances]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[ResourcePicks]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ResponsibilityCenters]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Roles]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[RoleMemberships]', RESEED, 1) WITH NO_INFOMSGS;
@@ -66,7 +66,7 @@ BEGIN TRY
 		:r .\06_ResponsibilityCenters.sql
 		:r .\07_Resources.sql
 		:r .\08_Accounts.sql
-		:r .\10_JournalVouchers.sql
+		--:r .\10_JournalVouchers.sql
 
 		--:r .\71_Operations.sql
 		--:r .\72_ProductCategories.sql

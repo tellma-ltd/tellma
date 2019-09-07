@@ -15,8 +15,8 @@
 	[RelatedAmountLabel]	NVARCHAR (50)
 	PRIMARY KEY NONCLUSTERED ([AccountId], [Direction])
 );
-INSERT INTO @AccountSpecifications(
+INSERT INTO @AccountSpecifications(-- TODO: Is monetary resource type correct
 [AccountId],				[Direction], [CustodyLabel], [CustodyFilter],				[ResourceLabel], [ResourceFilter],				[AmountLabel], [ReferenceLabel], [RelatedReferenceLabel], [RelatedAgentLabel], [RelatedAgentFilter], [RelatedResourceLabel], [RelatedResourceFilter], [RelatedAmountLabel]) VALUES
-(N'BalancesWithBanks',			+1,		N'BankAccount',	N'CustodyType = N''BankAccount''', N'Currency',	N'ResourceType = N''Currency''', N'Deposit',	N'DepositSlipReference', N'CheckReference', N'Depositer',		NULL,					NULL,					NULL,					NULL),
-(N'CurrentWithholdingTaxPayable', -1,		NULL,		N'SystemCode = N''TaxAgent''',	N'Currency',	N'SystemCode = N''Functional''', N'AmountWithheld',	N'WT Form #',	NULL,					N'Withholdee',		NULL,					NULL,					NULL,			N'Invoice Amount'),
+(N'BalancesWithBanks',			+1,		N'BankAccount',	N'CustodyType = N''BankAccount''', N'MonetaryValue',	N'ResourceType = N''MonetaryValue''', N'Deposit',	N'DepositSlipReference', N'CheckReference', N'Depositer',		NULL,					NULL,					NULL,					NULL),
+(N'CurrentWithholdingTaxPayable', -1,		NULL,		N'SystemCode = N''TaxAgent''',	N'MonetaryValue',	N'SystemCode = N''Functional''', N'AmountWithheld',	N'WT Form #',	NULL,					N'Withholdee',		NULL,					NULL,					NULL,			N'Invoice Amount'),
 (N'CurrentValueAddedTaxReceivables',+1,		NULL,		N'SystemCode = N''TaxAgent''',		NULL,		N'SystemCode = N''Functional''',	NULL,		N'Invoice #',		NULL,					N'Customer',		NULL,					NULL,					NULL,			N'Invoice Amount');

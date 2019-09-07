@@ -6,7 +6,7 @@
 --	Upon posting the document, the auto generated entries will be MERGED with the present ones
 --	based on AccountId, IfrsAccountId, IfrsEntryClassificationId, ResourceId
 --	to minimize Transaction Entries deletions
---	It will be presented ORDER BY IsSystem, Direction, AccountId.Code, IfrsAccountId.Node, IfrsEntryClassificationId.Node
+--	It will be presented ORDER BY Direction DESC, AccountId.Code, IfrsAccountId.Node, IfrsEntryClassificationId.Node
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
  -- Account selection enforces additional filters on the other columns
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__Accounts]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
@@ -21,14 +21,14 @@
 	[ResourceId]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_DocumentLineEntries__Resources]	FOREIGN KEY ([ResourceId])	REFERENCES [dbo].[Resources] ([Id]),
 --	steel rolls:coil #, car:VIN, merchandise:EPC, check:BankCode+AccNumber+CheckNumber.
 --	AVCO is run either at the resource level or at the number level (specified costing)
-	[InstanceId]				INT				CONSTRAINT [FK_DocumentLineEntries__ResourceInstances] FOREIGN KEY ([InstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),
+	[InstanceId]				INT				CONSTRAINT [FK_DocumentLineEntries__ResourceInstances] FOREIGN KEY ([InstanceId]) REFERENCES [dbo].[ResourcePicks] ([Id]),
 --  Used for tracking of raw materials, production supplies, and finished goods.
---	We always show the non zero balances per triplet (ResourceId, ResourceNumber, BatchNumber)
+--	We always show the non zero balances per triplet (ResourceId, InstanceId, BatchCode)
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
 	[BatchCode]					NVARCHAR (255),
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings
--- Tracking additive measures
-	[Quantity]					VTYPE			NOT NULL DEFAULT 0, -- measure on which the value is based. If it is MassMeasure then [Mass] must equal [ValueMeasure] and so on.
+-- Tracking additive measures, the data type is to be decided by AA
+	[Quantity]					VTYPE			NOT NULL DEFAULT 0, -- measure on which the value is based.
 	[MoneyAmount]				MONEY			NOT NULL DEFAULT 0, -- Amount in foreign Currency 
 	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
 	[Volume]					DECIMAL (18,2)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
@@ -56,7 +56,7 @@
 	[RelatedAccountId]			INT,
 	[RelatedQuantity]			MONEY ,		-- used in Tax accounts, to store the quantiy of taxable item
 	[RelatedMoneyAmount]		MONEY 			NOT NULL DEFAULT 0, -- e.g., amount subject to tax
-	[SortKey]					DECIMAL (9,4),
+	--[SortKey]					DECIMAL (9,4),
 -- for auditing
 	[CreatedAt]					DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__CreatedById] FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),

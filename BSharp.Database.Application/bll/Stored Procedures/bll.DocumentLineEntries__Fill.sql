@@ -10,6 +10,20 @@ DECLARE @FunctionalCurrencyId INT = CONVERT(INT, SESSION_CONTEXT(N'FunctionalCur
 INSERT INTO @FilledEntries
 SELECT * FROM @Entries;
 
+-- set quantity to the right value measure
+UPDATE E
+SET
+	E.[MoneyAmount] = CASE WHEN R.[UnitId] = R.[CurrencyId] THEN E.[Quantity] ELSE E.[MoneyAmount] END,
+	E.[Mass]		= CASE WHEN R.[UnitId] = R.[MassUnitId] THEN E.[Quantity] ELSE E.[Mass] END,
+	E.[Volume]		= CASE WHEN R.[UnitId] = R.[VolumeUnitId] THEN E.[Quantity] ELSE E.[Volume] END,
+	E.[Area]		= CASE WHEN R.[UnitId] = R.[AreaUnitId] THEN E.[Quantity] ELSE E.[Area] END,
+	E.[Length]		= CASE WHEN R.[UnitId] = R.[LengthUnitId] THEN E.[Quantity] ELSE E.[Length] END,
+	E.[Time]		= CASE WHEN R.[UnitId] = R.[TimeUnitId] THEN E.[Quantity] ELSE E.[Time] END,
+	E.[Count]		= CASE WHEN R.[UnitId] = R.[CountUnitId] THEN E.[Quantity] ELSE E.[Count] END
+FROM @FilledEntries E
+JOIN dbo.Resources R ON E.ResourceId = R.Id
+WHERE  R.[UnitId] = R.[CurrencyId];
+
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
 SET E.[Value] = E.[MoneyAmount]
@@ -17,8 +31,7 @@ FROM @FilledEntries E
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
-WHERE R.[ValueMeasure] = N'Currency'
-AND R.CurrencyId = @FunctionalCurrencyId
+WHERE R.UnitId = @FunctionalCurrencyId
 AND (E.[Value] <> E.[MoneyAmount]);
 
 -- for financial amounts in 
@@ -28,36 +41,9 @@ FROM @FilledEntries E
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
-WHERE R.[ValueMeasure] = N'Currency'
-AND R.CurrencyId <> @FunctionalCurrencyId
+WHERE R.UnitId IN (SELECT [Id] FROM dbo.MeasurementUnits WHERE UnitType = N'MonetaryValue')
+AND R.UnitId <> @FunctionalCurrencyId
 AND (E.[Value] <> dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MoneyAmount]));
-
--- set quantity to the right value measure
-UPDATE E
-SET E.[Quantity] = (
-		CASE
-		WHEN R.[ValueMeasure] = N'Currency' THEN E.[MoneyAmount]
-		WHEN R.[ValueMeasure] = N'Mass'		THEN E.[Mass]
-		WHEN R.[ValueMeasure] = N'Volume'	THEN E.[Volume]
-		WHEN R.[ValueMeasure] = N'Area'		THEN E.[Area]
-		WHEN R.[ValueMeasure] = N'Length'	THEN E.[Length]
-		WHEN R.[ValueMeasure] = N'Time'		THEN E.[Time]
-		WHEN R.[ValueMeasure] = N'Count'	THEN E.[Count]
-		ELSE NULL END
-	)
-FROM @FilledEntries E
-JOIN dbo.Resources R ON E.ResourceId = R.Id
-WHERE E.[Quantity] <> (
-		CASE
-		WHEN R.[ValueMeasure] = N'Currency' THEN E.[MoneyAmount]
-		WHEN R.[ValueMeasure] = N'Mass'		THEN E.[Mass]
-		WHEN R.[ValueMeasure] = N'Volume'	THEN E.[Volume]
-		WHEN R.[ValueMeasure] = N'Area'		THEN E.[Area]
-		WHEN R.[ValueMeasure] = N'Length'	THEN E.[Length]
-		WHEN R.[ValueMeasure] = N'Time'		THEN E.[Time]
-		WHEN R.[ValueMeasure] = N'Count'	THEN E.[Count]
-		ELSE NULL END
-	);
 
 -- if one value only is zero at the line level, set it to the sum of the rest. Otherwise, the accountant has to set it.
 WITH SingletonLines
