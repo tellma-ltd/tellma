@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Users_Validate__Save]
 	@Entities [UserList] READONLY,
+	@Roles [dbo].[RoleMembershipList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -34,4 +35,23 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	) OPTION (HASH JOIN);
 
+	-- No non existing roles
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1]) 
+	SELECT '[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Roles[' + 
+				CAST(P.[Index] AS NVARCHAR(255)) + '].RoleId' As [Key], N'Error_TheRole0IsNonExistent' As [ErrorName],
+				P.[RoleId] AS Argument1
+	FROM @Roles P
+	WHERE P.RoleId NOT IN (
+		SELECT [Id] FROM dbo.[Roles]
+	)
+
+	-- No inactive roles
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument1]) 
+	SELECT '[' + CAST(P.[HeaderIndex] AS NVARCHAR(255)) + '].Roles[' + 
+				CAST(P.[Index] AS NVARCHAR(255)) + '].RoleId' As [Key], N'Error_TheRole0IsInactive' As [ErrorName],
+				R.[Name] AS Argument1 -- TODO: Use the correct Name column depending on language
+	FROM @Roles P JOIN [dbo].[Roles] R ON P.RoleId = R.Id
+	WHERE R.IsActive = 0
+
+	-- Return the results
 	SELECT TOP(@Top) * FROM @ValidationErrors;

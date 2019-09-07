@@ -1,12 +1,6 @@
-<b-master collection="User" viewId="users"
-  [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
-  [tableDescriptionColumnTemplate]="descriptionColumn"
-  selectDefault="Email,State,LastAccess,IsActive" selectForTiles="Email,State"
-  inactiveFilter="Agent/IsActive eq true"
-  [multiselectActions]="[
-            { template : activate, action: onActivate, requiresUpdatePermission: true },
-            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
-          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+<b-master collection="User" viewId="users" [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
+  [tableDescriptionColumnTemplate]="descriptionColumn" selectDefault="State,LastAccess"
+  selectForTiles="State" inactiveFilter="Agent/IsActive eq true" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
@@ -24,30 +18,18 @@
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
-  <div class="d-flex">
-    <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
-    <div class="border b-dp-wrapper2">
-      <b-image [src]="'users/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></b-image>
-    </div>
-    &nbsp;&nbsp;&nbsp;
-  </ng-container>
-    <div class="flex-grow-1 d-inline-block b-mw-0">
-      <div class="d-flex justify-content-between">
-        <span class="d-block text-truncate">{{ ws.getMultilingualValue('User', id, 'Name') }}</span>
-      </div>
-      <div class="d-flex justify-content-between mt-1 small">
-        <b-restricted [metadata]="c[id].EntityMetadata?.Email"><span class="text-truncate">{{ c[id].Email }}</span></b-restricted>
-        <ng-container *ngTemplateOutlet="stateTemplate; context: { id: id }"></ng-container>
-      </div>
-    </div>
+  <div class="d-flex justify-content-between">
+    <span class="d-block text-truncate">{{ c[id].Email }}</span>
   </div>
-
+  <div class="d-flex justify-content-between mt-1 small">
+    <ng-container *ngTemplateOutlet="stateTemplate; context: { id: id }"></ng-container>
+  </div>
 </ng-template>
 
 
 <!-- Description Column -->
 <ng-template #descriptionColumn let-id="id">
-    <span class="text-truncate">{{ ws.User[id]?.Email }}</span>
+  <span class="text-truncate">{{ ws.User[id]?.Email }}</span>
 </ng-template>
 
 

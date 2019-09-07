@@ -56,6 +56,8 @@ namespace BSharp.Entities
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
 
+        // For Query
+
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]
         public User SavedBy { get; set; }

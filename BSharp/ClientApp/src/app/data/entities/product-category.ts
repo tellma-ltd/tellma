@@ -1,6 +1,6 @@
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from './settings';
-import { DtoDescriptor } from './base/metadata';
+import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
@@ -27,9 +27,9 @@ export class ProductCategory extends ProductCategoryForSave {
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _currentLang: string;
 let _settings: SettingsForClient;
-let _cache: DtoDescriptor;
+let _cache: EntityDescriptor;
 
-export function metadata_ProductCategory(ws: TenantWorkspace, trx: TranslateService, _subtype: string): DtoDescriptor {
+export function metadata_ProductCategory(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
     _currentLang = trx.currentLang;

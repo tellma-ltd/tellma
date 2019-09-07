@@ -15,8 +15,6 @@ export class UsersMasterComponent extends MasterBaseComponent {
 
   private usersApi = this.api.usersApi(this.notifyDestruct$); // for intellisense
 
-  public expand = '';
-
   constructor(private workspace: WorkspaceService, private api: ApiService) {
     super();
     this.usersApi = this.api.usersApi(this.notifyDestruct$);

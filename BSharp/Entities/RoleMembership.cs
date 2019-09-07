@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.Entities
@@ -20,18 +19,8 @@ namespace BSharp.Entities
 
     public class RoleMembership : RoleMembershipForSave
     {
-        //[Display(Name = "CreatedAt")]
-        //public DateTimeOffset? CreatedAt { get; set; }
-
-        //[Display(Name = "CreatedBy")]
-        //public int? CreatedById { get; set; }
-
-        //[Display(Name = "ModifiedAt")]
-        //public DateTimeOffset? ModifiedAt { get; set; }
-
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
-
 
         // For Query
 
@@ -42,10 +31,6 @@ namespace BSharp.Entities
         [Display(Name = "RoleMembership_Role")]
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
-
-        //[Display(Name = "CreatedBy")]
-        //[ForeignKey(nameof(CreatedById))]
-        //public User CreatedBy { get; set; }
 
         [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(SavedById))]

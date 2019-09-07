@@ -141,23 +141,17 @@
   <data name="Agent_AgentType" xml:space="preserve">
     <value>Agent Type</value>
   </data>
-  <data name="Agent_Female" xml:space="preserve">
+  <data name="Agent_Gender_Female" xml:space="preserve">
     <value>Female</value>
   </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>Gender</value>
   </data>
-  <data name="Agent_individuals_BirthDateTime" xml:space="preserve">
-    <value>Date of Birth</value>
-  </data>
   <data name="Agent_IsRelated" xml:space="preserve">
     <value>Is Related</value>
   </data>
-  <data name="Agent_Male" xml:space="preserve">
+  <data name="Agent_Gender_Male" xml:space="preserve">
     <value>Male</value>
-  </data>
-  <data name="Agent_organizations_BirthDateTime" xml:space="preserve">
-    <value>Date of Establishment</value>
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>Tax ID Number</value>
@@ -289,76 +283,67 @@
     <value>Enter your email</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
-    <value>A {0} path cannot terminate with a navigation field {1}</value>
+    <value>A {0} path cannot terminate with a navigation field {1}.</value>
   </data>
   <data name="Error_A0PathCannotTerminateWithASimpleField1" xml:space="preserve">
-    <value>A {0} path cannot terminate with a navigation field {1}</value>
+    <value>A {0} path cannot terminate with a navigation field {1}.</value>
   </data>
   <data name="Error_AddingLoginForUserWithEmail0" xml:space="preserve">
     <value>Unexpected error occurred adding external login for user with email '{0}'.</value>
   </data>
   <data name="Error_AUserWithEmail0CouldNotBeFound" xml:space="preserve">
-    <value>A user with email '{0}' could not be found</value>
+    <value>A user with email '{0}' could not be found.</value>
   </data>
   <data name="Error_BasicFieldsKeyword0ShouldComeEndOfPath" xml:space="preserve">
-    <value>The keyword '{0}' represent all basic fields, and should come at the end of a select path</value>
+    <value>The keyword '{0}' represent all basic fields, and should come at the end of a select path.</value>
   </data>
   <data name="Error_CannotDeactivateYourOwnUser" xml:space="preserve">
-    <value>You cannot deactivate your own user</value>
+    <value>You cannot deactivate your own user.</value>
   </data>
   <data name="Error_CannotDelete0AlreadyInUse" xml:space="preserve">
-    <value>Cannot delete a {0} record because it is already in use</value>
+    <value>Cannot delete a {0} record because it is already in use.</value>
   </data>
   <data name="Error_CannotDeleteNodeWithChildren" xml:space="preserve">
-    <value>Cannot delete a tree node with children</value>
-  </data>
-  <data name="Error_CannotDeleteWithoutId" xml:space="preserve">
-    <value>Cannot delete an item without specifying its Id</value>
+    <value>Cannot delete a tree node with children.</value>
   </data>
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
-    <value>You cannot delete your own user</value>
-  </data>
-  <data name="Error_CannotInsertWhileSpecifyId" xml:space="preserve">
-    <value>Cannot insert an item while specifying its Id</value>
+    <value>You cannot delete your own user.</value>
   </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
-    <value>Cannot modify an inactive item</value>
-  </data>
-  <data name="Error_CannotUpdateWithoutId" xml:space="preserve">
-    <value>Cannot update an item without specifying its Id</value>
+    <value>Cannot modify an inactive item.</value>
   </data>
   <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
-    <value>The code is required for the update import mode</value>
+    <value>The code is required for the update import mode.</value>
   </data>
   <data name="Error_Column0NotRecognizable" xml:space="preserve">
-    <value>The column '{0}' is not recognizable</value>
+    <value>The column '{0}' is not recognizable.</value>
   </data>
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
-    <value>An error occurred while confirming your email</value>
+    <value>An error occurred while confirming your email.</value>
   </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
-    <value>Deleting {0} is not supported from this API</value>
+    <value>Deleting {0} is not supported from this API.</value>
   </data>
   <data name="Error_EmailNotProvidedByExternalSignIn" xml:space="preserve">
-    <value>The email was not provided by the external sign-in</value>
+    <value>The email was not provided by the external sign-in.</value>
   </data>
   <data name="Error_EmptyImportFile" xml:space="preserve">
-    <value>The imported file is empty</value>
+    <value>The imported file is empty.</value>
   </data>
   <data name="Error_ErrorFromExternalProvider0" xml:space="preserve">
-    <value>Error from external provider: {0}</value>
+    <value>Error from external provider: {0}.</value>
   </data>
   <data name="Error_ExcelContainsMultipleSheetsNameOne0" xml:space="preserve">
-    <value>The imported Excel file contains multiple sheets, please mark one of them with the name '{0}'</value>
+    <value>The imported Excel file contains multiple sheets, please mark one of them with the name '{0}'.</value>
   </data>
   <data name="Error_Field0OnType1IsNotANavigationField" xml:space="preserve">
-    <value>Field '{0}' on type '{1}' is not a navigation field, therefore it cannot be followed by another field in the select path</value>
+    <value>Field '{0}' on type '{1}' is not a navigation field, therefore it cannot be followed by another field in the select path.</value>
   </data>
   <data name="Error_ForeignKeys1CannotBeUsedInSelectArgument" xml:space="preserve">
-    <value>Foreign keys like '{0}' cannot be specified in the select argument</value>
+    <value>Foreign keys like '{0}' cannot be specified in the select argument.</value>
   </data>
   <data name="Error_InvalidLanguageId0" xml:space="preserve">
-    <value>Invalid Language Id '{0}'</value>
+    <value>Invalid Language Id '{0}'.</value>
   </data>
   <data name="Error_InvalidLoginAttempt" xml:space="preserve">
     <value>Invalid sign-in attempt. If you haven't confirmed your email yet please check your email inbox</value>
@@ -367,73 +352,73 @@
     <value>Error loading external login information.</value>
   </data>
   <data name="Error_NavigationField0InSelectMustAlsoBeInExpand" xml:space="preserve">
-    <value>Cannot specify the navigation field '{0}' in the select argument without including it in the expand argument too</value>
+    <value>Cannot specify the navigation field '{0}' in the select argument without including it in the expand argument too.</value>
   </data>
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
-    <value>No file was uploaded</value>
+    <value>No file was uploaded.</value>
   </data>
   <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
-    <value>Delete mode is not supported in the parsing API</value>
+    <value>Delete mode is not supported in the parsing API.</value>
   </data>
   <data name="Error_Property0DoesNotExistOnType1" xml:space="preserve">
-    <value>Property {0} does not exist on type {1}</value>
+    <value>Property {0} does not exist on type {1}.</value>
   </data>
   <data name="Error_Property0OnType1IsACollection2" xml:space="preserve">
-    <value>Property {0} on type {1} is a collection, and therefore not allowed in a {2} path</value>
+    <value>Property {0} on type {1} is a collection, and therefore not allowed in a {2} path.</value>
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
-    <value>Secondary language cannot be the same as the primary language</value>
+    <value>Secondary language cannot be the same as the primary language.</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
-    <value>The code '{0}' does not exist</value>
+    <value>The code '{0}' does not exist.</value>
   </data>
   <data name="Error_TheCode0IsDuplicated" xml:space="preserve">
-    <value>The code '{0}' is duplicated</value>
+    <value>The code '{0}' is duplicated.</value>
   </data>
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
-    <value>The code '{0}' is already used</value>
+    <value>The code '{0}' is already used.</value>
   </data>
   <data name="Error_TheEmail0IsUsed" xml:space="preserve">
-    <value>The email '{0}' is already used</value>
+    <value>The email '{0}' is already used.</value>
   </data>
   <data name="Error_TheEmailCannotBeModified" xml:space="preserve">
-    <value>The user email cannot be modified from here</value>
+    <value>The user email cannot be modified from here.</value>
   </data>
   <data name="Error_TheEntityWithId0IsSpecifiedMoreThanOnce" xml:space="preserve">
-    <value>The entity with Id '{0}' is specified more than once</value>
+    <value>The entity with Id '{0}' is specified more than once.</value>
   </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
-    <value>The field {0} must be a valid HTML hexadecimal color, such as: #AB12E5</value>
+    <value>The field {0} must be a valid HTML hexadecimal color, such as: #AB12E5.</value>
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
-    <value>The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing</value>
+    <value>The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing.</value>
   </data>
   <data name="Error_TheName0IsDuplicated" xml:space="preserve">
-    <value>The name '{0}' is duplicated</value>
+    <value>The name '{0}' is duplicated.</value>
   </data>
   <data name="Error_TheName0IsUsed" xml:space="preserve">
-    <value>The name '{0}' is already used</value>
+    <value>The name '{0}' is already used.</value>
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>The password and confirmation password do not match.</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
-    <value>The user '{0}' is not active</value>
+    <value>The user '{0}' is not active.</value>
   </data>
   <data name="Error_TheValue0IsNotValidFor1Field" xml:space="preserve">
-    <value>The value '{0}' is not valid for the {1} field</value>
+    <value>The value '{0}' is not valid for the {1} field.</value>
   </data>
   <data name="Error_TheView0IsInactive" xml:space="preserve">
-    <value>The view with code '{0}' is not activated</value>
+    <value>The view with code '{0}' is not activated.</value>
   </data>
   <data name="Error_TryingToSignYouInWithExternalProvider" xml:space="preserve">
-    <value>An unknown error occurred while trying to sign you in using the external provider</value>
+    <value>An unknown error occurred while trying to sign you in using the external provider.</value>
   </data>
   <data name="Error_UnknownFileFormat" xml:space="preserve">
-    <value>Unknown file format</value>
+    <value>Unknown file format.</value>
   </data>
   <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
-    <value>The value '{0}' is not valid for the {1} field, acceptable values are: {2}</value>
+    <value>The value '{0}' is not valid for the {1} field, acceptable values are: {2}.</value>
   </data>
   <data name="Facebook" xml:space="preserve">
     <value>Facebook</value>
@@ -507,11 +492,8 @@
   <data name="Inactive" xml:space="preserve">
     <value>Inactive</value>
   </data>
-  <data name="Individual" xml:space="preserve">
+  <data name="Agent_AgentType_Individual" xml:space="preserve">
     <value>Individual</value>
-  </data>
-  <data name="Individuals" xml:space="preserve">
-    <value>Individuals</value>
   </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>Invalid authenticator code.</value>
@@ -645,11 +627,8 @@
   <data name="Or" xml:space="preserve">
     <value>Or</value>
   </data>
-  <data name="Organization" xml:space="preserve">
+  <data name="Agent_AgentType_Organization" xml:space="preserve">
     <value>Organization</value>
-  </data>
-  <data name="Organizations" xml:space="preserve">
-    <value>Organizations</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>Two-Factor Authentication (2FA)</value>
@@ -1009,7 +988,7 @@
     <value>You should generate a new set of recovery codes.</value>
   </data>
   <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
-    <value>Number of data points exceeds the maximum of {0}</value>
+    <value>Number of data points exceeds the maximum of {0}.</value>
   </data>
   <data name="Permission_Delete" xml:space="preserve">
     <value>Delete</value>
@@ -1030,7 +1009,7 @@
     <value>Server</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
-    <value>The email '{0}' is duplicated</value>
+    <value>The email '{0}' is duplicated.</value>
   </data>
   <data name="Agent_User" xml:space="preserve">
     <value>User</value>
@@ -1045,6 +1024,15 @@
     <value>Ternary Language Symbol</value>
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
-    <value>The user '{0}' has already accepted the invitation</value>
+    <value>The user '{0}' has already accepted the invitation.</value>
+  </data>
+  <data name="Agent_AgentType_System" xml:space="preserve">
+    <value>آلة</value>
+  </data>
+  <data name="Error_TheRole0IsInactive" xml:space="preserve">
+    <value>The role '{0}' is not active.</value>
+  </data>
+  <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
+    <value>The role with Id '{0}' does not exist or no longer exists.</value>
   </data>
 </root>

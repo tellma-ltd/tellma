@@ -2,14 +2,18 @@ import { EntityForSave } from './base/entity-for-save';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SettingsForClient } from './settings';
-import { DtoDescriptor } from './base/metadata';
+import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 
 export class MeasurementUnitForSave extends EntityForSave {
+  UnitType: 'Pure' | 'Time' | 'Distance' | 'Count' | 'Mass' | 'Volume' | 'Money';
   Name: string;
   Name2: string;
+  Name3: string;
   Code: string;
-  UnitType: 'Pure' | 'Time' | 'Distance' | 'Count' | 'Mass' | 'Volume' | 'Money';
+  Description: string;
+  Description2: string;
+  Description3: string;
   UnitAmount: number;
   BaseAmount: number;
 }
@@ -33,12 +37,12 @@ export const MeasurementUnit_UnitType = {
   'Money': 'MU_Money'
 };
 
-const _select = ['', '2'].map(pf => 'Name' + pf);
+const _select = ['', '2', '3'].map(pf => 'Description' + pf);
 let _currentLang: string;
 let _settings: SettingsForClient;
-let _cache: DtoDescriptor;
+let _cache: EntityDescriptor;
 
-export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateService, _subtype: string): DtoDescriptor {
+export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
     _currentLang = trx.currentLang;
@@ -54,6 +58,9 @@ export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateServ
         Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: trx.instant('Code') },
+        Description: { control: 'text', label: trx.instant('Description') + ws.primaryPostfix },
+        Description2: { control: 'text', label: trx.instant('Description') + ws.secondaryPostfix },
+        Description3: { control: 'text', label: trx.instant('Description') + ws.ternaryPostfix },
         UnitType: {
           control: 'choice',
           label: trx.instant('MU_UnitType'),

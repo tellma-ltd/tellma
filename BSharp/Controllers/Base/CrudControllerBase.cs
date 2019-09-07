@@ -226,7 +226,7 @@ namespace BSharp.Controllers
 
         private async Task<List<TEntityForSave>> ApplyUpdatePermissionsMask(List<TEntityForSave> entities)
         {
-            var entityMasks = GetMasksForSavedEntities(entities);
+          //  var entityMasks = GetMasksForSavedEntities(entities);
             var permissions = await UserPermissions(Constants.Update);
 
             // TODO

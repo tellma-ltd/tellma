@@ -115,7 +115,6 @@
     <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Agents__Activate.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Agents__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_ResponsibilityCenters__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_ResponsibilityCenters_Validate__Save.sql" />
@@ -161,7 +160,6 @@
     <Build Include="dbo\User Defined Types\dbo.DocumentLineTypeList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountList.sql" />
     <Build Include="dbo\Functions\dbo.fn_User__Language.sql" />
-    <Build Include="dbo\User Defined Types\dbo.LocalUserList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Unpost.sql" />
     <Build Include="dbo\Tables\dbo.DocumentSignatures.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Unsign.sql" />
@@ -177,9 +175,7 @@
     <Build Include="dbo\User Defined Types\dbo.RoleList.sql" />
     <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Roles_Validate__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Activate.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Roles__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ViewList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Views__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Views_Validate__Save.sql" />
@@ -332,8 +328,6 @@
     <Build Include="bll\Stored Procedures\bll.DocumentLineEntries__Fill.sql" />
     <Build Include="api\Stored Procedures\api.Agents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Save.sql" />
-    <Build Include="dbo\Tables\dbo.AccountClassifications.sql" />
-    <Build Include="bll\Stored Procedures\bll.Resources__Fill.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -370,10 +364,6 @@
     <SqlCmdVariable Include="FunctionalCurrency">
       <DefaultValue>ETB</DefaultValue>
       <Value>$(SqlCmdVar__4)</Value>
-    </SqlCmdVariable>
-    <SqlCmdVariable Include="I">
-      <DefaultValue>5</DefaultValue>
-      <Value>$(SqlCmdVar__5)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="PrimaryLanguageId">
       <DefaultValue>en</DefaultValue>

@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,6 +7,13 @@ namespace BSharp.Entities
     [StrongEntity]
     public class MeasurementUnitForSave : EntityWithKey<int>
     {
+        [Display(Name = "MU_UnitType")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume", "Money" },
+            new string[] { "MU_Pure", "MU_Time", "MU_Distance", "MU_Count", "MU_Mass", "MU_Volume", "MU_Money" })]
+        public string UnitType { get; set; }
+
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -30,12 +35,21 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "MU_UnitType")]
+        [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume", "Money" },
-            new string[] { "MU_Pure", "MU_Time", "MU_Distance", "MU_Count", "MU_Mass", "MU_Volume", "MU_Money" })]
-        public string UnitType { get; set; }
+        [AlwaysAccessible]
+        public string Description { get; set; }
+
+        [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Description2 { get; set; }
+
+        [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Description3 { get; set; }
 
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [Display(Name = "MU_UnitAmount")]

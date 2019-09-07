@@ -5,7 +5,7 @@
     <input class="form-control b-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
       ngbDropdownAnchor autocomplete="off" />
     <button class="btn btn-light btn-sm text-primary b-white-button p-0 pl-1 pr-1" *ngIf="showMagnifier" type="button"
-      title="{{ 'Search' | translate }}" (click)="onMagnifier()">
+      title="{{ 'Search' | translate }}" (click)="onMagnifier()" [disabled]="isDisabled">
       <fa-icon icon="search"></fa-icon>
     </button>
   </div>
@@ -15,7 +15,7 @@
     <ng-container *ngIf="showResults">
       <button class="dropdown-item" *ngFor="let item of searchResults; let i = index" [class.active]="i===highlightedIndex"
         (mouseenter)="onMouseEnter(i)" style="cursor:default" (focus)="onFocus(item)">
-        {{ formatter(item) }}
+        {{ formatterInner(item) }}
       </button>
     </ng-container>
     <div class="text-center">
@@ -49,7 +49,7 @@
 </ng-template>
 
 <ng-template #masterWrapperTemplate let-modal>
-  <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal }">
+  <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal, filter: filter }">
   </ng-container>
 </ng-template>
 

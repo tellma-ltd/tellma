@@ -110,4 +110,25 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[sp_ResourcesPicks]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="86f91e20-6e20-42b8-8456-5da6311368e6" ChangeDateTime="09/03/2019 10:16:35">
+    <Property Name="ElementName" Value="[dbo].[dal_Agents__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Agents__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c3d80e8f-413b-4f1e-8654-bef69e72c927" ChangeDateTime="09/04/2019 16:21:39">
+    <Property Name="ElementName" Value="[dbo].[dal_Roles__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Roles__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e46919a2-d980-4fc8-9313-1618877da200" ChangeDateTime="09/04/2019 16:29:08">
+    <Property Name="ElementName" Value="[dbo].[bll_Roles_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Roles_Validate__Save]" />
+  </Operation>
 </Operations>

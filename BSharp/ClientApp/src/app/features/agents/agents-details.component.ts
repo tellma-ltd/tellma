@@ -1,102 +1,86 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { Agent, AgentForSave } from '~/app/data/entities/agent';
+import { Agent, AgentForSave, metadata_Agent } from '~/app/data/entities/agent';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { supportedCultures } from '~/app/data/supported-cultures';
+import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 @Component({
   selector: 'b-agents-details',
   templateUrl: './agents-details.component.html',
   styleUrls: ['./agents-details.component.scss']
 })
-export class AgentsDetailsComponent extends DetailsBaseComponent implements OnInit {
+export class AgentsDetailsComponent extends DetailsBaseComponent {
 
-  private _genderChoices: { name: string, value: any }[];
+  private _languageChoices: { name: string, value: any }[];
+  private _agentTypeChoices: { name: string, value: any }[];
   private notifyDestruct$ = new Subject<void>();
-  private agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$); // for intellisense
-  private _agentType: 'individuals' | 'organizations';
+  private agentsApi = this.api.agentsApi(this.notifyDestruct$); // for intellisense
 
-  public birthDateTimeName: string;
-  public expand = '';
-
-  @Input()
-  public get agentType(): 'individuals' | 'organizations' {
-    return this._agentType;
-  }
-
-  public set agentType(t: 'individuals' | 'organizations') {
-    if (this._agentType !== t) {
-      this._agentType = t;
-      this.agentsApi = this.api.agentsApi(this.agentType, this.notifyDestruct$);
-      this.birthDateTimeName = `Agent_${t}_BirthDateTime`;
-    }
-  }
+  public expand = 'User';
 
   create = () => {
     const result = new AgentForSave();
     result.Name = this.initialText;
+    result.AgentType = 'Individual';
+    result.IsRelated = false;
+    result.PreferredLanguage = this.ws.settings.PrimaryLanguageId;
     return result;
   }
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private route: ActivatedRoute,
-    private router: Router, private translate: TranslateService) {
+  constructor(private workspace: WorkspaceService, private api: ApiService,
+    private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
     super();
   }
 
-  ngOnInit(): void {
-    if (this.mode === 'screen') {
-      this.route.paramMap.subscribe((params: ParamMap) => {
-        // This triggers changes on the screen
-        const agentType = params.get('agentType');
+  get languageChoices(): { name: string, value: any }[] {
 
-        if (['individuals', 'organizations'].indexOf(agentType) === -1) {
-          this.router.navigate(['page-not-found']);
-        }
-
-        if (this.agentType !== agentType) {
-          this.agentType = <'individuals' | 'organizations'>agentType;
-        }
-      });
-    }
-  }
-
-  public get masterCrumb(): string {
-    // TODO After implementing configuration
-    const agentType = this.agentType;
-    if (!!agentType) {
-      return agentType.charAt(0).toUpperCase() + agentType.slice(1);
+    if (!this._languageChoices) {
+      this._languageChoices = [{ name: this.ws.settings.PrimaryLanguageName, value: this.ws.settings.PrimaryLanguageId }];
+      if (!!this.ws.settings.SecondaryLanguageId) {
+        this._languageChoices.push({
+          name: this.ws.settings.SecondaryLanguageName,
+          value: this.ws.settings.SecondaryLanguageId
+        });
+      }
+      if (!!this.ws.settings.TernaryLanguageId) {
+        this._languageChoices.push({
+          name: this.ws.settings.TernaryLanguageName,
+          value: this.ws.settings.TernaryLanguageId
+        });
+      }
     }
 
-    return agentType;
+    return this._languageChoices;
   }
 
-
-  get isIndividual(): boolean {
-    return this.agentType === 'individuals';
+  public languageLookup(value: string) {
+    return supportedCultures[value];
   }
 
-  // get genderChoices(): { name: string, value: any }[] {
+  get agentTypeChoices(): { name: string, value: any }[] {
+    if (!this._agentTypeChoices) {
+      const descriptor = <ChoicePropDescriptor> metadata_Agent(this.ws, this.translate, null).properties.AgentType;
+      this._agentTypeChoices = descriptor.choices.map(c => ({ name: descriptor.format(c), value: c }));
+    }
 
-  //   if (!this._genderChoices) {
-  //     this._genderChoices = Object.keys(Agent_Gender)
-  //       .map(key => ({ name: Agent_Gender[key], value: key }));
-  //   }
+    return this._agentTypeChoices;
+  }
 
-  //   return this._genderChoices;
-  // }
+  public agentTypeLookup(value: string): string {
+    if (!value) {
+      return '';
+    }
 
-  // public genderLookup(value: string): string {
-  //   if (!value) {
-  //     return '';
-  //   }
-
-  //   return Agent_Gender[value];
-  // }
+    const descriptor = <ChoicePropDescriptor> metadata_Agent(this.ws, this.translate, null).properties.AgentType;
+    return descriptor.format(value);
+  }
 
   public onActivate = (model: Agent): void => {
     if (!!model && !!model.Id) {
@@ -124,5 +108,19 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
   public get ws() {
     return this.workspace.current;
+  }
+
+  public showUser(model: Agent): boolean {
+    return !!model && !!this.workspace.current.get('User', model.Id);
+  }
+
+  public createUser(model: Agent): void {
+    if (!!model && !!model.Id) {
+      const params: Params = {
+        agent_id : model.Id
+      };
+
+      this.router.navigate(['../../users/new', params], { relativeTo : this.route });
+    }
   }
 }

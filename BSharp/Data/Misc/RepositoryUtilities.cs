@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Transactions;
 
 namespace BSharp.Data
@@ -105,17 +106,19 @@ namespace BSharp.Data
 
                     // We add an index property since SQL works with un-ordered sets
                     row["Index"] = index++;
-                    row["HeaderIndex"] = headerIndex++;
+                    row["HeaderIndex"] = headerIndex;
 
                     // Add the remaining properties
                     foreach (var prop in props)
                     {
-                        var propValue = prop.GetValue(entity);
+                        var propValue = prop.GetValue(line);
                         row[prop.Name] = propValue ?? DBNull.Value;
                     }
 
                     table.Rows.Add(row);
                 }
+
+                headerIndex++;
             }
 
             return table;
@@ -166,6 +169,34 @@ namespace BSharp.Data
         public static Guid? Guid(this SqlDataReader reader, int index)
         {
             return reader.IsDBNull(index) ? (Guid?)null : reader.GetGuid(index);
+        }
+
+        /// <summary>
+        /// Loads the results of a validation stored procedure into a list of <see cref="ValidationError"/>
+        /// </summary>
+        public static async Task<List<ValidationError>> LoadErrors(SqlCommand cmd)
+        {
+            var result = new List<ValidationError>();
+
+            using (var reader = await cmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    int i = 0;
+                    result.Add(new ValidationError
+                    {
+                        Key = reader.String(i++),
+                        ErrorName = reader.String(i++),
+                        Argument1 = reader.String(i++),
+                        Argument2 = reader.String(i++),
+                        Argument3 = reader.String(i++),
+                        Argument4 = reader.String(i++),
+                        Argument5 = reader.String(i++)
+                    });
+                }
+            }
+
+            return result;
         }
     }
 }

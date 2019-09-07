@@ -8,17 +8,105 @@
         /// <summary>
         /// All the built-in views that do NOT depend on any specifications or definitions
         /// </summary>
-        public static readonly ViewInfo[] BUILT_IN = new ViewInfo[]
+        public static ViewInfo[] BUILT_IN
         {
-            new ViewInfo { Id = "all", Name = "View_All", Levels = new LevelInfo[] { Li("Read", false) } },
-            new ViewInfo { Id = "measurement-units", Name = "MeasurementUnits", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "roles", Name = "Roles", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "users", Name = "Users", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive"), Li("ResendInvitationEmail") } },
-            new ViewInfo { Id = "views", Name = "Views", Read = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "ifrs-notes", Name = "IfrsNotes", Read = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "product-categories", Name = "ProductCategories", Read = true, Update = true, Delete = true, Levels = new LevelInfo[] { Li("IsActive") } },
-            new ViewInfo { Id = "settings", Name = "Settings", Levels = new LevelInfo[] { Li("Read", false), Li("Update", false) } },
-        };
+            get
+            {
+                return new ViewInfo[]
+                {
+                    new ViewInfo {
+                        Id = "all",
+                        Name = "View_All",
+                        Levels = new LevelInfo[] 
+                        {
+                            Li("Read", false)
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "measurement-units",
+                        Name = "MeasurementUnits",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Levels = new LevelInfo[] 
+                        {
+                            Li("IsActive")
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "roles",
+                        Name = "Roles",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Levels = new LevelInfo[] 
+                        {
+                            Li("IsActive")
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "agents",
+                        Name = "Agents",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Levels = new LevelInfo[]
+                        {
+                            Li("IsActive")
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "users",
+                        Name = "Users",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Levels = new LevelInfo[] 
+                        {
+                            Li("ResendInvitationEmail")
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "views",
+                        Name = "Views",
+                        Read = true,
+                        Levels = new LevelInfo[] 
+                        {
+                            Li("IsActive")
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "ifrs-notes",
+                        Name = "IfrsNotes",
+                        Read = true,
+                        Levels = new LevelInfo[] 
+                        {
+                            Li("IsActive")
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "product-categories",
+                        Name = "ProductCategories",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Levels = new LevelInfo[] 
+                        {
+                            Li("IsActive")
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "settings",
+                        Name = "Settings",
+                        Levels = new LevelInfo[] 
+                        {
+                            Li("Read", false),
+                            Li("Update", false)
+                        }
+                    },
+                };
+            }
+        }
 
         private static LevelInfo Li(string name, bool criteria = true)
         {

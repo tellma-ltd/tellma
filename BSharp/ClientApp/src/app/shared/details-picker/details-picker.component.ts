@@ -3,13 +3,14 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgbDropdown, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlacementArray } from '@ng-bootstrap/ng-bootstrap/util/positioning';
 import { fromEvent, of, Subject, Subscription } from 'rxjs';
-import { catchError, debounceTime, map, switchMap, tap, expand } from 'rxjs/operators';
+import { catchError, debounceTime, map, switchMap, tap, expand, exhaustMap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
-import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 import { WorkspaceService } from '~/app/data/workspace.service';
-import { addToWorkspace, Key, toString } from '~/app/data/util';
+import { addToWorkspace, Key, toString, addSingleToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
+import { metadata } from '~/app/data/entities/base/metadata';
+import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 
 enum SearchStatus {
   showSpinner = 'showSpinner',
@@ -57,6 +58,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   collection: string;
 
   @Input()
+  subtype: string;
+
+  @Input()
   filter: string;
 
   @Input()
@@ -75,12 +79,14 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   private SEARCH_PAGE_SIZE = 15;
 
   private cancelRunningCall$ = new Subject<void>();
+  private notifyFetchUnloadedItem$ = new Subject<string | number>();
   private userInputSubscription: Subscription;
+  private notifyFethcUnloadedItemSubscription: Subscription;
   private _status: SearchStatus = null;
   private _isDisabled = false;
   private _searchResults: (string | number)[] = [];
   private _highlightedIndex = 0;
-  private chosenItem: string | number;
+  private chosenItem: string | number = null;
   private _errorMessage: string;
   private _initialText: string;
   private _viewId: string;
@@ -88,12 +94,18 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   private api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$); // for intellisense
 
   @Input()
-  formatter: (id: number | string) => string = (id: number | string) =>
-    this.workspace.current.getMultilingualValue(this.collection, id, 'Name')
+  formatter: (item: any) => string = (item: any) => {
+    return metadata[this.collection](this.workspace.current, this.translate, this.subtype).format(item);
+  }
 
   ///////////////// Lifecycle Hooks
   constructor(private apiService: ApiService, private workspace: WorkspaceService,
-    public modalService: NgbModal, private translate: TranslateService) { }
+    public modalService: NgbModal, private translate: TranslateService) {
+
+    this.notifyFethcUnloadedItemSubscription = this.notifyFetchUnloadedItem$.pipe(
+      exhaustMap((id) => this.doFetchUnloadedItem(id))
+    ).subscribe();
+  }
 
   public focus = () => {
     this.input.nativeElement.focus();
@@ -176,9 +188,46 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     if (!!this.langChangeSubscription) {
       this.langChangeSubscription.unsubscribe();
     }
+    if (!!this.notifyFethcUnloadedItemSubscription) {
+      this.notifyFethcUnloadedItemSubscription.unsubscribe();
+    }
   }
 
   ///////////////// Helper Functions
+
+  private formatterInner: (id: number | string) => string = (id: number | string) => {
+    // all this does is fetch the entity from the server in case it wasn't found in the workspace
+    const item = this.workspace.current.get(this.collection, id);
+    if (!!id && !item) {
+      this.fetchUnloadedItem(id);
+      return '';
+    } else {
+      return this.formatter(item);
+    }
+  }
+
+  private fetchUnloadedItem(id: string | number) {
+    this.notifyFetchUnloadedItem$.next(id);
+  }
+
+  private doFetchUnloadedItem(id: string | number) {
+    return this.api.getById(id, {
+      expand: this.expand,
+      select: this.select
+    }).pipe(
+      tap((response: GetByIdResponse) => {
+        addSingleToWorkspace(response, this.workspace);
+        if (this.chosenItem === id) {
+          this.updateUI(id);
+        }
+      }),
+      catchError(_ => {
+        this.chooseItem(null);
+        return of(null);
+      })
+    );
+  }
+
   private get status(): SearchStatus {
     return this._status;
   }
@@ -201,15 +250,19 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     }
   }
 
-  private chooseItem(item: string | number) {
+  private chooseItem(id: string | number) {
 
-    this.chosenItem = item;
+    id = id || null; // Standardise empty value
 
-    // Signal ControlValueAccessor
-    this.onChange(item);
+    if (this.chosenItem !== id) {
+      this.chosenItem = id;
+
+      // Signal ControlValueAccessor
+      this.onChange(id);
+    }
 
     // Show the selection in the input box
-    this.updateUI(item);
+    this.updateUI(id);
 
     // Restart input stream
     this.cancelRunningCall$.next(null);
@@ -218,28 +271,30 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     this.status = null;
   }
 
-  private updateUI(item: any) {
-
-    const display = !!item ? this.formatter(item) : '';
+  private updateUI(id: any) {
+    const display = !!id ? this.formatterInner(id) : '';
     this.input.nativeElement.value = display;
   }
 
   ///////////////// Implementation of ControlValueAccessor
-  private onChange = (e: any) => { };
+  private onChange = (_: any) => { };
   private onTouched = () => { };
 
-  writeValue(item: any): void {
+  writeValue(id: any): void {
+
+    id = id || null;
+
     // Restart input stream
     this.cancelRunningCall$.next(null);
 
     // Make it the chosen item;
-    this.chosenItem = item;
+    this.chosenItem = id;
 
     // Show the selection in the input box
-    this.updateUI(item);
+    this.updateUI(id);
   }
 
-  registerOnChange(fn: (val: any) => void): void {
+  registerOnChange(fn: (id: any) => void): void {
     this.onChange = fn;
   }
 
@@ -248,6 +303,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   setDisabledState?(isDisabled: boolean): void {
+    if (isDisabled) {
+      this.cancelRunningCall$.next();
+    }
     this._isDisabled = isDisabled;
   }
 

@@ -121,23 +121,17 @@
   <data name="Agent_AgentType" xml:space="preserve">
     <value>نوع الذمة</value>
   </data>
-  <data name="Agent_Female" xml:space="preserve">
+  <data name="Agent_Gender_Female" xml:space="preserve">
     <value>أنثى</value>
   </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>الجنس</value>
   </data>
-  <data name="Agent_individuals_BirthDateTime" xml:space="preserve">
-    <value>تاريخ الميلاد</value>
-  </data>
   <data name="Agent_IsRelated" xml:space="preserve">
     <value>ذو علاقة</value>
   </data>
-  <data name="Agent_Male" xml:space="preserve">
+  <data name="Agent_Gender_Male" xml:space="preserve">
     <value>ذكر</value>
-  </data>
-  <data name="Agent_organizations_BirthDateTime" xml:space="preserve">
-    <value>تاريخ التأسيس</value>
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>رقم السجل الضريبي</value>
@@ -292,20 +286,11 @@
   <data name="Error_CannotDeleteNodeWithChildren" xml:space="preserve">
     <value>لا يمكن حذف بيان شجري تنحدر منه بيانات أخرى</value>
   </data>
-  <data name="Error_CannotDeleteWithoutId" xml:space="preserve">
-    <value>لا يمكن حذف بيان بدون تحديد المفتاح</value>
-  </data>
   <data name="Error_CannotDeleteYourOwnUser" xml:space="preserve">
     <value>لا يمكنك حذف المستخدم خاصتك</value>
   </data>
-  <data name="Error_CannotInsertWhileSpecifyId" xml:space="preserve">
-    <value>لا يمكن إنشاء بيان مع تحديد المفتاح</value>
-  </data>
   <data name="Error_CannotModifyInactiveItem" xml:space="preserve">
     <value>لا يمكن تعديل بيان غير منشط</value>
-  </data>
-  <data name="Error_CannotUpdateWithoutId" xml:space="preserve">
-    <value>لا يمكن نعديل بيان بدون تحديد المفتاح</value>
   </data>
   <data name="Error_CodeIsRequiredForImportModeUpdate" xml:space="preserve">
     <value>الكود مطلوب لوضع التعديل</value>
@@ -487,11 +472,8 @@
   <data name="Inactive" xml:space="preserve">
     <value>غير منشط</value>
   </data>
-  <data name="Individual" xml:space="preserve">
+  <data name="Agent_AgentType_Individual" xml:space="preserve">
     <value>فرد</value>
-  </data>
-  <data name="Individuals" xml:space="preserve">
-    <value>أفراد</value>
   </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>الكود غير سليم.</value>
@@ -625,11 +607,8 @@
   <data name="Or" xml:space="preserve">
     <value>أو</value>
   </data>
-  <data name="Organization" xml:space="preserve">
+  <data name="Agent_AgentType_Organization" xml:space="preserve">
     <value>مؤسسة</value>
-  </data>
-  <data name="Organizations" xml:space="preserve">
-    <value>مؤسسات</value>
   </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
@@ -1026,5 +1005,14 @@
   </data>
   <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
     <value>المستخدم ({0}) قد قبل الدعوة</value>
+  </data>
+  <data name="Agent_AgentType_System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Error_TheRole0IsInactive" xml:space="preserve">
+    <value>الدور ({0}) غير منشط</value>
+  </data>
+  <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
+    <value>الدور ذو المفتاح ({0}) غير موجود أو لم يعد موجودا</value>
   </data>
 </root>

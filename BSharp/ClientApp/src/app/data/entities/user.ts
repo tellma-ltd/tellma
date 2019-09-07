@@ -1,6 +1,6 @@
 import { RoleMembership, RoleMembershipForSave } from './role-membership';
 import { SettingsForClient } from './settings';
-import { DtoDescriptor } from './base/metadata';
+import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
@@ -31,12 +31,12 @@ export class UserSettingsForClient {
     CustomSettings: { [key: string]: string };
 }
 
-const _select = ['', '2', '3'].map(pf => 'Agent/Name' + pf);
+const _select = ['Email'];
 let _currentLang: string;
 let _settings: SettingsForClient;
-let _cache: DtoDescriptor;
+let _cache: EntityDescriptor;
 
-export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subtype: string): DtoDescriptor {
+export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
     _currentLang = trx.currentLang;
@@ -48,9 +48,6 @@ export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subty
       format: (item: EntityWithKey) => item['Email'], // ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
         Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        // Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
-        // Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
-        // Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
         Email: { control: 'text', label: trx.instant('User_Email') },
         Agent: { control: 'navigation', label: trx.instant('User_Agent'), type: 'Agent', foreignKeyName: 'Id' },
         State: {

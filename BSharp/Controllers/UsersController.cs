@@ -42,6 +42,7 @@ namespace BSharp.Controllers
 
         // This is created and disposed across multiple methods
         private TransactionScope _adminTrxScope;
+        private TransactionScope _identityTrxScope;
 
         public string VIEW => "users";
 
@@ -140,7 +141,7 @@ namespace BSharp.Controllers
 
                 if (!string.IsNullOrWhiteSpace(user.ExternalId))
                 {
-                    throw new BadRequestException("Error_User0HasAlreadyAcceptedTheInvitation");
+                    throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
                 }
 
                 string toEmail = user.Email;
@@ -152,7 +153,7 @@ namespace BSharp.Controllers
 
                 if (idUser.EmailConfirmed)
                 {
-                    throw new BadRequestException("Error_User0HasAlreadyAcceptedTheInvitation");
+                    throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
                 }
 
                 var (subject, htmlMessage) = await MakeInvitationEmailAsync(idUser, user.Agent);
@@ -297,10 +298,15 @@ namespace BSharp.Controllers
             // on querying identity through UserManager one email at a time but it should be acceptable
             // with the usual workloads, customers with more than 200 users are rare anyways
 
-            // Step (1): If Embedded Identity Server is enabled, create any emails that don't already exist there
+            // Step (1) enlist the app repo
+            _appRepo.EnlistTransaction(Transaction.Current); // So that it is not affected by admin trx scope later
+
+            // Step (2): If Embedded Identity Server is enabled, create any emails that don't already exist there
             var usersToInvite = new List<(EmbeddedIdentityServerUser IdUser, UserForSave User)>();
             if (_options.EmbeddedIdentityServerEnabled)
             {
+                _identityTrxScope = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
+
                 foreach (var entity in entities)
                 {
                     var email = entity.Email;
@@ -342,17 +348,16 @@ namespace BSharp.Controllers
                 }
             }
 
-            // Step (2): Save the users in the app database
-            _appRepo.EnlistTransaction(Transaction.Current); // So that it is not affected by admin trx scope later
+            // Step (3): Save the users in the app database
             var (newEmails, oldEmails) = await _appRepo.Users__Save(entities);
 
-            // Step (3) Same the emails in the admin database
+            // Step (4) Same the emails in the admin database
             var tenantId = _tenantIdProvider.GetTenantId();
             _adminTrxScope = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
             _adminRepo.EnlistTransaction(Transaction.Current);
             await _adminRepo.GlobalUsers__Save(newEmails, oldEmails, tenantId);
 
-            // Step (4): Send the invitation emails
+            // Step (5): Send the invitation emails
             if (usersToInvite.Any()) // This will be empty if email is disabled
             {
                 var userIds = usersToInvite.Select(e => e.User.Id).ToArray();
@@ -402,6 +407,12 @@ namespace BSharp.Controllers
                 _adminTrxScope.Dispose();
             }
 
+            if (_identityTrxScope != null)
+            {
+                _identityTrxScope.Complete();
+                _identityTrxScope.Dispose();
+            }
+
             return Task.CompletedTask;
         }
 
@@ -410,6 +421,11 @@ namespace BSharp.Controllers
             if (_adminTrxScope != null)
             {
                 _adminTrxScope.Dispose();
+            }
+
+            if (_identityTrxScope != null)
+            {
+                _identityTrxScope.Dispose();
             }
 
             return Task.CompletedTask;

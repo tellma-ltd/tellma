@@ -1,5 +1,4 @@
--- TODO: Remove after implementing the provisioning SP
--- This file is executed before all the tests are run
+-- This file is executed before any test is run
 
 DECLARE @AdminId INT, @ServerId INT, @DatabaseId INT,
 @GlobalUserId INT, @Now DATETIMEOFFSET = SYSDATETIMEOFFSET();

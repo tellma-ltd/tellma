@@ -30,7 +30,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   private notifyDestruct$ = new Subject<void>();
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Permissions/View/Actions,Members/User';
+  public expand = 'Permissions/View/Actions,Members/Agent';
 
   create = () => {
     const result = new RoleForSave();

@@ -18,7 +18,7 @@ import {
   DEFAULT_PAGE_SIZE as DEFAULT_PAGE_SIZE
 } from '~/app/data/workspace.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { metadata, DtoDescriptor, dtoDescriptorImpl } from '~/app/data/entities/base/metadata';
+import { metadata, EntityDescriptor, dtoDescriptorImpl } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 enum SearchView {
@@ -87,6 +87,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   selectForTiles: string;
+
+  @Input()
+  filterDefault: string;
 
   @Input()
   skipInput: number;
@@ -253,8 +256,15 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       // select
       const select = this.selectFromUserSettings || this.selectDefault || '';
-      if (this.state.select !== select) {
+      if (select !== this.state.select) {
         this.state.select = select;
+        hasChanged = true;
+      }
+
+      // filter
+      const filter = this.filterDefault || null;
+      if (filter !== this.state.customFilter) {
+        this.state.customFilter = filter;
         hasChanged = true;
       }
 
@@ -579,7 +589,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   // Calculated screen properties
 
-  get dtoDescriptor(): DtoDescriptor {
+  get dtoDescriptor(): EntityDescriptor {
     const coll = this.collectionPart;
     return !!coll ? metadata[coll](this.workspace.current, this.translate, this.subtypePart) : null;
   }

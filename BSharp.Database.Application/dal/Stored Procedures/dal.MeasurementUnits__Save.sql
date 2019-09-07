@@ -11,7 +11,7 @@ SET NOCOUNT ON;
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
-		MERGE INTO [dbo].MeasurementUnits AS t
+		MERGE INTO [dbo].[MeasurementUnits] AS t
 		USING (
 			SELECT
 				[Index], [Id], [Code], [UnitType], [Name], [Name2], [Name3],

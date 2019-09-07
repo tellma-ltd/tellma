@@ -394,7 +394,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     return !!items && items.some(e => this.showItem(e));
   }
 
-
   showItem(item: MenuItemInfo): boolean {
     const term = this.search;
     return (!item.viewId || this.canView(item.viewId)) &&
