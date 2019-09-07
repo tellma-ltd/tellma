@@ -1,5 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[api_Roles__Save]
 	@Roles [dbo].[RoleList] READONLY,
+	@Members [dbo].[RoleMembershipList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -8,8 +9,9 @@ BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [dbo].[Roles_Validate__Save]
-		@Roles = @Roles,
+	EXEC [bll].[Roles_Validate__Save]
+		@Entities = @Roles,
+		@Members = @Members,
 		@Permissions = @Permissions;
 
 	SELECT @ValidationErrorsJson = 
@@ -25,6 +27,8 @@ BEGIN
 	-- Validate business rules (read from the table)
 
 	EXEC [dal].[Roles__Save]
-		@Roles = @Roles,
-		@Permissions = @Permissions
+		@Entities = @Roles,
+		@Members = @Members,
+		@Permissions = @Permissions,
+		@ReturnIds = @ReturnIds
 END;

@@ -4,4 +4,4 @@
 	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
 AS
 SET NOCOUNT ON;
-	EXEC [dbo].[Agents__Activate] @Ids = @Ids, @IsActive = @IsActive;
+	EXEC [dal].[Agents__Activate] @Ids = @Ids, @IsActive = @IsActive;
