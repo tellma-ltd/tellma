@@ -15,6 +15,7 @@
 	-- To import accounts, or to control sort order, a code is required. Otherwise, it is not.
 	[Code]										NVARCHAR (30)		CONSTRAINT [CK_Accounts__Code] UNIQUE,
 	[PartyReference]							NVARCHAR (255), -- how it is referred to by the other party
+	[HasSingleAgentId]							BIT					DEFAULT 1,
 	-- to link several accounts to the same agent.
 	[AgentId]									INT					CONSTRAINT [FK_Accounts__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),
 	-- necessary to generate notes such as cash flow (direct), statement of change of equity, notes on non current assets
@@ -25,7 +26,8 @@
 -- I propose making it part of the account, especially to track budget. Jiad complained about opening accounts
 -- also, smart sales posting is easier since a resource can tell the nature of expense, but not the responsibility center
 	-- called SegmentId in B10. When not needed, we use the entity itself.
-	[ResponsibilityCenterId]				INT					DEFAULT CONVERT(INT, SESSION_CONTEXT(N'BusinessEntityId')) CONSTRAINT [FK_Accounts__ResponsibilityCenterId] FOREIGN KEY ([ResponsibilityCenterId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
+	[ResponsibilityCenterId]					INT					DEFAULT CONVERT(INT, SESSION_CONTEXT(N'BusinessEntityId')) CONSTRAINT [FK_Accounts__ResponsibilityCenterId] FOREIGN KEY ([ResponsibilityCenterId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
+	[HasSingleResourceId]						BIT					DEFAULT 1,
 	-- Make the default null, if subsidiary journals are resource based such as inventory, fixed assets, allowance, bonus and overtime.
 	[DefaultResourceId]							INT					,--DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_Accounts__DefaultResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	-- To transfer a document from requested to authorized, we need an evidence that the responsible actor

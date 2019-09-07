@@ -11,7 +11,7 @@ BEGIN
 	FROM dbo.[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN dbo.Resources R ON J.RelatedResourceId = R.Id 
 	LEFT JOIN dbo.Agents A ON J.[RelatedAccountId] = A.Id
-	WHERE [IfrsClassificationId] = N'CurrentValueAddedTaxPayables'
+	WHERE J.[IfrsClassificationId] = N'CurrentValueAddedTaxPayables'
 	AND J.Direction = -1
 END
 GO;

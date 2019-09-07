@@ -36,7 +36,7 @@ DECLARE @TestingValidation bit = 0
 IF (@TestingValidation = 1)
 INSERT INTO @MU2
 	([Name], [UnitType], [Description], [UnitAmount], [BaseAmount], [Code]) Values
-	(N'AED', N'Currency', N'AE Dirhams', 3.67, 1, N'AED'),
+	(N'AED', N'MonetaryValue', N'AE Dirhams', 3.67, 1, N'AED'),
 	(N'c', N'Time', N'Century', 1, 3110400000, NULL),
 	(N'dozen', N'Count', N'Dazzina', 1, 12, NULL);
 -- Updating
@@ -62,7 +62,7 @@ END
 INSERT INTO @MU3 ([Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount])
 SELECT [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
 FROM [dbo].MeasurementUnits
-WHERE [Name] Like 'm%';
+WHERE [UnitType] = N'Distance';
 
 -- Calling Delete API
 INSERT INTO @MUIndexedIds([Index], [Id]) SELECT [Index], [Id] FROM @MU3;

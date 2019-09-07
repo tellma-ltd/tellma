@@ -54,4 +54,60 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[CK_Documents__Frequency]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="b8941248-f91e-4756-8ff4-ce849a0d5907" ChangeDateTime="09/03/2019 03:53:02">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[IsFixedResourceId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IsSingleResourceId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8164c363-e73e-4dc8-a17b-9cf7ff3d2dc0" ChangeDateTime="09/03/2019 03:54:57">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[IsSingleResourceId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[HasSingleResourceId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9d25d83e-ebfc-438f-8ac9-0a5062ef43ba" ChangeDateTime="09/03/2019 03:55:12">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[IsSingleAgentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[HasSingleAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1174b54d-535d-4738-a39f-973b3aa3e1d0" ChangeDateTime="09/03/2019 16:37:38">
+    <Property Name="ElementName" Value="[dbo].[ResourceInstances]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourcePicks]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a17d230f-c8ac-45d7-9ed9-748ed4e2a2d8" ChangeDateTime="09/03/2019 16:38:07">
+    <Property Name="ElementName" Value="[dbo].[ResourceInstanceList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourcePickList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a38f5bbb-8ee8-49f2-8325-e20add540580" ChangeDateTime="09/06/2019 15:24:53">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ValueMeasure]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PrimaryUnitTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d64453d9-6394-4536-93c3-a914a3cdf068" ChangeDateTime="09/07/2019 07:39:28">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitMoney]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitMonetaryValue]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d013b3d3-68ec-4818-80ea-cd004e81fd07" ChangeDateTime="09/07/2019 15:35:07">
+    <Property Name="ElementName" Value="[rpt].[sp_ResourcesInstances]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[sp_ResourcesPicks]" />
+  </Operation>
 </Operations>

@@ -6,8 +6,8 @@
 AS
 BEGIN
     -- Set the global values of the session context
-    EXEC sp_set_session_context @key = N'Culture', @value = @Culture;
-    EXEC sp_set_session_context @key = N'NeutralCulture', @value = @NeutralCulture;
+    EXEC master.sys.sp_set_session_context @key = N'Culture', @value = @Culture;
+    EXEC master.sys.sp_set_session_context @key = N'NeutralCulture', @value = @NeutralCulture;
 
     -- Get the User Id
     DECLARE 
@@ -64,7 +64,7 @@ BEGIN
     FROM [dbo].[Settings]
 
     -- Set the User Id
-    EXEC sp_set_session_context @key = N'UserId', @value = @UserId;
+    EXEC master.sys.sp_set_session_context @key = N'UserId', @value = @UserId;
 
     -- Return the user information
     SELECT 

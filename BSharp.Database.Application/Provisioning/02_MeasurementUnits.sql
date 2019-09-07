@@ -26,8 +26,8 @@ INSERT INTO @MU (
 (N'ltr', N'Volume', N'Liter', 1, 1, NULL),
 (N'usg', N'Volume', N'US Gallon', 1, 3.785411784, NULL),
 
-(N'ETB', N'Currency', N'Ethiopian Birr', 27.8, 1, N'ETB'),
-(N'USD', N'Currency', N'US Dollar', 1, 1, N'USD'),
+(N'ETB', N'MonetaryValue', N'Ethiopian Birr', 27.8, 1, N'ETB'),
+(N'USD', N'MonetaryValue', N'US Dollar', 1, 1, N'USD'),
 
 (N'cm', N'Distance', N'Centimeter', 1, 1, NULL),
 (N'm', N'Distance', N'meter', 1, 100, NULL),
@@ -38,7 +38,7 @@ INSERT INTO @MU (
 IF NOT EXISTS(SELECT * FROM @MU WHERE [Name] = @FunctionalCurrency)
 BEGIN
 	INSERT INTO dbo.[MeasurementUnits]([UnitType], [Name], [Description])
-	VALUES (N'Currency', @FunctionalCurrency, @FunctionalCurrency)
+	VALUES (N'MonetaryValue', @FunctionalCurrency, @FunctionalCurrency)
 END
 
 EXEC [api].[MeasurementUnits__Save]

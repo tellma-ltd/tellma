@@ -230,7 +230,7 @@
     <Build Include="dbo\Views\dbo.DocumentLineEntriesDetailsView.sql" />
     <Build Include="dbo\Views\dbo.AccountsBalancesView.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_ProductCategories__DeleteWithDescendants.sql" />
-    <Build Include="dbo\Tables\dbo.ResourceInstances.sql" />
+    <Build Include="dbo\Tables\dbo.ResourcePicks.sql" />
     <Build Include="dbo\Views\dbo.TransactionsEntriesSummaryView.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_DocumentWideLines__Unpivot.sql" />
@@ -305,10 +305,10 @@
     <Build Include="api\Stored Procedures\api.Resources__Save.sql" />
     <Build Include="api\Stored Procedures\api.Resources__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources_Validate__Delete.sql" />
-    <Build Include="dbo\User Defined Types\dbo.ResourceInstanceList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ResourcePickList.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Agents__Save.sql" />
-    <Build Include="rpt\Stored Procedures\rpt.sp_ResourcesInstances.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.sp_ResourcesPicks.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexedImageIdList.sql" />
     <Build Include="dal\Stored Procedures\dal.Roles__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
@@ -332,6 +332,8 @@
     <Build Include="bll\Stored Procedures\bll.DocumentLineEntries__Fill.sql" />
     <Build Include="api\Stored Procedures\api.Agents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Save.sql" />
+    <Build Include="dbo\Tables\dbo.AccountClassifications.sql" />
+    <Build Include="bll\Stored Procedures\bll.Resources__Fill.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
@@ -378,7 +380,7 @@
       <Value>$(SqlCmdVar__3)</Value>
     </SqlCmdVariable>
     <SqlCmdVariable Include="ShortCompanyName">
-      <DefaultValue>'ACME International'</DefaultValue>
+      <DefaultValue>ACME International</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
     </SqlCmdVariable>
   </ItemGroup>
