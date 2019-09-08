@@ -223,7 +223,7 @@ $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
   .b-rest-of-screen {
     flex: 1 0;
     overflow-y: auto;
-    overflow-y: overlay; // This stops the scrollbar from occupying width on webkit browsers
+  //  overflow-y: overlay; // This stops the scrollbar from occupying width on webkit browsers
   }
   // This will make it such that when the screen is small, you will be able to
   // scroll even the navbar out of view and not just the content area
