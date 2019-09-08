@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
+import { TemplateArguments_format } from '~/app/data/dto/template-arguments';
 import { ApiService } from '~/app/data/api.service';
 import { Subject } from 'rxjs';
 import { downloadBlob } from '~/app/data/util';
@@ -38,8 +38,9 @@ export class ImportComponent implements OnInit, OnDestroy {
   private notifyDestruct$ = new Subject<void>();
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Only for intellisense
 
-  constructor(private api: ApiService, private workspace: WorkspaceService, private router:
-    Router, private route: ActivatedRoute, private translate: TranslateService) { }
+  constructor(
+    private api: ApiService, private workspace: WorkspaceService, private router: Router,
+    private route: ActivatedRoute, private translate: TranslateService) { }
 
   ngOnInit() {
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
@@ -53,7 +54,7 @@ export class ImportComponent implements OnInit, OnDestroy {
     this.showSpinner = true;
     const format = this.format;
     this.downloadErrorMessage = null;
-    this.crud.template({ format: format }).subscribe(
+    this.crud.template({ format }).subscribe(
       (blob: Blob) => {
         this.showSpinner = false;
         const fileName = `${this.templateFileName || this.translate.instant('Template')} ${new Date().toDateString()}.${format}`;
@@ -97,8 +98,8 @@ export class ImportComponent implements OnInit, OnDestroy {
           const keys = Object.keys(friendlyError.error);
           let errorList = [];
 
-          for (let i = 0; i < keys.length; i++) {
-            const list = friendlyError.error[keys[i]];
+          for (const key of keys) {
+            const list = friendlyError.error[key];
             errorList = errorList.concat(list);
           }
 
@@ -132,8 +133,8 @@ export class ImportComponent implements OnInit, OnDestroy {
   get formatChoices(): { name: string, value: any }[] {
 
     if (!this._formatChoices) {
-      this._formatChoices = Object.keys(TemplateArguments_Format)
-        .map(key => ({ name: TemplateArguments_Format[key], value: key }));
+      this._formatChoices = Object.keys(TemplateArguments_format)
+        .map(key => ({ name: TemplateArguments_format[key], value: key }));
     }
 
     return this._formatChoices;

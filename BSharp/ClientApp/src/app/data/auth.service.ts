@@ -169,8 +169,8 @@ export class AuthService {
           // on many tabs at the same time, by checking if the 'nonce' has changed
           // it means only one of the tabs will be refreshing the access token
 
-          const nonce_key = 'nonce';
-          const storageNonce = this.storage.getItem(nonce_key);
+          const nonceKey = 'nonce';
+          const storageNonce = this.storage.getItem(nonceKey);
           const localNonce = this.nonce;
 
           // always refresh first time you open, then refresh
@@ -178,13 +178,13 @@ export class AuthService {
           if (n === 0 || storageNonce === localNonce) {
             this.refreshSilently().subscribe(
               _ => {
-                this.nonce = this.storage.getItem(nonce_key);
+                this.nonce = this.storage.getItem(nonceKey);
               }, _ => {
-                this.nonce = this.storage.getItem(nonce_key);
+                this.nonce = this.storage.getItem(nonceKey);
               });
           }
 
-          this.nonce = this.storage.getItem(nonce_key);
+          this.nonce = this.storage.getItem(nonceKey);
         });
     });
   }
@@ -261,20 +261,20 @@ export class AuthService {
     // clear the state of the application for security, especially localstorage
 
     // clean the app state (keep the id token since it is needed for the subsequent logout)
-    const id_token = this.storage.getItem('id_token');
+    const idToken = this.storage.getItem('id_token');
     this.cleaner.cleanLocalStorage(true); // preserve user independent stuff
-    this.storage.setItem('id_token', id_token);
+    this.storage.setItem('id_token', idToken);
 
     // go to identity server and sign out from there
     this.oauth.logOut();
   }
 
   public get email(): string {
-    const claims = this.oauth.getIdentityClaims();
+    const claims = this.oauth.getIdentityClaims() as any;
     if (!claims) {
       return null;
     }
-    return claims['email'];
+    return claims.email;
   }
 
   public get isAuthenticated(): boolean {
@@ -282,11 +282,11 @@ export class AuthService {
   }
 
   public get userName(): string {
-    const claims = this.oauth.getIdentityClaims();
+    const claims = this.oauth.getIdentityClaims() as any;
     if (!claims) {
       return null;
     }
 
-    return claims['email'];
+    return claims.email;
   }
 }

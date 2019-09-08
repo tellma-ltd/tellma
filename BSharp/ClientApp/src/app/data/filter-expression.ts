@@ -1,3 +1,74 @@
+
+
+/**
+ * The base class for all filter expressions
+ */
+export abstract class FilterExpressionBase {
+    public abstract toString(): string;
+}
+
+/**
+ * Represents a logical disjunction (and)
+ */
+export class FilterDisjunction extends FilterExpressionBase {
+    type: 'disjunction';
+    left: FilterExpression;
+    right: FilterExpression;
+
+    public toString(): string {
+        return `(${this.left.toString()}) or (${this.right.toString()})`;
+    }
+}
+
+/**
+ * Represents a logical disjunction (or)
+ */
+export class FilterConjunction extends FilterExpressionBase {
+    type: 'conjunction';
+    left: FilterExpression;
+    right: FilterExpression;
+
+    public toString(): string {
+        return `(${this.left.toString()}) or (${this.right.toString()})`;
+    }
+}
+
+/**
+ * Represents a logical negation (not)
+ */
+export class FilterNegation extends FilterExpressionBase {
+    type: 'negation';
+    inner: FilterExpression;
+
+    public toString(): string {
+        return `not(${this.inner.toString()})`;
+    }
+}
+
+/**
+ * Represents a filter atom (e.g. Code eq '11')
+ */
+export class FilterAtom extends FilterExpressionBase {
+    type: 'atom';
+    value: string;
+
+    public static parse(atom: string): FilterAtom {
+        return {
+            type: 'atom',
+            value: atom
+        };
+    }
+
+    public toString(): string {
+        return this.value;
+    }
+}
+
+/**
+ * The union of all Filter Expressions
+ */
+export declare type FilterExpression = FilterDisjunction | FilterConjunction | FilterNegation | FilterAtom;
+
 export class OperatorInfo {
     constructor(public precedence: number, public associativity: 'left' | 'right') { }
 
@@ -111,6 +182,7 @@ export class FilterTools {
                 }
             } else {
                 let matchingSymbol: string;
+                // tslint:disable:no-conditional-assignment
                 if (!insideQuotes && !(matchingSymbol = matchingOperator(index))) {
                     if (acc.length > 0) {
                         const token = acc.join().trim();
@@ -178,8 +250,7 @@ export class FilterTools {
             }
         }
 
-        for (let t = 0; t < tokens.length; t++) {
-            const token = tokens[t];
+        for (const token of tokens) {
 
             if (token === 'not') {
                 ops.push(token);
@@ -243,72 +314,3 @@ export class FilterTools {
         return output.pop();
     }
 }
-
-/**
- * The base class for all filter expressions
- */
-export abstract class FilterExpressionBase {
-    public abstract toString(): string;
-}
-
-/**
- * Represents a logical disjunction (and)
- */
-export class FilterDisjunction extends FilterExpressionBase {
-    type: 'disjunction';
-    left: FilterExpression;
-    right: FilterExpression;
-
-    public toString(): string {
-        return `(${this.left.toString()}) or (${this.right.toString()})`;
-    }
-}
-
-/**
- * Represents a logical disjunction (or)
- */
-export class FilterConjunction extends FilterExpressionBase {
-    type: 'conjunction';
-    left: FilterExpression;
-    right: FilterExpression;
-
-    public toString(): string {
-        return `(${this.left.toString()}) or (${this.right.toString()})`;
-    }
-}
-
-/**
- * Represents a logical negation (not)
- */
-export class FilterNegation extends FilterExpressionBase {
-    type: 'negation';
-    inner: FilterExpression;
-
-    public toString(): string {
-        return `not(${this.inner.toString()})`;
-    }
-}
-
-/**
- * Represents a filter atom (e.g. Code eq '11')
- */
-export class FilterAtom extends FilterExpressionBase {
-    type: 'atom';
-    value: string;
-
-    public static parse(atom: string): FilterAtom {
-        return {
-            type: 'atom',
-            value: atom
-        };
-    }
-
-    public toString(): string {
-        return this.value;
-    }
-}
-
-/**
- * The union of all Filter Expressions
- */
-export declare type FilterExpression = FilterDisjunction | FilterConjunction | FilterNegation | FilterAtom;

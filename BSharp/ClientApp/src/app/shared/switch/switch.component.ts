@@ -200,36 +200,36 @@ export class SwitchComponent implements OnInit {
   }
 
   get choiceValue(): string {
-    const prop = <ChoicePropDescriptor>this.propDescriptor();
+    const prop = this.propDescriptor() as ChoicePropDescriptor;
     const value = this.value;
     return !!prop && !!prop.format ? prop.format(value) : null;
   }
 
   get stateValue(): string {
-    const prop = <StatePropDescriptor>this.propDescriptor();
+    const prop = this.propDescriptor() as StatePropDescriptor;
     const value = this.value;
     return !!prop && !!prop.format ? prop.format(value) : null;
   }
 
   get stateColor(): string {
-    const prop = <StatePropDescriptor>this.propDescriptor();
+    const prop = this.propDescriptor() as StatePropDescriptor;
     const value = this.value;
     return (!!prop && !!prop.color ? prop.color(value) : null) || 'transparent';
   }
 
   get digitsInfo(): string {
-    const prop = <NumberPropDescriptor>this.propDescriptor();
+    const prop = this.propDescriptor() as NumberPropDescriptor;
     return `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
   }
 
   get alignment(): string {
-    const prop = <NumberPropDescriptor>this.propDescriptor();
+    const prop = this.propDescriptor() as NumberPropDescriptor;
     return prop.alignment;
   }
 
   get booleanValue(): string {
-    const prop = <BooleanPropDescriptor>this.propDescriptor();
-    const value = <boolean>this.value;
+    const prop = this.propDescriptor() as BooleanPropDescriptor;
+    const value = this.value as boolean;
     return (!!prop && !!prop.format) ? prop.format(value) : this.translate.instant(value ? 'Yes' : 'No');
   }
 

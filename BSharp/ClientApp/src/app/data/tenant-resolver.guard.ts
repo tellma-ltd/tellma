@@ -19,7 +19,8 @@ export const USER_SETTINGS_PREFIX = 'user_settings';
 export function storageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}`; }
 export function versionStorageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}_version`; }
 
-export function handleFreshSettings(result: DataWithVersion<SettingsForClient>,
+export function handleFreshSettings(
+  result: DataWithVersion<SettingsForClient>,
   tenantId: number, tws: TenantWorkspace, storage: StorageService) {
 
   const settings = result.Data;
@@ -32,7 +33,8 @@ export function handleFreshSettings(result: DataWithVersion<SettingsForClient>,
   tws.settingsVersion = version;
 }
 
-export function handleFreshPermissions(result: DataWithVersion<PermissionsForClient>,
+export function handleFreshPermissions(
+  result: DataWithVersion<PermissionsForClient>,
   tenantId: number, tws: TenantWorkspace, storage: StorageService) {
 
   const permissions = result.Data;
@@ -45,7 +47,8 @@ export function handleFreshPermissions(result: DataWithVersion<PermissionsForCli
   tws.permissionsVersion = version;
 }
 
-export function handleFreshUserSettings(result: DataWithVersion<UserSettingsForClient>,
+export function handleFreshUserSettings(
+  result: DataWithVersion<UserSettingsForClient>,
   tenantId: number, tws: TenantWorkspace, storage: StorageService) {
 
   const userSettings = result.Data;
@@ -72,7 +75,8 @@ export class TenantResolverGuard implements CanActivate {
   private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
   private ping: () => Observable<any>;
 
-  constructor(private workspace: WorkspaceService, private storage: StorageService,
+  constructor(
+    private workspace: WorkspaceService, private storage: StorageService,
     private router: Router, private api: ApiService, private progress: ProgressOverlayService) {
 
     this.cancellationToken$ = new Subject<void>();
@@ -99,7 +103,7 @@ export class TenantResolverGuard implements CanActivate {
 
           // Try to retrieve the settings from local storage
           const prefix = SETTINGS_PREFIX;
-          const cachedSettings = <SettingsForClient>JSON.parse(this.storage.getItem(storageKey(prefix, tenantId)));
+          const cachedSettings = JSON.parse(this.storage.getItem(storageKey(prefix, tenantId))) as SettingsForClient;
           const cachedSettingsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
           if (!!cachedSettings) {
             current.settings = cachedSettings;
@@ -116,7 +120,7 @@ export class TenantResolverGuard implements CanActivate {
 
           // Try to retrieve the permissions from local storage
           const prefix = PERMISSIONS_PREFIX;
-          const cachedPermissions = <PermissionsForClient>JSON.parse(this.storage.getItem(storageKey(prefix, tenantId)));
+          const cachedPermissions = JSON.parse(this.storage.getItem(storageKey(prefix, tenantId))) as PermissionsForClient;
           const cachedPermissionsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
           if (!!cachedPermissions) {
             current.permissions = cachedPermissions;
@@ -134,7 +138,7 @@ export class TenantResolverGuard implements CanActivate {
 
           // Try to retrieve the user settings from local storage
           const prefix = USER_SETTINGS_PREFIX;
-          const cachedUserSettings = <UserSettingsForClient>JSON.parse(this.storage.getItem(storageKey(prefix, tenantId)));
+          const cachedUserSettings = JSON.parse(this.storage.getItem(storageKey(prefix, tenantId))) as UserSettingsForClient;
           const cachedUserSettingsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
           if (!!cachedUserSettings) {
             current.userSettings = cachedUserSettings;

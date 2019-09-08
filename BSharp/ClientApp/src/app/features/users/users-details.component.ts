@@ -33,7 +33,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
 
   clone: (item: User) => User = (item: User) => {
     if (!!item) {
-      const clone = <User>JSON.parse(JSON.stringify(item));
+      const clone = JSON.parse(JSON.stringify(item)) as User;
       clone.Id = null;
 
       if (!!clone.Roles) {
@@ -50,27 +50,12 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     }
   }
 
-  constructor(public workspace: WorkspaceService, private api: ApiService,
+  constructor(
+    public workspace: WorkspaceService, private api: ApiService,
     private translate: TranslateService, private route: ActivatedRoute) {
     super();
 
     this.usersApi = this.api.usersApi(this.notifyDestruct$);
-  }
-
-  public onActivate = (model: User): void => {
-    if (!!model && !!model.Id) {
-      this.usersApi.activate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
-      ).subscribe(null, this.details.handleActionError);
-    }
-  }
-
-  public onDeactivate = (model: User): void => {
-    if (!!model && !!model.Id) {
-      this.usersApi.deactivate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
-        tap(res => addToWorkspace(res, this.workspace))
-      ).subscribe(null, this.details.handleActionError);
-    }
   }
 
   public onInvite = (model: User): void => {

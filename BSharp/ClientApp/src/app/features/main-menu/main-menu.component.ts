@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Key, toString } from '~/app/data/util';
+import { Key } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
@@ -17,10 +17,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // IMPORTANT: if you change these you must change the corresponding
   // SASS variables in main-menu.component.scss accordingly
-  $max_tiles = 6;
-  $tile_width = 135;
-  $tile_margin = 4;
-  $container_margin = 15;
+  MAX_TILES = 6;
+  TILE_WIDTH = 135;
+  TILE_MARGIN = 4;
+  CONTAINER_MARGIN = 15;
 
   // private fields
   private currentSection = -1;
@@ -119,7 +119,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   // tiles with the arrow keys, ala metro style
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (!this.searchInputIsFocused && !!event.key && event.key.trim().length === 1) {
+    let key: string = event.key;
+
+    // Focus on the search field as soon as the user starts typing letters or numbers
+    if (!this.searchInputIsFocused && !!key && key.trim().length === 1) {
       this.currentXMemory = -1;
       this.searchInput.nativeElement.value = '';
       this.searchInput.nativeElement.focus();
@@ -131,34 +134,32 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    let which = event.which;
-    if (Key[toString(which)]) {
+    if (Key[key]) {
 
       // reverse left and right arrows for RTL languages
       if (this.workspace.ws.isRtl) {
-        if (which === Key.ArrowRight) {
-          which = Key.ArrowLeft;
-        } else if (which === Key.ArrowLeft) {
-          which = Key.ArrowRight;
+        if (key === Key.ArrowRight) {
+          key = Key.ArrowLeft;
+        } else if (key === Key.ArrowLeft) {
+          key = Key.ArrowRight;
         }
       }
 
-      switch (which) {
-        case Key.Escape:
-          {
-            this.currentXMemory = -1;
-            this.search = '';
-            this.currentItem = -1;
-            this.currentSection = -1;
+      switch (key) {
+        case Key.Escape: {
+          this.currentXMemory = -1;
+          this.search = '';
+          this.currentItem = -1;
+          this.currentSection = -1;
 
-            (<any>this.document.activeElement).blur();
+          (this.document.activeElement as any).blur();
 
-            break;
-          }
+          break;
+        }
         case Key.Tab: {
           this.currentXMemory = -1;
-        }
           break;
+        }
         case Key.ArrowLeft:
           if (this.currentIdExists) {
             this.currentXMemory = -1;
@@ -302,8 +303,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private get rowTiles(): number {
     // this computes the number of tiles in each row using media queries
-    for (let i = this.$max_tiles; i > 0; i--) {
-      const minWidth = (this.$container_margin * 2) + (this.$tile_width + (2 * this.$tile_margin)) * i;
+    for (let i = this.MAX_TILES; i > 0; i--) {
+      const minWidth = (this.CONTAINER_MARGIN * 2) + (this.TILE_WIDTH + (2 * this.TILE_MARGIN)) * i;
       if (window.matchMedia(`(min-width: ${minWidth}px)`).matches) {
         return i;
       }
@@ -344,8 +345,8 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     return {
-      currentX: currentX,
-      currentY: currentY,
+      currentX,
+      currentY,
       width: rowTiles,
       height: gridModel.length,
       grid: gridModel

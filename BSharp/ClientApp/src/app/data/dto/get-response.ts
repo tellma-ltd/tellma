@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { EntityWithKey } from '../entities/base/entity-with-key';
 import { Entity } from '../entities/base/entity';
 

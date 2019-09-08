@@ -46,7 +46,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
   clone: (item: Role) => Role = (item: Role) => {
     if (!!item) {
-      const clone = <Role>JSON.parse(JSON.stringify(item));
+      const clone = JSON.parse(JSON.stringify(item)) as Role;
       clone.Id = null;
 
       if (!!clone.Permissions) {
@@ -81,7 +81,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
     // Returns the permission actions only permitted by the specified view
     if (!this._permissionActionChoices[item.ViewId]) {
-      const view = <View>this.ws.get('View', item.ViewId);
+      const view = this.ws.get('View', item.ViewId) as View;
       if (!!view && !!view.Actions) {
         this._permissionActionChoices[item.ViewId] =
         view.Actions.map(e => ({ name: Permission_Action[e.Action], value: e.Action })).concat([{ value: 'All', name: 'View_All' }]);
@@ -110,7 +110,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     if (!viewId || !action) {
       return true;
     }
-    const view = <View>this.ws.get('View', viewId);
+    const view = this.ws.get('View', viewId) as View;
     if (!!view && !!view.Actions) {
       const viewAction = view.Actions.find(e => e.Action === action);
       return !(viewAction && viewAction.SupportsCriteria);
@@ -124,7 +124,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     if (!viewId || !action) {
       return true;
     }
-    const view = <View>this.ws.get('View', viewId);
+    const view = this.ws.get('View', viewId) as View;
     if (!!view && !!view.Actions) {
       const viewAction = view.Actions.find(e => e.Action === action);
       return !(viewAction && viewAction.SupportsMask);
@@ -155,7 +155,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     if (!!model && !!model.Id) {
       this.rolesApi.activate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
-      ).subscribe(null, this.details.handleActionError);
+      ).subscribe({ error: this.details.handleActionError });
     }
   }
 
@@ -163,7 +163,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     if (!!model && !!model.Id) {
       this.rolesApi.deactivate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
-      ).subscribe(null, this.details.handleActionError);
+      ).subscribe({ error: this.details.handleActionError });
     }
   }
 

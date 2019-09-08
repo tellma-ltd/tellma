@@ -577,7 +577,7 @@
   <data name="MU_Mass" xml:space="preserve">
     <value>كتلة</value>
   </data>
-  <data name="MU_Money" xml:space="preserve">
+  <data name="MU_MonetaryValue" xml:space="preserve">
     <value>نقد</value>
   </data>
   <data name="MU_Pure" xml:space="preserve">

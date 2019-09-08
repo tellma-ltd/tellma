@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { GetArguments } from './get-arguments';
 
 export class ExportArguments extends GetArguments {
@@ -5,6 +6,6 @@ export class ExportArguments extends GetArguments {
 }
 
 export const ExportArguments_Format = {
-  'xlsx': 'Excel',
-  'csv': 'CSV'
+  xlsx: 'Excel',
+  csv: 'CSV'
 };

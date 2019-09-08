@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { EntityForSave } from './base/entity-for-save';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -6,7 +7,7 @@ import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 
 export class MeasurementUnitForSave extends EntityForSave {
-  UnitType: 'Pure' | 'Time' | 'Distance' | 'Count' | 'Mass' | 'Volume' | 'Money';
+  UnitType: 'Pure' | 'Time' | 'Distance' | 'Count' | 'Mass' | 'Volume' | 'MonetaryValue';
   Name: string;
   Name2: string;
   Name3: string;
@@ -25,17 +26,6 @@ export class MeasurementUnit extends MeasurementUnitForSave {
   ModifiedAt: string;
   ModifiedById: number | string;
 }
-
-// Choice list (Also repeated in measurement units master template)
-export const MeasurementUnit_UnitType = {
-  'Pure': 'MU_Pure',
-  'Time': 'MU_Time',
-  'Distance': 'MU_Distance',
-  'Count': 'MU_Count',
-  'Mass': 'MU_Mass',
-  'Volume': 'MU_Volume',
-  'Money': 'MU_Money'
-};
 
 const _select = ['', '2', '3'].map(pf => 'Description' + pf);
 let _currentLang: string;
@@ -64,7 +54,7 @@ export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateServ
         UnitType: {
           control: 'choice',
           label: trx.instant('MU_UnitType'),
-          choices: ['Pure', 'Time', 'Distance', 'Count', 'Mass', 'Volume', 'Money'],
+          choices: ['Pure', 'Time', 'Distance', 'Count', 'Mass', 'Volume', 'MonetaryValue'],
           format: (c: string) => {
             switch (c) {
               case 'Pure': return trx.instant('MU_Pure');
@@ -73,7 +63,7 @@ export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateServ
               case 'Count': return trx.instant('MU_Count');
               case 'Mass': return trx.instant('MU_Mass');
               case 'Volume': return trx.instant('MU_Volume');
-              case 'Money': return trx.instant('MU_Money');
+              case 'MonetaryValue': return trx.instant('MU_MonetaryValue');
               default: return c;
             }
           }

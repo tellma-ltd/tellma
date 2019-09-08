@@ -4,7 +4,7 @@ import { Subject, fromEvent, Subscription } from 'rxjs';
 import { WorkspaceService, MasterStatus } from '~/app/data/workspace.service';
 import { UserCompany } from '~/app/data/dto/user-company';
 import { DOCUMENT } from '@angular/common';
-import { Key, toString } from '~/app/data/util';
+import { Key } from '~/app/data/util';
 
 @Component({
   selector: 'b-companies',
@@ -37,7 +37,8 @@ export class CompaniesComponent implements OnInit, OnDestroy {
   @ViewChild('input', { static: true })
   input: ElementRef;
 
-  constructor(private api: ApiService, private workspace: WorkspaceService,
+  constructor(
+    private api: ApiService, private workspace: WorkspaceService,
     @Inject(DOCUMENT) private document: Document) { }
 
   ngOnInit() {
@@ -69,18 +70,6 @@ export class CompaniesComponent implements OnInit, OnDestroy {
     ws.companiesStatus = MasterStatus.loading;
     this.crud.getForClient().subscribe(e => {
       ws.companies = e;
-      // ws.companies = [{ Name: 'Microsoft Inc.', Id: 101, Name2: 'مايكروسوفت', ImageId: null },
-      // { Name: 'Google Inc.', Id: 102, Name2: 'جوجل', ImageId: null },
-      // { Name: 'Amazon Inc.', Id: 103, Name2: null, ImageId: null },
-      // { Name: 'Facebook Inc.', Id: 101, Name2: 'فيسبوك', ImageId: null },
-      // { Name: 'Oracle Inc.', Id: 102, Name2: 'أوراكل', ImageId: null },
-      // { Name: 'Samsung Inc.', Id: 103, Name2: null, ImageId: null },
-      // { Name: 'Facebook Inc.', Id: 101, Name2: 'فيسبوك', ImageId: null },
-      // { Name: 'Oracle Inc.', Id: 102, Name2: 'أوراكل', ImageId: null },
-      // { Name: 'Samsung Inc.', Id: 103, Name2: null, ImageId: null },
-      // { Name: 'Facebook Inc.', Id: 101, Name2: 'فيسبوك', ImageId: null },
-      // { Name: 'Oracle Inc.', Id: 102, Name2: 'أوراكل', ImageId: null },
-      // { Name: 'Samsung Inc.', Id: 103, Name2: null, ImageId: null }];
       ws.companiesStatus = MasterStatus.loaded;
     }, friendlyError => {
       ws.companiesStatus = MasterStatus.error;
@@ -101,36 +90,36 @@ export class CompaniesComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
+    let key: string = event.key;
+
+    // Focus on the search field as soon as the user starts typing letters or numbers
     if (!this.searchInputIsFocused && !!event.key && event.key.trim().length === 1) {
       this.input.nativeElement.value = '';
       this.input.nativeElement.focus();
     }
 
-    let which = event.which;
-    if (Key[toString(which)]) {
+    if (Key[key]) {
 
       // reverse left and right arrows for RTL languages
       if (this.workspace.ws.isRtl) {
-        if (which === Key.ArrowRight) {
-          which = Key.ArrowLeft;
-        } else if (which === Key.ArrowLeft) {
-          which = Key.ArrowRight;
+        if (key === Key.ArrowRight) {
+          key = Key.ArrowLeft;
+        } else if (key === Key.ArrowLeft) {
+          key = Key.ArrowRight;
         }
       }
 
-      switch (which) {
-        case Key.Escape:
-          {
+      switch (key) {
+        case Key.Escape: {
             this.input.nativeElement.value = '';
             this._searchTerm = '';
-            (<any>this.document.activeElement).blur();
+            (this.document.activeElement as any).blur();
 
             break;
           }
       }
     }
   }
-
 
   // UI Bindings
 

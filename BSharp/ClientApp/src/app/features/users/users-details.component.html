@@ -60,7 +60,7 @@
     <!-- The Agents Master Modal -->
     <ng-template #agentMaster let-modal="modal" let-update="update" let-create="create" let-filter="filter">
       <div class="modal-body">
-        <b-agents-master mode="popup" (cancel)="modal.close(false);" (select)="modal.close(true); update($event);"
+        <b-agents-master mode="popup" (cancel)="modal.close(false);" (choose)="modal.close(true); update($event);"
           (create)="modal.close(false); create()" [filterDefault]="filter">
         </b-agents-master>
       </div>
@@ -126,7 +126,7 @@
             <ng-template #roleMaster let-modal="modal" let-update="update" let-create="create">
               <div class="modal-body">
                 <b-roles-master mode="popup" (cancel)="modal.close(false);"
-                  (select)="modal.close(true); update($event);" (create)="modal.close(false); create()">
+                  (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
                 </b-roles-master>
               </div>
             </ng-template>

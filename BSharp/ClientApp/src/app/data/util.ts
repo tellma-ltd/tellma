@@ -39,8 +39,7 @@ export function addSingleToWorkspace(response: GetByIdResponse, workspace: Works
 export function mergeEntitiesInWorkspace(entities: { [key: string]: EntityWithKey[] }, workspace: WorkspaceService) {
   if (!!entities) {
     const collectionNames = Object.keys(entities);
-    for (let c = 0; c < collectionNames.length; c++) {
-      const collectionName = collectionNames[c];
+    for (const collectionName of collectionNames) {
       const collection = entities[collectionName];
       const wsCollection = workspace.current[collectionName];
       if (!collection) {
@@ -52,8 +51,7 @@ export function mergeEntitiesInWorkspace(entities: { [key: string]: EntityWithKe
         console.error(`Could not find collection '${collectionName}' in the workspace`);
       }
 
-      for (let i = 0; i < collection.length; i++) {
-        const freshItem = collection[i];
+      for (const freshItem of collection) {
         const staleItem = wsCollection[freshItem.Id];
         apply(freshItem, staleItem, wsCollection);
       }
@@ -162,18 +160,14 @@ export function downloadBlob(blob: Blob, fileName: string) {
 }
 
 export enum Key {
-  Tab = 9,
-  Enter = 13,
-  Escape = 27,
-  Space = 32,
-  PageUp = 33,
-  PageDown = 34,
-  End = 35,
-  Home = 36,
-  ArrowLeft = 37,
-  ArrowUp = 38,
-  ArrowRight = 39,
-  ArrowDown = 40
+  Tab = 'Tab',
+  Enter = 'Enter',
+  Escape = 'Escape',
+  Space = 'Space',
+  ArrowLeft = 'ArrowLeft',
+  ArrowUp = 'ArrowUp',
+  ArrowRight = 'ArrowRight',
+  ArrowDown = 'ArrowDown'
 }
 
 export function toString(value: any): string {

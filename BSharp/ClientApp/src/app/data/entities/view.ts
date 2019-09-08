@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { Permission, PermissionForSave } from './permission';
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from './settings';
@@ -7,7 +8,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 
 export class ViewForSave<TPermission = PermissionForSave> extends EntityForSave {
-
     Permissions: TPermission[];
 }
 
@@ -27,7 +27,6 @@ export class ViewAction extends EntityForSave {
     SupportsCriteria: boolean;
     SupportsMask: boolean;
 }
-
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _currentLang: string;
@@ -57,4 +56,3 @@ export function metadata_View(ws: TenantWorkspace, trx: TranslateService, _subty
 
   return _cache;
 }
-

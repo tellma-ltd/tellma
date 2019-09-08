@@ -15,7 +15,8 @@ export class ErrorComponent implements OnInit {
   private _generalErrorMessage: string;
   private _detailedErrorMessage: string;
 
-  constructor(private workspace: WorkspaceService, private location: Location,
+  constructor(
+    private workspace: WorkspaceService, private location: Location,
     private route: ActivatedRoute, private router: Router, private storage: StorageService) {
     this.route.queryParamMap.subscribe(p => {
       // retry URL

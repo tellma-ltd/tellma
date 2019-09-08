@@ -196,8 +196,7 @@ export class TableComponent implements OnInit {
 
     // Get the total weight of the other columns
     let totalWeight = 0;
-    for (let i = 0; i < this.columnPaths.length; i++) {
-      const path = this.columnPaths[i];
+    for (const path of this.columnPaths) {
       if (this.columnTemplates[path]) {
         totalWeight = totalWeight + (this.columnTemplates[path].weight || 1);
       }

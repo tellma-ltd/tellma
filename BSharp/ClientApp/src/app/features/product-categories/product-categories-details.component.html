@@ -91,7 +91,7 @@
   <ng-template #productCategoriesMaster let-modal="modal" let-update="update" let-create="create">
     <div class="modal-body">
       <b-product-categories-master mode="popup" (cancel)="modal.close(false);"
-        (select)="modal.close(true); update($event); " (create)="modal.close(false); create()">
+        (choose)="modal.close(true); update($event); " (create)="modal.close(false); create()">
       </b-product-categories-master>
     </div>
   </ng-template>

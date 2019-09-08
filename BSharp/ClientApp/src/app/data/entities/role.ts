@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { EntityForSave } from './base/entity-for-save';
 import { Permission, PermissionForSave } from './permission';
 import { RoleMembershipForSave, RoleMembership } from './role-membership';

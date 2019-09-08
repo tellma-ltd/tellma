@@ -16,7 +16,7 @@ export class MasterBaseComponent implements OnDestroy {
   public mode: 'screen' | 'popup' = 'screen';
 
   @Output()
-  select = new EventEmitter<number | string>();
+  choose = new EventEmitter<number | string>();
 
   @Output()
   create = new EventEmitter<void>();
@@ -54,7 +54,7 @@ export class MasterBaseComponent implements OnDestroy {
 
       // subscribe to new details events
       if (!!this._master) {
-        this.masterSelect = this._master.select.subscribe(this.select);
+        this.masterSelect = this._master.choose.subscribe(this.choose);
         this.masterCreate = this._master.create.subscribe(this.create);
         this.masterCancel = this._master.cancel.subscribe(this.cancel);
       }

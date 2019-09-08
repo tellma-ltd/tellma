@@ -24,13 +24,11 @@ type VersionStatus = 'Fresh' | 'Stale' | 'Unauthorized';
 export class RootHttpInterceptor implements HttpInterceptor {
 
   private notifyRefreshGlobalSettings$: Subject<void>;
-  private notifyRefreshTranslations$: Subject<string>;
   private notifyRefreshSettings$: Subject<void>;
   private notifyRefreshPermissions$: Subject<void>;
   private notifyRefreshUserSettings$: Subject<void>;
   private cancellationToken$: Subject<void>;
   private globalSettingsApi: () => Observable<DataWithVersion<GlobalSettingsForClient>>;
-  // private translationsApi: (cultureName: string) => Observable<DataWithVersion<any>>;
   private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
   private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
@@ -70,18 +68,6 @@ export class RootHttpInterceptor implements HttpInterceptor {
     this.settingsApi = this.api.settingsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
     this.userSettingsApi = this.api.usersApi(this.cancellationToken$).getForClient;
-
-
-    // Monitor local storage for changes to translations
-    storage.changed$.subscribe(e => {
-      if (!!e.key && e.key.startsWith('translations_') && !e.key.endsWith('_version')) {
-        const cultureName = e.key.split('_')[1];
-        const translations = JSON.parse(e.newValue);
-        translate.setTranslation(cultureName, translations, false);
-      }
-
-      // TODO the other versions
-    });
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -101,13 +87,13 @@ export class RootHttpInterceptor implements HttpInterceptor {
       // Even though API response caching is disabled with server headers, this is a last defense
       // to absolutely guarantee that caching will never cause one tenant's data to show up while
       // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
-      params['tenant_id'] = tenantId.toString();
+      params['tenant-id'] = tenantId.toString();
     }
 
     if (!!this.authStorage) {
       const accessToken = this.authStorage.getItem('access_token');
       if (!!accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
+        headers.Authorization = `Bearer ${accessToken}`;
       }
     }
 
@@ -162,7 +148,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
       // global versions
       {
         // global settings
-        const v = <VersionStatus>e.headers.get('x-global-settings-version');
+        const v = e.headers.get('x-global-settings-version') as VersionStatus;
         if (v === 'Stale') {
           this.refreshGlobalSettings();
         }
@@ -172,7 +158,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
       if (!!tenantId) {
         // settings
         {
-          const v = <VersionStatus>e.headers.get('x-settings-version');
+          const v = e.headers.get('x-settings-version') as VersionStatus;
           if (v === 'Stale') {
             this.refreshSettings();
           }
@@ -200,7 +186,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
         // permissions
         {
-          const v = <VersionStatus>e.headers.get('x-permissions-version');
+          const v = e.headers.get('x-permissions-version') as VersionStatus;
           if (v === 'Stale') {
             this.refreshPermissions();
           }
@@ -208,7 +194,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
         // user settings
         {
-          const v = <VersionStatus>e.headers.get('x-user-settings-version');
+          const v = e.headers.get('x-user-settings-version') as VersionStatus;
           if (v === 'Stale') {
             this.refreshUserSettings();
           }

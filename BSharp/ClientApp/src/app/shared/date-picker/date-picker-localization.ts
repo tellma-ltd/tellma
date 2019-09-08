@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Injectable()
 export class DatePickerLocalization extends NgbDatepickerI18n {
 
-    constructor (private translation: TranslateService) {
+    constructor(private translation: TranslateService) {
         super();
     }
 
