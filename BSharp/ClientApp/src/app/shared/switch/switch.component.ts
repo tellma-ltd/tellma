@@ -1,17 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, SimpleChanges, OnChanges } from '@angular/core';
 import {
-  metadata, BooleanPropDescriptor,
-  ChoicePropDescriptor, StatePropDescriptor, NumberPropDescriptor, propDescriptorImpl, entityDescriptorImpl
+  metadata, BooleanPropDescriptor, ChoicePropDescriptor, StatePropDescriptor,
+  NumberPropDescriptor, EntityDescriptor, PropDescriptor
 } from '~/app/data/entities/base/metadata';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'b-switch',
-  templateUrl: './switch.component.html'
+  templateUrl: './switch.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SwitchComponent implements OnInit {
+export class SwitchComponent implements OnInit, OnChanges, OnDestroy {
 
   // This component automatically displays the property value from its metadata
 
@@ -27,214 +28,185 @@ export class SwitchComponent implements OnInit {
   @Input()
   subtype: string;
 
-  _previousPath: string;
-  _pathArray: string[];
+  _subscription: Subscription;
 
-  constructor(private ws: WorkspaceService, private translate: TranslateService) { }
+  // The method 'recompute' efficiently populates all the following
+  // values once, it is run once at the beginning and every time the
+  // input changes or the workspace changes
+  _entityDescriptor: EntityDescriptor;
+  _propDescriptor: PropDescriptor;
+  _metavalue: -1 | 0 | 1 | 2;
+  _value: any;
+  _control: string;
+
+  // Constructor and lifecycle hooks
+  constructor(private ws: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-  }
-
-  get pathArray(): string[] {
-    if (this.path !== this._previousPath || !this._pathArray) {
-      this._previousPath = this.path;
-      this._pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
-    }
-
-    return this._pathArray;
-  }
-
-  private dtoDescriptor(ignoreLast = false) {
-    return entityDescriptorImpl(this.pathArray, this.baseCollection, this.subtype, this.ws.current, this.translate, ignoreLast);
-  }
-
-  private propDescriptor() {
-    return propDescriptorImpl(this.pathArray, this.baseCollection, this.subtype, this.ws.current, this.translate);
-  }
-
-  private entity(meta: { meta: 0 | 1 | 2 } = null): EntityWithKey {
-
-    if (!this.baseCollection) {
-      throw new Error(`The baseCollection is not specified, therefore cannot retrieve the value`);
-    }
-
-    if (!this.entityId) {
-      // any path based on a null Id returns a null value
-      return null;
-    }
-
-    let currentEntity = this.ws.current[this.baseCollection][this.entityId];
-    let currentDtoDescriptor = metadata[this.baseCollection](this.ws.current, this.translate, this.subtype);
-
-    const pathArray = this.pathArray;
-    for (let i = 0; i < pathArray.length - 1; i++) {
-
-      // get the property descriptor
-      const step = pathArray[i];
-
-      // in case the navigation property was forbidden or not even loaded
-      const s = currentEntity.EntityMetadata[step] || 0;
-      if (s < 2) {
-        meta.meta = s;
-        return null;
+    this._subscription = this.ws.stateChanged$.subscribe({
+      next: () => {
+        this.recompute();
+        this.cdr.markForCheck();
       }
-
-      const currentPropDescriptor = currentDtoDescriptor.properties[step];
-      if (!currentPropDescriptor) {
-        throw new Error(`Property '${step}' does not exist`);
-
-      } else if (currentPropDescriptor.control !== 'navigation') {
-        throw new Error(`'${step}' is not a nav property`);
-
-      } else {
-        const coll = currentPropDescriptor.collection || currentPropDescriptor.type;
-        const subtype = currentPropDescriptor.subtype;
-        const id = currentEntity[currentPropDescriptor.foreignKeyName];
-        if (!id) {
-          return null;
-        }
-
-        currentEntity = this.ws.current[coll][id];
-        currentDtoDescriptor = metadata[coll](this.ws.current, this.translate, subtype);
-      }
-    }
-
-    return currentEntity;
+    });
   }
 
-  get control(): string {
-    if (!this.path || this.path.length === 0) {
-      return 'navigation';
-    } else {
-      try {
-        return this.propDescriptor().control;
-      } catch (ex) {
-        console.error(ex.message);
-        return 'error';
-      }
+  ngOnChanges(_: SimpleChanges) {
+    this.recompute();
+  }
+
+  ngOnDestroy() {
+    if (!!this._subscription) {
+      this._subscription.unsubscribe();
     }
   }
 
-  // UI bindings
+  // For computing values and definitions
 
-  get value(): any {
+  private metadataFactory(collection: string) {
+    const factory = metadata[collection]; // metadata factory for User
+    if (!factory) {
+      throw new Error(`The collection ${collection} does not exist`);
+    }
+
+    return factory;
+  }
+
+  private recompute() {
+
+    // clear previous values
+    this._entityDescriptor = null;
+    this._propDescriptor = null;
+    this._metavalue = 2;
+    this._value = null;
+    this._control = null;
 
     try {
-      const entity = this.entity();
-      const pathArray = this.pathArray;
-      if (pathArray.length === 0) {
-        return entity;
-      } else {
-        if (!entity) {
-          return null;
-        }
-
-        const propName = pathArray[pathArray.length - 1];
-        const dtoDescriptor = this.dtoDescriptor(true);
-        const propDescriptor = dtoDescriptor.properties[propName];
-        if (!propDescriptor) {
-          return `Property '${propName}' does not exist`;
-
-        } else if (propDescriptor.control === 'navigation') {
-          const coll = propDescriptor.collection || propDescriptor.type;
-          const id = entity[propDescriptor.foreignKeyName];
-          return this.ws.current[coll][id];
-
-        } else {
-          return entity[propName];
-        }
+      if (!this.baseCollection) {
+        throw new Error(`The baseCollection is not specified`);
       }
 
+      if (!this.entityId) {
+        throw new Error(`entityId is not specified`);
+      }
+
+      const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+
+      this._entityDescriptor = this.metadataFactory(this.baseCollection)(this.ws.current, this.translate, this.subtype);
+      this._value = this.ws.current[this.baseCollection][this.entityId]; // the user with Id = 1
+
+      if (pathArray.length === 0) {
+        this._propDescriptor = null;
+        this._metavalue = 2;
+        this._control = 'navigation';
+
+      } else {
+        let currentCollection = this.baseCollection;
+        let currentSubtype = this.subtype;
+
+        for (let i = 0; i < pathArray.length; i++) {
+          const step = pathArray[i];
+
+          this._propDescriptor = this._entityDescriptor.properties[step];
+          if (!this._propDescriptor) {
+            throw new Error(`'${step}' does not exist on '${currentCollection}', subtype:'${currentSubtype}'`);
+
+          } else {
+
+            // always set the control
+            this._control = this._propDescriptor.control;
+
+            if (this._propDescriptor.control === 'navigation') {
+
+              currentCollection = this._propDescriptor.collection || this._propDescriptor.type;
+              currentSubtype = this._propDescriptor.subtype;
+              this._entityDescriptor = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentSubtype);
+
+              if (this._metavalue === 2 && this._value && this._value.EntityMetadata) {
+                this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
+
+                const fkValue = this._value[this._propDescriptor.foreignKeyName];
+                this._value = this.ws.current[currentCollection][fkValue];
+
+              } else {
+                this._metavalue = 0;
+              }
+            } else {
+              // only allowed at the last step
+              if (i !== pathArray.length - 1) {
+                throw new Error(`'${step}' is not a navigation property on '${currentCollection}', subtype:'${currentSubtype}'`);
+              }
+
+              // set the property and control at the end
+              if (this._metavalue === 2 && this._value) {
+                this._value = this._value[step] || null;
+              }
+            }
+          }
+        }
+      }
     } catch (ex) {
+
+      this._entityDescriptor = null;
+      this._propDescriptor = null;
+      this._metavalue = -1;
+      this._value = ex.message;
+      this._control = 'error';
+
       console.error(ex.message);
-      return '(Error)';
     }
+  }
+
+  // UI Binding
+
+  get control(): string {
+    return this._control;
   }
 
   get metavalue(): -1 | 0 | 1 | 2 { // -1=Error, 0=Not Loaded, 1=Restricted, 2=Loaded
-    try {
-      const pathArray = this.pathArray;
-      if (pathArray.length === 0) {
-        return 2;
-      } else {
-        const meta: { meta: 0 | 1 | 2 } = { meta: 2 };
-        const entity = this.entity(meta);
-
-        // this means somewhere along the nav chain, there is a nav property that isn't loaded
-        if (meta.meta === 0) {
-          // here we check whether the nav property was even
-          // valid to begin with or valid but not loaded
-          return this.control === 'error' ? -1 : 0;
-        } else if (meta.meta === 1) {
-          // not allowed to see it
-          return 1;
-        }
-
-        // after the previous check, this means the property is loaded and it is null
-        if (!entity) {
-          return 2;
-        }
-
-        const propName = pathArray[pathArray.length - 1];
-        if (propName === 'Id') {
-          return 2; // Id is always loaded
-        }
-
-        const result = entity.EntityMetadata[propName] || 0;
-        if (result === 0) {
-          // here we check whether the nav property was even
-          // valid to begin with or valid but not loaded
-          return this.control === 'error' ? -1 : 0;
-        } else {
-          return result;
-        }
-      }
-    } catch (ex) {
-      console.error(ex.message);
-      return -1;
-    }
+    return this._metavalue;
   }
 
-  get textValue(): string {
-    return this.value;
+  get value(): any {
+    return this._value;
   }
 
   get choiceValue(): string {
-    const prop = this.propDescriptor() as ChoicePropDescriptor;
+    const prop = this._propDescriptor as ChoicePropDescriptor;
     const value = this.value;
     return !!prop && !!prop.format ? prop.format(value) : null;
   }
 
   get stateValue(): string {
-    const prop = this.propDescriptor() as StatePropDescriptor;
+    const prop = this._propDescriptor as StatePropDescriptor;
     const value = this.value;
     return !!prop && !!prop.format ? prop.format(value) : null;
   }
 
   get stateColor(): string {
-    const prop = this.propDescriptor() as StatePropDescriptor;
+    const prop = this._propDescriptor as StatePropDescriptor;
     const value = this.value;
     return (!!prop && !!prop.color ? prop.color(value) : null) || 'transparent';
   }
 
   get digitsInfo(): string {
-    const prop = this.propDescriptor() as NumberPropDescriptor;
+    const prop = this._propDescriptor as NumberPropDescriptor;
     return `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
   }
 
   get alignment(): string {
-    const prop = this.propDescriptor() as NumberPropDescriptor;
+    const prop = this._propDescriptor as NumberPropDescriptor;
     return prop.alignment;
   }
 
   get booleanValue(): string {
-    const prop = this.propDescriptor() as BooleanPropDescriptor;
+    const prop = this._propDescriptor as BooleanPropDescriptor;
     const value = this.value as boolean;
     return (!!prop && !!prop.format) ? prop.format(value) : this.translate.instant(value ? 'Yes' : 'No');
   }
 
   get navigationValue(): any {
-    const dto = this.dtoDescriptor();
+    const dto = this._entityDescriptor;
     const value = this.value; // Should return the DTO itself
     return !!dto.format ? dto.format(value) : '(Format function missing)';
   }

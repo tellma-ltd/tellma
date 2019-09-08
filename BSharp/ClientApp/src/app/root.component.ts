@@ -88,13 +88,12 @@ export class RootComponent {
       // we set it in the workspace so that all our components
       // reflect the change too
       const culture = this.translate.currentLang;
-      this.setDocumentRTL(culture);
+      this.setWorkspaceCulture(culture);
       if (!!document) {
         // TODO Load from configuration instead
         document.title = this.translate.instant('AppName');
       }
 
-      // TODO Set in local storage properly
       this.storage.setItem('user_culture', culture);
     });
 
@@ -133,15 +132,24 @@ export class RootComponent {
     return null;
   }
 
-  setDocumentRTL(culture: string) {
+  setWorkspaceCulture(culture: string) {
+
+    // set the culture
     this.workspace.ws.culture = culture;
+
+    // set isRTL in workspace
     const isRtl = this.rtlLanguages.some(e => culture.startsWith(e));
     this.workspace.ws.isRtl = isRtl;
+
+    // set RTL on the DOM document
     if (isRtl && !!document) {
       document.body.classList.add('b-rtl');
     } else {
       document.body.classList.remove('b-rtl');
     }
+
+    // notify everyone about the change
+    this.workspace.notifyStateChanged();
   }
 
   get showOverlay(): boolean {

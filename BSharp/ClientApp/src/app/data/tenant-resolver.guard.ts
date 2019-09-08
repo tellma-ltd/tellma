@@ -93,7 +93,7 @@ export class TenantResolverGuard implements CanActivate {
       const tenantId = +tenantIdSring;
       if (!!tenantId) {
         // set the Tenant ID
-        this.workspace.ws.tenantId = tenantId;
+        this.workspace.setTenantId(tenantId);
 
         // take a concrete reference just in case it changes
         const current = this.workspace.current;

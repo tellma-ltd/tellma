@@ -196,17 +196,21 @@ export function propDescriptorImpl(
     if (pathArray.length > 0) {
         const entityDesc = entityDescriptorImpl(pathArray, baseCollection, baseSubtype, ws, trx, true, labels);
         const lastStep = pathArray[pathArray.length - 1];
-        const result = entityDesc.properties[lastStep];
-        if (!result) {
-            throw new Error(`Property '${lastStep}' does not exist`);
-        } else {
-            if (!!labels) {
-                labels.push(result.label);
-            }
-
-            return result;
-        }
+        return propDescriptorFromEntityDescriptor(lastStep, entityDesc, labels);
     } else {
         throw new Error(`The path is empty, therefore cannot retrieve the property descriptor`);
+    }
+}
+
+export function propDescriptorFromEntityDescriptor(lastStep: string, entityDesc: EntityDescriptor, labels: string[] = null) {
+    const result = entityDesc.properties[lastStep];
+    if (!result) {
+        throw new Error(`Property '${lastStep}' does not exist`);
+    } else {
+        if (!!labels) {
+            labels.push(result.label);
+        }
+
+        return result;
     }
 }
