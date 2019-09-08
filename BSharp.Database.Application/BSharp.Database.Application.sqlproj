@@ -344,6 +344,10 @@
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Users_Validate__Delete.sql" />
     <Build Include="dbo\Tables\dbo.Blobs.sql" />
+    <Build Include="Mapping\Agents.sql" />
+    <Build Include="Mapping\Agents__AsQuery.sql" />
+    <Build Include="Mapping\Roles.sql" />
+    <Build Include="Mapping\Roles__AsQuery.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
