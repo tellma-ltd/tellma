@@ -101,7 +101,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
       // Even though API response caching is disabled with server headers, this is a last defense
       // to absolutely guarantee that caching will never cause one tenant's data to show up while
       // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
-      params['tenant_id'] = tenantId.toString();
+      params['tenant-id'] = tenantId.toString();
     }
 
     if (!!this.authStorage) {

@@ -34,7 +34,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
   }
 
   constructor(private workspace: WorkspaceService, private api: ApiService,
-    private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
+              private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
     super();
   }
 
@@ -65,7 +65,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
 
   get agentTypeChoices(): { name: string, value: any }[] {
     if (!this._agentTypeChoices) {
-      const descriptor = <ChoicePropDescriptor> metadata_Agent(this.ws, this.translate, null).properties.AgentType;
+      const descriptor = metadata_Agent(this.ws, this.translate, null).properties.AgentType as ChoicePropDescriptor;
       this._agentTypeChoices = descriptor.choices.map(c => ({ name: descriptor.format(c), value: c }));
     }
 
@@ -77,7 +77,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
       return '';
     }
 
-    const descriptor = <ChoicePropDescriptor> metadata_Agent(this.ws, this.translate, null).properties.AgentType;
+    const descriptor = metadata_Agent(this.ws, this.translate, null).properties.AgentType as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 
