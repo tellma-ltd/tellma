@@ -890,7 +890,7 @@
 //                    SqlDbType = SqlDbType.Structured
 //                };
 
-//                string sql = $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[ProductCategories] e ON c.Code = e.Code WHERE e.UnitType <> 'Money';";
+//                string sql = $@"SELECT c.Code, e.Id FROM @Codes c JOIN [dbo].[ProductCategories] e ON c.Code = e.Code WHERE e.UnitType <> 'MonetaryValue';";
 //                var idCodesDic = await _db.CodeIds.FromSql(sql, entitiesTvp).ToDictionaryAsync(e => e.Code, e => e.Id);
 
 //                result.ForEach(e =>

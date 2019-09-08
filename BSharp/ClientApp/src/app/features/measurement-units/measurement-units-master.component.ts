@@ -2,10 +2,12 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { MeasurementUnit_UnitType } from '~/app/data/entities/measurement-unit';
+import { metadata_MeasurementUnit } from '~/app/data/entities/measurement-unit';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
+import { TranslateService } from '@ngx-translate/core';
+import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
 @Component({
   selector: 'b-measurement-units-master',
@@ -17,7 +19,7 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
 
   public expand = '';
 
-  constructor(private workspace: WorkspaceService, private api: ApiService) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
     this.measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$);
   }
@@ -31,7 +33,8 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   }
 
   public unitTypeLookup(value: string): string {
-    return MeasurementUnit_UnitType[value];
+    const descriptor = metadata_MeasurementUnit(this.ws, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+    return descriptor.format(value);
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {

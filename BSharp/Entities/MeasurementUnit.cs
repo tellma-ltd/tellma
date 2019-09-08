@@ -10,8 +10,8 @@ namespace BSharp.Entities
         [Display(Name = "MU_UnitType")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume", "Money" },
-            new string[] { "MU_Pure", "MU_Time", "MU_Distance", "MU_Count", "MU_Mass", "MU_Volume", "MU_Money" })]
+        [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume", "MonetaryValue" },
+            new string[] { "MU_Pure", "MU_Time", "MU_Distance", "MU_Count", "MU_Mass", "MU_Volume", "MU_MonetaryValue" })]
         public string UnitType { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]

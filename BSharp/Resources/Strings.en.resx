@@ -597,8 +597,8 @@
   <data name="MU_Mass" xml:space="preserve">
     <value>Mass</value>
   </data>
-  <data name="MU_Money" xml:space="preserve">
-    <value>Money</value>
+  <data name="MU_MonetaryValue" xml:space="preserve">
+    <value>Monetary Value</value>
   </data>
   <data name="MU_Pure" xml:space="preserve">
     <value>Pure</value>

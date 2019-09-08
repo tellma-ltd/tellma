@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { MeasurementUnit, MeasurementUnitForSave, MeasurementUnit_UnitType } from '~/app/data/entities/measurement-unit';
+import { MeasurementUnit, MeasurementUnitForSave, metadata_MeasurementUnit } from '~/app/data/entities/measurement-unit';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
+import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 
 @Component({
   selector: 'b-measurement-units-details',
@@ -36,9 +37,8 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   get unitTypeChoices(): { name: string, value: any }[] {
 
     if (!this._unitTypeChoices) {
-      this._unitTypeChoices = Object.keys(MeasurementUnit_UnitType)
-        .filter(e => e !== 'Money').map(
-          key => ({ name: MeasurementUnit_UnitType[key], value: key }));
+      const descriptor = metadata_MeasurementUnit(this.ws, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+      this._unitTypeChoices = descriptor.choices.map(c => ({ name: descriptor.format(c), value: c }));
     }
 
     return this._unitTypeChoices;
@@ -49,7 +49,8 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
       return '';
     }
 
-    return MeasurementUnit_UnitType[value];
+    const descriptor = metadata_MeasurementUnit(this.ws, this.translate, null).properties.UnitType as ChoicePropDescriptor;
+    return descriptor.format(value);
   }
 
   public get ws() {
