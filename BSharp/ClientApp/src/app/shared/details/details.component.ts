@@ -1,3 +1,4 @@
+// tslint:disable:no-string-literal
 import { Location } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, TemplateRef, ViewChild, Output } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
@@ -156,7 +157,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @Input()
   cloneFunc: (item: EntityForSave) => EntityForSave = (item: EntityForSave) => {
     if (!!item) {
-      const clone = <EntityForSave>JSON.parse(JSON.stringify(item));
+      const clone = JSON.parse(JSON.stringify(item)) as EntityForSave;
       clone.Id = null;
 
       if (clone['ImageId']) {
@@ -171,7 +172,8 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private location: Location,
+  constructor(
+    private workspace: WorkspaceService, private api: ApiService, private location: Location,
     private router: Router, private route: ActivatedRoute, public modalService: NgbModal, private translate: TranslateService) {
     // the constructor contains initializations and wiring
     // that survives over the lifetime of the component itself
@@ -841,7 +843,8 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   }
 }
 
-export function applyServerErrors(entity: EntityForSave | EntityForSave[],
+export function applyServerErrors(
+  entity: EntityForSave | EntityForSave[],
   errors: { [key: string]: string[] }): { [key: string]: string[] } {
 
   if (!entity) {
@@ -854,8 +857,7 @@ export function applyServerErrors(entity: EntityForSave | EntityForSave[],
 
   const paths = Object.keys(errors);
   const leftovers: { [key: string]: string[] } = {};
-  for (let p = 0; p < paths.length; p++) {
-    const path = paths[p];
+  for (const path of paths) {
     const steps = path.split('.');
 
     let current = entity;
@@ -890,15 +892,16 @@ export function applyServerErrors(entity: EntityForSave | EntityForSave[],
     }
 
     if (!!current) {
+      const currentEntity = current as EntityForSave;
       // we have to use the property indexer here otherwise typescript will complain
       // in reality we are setting serverErrors even if the target is an array, javascript
       // allows that but typescript doesn't
-      if (!current['serverErrors']) {
-        current['serverErrors'] = {};
+      if (!currentEntity.serverErrors) {
+        currentEntity.serverErrors = {};
       }
 
       const lastStep = steps[steps.length - 1];
-      current['serverErrors'][lastStep] = errors[path];
+      currentEntity.serverErrors[lastStep] = errors[path];
 
     } else {
       leftovers[path] = errors[path];
@@ -914,23 +917,21 @@ export function clearServerErrors(entity: EntityForSave | EntityForSave[]): void
     return;
   }
 
-  // if errors exist remove them, they can exist even on arrays
-  if (!!entity['serverErrors']) {
-    delete entity['serverErrors'];
+  // if errors exist remove them (they can potentially exist even on arrays)
+  if (!!(entity as EntityForSave).serverErrors) {
+    delete (entity as EntityForSave).serverErrors;
   }
 
   // if the property is an array, recursively clear the errors from all the items
   if (Array.isArray(entity)) {
     // loop over the array items and clear them
-    for (let i = 0; i < entity.length; i++) {
-      const item = entity[i];
+    for (const item of entity) {
       clearServerErrors(item);
     }
   } else if (!!entity.Id || entity.Id === null) {
     // if the property is a DTO loop over the navigation properties and recursively clear their errors
     const props = Object.keys(entity);
-    for (let i = 0; i < props.length; i++) {
-      const prop = props[i];
+    for (const prop of props) {
       const item = entity[prop];
       clearServerErrors(item);
     }

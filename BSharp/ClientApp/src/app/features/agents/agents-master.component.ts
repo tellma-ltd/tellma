@@ -59,7 +59,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   }
 
   public agentTypeLookup(value: string): string {
-    const descriptor = <ChoicePropDescriptor> metadata_Agent(this.ws, this.translate, null).properties.AgentType;
+    const descriptor = metadata_Agent(this.ws, this.translate, null).properties.AgentType as ChoicePropDescriptor;
     return descriptor.format(value);
   }
 }

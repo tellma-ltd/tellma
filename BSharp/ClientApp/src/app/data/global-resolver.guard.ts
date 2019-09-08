@@ -9,7 +9,6 @@ import { ApiService } from './api.service';
 import { retry, tap, map, catchError, finalize } from 'rxjs/operators';
 import { ProgressOverlayService } from './progress-overlay.service';
 
-
 export const GLOBAL_SETTINGS_KEY = 'global_settings';
 export const GLOBAL_SETTINGS_VERSION_KEY = 'global_settings_version';
 

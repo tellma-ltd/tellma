@@ -190,7 +190,7 @@
             <ng-template #usersMaster let-modal="modal" let-update="update" let-create="create">
               <div class="modal-body">
                 <b-users-master mode="popup" (cancel)="modal.close(false);"
-                  (select)="modal.close(true); update($event);" (create)="modal.close(false); create()">
+                  (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
                 </b-users-master>
               </div>
             </ng-template>

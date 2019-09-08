@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { EntityForSave } from '../entities/base/entity-for-save';
 
 export class PermissionForSave extends EntityForSave {
@@ -18,11 +19,11 @@ export class Permission extends PermissionForSave {
 
 // Choice list (Also repeated in measurement units master template)
 export const Permission_Level = {
-  'Read': 'Permission_Read',
-  'Update': 'Permission_Update',
-  'Delete': 'Permission_Delete',
-  'IsActive': 'Permission_IsActive',
-  'ResendInvitationEmail': 'ResendInvitationEmail',
+  Read: 'Permission_Read',
+  Update: 'Permission_Update',
+  Delete: 'Permission_Delete',
+  IsActive: 'Permission_IsActive',
+  ResendInvitationEmail: 'ResendInvitationEmail',
 };
 
 export class PermissionsForClient {

@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { EntityWithKey } from '../entities/base/entity-with-key';
 
 export class GetEntityResponse<TEntity> {

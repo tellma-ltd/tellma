@@ -453,7 +453,7 @@ export class ApiService {
     const url = appconfig.apiAddress + `api/${endpoint}?imageId=${imageId}`;
     const obs$ = this.http.get(url, { responseType: 'blob', observe : 'response' }).pipe(
       map(res => {
-        return { image: res.body, imageId: res.headers.get('x-image-id')  };
+        return { image: res.body, imageId: res.headers.get('x-image-id') };
       }),
       catchError(error => {
         const friendlyError = this.friendly(error);

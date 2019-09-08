@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { MeasurementUnit } from './entities/measurement-unit';
 import { Injectable } from '@angular/core';
 import { Role } from './entities/role';
@@ -48,6 +49,79 @@ export enum DetailsStatus {
   // The details record is set to be modified or is currently being modified
   edit = 4,
 }
+
+
+/**
+ * different preservation modes when refrshing the tree
+ */
+export enum TreeRefreshMode {
+
+  /**
+   * when refreshing the tree, preserve the expansions and master states and only include
+   */
+  includeIfAncestorsLoaded,
+
+  /**
+   * when refreshing the tree, preserve the expansions but update parent statuses to loaded
+   */
+  preserveExpansions,
+
+  /**
+   * when refreshing the tree, ignore the old one entirely and start anew
+   */
+  cleanSlate
+}
+
+export class NodeInfo {
+  id: (string | number);
+  level: number;
+  index: number;
+  lastChildIndex = 0;
+  isExpanded: boolean;
+  hasChildren: boolean;
+  parent: NodeInfo;
+  isAdded = false;
+  highlight = false;
+  fromResult = false;
+  status: MasterStatus;
+  notifyCancel$: Subject<void>; // cancels calls on this node's children
+}
+
+
+// this method compares two nodes based on the paths from the root
+const nodeCompare = (n1: NodeInfo, n2: NodeInfo) => {
+
+  let p1 = n1;
+  let p2 = n2;
+
+  // goes up the chain until we are at the same level
+  if (n1.level < n2.level) {
+    for (let i = n2.level - n1.level; i--;) {
+      p2 = p2.parent;
+    }
+  } else {
+    for (let i = n1.level - n2.level; i--;) {
+      p1 = p1.parent;
+    }
+  }
+
+  if (p1 === p2) {
+    // this means one of the nodes is a child of the other
+    // compare levels to make the child larger than the parent
+    return n1.level - n2.level;
+
+  } else {
+
+    // go up the chain until you find siblings of a common parent
+    while (!!p1.parent && p1.parent !== p2.parent) {
+      p1 = p1.parent;
+      p2 = p2.parent;
+    }
+
+    // compare the indices of the siblings
+    return p1.index - p2.index;
+  }
+};
 
 // Represents a collection of savable entities, indexed by their IDs
 export class EntityWorkspace<T extends EntityWithKey> {
@@ -199,7 +273,7 @@ export class TenantWorkspace {
     }
 
     const viewPerms = this.permissions[viewId];
-    const allPerms = this.permissions['all'];
+    const allPerms = this.permissions.all;
     return (!!viewPerms || !!allPerms);
   }
 
@@ -213,7 +287,7 @@ export class TenantWorkspace {
     }
 
     const viewPerms = this.permissions[viewId];
-    const allPerms = this.permissions['all'];
+    const allPerms = this.permissions.all;
     return (!!viewPerms && (viewPerms.Update || viewPerms.All))
       || (!!allPerms && (allPerms.Update || allPerms.All));
   }
@@ -225,7 +299,7 @@ export class TenantWorkspace {
     }
 
     const viewPerms = this.permissions[viewId];
-    const allPerms = this.permissions['all'];
+    const allPerms = this.permissions.all;
     // const userId = this.userSettings.UserId;
     // (userId === createdById) ||
     return (!!viewPerms && (viewPerms.Update || viewPerms.All))
@@ -239,7 +313,7 @@ export class TenantWorkspace {
     }
 
     const viewPerms = this.permissions[viewId];
-    const allPerms = this.permissions['all'];
+    const allPerms = this.permissions.all;
     // const userId = this.userSettings.UserId;
     // (userId === createdById) ||
     return (!!viewPerms && (viewPerms[action] || viewPerms.All))
@@ -475,8 +549,12 @@ export class MasterDetailsStore {
     s.treeNodes = listOfNodes.sort(nodeCompare);
   }
 
-  private addNodeToDictionary(id: string | number, rootsInfo: { lastIndex: number }, entityWs: any, nodesDic: { [key: string]: NodeInfo },
-    currentNodesDic: { [key: string]: NodeInfo }, mode: TreeRefreshMode): NodeInfo {
+  private addNodeToDictionary(
+    id: string | number,
+    rootsInfo: { lastIndex: number },
+    entityWs: any, nodesDic: { [key: string]: NodeInfo },
+    currentNodesDic: { [key: string]: NodeInfo },
+    mode: TreeRefreshMode): NodeInfo {
 
     const existing = nodesDic[id];
     if (!!existing) {
@@ -546,69 +624,6 @@ export class MasterDetailsStore {
       return n;
     }
   }
-}
-
-// this method compares two nodes based on the paths from the root
-const nodeCompare = (n1: NodeInfo, n2: NodeInfo) => {
-
-  let p1 = n1;
-  let p2 = n2;
-
-  // goes up the chain until we are at the same level
-  if (n1.level < n2.level) {
-    for (let i = n2.level - n1.level; i--;) {
-      p2 = p2.parent;
-    }
-  } else {
-    for (let i = n1.level - n2.level; i--;) {
-      p1 = p1.parent;
-    }
-  }
-
-  if (p1 === p2) {
-    // this means one of the nodes is a child of the other
-    // compare levels to make the child larger than the parent
-    return n1.level - n2.level;
-
-  } else {
-
-    // go up the chain until you find siblings of a common parent
-    while (!!p1.parent && p1.parent !== p2.parent) {
-      p1 = p1.parent;
-      p2 = p2.parent;
-    }
-
-    // compare the indices of the siblings
-    return p1.index - p2.index;
-  }
-};
-
-// different preservation modes when refrshing the tree
-export enum TreeRefreshMode {
-
-  // when refreshing the tree, preserve the expansions and master states and only include
-  includeIfAncestorsLoaded,
-
-  // when refreshing the tree, preserve the expansions but update parent statuses to loaded
-  preserveExpansions,
-
-  // when refreshing the tree, ignore the old one entirely and start anew
-  cleanSlate
-}
-
-export class NodeInfo {
-  id: (string | number);
-  level: number;
-  index: number;
-  lastChildIndex = 0;
-  isExpanded: boolean;
-  hasChildren: boolean;
-  parent: NodeInfo;
-  isAdded = false;
-  highlight = false;
-  fromResult = false;
-  status: MasterStatus;
-  notifyCancel$: Subject<void>; // cancels calls on this node's children
 }
 
 // The Workspace of the application stores ALL application wide in-memory state that survives

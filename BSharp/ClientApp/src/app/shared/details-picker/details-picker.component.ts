@@ -7,7 +7,7 @@ import { catchError, debounceTime, map, switchMap, tap, expand, exhaustMap } fro
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { WorkspaceService } from '~/app/data/workspace.service';
-import { addToWorkspace, Key, toString, addSingleToWorkspace } from '~/app/data/util';
+import { addToWorkspace, Key, addSingleToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata } from '~/app/data/entities/base/metadata';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
@@ -123,7 +123,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     // use some RxJS magic to listen to user input and call the backend
     // in order to show the results in a dropdown
     this.userInputSubscription = fromEvent(this.input.nativeElement, 'input').pipe(
-      map((e: any) => <string>e.target.value),
+      map((e: any) => e.target.value as string),
       tap(term => {
 
         // here capture what the user is typing, in case s/he clicks on 'Create'
@@ -376,7 +376,8 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
       return;
     }
 
-    if (Key[toString(event.which)]) {
+    const key: string = event.key;
+    if (Key[key]) {
       let offset = 0;
       // if (this.showEditSelected) {
       //   offset = offset + 1;
@@ -386,7 +387,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
       }
       const maxIndex = this._searchResults.length - 1 + offset;
 
-      switch (event.which) {
+      switch (key) {
         case Key.ArrowDown:
           // Event was handled
           event.preventDefault();

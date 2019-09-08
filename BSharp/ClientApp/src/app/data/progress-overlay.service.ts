@@ -17,7 +17,7 @@ export class ProgressOverlayService {
 
   startAsyncOperation(key: string, labelName?: string) {
     const copy = this.progress.slice();
-    copy.push({ key: key, labelName: labelName });
+    copy.push({ key, labelName });
     this.progress = copy;
   }
 

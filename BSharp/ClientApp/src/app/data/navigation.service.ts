@@ -36,6 +36,7 @@ export class NavigationService {
   }
 
   private get isStandalone() {
+    // tslint:disable-next-line:no-string-literal
     return window.navigator['standalone'] || window.matchMedia('(display-mode: standalone)').matches;
   }
 }

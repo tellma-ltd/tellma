@@ -6,7 +6,7 @@ import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
-import { TemplateArguments_Format } from '~/app/data/dto/template-arguments';
+import { TemplateArguments_format } from '~/app/data/dto/template-arguments';
 import { addToWorkspace, downloadBlob } from '~/app/data/util';
 import {
   MasterDetailsStore,
@@ -114,7 +114,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   exportFileName: string;
 
   @Output()
-  select = new EventEmitter<number | string>();
+  choose = new EventEmitter<number | string>(); // Fired in popup mode to indicate choosing an item
 
   @Output()
   create = new EventEmitter<void>();
@@ -197,7 +197,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   ////////////////// END - TREE STUFF
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private router: Router,
+  constructor(
+    private workspace: WorkspaceService, private api: ApiService, private router: Router,
     private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) {
 
     // Use some RxJS magic to refresh the data as the user changes the parameters
@@ -433,12 +434,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     // Retrieve the entities
     return this.crud.get({
-      top: top,
-      skip: skip,
-      orderby: orderby,
-      search: search,
-      select: select,
-      filter: filter,
+      top,
+      skip,
+      orderby,
+      search,
+      select,
+      filter,
     }).pipe(
       tap((response: GetResponse) => {
         s = this.state; // get the source
@@ -477,8 +478,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     const parentId = parentNode.id;
     const isString = !!this.collectionPart ?
-      metadata[this.collectionPart](this.workspace.current, this.translate, null).properties['Id'].control === 'text' :
-      isNaN(<any>parentId); // TODO make this more robust
+      metadata[this.collectionPart](this.workspace.current, this.translate, null).properties.Id.control === 'text' :
+      isNaN(parentId as any); // TODO make this more robust
 
     // capture the state object and clear the details object
     let s = this.state;
@@ -501,8 +502,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     crud.get({
       top: 2500,
       orderby: 'Node',
-      filter: filter,
-      select: select
+      filter,
+      select
       // expand: this.expand
     }).pipe(
       tap((response: GetResponse) => {
@@ -944,7 +945,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   onSelect(id: number | string) {
     if (this.isPopupMode) {
-      this.select.emit(id);
+      this.choose.emit(id);
     } else {
       this.router.navigate(['.', id], { relativeTo: this.route });
     }
@@ -1034,8 +1035,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   get formatChoices(): { name: string, value: any }[] {
 
     if (!this._formatChoices) {
-      this._formatChoices = Object.keys(TemplateArguments_Format)
-        .map(key => ({ name: TemplateArguments_Format[key], value: key }));
+      this._formatChoices = Object.keys(TemplateArguments_format)
+        .map(key => ({ name: TemplateArguments_format[key], value: key }));
     }
 
     return this._formatChoices;
@@ -1142,7 +1143,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       filter: this.filter(),
       expand: null,
       inactive: s.inactive,
-      format: format
+      format
     }).pipe(tap(
       (blob: Blob) => {
         this.showExportSpinner = false;
@@ -1335,8 +1336,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     const filterState = this.state.builtInFilterSelections;
     const disjunctions: string[] = [];
     const groupNames = Object.keys(this.filterDefinition);
-    for (let i = 0; i < groupNames.length; i++) {
-      const groupName = groupNames[i];
+    for (const groupName of groupNames) {
       const expressions: string[] = [];
       const groupState = filterState[groupName];
       if (!!groupState) {

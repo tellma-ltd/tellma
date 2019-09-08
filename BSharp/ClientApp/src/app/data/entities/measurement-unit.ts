@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { EntityForSave } from './base/entity-for-save';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,15 +27,14 @@ export class MeasurementUnit extends MeasurementUnitForSave {
   ModifiedById: number | string;
 }
 
-// Choice list (Also repeated in measurement units master template)
 export const MeasurementUnit_UnitType = {
-  'Pure': 'MU_Pure',
-  'Time': 'MU_Time',
-  'Distance': 'MU_Distance',
-  'Count': 'MU_Count',
-  'Mass': 'MU_Mass',
-  'Volume': 'MU_Volume',
-  'Money': 'MU_Money'
+  Pure: 'MU_Pure',
+  Time: 'MU_Time',
+  Distance: 'MU_Distance',
+  Count: 'MU_Count',
+  Mass: 'MU_Mass',
+  Volume: 'MU_Volume',
+  Money: 'MU_Money'
 };
 
 const _select = ['', '2', '3'].map(pf => 'Description' + pf);

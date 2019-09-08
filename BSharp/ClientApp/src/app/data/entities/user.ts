@@ -1,10 +1,10 @@
+// tslint:disable:variable-name
 import { RoleMembership, RoleMembershipForSave } from './role-membership';
 import { SettingsForClient } from './settings';
 import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
-import { EntityWithKey } from './base/entity-with-key';
 
 export class UserForSave<TRoleMembership = RoleMembershipForSave> extends EntityForSave {
     Email: string;
@@ -45,7 +45,7 @@ export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subty
       select: _select,
       apiEndpoint: 'users',
       orderby: ['Email'],
-      format: (item: EntityWithKey) => item['Email'], // ws.getMultilingualValueImmediate(item, _select[0]),
+      format: (item: UserForSave) => item.Email, // ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
         Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Email: { control: 'text', label: trx.instant('User_Email') },

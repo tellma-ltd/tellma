@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Subject, of, Observable } from 'rxjs';
+import { Subject, of, Observable, Observer } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { StorageService } from '~/app/data/storage.service';
@@ -100,7 +100,8 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
     this.isDisabled = isDisabled;
   }
 
-  constructor(private api: ApiService, private workspace: WorkspaceService,
+  constructor(
+    private api: ApiService, private workspace: WorkspaceService,
     private storage: StorageService, private modalService: NgbModal) {
 
     this.notifyUpdate$ = new Subject<void>();
@@ -214,7 +215,7 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
               this.dataUrl = dataUrl;
 
               // cache it in local storage for the future
-              this.storage.setItem(storageKey, JSON.stringify({ imageId: b.imageId || imageId, dataUrl: dataUrl }));
+              this.storage.setItem(storageKey, JSON.stringify({ imageId: b.imageId || imageId, dataUrl }));
 
             }))),
           catchError((error: any) => {
@@ -236,11 +237,11 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
 
   private getDataURL(blob: Blob): Observable<string> {
     const reader = new FileReader();
-    const obs$ = Observable.create((obs: any) => {
+    const obs$ = new Observable<string>((obs: Observer<string>) => {
       // implement the observable contract based on reader
       reader.onloadend = () => {
 
-        const data = <string>reader.result;
+        const data = reader.result as string;
         obs.next(data);
         obs.complete();
       };
@@ -299,7 +300,7 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
   }
 
   public onFileSelected(input: any) {
-    const files = <FileList>input.files;
+    const files = input.files as FileList;
 
     if (!files || files.length === 0) {
       return;

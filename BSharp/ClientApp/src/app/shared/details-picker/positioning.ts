@@ -10,10 +10,10 @@ export class Positioning {
     }
 
     private offsetParent(element: HTMLElement): HTMLElement {
-        let offsetParentEl = <HTMLElement>element.offsetParent || document.documentElement;
+        let offsetParentEl = element.offsetParent as HTMLElement || document.documentElement;
 
         while (offsetParentEl && offsetParentEl !== document.documentElement && this.isStaticPositioned(offsetParentEl)) {
-            offsetParentEl = <HTMLElement>offsetParentEl.offsetParent;
+            offsetParentEl = offsetParentEl.offsetParent as HTMLElement;
         }
 
         return offsetParentEl || document.documentElement;
@@ -90,12 +90,12 @@ export class Positioning {
         const placementSecondary = placement.split('-')[1] || 'center';
 
         const targetElPosition: ClientRect = {
-            'height': targetElBCR.height || targetElement.offsetHeight,
-            'width': targetElBCR.width || targetElement.offsetWidth,
-            'top': 0,
-            'bottom': targetElBCR.height || targetElement.offsetHeight,
-            'left': 0,
-            'right': targetElBCR.width || targetElement.offsetWidth
+            height: targetElBCR.height || targetElement.offsetHeight,
+            width: targetElBCR.width || targetElement.offsetWidth,
+            top: 0,
+            bottom: targetElBCR.height || targetElement.offsetHeight,
+            left: 0,
+            right: targetElBCR.width || targetElement.offsetWidth
         };
 
         switch (placementPrimary) {
@@ -211,10 +211,10 @@ export class Positioning {
         availablePlacementArr: Array<string>) {
             const html = document.documentElement;
         // check for left-bottom
-        if (targetElemClientRect.height <= hostElemClientRect.bottom) {
+            if (targetElemClientRect.height <= hostElemClientRect.bottom) {
             availablePlacementArr.splice(availablePlacementArr.length, 1, primaryPlacement + '-bottom');
         }
-        if ((window.innerHeight || html.clientHeight) - hostElemClientRect.top >= targetElemClientRect.height) {
+            if ((window.innerHeight || html.clientHeight) - hostElemClientRect.top >= targetElemClientRect.height) {
             availablePlacementArr.splice(availablePlacementArr.length, 1, primaryPlacement + '-top');
         }
     }
@@ -229,10 +229,10 @@ export class Positioning {
         availablePlacementArr: Array<string>) {
             const html = document.documentElement;
         // check for left-bottom
-        if ((window.innerWidth || html.clientWidth) - hostElemClientRect.left >= targetElemClientRect.width) {
+            if ((window.innerWidth || html.clientWidth) - hostElemClientRect.left >= targetElemClientRect.width) {
             availablePlacementArr.splice(availablePlacementArr.length, 1, primaryPlacement + '-left');
         }
-        if (targetElemClientRect.width <= hostElemClientRect.right) {
+            if (targetElemClientRect.width <= hostElemClientRect.right) {
             availablePlacementArr.splice(availablePlacementArr.length, 1, primaryPlacement + '-right');
         }
     }
@@ -260,7 +260,7 @@ export function positionElements(
     if (hasAuto >= 0) {
         ['top', 'bottom', 'left', 'right', 'top-left', 'top-right', 'bottom-left', 'bottom-right', 'left-top',
             'left-bottom', 'right-top', 'right-bottom',
-        ].forEach(function (obj) {
+        ].forEach(obj => {
             if (placementVals.find(val => val.search('^' + obj) !== -1) == null) {
                 placementVals.splice(hasAuto++, 1, obj as Placement);
             }
@@ -268,7 +268,8 @@ export function positionElements(
     }
 
     // coordinates where to position
-    let topVal = 0, leftVal = 0;
+    let topVal = 0;
+    let leftVal = 0;
     let appliedPlacement: Placement;
     // get available placements
     const availablePlacements = positionService.getAvailablePlacements(hostElement, targetElement);
@@ -277,7 +278,7 @@ export function positionElements(
         // check if passed placement is present in the available placement or otherwise apply the last placement in the
         // passed placement list
         if ((availablePlacements.find(val => val === item) != null) || (placementVals.length === index + 1)) {
-            appliedPlacement = <Placement>item;
+            appliedPlacement = item as Placement;
             const pos = positionService.positionElements(hostElement, targetElement, item, appendToBody);
             topVal = pos.top;
             leftVal = pos.left;

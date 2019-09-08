@@ -19,7 +19,8 @@ export class RootShellComponent implements OnInit, OnDestroy {
 
   private _activeLanguages: string[];
 
-  constructor(public workspace: WorkspaceService, public nav: NavigationService, @Inject(DOCUMENT) private document: Document,
+  constructor(
+    public workspace: WorkspaceService, public nav: NavigationService, @Inject(DOCUMENT) private document: Document,
     private translate: TranslateService, private progress: ProgressOverlayService, private auth: AuthService) {
   }
 

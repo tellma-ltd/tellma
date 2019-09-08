@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { Entity } from './base/entity';
 
 export class SettingsForSave extends Entity {

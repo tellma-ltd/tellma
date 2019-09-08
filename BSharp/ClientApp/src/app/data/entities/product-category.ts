@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from './settings';
 import { EntityDescriptor } from './base/metadata';

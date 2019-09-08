@@ -85,7 +85,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
     if (!!model && !!model.Id) {
       this.agentsApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
-      ).subscribe(null, this.details.handleActionError);
+      ).subscribe({ error: this.details.handleActionError });
     }
   }
 
@@ -93,7 +93,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
     if (!!model && !!model.Id) {
       this.agentsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
-      ).subscribe(null, this.details.handleActionError);
+      ).subscribe({ error: this.details.handleActionError });
     }
   }
 

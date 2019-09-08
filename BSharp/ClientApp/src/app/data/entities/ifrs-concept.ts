@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';

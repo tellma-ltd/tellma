@@ -1,3 +1,4 @@
+// tslint:disable:variable-name
 export class ImportArguments {
   mode?: 'Insert' | 'Update' | 'Merge';
 }
