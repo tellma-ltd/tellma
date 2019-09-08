@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [rpt].[sp_ResourcesPicks]
 	@Ids dbo.[IdList] READONLY
 AS
-	SELECT 	R.[Id], [IfrsClassificationId], R.[Name], R.[IsActive], R.[IsBatch], R.[Code],
+	SELECT 	R.[Id], [ResourceType], R.[Name], R.[IsActive], R.[Code],
 		MU.[Name] AS [Unit], [UnitMonetaryValue], MF.[Name] AS [Currency], [UnitMass], MM.[Name] AS [MassUnit], [UnitVolume], MV.[Name] AS [VolumeUnit],
 		[UnitArea], MA.[Name] AS [AreaUnit], [UnitLength], ML.[Name] AS [LengthUnit], [UnitTime], MT.[Name] AS [TimeUnit], [UnitCount], MC.[Name] AS [CountUnit]
 	FROM dbo.Resources R
@@ -15,7 +15,7 @@ AS
 	LEFT JOIN dbo.MeasurementUnits MC ON R.[CountUnitId] = MC.[Id]
 	WHERE R.[Id] IN (SELECT [Id] FROM @Ids);
 
-	SELECT R.[Name], RP.[Id] As InstanceId, RP.[Code], RP.[ProductionDate], 
+	SELECT R.[Name], RP.[Id] As ResourcePickId, RP.[Code], RP.[ProductionDate], 
 			RP.[MonetaryValue], RP.[Mass], RP.[Volume], RP.[Area], RP.[Length], RP.[Time], RP.[Count]
 	FROM dbo.[ResourcePicks] RP 
 	JOIN dbo.Resources R ON R.Id = RP.ResourceId

@@ -15,38 +15,38 @@ BEGIN
 		A.TaxIdentificationNumber As [Employee TIN],
 		A.[Name] As [Employee Full Name],
 		SUM(CASE 
-			WHEN (J.[IfrsClassificationId] = N'ShorttermEmployeeBenefitsAccruals' 
+			WHEN (J.[IfrsAccountClassificationId] = N'ShorttermEmployeeBenefitsAccruals' 
 			AND J.ResourceId = @BasicSalaryResourceId)
 			THEN J.Direction * J.[Value] Else 0 
 			END) AS [Basic Salary],
 		SUM(CASE
-			WHEN (J.[IfrsClassificationId] = N'ShorttermEmployeeBenefitsAccruals' 
+			WHEN (J.[IfrsAccountClassificationId] = N'ShorttermEmployeeBenefitsAccruals' 
 			AND J.ResourceId = @TransportationAllowanceResourceId)
 			THEN J.Direction * J.[Value] Else 0 
 			END) AS [Transportation],
 		SUM(CASE
-			WHEN (J.[IfrsClassificationId] = N'ShorttermEmployeeBenefitsAccruals' 
+			WHEN (J.[IfrsAccountClassificationId] = N'ShorttermEmployeeBenefitsAccruals' 
 			AND J.ResourceId = @OvertimeResourceId)
 			THEN J.Direction * J.[Value] Else 0 
 			END) AS [Overtime],
 		SUM(CASE 
-			WHEN (J.[IfrsClassificationId] = N'CurrentEmployeeIncomeTaxPayable')
+			WHEN (J.[IfrsAccountClassificationId] = N'CurrentEmployeeIncomeTaxPayable')
 			THEN J.Direction * J.[Value] Else 0 
 			END) AS [Income Tax],
 		SUM(CASE 
-			WHEN (J.[IfrsClassificationId] IN (N'ShorttermPensionContributionAccruals', 'CurrentSocialSecurityTaxPayable'))
+			WHEN (J.[IfrsAccountClassificationId] IN (N'ShorttermPensionContributionAccruals', 'CurrentSocialSecurityTaxPayable'))
 			THEN J.Direction * J.[Value] Else 0 
 			END) AS [Pension Contribution 7%],
 		SUM(CASE 
-			WHEN (J.[IfrsClassificationId] = N'CurrentReceivablesFromEmployees')
+			WHEN (J.[IfrsAccountClassificationId] = N'CurrentReceivablesFromEmployees')
 			THEN J.Direction * J.[Value] Else 0 
 			END) AS [Loans],
 		SUM(CASE 
-			WHEN (J.[IfrsClassificationId] = N'CurrentPayablesToEmployees')
+			WHEN (J.[IfrsAccountClassificationId] = N'CurrentPayablesToEmployees')
 			THEN -J.Direction * J.[Value] Else 0 
 			END) AS [Net Pay],
 		SUM(CASE 
-			WHEN (J.[IfrsClassificationId] = N'ShorttermPensionContributionAccruals')
+			WHEN (J.[IfrsAccountClassificationId] = N'ShorttermPensionContributionAccruals')
 			THEN J.Direction * J.[Value] Else 0 
 			END) AS [Pension Contribution 11%]
 	FROM [dbo].[fi_Journal](@fromDate, @toDate) J

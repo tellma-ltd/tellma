@@ -24,7 +24,7 @@ SET NOCOUNT ON;
 		THEN
 			UPDATE SET
 				t.[CustomClassificationId]			= s.[CustomClassificationId], 
-				t.[IfrsClassificationId]					= s.[IfrsClassificationId],
+				t.[IfrsAccountClassificationId]					= s.[IfrsClassificationId],
 				t.[Name]							= s.[Name],
 				t.[Name2]							= s.[Name2],
 				t.[Name3]							= s.[Name3],
@@ -38,7 +38,7 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]						= @Now,
 				t.[ModifiedById]					= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([CustomClassificationId], [IfrsClassificationId],
+			INSERT ([CustomClassificationId], [IfrsAccountClassificationId],
 				[Name], [Name2], [Name3], [Code], [PartyReference], [AgentId],
 				[DefaultDebitIfrsEntryClassificationId], [DefaultCreditIfrsEntryClassificationId], [ResponsibilityCenterId], [DefaultResourceId])
 			VALUES (s.[CustomClassificationId], s.[IfrsClassificationId],

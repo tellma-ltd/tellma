@@ -36,7 +36,7 @@ BEGIN
 		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		WHERE J.[IfrsEntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
-		AND R.[IfrsClassificationId] = N'FinishedGoods'
+		AND R.[ResourceType] = N'FinishedGoods'
 		GROUP BY J.ResponsibilityCenterId, R.ResourceLookup1Id
 	),
 	PlannedDetails AS (

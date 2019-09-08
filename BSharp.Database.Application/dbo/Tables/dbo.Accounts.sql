@@ -8,7 +8,7 @@
 	-- or can some be combined into catchall "other", like Other Inventories, Other property plant and equipment, etc.
 	-- To generate additional disclosures, the user must design disclosures using appropriate Ifrs concepts, and then each account 
 	-- could be mapped to any concept from that disclosure.
-	[IfrsClassificationId]						NVARCHAR (255)		CONSTRAINT [FK_Accounts__IfrsClassificationId] FOREIGN KEY ([IfrsClassificationId]) REFERENCES [dbo].[IfrsAccountClassifications] ([Id]),
+	[IfrsAccountClassificationId]				NVARCHAR (255)		CONSTRAINT [FK_Accounts__IfrsAccountClassificationId] FOREIGN KEY ([IfrsAccountClassificationId]) REFERENCES [dbo].[IfrsAccountClassifications] ([Id]),
 	[Name]										NVARCHAR (255)		NOT NULL CONSTRAINT [CK_Accounts__Name] UNIQUE,
 	[Name2]										NVARCHAR (255),
 	[Name3]										NVARCHAR (255),
@@ -46,7 +46,7 @@
 	[ModifiedAt]								DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[ModifiedById]								INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Accounts__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),
 	CONSTRAINT [CK_Accounts__ExpenseByNatureIsRequired] CHECK(
-		([IfrsClassificationId] NOT IN (N'CostOfSales', N'DistributionCosts', N'AdministrativeExpense'))
+		([IfrsAccountClassificationId] NOT IN (N'CostOfSales', N'DistributionCosts', N'AdministrativeExpense'))
 		OR (
 			[DefaultDebitIfrsEntryClassificationId] IS NOT NULL
 			AND [DefaultCreditIfrsEntryClassificationId] IS NOT NULL

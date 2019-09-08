@@ -5,7 +5,7 @@
 AS 
 RETURN
 	SELECT 	
-		[Id], [IfrsClassificationId], [Name], [IsActive], [IsBatch], [Code]
+		[Id], [ResourceType], [Name], [IsActive], [Code]
 	FROM dbo.Resources
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)
 GO

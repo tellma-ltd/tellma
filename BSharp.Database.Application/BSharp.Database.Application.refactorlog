@@ -159,4 +159,88 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[IfrsClassificationId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e65a1159-5838-4584-b943-f223730fed05" ChangeDateTime="09/08/2019 15:18:40">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[IfrsClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IfrsAccountClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3ca1e965-de06-4e53-b130-160d8769faf3" ChangeDateTime="09/08/2019 15:19:20">
+    <Property Name="ElementName" Value="[dbo].[Resources].[IfrsClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IfrsResourceClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d997b49d-9847-47ed-ac68-398edaf567d5" ChangeDateTime="09/08/2019 15:42:21">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[InstanceLookup1Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PickLookup1Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2664975d-7558-42fd-a74f-6c232ba89671" ChangeDateTime="09/08/2019 15:42:34">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[InstanceLookup2Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PickLookup2Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3ef6c58a-d45e-419a-aaee-0ee3e6c3782a" ChangeDateTime="09/08/2019 15:42:47">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[InstanceLookup3Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PickLookup3Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6cca315a-4467-4822-af7a-96ac9d6079e5" ChangeDateTime="09/08/2019 15:43:00">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[InstanceLookup4Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PickLookup4Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1eb56180-02e3-466f-a453-d740709c2ee2" ChangeDateTime="09/08/2019 15:43:13">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[InstanceLookup5Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PickLookup5Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eac2347e-06be-46ee-bf14-6d9b47519ee5" ChangeDateTime="09/08/2019 15:51:04">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[InstanceString1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourcePickString1]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eea8cdbb-1446-4a3e-a1ba-5fda6dbd4ece" ChangeDateTime="09/08/2019 15:51:23">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[InstanceString2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourcePickString2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2b0d53b4-dbf0-4974-861e-a27fed1d738d" ChangeDateTime="09/08/2019 15:51:51">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[PickLookup1Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourcePickLookup1Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f368ac2d-89fb-4ea8-906d-7e743d486bd2" ChangeDateTime="09/08/2019 17:11:07">
+    <Property Name="ElementName" Value="[dbo].[Resources].[IfrsResourceClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceType]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2008081d-ef37-4afd-a79f-d452b7503eba" ChangeDateTime="09/08/2019 17:12:44">
+    <Property Name="ElementName" Value="[dbo].[Resources].[CustomClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceClassificationId]" />
+  </Operation>
 </Operations>

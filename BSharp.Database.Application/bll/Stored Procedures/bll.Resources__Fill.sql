@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Resources__Fill]
+	@ResourceType NVARCHAR (255),
 	@Resources [dbo].[ResourceList] READONLY
 AS
 SET NOCOUNT ON;

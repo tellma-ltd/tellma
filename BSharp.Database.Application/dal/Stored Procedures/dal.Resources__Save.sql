@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Save]
+	@ResourceType NVARCHAR (255),
 	@Resources [dbo].[ResourceList] READONLY,
 	@Picks [dbo].[ResourcePickList] READONLY,
 	@ReturnIds BIT = 0
@@ -15,7 +16,7 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Resources] AS t
 		USING (
 			SELECT 	
-				[Index], [Id], [IfrsClassificationId], [Name], [Name2], [Name3], [IsBatch], 
+				[Index], [Id], [ResourceClassificationId], [Name], [Name2], [Name3], 
 				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
 				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
@@ -25,11 +26,10 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-				t.[IfrsClassificationId]			= s.[IfrsClassificationId],     
+				t.[ResourceClassificationId]= s.[ResourceClassificationId],     
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
-				t.[IsBatch]					= s.[IsBatch],
 				t.[UnitId]					= s.[UnitId],
 				t.[UnitMonetaryValue]		= s.[UnitMonetaryValue],
 				t.[CurrencyId]				= s.[CurrencyId],
@@ -56,12 +56,12 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([IfrsClassificationId], [Name], [Name2], [Name3], [IsBatch],
+			INSERT ([ResourceType], [ResourceClassificationId], [Name], [Name2], [Name3],
 				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
 				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
 				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id])
-			VALUES (s.[IfrsClassificationId], s.[Name], s.[Name2], s.[Name3], s.[IsBatch],
+			VALUES (@ResourceType, s.[ResourceClassificationId], s.[Name], s.[Name2], s.[Name3],
 				s.[UnitId], s.[UnitMonetaryValue], s.[CurrencyId], s.[UnitMass], s.[MassUnitId], s.[UnitVolume], s.[VolumeUnitId],
 				s.[UnitArea], s.[AreaUnitId], s.[UnitLength], s.[LengthUnitId], s.[UnitTime], s.[TimeUnitId], s.[UnitCount], s.[CountUnitId],
 				s.[Code], s.[SystemCode], s.[Memo], s.[CustomsReference] ,s.[UniversalProductCode], s.[PreferredSupplierId],
