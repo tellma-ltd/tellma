@@ -36,7 +36,7 @@
         </b-text-editor>
 
         <!-- Filter -->
-        <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement" bDropdownAppendToBody>
+        <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">
           <button class="btn btn-light btn-sm b-white-button d-flex b-no-arrow b-filter-button" ngbDropdownToggle
             type="button" title="{{ 'Filter' | translate }}">
             <fa-icon icon="filter"></fa-icon>
@@ -109,7 +109,7 @@
 
         <!-- Data dropdown -->
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement"
-          *ngIf="showDataDropdown" bDropdownAppendToBody>
+          *ngIf="showDataDropdown">
           <button type="button"
             class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle" ngbDropdownToggle>
             {{ 'Data' | translate }}

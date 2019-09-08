@@ -22,17 +22,17 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
 export interface EntityDescriptor {
 
     /**
-     * The DTO properties that need to be selected from the server for the format function to succeed
+     * The Entity properties that need to be selected from the server for the format function to succeed
      */
     select: string[];
 
     /**
-     * When ordering by a nav property of this DTO type, this value specifies the OData 'orderby' value to use
+     * When ordering by a nav property of this Entity type, this value specifies the OData 'orderby' value to use
      */
     orderby: string[];
 
     /**
-     * The server endpoint from which to retrieve DTOs of this type, after the 'https://www.bsharp.online/api/' part
+     * The server endpoint from which to retrieve Entities of this type, after the 'https://www.bsharp.online/api/' part
      */
     apiEndpoint: string;
 
@@ -153,19 +153,20 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
 export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor | BooleanPropDescriptor
     | NumberPropDescriptor | DatePropDscriptor | DatetimePropDscriptor | NavigationPropDescriptor | StatePropDescriptor;
 
-export function dtoDescriptorImpl(pathArray: string[], baseCollection: string, baseSubtype: string,
+export function entityDescriptorImpl(
+    pathArray: string[], baseCollection: string, baseSubtype: string,
     ws: TenantWorkspace, trx: TranslateService, ignoreLast = false, labels: string[] = null): EntityDescriptor {
 
     if (!baseCollection) {
-        throw new Error(`The baseCollection is not specified, therefore cannot retrieve the DTO descriptor`);
+        throw new Error(`The baseCollection is not specified, therefore cannot retrieve the Entity descriptor`);
     }
 
     const length = pathArray.length - (ignoreLast ? 1 : 0);
-    let currentDtoDesc = metadata[baseCollection](ws, trx, baseSubtype);
+    let currentEntityDesc = metadata[baseCollection](ws, trx, baseSubtype);
 
     for (let i = 0; i < length; i++) {
         const step = pathArray[i];
-        const propDesc = currentDtoDesc.properties[step];
+        const propDesc = currentEntityDesc.properties[step];
 
         if (!propDesc) {
             throw new Error(`Property ${step} does not exist`);
@@ -181,20 +182,21 @@ export function dtoDescriptorImpl(pathArray: string[], baseCollection: string, b
             const coll = propDesc.collection || propDesc.type;
             const subtype = propDesc.subtype;
 
-            currentDtoDesc = metadata[coll](ws, trx, subtype);
+            currentEntityDesc = metadata[coll](ws, trx, subtype);
         }
     }
 
-    return currentDtoDesc;
+    return currentEntityDesc;
 }
 
-export function propDescriptorImpl(pathArray: string[], baseCollection: string, baseSubtype: string,
+export function propDescriptorImpl(
+    pathArray: string[], baseCollection: string, baseSubtype: string,
     ws: TenantWorkspace, trx: TranslateService, labels: string[] = null): PropDescriptor {
 
     if (pathArray.length > 0) {
-        const dtoDesc = dtoDescriptorImpl(pathArray, baseCollection, baseSubtype, ws, trx, true, labels);
+        const entityDesc = entityDescriptorImpl(pathArray, baseCollection, baseSubtype, ws, trx, true, labels);
         const lastStep = pathArray[pathArray.length - 1];
-        const result = dtoDesc.properties[lastStep];
+        const result = entityDesc.properties[lastStep];
         if (!result) {
             throw new Error(`Property '${lastStep}' does not exist`);
         } else {

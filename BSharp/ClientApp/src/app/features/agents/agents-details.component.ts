@@ -13,8 +13,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 
 @Component({
   selector: 'b-agents-details',
-  templateUrl: './agents-details.component.html',
-  styleUrls: ['./agents-details.component.scss']
+  templateUrl: './agents-details.component.html'
 })
 export class AgentsDetailsComponent extends DetailsBaseComponent {
 

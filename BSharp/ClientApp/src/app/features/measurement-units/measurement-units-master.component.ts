@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
@@ -6,12 +6,10 @@ import { MeasurementUnit_UnitType } from '~/app/data/entities/measurement-unit';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
-import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 
 @Component({
   selector: 'b-measurement-units-master',
-  templateUrl: './measurement-units-master.component.html',
-  styleUrls: ['./measurement-units-master.component.scss']
+  templateUrl: './measurement-units-master.component.html'
 })
 export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
 

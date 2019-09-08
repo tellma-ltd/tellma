@@ -10,8 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-measurement-units-details',
-  templateUrl: './measurement-units-details.component.html',
-  styleUrls: ['./measurement-units-details.component.scss']
+  templateUrl: './measurement-units-details.component.html'
 })
 export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
 

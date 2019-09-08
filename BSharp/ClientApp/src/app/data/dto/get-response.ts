@@ -1,14 +1,14 @@
 import { EntityWithKey } from '../entities/base/entity-with-key';
 import { Entity } from '../entities/base/entity';
 
-export class EntitiesResponse<TDto extends Entity = EntityWithKey> {
+export class EntitiesResponse<TEntity extends Entity = EntityWithKey> {
   Bag: { [key: string]: any; };
-  Result: TDto[];
+  Result: TEntity[];
   CollectionName: string;
   RelatedEntities: { [key: string]: EntityWithKey[]; };
 }
 
-export class GetResponse extends EntitiesResponse {
+export class GetResponse<TEntity extends Entity = EntityWithKey> extends EntitiesResponse<TEntity> {
   Skip: number;
   Top: number;
   OrderBy: string;

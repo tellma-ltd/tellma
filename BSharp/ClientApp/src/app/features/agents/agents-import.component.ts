@@ -3,8 +3,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
   selector: 'b-agents-import',
-  templateUrl: './agents-import.component.html',
-  styleUrls: ['./agents-import.component.scss']
+  templateUrl: './agents-import.component.html'
 })
 export class AgentsImportComponent implements OnInit {
 

@@ -11,8 +11,7 @@ import { ImportResult } from '~/app/data/dto/import-result';
 
 @Component({
   selector: 'b-import',
-  templateUrl: './import.component.html',
-  styleUrls: ['./import.component.scss']
+  templateUrl: './import.component.html'
 })
 export class ImportComponent implements OnInit, OnDestroy {
 

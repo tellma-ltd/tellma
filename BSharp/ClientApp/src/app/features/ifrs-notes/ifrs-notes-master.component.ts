@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
@@ -9,8 +9,7 @@ import { addToWorkspace } from '~/app/data/util';
 
 @Component({
   selector: 'b-ifrs-notes-master',
-  templateUrl: './ifrs-notes-master.component.html',
-  styleUrls: ['./ifrs-notes-master.component.scss']
+  templateUrl: './ifrs-notes-master.component.html'
 })
 export class IfrsNotesMasterComponent extends MasterBaseComponent {
 

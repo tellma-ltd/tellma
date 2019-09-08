@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -8,8 +8,7 @@ import { addToWorkspace } from '~/app/data/util';
 
 @Component({
   selector: 'b-product-categories-master',
-  templateUrl: './product-categories-master.component.html',
-  styleUrls: ['./product-categories-master.component.scss']
+  templateUrl: './product-categories-master.component.html'
 })
 export class ProductCategoriesMasterComponent extends MasterBaseComponent {
 

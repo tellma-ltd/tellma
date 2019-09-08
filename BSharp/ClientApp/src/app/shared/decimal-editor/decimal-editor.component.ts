@@ -14,7 +14,7 @@ export class DecimalEditorComponent implements ControlValueAccessor {
   @Input()
   decimalPlaces: number = null;
 
-  @ViewChild('input')
+  @ViewChild('input', { static: true })
   input: ElementRef;
 
   @HostBinding('class.w-100')

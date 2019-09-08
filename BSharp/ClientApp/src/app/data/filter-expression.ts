@@ -8,8 +8,8 @@ export class OperatorInfo {
 
 export class FilterTools {
     private static _operators: { [op: string]: OperatorInfo } = {
-        'and': new OperatorInfo(6, 'left'),
-        'or': new OperatorInfo(7, 'left'),
+        and: new OperatorInfo(6, 'left'),
+        or: new OperatorInfo(7, 'left'),
     };
 
     public static areEquivalent(exp1: FilterExpression, exp2: FilterExpression) {

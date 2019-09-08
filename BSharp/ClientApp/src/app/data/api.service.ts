@@ -267,7 +267,7 @@ export class ApiService {
     };
   }
 
-  public crudFactory<TDto extends EntityForSave = EntityForSave, TDtoForSave extends EntityForSave = EntityForSave>(
+  public crudFactory<TEntity extends EntityForSave, TEntityForSave extends EntityForSave = EntityForSave>(
     endpoint: string, cancellationToken$: Observable<void>) {
     return {
       get: (args: GetArguments) => {
@@ -275,7 +275,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}?${params}`;
 
-        const obs$ = this.http.get<GetResponse>(url).pipe(
+        const obs$ = this.http.get<GetResponse<TEntity>>(url).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
@@ -297,7 +297,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}/${id}?${params}`;
 
-        const obs$ = this.http.get<GetByIdResponse>(url).pipe(
+        const obs$ = this.http.get<GetByIdResponse<TEntity>>(url).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);
@@ -308,7 +308,7 @@ export class ApiService {
         return obs$;
       },
 
-      save: (entities: TDtoForSave[], args: SaveArguments) => {
+      save: (entities: TEntityForSave[], args: SaveArguments) => {
         this.showRotator = true;
         args = args || {};
         const paramsArray: string[] = [];
@@ -322,7 +322,7 @@ export class ApiService {
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}?${params}`;
 
-        const obs$ = this.http.post<EntitiesResponse>(url, entities, {
+        const obs$ = this.http.post<EntitiesResponse<TEntity>>(url, entities, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
         }).pipe(
           tap(() => this.showRotator = false),
@@ -483,7 +483,7 @@ export class ApiService {
       const url = appconfig.apiAddress + `api/${endpoint}/activate?${params}`;
 
       this.showRotator = true;
-      const obs$ = this.http.put<EntitiesResponse>(url, ids, {
+      const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }).pipe(
         tap(() => this.showRotator = false),
@@ -518,7 +518,7 @@ export class ApiService {
       const url = appconfig.apiAddress + `api/${endpoint}/deactivate?${params}`;
 
       this.showRotator = true;
-      const obs$ = this.http.put<EntitiesResponse>(url, ids, {
+      const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
         headers: new HttpHeaders({ 'Content-Type': 'application/json' })
       }).pipe(
         tap(() => this.showRotator = false),
@@ -580,14 +580,14 @@ export class ApiService {
   } {
     const friendlyStructure = (status: number, err: any) => {
       return {
-        status: status,
+        status,
         error: err
       };
     };
 
     // Translates HttpClient's errors into human-friendly errors
     if (error instanceof HttpErrorResponse) {
-      const res = <HttpErrorResponse>error;
+      const res = error as HttpErrorResponse;
 
       switch (res.status) {
         case 0: // Offline

@@ -10,8 +10,7 @@ import { addToWorkspace } from '~/app/data/util';
 
 @Component({
   selector: 'b-product-categories-details',
-  templateUrl: './product-categories-details.component.html',
-  styleUrls: ['./product-categories-details.component.scss']
+  templateUrl: './product-categories-details.component.html'
 })
 export class ProductCategoriesDetailsComponent extends DetailsBaseComponent {
 

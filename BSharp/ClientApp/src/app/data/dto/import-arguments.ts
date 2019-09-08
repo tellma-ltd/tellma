@@ -3,7 +3,7 @@ export class ImportArguments {
 }
 
 export const ImportArguments_Mode = {
-  'Insert': 'Mode_Insert',
-  'Update': 'Mode_Update',
-  'Merge': 'Mode_Merge'
+  Insert: 'Mode_Insert',
+  Update: 'Mode_Update',
+  Merge: 'Mode_Merge'
 };

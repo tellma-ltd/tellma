@@ -8,8 +8,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 
 @Component({
   selector: 'b-roles-master',
-  templateUrl: './roles-master.component.html',
-  styleUrls: ['./roles-master.component.scss']
+  templateUrl: './roles-master.component.html'
 })
 export class RolesMasterComponent extends MasterBaseComponent {
 

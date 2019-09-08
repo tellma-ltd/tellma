@@ -9,7 +9,7 @@ import { NgControl } from '@angular/forms';
 export class FormGroupComponent {
 
   // this component wraps a component (typically a form field) and optionally adds a label to it
-  // and also optionally displays an error icon shown the errors on that form field, it can also display
+  // and also optionally displays an error icon showing the errors on that form field, it can also display
   // server errors and correctly hides the server errors as soon as the user makes a change on the field
 
   @Input()
@@ -21,7 +21,7 @@ export class FormGroupComponent {
   @Input()
   serverErrors: string[];
 
-  @ContentChild(NgControl)
+  @ContentChild(NgControl, { static : false })
   control: NgControl;
 
   constructor(private workspace: WorkspaceService) { }

@@ -35,14 +35,14 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   private _validationErrors: { [id: string]: string[] } = {}; // on the fields
   private crud = this.api.settingsApi(this.notifyDestruct$); // Just for intellisense
 
-  @ViewChild('errorModal')
+  @ViewChild('errorModal', { static: true })
   public errorModal: TemplateRef<any>;
 
-  @ViewChild('unsavedChangesModal')
+  @ViewChild('unsavedChangesModal', { static: true })
   public unsavedChangesModal: TemplateRef<any>;
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private storage: StorageService,
-    public modalService: NgbModal, private translate: TranslateService) {
+              public modalService: NgbModal, private translate: TranslateService) {
 
 
     // When the notifyFetch$ subject fires, cancel existing backend

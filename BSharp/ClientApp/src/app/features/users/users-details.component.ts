@@ -11,8 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'b-users-details',
-  templateUrl: './users-details.component.html',
-  styleUrls: ['./users-details.component.scss']
+  templateUrl: './users-details.component.html'
 })
 export class UsersDetailsComponent extends DetailsBaseComponent {
 

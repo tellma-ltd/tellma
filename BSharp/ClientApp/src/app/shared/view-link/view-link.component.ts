@@ -2,8 +2,7 @@ import { Component, OnInit, HostBinding, Input } from '@angular/core';
 
 @Component({
   selector: 'b-view-link',
-  templateUrl: './view-link.component.html',
-  styleUrls: ['./view-link.component.scss']
+  templateUrl: './view-link.component.html'
 })
 export class ViewLinkComponent implements OnInit {
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, ViewChild, Input, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { DetailsComponent } from '~/app/shared/details/details.component';
 import { Observable, Subscription } from 'rxjs';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
@@ -32,7 +32,7 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   private detailsSave: Subscription;
   private detailsCancel: Subscription;
 
-  @ViewChild(DetailsComponent)
+  @ViewChild(DetailsComponent, { static: false })
   set details(v: DetailsComponent) {
     if (this._details !== v) {
 

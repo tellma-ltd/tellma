@@ -8,8 +8,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 
 @Component({
   selector: 'b-users-master',
-  templateUrl: './users-master.component.html',
-  styleUrls: ['./users-master.component.scss']
+  templateUrl: './users-master.component.html'
 })
 export class UsersMasterComponent extends MasterBaseComponent {
 

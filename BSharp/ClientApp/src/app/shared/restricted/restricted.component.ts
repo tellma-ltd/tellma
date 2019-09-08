@@ -2,20 +2,13 @@ import { Component, OnInit, Input, HostBinding } from '@angular/core';
 
 @Component({
   selector: 'b-restricted',
-  templateUrl: './restricted.component.html',
-  styleUrls: ['./restricted.component.scss']
+  templateUrl: './restricted.component.html'
 })
-export class RestrictedComponent implements OnInit {
+export class RestrictedComponent {
 
   @HostBinding('class.d-block')
   w100 = true;
 
   @Input()
   metadata: number;
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
 }

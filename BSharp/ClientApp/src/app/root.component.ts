@@ -8,6 +8,7 @@ import { SwUpdate } from '@angular/service-worker';
 import { interval, concat } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ProgressOverlayService } from './data/progress-overlay.service';
+import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'b-root',
@@ -43,12 +44,17 @@ export class RootComponent {
   public showNewUpdateIsAvailable = false;
   public showIEWarning = false;
 
-  constructor(private translate: TranslateService, private workspace: WorkspaceService, private router: Router,
+  constructor(
+    private translate: TranslateService, private workspace: WorkspaceService, private router: Router,
     private api: ApiService, private storage: StorageService, private progress: ProgressOverlayService,
-    private serviceWorker: SwUpdate, appRef: ApplicationRef) {
+    private serviceWorker: SwUpdate, appRef: ApplicationRef, dropdownConfig: NgbDropdownConfig) {
 
-      // If the user navigates to the base address '/', s/he
-      // gets automatically redirected to the last visited url
+    // This came at long last with ng-bootstrap v4.1.0 allowing us to specify that
+    // all dropdowns should be appended to the body by default
+    dropdownConfig.container = 'body';
+
+    // If the user navigates to the base address '/', s/he
+    // gets automatically redirected to the last visited url
     this.router.events.subscribe(e => {
       if (e instanceof NavigationEnd && e.url.indexOf('/app/') !== -1) {
         this.storage.setItem('last_visited_url', e.url);
@@ -71,6 +77,7 @@ export class RootComponent {
     });
 
     // show a message if the user opens the app for the first time on Internet Explorer
+    // tslint:disable-next-line:no-string-literal
     const isIE = (/*@cc_on!@*/false) || (document['documentMode']);
     const dismissedBefore = this.storage.getItem('ie_warning_dismissed');
     this.showIEWarning = isIE && !dismissedBefore;
