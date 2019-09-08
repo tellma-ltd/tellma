@@ -29,7 +29,7 @@ AS
 		E.[BatchCode],
 		E.[DueDate],
 		E.[Quantity],
-		E.[MoneyAmount], -- normalization is already done in the Value and stored in the entry
+		E.[MonetaryValue], -- normalization is already done in the Value and stored in the entry
 		E.[Mass],
 		E.[Volume],
 		E.[Area],

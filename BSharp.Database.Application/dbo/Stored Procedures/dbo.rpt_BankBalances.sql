@@ -4,7 +4,7 @@ AS
 BEGIN
 	SELECT
 		AG.[Name] As BankName, AG.[Name2] As BankName2, AG.[Name3] As BankName3,
-		SUM(J.[MoneyAmount] * J.[Direction]) AS [Balance],
+		SUM(J.[MonetaryValue] * J.[Direction]) AS [Balance],
 		R.[Name] As Currency, R.Name2 As Currency2, R.Name3 As Currency3
 	FROM [dbo].[fi_Journal](NULL, @AsOfDate) J
 	JOIN dbo.Accounts AC ON J.AccountId = AC.Id

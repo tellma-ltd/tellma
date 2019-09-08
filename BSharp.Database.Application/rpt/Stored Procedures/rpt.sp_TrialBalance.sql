@@ -23,7 +23,7 @@ BEGIN
 		SET @Query = @Query + N'
 			T.IfrsEntryClassificationId As IfrsNote,'
 	SET @Query = @Query + N'
-			[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time], [Count],
+			[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],
 			(CASE WHEN T.[Value] > 0 THEN T.[Value] ELSE 0 END) As Debit,
 			(CASE WHEN T.[Value] < 0 THEN -T.[Value] ELSE 0 END) As Credit
 		FROM 
@@ -32,7 +32,7 @@ BEGIN
 	IF (@ByResource = 1) SET @Query = @Query + N'ResourceId, '
 	IF (@ByIfrsEntryClassification = 1) SET @Query = @Query + N'IfrsEntryClassificationId, '
 	SET @Query = @Query + N'
-			CAST(SUM([Direction] * [MoneyAmount]) AS money) AS [MoneyAmount],
+			CAST(SUM([Direction] * [MonetaryValue]) AS money) AS [MoneyAmount],
 			CAST(SUM([Direction] * [Mass]) AS money) AS [Mass],
 			CAST(SUM([Direction] * [Volume]) AS money) AS [Volume],	
 			CAST(SUM([Direction] * [Area]) AS money) AS [Area],
@@ -46,7 +46,7 @@ BEGIN
 	IF (@ByIfrsEntryClassification = 1) SET @Query = @Query + N', IfrsEntryClassificationId'
 	SET @Query = @Query + N'		
 			HAVING
-				SUM([Direction] * [MoneyAmount]) <> 0 OR
+				SUM([Direction] * [MonetaryValue]) <> 0 OR
 				SUM([Direction] * [Mass]) <> 0 OR
 				SUM([Direction] * [Volume]) <> 0 OR
 				SUM([Direction] * [Area]) <> 0 OR

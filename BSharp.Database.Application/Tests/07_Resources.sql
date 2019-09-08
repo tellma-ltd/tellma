@@ -9,7 +9,7 @@ Missing
 */
 BEGIN -- Cleanup & Declarations
 	DECLARE @R1 [dbo].ResourceList, @R2 [dbo].ResourceList, @R3 [dbo].ResourceList;
-	DECLARE @RI1 [dbo].ResourcePickList, @RI2 [dbo].ResourcePickList, @RI3 [dbo].ResourcePickList;
+	DECLARE @RP1 [dbo].ResourcePickList, @RP2 [dbo].ResourcePickList, @RP3 [dbo].ResourcePickList;
 	DECLARE @R1Ids dbo.[IdList], @R2Ids dbo.[IdList], @R3Ids dbo.[idList];
 	DECLARE @R1IndexedIds dbo.IndexedIdList, @R2IndexedIds dbo.IndexedIdList, @R3IndexedIds dbo.IndexedIdList;
 
@@ -22,13 +22,13 @@ BEGIN -- Cleanup & Declarations
 END
 BEGIN -- Inserting
 	INSERT INTO @R1 ([Index],
-		[ResourceType],		[Name],					[Code],		[UnitId]) VALUES
-	(0, N'money',			N'ETB',					N'ETB',		@ETBUnit),
-	(1, N'money',			N'USD',					N'USD',		@USDUnit),
-	(2, N'money',			N'ETB Incoming Checks',	N'ICKETB',	@ETBUnit); --1
+		[ResourceType],		[Name],					[Code],		[UnitId], [CountUnitId]) VALUES
+	(0, N'money',			N'ETB',					N'ETB',		@ETBUnit, @pcsUnit),
+	(1, N'money',			N'USD',					N'USD',		@USDUnit, @pcsUnit),
+	(2, N'money',			N'ETB Incoming Checks',	N'ICKETB',	@ETBUnit, @pcsUnit); --1
 DECLARE @ICKETBIndex INT = (SELECT [Index] FROM @R1 WHERE [Code] = N'ICKETB');
 DECLARE @CBEBank INT, @AWBBank INT;
-INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code], [MoneyAmount], [IssuingBankId]) VALUES
+INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code], [MonetaryValue], [IssuingBankId]) VALUES
 				(@ICKETBIndex,	N'2017.10.01',		N'101009', 6900,		@CBEBank),
 				(@ICKETBIndex,	N'2017.10.15',		N'2308', 17550,			@AWBBank);
 
@@ -42,17 +42,17 @@ INSERT INTO @R1 ([Index],
 	(8, N'financial-instruments',N'Premium Stock',		N'PRMMSTCK',NULL,			@shareUnit);
 DECLARE @ToyotaCamryIndex INT = (SELECT [Index] FROM @R1 WHERE [Name] = N'Toyota Camry 2018');
 DECLARE @ToyotaYarisIndex INT = (SELECT [Index] FROM @R1 WHERE [Name] = N'Toyota Yaris 2018');
-INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code]) VALUES
+INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code]) VALUES
 				(@ToyotaCamryIndex,	N'2017.10.01',		N'101'),
 				(@ToyotaCamryIndex,	N'2017.10.15',		N'102'),
 				(@ToyotaCamryIndex,	N'2017.10.15',		N'199'),
 				(@ToyotaYarisIndex,	N'2017.10.01',		N'201');
 INSERT INTO @R1 ([Index],
-		[ResourceType],		[Name],					[Code],			[UnitId]) VALUES
-	(9, N'raw-materials',	N'HR 1000MMx1.9MM',		N'HR1000x1.9',	@KgUnit),
-	(10, N'raw-materials',	N'CR 1000MMx1.4MM',		N'CR1000x1.4',	@KgUnit);
+		[ResourceType],		[Name],					[Code],			[UnitId], [CountUnitId]) VALUES
+	(9, N'raw-materials',	N'HR 1000MMx1.9MM',		N'HR1000x1.9',	@KgUnit, @pcsUnit),
+	(10, N'raw-materials',	N'CR 1000MMx1.4MM',		N'CR1000x1.4',	@KgUnit, @pcsUnit);
 DECLARE @HotRollIndex INT =  (SELECT [Index] FROM @R1 WHERE [Name] = N'HR 1000MMx1.9MM');
-INSERT INTO @RI1([ResourceIndex], [ProductionDate], [Code], [Mass]) VALUES
+INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code], [Mass]) VALUES
 				(@HotRollIndex,		N'2017.10.01',	N'54001', 7891),
 				(@HotRollIndex,		N'2017.10.15',	N'54002', 6985),
 				(@HotRollIndex,		N'2017.10.15',	N'60032', 7320),
@@ -81,7 +81,7 @@ INSERT INTO @R1 ([Index],
 	--INSERT INTO @R1IndexedIds([Index], [Id])
 	EXEC [api].[Resources__Save]
 		@Resources = @R1,
-		@Picks = @RI1,
+		@Picks = @RP1,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -91,7 +91,7 @@ INSERT INTO @R1 ([Index],
 	END;
 	IF @DebugResources = 1
 	BEGIN
-		SELECT * FROM dbo.Resources;
+		--SELECT * FROM dbo.Resources;
 		INSERT INTO @R1Ids SELECT [Id] FROM dbo.Resources;
 		EXEC rpt.[sp_ResourcesPicks] @R1Ids;
 	END
@@ -102,12 +102,12 @@ BEGIN -- Updating
 		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
 		[CurrencyId], [MassUnitId], [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 	)
-	SELECT ROW_NUMBER() OVER (PARTITION BY [Id] ORDER BY [Id]),
+	SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
 		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
 		[CurrencyId], [MassUnitId], [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 	FROM [dbo].Resources
 	WHERE [Name] IN (N'Toyota Camry 2018')
-	INSERT INTO @RI2 ( [ResourceIndex], [Id], [ResourceId],	[Code], [ProductionDate])
+	INSERT INTO @RP2 ( [ResourceIndex], [Id], [ResourceId],	[Code], [ProductionDate])
 	SELECT				R2.[Index], RI.[Id], RI.[ResourceId],  RI.[Code], RI.[ProductionDate]
 	FROM [dbo].[ResourcePicks] RI
 	JOIN @R2 R2 ON RI.ResourceId = R2.[Id]
@@ -117,11 +117,11 @@ BEGIN -- Updating
 	SET 
 		[Name] = [Name] + N' - (New)';
 
-	DELETE FROM @RI2 WHERE [Code] = N'199';
+	DELETE FROM @RP2 WHERE [Code] = N'199';
 
 	EXEC [api].[Resources__Save]
 		@Resources = @R2,
-		@Picks = @RI2,
+		@Picks = @RP2,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -132,7 +132,7 @@ BEGIN -- Updating
 	IF @DebugResources = 1
 	BEGIN
 		--SELECT * FROM @R2;
-		--SELECT * FROM @RI2;
+		--SELECT * FROM @RP2;
 		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
 		EXEC rpt.[sp_ResourcesPicks] @R2Ids;
 	END
@@ -143,7 +143,7 @@ BEGIN -- Deleting
 		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
 		[CurrencyId], [MassUnitId]	, [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 	)
-	SELECT ROW_NUMBER() OVER (PARTITION BY [Id] ORDER BY [Id]),
+	SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
 		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
 		[CurrencyId], [MassUnitId]	, [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 	FROM [dbo].Resources

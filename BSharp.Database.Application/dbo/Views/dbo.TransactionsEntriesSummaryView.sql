@@ -31,7 +31,7 @@ AS
 		E.[InstanceId],
 		E.[BatchCode],
 		SUM(E.[Direction] * E.[Quantity]) AS [Quantity],
-		SUM(E.[Direction] * E.[MoneyAmount]) AS [MoneyAmount],
+		SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue],
 		SUM(E.[Direction] * E.[Mass]) AS [Mass],
 		SUM(E.[Direction] * E.[Volume]) AS [Volume],
 		SUM(E.[Direction] * E.[Area]) AS [Area],

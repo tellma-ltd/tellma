@@ -49,13 +49,13 @@ So, we have:
 	[UnitVolume]				DECIMAL,		-- if not null, it specifies the conversion rate Volume/Primary Unit
 	[VolumeUnitId]				INT					CONSTRAINT [FK_Resources__VolumeUnitId] FOREIGN KEY ([VolumeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[UnitArea]					DECIMAL,		-- if not null, it specifies the conversion rate Area/Primary Unit
-	[AreaUnitId]				INT,-- FK, Table Units
+	[AreaUnitId]				INT					CONSTRAINT [FK_Resources__AreaUnitId] FOREIGN KEY ([AreaUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[UnitLength]				DECIMAL,		-- if not null, it specifies the conversion rate Length/Primary Unit
-	[LengthUnitId]				INT,-- FK, Table Units
+	[LengthUnitId]				INT					CONSTRAINT [FK_Resources__LengthUnitId] FOREIGN KEY ([LengthUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[UnitTime]					DECIMAL,		-- if not null, it specifies the conversion rate Time/Primary Unit
-	[TimeUnitId]				INT,-- FK, Table Units
-	[UnitCount]					DECIMAL,
-	[CountUnitId]				INT,-- FK, Table Units
+	[TimeUnitId]				INT					CONSTRAINT [FK_Resources__TimeUnitId] FOREIGN KEY ([TimeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitCount]					DECIMAL,		-- if not null, it specifies the conversion rate Count/Primary Unit
+	[CountUnitId]				INT					CONSTRAINT [FK_Resources__CountUnitId] FOREIGN KEY ([CountUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[Code]						NVARCHAR (255),
 
  -- functional currency, common stock, basic, allowance, overtime/types, 

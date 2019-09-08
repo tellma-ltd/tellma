@@ -15,7 +15,7 @@ AS
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	[DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
 	[ResourceId], [InstanceId], [BatchCode], [DueDate], [Quantity],
-	[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value], [Memo],
+	[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value], [Memo],
 	[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId],
 	[RelatedQuantity], [RelatedMoneyAmount])
 	SELECT

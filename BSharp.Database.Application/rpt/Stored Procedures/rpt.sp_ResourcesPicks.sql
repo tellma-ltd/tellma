@@ -9,14 +9,14 @@ AS
 	LEFT JOIN dbo.MeasurementUnits MF ON R.[CurrencyId] = MF.[Id]
 	LEFT JOIN dbo.MeasurementUnits MM ON R.[MassUnitId] = MM.[Id]
 	LEFT JOIN dbo.MeasurementUnits MV ON R.[VolumeUnitId] = MV.[Id]
-	LEFT JOIN dbo.MeasurementUnits MA ON R.[UnitArea] = MA.[Id]
-	LEFT JOIN dbo.MeasurementUnits ML ON R.[UnitLength] = ML.[Id]
-	LEFT JOIN dbo.MeasurementUnits MT ON R.[UnitTime] = MT.[Id]
-	LEFT JOIN dbo.MeasurementUnits MC ON R.[UnitCount] = MC.[Id]
+	LEFT JOIN dbo.MeasurementUnits MA ON R.[AreaUnitId] = MA.[Id]
+	LEFT JOIN dbo.MeasurementUnits ML ON R.[LengthUnitId] = ML.[Id]
+	LEFT JOIN dbo.MeasurementUnits MT ON R.[TimeUnitId] = MT.[Id]
+	LEFT JOIN dbo.MeasurementUnits MC ON R.[CountUnitId] = MC.[Id]
 	WHERE R.[Id] IN (SELECT [Id] FROM @Ids);
 
-	SELECT R.[Name], RI.[Id] As InstanceId, RI.[Code], RI.[ProductionDate], 
-			RI.[MoneyAmount], RI.[Mass], RI.[Volume], RI.[Area], RI.[Length], RI.[Time] 
-	FROM dbo.[ResourcePicks] RI 
-	JOIN dbo.Resources R ON R.Id = RI.ResourceId
+	SELECT R.[Name], RP.[Id] As InstanceId, RP.[Code], RP.[ProductionDate], 
+			RP.[MonetaryValue], RP.[Mass], RP.[Volume], RP.[Area], RP.[Length], RP.[Time], RP.[Count]
+	FROM dbo.[ResourcePicks] RP 
+	JOIN dbo.Resources R ON R.Id = RP.ResourceId
 	WHERE R.[Id] IN (SELECT [Id] FROM @Ids);

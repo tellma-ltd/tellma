@@ -12,7 +12,7 @@ BEGIN -- Inserting
 		(1,0,	N'GoodReceiptWithInvoice',	2),
 		(2,0,	N'CashIssue',				1);
 	INSERT INTO @E21 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber],
-					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MoneyAmount],[Mass], [Value]) VALUES
+					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MonetaryValue],[Mass], [Value]) VALUES
 		(0,0,0,1,	+1,			@ESL,			N'InventoryPurchaseExtension', 		@HR1000x1_9,	0,			500000, 0),
 		(1,0,0,2,	-1,			@VimeksAccount,	NULL,								@USD,		100000,			0,		0),
 		(2,1,0,1,	+1,			@ESL,			N'InventoryPurchaseExtension',		@CR1000x1_4,	0,			500000, 0),
@@ -29,7 +29,7 @@ BEGIN -- Inserting
 		(4,1,	 N'GoodReceiptWithInvoice', 2);
 
 	INSERT INTO @E21 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber],
-					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MoneyAmount],[Volume], [Value]) VALUES
+					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MonetaryValue],[Volume], [Value]) VALUES
 		(6,3,1,1,	+1,			@fuelHR,		N'TransportationExpense', 			@Oil,			0,			20,		0),
 		(7,3,1,2,	-1,			@NocJimmaAccount,	NULL,							@ETB,		430.6,			0,		0),
 		(8,4,1,1,	+1,			@fuelHR,		N'TransportationExpense',			@Diesel,	0,				30,		0),
@@ -75,7 +75,7 @@ BEGIN -- Inserting
 	WITH CompactLines AS (
 		SELECT [AccountId], [IfrsEntryClassificationId], [ResourceId],
 			SUM([Direction] * [Quantity]) AS [Quantity],
-			--SUM([Direction] * [MoneyAmount]) AS [MoneyAmount],
+			--SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
 			--SUM([Direction] * [Mass]) AS [Mass],
 			SUM([Direction] * [Value]) AS [Value]
 		FROM DocumentLineEntries
@@ -83,7 +83,7 @@ BEGIN -- Inserting
 	)
 	SELECT A.[Name] AS [Account], IEC.Label AS [Note], R.[Name] AS [Resource],
 	CAST([Quantity] AS MONEY) AS [Quantity], MU.[Name] AS [Unit],
-	--CAST([MoneyAmount] AS MONEY) AS [MoneyAmount],
+	--CAST([MonetaryValue] AS MONEY) AS [MoneyAmount],
 	--CAST([Mass] AS MONEY) AS [Mass],
 	CAST([Value] AS MONEY) AS [Value]
 	FROM CompactLines CL
@@ -91,7 +91,7 @@ BEGIN -- Inserting
 	JOIN dbo.MeasurementUnits MU ON R.UnitId = MU.Id
 	JOIN dbo.Accounts A ON CL.[AccountId] = A.[Id]
 	JOIN dbo.IfrsEntryClassifications IEC ON CL.IfrsEntryClassificationId = IEC.Id
-	WHERE CL.[Quantity] <> 0 --OR CL.[MoneyAmount] <> 0 OR CL.[Mass] <> 0 
+	WHERE CL.[Quantity] <> 0 --OR CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
 	OR CL.[Value] <> 0;
 
 	
@@ -110,7 +110,7 @@ BEGIN -- Updating document and deleting lines/entries
 	JOIN @D22 D22 ON D22.[Id] = DL.[DocumentId];
 
 	INSERT INTO @E22([Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value])
-	SELECT DLE.[Id], L22.[Id], L22.DocumentIndex, L22.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value]
+	SELECT DLE.[Id], L22.[Id], L22.DocumentIndex, L22.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value]
 	FROM dbo.DocumentLineEntries DLE
 	JOIN @L22 L22 ON L22.[Id] = DLE.[DocumentLineId];
 

@@ -13,7 +13,7 @@
 	[BatchCode]				NVARCHAR (255),
 	[DueDate]				DATE,
 	[Quantity]				VTYPE				NOT NULL DEFAULT 0, --  measure on which the value is based. If it is MassMeasure then [Mass] must equal [ValueMeasure] and so on.
-	[MoneyAmount]			MONEY				NOT NULL DEFAULT 0, -- Amount in foreign Currency 
+	[MonetaryValue]			MONEY				NOT NULL DEFAULT 0, -- Amount in foreign Currency 
 	[Mass]					DECIMAL				NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
 	[Volume]				DECIMAL				NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
 	[Area]					DECIMAL				NOT NULL DEFAULT 0, -- Area Unit, possibly for lands

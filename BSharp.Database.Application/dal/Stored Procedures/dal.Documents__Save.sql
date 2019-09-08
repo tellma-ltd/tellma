@@ -93,17 +93,7 @@ BEGIN
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
 				[ResourceId], [InstanceId], [BatchCode], [DueDate], [Quantity],
-				--(CASE
-				--	WHEN R.[UnitId] = R.[CurrencyId] THEN E.[MoneyAmount]
-				--	WHEN R.[UnitId] = R.[MassUnitId] THEN E.[Mass]
-				--	WHEN R.[UnitId] = R.[VolumeUnitId] THEN E.[Volume]
-				--	WHEN R.[UnitId] = R.[AreaUnitId] THEN E.[Area]
-				--	WHEN R.[UnitId] = R.[LengthUnitId] THEN E.[Length]
-				--	WHEN R.[UnitId] = R.[TimeUnitId] THEN E.[Time]
-				--	WHEN R.[UnitId] = R.[CountUnitId] THEN E.[Count]
-				--	ELSE NULL END
-				--) AS [Quantity],
-				[MoneyAmount], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value], E.[Memo],
+				[MonetaryValue], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value], E.[Memo],
 				[ExternalReference], [AdditionalReference], 
 				[RelatedResourceId], [RelatedAgentId], [RelatedMoneyAmount]
 		FROM @Entries E
@@ -120,7 +110,7 @@ BEGIN
 			t.[InstanceId]				= s.[InstanceId],
 			t.[BatchCode]				= s.[BatchCode],
 			t.[Quantity]				= s.[Quantity],
-			t.[MoneyAmount]				= s.[MoneyAmount],
+			t.[MonetaryValue]				= s.[MonetaryValue],
 			t.[Mass]					= s.[Mass],
 			t.[Volume]					= s.[Volume],
 			t.[Area]					= s.[Area],
@@ -139,11 +129,11 @@ BEGIN
 	WHEN NOT MATCHED THEN
 		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
 				[ResourceId], [InstanceId], [BatchCode], [Quantity],
-				[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value], [Memo],
+				[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value], [Memo],
 				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount])
 		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IfrsEntryClassificationId],
 				s.[ResourceId], s.[InstanceId], s.[BatchCode], s.[Quantity],
-				s.[MoneyAmount], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value], s.[Memo],
+				s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value], s.[Memo],
 				s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;

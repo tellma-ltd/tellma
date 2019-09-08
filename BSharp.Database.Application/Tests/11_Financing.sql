@@ -15,7 +15,7 @@ BEGIN -- Inserting
 		(3,0,	N'ManualLine', 2);
 
 	INSERT INTO @E11 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
-					[AccountId], [IfrsEntryClassificationId],		[ResourceId], [Quantity],	[Value], [MoneyAmount]) VALUES
+					[AccountId], [IfrsEntryClassificationId],		[ResourceId], [Quantity],	[Value], [MonetaryValue]) VALUES
 		(0,0,0,1,+1,@CBEUSD,		N'ProceedsFromIssuingShares', 	@USD,			200000,		4700000, 200000),
 		(1,1,0,1,-1,@CapitalMA,		N'IssueOfEquity',		@CommonStock,			1000,		2351000, 100050),
 		(2,2,0,1,-1,@CapitalAA,		N'IssueOfEquity',		@CommonStock,			1000,		2351000, 100050),
@@ -47,8 +47,8 @@ BEGIN -- Updating document and deleting lines/entries
 	FROM dbo.DocumentLines DL
 	JOIN @D12 D12 ON D12.[Id] = DL.[DocumentId];
 
-	INSERT INTO @E12([Index], [Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value])
-	SELECT ROW_NUMBER() OVER (ORDER BY DLE.[Id]), DLE.[Id], L12.[Id], L12.DocumentIndex, L12.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value]
+	INSERT INTO @E12([Index], [Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value])
+	SELECT ROW_NUMBER() OVER (ORDER BY DLE.[Id]), DLE.[Id], L12.[Id], L12.DocumentIndex, L12.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value]
 	FROM dbo.DocumentLineEntries DLE
 	JOIN @L12 L12 ON L12.[Id] = DLE.[DocumentLineId]
 	;

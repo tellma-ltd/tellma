@@ -30,7 +30,7 @@ BEGIN
 END
 -- Set the user session context
 SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = @DeployEmail;
-EXEC sp_set_session_context 'UserId', @UserId;
+EXEC master.sys.sp_set_session_context 'UserId', @UserId;
 --
 EXEC [dal].[Settings__Save]
 	@ShortCompanyName = @ShortCompanyName,

@@ -14,7 +14,7 @@ BEGIN -- Inserting
 		(N'CashIssue', 1);
 
 	INSERT INTO @E41 (--DocumentIndex DEFAULT 0
-[DocumentLineIndex], [Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MoneyAmount],[Mass], [Value]) VALUES
+[DocumentLineIndex], [Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MonetaryValue],[Mass], [Value]) VALUES
 		(0,				0, 1,				+1,			@ESL,	N'InventoryPurchaseExtension', 				@HR1000x1_9,	0,			500000, 0),
 		(0,				1, 2,				-1,			@Vimeks,	NULL,									@USD,		100000,			0,		0),
 		(1,				2, 1,				+1,			@ESL,	N'InventoryPurchaseExtension',				@CR1000x1_4,	0,			500000, 0),
@@ -52,7 +52,7 @@ BEGIN -- Inserting
 	WITH CompactLines AS (
 		SELECT [AccountId], [IfrsEntryClassificationId], [ResourceId],
 			SUM([Direction] * [Quantity]) AS [Quantity],
-			--SUM([Direction] * [MoneyAmount]) AS [MoneyAmount],
+			--SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
 			--SUM([Direction] * [Mass]) AS [Mass],
 			SUM([Direction] * [Value]) AS [Value]
 		FROM DocumentLineEntries
@@ -60,7 +60,7 @@ BEGIN -- Inserting
 	)
 	SELECT A.[Name] AS [Account], IEC.Label AS [Note], R.[Name] AS [Resource],
 	CAST([Quantity] AS MONEY) AS [Quantity], MU.[Name] AS [Unit],
-	--CAST([MoneyAmount] AS MONEY) AS [MoneyAmount],
+	--CAST([MonetaryValue] AS MONEY) AS[MonetaryValue],
 	--CAST([Mass] AS MONEY) AS [Mass],
 	CAST([Value] AS MONEY) AS [Value]
 	FROM CompactLines CL
@@ -68,7 +68,7 @@ BEGIN -- Inserting
 	JOIN dbo.MeasurementUnits MU ON R.UnitId = MU.Id
 	JOIN dbo.Accounts A ON CL.[AccountId] = A.[Id]
 	JOIN dbo.IfrsEntryClassifications IEC ON CL.IfrsEntryClassificationId = IEC.Id
-	WHERE CL.[Quantity] <> 0 --OR CL.[MoneyAmount] <> 0 OR CL.[Mass] <> 0 
+	WHERE CL.[Quantity] <> 0 --OR CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
 	OR CL.[Value] <> 0;
 
 	
@@ -87,7 +87,7 @@ BEGIN -- Updating document and deleting lines/entries
 	JOIN @D42 D42 ON D42.[Id] = DL.[DocumentId];
 
 	INSERT INTO @E42([Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value])
-	SELECT DLE.[Id], L42.[Id], L42.DocumentIndex, L42.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value]
+	SELECT DLE.[Id], L42.[Id], L42.DocumentIndex, L42.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value]
 	FROM dbo.DocumentLineEntries DLE
 	JOIN @L42 L42 ON L42.[Id] = DLE.[DocumentLineId];
 
