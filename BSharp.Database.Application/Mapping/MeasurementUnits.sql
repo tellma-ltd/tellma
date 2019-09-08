@@ -2,5 +2,5 @@
 RETURNS TABLE
 AS
 RETURN (
-	SELECT * FROM [dbo].[MeasurementUnits] WHERE [UnitType] <> N'Currency'
+	SELECT * FROM [dbo].[MeasurementUnits] WHERE [UnitType] <> N'MonetaryValue'
 );

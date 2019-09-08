@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Resources] (
 	[Id]						INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
 /*
-The resource type specifies the Ifrs Asset Classification and the labels for the dynamic columns.
+The resource type (= Custom Classification) determines the specs
 So, we have:
 	- ?: financial-instruments, banknotes, investment-bonds, shares, ...
 	- RawMaterials:, hot-rolls, cold-rolls, checkered-plates, skd
@@ -24,16 +24,16 @@ So, we have:
 	Employee Job
 	general services
 */
-	[CustomClassificationId]					INT,
+	[CustomClassificationId]	INT,
 	-- Once the data is imported, the classification of accounts in a manner that is consistent with Ifrs can start.
 	-- The allowable values are the lowest level of the calculation trees in Ifrs Taxonomies: (financial position, comprehensive income, by function)
 	-- To generate the above financial statements , classifications of childen of same parent can all be aggregated to the parent,
 	-- or can some be combined into catchall "other", like Other Inventories, Other property plant and equipment, etc.
 	-- To generate additional disclosures, the user must design disclosures using appropriate Ifrs concepts, and then each account 
 	-- could be mapped to any concept from that disclosure.
-	[IfrsClassificationId]						NVARCHAR (255),--		CONSTRAINT [FK_Resources__IfrsClassificationId] FOREIGN KEY ([IfrsClassificationId]) REFERENCES [dbo].[IfrsResourceClassifications] ([Id]),
+	--[IfrsClassificationId]		NVARCHAR (255),--		CONSTRAINT [FK_Resources__IfrsClassificationId] FOREIGN KEY ([IfrsClassificationId]) REFERENCES [dbo].[IfrsResourceClassifications] ([Id]),
 
-	[ResourceType]				NVARCHAR (255)		NOT NULL,
+	[IfrsClassificationId]		NVARCHAR (255)		NOT NULL,
 	[Name]						NVARCHAR (255)		NOT NULL CONSTRAINT [CX_Resources__Name] UNIQUE,
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),

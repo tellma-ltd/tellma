@@ -22,10 +22,10 @@ BEGIN -- Cleanup & Declarations
 END
 BEGIN -- Inserting
 	INSERT INTO @R1 ([Index],
-		[ResourceType],		[Name],					[Code],		[UnitId], [CountUnitId]) VALUES
-	(0, N'money',			N'ETB',					N'ETB',		@ETBUnit, @pcsUnit),
-	(1, N'money',			N'USD',					N'USD',		@USDUnit, @pcsUnit),
-	(2, N'money',			N'ETB Incoming Checks',	N'ICKETB',	@ETBUnit, @pcsUnit); --1
+		[IfrsClassificationId],	[Name],					[Code],		[UnitId], [CountUnitId]) VALUES
+	(0, N'money',				N'ETB',					N'ETB',		@ETBUnit, @pcsUnit),
+	(1, N'money',				N'USD',					N'USD',		@USDUnit, @pcsUnit),
+	(2, N'money',				N'ETB Incoming Checks',	N'ICKETB',	@ETBUnit, @pcsUnit); --1
 DECLARE @ICKETBIndex INT = (SELECT [Index] FROM @R1 WHERE [Code] = N'ICKETB');
 DECLARE @CBEBank INT, @AWBBank INT;
 INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code], [MonetaryValue], [IssuingBankId]) VALUES
@@ -33,7 +33,7 @@ INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code], [MonetaryValue], [Is
 				(@ICKETBIndex,	N'2017.10.15',		N'2308', 17550,			@AWBBank);
 
 INSERT INTO @R1 ([Index],
-		[ResourceType],			[Name],					[Code],		[SystemCode], [UnitId]) VALUES
+		[IfrsClassificationId],	[Name],					[Code],		[SystemCode], [UnitId]) VALUES
 	(3, N'motor-vehicles',		N'Toyota Camry 2018',	NULL,		NULL,			@pcsUnit),--1
 	(4, N'motor-vehicles',		N'Fake',				NULL,		NULL,			@pcsUnit),--1
 	(5, N'motor-vehicles',		N'Toyota Yaris 2018',	NULL,		NULL,			@pcsUnit),--1
@@ -48,7 +48,7 @@ INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code]) VALUES
 				(@ToyotaCamryIndex,	N'2017.10.15',		N'199'),
 				(@ToyotaYarisIndex,	N'2017.10.01',		N'201');
 INSERT INTO @R1 ([Index],
-		[ResourceType],		[Name],					[Code],			[UnitId], [CountUnitId]) VALUES
+		[IfrsClassificationId],		[Name],					[Code],			[UnitId], [CountUnitId]) VALUES
 	(9, N'raw-materials',	N'HR 1000MMx1.9MM',		N'HR1000x1.9',	@KgUnit, @pcsUnit),
 	(10, N'raw-materials',	N'CR 1000MMx1.4MM',		N'CR1000x1.4',	@KgUnit, @pcsUnit);
 DECLARE @HotRollIndex INT =  (SELECT [Index] FROM @R1 WHERE [Name] = N'HR 1000MMx1.9MM');
@@ -58,16 +58,16 @@ INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code], [Mass]) VALUES
 				(@HotRollIndex,		N'2017.10.15',	N'60032', 7320),
 				(@HotRollIndex,		N'2017.10.01',	N'60342', 7100);
 INSERT INTO @R1 ([Index],
-		[ResourceType],		[Name],		[Code],	[SystemCode], [UnitId]) VALUES
-	(11, N'general-goods',	N'Cotton',	NULL,	NULL,		@KgUnit);
+		[IfrsClassificationId],	[Name],		[Code],	[SystemCode], [UnitId]) VALUES
+	(11, N'general-goods',		N'Cotton',	NULL,	NULL,		@KgUnit);
 
 INSERT INTO @R1 ([Index],
-		[ResourceType],		[Name],		[Code],	[SystemCode], [UnitId]) VALUES
+		[IfrsClassificationId],		[Name],		[Code],	[SystemCode], [UnitId]) VALUES
 	(12, N'general-goods',	N'Oil',		NULL,	NULL,		@LiterUnit),
 	(13, N'general-goods',	N'Diesel',	NULL,	NULL,		@LiterUnit);
 
 INSERT INTO @R1 ([Index],
-		[ResourceType],		[Name],					[Code],		[SystemCode],	[UnitId]) VALUES
+		[IfrsClassificationId],	[Name],					[Code],		[SystemCode],	[UnitId]) VALUES
 	(14, N'wages-and-salaries',	N'Basic',			NULL,		N'Basic',		@moUnit),
 	(15, N'wages-and-salaries',	N'Transportation',	NULL,		N'Transportation',@moUnit),
 	(16, N'wages-and-salaries',	N'Holiday Overtime',NULL,		N'HolidayOvertime',@hrUnit),
@@ -99,11 +99,11 @@ END
 
 BEGIN -- Updating
 	INSERT INTO @R2 ([Index],
-		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
+		[Id], [UnitId], [IfrsClassificationId], [Name], [Code], [SystemCode],
 		[CurrencyId], [MassUnitId], [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 	)
 	SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
-		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
+		[Id], [UnitId], [IfrsClassificationId], [Name], [Code], [SystemCode],
 		[CurrencyId], [MassUnitId], [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 	FROM [dbo].Resources
 	WHERE [Name] IN (N'Toyota Camry 2018')
@@ -140,11 +140,11 @@ END
 
 BEGIN -- Deleting
 	INSERT INTO @R3 ([Index],
-		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
+		[Id], [UnitId], [IfrsClassificationId], [Name], [Code], [SystemCode],
 		[CurrencyId], [MassUnitId]	, [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 	)
 	SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
-		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
+		[Id], [UnitId], [IfrsClassificationId], [Name], [Code], [SystemCode],
 		[CurrencyId], [MassUnitId]	, [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 	FROM [dbo].Resources
 	WHERE [Name] LIKE N'Fake%';

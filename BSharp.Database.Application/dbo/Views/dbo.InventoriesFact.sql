@@ -34,7 +34,7 @@ WITH IfrsInventoryAccounts AS (
 		J.[RelatedResourceId],
 		J.[RelatedAccountId],
 		J.[RelatedMoneyAmount],
-		R.ResourceType,
+		R.[IfrsClassificationId],
 		R.[ResourceLookup1Id],
 		R.[ResourceLookup2Id],
 		R.[ResourceLookup3Id],

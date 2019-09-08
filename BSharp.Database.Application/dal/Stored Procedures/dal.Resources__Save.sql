@@ -15,7 +15,7 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Resources] AS t
 		USING (
 			SELECT 	
-				[Index], [Id], [ResourceType], [Name], [Name2], [Name3], [IsBatch], 
+				[Index], [Id], [IfrsClassificationId], [Name], [Name2], [Name3], [IsBatch], 
 				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
 				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
@@ -25,7 +25,7 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-				t.[ResourceType]			= s.[ResourceType],     
+				t.[IfrsClassificationId]			= s.[IfrsClassificationId],     
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
@@ -56,12 +56,12 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ResourceType], [Name], [Name2], [Name3], [IsBatch],
+			INSERT ([IfrsClassificationId], [Name], [Name2], [Name3], [IsBatch],
 				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
 				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
 				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id])
-			VALUES (s.[ResourceType], s.[Name], s.[Name2], s.[Name3], s.[IsBatch],
+			VALUES (s.[IfrsClassificationId], s.[Name], s.[Name2], s.[Name3], s.[IsBatch],
 				s.[UnitId], s.[UnitMonetaryValue], s.[CurrencyId], s.[UnitMass], s.[MassUnitId], s.[UnitVolume], s.[VolumeUnitId],
 				s.[UnitArea], s.[AreaUnitId], s.[UnitLength], s.[LengthUnitId], s.[UnitTime], s.[TimeUnitId], s.[UnitCount], s.[CountUnitId],
 				s.[Code], s.[SystemCode], s.[Memo], s.[CustomsReference] ,s.[UniversalProductCode], s.[PreferredSupplierId],

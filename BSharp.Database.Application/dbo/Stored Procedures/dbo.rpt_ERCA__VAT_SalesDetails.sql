@@ -6,7 +6,7 @@ BEGIN
 	SELECT
 		J.Id, A.TaxIdentificationNumber AS TIN, J.AdditionalReference AS MRC,
 		J.ExternalReference AS RCPT_NUM, J.DocumentDate As RCPT_Date,  J.[Mass],
-		J.RelatedMoneyAmount As Price, N'' AS COM_CODE, ResourceType As COM_DETAIL,
+		J.RelatedMoneyAmount As Price, N'' AS COM_CODE, [IfrsClassificationId] As COM_DETAIL,
 		R.[Name] As [Description]
 	FROM dbo.[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN dbo.Resources R ON J.RelatedResourceId = R.Id 
