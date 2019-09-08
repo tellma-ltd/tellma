@@ -9,7 +9,7 @@ BEGIN
 		A.[RegisteredAddress] As [Withholdee Address], 
 		J.[Memo] As [Withholding Type],
 		J.[RelatedMoneyAmount] As [Taxable Amount], 
-		J.[MoneyAmount] As [Tax Withheld], 
+		J.[MonetaryValue] As [Tax Withheld], 
 		J.[ExternalReference] As [Receipt Number], 
 		J.DocumentDate As [Receipt Date],
 		J.[DocumentLineId] -- for navigation

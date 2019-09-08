@@ -13,7 +13,7 @@ SELECT * FROM @Entries;
 -- set quantity to the right value measure
 UPDATE E
 SET
-	E.[MoneyAmount] = CASE WHEN R.[UnitId] = R.[CurrencyId] THEN E.[Quantity] ELSE E.[MoneyAmount] END,
+	E.[MonetaryValue] = CASE WHEN R.[UnitId] = R.[CurrencyId] THEN E.[Quantity] ELSE E.[MonetaryValue] END,
 	E.[Mass]		= CASE WHEN R.[UnitId] = R.[MassUnitId] THEN E.[Quantity] ELSE E.[Mass] END,
 	E.[Volume]		= CASE WHEN R.[UnitId] = R.[VolumeUnitId] THEN E.[Quantity] ELSE E.[Volume] END,
 	E.[Area]		= CASE WHEN R.[UnitId] = R.[AreaUnitId] THEN E.[Quantity] ELSE E.[Area] END,
@@ -26,24 +26,24 @@ WHERE  R.[UnitId] = R.[CurrencyId];
 
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
-SET E.[Value] = E.[MoneyAmount]
+SET E.[Value] = E.[MonetaryValue]
 FROM @FilledEntries E
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
 WHERE R.UnitId = @FunctionalCurrencyId
-AND (E.[Value] <> E.[MoneyAmount]);
+AND (E.[Value] <> E.[MonetaryValue]);
 
 -- for financial amounts in 
 UPDATE E 
-SET E.[Value] = dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MoneyAmount])
+SET E.[Value] = dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue])
 FROM @FilledEntries E
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
 WHERE R.UnitId IN (SELECT [Id] FROM dbo.MeasurementUnits WHERE UnitType = N'MonetaryValue')
 AND R.UnitId <> @FunctionalCurrencyId
-AND (E.[Value] <> dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MoneyAmount]));
+AND (E.[Value] <> dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue]));
 
 -- if one value only is zero at the line level, set it to the sum of the rest. Otherwise, the accountant has to set it.
 WITH SingletonLines

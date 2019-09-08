@@ -23,11 +23,11 @@ SET NOCOUNT ON;
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].Amount' + CAST([EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheAmount0DoesNotMatchTheValue1',
-		[MoneyAmount],
+		[MonetaryValue],
 		[Value]
 	FROM @Entries
 	WHERE ([ResourceId] = dbo.fn_FunctionalCurrency())
-	AND ([Value] <> [MoneyAmount] )
+	AND ([Value] <> [MonetaryValue] )
 
 	-- (FE Check, DB constraint)  Cannot save with a date that lies in the archived period
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

@@ -346,13 +346,6 @@
     <Build Include="dbo\Tables\dbo.Blobs.sql" />
   </ItemGroup>
   <ItemGroup>
-    <ArtifactReference Include="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
-      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
-      <SuppressMissingDependenciesErrors>True</SuppressMissingDependenciesErrors>
-      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
-    </ArtifactReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
     <None Include="Tests\12_ManualMisc.sql" />
     <None Include="Provisioning\07_AccountSpecifications.sql" />
@@ -368,6 +361,7 @@
     <None Include="Tests\12_Purchasing.sql" />
     <None Include="Tests\14_Sales.sql" />
     <None Include="IntegrationTests.publish.xml" />
+    <None Include="BSharp.Database.Application.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BSharp.Database.Application.refactorlog" />
@@ -389,5 +383,12 @@
       <DefaultValue>ACME International</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
     </SqlCmdVariable>
+  </ItemGroup>
+  <ItemGroup>
+    <ArtifactReference Include="$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac">
+      <HintPath>$(DacPacRootPath)\Extensions\Microsoft\SQLDB\Extensions\SqlServer\AzureV12\SqlSchemas\master.dacpac</HintPath>
+      <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
+      <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
+    </ArtifactReference>
   </ItemGroup>
 </Project>

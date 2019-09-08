@@ -6,13 +6,13 @@
 	[ProductionDate]			DATE,
 	[ExpiryDate]				DATE,
 
-	[MoneyAmount]				DECIMAL,
+	[MonetaryValue]				DECIMAL,
 	[Mass]						DECIMAL,
 	[Volume]					DECIMAL,
 	[Area]						DECIMAL,
 	[Length]					DECIMAL,
 	[Time]						DECIMAL,
-
+	[Count]						DECIMAL				DEFAULT 1,
 -- Case of Issued Payments
 	[Beneficiary]				NVARCHAR (255),
 	[IssuingBankAccountId]		INT,

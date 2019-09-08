@@ -13,7 +13,7 @@ BEGIN
 		[SerialNumber],
 		[Direction],
 		[IfrsEntryClassificationId],
-		[MoneyAmount],
+		[MonetaryValue],
 		[Value],
 		[VoucherNumericReference] As [CPV_CRV_Ref],
 		[Memo],

@@ -1,5 +1,5 @@
 ﻿CREATE TYPE [dbo].[MeasurementUnitList] AS TABLE (
-	[Index]			INT,
+	[Index]			INT				PRIMARY KEY,
 	[Id]			INT				NOT NULL DEFAULT 0,
 	[UnitType]		NVARCHAR (255)	NOT NULL,
 	[Name]			NVARCHAR (255)	NOT NULL,

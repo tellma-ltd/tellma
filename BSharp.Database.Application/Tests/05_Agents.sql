@@ -10,42 +10,42 @@
 			@MaterialsAndPurchasing int;
 END
 BEGIN -- Insert individuals and organizations
-	INSERT INTO @Agents1
-	([AgentType],		[Name],		[IsRelated],[TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate]) VALUES
-	(N'Individual',	N'Mohamad Akra',	0,		NULL,						NULL,				N'Dr.',		1,	'1966.02.19'),
-	(N'Individual',	N'Ahmad Akra',		0,		NULL,						NULL,				N'Mr.',		1,	'1992.09.21'),
-	(N'Individual',	N'Badege Kebede',	1,		NULL,						NULL,				N'ATO',		1,	NULL),
-	(N'Individual',	N'Tizita Nigussie',	0,		NULL,						NULL,				N'Ms.', 	2,	NULL),
-	(N'Individual',	N'Ashenafi Fantahun',0,		NULL,						NULL,				N'Mr.',		1,	NULL),
-	(N'Individual',	N'Yisak Tegene',	0,		NULL,						NULL,				N'Mr.',		1,	NULL),
-	(N'Individual',	N'Zewdinesh Hora',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
-	(N'Individual',	N'Tigist Negash',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
-	(N'Individual',	N'Roman Zenebe',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
-	(N'Individual',	N'Mestawet G/Egziyabhare',	0,NULL,						NULL,				N'Ms.',		2,	NULL),
-	(N'Individual',	N'Ayelech Hora',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
-	(N'Individual',	N'Yigezu Legesse',	0,		NULL,						NULL,				N'ATO',		2,	NULL),
-	(N'Individual',	N'Mesfin Wolde',	0,		N'0059603732',				NULL,				N'Eng.',	1,	NULL),
+	INSERT INTO @Agents1([Index],
+		[AgentType],		[Name],		[IsRelated],[TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate]) VALUES
+	(0,N'Individual',	N'Mohamad Akra',	0,		NULL,						NULL,				N'Dr.',		1,	'1966.02.19'),
+	(1,N'Individual',	N'Ahmad Akra',		0,		NULL,						NULL,				N'Mr.',		1,	'1992.09.21'),
+	(2,N'Individual',	N'Badege Kebede',	1,		NULL,						NULL,				N'ATO',		1,	NULL),
+	(3,N'Individual',	N'Tizita Nigussie',	0,		NULL,						NULL,				N'Ms.', 	2,	NULL),
+	(4,N'Individual',	N'Ashenafi Fantahun',0,		NULL,						NULL,				N'Mr.',		1,	NULL),
+	(5,N'Individual',	N'Yisak Tegene',	0,		NULL,						NULL,				N'Mr.',		1,	NULL),
+	(6,N'Individual',	N'Zewdinesh Hora',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
+	(7,N'Individual',	N'Tigist Negash',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
+	(8,N'Individual',	N'Roman Zenebe',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
+	(9,N'Individual',	N'Mestawet G/Egziyabhare',	0,NULL,						NULL,				N'Ms.',		2,	NULL),
+	(10,N'Individual',	N'Ayelech Hora',	0,		NULL,						NULL,				N'Ms.',		2,	NULL),
+	(11,N'Individual',	N'Yigezu Legesse',	0,		NULL,						NULL,				N'ATO',		2,	NULL),
+	(12,N'Individual',	N'Mesfin Wolde',	0,		N'0059603732',				NULL,				N'Eng.',	1,	NULL),
 
-	(N'Organization', N'Banan Information technologies, plc', 1,N'0054901530', N'AA, Bole, 316/3/203 A',NULL,9,	'2017.08.09'),
-	(N'Organization', N'Walia Steel Industry, plc', 1,N'0001656462',		NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Yangfan Motors, PLC', 0,N'0005306731',				N'AA, Bole, 06, New',NULL,		9,	NULL),
-	(N'Organization', N'Sisay Tesfaye, PLC', 0,	N'',						NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Ethiopian Revenues and Customs Authority', 0,NULL,	NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Best Paint Industry', 0,NULL,						NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Best Plastic Industry', 0,NULL,						NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Commercial Bank of Ethiopia', 0,NULL,				NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Awash Bank',	0,		NULL,						NULL,				NULL,		9,	NULL),
-	(N'Organization', N'NIB',			0,		NULL,						NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Regus',			0,		N'0008895353',		N'AA, Girgi, 22, New',		NULL,		9,	NULL),
+	(13,N'Organization', N'Banan Information technologies, plc', 1,N'0054901530', N'AA, Bole, 316/3/203 A',NULL,9,	'2017.08.09'),
+	(14,N'Organization', N'Walia Steel Industry, plc', 1,N'0001656462',		NULL,				NULL,		9,	NULL),
+	(15,N'Organization', N'Yangfan Motors, PLC', 0,N'0005306731',				N'AA, Bole, 06, New',NULL,		9,	NULL),
+	(16,N'Organization', N'Sisay Tesfaye, PLC', 0,	N'',						NULL,				NULL,		9,	NULL),
+	(17,N'Organization', N'Ethiopian Revenues and Customs Authority', 0,NULL,	NULL,				NULL,		9,	NULL),
+	(18,N'Organization', N'Best Paint Industry', 0,NULL,						NULL,				NULL,		9,	NULL),
+	(19,N'Organization', N'Best Plastic Industry', 0,NULL,						NULL,				NULL,		9,	NULL),
+	(20,N'Organization', N'Commercial Bank of Ethiopia', 0,NULL,				NULL,				NULL,		9,	NULL),
+	(21,N'Organization', N'Awash Bank',	0,		NULL,						NULL,				NULL,		9,	NULL),
+	(22,N'Organization', N'NIB',			0,		NULL,						NULL,				NULL,		9,	NULL),
+	(23,N'Organization', N'Regus',			0,		N'0008895353',		N'AA, Girgi, 22, New',		NULL,		9,	NULL),
 	
-	(N'Organization', N'Noc Jimma Ber Service Station',	0,NULL,				NULL,				NULL,		9,	NULL),
+	(24,N'Organization', N'Noc Jimma Ber Service Station',	0,NULL,				NULL,				NULL,		9,	NULL),
 
-	(N'Organization', N'Executive Office',1,	NULL,						NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Production Department',0,NULL,						NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Sales & Marketing Department',0,NULL,				NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Finance Department',0,	NULL,						NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Human Resources Department',0,NULL,					NULL,				NULL,		9,	NULL),
-	(N'Organization', N'Materials & Purchasing Department',0,NULL,			NULL,				NULL,		9,	NULL);
+	(25,N'Organization', N'Executive Office',1,	NULL,						NULL,				NULL,		9,	NULL),
+	(26,N'Organization', N'Production Department',0,NULL,						NULL,				NULL,		9,	NULL),
+	(27,N'Organization', N'Sales & Marketing Department',0,NULL,				NULL,				NULL,		9,	NULL),
+	(28,N'Organization', N'Finance Department',0,	NULL,						NULL,				NULL,		9,	NULL),
+	(29,N'Organization', N'Human Resources Department',0,NULL,					NULL,				NULL,		9,	NULL),
+	(30,N'Organization', N'Materials & Purchasing Department',0,NULL,			NULL,				NULL,		9,	NULL);
 
 	EXEC [api].[Agents__Save]
 		@Entities = @Agents1,
@@ -59,9 +59,9 @@ BEGIN -- Insert individuals and organizations
 END
 
 -- Inserting
-INSERT INTO @Agents2 (
+INSERT INTO @Agents2 ([Index],
 	[Id], [AgentType], [Name], [Code], [IsRelated], [TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate])
-SELECT
+SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
 	[Id], [AgentType], [Name], [Code], [IsRelated], [TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate]
 FROM [dbo].[Agents]
 WHERE [Name] Like N'%Akra' OR [Name] Like N'Y%';

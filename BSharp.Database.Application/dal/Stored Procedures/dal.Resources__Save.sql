@@ -77,7 +77,7 @@ SET NOCOUNT ON;
 	MERGE INTO BE AS t
 	USING (
 		SELECT RI.[Id], II.[Id] As ResourceId, RI.[Code], RI.[ProductionDate],
-				[MoneyAmount], [Mass], [Volume], [Area], [Length], [Time]
+				[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count]
 		FROM @Picks RI
 		JOIN @IndexedIds II ON RI.[ResourceIndex] = II.[Index]
 	) AS s
@@ -86,15 +86,16 @@ SET NOCOUNT ON;
 		UPDATE SET
 			t.[Code]			= s.[Code],
 			t.[ProductionDate]	= s.[ProductionDate],
-			t.[MoneyAmount]		= s.[MoneyAmount],
+			t.[MonetaryValue]	= s.[MonetaryValue],
 			t.[Mass]			= s.[Mass],
 			t.[Volume]			= s.[Volume],
 			t.[Area]			= s.[Area],
 			t.[Length]			= s.[Length],
-			t.[Time]			= s.[Time]
+			t.[Time]			= s.[Time],
+			t.[Count]			= s.[Count]
 	WHEN NOT MATCHED THEN
-		INSERT ([ResourceId], [ProductionDate], [Code], [MoneyAmount], [Mass], [Volume], [Area], [Length], [Time])
-		VALUES(s.[ResourceId], s.[ProductionDate], s.[Code], s.[MoneyAmount], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time])
+		INSERT ([ResourceId], [ProductionDate], [Code], [MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count])
+		VALUES(s.[ResourceId], s.[ProductionDate], s.[Code], s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

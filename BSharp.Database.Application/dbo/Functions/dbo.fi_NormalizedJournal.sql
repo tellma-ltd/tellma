@@ -35,7 +35,7 @@ RETURN
 		J.[ResourceId],
 		J.[InstanceId],
 		J.[BatchCode],
-		J.[MoneyAmount],
+		J.[MonetaryValue],
 		J.[CurrencyId],
 		J.[Mass] * ISNULL(MR.[Ratio], 0) AS [Mass],
 		J.[Volume],

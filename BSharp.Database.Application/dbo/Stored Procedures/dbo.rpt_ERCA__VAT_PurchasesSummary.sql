@@ -7,7 +7,7 @@ BEGIN
 		A.[Name] As [Supplier], 
 		A.TaxIdentificationNumber As TIN, 
 		J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
-		SUM(J.[MoneyAmount]) AS VAT,
+		SUM(J.[MonetaryValue]) AS VAT,
 		SUM(J.[RelatedMoneyAmount]) AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date]
 	FROM [dbo].[fi_Journal](@fromDate, @toDate) J

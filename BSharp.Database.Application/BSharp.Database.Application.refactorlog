@@ -131,4 +131,25 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Roles_Validate__Save]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="e68d91c4-dc21-49a0-9322-01fa619ce32a" ChangeDateTime="09/08/2019 04:45:31">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[MoneyAmount]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MonetaryValue]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1129d69a-507c-4b43-9eba-c1d115d70561" ChangeDateTime="09/08/2019 05:13:54">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineEntries].[MoneyAmount]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MonetaryValue]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a56c5422-385e-48cc-b484-72663101121f" ChangeDateTime="09/08/2019 05:19:02">
+    <Property Name="ElementName" Value="[dbo].[Plans].[MoneyAmount]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Plans]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MonetaryValue]" />
+  </Operation>
 </Operations>

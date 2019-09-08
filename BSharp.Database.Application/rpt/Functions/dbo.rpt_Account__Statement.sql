@@ -15,7 +15,7 @@ RETURN
 		[Direction],
 		[IfrsEntryClassificationId],
 		[ResourceId],
-		[MoneyAmount],
+		[MonetaryValue],
 		[CurrencyId],
 		[Mass],
 		[MassUnitId],

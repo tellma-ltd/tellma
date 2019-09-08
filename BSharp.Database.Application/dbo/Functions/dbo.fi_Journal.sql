@@ -31,7 +31,7 @@ RETURN
 		--V.[Quantity],
 -- because too many joins with table Measurement units affects performance, I will only add the 
 -- normalized quantities when needed
-		V.[MoneyAmount],
+		V.[MonetaryValue],
 		R.[CurrencyId],
 		-- When financial instruments 
 		V.[Mass],

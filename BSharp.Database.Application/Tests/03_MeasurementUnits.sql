@@ -5,10 +5,10 @@
 			@wmoUnit INT, @hrUnit INT, @yrUnit INT, @dayUnit INT, @moUnit INT;
 END
 BEGIN -- Inserting
-	INSERT INTO @MU1 (
-	[Name], [UnitType], [Description], [UnitAmount], [BaseAmount], [Code]) VALUES
-	(N'pack-6', N'Count', N'Pack of 6', 1, 6, NULL),
-	(N'dozen', N'Count', N'Dozen', 1, 12, NULL);
+	INSERT INTO @MU1 ([Index],
+		[Name], [UnitType], [Description], [UnitAmount], [BaseAmount], [Code]) VALUES
+	(0, N'pack-6', N'Count', N'Pack of 6', 1, 6, NULL),
+	(1, N'dozen', N'Count', N'Dozen', 1, 12, NULL);
 
 
 	EXEC [api].[MeasurementUnits__Save]
@@ -25,20 +25,21 @@ BEGIN -- Inserting
 END
 
 -- Display units whose code starts with m
-INSERT INTO @MU2 ([Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount])
-SELECT [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
+INSERT INTO @MU2 ([Index], [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount])
+SELECT ROW_NUMBER() OVER(ORDER BY [Id]),
+	[Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
 FROM [dbo].MeasurementUnits
 WHERE [Name] Like 'm%';
 SET @RowCount = @@ROWCOUNT;
 
 -- Inserting
-DECLARE @TestingValidation bit = 0
+DECLARE @TestingValidation bit = 0;
 IF (@TestingValidation = 1)
-INSERT INTO @MU2
-	([Name], [UnitType], [Description], [UnitAmount], [BaseAmount], [Code]) Values
-	(N'AED', N'MonetaryValue', N'AE Dirhams', 3.67, 1, N'AED'),
-	(N'c', N'Time', N'Century', 1, 3110400000, NULL),
-	(N'dozen', N'Count', N'Dazzina', 1, 12, NULL);
+INSERT INTO @MU2 ( [Index],
+				[Name], [UnitType], [Description], [UnitAmount], [BaseAmount], [Code]) Values
+	(@RowCount+1, N'AED', N'MonetaryValue', N'AE Dirhams', 3.67, 1, N'AED'),
+	(@RowCount+2, N'c', N'Time', N'Century', 1, 3110400000, NULL),
+	(@RowCount+3, N'dozen', N'Count', N'Dazzina', 1, 12, NULL);
 -- Updating
 UPDATE @MU2 
 SET 
@@ -59,8 +60,9 @@ BEGIN
 	GOTO Err_Label;
 END
 
-INSERT INTO @MU3 ([Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount])
-SELECT [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
+INSERT INTO @MU3 ([Index], [Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount])
+SELECT ROW_NUMBER() OVER(ORDER BY [Id]),
+	[Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
 FROM [dbo].MeasurementUnits
 WHERE [UnitType] = N'Distance';
 
