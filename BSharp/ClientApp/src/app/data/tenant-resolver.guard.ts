@@ -31,6 +31,7 @@ export function handleFreshSettings(
 
   tws.settings = settings;
   tws.settingsVersion = version;
+  tws.notifyStateChanged();
 }
 
 export function handleFreshPermissions(
@@ -45,6 +46,7 @@ export function handleFreshPermissions(
 
   tws.permissions = permissions;
   tws.permissionsVersion = version;
+  tws.notifyStateChanged();
 }
 
 export function handleFreshUserSettings(
@@ -59,6 +61,7 @@ export function handleFreshUserSettings(
 
   tws.userSettings = userSettings;
   tws.userSettingsVersion = version;
+  tws.notifyStateChanged();
 }
 
 @Injectable({

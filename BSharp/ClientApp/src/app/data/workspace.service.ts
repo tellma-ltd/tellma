@@ -168,6 +168,12 @@ export class TenantWorkspace {
     this.Agent = new EntityWorkspace<Agent>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
     this.ProductCategory = new EntityWorkspace<ProductCategory>();
+
+    this.notifyStateChanged();
+  }
+
+  notifyStateChanged() {
+    this.workspaceService.notifyStateChanged();
   }
 
   ////// the methods below provide easy access to the global tenant values
@@ -668,11 +674,15 @@ export class WorkspaceService {
   // Wipes the application state clean, usually upon signing out
   public reset() {
     this.ws = new Workspace();
+    this.notifyStateChanged();
   }
 
 
   setTenantId(tenantId: number) {
-    this.ws.tenantId = tenantId;
+    if (this.ws.tenantId !== tenantId) {
+      this.ws.tenantId = tenantId;
+      this.notifyStateChanged();
+    }
   }
 
   notifyStateChanged() {

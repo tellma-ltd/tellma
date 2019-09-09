@@ -71,9 +71,11 @@ export class CompaniesComponent implements OnInit, OnDestroy {
     this.crud.getForClient().subscribe(e => {
       ws.companies = e;
       ws.companiesStatus = MasterStatus.loaded;
+      this.workspace.notifyStateChanged();
     }, friendlyError => {
       ws.companiesStatus = MasterStatus.error;
       this._errorMessage = friendlyError.error;
+      this.workspace.notifyStateChanged();
     });
   }
 
@@ -140,7 +142,8 @@ export class CompaniesComponent implements OnInit, OnDestroy {
       this._filteredCompanies = !ws.companies ? null : ws.companies
           .filter(c => !this._searchTerm ||
             (!!c.Name && c.Name.toLowerCase().indexOf(t) !== -1) ||
-            (!!c.Name2 && c.Name2.toLowerCase().indexOf(t) !== -1));
+            (!!c.Name2 && c.Name2.toLowerCase().indexOf(t) !== -1) ||
+            (!!c.Name3 && c.Name3.toLowerCase().indexOf(t) !== -1));
     }
 
     return this._filteredCompanies;

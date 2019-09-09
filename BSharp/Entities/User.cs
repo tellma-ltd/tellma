@@ -14,6 +14,7 @@ namespace BSharp.Entities
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
         public string Email { get; set; }
 
         [Display(Name = "User_Roles")]

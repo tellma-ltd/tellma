@@ -138,8 +138,11 @@ export class SwitchComponent implements OnInit, OnChanges, OnDestroy {
               }
 
               // set the property and control at the end
-              if (this._metavalue === 2 && this._value) {
+              if (this._metavalue === 2 && this._value && this._value.EntityMetadata) {
+                this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
                 this._value = this._value[step] || null;
+              } else {
+                this._metavalue = 0;
               }
             }
           }

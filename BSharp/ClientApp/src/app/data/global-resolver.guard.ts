@@ -24,6 +24,7 @@ export function handleFreshGlobalSettings(
 
   tws.globalSettings = globalSettings;
   tws.globalSettingsVersion = version;
+  tws.notifyStateChanged();
 }
 
 @Injectable({
@@ -61,6 +62,7 @@ export class GlobalResolverGuard implements CanActivate {
         if (!!cachedGlobalSettings) {
           wss.globalSettings = cachedGlobalSettings;
           wss.globalSettingsVersion = cachedGlobalSettingsVersion || '???';
+          wss.notifyStateChanged();
         }
       } catch {}
     };

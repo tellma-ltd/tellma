@@ -141,15 +141,15 @@ export class RootComponent {
     const isRtl = this.rtlLanguages.some(e => culture.startsWith(e));
     this.workspace.ws.isRtl = isRtl;
 
+    // notify everyone about the change
+    this.workspace.notifyStateChanged();
+
     // set RTL on the DOM document
     if (isRtl && !!document) {
       document.body.classList.add('b-rtl');
     } else {
       document.body.classList.remove('b-rtl');
     }
-
-    // notify everyone about the change
-    this.workspace.notifyStateChanged();
   }
 
   get showOverlay(): boolean {

@@ -155,17 +155,15 @@ export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
 
 export function entityDescriptorImpl(
     pathArray: string[], baseCollection: string, baseSubtype: string,
-    ws: TenantWorkspace, trx: TranslateService, ignoreLast = false, labels: string[] = null): EntityDescriptor {
+    ws: TenantWorkspace, trx: TranslateService): EntityDescriptor {
 
     if (!baseCollection) {
         throw new Error(`The baseCollection is not specified, therefore cannot retrieve the Entity descriptor`);
     }
 
-    const length = pathArray.length - (ignoreLast ? 1 : 0);
     let currentEntityDesc = metadata[baseCollection](ws, trx, baseSubtype);
 
-    for (let i = 0; i < length; i++) {
-        const step = pathArray[i];
+    for (const step of pathArray) {
         const propDesc = currentEntityDesc.properties[step];
 
         if (!propDesc) {
@@ -175,9 +173,6 @@ export function entityDescriptorImpl(
             throw new Error(`Property ${step} is not a navigation property`);
 
         } else {
-            if (!!labels) {
-                labels.push(propDesc.label);
-            }
 
             const coll = propDesc.collection || propDesc.type;
             const subtype = propDesc.subtype;
@@ -187,30 +182,4 @@ export function entityDescriptorImpl(
     }
 
     return currentEntityDesc;
-}
-
-export function propDescriptorImpl(
-    pathArray: string[], baseCollection: string, baseSubtype: string,
-    ws: TenantWorkspace, trx: TranslateService, labels: string[] = null): PropDescriptor {
-
-    if (pathArray.length > 0) {
-        const entityDesc = entityDescriptorImpl(pathArray, baseCollection, baseSubtype, ws, trx, true, labels);
-        const lastStep = pathArray[pathArray.length - 1];
-        return propDescriptorFromEntityDescriptor(lastStep, entityDesc, labels);
-    } else {
-        throw new Error(`The path is empty, therefore cannot retrieve the property descriptor`);
-    }
-}
-
-export function propDescriptorFromEntityDescriptor(lastStep: string, entityDesc: EntityDescriptor, labels: string[] = null) {
-    const result = entityDesc.properties[lastStep];
-    if (!result) {
-        throw new Error(`Property '${lastStep}' does not exist`);
-    } else {
-        if (!!labels) {
-            labels.push(result.label);
-        }
-
-        return result;
-    }
 }
