@@ -8,8 +8,10 @@
 	[Direction]				SMALLINT			NOT NULL,
 	[AccountId]				INT					NOT NULL,
 	[IfrsEntryClassificationId]					NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
-	[ResourceId]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')), -- because it may be specified by Account				
-	[InstanceId]			INT,
+	[AgentId]				INT,
+	[ResponsibilityCenterId]INT,			
+	[ResourceId]			INT					DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')), -- because it may be specified by Account				
+	[ResourcePickId]		INT,
 	[BatchCode]				NVARCHAR (255),
 	[DueDate]				DATE,
 	[Quantity]				VTYPE				NOT NULL DEFAULT 0, --  measure on which the value is based. If it is MassMeasure then [Mass] must equal [ValueMeasure] and so on.

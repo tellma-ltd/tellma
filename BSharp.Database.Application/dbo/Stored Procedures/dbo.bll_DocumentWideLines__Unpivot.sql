@@ -14,7 +14,7 @@ AS
 	INSERT INTO @Entries(
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	[DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
-	[ResourceId], [InstanceId], [BatchCode], [DueDate], [Quantity],
+	[ResourceId], [ResourcePickId], [BatchCode], [DueDate], [Quantity],
 	[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value], [Memo],
 	[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId],
 	[RelatedQuantity], [RelatedMoneyAmount])

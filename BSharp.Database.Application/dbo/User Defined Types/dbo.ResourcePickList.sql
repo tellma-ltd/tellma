@@ -1,6 +1,6 @@
 ﻿CREATE TYPE [dbo].[ResourcePickList] AS TABLE
 (
-	[Index]						INT					PRIMARY KEY IDENTITY (0,1),
+	[Index]						INT					PRIMARY KEY,
 	[Id]						INT					NOT NULL DEFAULT 0,
 	[ResourceIndex]				INT					NOT NULL,
 	[ResourceId]				INT					NOT NULL DEFAULT 0,

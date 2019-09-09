@@ -92,25 +92,26 @@ BEGIN
 	USING (
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
-				[ResourceId], [InstanceId], [BatchCode], [DueDate], [Quantity],
+				[AgentId], [ResponsibilityCenterId], [ResourceId], [ResourcePickId], [BatchCode], [DueDate], [Quantity],
 				[MonetaryValue], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value], E.[Memo],
 				[ExternalReference], [AdditionalReference], 
 				[RelatedResourceId], [RelatedAgentId], [RelatedMoneyAmount]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[DocumentLineIndex] = LI.[Index]
-		JOIN dbo.Resources R ON E.ResourceId = R.[Id]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[IfrsEntryClassificationId]= s.[IfrsEntryClassificationId],
+			t.[AgentId]					= s.[AgentId],
+			t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
 			t.[ResourceId]				= s.[ResourceId],
-			t.[InstanceId]				= s.[InstanceId],
+			t.[ResourcePickId]			= s.[ResourcePickId],
 			t.[BatchCode]				= s.[BatchCode],
 			t.[Quantity]				= s.[Quantity],
-			t.[MonetaryValue]				= s.[MonetaryValue],
+			t.[MonetaryValue]			= s.[MonetaryValue],
 			t.[Mass]					= s.[Mass],
 			t.[Volume]					= s.[Volume],
 			t.[Area]					= s.[Area],
@@ -128,11 +129,11 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
-				[ResourceId], [InstanceId], [BatchCode], [Quantity],
+				[AgentId], [ResponsibilityCenterId], [ResourceId], [ResourcePickId], [BatchCode], [Quantity],
 				[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value], [Memo],
 				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount])
 		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IfrsEntryClassificationId],
-				s.[ResourceId], s.[InstanceId], s.[BatchCode], s.[Quantity],
+				s.[AgentId], s.[ResponsibilityCenterId], s.[ResourceId], s.[ResourcePickId], s.[BatchCode], s.[Quantity],
 				s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value], s.[Memo],
 				s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount])
 	WHEN NOT MATCHED BY SOURCE THEN

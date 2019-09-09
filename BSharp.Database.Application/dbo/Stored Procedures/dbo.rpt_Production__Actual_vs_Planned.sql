@@ -30,14 +30,14 @@ BEGIN
 	),
 	Actual AS (
 		SELECT 
-			R.ResourceLookup1Id, J.ResponsibilityCenterId,
+			R.ResourceLookup1Id, J.[ResponsibilityCenterId],
 			SUM(J.Direction * J.[Mass]) AS [Mass],
 			SUM(J.Direction * J.[Count]) AS [Count]
 		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		WHERE J.[IfrsEntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
-		AND R.[IfrsClassificationId] = N'FinishedGoods'
-		GROUP BY J.ResponsibilityCenterId, R.ResourceLookup1Id
+		AND R.[ResourceType] = N'FinishedGoods'
+		GROUP BY J.[ResponsibilityCenterId], R.ResourceLookup1Id
 	),
 	PlannedDetails AS (
 		SELECT 

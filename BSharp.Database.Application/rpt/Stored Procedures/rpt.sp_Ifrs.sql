@@ -46,14 +46,14 @@ BEGIN
 	(N'DateOfEndOfReportingPeriod2013', @strToDate)
 
 	INSERT INTO #Ifrs([Field], [Value])
-	SELECT [IfrsClassificationId], SUM([Value] * [Direction])
+	SELECT [IfrsAccountClassificationId], SUM([Value] * [Direction])
 	FROM dbo.[fi_Journal](@fromDate, @toDate)
-	GROUP BY [IfrsClassificationId];
+	GROUP BY [IfrsAccountClassificationId];
 
 	-- We can either define them as the ones with specific IfrsAccount, or the expense accounts that require a note
 	WITH ExpenseByFunctionAccounts AS (
 		SELECT [Id] FROM dbo.Accounts
-		WHERE [IfrsClassificationId] IN (
+		WHERE [IfrsAccountClassificationId] IN (
 			N'CostOfSales',
 			N'DistributionCosts',
 			N'AdministrativeExpense',
@@ -63,7 +63,7 @@ BEGIN
 	INSERT INTO #Ifrs([Field], [Value])
 	SELECT [IfrsEntryClassificationId], SUM([Value] * [Direction])
 	FROM dbo.[fi_Journal](@fromDate, @toDate)
-	WHERE [IfrsClassificationId] IN (SELECT [Id] FROM ExpenseByFunctionAccounts)
+	WHERE [IfrsAccountClassificationId] IN (SELECT [Id] FROM ExpenseByFunctionAccounts)
 	GROUP BY [IfrsEntryClassificationId];
 
 	SELECT * FROM #Ifrs;

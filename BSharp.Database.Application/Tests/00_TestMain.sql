@@ -27,6 +27,7 @@ BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[MeasurementUnits]', RESEED, 100) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Permissions]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ProductCategories]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[ResourceClassifications]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ResourcePicks]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ResponsibilityCenters]', RESEED, 1) WITH NO_INFOMSGS;

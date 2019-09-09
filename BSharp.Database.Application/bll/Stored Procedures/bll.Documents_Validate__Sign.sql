@@ -87,7 +87,7 @@ BEGIN
 	),
 	AssetAccounts AS (
 		SELECT [Id] FROM dbo.Accounts A
-		WHERE A.[IfrsClassificationId] IN (
+		WHERE A.[IfrsAccountClassificationId] IN (
 			SELECT [Id] FROM IfrsAssetAccounts
 		)
 	),

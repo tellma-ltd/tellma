@@ -18,7 +18,7 @@ BEGIN
 	),
 	InventoriesInTransitAccounts AS (
 		SELECT A.[Id] FROM dbo.Accounts A
-		JOIN dbo.[IfrsAccountClassifications] I ON A.[IfrsClassificationId] = I.[Id]
+		JOIN dbo.[IfrsAccountClassifications] I ON A.[IfrsAccountClassificationId] = I.[Id]
 		WHERE I.[Node].IsDescendantOf((SELECT * FROM Ifrs_MIT))	= 1
 	),
 	Balances AS (

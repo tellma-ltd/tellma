@@ -10,7 +10,7 @@ AS
 	SELECT
 			[AccountId],
 			[ResourceId],
-			[InstanceId],
+			[ResourcePickId],
 			[BatchCode],
 			SUM([Mass]) AS [Mass],
 			SUM([Volume]) As [Volume],
@@ -19,11 +19,11 @@ AS
 			SUM([Count]) AS [Count],
 			SUM([Value]) As [Value]
 	FROM dbo.[fi_Journal](NULL, @AsOfDate) J
-	WHERE [IfrsClassificationId] IN (SELECT Id FROM IfrsInventoryAccounts)
+	WHERE [IfrsAccountClassificationId] IN (SELECT Id FROM IfrsInventoryAccounts)
 	GROUP BY
 			[AccountId],
 			[ResourceId],
-			[InstanceId],
+			[ResourcePickId],
 			[BatchCode]
 	HAVING
 			SUM([Mass]) < 0 OR SUM([Volume]) < 0 OR SUM([Area]) < 0 OR 

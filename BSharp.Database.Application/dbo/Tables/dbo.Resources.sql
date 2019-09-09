@@ -1,85 +1,71 @@
 ﻿CREATE TABLE [dbo].[Resources] (
-	[Id]						INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
-/*
-The resource type (= Custom Classification) determines the specs
-So, we have:
-	- ?: financial-instruments, banknotes, investment-bonds, shares, ...
-	- RawMaterials:, hot-rolls, cold-rolls, checkered-plates, skd
-	- PeoductionSupplies: 
-	- work-in-progress: strips, skd-in-process, food-in-process,..
-	- FinishedGoods: finished-goods-general, hsp, sm, ssm, vehicles
-	- SpareParts:
-	for PPE, we can have:
-	- Buildings
-	- MotorVehicles: Truck, Salon, Motorcycle, ...
-	Or simply: (more practical, unless categories are significant for
-	- PropertyPlantAndEquipment 
+	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
+	-- The resource type defines the screen. Managed by Banan
+	-- The resource classification defines the specs. Managed by User
+	[ResourceType]					NVARCHAR (255) NOT NULL CONSTRAINT [CK_Resources__ResourceType] CHECK (
+										[ResourceType] IN (
+											N'property-plant-and-equipment',
+											N'investment-property',
+											N'intangible-assets',
+											N'financial-assets',
+											N'investments',
+											N'biological-assets',
+											N'inventories',
+											N'cash-and-cash-equivalents',
+											N'trade-and-other-receivables'
+											--Lease services
+											--Employee Job
+											--general services
+										)
+									),
 
-	Money,
-	Intangible [rights,..]
-	Material/Good [RM, WIP, FG, TM]
-	PPE (leases, investments ?)
-	Biological
-	Lease services
-	Employee Job
-	general services
-*/
-	[CustomClassificationId]	INT,
-	-- Once the data is imported, the classification of accounts in a manner that is consistent with Ifrs can start.
-	-- The allowable values are the lowest level of the calculation trees in Ifrs Taxonomies: (financial position, comprehensive income, by function)
-	-- To generate the above financial statements , classifications of childen of same parent can all be aggregated to the parent,
-	-- or can some be combined into catchall "other", like Other Inventories, Other property plant and equipment, etc.
-	-- To generate additional disclosures, the user must design disclosures using appropriate Ifrs concepts, and then each account 
-	-- could be mapped to any concept from that disclosure.
-	--[IfrsClassificationId]		NVARCHAR (255),--		CONSTRAINT [FK_Resources__IfrsClassificationId] FOREIGN KEY ([IfrsClassificationId]) REFERENCES [dbo].[IfrsResourceClassifications] ([Id]),
-
-	[IfrsClassificationId]		NVARCHAR (255)		NOT NULL,
-	[Name]						NVARCHAR (255)		NOT NULL CONSTRAINT [CX_Resources__Name] UNIQUE,
-	[Name2]						NVARCHAR (255),
-	[Name3]						NVARCHAR (255),
-	[IsActive]					BIT					NOT NULL DEFAULT 1,
+	[ResourceClassificationId]		INT CONSTRAINT [FK_Resources__ResourceClassificationId] FOREIGN KEY ([ResourceClassificationId]) REFERENCES [dbo].[ResourceClassifications] ([Id]),
+	[Name]							NVARCHAR (255)		NOT NULL CONSTRAINT [CX_Resources__Name] UNIQUE,
+	[Name2]							NVARCHAR (255),
+	[Name3]							NVARCHAR (255),
+	[IsActive]						BIT					NOT NULL DEFAULT 1,
 -- IsBatch = 1 <=> BatchNumber is REQUIRED in table TransactionEntries when Document in Completed state
 -- HasBatch, IsTrackable, 
-	[IsBatch]					BIT					NOT NULL DEFAULT 0,
-	[UnitId]					INT					NOT NULL,
-	[UnitMonetaryValue]			DECIMAL,		-- if not null, it specifies the conversion rate Monetary Value/Primary Unit
-	[CurrencyId]				INT					CONSTRAINT [FK_Resources__CurrencyId] FOREIGN KEY ([CurrencyId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[UnitMass]					DECIMAL,		-- if not null, it specifies the conversion rate Mass/Primary Unit
-	[MassUnitId]				INT					CONSTRAINT [FK_Resources__MassUnitId] FOREIGN KEY ([MassUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[UnitVolume]				DECIMAL,		-- if not null, it specifies the conversion rate Volume/Primary Unit
-	[VolumeUnitId]				INT					CONSTRAINT [FK_Resources__VolumeUnitId] FOREIGN KEY ([VolumeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[UnitArea]					DECIMAL,		-- if not null, it specifies the conversion rate Area/Primary Unit
-	[AreaUnitId]				INT					CONSTRAINT [FK_Resources__AreaUnitId] FOREIGN KEY ([AreaUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[UnitLength]				DECIMAL,		-- if not null, it specifies the conversion rate Length/Primary Unit
-	[LengthUnitId]				INT					CONSTRAINT [FK_Resources__LengthUnitId] FOREIGN KEY ([LengthUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[UnitTime]					DECIMAL,		-- if not null, it specifies the conversion rate Time/Primary Unit
-	[TimeUnitId]				INT					CONSTRAINT [FK_Resources__TimeUnitId] FOREIGN KEY ([TimeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[UnitCount]					DECIMAL,		-- if not null, it specifies the conversion rate Count/Primary Unit
-	[CountUnitId]				INT					CONSTRAINT [FK_Resources__CountUnitId] FOREIGN KEY ([CountUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Code]						NVARCHAR (255),
+	[IsBatch]						BIT					NOT NULL DEFAULT 0,
+	[UnitId]						INT					NOT NULL,
+	[UnitMonetaryValue]				DECIMAL,		-- if not null, it specifies the conversion rate Monetary Value/Primary Unit
+	[CurrencyId]					INT					CONSTRAINT [FK_Resources__CurrencyId] FOREIGN KEY ([CurrencyId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitMass]						DECIMAL,		-- if not null, it specifies the conversion rate Mass/Primary Unit
+	[MassUnitId]					INT					CONSTRAINT [FK_Resources__MassUnitId] FOREIGN KEY ([MassUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitVolume]					DECIMAL,		-- if not null, it specifies the conversion rate Volume/Primary Unit
+	[VolumeUnitId]					INT					CONSTRAINT [FK_Resources__VolumeUnitId] FOREIGN KEY ([VolumeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitArea]						DECIMAL,		-- if not null, it specifies the conversion rate Area/Primary Unit
+	[AreaUnitId]					INT					CONSTRAINT [FK_Resources__AreaUnitId] FOREIGN KEY ([AreaUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitLength]					DECIMAL,		-- if not null, it specifies the conversion rate Length/Primary Unit
+	[LengthUnitId]					INT					CONSTRAINT [FK_Resources__LengthUnitId] FOREIGN KEY ([LengthUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitTime]						DECIMAL,		-- if not null, it specifies the conversion rate Time/Primary Unit
+	[TimeUnitId]					INT					CONSTRAINT [FK_Resources__TimeUnitId] FOREIGN KEY ([TimeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitCount]						DECIMAL,		-- if not null, it specifies the conversion rate Count/Primary Unit
+	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] FOREIGN KEY ([CountUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[Code]							NVARCHAR (255),
 
  -- functional currency, common stock, basic, allowance, overtime/types, 
-	[SystemCode]				NVARCHAR (255),
-	[Memo]						NVARCHAR (2048), -- description
-	[CustomsReference]			NVARCHAR (255), -- how it is referred to by Customs
-	[UniversalProductCode]		NVARCHAR (255), -- for barcode readers
-	[PreferredSupplierId]		INT,-- FK, Table Agents, specially for purchasing
+	[SystemCode]					NVARCHAR (255),
+	[Memo]							NVARCHAR (2048), -- description
+	[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
+	[UniversalProductCode]			NVARCHAR (255), -- for barcode readers
+	[PreferredSupplierId]			INT,-- FK, Table Agents, specially for purchasing
 --	Useful for smart posting, we may need a list of compatible accounts ResourceId, AccountId.
 -- If no compatible list, we get all accounts compatible with IFRS. They come at the top
 -- Must have in the tree at least one account per warehouse.
-	[ExpenseAccountId]			INT,
+	[ExpenseAccountId]				INT,
 	[RevenueAccountId]			INT, -- additional accounts to be decided when we reach smart posting
 	-- The following properties are user-defined, used for reporting
 	-- Examples for Steel finished goods are: Thickness and width. For cars: make and model.
-	[ProductCategoryId]			INT,
-	[ResourceLookup1Id]			INT					CONSTRAINT [FK_Resources__ResourceLookup1Id] FOREIGN KEY ([ResourceLookup1Id]) REFERENCES [dbo].[ResourceLookup1s] ([Id]),
-	[ResourceLookup2Id]			INT,			-- UDL 
-	[ResourceLookup3Id]			INT,			-- UDL 
-	[ResourceLookup4Id]			INT,			-- UDL 
-	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[ProductCategoryId]				INT,
+	[ResourceLookup1Id]				INT					CONSTRAINT [FK_Resources__ResourceLookup1Id] FOREIGN KEY ([ResourceLookup1Id]) REFERENCES [dbo].[ResourceLookup1s] ([Id]),
+	[ResourceLookup2Id]				INT,			-- UDL 
+	[ResourceLookup3Id]				INT,			-- UDL 
+	[ResourceLookup4Id]				INT,			-- UDL 
+	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[CreatedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[ModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[ModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	-- repeat for all lookups
 	CONSTRAINT [FK_Resources__ProductCategoryId] FOREIGN KEY ([ProductCategoryId]) REFERENCES [dbo].[ProductCategories] ([Id]),
 );

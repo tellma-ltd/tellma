@@ -15,5 +15,5 @@ BEGIN
 	FROM [dbo].ExchangeRatesHistory 
 	WHERE (@Date BETWEEN [ValidFrom] AND [ValidTo]) AND BaseCurrency = @BaseCurrency AND TargetCurrency = @TargetCurrency
 
-	RETURN @Amount * 30; --@Result;
+	RETURN @Amount * 23.5; --@Result;
 END;
