@@ -8,34 +8,31 @@ Missing
 	- Deactivating
 */
 BEGIN -- Cleanup & Declarations
-	DECLARE @R1 [dbo].ResourceList, @R2 [dbo].ResourceList, @R3 [dbo].ResourceList;
-	DECLARE @RP1 [dbo].ResourcePickList, @RP2 [dbo].ResourcePickList, @RP3 [dbo].ResourcePickList;
+	DECLARE @R1 [dbo].ResourceList, @R2 [dbo].ResourceList, @R3 [dbo].ResourceList, @R4 [dbo].ResourceList, @R5 [dbo].ResourceList, @R6 [dbo].ResourceList;
+	DECLARE @RP1 [dbo].ResourcePickList, @RP2 [dbo].ResourcePickList, @RP3 [dbo].ResourcePickList, @RP4 [dbo].ResourcePickList, @RP5 [dbo].ResourcePickList, @RP6 [dbo].ResourcePickList;
 	DECLARE @R1Ids dbo.[IdList], @R2Ids dbo.[IdList], @R3Ids dbo.[idList];
 	DECLARE @R1IndexedIds dbo.IndexedIdList, @R2IndexedIds dbo.IndexedIdList, @R3IndexedIds dbo.IndexedIdList;
 
-	DECLARE @ETB int, @USD int, @CommonStock int;
-	DECLARE @Camry2018 int, @Cotton int, @TeddyBear int, @Car1 int, @Car2 int;
-	DECLARE @HOvertime int, @ROvertime int, @Basic int, @Transportation int, 
-			@LaborHourly int, @LaborDaily int, @Car1Svc int, @GOff int;
-	DECLARE @HR1000x1_9 INT, @CR1000x1_4 INT;
-	DECLARE @Oil INT, @Diesel INT;
+
 END
-INSERT INTO dbo.ResourceClassifications([ResourceType],	[Name]) VALUES
-					(N'property-plant-and-equipment',	N'Property, plant and equipment'),
-					(N'investment-property',			N'Investment property'),
-					(N'intangible-assets',				N'Intangible assets other than goodwill'),
-					(N'financial-assets',				N'Financial assets'),
-					(N'investments',					N'Investments'),	
-					(N'biological-assets',				N'Biological assets'),
-					(N'inventories',					N'Inventories'),
-					(N'cash-and-cash-equivalents',		N'Cash and cash equivalents'),
-					(N'trade-and-other-receivables',	N'Trade and other receivables');
-DECLARE @RTPPE INT, @RTSTK INT, @RTCCE INT
+	INSERT INTO dbo.ResourceClassifications
+	([ResourceType],					[Name],									[IsLeaf]) VALUES
+	(N'property-plant-and-equipment',	N'Property, plant and equipment',		0),
+	(N'investment-property',			N'Investment property',					1),
+	(N'intangible-assets',				N'Intangible assets other than goodwill',1),
+	(N'financial-assets',				N'Financial assets',					1),
+	(N'investments',					N'Investments',							1),	
+	(N'biological-assets',				N'Biological assets',					1),
+	(N'inventories',					N'Inventories',							0),
+	(N'cash-and-cash-equivalents',		N'Cash and cash equivalents',			1),
+	(N'trade-and-other-receivables',	N'Trade and other receivables',			1);
+DECLARE @RTPPE INT, @RTFIA INT, @RTSTK INT, @RTCCE INT
 SELECT 
 	@RTPPE = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'property-plant-and-equipment' AND [Code] = N''),
+	@RTFIA = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'financial-assets' AND [Code] = N''),
 	@RTSTK = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'inventories' AND [Code] = N''),
-	@RTCCE = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'cash-and-cash-equivalents' AND [Code] = N''),
-	@RTPPE = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'property-plant-and-equipment' AND [Code] = N'')
+	@RTCCE = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'cash-and-cash-equivalents' AND [Code] = N'')
+
 BEGIN -- Inserting
 	INSERT INTO @R1 ([Index],
 	[ResourceClassificationId],	[Name],					[Code],		[UnitId], [CountUnitId]) VALUES
@@ -44,9 +41,10 @@ BEGIN -- Inserting
 	(2, @RTCCE,					N'Received Checks/ETB',	N'RCKETB',	@ETBUnit, @pcsUnit); --1
 DECLARE @RCKETBIndex INT = (SELECT [Index] FROM @R1 WHERE [Code] = N'RCKETB');
 DECLARE @CBEBank INT, @AWBBank INT;
-INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code], [MonetaryValue], [IssuingBankId]) VALUES
-				(@RCKETBIndex,	N'2017.10.01',		N'101009', 6900,		@CBEBank),
-				(@RCKETBIndex,	N'2017.10.15',		N'2308', 17550,			@AWBBank);
+	INSERT INTO @RP1([Index], 
+	[ResourceIndex], [ProductionDate], [Code], [MonetaryValue], [IssuingBankId]) VALUES
+	(0,@RCKETBIndex,	N'2017.10.01',		N'101009', 6900,		@CBEBank),
+	(1,@RCKETBIndex,	N'2017.10.15',		N'2308', 17550,			@AWBBank);
 
 	EXEC [api].[Resources__Save]
 		@ResourceType = N'cash-and-cash-equivalents',
@@ -59,38 +57,92 @@ INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code], [MonetaryValue], [Is
 		Print 'Inserting Cash and cash equivalents'
 		GOTO Err_Label;
 	END;
+
+	INSERT INTO dbo.ResourceClassifications
+	([ResourceType],	[ParentId],	[Name],			[Code], [IsLeaf]) VALUES
+	(N'inventories',	@RTSTK,		N'Vehicles',	N'1',	0);
+DECLARE @RTVHC INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'inventories' AND [Code] = N'1');
+
+	INSERT INTO dbo.ResourceClassifications
+	([ResourceType],	[ParentId],	[Name],			[Code], [IsLeaf]) VALUES
+	(N'inventories',	@RTVHC,		N'Sedan',		N'11',	1),
+	(N'inventories',	@RTVHC,		N'4x Drive',	N'12',	1),
+	(N'inventories',	@RTVHC,		N'Sports',		N'13',	1);
+
+DECLARE @RCVS INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'inventories' AND [Code] = N'11');
+	INSERT INTO @R2 ([Index],
+	[ResourceClassificationId],	[Name],					[Code],	[UnitId]) VALUES
+	(0, @RCVS,					N'Toyota Camry 2018',	NULL,	@pcsUnit),--1
+	(1, @RCVS,					N'Fake',				NULL,	@pcsUnit),--1
+	(2, @RCVS,					N'Toyota Yaris 2018',	NULL,	@pcsUnit);--1
+
+DECLARE @ToyotaCamryIndex INT = (SELECT [Index] FROM @R2 WHERE [Name] = N'Toyota Camry 2018');
+DECLARE @ToyotaYarisIndex INT = (SELECT [Index] FROM @R2 WHERE [Name] = N'Toyota Yaris 2018');
+	INSERT INTO @RP2([Index],
+	[ResourceIndex],		[ProductionDate], [Code]) VALUES
+	(0,@ToyotaCamryIndex,	N'2017.10.01',		N'101'),
+	(1,@ToyotaCamryIndex,	N'2017.10.15',		N'102'),
+	(2,@ToyotaCamryIndex,	N'2017.10.15',		N'199'),
+	(3,@ToyotaYarisIndex,	N'2017.10.01',		N'201');
+
+	INSERT INTO dbo.ResourceClassifications
+	([ResourceType],	[ParentId],	[Name],				[Code], [IsLeaf]) VALUES
+	(N'inventories',	@RTSTK,		N'Raw Materials',	N'2',	1);
+DECLARE @RCRM INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'inventories' AND [Code] = N'2');
+
+	INSERT INTO @R2 ([Index],
+	[ResourceClassificationId],	[Name],					[Code],			[UnitId], [CountUnitId]) VALUES
+	(3, @RCRM,					N'HR 1000MMx1.9MM',		N'HR1000x1.9',	@KgUnit, @pcsUnit),
+	(4, @RCRM,					N'CR 1000MMx1.4MM',		N'CR1000x1.4',	@KgUnit, @pcsUnit);
+
+DECLARE @HotRollIndex INT =  (SELECT [Index] FROM @R2 WHERE [Name] = N'HR 1000MMx1.9MM');
+	INSERT INTO @RP2([Index],
+	[ResourceIndex], [ProductionDate], [Code], [Mass]) VALUES
+	(4,@HotRollIndex,		N'2017.10.01',	N'54001', 7891),
+	(5,@HotRollIndex,		N'2017.10.15',	N'54002', 6985),
+	(6,@HotRollIndex,		N'2017.10.15',	N'60032', 7320),
+	(7,@HotRollIndex,		N'2017.10.01',	N'60342', 7100);
+
+	EXEC [api].[Resources__Save]
+		@ResourceType = N'inventories',
+		@Resources = @R2,
+		@Picks = @RP2,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Inserting inventories'
+		GOTO Err_Label;
+	END;
+
+	INSERT INTO @R3 ([Index],
+	[ResourceClassificationId],	[Name],				[Code],			[UnitId]) VALUES
+	(0, @RTFIA,					N'Common Stock',	N'CMNSTCK',		@shareUnit),
+	(1, @RTFIA,					N'Premium Stock',	N'PRMMSTCK',	@shareUnit);
+
+	EXEC [api].[Resources__Save]
+		@ResourceType = N'financial-assets',
+		@Resources = @R3,
+		@Picks = @RP3,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Inserting financial assets'
+		GOTO Err_Label;
+	END;
+
 	IF @DebugResources = 1
 	BEGIN
-		--SELECT * FROM dbo.Resources;
-		INSERT INTO @R1Ids SELECT [Id] FROM dbo.Resources;
-		EXEC rpt.[sp_ResourcesPicks] @R1Ids;
+		SELECT * FROM dbo.ResourceClassifications ORDER BY [ResourceType], [Code];
+		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
+		EXEC rpt.[sp_ResourcesPicks] @R2Ids;
 	END
 
---INSERT INTO @R1 ([Index],
---[IfrsResourceClassificationId],	[Name],					[Code],		[SystemCode], [UnitId]) VALUES
---	(3, N'motor-vehicles',		N'Toyota Camry 2018',	NULL,		NULL,			@pcsUnit),--1
---	(4, N'motor-vehicles',		N'Fake',				NULL,		NULL,			@pcsUnit),--1
---	(5, N'motor-vehicles',		N'Toyota Yaris 2018',	NULL,		NULL,			@pcsUnit),--1
---	(6, N'general-goods',		N'Teddy bear',			NULL,		NULL,			@pcsUnit),
---	(7, N'financial-instruments',N'Common Stock',		N'CMNSTCK',	N'CMNSTCK',		@shareUnit),
---	(8, N'financial-instruments',N'Premium Stock',		N'PRMMSTCK',NULL,			@shareUnit);
---DECLARE @ToyotaCamryIndex INT = (SELECT [Index] FROM @R1 WHERE [Name] = N'Toyota Camry 2018');
---DECLARE @ToyotaYarisIndex INT = (SELECT [Index] FROM @R1 WHERE [Name] = N'Toyota Yaris 2018');
---INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code]) VALUES
---				(@ToyotaCamryIndex,	N'2017.10.01',		N'101'),
---				(@ToyotaCamryIndex,	N'2017.10.15',		N'102'),
---				(@ToyotaCamryIndex,	N'2017.10.15',		N'199'),
---				(@ToyotaYarisIndex,	N'2017.10.01',		N'201');
---INSERT INTO @R1 ([Index],
---[IfrsResourceClassificationId],	[Name],					[Code],			[UnitId], [CountUnitId]) VALUES
---	(9, N'raw-materials',		N'HR 1000MMx1.9MM',		N'HR1000x1.9',	@KgUnit, @pcsUnit),
---	(10, N'raw-materials',		N'CR 1000MMx1.4MM',		N'CR1000x1.4',	@KgUnit, @pcsUnit);
---DECLARE @HotRollIndex INT =  (SELECT [Index] FROM @R1 WHERE [Name] = N'HR 1000MMx1.9MM');
---INSERT INTO @RP1([ResourceIndex], [ProductionDate], [Code], [Mass]) VALUES
---				(@HotRollIndex,		N'2017.10.01',	N'54001', 7891),
---				(@HotRollIndex,		N'2017.10.15',	N'54002', 6985),
---				(@HotRollIndex,		N'2017.10.15',	N'60032', 7320),
---				(@HotRollIndex,		N'2017.10.01',	N'60342', 7100);
+	--(6, N'general-goods',		N'Teddy bear',			NULL,		NULL,			@pcsUnit),
+
+
+
 --INSERT INTO @R1 ([Index],
 --[IfrsResourceClassificationId],	[Name],		[Code],	[SystemCode], [UnitId]) VALUES
 --	(11, N'general-goods',		N'Cotton',	NULL,	NULL,		@KgUnit);
@@ -200,9 +252,16 @@ END
 --	END
 --END 
 
+DECLARE @ETB int, @USD int, @CommonStock int;
+DECLARE @Camry2018 int, @Cotton int, @TeddyBear int, @Car1 int, @Car2 int;
+DECLARE @HOvertime int, @ROvertime int, @Basic int, @Transportation int, 
+		@LaborHourly int, @LaborDaily int, @Car1Svc int, @GOff int;
+DECLARE @HR1000x1_9 INT, @CR1000x1_4 INT;
+DECLARE @Oil INT, @Diesel INT;
+
 SELECT 
-	@ETB = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'ETB'), 
-	@USD = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'USD'),
+	@ETB = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'ETB'), 
+	@USD = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'USD'),
 	@Camry2018 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Toyota Camry 2018'),
 	@Car1 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'101'),
 	@Car2 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'102'),

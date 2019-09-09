@@ -33,7 +33,7 @@ RETURN
 		J.[IfrsEntryClassificationId],
 		J.[ResponsibilityCenterId],
 		J.[ResourceId],
-		J.[InstanceId],
+		J.[ResourcePickId],
 		J.[BatchCode],
 		J.[MonetaryValue],
 		J.[CurrencyId],

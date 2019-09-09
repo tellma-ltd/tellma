@@ -47,13 +47,49 @@ BEGIN -- Insert individuals and organizations
 	--(29,N'Organization', N'Human Resources Department',0,NULL,					NULL,				NULL,		9,	NULL),
 	--(30,N'Organization', N'Materials & Purchasing Department',0,NULL,			NULL,				NULL,		9,	NULL);
 
+		INSERT INTO @Agents1([Index],
+		[AgentType],		[Name],		[IsRelated]) VALUES
+	(0,N'Individual',	N'Mohamad Akra',	0),
+	(1,N'Individual',	N'Ahmad Akra',		0),
+	(2,N'Individual',	N'Badege Kebede',	1),
+	(3,N'Individual',	N'Tizita Nigussie',	0),
+	(4,N'Individual',	N'Ashenafi Fantahun',0),
+	(5,N'Individual',	N'Yisak Tegene',	0),
+	(6,N'Individual',	N'Zewdinesh Hora',	0),
+	(7,N'Individual',	N'Tigist Negash',	0),
+	(8,N'Individual',	N'Roman Zenebe',	0),
+	(9,N'Individual',	N'Mestawet G/Egziyabhare',	0),
+	(10,N'Individual',	N'Ayelech Hora',	0),
+	(11,N'Individual',	N'Yigezu Legesse',	0),
+	(12,N'Individual',	N'Mesfin Wolde',	0),
+
+	(13,N'Organization', N'Banan Information technologies, plc', 1),
+	(14,N'Organization', N'Walia Steel Industry, plc', 1),
+	(15,N'Organization', N'Yangfan Motors, PLC', 0),
+	(16,N'Organization', N'Sisay Tesfaye, PLC', 0),
+	(17,N'Organization', N'Ethiopian Revenues and Customs Authority', 0),
+	(18,N'Organization', N'Best Paint Industry', 0),
+	(19,N'Organization', N'Best Plastic Industry', 0),
+	(20,N'Organization', N'Commercial Bank of Ethiopia', 0),
+	(21,N'Organization', N'Awash Bank', 0),
+	(22,N'Organization', N'NIB', 0),
+	(23,N'Organization', N'Regus',0),
+	
+	(24,N'Organization', N'Noc Jimma Ber Service Station',	0),
+
+	(25,N'Organization', N'Executive Office',1),
+	(26,N'Organization', N'Production Department',0),
+	(27,N'Organization', N'Sales & Marketing Department',0),
+	(28,N'Organization', N'Finance Department',0),
+	(29,N'Organization', N'Human Resources Department',0),
+	(30,N'Organization', N'Materials & Purchasing Department',0);
 	EXEC [api].[Agents__Save]
 		@Entities = @Agents1,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Agents: Place 1'
+		Print 'Agents: Inserting'
 		GOTO Err_Label;
 	END;
 END
@@ -78,7 +114,7 @@ END
 
 --	IF @ValidationErrorsJson IS NOT NULL 
 --	BEGIN
---		Print 'Agents: Place 2'
+--		Print 'Agents: Updating'
 --		GOTO Err_Label;
 --	END;
 

@@ -243,4 +243,88 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ResourceClassificationId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="aaf2484b-5f5a-4e9f-8538-a7010fa511e2" ChangeDateTime="09/09/2019 00:01:05">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[HasSingleAgentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IsMultiAgent]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="93b632da-1498-4792-a330-eef457a23daa" ChangeDateTime="09/09/2019 00:02:44">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[HasSingleResourceId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IsMultiResource]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6ff98e90-08c7-4a31-828f-3665836cde54" ChangeDateTime="09/09/2019 00:03:37">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[AgentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8ef03a7c-e377-48d0-b60a-f3e47273965e" ChangeDateTime="09/09/2019 00:05:59">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[ResponsibilityCenterId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefaultResponsibilityCenterId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="78947530-6ecd-4365-872f-80447ae16511" ChangeDateTime="09/09/2019 00:09:38">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DefaultAgentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6a81ed3f-0853-491d-a451-e0482aebf422" ChangeDateTime="09/09/2019 00:10:08">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DefaultResponsibilityCenterId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityCenterId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4f8b008b-655b-4808-a603-0144e641fdf5" ChangeDateTime="09/09/2019 00:10:26">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DefaultResourceId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="29d49301-939c-4cf3-9d53-2f862bcd00a7" ChangeDateTime="09/09/2019 00:13:48">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[IsMultiEntryClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IsMultiEntryClassification]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="082c476b-c301-413a-8bca-98450851bbc5" ChangeDateTime="09/09/2019 00:15:26">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DefaultDebitIfrsEntryClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitIfrsEntryClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a9495f4b-6840-440e-965e-bfe33147ecb2" ChangeDateTime="09/09/2019 00:16:27">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DefaultCreditIfrsEntryClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CreditIfrsEntryClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="89ec79e1-8360-47f8-931a-c9889d61254d" ChangeDateTime="09/09/2019 00:18:22">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[CustomClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d7255e33-23e6-469c-b040-67f6b7e83f37" ChangeDateTime="09/09/2019 00:55:51">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineEntries].[InstanceId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourcePickId]" />
+  </Operation>
 </Operations>

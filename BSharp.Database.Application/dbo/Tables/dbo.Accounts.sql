@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Accounts] (
 	[Id]										INT					CONSTRAINT [PK_Accounts] PRIMARY KEY IDENTITY,
 	-- to simplify the account migration, and to reconciliation with the previous system. Users can start entering Jvs immediately afterwards.
-	[CustomClassificationId]					INT,
+	[AccountClassificationId]					INT,
 	-- Once the data is imported, the classification of accounts in a manner that is consistent with Ifrs can start.
 	-- The allowable values are the lowest level of the calculation trees in Ifrs Taxonomies: (financial position, comprehensive income, by function)
 	-- To generate the above financial statements , classifications of childen of same parent can all be aggregated to the parent,
@@ -15,21 +15,23 @@
 	-- To import accounts, or to control sort order, a code is required. Otherwise, it is not.
 	[Code]										NVARCHAR (30)		CONSTRAINT [CK_Accounts__Code] UNIQUE,
 	[PartyReference]							NVARCHAR (255), -- how it is referred to by the other party
-	[HasSingleAgentId]							BIT					DEFAULT 1,
-	-- to link several accounts to the same agent.
-	[AgentId]									INT					CONSTRAINT [FK_Accounts__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),
 	-- necessary to generate notes such as cash flow (direct), statement of change of equity, notes on non current assets
 	-- notes on expenses by nature, etc.
-	[DefaultDebitIfrsEntryClassificationId]		NVARCHAR (255)		CONSTRAINT [FK_Accounts__DebitIfrsEntryClassificationId] FOREIGN KEY ([DefaultDebitIfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),
-	[DefaultCreditIfrsEntryClassificationId]	NVARCHAR (255)		CONSTRAINT [FK_Accounts__CreditIfrsEntryClassificationId] FOREIGN KEY ([DefaultCreditIfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),
--- The business segment that "owns" the asset/liablity, and whose performance is assessed by the revenue/expense
+	[IsMultiEntryClassification]				BIT					NOT NULL DEFAULT 1,
+	[DebitIfrsEntryClassificationId]			NVARCHAR (255)		CONSTRAINT [FK_Accounts__DebitIfrsEntryClassificationId] FOREIGN KEY ([DebitIfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),
+	[CreditIfrsEntryClassificationId]			NVARCHAR (255)		CONSTRAINT [FK_Accounts__CreditIfrsEntryClassificationId] FOREIGN KEY ([CreditIfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),
+	-- to link several accounts to the same agent.
+	[IsMultiAgent]								BIT					NOT NULL DEFAULT 0,
+	[AgentId]									INT					CONSTRAINT [FK_Accounts__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),
+	-- The business segment that "owns" the asset/liablity, and whose performance is assessed by the revenue/expense
 -- I propose making it part of the account, especially to track budget. Jiad complained about opening accounts
 -- also, smart sales posting is easier since a resource can tell the nature of expense, but not the responsibility center
 	-- called SegmentId in B10. When not needed, we use the entity itself.
+	[IsMultiResponsibilityCenter]				BIT					NOT NULL DEFAULT 0,
 	[ResponsibilityCenterId]					INT					DEFAULT CONVERT(INT, SESSION_CONTEXT(N'BusinessEntityId')) CONSTRAINT [FK_Accounts__ResponsibilityCenterId] FOREIGN KEY ([ResponsibilityCenterId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
-	[HasSingleResourceId]						BIT					DEFAULT 1,
-	-- Make the default null, if subsidiary journals are resource based such as inventory, fixed assets, allowance, bonus and overtime.
-	[DefaultResourceId]							INT					,--DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_Accounts__DefaultResourceId] REFERENCES [dbo].[Resources] ([Id]),
+	-- The resource being tracked in the account
+	[IsMultiResource]							BIT					NOT NULL DEFAULT 1,
+	[ResourceId]								INT					,--DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_Accounts__DefaultResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	-- To transfer a document from requested to authorized, we need an evidence that the responsible actor
 	-- has authorized it. If responsibility changes frequently, we use roles. 
 	-- However, if responsibility center can be external to account, we may have to move these
@@ -48,10 +50,14 @@
 	CONSTRAINT [CK_Accounts__ExpenseByNatureIsRequired] CHECK(
 		([IfrsAccountClassificationId] NOT IN (N'CostOfSales', N'DistributionCosts', N'AdministrativeExpense'))
 		OR (
-			[DefaultDebitIfrsEntryClassificationId] IS NOT NULL
-			AND [DefaultCreditIfrsEntryClassificationId] IS NOT NULL
-			AND [DefaultDebitIfrsEntryClassificationId] = [DefaultCreditIfrsEntryClassificationId]
+			[DebitIfrsEntryClassificationId] IS NOT NULL
+			AND [CreditIfrsEntryClassificationId] IS NOT NULL
+			AND [DebitIfrsEntryClassificationId] = [CreditIfrsEntryClassificationId]
 		)
-	)
+	),
+	CONSTRAINT [CK_Account__MultiAgent] CHECK ([IsMultiAgent] = 0 OR [AgentId] IS NULL),
+	CONSTRAINT [CK_Account__MultiEntryClassification] CHECK ([IsMultiEntryClassification] = 0 OR [DebitIfrsEntryClassificationId] IS NULL AND [CreditIfrsEntryClassificationId] IS NULL),
+	CONSTRAINT [CK_Account__MultiResponsibilityCenter] CHECK ([IsMultiResponsibilityCenter] = 0 OR [ResponsibilityCenterId] IS NULL),
+	CONSTRAINT [CK_Account__MultiResource] CHECK ([IsMultiResource] = 0 OR [ResourceId] IS NULL)
 );
 GO

@@ -16,7 +16,7 @@ BEGIN
 		@Lines = @Lines,
 		@Entries = @Entries;
 
-	--SELECT * FROM @FilledEntries;
+	SELECT * FROM @FilledEntries;
 	--INSERT INTO @ValidationErrors
 	--EXEC [bll].[Documents_Validate__Save]
 	--	@Documents = @Documents,

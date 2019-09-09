@@ -26,7 +26,7 @@ RETURN
 		V.[ResponsibilityCenterId],
 		V.[ResourceId],
 		--R.[UnitId],
-		V.[InstanceId],
+		V.[ResourcePickId],
 		V.[BatchCode],
 		--V.[Quantity],
 -- because too many joins with table Measurement units affects performance, I will only add the 

@@ -10,16 +10,31 @@ DECLARE @FunctionalCurrencyId INT = CONVERT(INT, SESSION_CONTEXT(N'FunctionalCur
 INSERT INTO @FilledEntries
 SELECT * FROM @Entries;
 
--- set quantity to the right value measure
 UPDATE E
 SET
-	E.[MonetaryValue] = CASE WHEN R.[UnitId] = R.[CurrencyId] THEN E.[Quantity] ELSE E.[MonetaryValue] END,
-	E.[Mass]		= CASE WHEN R.[UnitId] = R.[MassUnitId] THEN E.[Quantity] ELSE E.[Mass] END,
-	E.[Volume]		= CASE WHEN R.[UnitId] = R.[VolumeUnitId] THEN E.[Quantity] ELSE E.[Volume] END,
-	E.[Area]		= CASE WHEN R.[UnitId] = R.[AreaUnitId] THEN E.[Quantity] ELSE E.[Area] END,
-	E.[Length]		= CASE WHEN R.[UnitId] = R.[LengthUnitId] THEN E.[Quantity] ELSE E.[Length] END,
-	E.[Time]		= CASE WHEN R.[UnitId] = R.[TimeUnitId] THEN E.[Quantity] ELSE E.[Time] END,
-	E.[Count]		= CASE WHEN R.[UnitId] = R.[CountUnitId] THEN E.[Quantity] ELSE E.[Count] END
+	E.IfrsEntryClassificationId = 
+		CASE
+			WHEN Direction = +1 AND A.DebitIfrsEntryClassificationId IS NOT NULL THEN A.DebitIfrsEntryClassificationId
+			WHEN Direction = -1 AND A.CreditIfrsEntryClassificationId IS NOT NULL THEN A.CreditIfrsEntryClassificationId
+			ELSE E.IfrsEntryClassificationId
+		END,
+	E.AgentId = CASE WHEN A.AgentId IS NOT NULL THEN A.AgentId ELSE E.AgentId END,
+	E.ResponsibilityCenterId = CASE WHEN A.ResponsibilityCenterId IS NOT NULL THEN A.ResponsibilityCenterId ELSE E.ResponsibilityCenterId END,
+	E.ResourceId = CASE WHEN A.ResourceId IS NOT NULL THEN A.ResourceId ELSE E.ResourceId END
+FROM @FilledEntries E
+JOIN dbo.Accounts A ON E.AccountId = A.Id
+WHERE A.AgentId IS NOT NULL
+
+-- copy quantity to the corresponding measure
+UPDATE E
+SET
+	E.[MonetaryValue]	= CASE WHEN R.[UnitId] = R.[CurrencyId]		THEN E.[Quantity] ELSE E.[MonetaryValue] END,
+	E.[Mass]			= CASE WHEN R.[UnitId] = R.[MassUnitId]		THEN E.[Quantity] ELSE E.[Mass] END,
+	E.[Volume]			= CASE WHEN R.[UnitId] = R.[VolumeUnitId]	THEN E.[Quantity] ELSE E.[Volume] END,
+	E.[Area]			= CASE WHEN R.[UnitId] = R.[AreaUnitId]		THEN E.[Quantity] ELSE E.[Area] END,
+	E.[Length]			= CASE WHEN R.[UnitId] = R.[LengthUnitId]	THEN E.[Quantity] ELSE E.[Length] END,
+	E.[Time]			= CASE WHEN R.[UnitId] = R.[TimeUnitId]		THEN E.[Quantity] ELSE E.[Time] END,
+	E.[Count]			= CASE WHEN R.[UnitId] = R.[CountUnitId]	THEN E.[Quantity] ELSE E.[Count] END
 FROM @FilledEntries E
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 WHERE  R.[UnitId] = R.[CurrencyId];
@@ -50,21 +65,21 @@ WITH SingletonLines
 AS (
 	SELECT [DocumentIndex], [DocumentLineIndex] 
 	FROM @FilledEntries WHERE [Value] = 0
-	GROUP BY [DocumentIndex],  [DocumentLineIndex] 
+	GROUP BY [DocumentIndex], [DocumentLineIndex] 
 	HAVING COUNT(*) = 1
 ),
 LinesBalances
 AS (
 	SELECT [DocumentIndex], [DocumentLineIndex], SUM([Direction] * [Value]) AS [Balance]
 	FROM @FilledEntries
-	GROUP BY [DocumentIndex],  [DocumentLineIndex] 
+	GROUP BY [DocumentIndex], [DocumentLineIndex] 
 )
 UPDATE E
 SET E.[Value] = -E.[Direction] * LB.[Balance]
 FROM @FilledEntries E
 JOIN SingletonLines SL ON (E.[DocumentIndex] = SL.[DocumentIndex] AND E.[DocumentLineIndex] = SL.[DocumentLineIndex])
 JOIN LinesBalances LB ON (E.[DocumentIndex] = LB.[DocumentIndex] AND E.[DocumentLineIndex] = LB.[DocumentLineIndex])
-WHERE E.[Value] = 0 AND E.[Value] <>  -E.[Direction] * LB.[Balance];
+WHERE E.[Value] = 0 AND E.[Value] <> -E.[Direction] * LB.[Balance];
 
 -- if one value only is zero at the document level, set it to the sum of the rest. Otherwise, the accountant has to set it.
 WITH SingletonDocs

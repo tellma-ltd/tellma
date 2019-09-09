@@ -13,15 +13,17 @@
 -- Analysis of accounts including: cash, non current assets, equity, and expenses. Can be updated after posting
 	-- Note that the responsibility center might define the Ifrs Note
 	[IfrsEntryClassificationId]	NVARCHAR (255)	CONSTRAINT [FK_DocumentLineEntries__IfrsEntryClassifications] FOREIGN KEY ([IfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),	
-
+	[AgentId]					INT				CONSTRAINT [FK_DocumentLineEntries__AgentId] FOREIGN KEY ([AgentId])	REFERENCES [dbo].[Resources] ([Id]),
+	[ResponsibilityCenterId]	INT				CONSTRAINT [FK_DocumentLineEntries__ResponsibilityCenterId] FOREIGN KEY ([ResponsibilityCenterId])	REFERENCES [dbo].[Resources] ([Id]),
 -- Resource is defined as
 --	The actual asset, liability
 --	The good/service sold for revenues and direct expenses
 --	The good/service consumed for indirect expenses
-	[ResourceId]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_DocumentLineEntries__Resources]	FOREIGN KEY ([ResourceId])	REFERENCES [dbo].[Resources] ([Id]),
+--  TODO: Make a composite foreign key to table ResourcePicks using ResourceId and ResourcePickId
+	[ResourceId]				INT				CONSTRAINT [FK_DocumentLineEntries__ResourceId] FOREIGN KEY ([ResourceId])	REFERENCES [dbo].[Resources] ([Id]),
 --	steel rolls:coil #, car:VIN, merchandise:EPC, check:BankCode+AccNumber+CheckNumber.
 --	AVCO is run either at the resource level or at the number level (specified costing)
-	[InstanceId]				INT				CONSTRAINT [FK_DocumentLineEntries__ResourceInstances] FOREIGN KEY ([InstanceId]) REFERENCES [dbo].[ResourcePicks] ([Id]),
+	[ResourcePickId]			INT				CONSTRAINT [FK_DocumentLineEntries__ResourcePickId] FOREIGN KEY ([ResourcePickId]) REFERENCES [dbo].[ResourcePicks] ([Id]),
 --  Used for tracking of raw materials, production supplies, and finished goods.
 --	We always show the non zero balances per triplet (ResourceId, InstanceId, BatchCode)
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)

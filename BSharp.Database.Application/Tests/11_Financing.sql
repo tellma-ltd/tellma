@@ -31,11 +31,13 @@ BEGIN -- Inserting
 		Print 'Capital Investment (M): Insert'
 		GOTO Err_Label;
 	END;
-
+	--SELECT * FROM dbo.Documents; SELECT * FROM dbo.DocumentLines; SELECT * FROM dbo.DocumentLineEntries;
+	SELECT * FROM dbo.Accounts;
 	INSERT INTO @D11Ids([Id]) SELECT [Id] FROM dbo.Documents;
 	SELECT * FROM rpt.Documents(@D11Ids) ORDER BY [SortKey], [EntryNumber];
 END
 
+IF (1=0)
 BEGIN -- Updating document and deleting lines/entries
 	INSERT INTO @D12([Index], [Id], [DocumentDate],	[Memo], [EvidenceTypeId])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id], [DocumentDate],	[Memo], [EvidenceTypeId] 
@@ -47,11 +49,10 @@ BEGIN -- Updating document and deleting lines/entries
 	FROM dbo.DocumentLines DL
 	JOIN @D12 D12 ON D12.[Id] = DL.[DocumentId];
 
-	INSERT INTO @E12([Index], [Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value])
-	SELECT ROW_NUMBER() OVER (ORDER BY DLE.[Id]), DLE.[Id], L12.[Id], L12.DocumentIndex, L12.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value]
+	INSERT INTO @E12([Index], [Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex],				[EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value])
+	SELECT ROW_NUMBER() OVER (ORDER BY DLE.[Id]), DLE.[Id], L12.[Id], L12.DocumentIndex, L12.[Index],	[EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value]
 	FROM dbo.DocumentLineEntries DLE
-	JOIN @L12 L12 ON L12.[Id] = DLE.[DocumentLineId]
-	;
+	JOIN @L12 L12 ON L12.[Id] = DLE.[DocumentLineId];
 
 	--SELECT * FROM @D12; SELECT * FROM @L12; SELECT * FROM @E12;
 

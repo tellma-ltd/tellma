@@ -9,7 +9,7 @@ BEGIN
 	FROM [dbo].[fi_Journal](NULL, @AsOfDate) J
 	JOIN dbo.Accounts AC ON J.AccountId = AC.Id
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
-	LEFT JOIN dbo.Agents AG ON Ac.AgentId = AG.Id
+	LEFT JOIN dbo.Agents AG ON Ac.[AgentId] = AG.Id
 	WHERE Ac.[IfrsAccountClassificationId] = N'BalancesWithBanks'
 	GROUP BY
 		AG.[Name], AG.[Name2], AG.[Name3],

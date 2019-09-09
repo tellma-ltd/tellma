@@ -10,7 +10,7 @@ AS
 	SELECT
 			[AccountId],
 			[ResourceId],
-			[InstanceId],
+			[ResourcePickId],
 			[BatchCode],
 			SUM([Mass]) AS [Mass],
 			SUM([Volume]) As [Volume],
@@ -23,7 +23,7 @@ AS
 	GROUP BY
 			[AccountId],
 			[ResourceId],
-			[InstanceId],
+			[ResourcePickId],
 			[BatchCode]
 	HAVING
 			SUM([Mass]) < 0 OR SUM([Volume]) < 0 OR SUM([Area]) < 0 OR 
