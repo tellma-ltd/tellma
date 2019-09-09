@@ -196,17 +196,6 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   ///////////////// Helper Functions
 
-  private formatterInner: (id: number | string) => string = (id: number | string) => {
-    // all this does is fetch the entity from the server in case it wasn't found in the workspace
-    const item = this.workspace.current.get(this.collection, id);
-    if (!!id && !item) {
-      this.fetchUnloadedItem(id);
-      return '';
-    } else {
-      return this.formatter(item);
-    }
-  }
-
   private fetchUnloadedItem(id: string | number) {
     this.notifyFetchUnloadedItem$.next(id);
   }
@@ -349,6 +338,17 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     return this.workspace.ws.isRtl ?
       ['bottom-right', 'bottom-left', 'bottom'] :
       ['bottom-left', 'bottom-right', 'bottom'];
+  }
+
+  public formatterInner: (id: number | string) => string = (id: number | string) => {
+    // all this does is fetch the entity from the server in case it wasn't found in the workspace
+    const item = this.workspace.current.get(this.collection, id);
+    if (!!id && !item) {
+      this.fetchUnloadedItem(id);
+      return '';
+    } else {
+      return this.formatter(item);
+    }
   }
 
   onMouseEnter(i: number) {

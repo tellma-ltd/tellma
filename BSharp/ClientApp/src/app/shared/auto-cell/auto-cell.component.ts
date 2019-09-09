@@ -8,11 +8,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'b-switch',
-  templateUrl: './switch.component.html',
+  selector: 'b-auto-cell',
+  templateUrl: './auto-cell.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SwitchComponent implements OnInit, OnChanges, OnDestroy {
+export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
 
   // This component automatically displays the property value from its metadata
 

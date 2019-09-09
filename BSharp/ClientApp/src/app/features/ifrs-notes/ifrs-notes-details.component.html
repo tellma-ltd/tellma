@@ -27,7 +27,7 @@
   </b-form-group>
 
   <!-- Label2 -->
-  <b-form-group class="b-form-group" *ngIf="!ws.SecondaryLanguage && ws.settings.SecondaryLanguageId"
+  <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
     [label]="('IfrsConcepts_Label' | translate) + ws.secondaryPostfix">
     <div class="d-block text-truncate">{{ model?.Label2 }}</div>
   </b-form-group>
@@ -64,7 +64,7 @@
   <!-- Parent -->
   <b-form-group class="b-form-group" [label]="'TreeParent' | translate">
     <b-restricted [metadata]="model?.EntityMetadata?.Parent"> 
-        <b-view-link *ngIf="!isEdit" link="../"
+        <b-view-link link="../"
         [itemId]="model?.ParentId">
         {{ ws.getMultilingualValue('IfrsNote', model?.ParentId, 'Label') }}
       </b-view-link>
