@@ -32,7 +32,7 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   private detailsSave: Subscription;
   private detailsCancel: Subscription;
 
-  @ViewChild(DetailsComponent, { static: false })
+  @ViewChild(DetailsComponent, { static: true })
   set details(v: DetailsComponent) {
     if (this._details !== v) {
 

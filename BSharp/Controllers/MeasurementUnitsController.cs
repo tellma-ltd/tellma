@@ -113,8 +113,11 @@ namespace BSharp.Controllers
                 var name2 = nameof(MeasurementUnit.Name2);
                 var name3 = nameof(MeasurementUnit.Name3);
                 var code = nameof(MeasurementUnit.Code);
+                var desc = nameof(MeasurementUnit.Description);
+                var desc2 = nameof(MeasurementUnit.Description2);
+                var desc3 = nameof(MeasurementUnit.Description3);
 
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
+                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
                 query = query.Filter(FilterExpression.Parse(filterString));
             }
 

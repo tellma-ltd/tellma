@@ -1,9 +1,12 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component, EventEmitter, Input, OnDestroy, OnInit, Output, TemplateRef,
+  ViewChild, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef
+} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_format } from '~/app/data/dto/template-arguments';
@@ -28,7 +31,8 @@ enum SearchView {
 
 @Component({
   selector: 'b-master',
-  templateUrl: './master.component.html'
+  templateUrl: './master.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -122,9 +126,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   cancel = new EventEmitter<void>();
 
-  @ViewChild('errorModal', { static : true })
+  @ViewChild('errorModal', { static: true })
   public errorModal: TemplateRef<any>;
 
+  private _changeSubscription: Subscription;
   private _collection: string;
   private _subtype: string;
   private localState = new MasterDetailsStore();  // Used in popup mode
@@ -198,7 +203,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   ////////////////// END - TREE STUFF
 
   constructor(
-    private workspace: WorkspaceService, private api: ApiService, private router: Router,
+    private workspace: WorkspaceService, private api: ApiService, private router: Router, private cdr: ChangeDetectorRef,
     private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) {
 
     // Use some RxJS magic to refresh the data as the user changes the parameters
@@ -220,6 +225,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
+
+    this._changeSubscription = this.workspace.stateChanged$.subscribe({
+      next: () => this.cdr.markForCheck()
+    });
 
     // Reset the state of the master component state
     this.localState = new MasterDetailsStore();
@@ -335,39 +344,43 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this.notifyDestruct$.next();
     this._subscriptions.unsubscribe();
     this.cancelAllTreeQueries();
+
+    if (!!this._changeSubscription) {
+      this._changeSubscription.unsubscribe();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
 
-      // the combinatino of these two properties defines a whole new screen from the POV of the user
-      // when either of these properties change it is equivalent to a screen closing and
-      // and another screen opening even though Angular may reuse the same
-      // component and never call ngOnDestroy and ngOnInit. So we call them
-      // manually here if this is not the first time these properties are set
-      // to simulate a screen closing and opening again
-      const screenDefProperties = [changes.collection, changes.subtype];
+    // the combinatino of these two properties defines a whole new screen from the POV of the user
+    // when either of these properties change it is equivalent to a screen closing and
+    // and another screen opening even though Angular may reuse the same
+    // component and never call ngOnDestroy and ngOnInit. So we call them
+    // manually here if this is not the first time these properties are set
+    // to simulate a screen closing and opening again
+    const screenDefProperties = [changes.collection, changes.subtype];
 
-      const anyChanges = screenDefProperties.some(prop => !!prop);
-      const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+    const anyChanges = screenDefProperties.some(prop => !!prop);
+    const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
 
-      if (anyChanges) {
+    if (anyChanges) {
 
-        if (notFirstChange) {
-          this.ngOnDestroy();
-        }
+      if (notFirstChange) {
+        this.ngOnDestroy();
+      }
 
-        if (!!changes.collection) {
-          this._collection = changes.collection.currentValue;
-        }
+      if (!!changes.collection) {
+        this._collection = changes.collection.currentValue;
+      }
 
-        if (!!changes.subtype) {
-          this._subtype = changes.subtype.currentValue;
-        }
+      if (!!changes.subtype) {
+        this._subtype = changes.subtype.currentValue;
+      }
 
-        // set the values
-        if (notFirstChange) {
-          this.ngOnInit();
-        }
+      // set the values
+      if (notFirstChange) {
+        this.ngOnInit();
+      }
     }
   }
 
@@ -432,6 +445,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
 
+    // This will show the spinner
+    this.cdr.markForCheck();
+
     // Retrieve the entities
     return this.crud.get({
       top,
@@ -464,7 +480,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         s.masterStatus = MasterStatus.error;
         s.errorMessage = friendlyError.error;
         return of(null);
-      })
+      }),
+      finalize(() => this.cdr.markForCheck())
     );
   }
 
@@ -497,6 +514,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     const select = this.computeSelect();
 
+    // This will show the spinner
+    this.cdr.markForCheck();
+
     // Retrieve the entities
     const crud = this.api.crudFactory(this.apiEndpoint, parentNode.notifyCancel$);
     crud.get({
@@ -522,7 +542,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         parentNode.status = MasterStatus.error;
         this.displayErrorModal(friendlyError.error);
         return of(null);
-      })
+      }),
+      finalize(() => this.cdr.markForCheck())
     ).subscribe();
   }
 
@@ -655,19 +676,20 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return settings.CustomSettings[this.selectKey];
   }
 
-  private saveSelect(v: string) {
+  private saveSelect(select: string) {
 
     // Save the new value with the server, to be used again afterwards
     const settings = this.workspace.current.userSettings;
     if (!settings.CustomSettings) {
       settings.CustomSettings = {};
     }
-    settings.CustomSettings[this.selectKey] = v;
-    this.api.usersApi(this.notifyDestruct$).saveForClient(this.selectKey, v)
+    settings.CustomSettings[this.selectKey] = select;
+    this.api.usersApi(this.notifyDestruct$).saveForClient(this.selectKey, select)
       .pipe(
         tap(x => {
           this.workspace.current.userSettings = x.Data;
           this.workspace.current.userSettingsVersion = x.Version;
+          this.workspace.notifyStateChanged();
         })
       )
       .subscribe();
@@ -1138,7 +1160,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       top: this.exportPageSize,
       skip: this.exportSkip,
       orderby: s.orderby,
-      // desc: s.desc,
       search: s.search,
       filter: this.filter(),
       expand: null,
@@ -1157,7 +1178,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       () => {
         this.showExportSpinner = false;
       }
-    )).subscribe();
+    ),
+      finalize(() => this.cdr.markForCheck())
+    ).subscribe();
   }
 
   public get showExportErrorMessage(): boolean {
@@ -1229,7 +1252,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       (friendlyError: any) => {
         this.handleActionError(ids, friendlyError);
       }
-    )).subscribe();
+    ),
+      finalize(() => this.cdr.markForCheck())
+    ).subscribe();
   }
 
   onDelete() {
@@ -1251,7 +1276,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       (friendlyError: any) => {
         this.handleActionError(ids, friendlyError);
       }
-    )).subscribe();
+    ),
+      finalize(() => this.cdr.markForCheck())
+    ).subscribe();
   }
 
   onDeleteWithDescendants() {
@@ -1273,7 +1300,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       (friendlyError: any) => {
         this.handleActionError(ids, friendlyError);
       }
-    )).subscribe();
+    ),
+      finalize(() => this.cdr.markForCheck())
+    ).subscribe();
   }
 
   private handleActionError(ids: (string | number)[], friendlyError) {
