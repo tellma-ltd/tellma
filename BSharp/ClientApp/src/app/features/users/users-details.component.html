@@ -70,7 +70,7 @@
 
   <!-- Last Activity -->
   <b-form-group class="b-form-group" [label]="'User_LastActivity' | translate" *ngIf="!isEdit">
-    <b-auto-cell baseCollection="User" [entityId]="model?.Id" path="LastAccess">
+    <b-auto-cell baseCollection="User" [entity]="model" path="LastAccess">
     </b-auto-cell>
   </b-form-group>
 

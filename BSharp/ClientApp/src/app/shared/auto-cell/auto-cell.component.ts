@@ -6,6 +6,7 @@ import {
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import { Entity } from '~/app/data/entities/base/entity';
 
 @Component({
   selector: 'b-auto-cell',
@@ -20,7 +21,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   baseCollection: string;
 
   @Input()
-  entityId: string | number;
+  entity: Entity;
 
   @Input()
   path: string;
@@ -86,14 +87,10 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
         throw new Error(`The baseCollection is not specified`);
       }
 
-      if (!this.entityId) {
-        throw new Error(`entityId is not specified`);
-      }
-
       const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
 
       this._entityDescriptor = this.metadataFactory(this.baseCollection)(this.ws.current, this.translate, this.subtype);
-      this._value = this.ws.current[this.baseCollection][this.entityId]; // the user with Id = 1
+      this._value = this.entity;
 
       if (pathArray.length === 0) {
         this._propDescriptor = null;
@@ -198,8 +195,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get alignment(): string {
-    const prop = this._propDescriptor as NumberPropDescriptor;
-    return prop.alignment;
+    return (this._propDescriptor as NumberPropDescriptor).alignment;
   }
 
   get booleanValue(): string {
@@ -209,9 +205,9 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get navigationValue(): any {
-    const dto = this._entityDescriptor;
-    const value = this.value; // Should return the DTO itself
-    return !!dto.format ? dto.format(value) : '(Format function missing)';
+    const entityDesc = this._entityDescriptor;
+    const value = this.value; // Should return the entity itself
+    return !!entityDesc.format ? entityDesc.format(value) : '(Format function missing)';
   }
 
 }

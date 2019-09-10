@@ -130,8 +130,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   public errorModal: TemplateRef<any>;
 
   private _changeSubscription: Subscription;
-  private _collection: string;
-  private _subtype: string;
+  // private _collection: string;
+  // private _subtype: string;
   private localState = new MasterDetailsStore();  // Used in popup mode
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
@@ -369,13 +369,13 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         this.ngOnDestroy();
       }
 
-      if (!!changes.collection) {
-        this._collection = changes.collection.currentValue;
-      }
+      // if (!!changes.collection) {
+      //   this._collection = changes.collection.currentValue;
+      // }
 
-      if (!!changes.subtype) {
-        this._subtype = changes.subtype.currentValue;
-      }
+      // if (!!changes.subtype) {
+      //   this._subtype = changes.subtype.currentValue;
+      // }
 
       // set the values
       if (notFirstChange) {
@@ -494,8 +494,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     const parentId = parentNode.id;
-    const isString = !!this.collectionPart ?
-      metadata[this.collectionPart](this.workspace.current, this.translate, null).properties.Id.control === 'text' :
+    const isString = !!this.collection ?
+      metadata[this.collection](this.workspace.current, this.translate, null).properties.Id.control === 'text' :
       isNaN(parentId as any); // TODO make this more robust
 
     // capture the state object and clear the details object
@@ -610,28 +610,28 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   // Calculated screen properties
 
-  get dtoDescriptor(): EntityDescriptor {
-    const coll = this.collectionPart;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.subtypePart) : null;
+  get entityDescriptor(): EntityDescriptor {
+    const coll = this.collection;
+    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.subtype) : null;
   }
 
   get apiEndpoint(): string {
-    const meta = this.dtoDescriptor;
+    const meta = this.entityDescriptor;
     return !!meta ? meta.apiEndpoint : null;
   }
 
   private computeSelect(): string {
     const select = this.state.select || '';
     const resultPaths: { [path: string]: boolean } = {};
-    const baseDtoDescriptor = this.dtoDescriptor;
+    const baseEntityDescriptor = this.entityDescriptor;
 
     // (0) add select for tiles
     if (this.selectForTiles) {
       this.selectForTiles.split(',').forEach(e => resultPaths[e] = true);
     }
 
-    // (1) append the current DTO type default properties (usually 'Name', 'Name2' and 'Name3')
-    baseDtoDescriptor.select.forEach(e => resultPaths[e] = true);
+    // (1) append the current entity type default properties (usually 'Name', 'Name2' and 'Name3')
+    baseEntityDescriptor.select.forEach(e => resultPaths[e] = true);
 
     // (2) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
     select.split(',').forEach(path => {
@@ -640,8 +640,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       path = steps.join('/'); // to trim extra spaces
 
       try {
-        const currentDesc = entityDescriptorImpl(steps, this.collectionPart,
-          this.subtypePart, this.workspace.current, this.translate);
+        const currentDesc = entityDescriptorImpl(steps, this.collection,
+          this.subtype, this.workspace.current, this.translate);
 
         currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
       } catch {
@@ -667,7 +667,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private get selectKey(): string {
-    return `${this.collectionPart + (!!this.subtypePart ? '/' + this.subtypePart : '')}/select`;
+    return `${this.collection + (!!this.subtype ? '/' + this.subtype : '')}/select`;
   }
 
   private get selectFromUserSettings(): string {
@@ -696,14 +696,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ////////////// UI Bindings below
-
-  get collectionPart(): string {
-    return this._collection; // !!this.collection ? this.collection.split('|')[0] : null;
-  }
-
-  get subtypePart(): string {
-    return this._subtype; // !!this.collection ? this.collection.split('|')[1] || null : null;
-  }
 
   get errorMessage() {
     return this.state.errorMessage;
@@ -762,15 +754,15 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       if (!result) {
         return null;
       } else if (result === '(Description)') {
-        result = this.dtoDescriptor.orderby.join(',');
+        result = this.entityDescriptor.orderby.join(',');
       } else {
 
         try {
-          const dtoDesc = entityDescriptorImpl(result.split('/'),
-            this.collectionPart, this.subtypePart, this.workspace.current, this.translate);
+          const entityDesc = entityDescriptorImpl(result.split('/'),
+            this.collection, this.subtype, this.workspace.current, this.translate);
 
-          if (!!dtoDesc) {
-            result = dtoDesc.orderby.map(e => `${result}/${e}`).join(',');
+          if (!!entityDesc) {
+            result = entityDesc.orderby.map(e => `${result}/${e}`).join(',');
           }
 
         } catch { }
@@ -1535,5 +1527,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     this.urlStateChange();
     this.saveSelect(this.state.select);
+  }
+
+  public entity(id: string | number) {
+    return this.workspace.current.get(this.collection, id);
   }
 }
