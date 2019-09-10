@@ -25,7 +25,7 @@
             <td class="text-muted">
               <div class="text-center">
                 <span *ngIf="!item.PH"> {{ i + 1 | number }} </span>
-                <fa-icon style="font-size: 70%" *ngIf="item.PH" icon="asterisk"> </fa-icon>
+                <fa-icon style="font-size: 60%" *ngIf="item.PH" icon="asterisk"> </fa-icon>
               </div>
             </td>
             <td *ngFor="let path of columnPaths" [class.table-bordered]="isEdit">

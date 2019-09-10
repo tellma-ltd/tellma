@@ -1,6 +1,7 @@
 <b-master collection="User" viewId="users" [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
-  [tableDescriptionColumnTemplate]="descriptionColumn" selectDefault="State,LastAccess"
-  selectForTiles="State" inactiveFilter="Agent/IsActive eq true" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+  [tableDescriptionColumnTemplate]="descriptionColumn" selectDefault="Email,State,LastAccess"
+  selectForTiles="ImageId,State,Email" inactiveFilter="Agent/IsActive eq true"
+  [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
@@ -18,18 +19,29 @@
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
-  <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ c[id].Email }}</span>
-  </div>
-  <div class="d-flex justify-content-between mt-1 small">
-    <ng-container *ngTemplateOutlet="stateTemplate; context: { id: id }"></ng-container>
+  <div class="d-flex">
+    <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
+      <div class="border b-dp-wrapper2">
+        <b-image [src]="'agents/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></b-image>
+      </div>
+      &nbsp;&nbsp;&nbsp;
+    </ng-container>
+    <div class="flex-grow-1 d-inline-block b-mw-0">
+      <div class="d-flex justify-content-between">
+        <b-auto-cell baseCollection="User" path="" [entityId]="id"></b-auto-cell>
+      </div>
+      <div class="d-flex justify-content-between mt-1 small">
+        <b-auto-cell baseCollection="User" path="Email" [entityId]="id"></b-auto-cell>
+        <b-auto-cell baseCollection="User" path="State" [entityId]="id"></b-auto-cell>
+      </div>
+    </div>
   </div>
 </ng-template>
 
 
 <!-- Description Column -->
 <ng-template #descriptionColumn let-id="id">
-  <span class="text-truncate">{{ ws.User[id]?.Email }}</span>
+  <b-auto-cell baseCollection="User" [entityId]="id"></b-auto-cell>
 </ng-template>
 
 
@@ -46,9 +58,3 @@
 
 <ng-template #withPicture> {{ 'WithPicture' | translate }} </ng-template>
 <ng-template #withoutPicture> {{ 'WithoutPicture' | translate }} </ng-template>
-
-
-<!-- Templeate for a colorful state -->
-<ng-template #stateTemplate let-id="id">
-  <b-auto-cell baseCollection="User" path="State" [entityId]="id"></b-auto-cell>
-</ng-template>

@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, TemplateRef, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
 import { EntityForSave } from '~/app/data/entities/base/entity-for-save';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'b-table',
   templateUrl: './table.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TableComponent implements OnInit {
 
@@ -78,9 +78,6 @@ export class TableComponent implements OnInit {
   get filter(): (item: EntityForSave) => boolean {
     return this._filter;
   }
-
-  // @ViewChild(CdkVirtualScrollViewport, { static: true })
-  // viewport: CdkVirtualScrollViewport;
 
   private cloneAndMap() {
     // To implement filter in a performant way and to support virtual scrolling and line numbering
@@ -184,10 +181,6 @@ export class TableComponent implements OnInit {
     }
   }
 
-  // onAddNew() {
-  //   this.onUpdateLine(this.dataSourceCopy[this.dataSourceCopy.length - 1]);
-  // }
-
   colWith(colPath: string) {
     // This returns an html percentage width based on the weights assigned to this column and all the other columns
 
@@ -205,10 +198,6 @@ export class TableComponent implements OnInit {
     // Calculate the percentage, (
     // if totalweight = 0 this method will never be called in the first place)
     return ((weight / totalWeight) * 100) + '%';
-  }
-
-  get showLineNumbers() {
-    return false;
   }
 
   get visibleDataCount() {

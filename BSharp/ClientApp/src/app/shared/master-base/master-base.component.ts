@@ -23,22 +23,34 @@ export class MasterBaseComponent implements OnInit, OnDestroy {
   @Output()
   cancel = new EventEmitter<void>();
 
+  private _master: MasterComponent;
   private masterSelect: Subscription;
   private masterCreate: Subscription;
   private masterCancel: Subscription;
   public notifyDestruct$ = new Subject<void>();
 
-  @ViewChild(MasterComponent, { static : true })
-  master: MasterComponent;
+  @ViewChild(MasterComponent, { static: true })
+  set master(m: MasterComponent) {
+    if (this._master !== m) {
 
-  ngOnInit(): void {
-    this.masterSelect = this.master.choose.subscribe(this.choose);
-    this.masterCreate = this.master.create.subscribe(this.create);
-    this.masterCancel = this.master.cancel.subscribe(this.cancel);
+      this.cleanupSubscriptions();
+
+      this._master = m;
+
+      if (!!m) {
+        this.masterSelect = m.choose.subscribe(this.choose);
+        this.masterCreate = m.create.subscribe(this.create);
+        this.masterCancel = m.cancel.subscribe(this.cancel);
+      }
+    }
   }
 
-  ngOnDestroy(): void {
-    // cleanup duty
+  get master(): MasterComponent {
+    return this._master;
+  }
+
+  private cleanupSubscriptions() {
+
     if (!!this.masterSelect) {
       this.masterSelect.unsubscribe();
     }
@@ -50,6 +62,14 @@ export class MasterBaseComponent implements OnInit, OnDestroy {
     if (!!this.masterCancel) {
       this.masterCancel.unsubscribe();
     }
+  }
+
+  ngOnInit(): void {
+  }
+
+  ngOnDestroy(): void {
+    // cleanup duty
+    this.cleanupSubscriptions();
 
     this.notifyDestruct$.next();
   }
