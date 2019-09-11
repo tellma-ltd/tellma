@@ -268,6 +268,19 @@ namespace BSharp.Data
 	(SELECT [Id] FROM [dbo].[IfrsNotes] WHERE [N].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsConcepts] As [C] JOIN [dbo].[IfrsNotes] As [N] ON [C].[Id] = [N].[Id])");
 
+                    #region _Temp
+
+                    case nameof(ResponsibilityCenter):
+                        return new SqlSource("[dbo].[ResponsibilityCenters]");
+
+                    case nameof(Resource):
+                        return new SqlSource("[dbo].[Resources]");
+
+                    case nameof(ResourcePick):
+                        return new SqlSource("[dbo].[ResourcePicks]");
+
+                    #endregion
+
                     case nameof(View):
                         var builtInValuesCollection = Views.BUILT_IN.Select(e => $"('{e.Id}', {localize(e.Name)})");
                         var builtInValuesString = builtInValuesCollection.Aggregate((s1, s2) => $@"{s1},
