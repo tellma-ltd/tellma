@@ -11,7 +11,7 @@ import { WorkspaceService } from './data/workspace.service';
 import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { StorageService } from './data/storage.service';
 import { ApiService } from './data/api.service';
-import { Router, RouterModule, Routes } from '@angular/router';
+import { Router, RouterModule, Routes, PreloadAllModules } from '@angular/router';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './data/cleaner.service';
 import { SignOutComponent } from './features/sign-out/sign-out.component';
@@ -134,7 +134,7 @@ export const routes: Routes = [
   imports: [
     BrowserModule,
     FontAwesomeModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
     HttpClientModule,
     NgbCollapseModule,
     NgbDropdownModule,

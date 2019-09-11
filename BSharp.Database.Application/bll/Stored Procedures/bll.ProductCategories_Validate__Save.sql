@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[bll_ProductCategories_Validate__Save]
+﻿CREATE PROCEDURE [bll].[ProductCategories_Validate__Save]
 	@Entities [dbo].[ProductCategoryList] READONLY,
 	@Top INT = 10
 AS
@@ -20,7 +20,7 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id Is NOT NULL
+    WHERE Id <> 0
 	AND Id NOT IN (SELECT Id from [dbo].[ProductCategories])
 	OPTION(HASH JOIN);
 

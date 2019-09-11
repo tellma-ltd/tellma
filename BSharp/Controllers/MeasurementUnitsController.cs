@@ -18,7 +18,6 @@ namespace BSharp.Controllers
     [ApplicationApi]
     public class MeasurementUnitsController : CrudControllerBase<MeasurementUnitForSave, MeasurementUnit, int>
     {
-        private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
@@ -28,13 +27,11 @@ namespace BSharp.Controllers
         public MeasurementUnitsController(
             ILogger<MeasurementUnitsController> logger,
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo,
-            IModelMetadataProvider metadataProvider) : base(logger, localizer)
+            ApplicationRepository repo) : base(logger, localizer)
         {
             _logger = logger;
             _localizer = localizer;
             _repo = repo;
-            _metadataProvider = metadataProvider;
         }
 
         [HttpPut("activate")]

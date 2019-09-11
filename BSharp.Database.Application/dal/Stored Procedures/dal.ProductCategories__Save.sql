@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[dal_ProductCategories__Save]
+﻿CREATE PROCEDURE [dal].[ProductCategories__Save]
 	@Entities [ProductCategoryList] READONLY,
 	@ReturnIds BIT = 0
 AS
@@ -66,3 +66,8 @@ SET NOCOUNT ON;
 	MERGE INTO [dbo].[ProductCategories] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
+
+
+
+	IF @ReturnIds = 1
+		SELECT * FROM @IndexedIds;

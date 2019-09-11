@@ -57,10 +57,6 @@ export class ApplicationShellComponent implements OnInit {
     return this.ws.getMultilingualValueImmediate(this.ws.settings, 'ShortCompanyName');
   }
 
-  get myAccountDropdownPlacement() {
-    return this.isRtl ? 'bottom-left' : 'bottom-right';
-  }
-
   get isRtl(): boolean {
     return this.workspace.ws.isRtl;
   }

@@ -1,6 +1,6 @@
 <div class="d-flex flex-column h-100">
   <!-- <b-error-message>The system license has expired. If the license is not renewed the system will become read-only in <b>22 days.</b></b-error-message> -->
-  <nav class="b-navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-lg-stretch"
+  <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-lg-stretch"
     [style.background-color]="settings?.BrandColor">
     <a class="b-brand-link b-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
       <b-brand [scale]="1.2"></b-brand>
@@ -32,12 +32,6 @@
             (click)="onCollapse()">
             {{ 'IfrsNotes' | translate }}
           </a>
-        </li>
-        <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
-            routerLink="./product-categories" (click)="onCollapse()">
-            {{ 'ProductCategories' | translate }}
-          </a>
         </li> -->
         <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./users"
@@ -64,6 +58,12 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+            routerLink="./product-categories" (click)="onCollapse()">
+            {{ 'ProductCategories' | translate }}
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./settings"
             (click)="onCollapse()">
             {{ 'Settings' | translate }}
@@ -72,7 +72,7 @@
       </ol>
 
       <ol class="nav navbar-nav p-0">
-        <li class="nav-item" ngbDropdown [placement]="myAccountDropdownPlacement">
+        <li class="nav-item" ngbDropdown container="">
           <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
             <div class="align-self-center">
               <div class="b-dp-wrapper b-dp-dark bg-white mx-1">
@@ -89,16 +89,20 @@
             </div>
             &nbsp;&nbsp;
           </button>
-          <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action">
+          <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action" [class.dropdown-menu-right]="!isRtl">
             <ng-container *ngIf="ws?.settings?.SecondaryLanguageId">
-              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isSecondaryLanguage"
+              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isPrimaryLanguage"
                 (click)="onPrimary();onCollapse()">
                 {{ settings?.PrimaryLanguageName }}
               </button>
-              <button type="button" class="dropdown-item btn-light" *ngIf="ws.isPrimaryLanguage"
+              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isSecondaryLanguage && !!ws.settings?.SecondaryLanguageId"
                 (click)="onSecondary();onCollapse()">
                 {{ settings?.SecondaryLanguageName }}
               </button>
+              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isTernaryLanguage && !!ws.settings?.TernaryLanguageId"
+              (click)="onSecondary();onCollapse()">
+              {{ settings?.SecondaryLanguageName }}
+            </button>
               <hr />
             </ng-container>
 

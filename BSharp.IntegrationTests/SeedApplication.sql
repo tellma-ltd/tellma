@@ -15,6 +15,7 @@ DELETE FROM [dbo].[Agents] WHERE [Id]<> @UserId;
 
 
 DELETE FROM [dbo].[MeasurementUnits];
+DELETE FROM [dbo].[ProductCategories];
 
 INSERT INTO [dbo].[Permissions] ([RoleId], [ViewId], [Action])
 VALUES (@RoleId, N'agents', N'All'),

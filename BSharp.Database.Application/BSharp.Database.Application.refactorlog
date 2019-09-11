@@ -327,4 +327,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ResourcePickId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="75953b02-11f8-4c4d-a2c2-dac3d2330103" ChangeDateTime="09/11/2019 15:13:03">
+    <Property Name="ElementName" Value="[dbo].[dal_ProductCategories__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ProductCategories__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="56ab7d86-9847-4e86-b2f2-a60904a3e35f" ChangeDateTime="09/11/2019 15:13:21">
+    <Property Name="ElementName" Value="[dbo].[dal_ProductCategories__DeleteWithDescendants]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ProductCategories__DeleteWithDescendants]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5ec27a10-479c-4e57-a7b0-582506981723" ChangeDateTime="09/11/2019 15:14:32">
+    <Property Name="ElementName" Value="[dbo].[bll_ProductCategories_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ProductCategories_Validate__Delete]" />
+  </Operation>
 </Operations>
