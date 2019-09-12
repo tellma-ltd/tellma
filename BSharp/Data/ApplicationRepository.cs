@@ -254,20 +254,6 @@ namespace BSharp.Data
                     case nameof(ProductCategory):
                         return new SqlSource("[rpt].[ProductCategories]()");
 
-                    case nameof(IfrsNote):
-                        return new SqlSource(@"(SELECT 
-	[C].*, 
-	[N].[Node] As [Node],
-	[N].[Level],
-	[N].[ParentNode] As [ParentNode],
-	[N].[IsAggregate],
-	[N].[ForDebit],
-	[N].[ForCredit],
-	(SELECT COUNT(*) FROM [dbo].[IfrsNotes] As [NI] JOIN [dbo].[IfrsConcepts] As [CI] ON [CI].[Id] = [NI].[Id] WHERE [CI].[IsActive] = 1 AND [NI].[Node].IsDescendantOf([N].[Node]) = 1) As [ActiveChildCount],
-	(SELECT COUNT(*) FROM [dbo].[IfrsNotes] As [NI] JOIN [dbo].[IfrsConcepts] As [CI] ON [CI].[Id] = [NI].[Id] WHERE [NI].[Node].IsDescendantOf([N].[Node]) = 1) As [ChildCount],
-	(SELECT [Id] FROM [dbo].[IfrsNotes] WHERE [N].[Node].GetAncestor(1) = [Node]) As [ParentId]
-FROM [dbo].[IfrsConcepts] As [C] JOIN [dbo].[IfrsNotes] As [N] ON [C].[Id] = [N].[Id])");
-
                     #region _Temp
 
                     case nameof(ResponsibilityCenter):
@@ -278,6 +264,22 @@ FROM [dbo].[IfrsConcepts] As [C] JOIN [dbo].[IfrsNotes] As [N] ON [C].[Id] = [N]
 
                     case nameof(ResourcePick):
                         return new SqlSource("[dbo].[ResourcePicks]");
+
+                    case nameof(VoucherBooklet):
+                        return new SqlSource("[dbo].[VoucherBooklets]");
+
+                    case nameof(IfrsAccountClassification):
+                        return new SqlSource(@"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level],
+	(SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([Q].[Node]) = 1) As [ActiveChildCount],
+    (SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount]
+FROM [dbo].[IfrsAccountClassifications] AS [Q])");
+
+                    case nameof(IfrsEntryClassification):
+                        return new SqlSource(@"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level],
+	(SELECT COUNT(*) FROM [dbo].[IfrsEntryClassifications] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([Q].[Node]) = 1) As [ActiveChildCount],
+    (SELECT COUNT(*) FROM [dbo].[IfrsEntryClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount]
+FROM [dbo].[IfrsEntryClassifications] AS [Q])");
+
 
                     #endregion
 

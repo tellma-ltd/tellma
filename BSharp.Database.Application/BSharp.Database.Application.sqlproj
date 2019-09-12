@@ -353,6 +353,7 @@
     <Build Include="bll\Stored Procedures\bll.ProductCategories_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.ProductCategories_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.ProductCategories__Activate.sql" />
+    <Build Include="dbo\Tables\dbo.AccountClassifications.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

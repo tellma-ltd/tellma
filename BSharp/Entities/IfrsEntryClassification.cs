@@ -1,19 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BSharp.Entities
 {
-    public class IfrsConcept : EntityWithKey<string> // There is no DTO for save
+    [StrongEntity]
+    public class IfrsEntryClassification : EntityWithKey<string>
     {
-        [Display(Name = "IfrsConcepts_IfrsType")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [ChoiceList(new object[] { "Amendment", "Extension", "Regulatory" },
-            new string[] { "IfrsConcept_Amendment", "IfrsConcept_Extension", "IfrsConcept_Regulatory" })]
         [AlwaysAccessible]
-        public string IfrsType { get; set; }
+        public short? Level { get; set; }
+
+        [AlwaysAccessible]
+        public string ParentId { get; set; }
+
+        [AlwaysAccessible]
+        public int? ActiveChildCount { get; set; }
+
+        [AlwaysAccessible]
+        public int? ChildCount { get; set; }
+
+        [Display(Name = "IfrsConcepts_IsLeaf")]
+        [AlwaysAccessible]
+        public bool? IsLeaf { get; set; }
 
         [MultilingualDisplay(Name = "IfrsConcepts_Label", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -36,7 +44,7 @@ namespace BSharp.Entities
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
         public string Documentation { get; set; }
 
-        [MultilingualDisplay(Name = "IfrsConcepts_Documentation", Language = Language.Secondary)]
+        [MultilingualDisplay(Name = "IfrsoConcepts_Documentation", Language = Language.Secondary)]
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
         public string Documentation2 { get; set; }
 
@@ -50,20 +58,50 @@ namespace BSharp.Entities
         [Display(Name = "IfrsConcepts_ExpiryDate")]
         public DateTime? ExpiryDate { get; set; }
 
+        // Specific to IFRS Entry Classification
+
+        [Display(Name = "IfrsNotes_ForDebit")]
+        public bool? ForDebit { get; set; }
+
+        [Display(Name = "IfrsNotes_ForCredit")]
+        public bool? ForCredit { get; set; }
+
+        // End specific to IFRS Entry
+
         [Display(Name = "IsActive")]
         [AlwaysAccessible]
         public bool? IsActive { get; set; }
 
-        [Display(Name = "CreatedAt")]
-        public DateTimeOffset? CreatedAt { get; set; }
+        //[Display(Name = "CreatedAt")]
+        //public DateTimeOffset? CreatedAt { get; set; }
 
-        [Display(Name = "CreatedBy")]
-        public int? CreatedById { get; set; }
+        //[Display(Name = "CreatedBy")]
+        //public int? CreatedById { get; set; }
 
-        [Display(Name = "ModifiedAt")]
-        public DateTimeOffset? ModifiedAt { get; set; }
+        //[Display(Name = "ModifiedAt")]
+        //public DateTimeOffset? ModifiedAt { get; set; }
 
-        [Display(Name = "ModifiedBy")]
-        public int? ModifiedById { get; set; }
+        //[Display(Name = "ModifiedBy")]
+        //public int? ModifiedById { get; set; }
+
+        // For Query
+
+        [AlwaysAccessible]
+        public HierarchyId Node { get; set; }
+
+        [AlwaysAccessible]
+        public HierarchyId ParentNode { get; set; }
+
+        [Display(Name = "TreeParent")]
+        [ForeignKey(nameof(ParentId))]
+        public IfrsEntryClassification Parent { get; set; }
+
+        //[Display(Name = "CreatedBy")]
+        //[ForeignKey(nameof(CreatedById))]
+        //public User CreatedBy { get; set; }
+
+        //[Display(Name = "ModifiedBy")]
+        //[ForeignKey(nameof(ModifiedById))]
+        //public User ModifiedBy { get; set; }
     }
 }
