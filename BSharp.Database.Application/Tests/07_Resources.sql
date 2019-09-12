@@ -43,8 +43,8 @@ DECLARE @RCKETBIndex INT = (SELECT [Index] FROM @R1 WHERE [Code] = N'RCKETB');
 DECLARE @CBEBank INT, @AWBBank INT;
 	INSERT INTO @RP1([Index], 
 	[ResourceIndex], [ProductionDate], [Code], [MonetaryValue], [IssuingBankId]) VALUES
-	(0,@RCKETBIndex,	N'2017.10.01',		N'101009', 6900,		@CBEBank),
-	(1,@RCKETBIndex,	N'2017.10.15',		N'2308', 17550,			@AWBBank);
+	(0,@RCKETBIndex,	N'2017.10.01',	N'101009',	6900,		@CBEBank),
+	(1,@RCKETBIndex,	N'2017.10.15',	N'2308',	17550,		@AWBBank);
 
 	EXEC [api].[Resources__Save]
 		@ResourceType = N'cash-and-cash-equivalents',
@@ -86,8 +86,8 @@ DECLARE @ToyotaYarisIndex INT = (SELECT [Index] FROM @R2 WHERE [Name] = N'Toyota
 	(3,@ToyotaYarisIndex,	N'2017.10.01',		N'201');
 
 	INSERT INTO dbo.ResourceClassifications
-	([ResourceType],	[ParentId],	[Name],				[Code], [IsLeaf]) VALUES
-	(N'inventories',	@RTSTK,		N'Raw Materials',	N'2',	1);
+	([ResourceType],	[ParentId],	[Name],				[Code], [IsLeaf], [HasMass], [HasCount]) VALUES
+	(N'inventories',	@RTSTK,		N'Raw Materials',	N'2',	1,			1,			1);
 DECLARE @RCRM INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'inventories' AND [Code] = N'2');
 
 	INSERT INTO @R2 ([Index],

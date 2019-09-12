@@ -327,4 +327,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ResourcePickId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1c221d21-f52b-4ce9-9b56-57741c986917" ChangeDateTime="09/09/2019 17:35:03">
+    <Property Name="ElementName" Value="[dbo].[ResourceClassifications].[IsResourceLookup1Visible]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[HasResourceLookup1]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d240e012-e8bb-47c2-8b18-c56b4ed5f088" ChangeDateTime="09/09/2019 17:35:21">
+    <Property Name="ElementName" Value="[dbo].[ResourceClassifications].[IsResourceLookup2Visible]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[HasResourceLookup2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2fdecbd1-d504-4f03-8b2d-12ceb1b03e7c" ChangeDateTime="09/09/2019 17:36:02">
+    <Property Name="ElementName" Value="[dbo].[ResourceClassifications].[IsResourceLookup3Visible]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[HasResourceLookup3]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3e82c88d-8929-407d-9a0d-e27b42009135" ChangeDateTime="09/09/2019 17:36:41">
+    <Property Name="ElementName" Value="[dbo].[ResourceClassifications].[IsResourceLookup4Visible]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[HasResourceLookup4]" />
+  </Operation>
 </Operations>
