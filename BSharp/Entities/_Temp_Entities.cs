@@ -7,6 +7,67 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
+    public class VoucherBookletForSave : EntityWithKey<int>
+    {
+        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Name { get; set; }
+
+        [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Name2 { get; set; }
+
+        [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Name3 { get; set; }
+
+        // Temp
+
+        public int VoucherTypeId { get; set; }
+        public string StringPrefix { get; set; }
+        public int? NumericLength { get; set; }
+        public int? RangeStarts { get; set; }
+        public int? RangeEnds { get; set; }
+    }
+
+    public class VoucherBooklet : VoucherBookletForSave
+    {
+        [Display(Name = "IsActive")]
+        [AlwaysAccessible]
+        public bool? IsActive { get; set; }
+
+        //[Display(Name = "CreatedAt")]
+        //public DateTimeOffset? CreatedAt { get; set; }
+
+        //[Display(Name = "CreatedBy")]
+        //public int? CreatedById { get; set; }
+
+        //[Display(Name = "ModifiedAt")]
+        //public DateTimeOffset? ModifiedAt { get; set; }
+
+        //[Display(Name = "ModifiedBy")]
+        //public int? ModifiedById { get; set; }
+
+        //[Display(Name = "CreatedBy")]
+        //[ForeignKey(nameof(CreatedById))]
+        //public User CreatedBy { get; set; }
+
+        //[Display(Name = "CreatedBy")]
+        //[ForeignKey(nameof(ModifiedById))]
+        //public User ModifiedBy { get; set; }
+
+
+        // Temp
+
+        //[ForeignKey(nameof(VoucherTypeId))]
+        //public VoucherType VoucherType { get; set; }
+    }
+
+    [StrongEntity]
     public class ResourcePickForSave : EntityWithKey<int>
     {
         // Where is Name ?? The name of the Resource itself?
@@ -58,9 +119,19 @@ namespace BSharp.Entities
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
+
+        // Temp
+
+        [ForeignKey(nameof(ResourceId))]
+        public Resource Resource { get; set; }
+
+        //[ForeignKey(nameof(IssuingBankAccountId))]
+        //public ??? IssuingBankAccount { get; set; }
+
+        //[ForeignKey(nameof(IssuingBankId))]
+        //public ??? IssuingBank { get; set; }
+
     }
-
-
 
     [StrongEntity]
     public class ResourceForSave : EntityWithKey<int>
@@ -141,6 +212,43 @@ namespace BSharp.Entities
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
+
+        // Temp
+
+        //public ResourceClassification ResourceClassification { get; set; }
+        [ForeignKey(nameof(UnitId))]
+        public MeasurementUnit Unit { get; set; }
+
+        [ForeignKey(nameof(CurrencyId))]
+        public MeasurementUnit Currency { get; set; }
+
+        [ForeignKey(nameof(MassUnitId))]
+        public MeasurementUnit MassUnit { get; set; }
+
+        [ForeignKey(nameof(VolumeUnitId))]
+        public MeasurementUnit VolumeUnit { get; set; }
+
+        [ForeignKey(nameof(AreaUnitId))]
+        public MeasurementUnit AreaUnit { get; set; }
+
+        [ForeignKey(nameof(LengthUnitId))]
+        public MeasurementUnit LengthUnit { get; set; }
+
+        [ForeignKey(nameof(TimeUnitId))]
+        public MeasurementUnit TimeUnit { get; set; }
+
+        [ForeignKey(nameof(CountUnitId))]
+        public MeasurementUnit CountUnit { get; set; }
+
+        [ForeignKey(nameof(PreferredSupplierId))]
+        public Agent PreferredSupplier { get; set; }
+
+        //public int? ExpenseAccountId { get; set; }
+        //public int? RevenueAccountId { get; set; }
+
+        [ForeignKey(nameof(ProductCategoryId))]
+        public ProductCategory ProductCategory { get; set; }
+
     }
 
     [StrongEntity]

@@ -453,15 +453,6 @@
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>Email '{0}' is invalid.</value>
   </data>
-  <data name="IfrsConcept_Amendment" xml:space="preserve">
-    <value>Amendment</value>
-  </data>
-  <data name="IfrsConcept_Extension" xml:space="preserve">
-    <value>Extension</value>
-  </data>
-  <data name="IfrsConcept_Regulatory" xml:space="preserve">
-    <value>Regulatory</value>
-  </data>
   <data name="IfrsConcepts_Documentation" xml:space="preserve">
     <value>Documentation</value>
   </data>
@@ -470,9 +461,6 @@
   </data>
   <data name="IfrsConcepts_ExpiryDate" xml:space="preserve">
     <value>Expiry Date</value>
-  </data>
-  <data name="IfrsConcepts_IfrsType" xml:space="preserve">
-    <value>IFRS Type</value>
   </data>
   <data name="IfrsConcepts_Label" xml:space="preserve">
     <value>Label</value>
@@ -485,9 +473,6 @@
   </data>
   <data name="IfrsNotes_ForDebit" xml:space="preserve">
     <value>For Debit</value>
-  </data>
-  <data name="IfrsNotes_IsAggregate" xml:space="preserve">
-    <value>Is Aggregate</value>
   </data>
   <data name="Inactive" xml:space="preserve">
     <value>Inactive</value>
@@ -1034,5 +1019,8 @@
   </data>
   <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
     <value>The role with Id '{0}' does not exist or no longer exists.</value>
+  </data>
+  <data name="IfrsConcepts_IsLeaf" xml:space="preserve">
+    <value>Is Leaf</value>
   </data>
 </root>
