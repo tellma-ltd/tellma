@@ -24,16 +24,4 @@
 	-- for Ifrs Reporting, and to check resource-account compatibility.
 	[IfrsResourceClassificationId]	NVARCHAR(255),
 	-- Specs
-	[HasMonetaryAmount]				BIT						DEFAULT 0,
-	[HasMass]						BIT						DEFAULT 0,
-	[HasVolume]						BIT						DEFAULT 0,
-	[HasArea]						BIT						DEFAULT 0,
-	[HasLength]						BIT						DEFAULT 0,
-	[HasTime]						BIT						DEFAULT 0,
-	[HasCount]						BIT						DEFAULT 0,
-
-	[HasResourceLookup1]			BIT						DEFAULT 0, -- Vehicle: Internal Color, External color, Make, Model
-	[HasResourceLookup2]			BIT						DEFAULT 0, -- Steel: Thickness, Product type
-	[HasResourceLookup3]			BIT						DEFAULT 0, -- Dress: Size, Color 
-	[HasResourceLookup4]			BIT						DEFAULT 0, --  
 )
