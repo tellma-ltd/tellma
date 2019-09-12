@@ -373,9 +373,6 @@
     <None Include="BSharp.Database.Application.publish.xml" />
   </ItemGroup>
   <ItemGroup>
-    <RefactorLog Include="BSharp.Database.Application.refactorlog" />
-  </ItemGroup>
-  <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
       <DefaultValue>support@banan-it.com</DefaultValue>
       <Value>$(SqlCmdVar__1)</Value>
