@@ -42,7 +42,7 @@ BEGIN -- Updating document and deleting lines/entries
 	INSERT INTO @D12([Index], [Id], [DocumentDate],	[Memo], [EvidenceTypeId])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id], [DocumentDate],	[Memo], [EvidenceTypeId] 
 	FROM dbo.Documents
-	WHERE [DocumentTypeId] = N'manual-journals' AND [SerialNumber] = 1;
+	WHERE [DocumentDefinitionId] = N'manual-journals' AND [SerialNumber] = 1;
 
 	INSERT INTO @L12([Index], [DocumentIndex],					[Id], [DocumentId], [LineTypeId], [ScalingFactor], [SortKey])
 	SELECT ROW_NUMBER() OVER(ORDER BY DL.[Id]), D12.[Index], DL.[Id], DL.[DocumentId],  DL.[LineTypeId], [ScalingFactor], [SortKey]

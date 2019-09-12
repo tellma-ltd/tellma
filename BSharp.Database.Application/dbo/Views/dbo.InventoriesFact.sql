@@ -14,7 +14,7 @@ WITH IfrsInventoryAccounts AS (
 )
 	SELECT
 		J.[DocumentLineId],
-		J.[DocumentTypeId],
+		J.[DocumentDefinitionId],
 		J.[SerialNumber],
 		J.[DocumentDate],
 		J.[Id],

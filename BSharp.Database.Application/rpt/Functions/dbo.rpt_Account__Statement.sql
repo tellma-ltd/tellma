@@ -10,7 +10,7 @@ RETURN
 		[Id],
 		[DocumentLineId],
 		[DocumentDate],
-		[DocumentTypeId],
+		[DocumentDefinitionId],
 		[SerialNumber],
 		[Direction],
 		[IfrsEntryClassificationId],

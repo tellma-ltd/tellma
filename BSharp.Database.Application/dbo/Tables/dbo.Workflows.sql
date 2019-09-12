@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Workflows] (
 	[Id]			INT					CONSTRAINT [PK_Workflows] PRIMARY KEY IDENTITY,
-	[DocumentTypeId]NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Workflows__DocumentTypes] FOREIGN KEY ([DocumentTypeId]) REFERENCES [dbo].[DocumentTypes] ([Id]) ON DELETE CASCADE,
+	[DocumentTypeId]NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Workflows__DocumentTypes] FOREIGN KEY ([DocumentTypeId]) REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON DELETE CASCADE,
 	-- Must be a positive state
 	[FromState]		NVARCHAR (30)		NOT NULL CONSTRAINT [CK_Workflows__FromState] CHECK ([FromState] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
 	-- Must be a positive state

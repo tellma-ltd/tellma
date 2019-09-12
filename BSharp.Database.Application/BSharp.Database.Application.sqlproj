@@ -97,7 +97,7 @@
     <Build Include="dbo\Tables\dbo.Reconciliation.sql" />
     <Build Include="dbo\Tables\dbo.Resources.sql" />
     <Build Include="dbo\Tables\dbo.Settings.sql" />
-    <Build Include="dbo\Tables\dbo.DocumentTypes.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.MeasurementUnits.sql" />
     <Build Include="dbo\Tables\dbo.ExchangeRatesHistory.sql" />
     <Build Include="dbo\Tables\dbo.ResponsibilityCenters.sql" />
@@ -148,7 +148,7 @@
     <None Include="Provisioning\012_IfrsEntryClassifications.sql" />
     <PostDeploy Include="Provisioning\00_Main.sql" />
     <None Include="Provisioning\05_LineTypeSpecifications.sql" />
-    <None Include="Provisioning\06_DocumentTypes.sql" />
+    <None Include="Provisioning\06_DocumentDefinitions.sql" />
     <Build Include="Security\bll.sql" />
     <Build Include="dbo\Tables\dbo.LineTypes.sql" />
     <Build Include="dbo\Functions\dbo.fe_EndDateTime__StartDateTime_Frequency_Duration.sql" />

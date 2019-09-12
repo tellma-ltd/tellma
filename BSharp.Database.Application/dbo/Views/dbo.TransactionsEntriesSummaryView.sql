@@ -4,7 +4,7 @@ AS
 		ROW_NUMBER() OVER(ORDER BY L.[DocumentId],
 			SUM(E.[Direction] * E.[Value]) DESC) AS [Id],
 		L.[DocumentId],
-		D.[DocumentTypeId],
+		D.[DocumentDefinitionId],
 		D.[SerialNumber],
 		D.[DocumentDate],
 		D.[VoucherNumericReference],
@@ -50,13 +50,13 @@ AS
 		[dbo].[DocumentLineEntries] E
 		JOIN [dbo].[DocumentLines] L ON E.[DocumentLineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
-		JOIN dbo.[DocumentTypes] DT ON D.[DocumentTypeId] = DT.[Id]
+		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
 		JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 	WHERE
 		D.[State] = N'Posted'
 	GROUP BY
 		L.[DocumentId],
-		D.[DocumentTypeId],
+		D.[DocumentDefinitionId],
 		D.[SerialNumber],
 		D.[DocumentDate],
 		D.[VoucherNumericReference],
