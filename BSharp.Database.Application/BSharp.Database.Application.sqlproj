@@ -210,22 +210,17 @@
     <Build Include="dbo\Stored Procedures\dbo.rpt_BankAccount__Statement.sql" />
     <Build Include="dbo\Tables\dbo.ProductCategories.sql" />
     <Build Include="dbo\User Defined Types\dbo.ProductCategoryList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_ProductCategories__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_ProductCategories__Save.sql" />
     <Build Include="dbo\Tables\dbo.IfrsDisclosureDetails.sql" />
     <Build Include="dbo\Functions\dbo.fi_IfrsDisclosureDetails.sql" />
     <Build Include="dbo\Tables\dbo.IfrsConcepts.sql" />
     <Build Include="dbo\Tables\dbo.IfrsDisclosures.sql" />
     <Build Include="dbo\User Defined Types\dbo.IfrsDisclosureDetailList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_ProductCategories_Validate__Delete.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Tree__Organize.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_ProductCategories__Delete.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_ProductCategories__Delete.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_ProductCategories_Validate__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_ProductCategories__Select.sql" />
     <Build Include="dbo\Views\dbo.DocumentLineEntriesDetailsView.sql" />
     <Build Include="dbo\Views\dbo.AccountsBalancesView.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_ProductCategories__DeleteWithDescendants.sql" />
     <Build Include="dbo\Tables\dbo.ResourcePicks.sql" />
     <Build Include="dbo\Views\dbo.TransactionsEntriesSummaryView.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineList.sql" />
@@ -349,6 +344,15 @@
     <Build Include="Mapping\Roles.sql" />
     <Build Include="Mapping\Roles__AsQuery.sql" />
     <Build Include="dbo\Tables\dbo.ResourceClassifications.sql" />
+    <Build Include="Mapping\ProductCategories.sql" />
+    <Build Include="Mapping\ProductCategories__AsQuery.sql" />
+    <Build Include="bll\Stored Procedures\bll.ProductCategories_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.ProductCategories__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.ProductCategories__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.ProductCategories__DeleteWithDescendants.sql" />
+    <Build Include="bll\Stored Procedures\bll.ProductCategories_Validate__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.ProductCategories_Validate__DeleteWithDescendants.sql" />
+    <Build Include="dal\Stored Procedures\dal.ProductCategories__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

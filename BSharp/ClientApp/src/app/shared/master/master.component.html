@@ -319,7 +319,7 @@
                 (click)="onOrderBy(colPath)" cdkDrag>
                 <!-- <div class="d-flex align-items-center"> -->
 
-                <b-auto-label [baseCollection]="collectionPart" [path]="colPath" [subtype]="subtypePart">
+                <b-auto-label [baseCollection]="collection" [path]="colPath" [subtype]="subtype">
                 </b-auto-label>
                 <!-- &nbsp;
                   <button *ngIf="editingColumns" class="btn btn-light btn-sm b-white-button b-toolbar-button" style="margin:-20px 0"
@@ -450,8 +450,8 @@
       <!-- Template reused in both tree and flat tables -->
       <ng-template #selectColumns let-id="id">
         <td class="b-pointer" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
-          <b-switch [baseCollection]="collectionPart" [path]="colPath" [subtype]="subtypePart" [entityId]="id">
-          </b-switch>
+          <b-auto-cell [baseCollection]="collection" [path]="colPath" [subtype]="subtype" [entity]="entity(id)">
+          </b-auto-cell>
         </td>
       </ng-template>
 
@@ -527,7 +527,7 @@
 
   </div>
   <div class="modal-footer">
-    <button class="btn btn-primary" (click)="onExport(modal);" ngbAutofocus>
+    <button class="btn btn-primary" (click)="onExport();" ngbAutofocus>
       <fa-icon icon="download"></fa-icon>
       &nbsp;{{ 'Export' | translate }}
       <b-spinner class="ml-1" *ngIf="showExportSpinner" [scale]="1"></b-spinner>

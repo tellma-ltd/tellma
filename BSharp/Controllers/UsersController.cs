@@ -46,7 +46,6 @@ namespace BSharp.Controllers
 
         public string VIEW => "users";
 
-
         public UsersController(
             ApplicationRepository appRepo,
             AdminRepository adminRepo,
@@ -218,13 +217,12 @@ namespace BSharp.Controllers
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
                 var email = nameof(Entities.User.Email);
-                var agent = nameof(Entities.User.Agent);
-                var name = nameof(Agent.Name);
-                var name2 = nameof(Agent.Name2);
-                var name3 = nameof(Agent.Name3);
+                var name = nameof(Entities.User.Name);
+                var name2 = nameof(Entities.User.Name2);
+                var name3 = nameof(Entities.User.Name3);
                 var cs = Ops.contains;
 
-                query = query.Filter($"{agent}/{name} {cs} '{search}' or {agent}/{name2} {cs} '{search}' or {agent}/{name3} {cs} '{search}' or {email} {cs} '{search}'");
+                query = query.Filter($"{name} {cs} '{search}' or {name2} {cs} '{search}' or {name3} {cs} '{search}' or {email} {cs} '{search}'");
             }
 
             return query;

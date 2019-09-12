@@ -1,4 +1,4 @@
-<b-details apiEndpoint="product-categories" viewId="product-categories" collection="ProductCategory"
+<b-details apiEndpoint="product-categories" viewId="product-categories" collection="ProductCategory" [idString]="idString"
   [createFunc]="create" [expand]="expand" [mode]="mode" [masterCrumb]="'ProductCategories' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },

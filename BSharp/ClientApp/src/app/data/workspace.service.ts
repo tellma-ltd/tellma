@@ -11,7 +11,7 @@ import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { IfrsNote } from './entities/ifrs-note';
 import { ProductCategory } from './entities/product-category';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 
 export enum MasterStatus {
@@ -168,6 +168,12 @@ export class TenantWorkspace {
     this.Agent = new EntityWorkspace<Agent>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
     this.ProductCategory = new EntityWorkspace<ProductCategory>();
+
+    this.notifyStateChanged();
+  }
+
+  notifyStateChanged() {
+    this.workspaceService.notifyStateChanged();
   }
 
   ////// the methods below provide easy access to the global tenant values
@@ -323,6 +329,7 @@ export class TenantWorkspace {
 
 // This contains the application state during a particular user session
 export class Workspace {
+
   ////// Global state
   // Current UI culture selected by the user
   culture: string;
@@ -335,7 +342,6 @@ export class Workspace {
 
   // Current tenantID selected by the user
   tenantId: number;
-
   tenants: { [tenantId: number]: TenantWorkspace };
 
   constructor() {
@@ -641,6 +647,10 @@ export class WorkspaceService {
   public globalSettings: GlobalSettingsForClient;
   public globalSettingsVersion: string;
 
+  // Notifies that something has changed in workspace
+  // Used by OnPush components to mark for check
+  stateChanged$: Observable<void> = new Subject<void>();
+
   constructor() {
     this.reset();
   }
@@ -664,5 +674,21 @@ export class WorkspaceService {
   // Wipes the application state clean, usually upon signing out
   public reset() {
     this.ws = new Workspace();
+    this.notifyStateChanged();
+  }
+
+
+  setTenantId(tenantId: number) {
+    if (this.ws.tenantId !== tenantId) {
+      this.ws.tenantId = tenantId;
+      this.notifyStateChanged();
+    }
+  }
+
+  notifyStateChanged() {
+    // This notifies OnPush components to mark for check
+    // It is the responsibility for anyone modifying the
+    // workspace to remember to call this method
+    (this.stateChanged$ as Subject<void>).next();
   }
 }

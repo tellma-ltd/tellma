@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [dbo].[bll_ProductCategories_Validate__Delete]
-	@Entities [IndexedIdList] READONLY,
+﻿CREATE PROCEDURE [bll].[ProductCategories_Validate__Delete]
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -13,7 +13,7 @@ SET NOCOUNT ON;
 		COUNT(RC.[Id]) As [Argument1],
 		N'ResponsibilityCenters' As [Argument2],
 		MIN(RC.[Code]) As [Argument3]
-	FROM @Entities E -- get me every node in the table
+	FROM @Ids E -- get me every node in the table
 	JOIN dbo.[ResponsibilityCenters] RC ON E.[Id] = RC.[ProductCategoryId]
 	GROUP BY E.[Index]
 	OPTION(HASH JOIN);

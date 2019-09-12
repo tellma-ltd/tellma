@@ -12,7 +12,7 @@ import { EntitiesResponse } from '~/app/data/dto/get-response';
 import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
-import { Subject, Observable, of } from 'rxjs';
+import { Subject, Observable, of, Subscription } from 'rxjs';
 
 @Component({
   selector: 'b-details',
@@ -131,6 +131,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @ViewChild('unsavedChangesModal', { static : true })
   public unsavedChangesModal: TemplateRef<any>;
 
+  private paramMapSubscription: Subscription;
   private alreadyInit: boolean;
   private _idString: string;
   private _apiEndpoint: string;
@@ -179,7 +180,26 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     // that survives over the lifetime of the component itself
     // even if apiEndpoint or idString change
 
-    this.route.paramMap.subscribe((params: ParamMap) => {
+    // when the notifyFetch$ subject fires, cancel existing backend
+    // call and dispatch a new backend call
+    this.notifyFetch$ = new Subject<any>();
+    this.notifyFetch$.pipe(
+      switchMap(() => this.doFetch())
+    ).subscribe();
+  }
+
+  ngOnInit() {
+
+    // as if the screen is opened a new
+    this.localState = new MasterDetailsStore();
+    this._errorMessage = null;
+    this._modalErrorMessage = null;
+    this._modalSuccessMessage = null;
+    this._unboundServerErrors = [];
+    this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
+    this._viewModelJson = null;
+
+    this.paramMapSubscription = this.route.paramMap.subscribe((params: ParamMap) => {
       // the id parameter from the URI is only avaialble in screen mode
       // when it changes set idString which triggers a new refresh
       if (this.isScreenMode) {
@@ -190,24 +210,6 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
         }
       }
     });
-
-    // when the notifyFetch$ subject fires, cancel existing backend
-    // call and dispatch a new backend call
-    this.notifyFetch$ = new Subject<any>();
-    this.notifyFetch$.pipe(
-      switchMap(() => this.doFetch())
-    ).subscribe();
-  }
-
-  ngOnInit() {
-    // as if the screen is opened a new
-    this.localState = new MasterDetailsStore();
-    this._errorMessage = null;
-    this._modalErrorMessage = null;
-    this._modalSuccessMessage = null;
-    this._unboundServerErrors = [];
-    this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
-    this._viewModelJson = null;
 
     // Fetch the data of the screen based on apiEndpoint and idString
     this.fetch();
@@ -220,6 +222,10 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   ngOnDestroy() {
     // cancel any backend operations
     this.notifyDestruct$.next();
+
+    if (!!this.paramMapSubscription) {
+      this.paramMapSubscription.unsubscribe();
+    }
   }
 
   private fetch() {

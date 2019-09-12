@@ -33,7 +33,7 @@
   <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Email">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Email }}</h2>
     <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Email" [disabled]="!isNew"
-      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('User_Email' | translate) + '...'" required>
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('User_Email' | translate) + '...'" required email>
     </b-text-editor>
   </b-form-group>
 
@@ -45,7 +45,8 @@
       </b-view-link>
     </b-restricted>
     <b-details-picker *ngIf="isEdit" [(ngModel)]="model.Id" apiEndpoint="agents" collection="Agent"
-      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" required [disabled]="!isNew" filter="User/Id eq null">
+      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" required [disabled]="!isNew"
+      filter="User/Id eq null">
     </b-details-picker>
 
     <!-- The Agents Details Modal -->
@@ -69,10 +70,8 @@
 
   <!-- Last Activity -->
   <b-form-group class="b-form-group" [label]="'User_LastActivity' | translate" *ngIf="!isEdit">
-    <div>
-      <b-restricted [metadata]="model?.EntityMetadata?.LastAccess">{{  model?.LastAccess | date:'yyyy-MM-dd h:mm a' }}
-      </b-restricted>
-    </div>
+    <b-auto-cell baseCollection="User" [entity]="model" path="LastAccess">
+    </b-auto-cell>
   </b-form-group>
 
   <!-- Email Notice -->

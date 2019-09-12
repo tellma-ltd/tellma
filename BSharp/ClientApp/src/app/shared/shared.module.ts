@@ -20,13 +20,9 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 
 import {
-  faExclamationTriangle,
-  faSpinner,
-  faSignInAlt,
   faSignOutAlt,
   faCheck,
   faPlus,
-  faSyncAlt,
   faAngleDoubleLeft,
   faAngleLeft,
   faAngleRight,
@@ -45,7 +41,6 @@ import {
   faFilter,
   faCalendarAlt,
   faPen,
-  faSearch,
   faAsterisk,
   faCameraRetro,
   faUser,
@@ -64,8 +59,6 @@ import {
   faFileContract,
   faFileInvoiceDollar,
   faMoneyBillWave,
-  faArrowLeft,
-  faArrowRight,
   faClipboard,
   faBars,
   faTable,
@@ -95,7 +88,7 @@ import { DetailsPickerComponent } from './details-picker/details-picker.componen
 import { ViewLinkComponent } from './view-link/view-link.component';
 import { ImageComponent } from './image/image.component';
 import { RestrictedComponent } from './restricted/restricted.component';
-import { SwitchComponent } from './switch/switch.component';
+import { AutoCellComponent } from './auto-cell/auto-cell.component';
 import { AutoLabelComponent } from './auto-label/auto-label.component';
 
 @NgModule({
@@ -120,7 +113,7 @@ import { AutoLabelComponent } from './auto-label/auto-label.component';
     ViewLinkComponent,
     ImageComponent,
     RestrictedComponent,
-    SwitchComponent,
+    AutoCellComponent,
     AutoLabelComponent
   ],
   imports: [
@@ -174,7 +167,7 @@ import { AutoLabelComponent } from './auto-label/auto-label.component';
     ViewLinkComponent,
     ImageComponent,
     RestrictedComponent,
-    SwitchComponent,
+    AutoCellComponent,
     AutoLabelComponent
   ],
   providers: [

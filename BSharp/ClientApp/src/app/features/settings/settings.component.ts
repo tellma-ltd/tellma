@@ -41,8 +41,9 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @ViewChild('unsavedChangesModal', { static: true })
   public unsavedChangesModal: TemplateRef<any>;
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private storage: StorageService,
-              public modalService: NgbModal, private translate: TranslateService) {
+  constructor(
+    private workspace: WorkspaceService, private api: ApiService, private storage: StorageService,
+    public modalService: NgbModal, private translate: TranslateService) {
 
 
     // When the notifyFetch$ subject fires, cancel existing backend
@@ -70,6 +71,9 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
         // Add related items to the workspace
         mergeEntitiesInWorkspace(response.Entities, this.workspace);
+
+        // Notify everyone
+        this.workspace.notifyStateChanged();
 
         // display the settings
         this.detailsStatus = DetailsStatus.loaded;
@@ -295,6 +299,9 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
           // update the workspace with the DTO from the server
           this._viewModel = response.Result;
           mergeEntitiesInWorkspace(response.Entities, this.workspace);
+
+          // Notify everyone
+          this.workspace.notifyStateChanged();
 
           // Update the cache with fresh versions
           if (!!response.SettingsForClient) {

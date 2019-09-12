@@ -1,5 +1,5 @@
 <b-details apiEndpoint="measurement-units" viewId="measurement-units" collection="MeasurementUnit" [createFunc]="create"
-  [expand]="expand" [mode]="mode" [masterCrumb]="'MeasurementUnits' | translate" [detailsCrumb]="detailsCrumb"
+  [expand]="expand" [mode]="mode" [masterCrumb]="'MeasurementUnits' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
   [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }

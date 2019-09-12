@@ -18,7 +18,6 @@ namespace BSharp.Controllers
     [ApplicationApi]
     public class MeasurementUnitsController : CrudControllerBase<MeasurementUnitForSave, MeasurementUnit, int>
     {
-        private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
@@ -28,13 +27,11 @@ namespace BSharp.Controllers
         public MeasurementUnitsController(
             ILogger<MeasurementUnitsController> logger,
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo,
-            IModelMetadataProvider metadataProvider) : base(logger, localizer)
+            ApplicationRepository repo) : base(logger, localizer)
         {
             _logger = logger;
             _localizer = localizer;
             _repo = repo;
-            _metadataProvider = metadataProvider;
         }
 
         [HttpPut("activate")]
@@ -113,8 +110,11 @@ namespace BSharp.Controllers
                 var name2 = nameof(MeasurementUnit.Name2);
                 var name3 = nameof(MeasurementUnit.Name3);
                 var code = nameof(MeasurementUnit.Code);
+                var desc = nameof(MeasurementUnit.Description);
+                var desc2 = nameof(MeasurementUnit.Description2);
+                var desc3 = nameof(MeasurementUnit.Description3);
 
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
+                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}' or {desc} {Ops.contains} '{search}' or {desc2} {Ops.contains} '{search}' or {desc3} {Ops.contains} '{search}'";
                 query = query.Filter(FilterExpression.Parse(filterString));
             }
 

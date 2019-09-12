@@ -7,31 +7,35 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
 
 export class UserForSave<TRoleMembership = RoleMembershipForSave> extends EntityForSave {
-    Email: string;
-    Roles: TRoleMembership[];
+  Email: string;
+  Roles: TRoleMembership[];
 }
 
 export class User extends UserForSave<RoleMembership> {
-    ExternalId: string;
-    LastAccess: string;
-    CreatedAt: string;
-    CreatedById: number | string;
-    ModifiedAt: string;
-    ModifiedById: number | string;
+  Name: string;
+  Name2: string;
+  Name3: string;
+  ImageId: string;
+  ExternalId: string;
+  LastAccess: string;
+  CreatedAt: string;
+  CreatedById: number | string;
+  ModifiedAt: string;
+  ModifiedById: number | string;
 }
 
 export class UserSettingsForClientForSave {
 }
 
 export class UserSettingsForClient {
-    UserId: number;
-    ImageId: string;
-    Name: string;
-    Name2: string;
-    CustomSettings: { [key: string]: string };
+  UserId: number;
+  ImageId: string;
+  Name: string;
+  Name2: string;
+  CustomSettings: { [key: string]: string };
 }
 
-const _select = ['Email'];
+const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _currentLang: string;
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
@@ -44,10 +48,13 @@ export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subty
     _cache = {
       select: _select,
       apiEndpoint: 'users',
-      orderby: ['Email'],
-      format: (item: UserForSave) => item.Email, // ws.getMultilingualValueImmediate(item, _select[0]),
+      orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
+      format: (item: UserForSave) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
         Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
+        Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
         Email: { control: 'text', label: trx.instant('User_Email') },
         Agent: { control: 'navigation', label: trx.instant('User_Agent'), type: 'Agent', foreignKeyName: 'Id' },
         State: {
@@ -63,10 +70,10 @@ export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subty
           },
           color: (c: string) => {
             switch (c) {
-                case 'New': return '#6c757d';
-                case 'Confirmed': return '#28a745';
-                default: return c;
-              }
+              case 'New': return '#6c757d';
+              case 'Confirmed': return '#28a745';
+              default: return c;
+            }
           }
         },
         LastAccess: { control: 'datetime', label: trx.instant('User_LastActivity') },

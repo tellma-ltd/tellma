@@ -1,12 +1,11 @@
-import { Component, ViewChild, Input, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, ViewChild, Input, EventEmitter, OnDestroy, Output, OnInit } from '@angular/core';
 import { Subscription, Subject } from 'rxjs';
 import { MasterComponent } from '../master/master.component';
-import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 
 @Component({
   template: ''
 })
-export class MasterBaseComponent implements OnDestroy {
+export class MasterBaseComponent implements OnInit, OnDestroy {
 
   // a convenience class that canonical master components can inherit from
   // it provides all common functionality of the TypeScript part of the component
@@ -24,39 +23,24 @@ export class MasterBaseComponent implements OnDestroy {
   @Output()
   cancel = new EventEmitter<void>();
 
-  private _columns: string[];
-  private _adjustedColumns: string[];
   private _master: MasterComponent;
   private masterSelect: Subscription;
   private masterCreate: Subscription;
   private masterCancel: Subscription;
   public notifyDestruct$ = new Subject<void>();
 
-  @ViewChild(MasterComponent, { static : false })
-  set master(v: MasterComponent) {
-    if (this._master !== v) {
+  @ViewChild(MasterComponent, { static: true })
+  set master(m: MasterComponent) {
+    if (this._master !== m) {
 
-      // unsubscribe from old details events
-      if (!!this.masterSelect) {
-        this.masterSelect.unsubscribe();
-      }
+      this.cleanupSubscriptions();
 
-      if (!!this.masterCreate) {
-        this.masterCreate.unsubscribe();
-      }
+      this._master = m;
 
-      if (!!this.masterCancel) {
-        this.masterCancel.unsubscribe();
-      }
-
-      // set the new NgControl
-      this._master = v;
-
-      // subscribe to new details events
-      if (!!this._master) {
-        this.masterSelect = this._master.choose.subscribe(this.choose);
-        this.masterCreate = this._master.create.subscribe(this.create);
-        this.masterCancel = this._master.cancel.subscribe(this.cancel);
+      if (!!m) {
+        this.masterSelect = m.choose.subscribe(this.choose);
+        this.masterCreate = m.create.subscribe(this.create);
+        this.masterCancel = m.cancel.subscribe(this.cancel);
       }
     }
   }
@@ -65,8 +49,8 @@ export class MasterBaseComponent implements OnDestroy {
     return this._master;
   }
 
-  ngOnDestroy(): void {
-    // cleanup duty
+  private cleanupSubscriptions() {
+
     if (!!this.masterSelect) {
       this.masterSelect.unsubscribe();
     }
@@ -78,32 +62,15 @@ export class MasterBaseComponent implements OnDestroy {
     if (!!this.masterCancel) {
       this.masterCancel.unsubscribe();
     }
-
-    this.notifyDestruct$.next();
   }
 
-  public adjustForMultilingual(columns: string[], multilingualColumns: string[], workspace: TenantWorkspace): string[] {
+  ngOnInit(): void {
+  }
 
-    // Remove columns of a second language if a second language is not defined
-    // Remove columns of a third language if a third language is not defined
+  ngOnDestroy(): void {
+    // cleanup duty
+    this.cleanupSubscriptions();
 
-    if (this._columns !== columns) {
-      this._columns = columns;
-      this._adjustedColumns = columns;
-
-      if (!workspace.settings.SecondaryLanguageId) {
-
-        const toRemove = multilingualColumns.map(e => e + '2');
-        this._adjustedColumns = columns.filter(e => toRemove.indexOf(e) === -1);
-      }
-
-      if (!workspace.settings.TernaryLanguageId) {
-
-        const toRemove = multilingualColumns.map(e => e + '3');
-        this._adjustedColumns = columns.filter(e => toRemove.indexOf(e) === -1);
-      }
-    }
-
-    return this._adjustedColumns;
+    this.notifyDestruct$.next();
   }
 }

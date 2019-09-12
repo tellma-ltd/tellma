@@ -31,6 +31,7 @@ export function handleFreshSettings(
 
   tws.settings = settings;
   tws.settingsVersion = version;
+  tws.notifyStateChanged();
 }
 
 export function handleFreshPermissions(
@@ -45,6 +46,7 @@ export function handleFreshPermissions(
 
   tws.permissions = permissions;
   tws.permissionsVersion = version;
+  tws.notifyStateChanged();
 }
 
 export function handleFreshUserSettings(
@@ -59,6 +61,7 @@ export function handleFreshUserSettings(
 
   tws.userSettings = userSettings;
   tws.userSettingsVersion = version;
+  tws.notifyStateChanged();
 }
 
 @Injectable({
@@ -93,7 +96,7 @@ export class TenantResolverGuard implements CanActivate {
       const tenantId = +tenantIdSring;
       if (!!tenantId) {
         // set the Tenant ID
-        this.workspace.ws.tenantId = tenantId;
+        this.workspace.setTenantId(tenantId);
 
         // take a concrete reference just in case it changes
         const current = this.workspace.current;

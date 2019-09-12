@@ -41,7 +41,7 @@
 <!-- Description Column -->
 <ng-template #descriptionColumn let-id="id">
   <span class="text-truncate">
-    <b-switch baseCollection="Agent" [entityId]="id"></b-switch>
+    <b-auto-cell baseCollection="Agent" [entity]="c[id]"></b-auto-cell>
   </span>
 </ng-template>
 

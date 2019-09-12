@@ -12,9 +12,10 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   // a convenience class that canonical details components can inherit from
   // it provides all common functionality of the TypeScript part of the component
   // and complements a b-details in the root of its HTML template
-
   @Input()
   public mode: 'screen' | 'popup' = 'screen';
+
+  // public mode: 'screen' | 'popup' = 'screen';
 
   @Input()
   public idString: string | number;
@@ -32,7 +33,7 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   private detailsSave: Subscription;
   private detailsCancel: Subscription;
 
-  @ViewChild(DetailsComponent, { static: false })
+  @ViewChild(DetailsComponent, { static: true })
   set details(v: DetailsComponent) {
     if (this._details !== v) {
 

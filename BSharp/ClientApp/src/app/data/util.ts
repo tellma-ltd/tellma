@@ -18,6 +18,9 @@ export function addToWorkspace(response: EntitiesResponse, workspace: WorkspaceS
   result[response.CollectionName] = response.Result;
   mergeEntitiesInWorkspace(result, workspace);
 
+  // Notify everyone
+  workspace.notifyStateChanged();
+
   // Return the IDs of the main entities
   return response.Result.map(e => e.Id);
 }
@@ -31,6 +34,9 @@ export function addSingleToWorkspace(response: GetByIdResponse, workspace: Works
   const result = {};
   result[response.CollectionName] = [ response.Result ];
   mergeEntitiesInWorkspace(result, workspace);
+
+  // Noitfy everyone
+  workspace.notifyStateChanged();
 
   // Return the ID of the result
   return response.Result.Id;
@@ -168,8 +174,4 @@ export enum Key {
   ArrowUp = 'ArrowUp',
   ArrowRight = 'ArrowRight',
   ArrowDown = 'ArrowDown'
-}
-
-export function toString(value: any): string {
-  return (value !== undefined && value !== null) ? `${value}` : '';
 }

@@ -1,19 +1,15 @@
-﻿CREATE PROCEDURE [dbo].[dal_ProductCategories__DeleteWithDescendants]
-	@Entities [IdList] READONLY
+﻿CREATE PROCEDURE [dal].[ProductCategories__Delete]
+	@Ids [IdList] READONLY
 AS
-	IF NOT EXISTS(SELECT * FROM @Entities) RETURN;
+	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
 
-	-- Delete the entites and their children
-	WITH EntitiesWithDescendants
-	AS (
-		SELECT T2.[Id]
-		FROM [dbo].[ProductCategories] T1
-		JOIN [dbo].[ProductCategories] T2
-		ON T2.[Node].IsDescendantOf(T1.[Node]) = 1
-		WHERE T1.[Id] IN (SELECT [Id] FROM @Entities)
-	)
+	-- Delete the entites, after setting Parent Id of children to NULL
+	UPDATE [dbo].[ProductCategories]
+	SET [ParentId] = NULL
+	WHERE [ParentId] IN (SELECT [Id] FROM @Ids);
+
 	DELETE FROM [dbo].[ProductCategories]
-	WHERE [Id] IN (SELECT [Id] FROM EntitiesWithDescendants);
+	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (

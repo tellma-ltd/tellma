@@ -1,7 +1,10 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component, OnInit, Input, OnDestroy, ViewChild,
+  ElementRef, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Subject, of, Observable, Observer } from 'rxjs';
-import { switchMap, map, catchError } from 'rxjs/operators';
+import { Subject, of, Observable, Observer, Subscription } from 'rxjs';
+import { switchMap, map, catchError, tap, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { StorageService } from '~/app/data/storage.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -21,7 +24,8 @@ enum ImageStatus {
 @Component({
   selector: 'b-image',
   templateUrl: './image.component.html',
-  styleUrls : ['./image.component.scss'],
+  styleUrls: ['./image.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: ImageComponent }]
 })
 export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValueAccessor {
@@ -47,12 +51,13 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
   @Input()
   imageId: string;
 
-  @ViewChild('input', { static : true })
+  @ViewChild('input', { static: true })
   input: ElementRef;
 
-  @ViewChild('errorModal', { static : true })
+  @ViewChild('errorModal', { static: true })
   errorModal: ElementRef;
 
+  private _subscription: Subscription;
   private notifyCancel$ = new Subject<void>();
   private notifyUpdate$: Subject<void>;
   private _src: string;
@@ -87,7 +92,7 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
     this.onChange = (v: any) => {
       fn(v);
 
-      // The image controller behaves the same wheher update on input or on blur
+      // The image controller behaves the same whether update on input or on blur
       this.onTouched();
     };
   }
@@ -101,55 +106,68 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
   }
 
   constructor(
-    private api: ApiService, private workspace: WorkspaceService,
+    private api: ApiService, private workspace: WorkspaceService, private cdr: ChangeDetectorRef,
     private storage: StorageService, private modalService: NgbModal) {
 
     this.notifyUpdate$ = new Subject<void>();
     this.notifyUpdate$.pipe(
-      switchMap(() => this.doUpdate())
+      switchMap(() => {
+        const obs$ = this.doUpdate();
+        this.cdr.markForCheck();
+        return obs$;
+      })
     ).subscribe();
   }
 
   ngOnInit() {
     this.update();
+    this._subscription = this.workspace.stateChanged$.subscribe({
+      next: () => {
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   ngOnDestroy() {
     this.notifyCancel$.next();
+
+    if (!!this._subscription) {
+      this._subscription.unsubscribe();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
 
-      // the combinatino of these two properties defines a whole new screen from the POV of the user
-      // when either of these properties change it is equivalent to a screen closing and
-      // and another screen opening even though Angular may reuse the same
-      // component and never call ngOnDestroy and ngOnInit. So we call them
-      // manually here if this is not the first time these properties are set
-      // to simulate a screen closing and opening again
-      const screenDefProperties = [changes.src, changes.imageId];
+    // the combinatino of these two properties defines a whole new screen from the POV of the user
+    // when either of these properties change it is equivalent to a screen closing and
+    // and another screen opening even though Angular may reuse the same
+    // component and never call ngOnDestroy and ngOnInit. So we call them
+    // manually here if this is not the first time these properties are set
+    // to simulate a screen closing and opening again
+    const screenDefProperties = [changes.src, changes.imageId];
 
-      const anyChanges = screenDefProperties.some(prop => !!prop);
-      const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+    const anyChanges = screenDefProperties.some(prop => !!prop);
+    const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
 
-      if (anyChanges) {
+    if (anyChanges) {
 
-        if (notFirstChange) {
-          this.ngOnDestroy();
-        }
-
-        if (!!changes.src) {
-          this._src = changes.src.currentValue;
-        }
-
-        if (!!changes.imageId) {
-          this._imageId = changes.imageId.currentValue;
-        }
-
-        // set the values
-        if (notFirstChange) {
-          this.ngOnInit();
-        }
+      if (notFirstChange) {
+        this.ngOnDestroy();
       }
+
+      if (!!changes.src) {
+        this._src = changes.src.currentValue;
+      }
+
+      if (!!changes.imageId) {
+        this._imageId = changes.imageId.currentValue;
+      }
+
+      // set the values
+      if (notFirstChange) {
+        this.ngOnInit();
+      }
+    }
   }
 
   private update(): void {
@@ -157,7 +175,6 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
   }
 
   private doUpdate(): Observable<void> {
-
 
     if (!!this._value) {
 
@@ -210,13 +227,12 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
         this.status = ImageStatus.loading;
         return this.api.getImage(src, imageId, this.notifyCancel$).pipe(
           switchMap((b: { image: Blob, imageId: string }) => this.getDataURL(b.image).pipe(
-            map((dataUrl: string) => {
+            tap((dataUrl: string) => {
               this.status = ImageStatus.loaded;
               this.dataUrl = dataUrl;
 
               // cache it in local storage for the future
               this.storage.setItem(storageKey, JSON.stringify({ imageId: b.imageId || imageId, dataUrl }));
-
             }))),
           catchError((error: any) => {
             if (error.status === 404) {
@@ -229,7 +245,8 @@ export class ImageComponent implements OnInit, OnDestroy, OnChanges, ControlValu
               this.status = ImageStatus.error;
             }
             return of(null);
-          })
+          }),
+          finalize(() => this.cdr.markForCheck())
         );
       }
     }

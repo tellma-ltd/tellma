@@ -124,6 +124,56 @@ namespace BSharp.Data
             return table;
         }
 
+        public static DataTable DataTableWithParentIndex<T>(IEnumerable<T> entities, Func<T, int?> parentIndexFunc)
+        {
+            DataTable table = new DataTable();
+
+            // The column order MUST match the column order in the user-defined table type
+            table.Columns.Add(new DataColumn("Index", typeof(int)));
+            table.Columns.Add(new DataColumn("ParentIndex", typeof(int)));
+
+            var props = typeof(T).GetMappedProperties();
+            foreach (var prop in props)
+            {
+                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                var column = new DataColumn(prop.Name, propType);
+                if (propType == typeof(string))
+                {
+                    // For string columns, it is more performant to explicitly specify the maximum column size
+                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
+                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
+                    if (stringLengthAttribute != null)
+                    {
+                        column.MaxLength = stringLengthAttribute.MaximumLength;
+                    }
+                }
+
+                table.Columns.Add(column);
+            }
+
+            int index = 0;
+            foreach (var entity in entities)
+            {
+                DataRow row = table.NewRow();
+
+                // We add an index properties since SQL works with un-ordered sets
+                row["Index"] = index++;
+                row["ParentIndex"] = (object)parentIndexFunc(entity) ?? DBNull.Value;
+
+                // Add the remaining properties
+                foreach (var prop in props)
+                {
+                    var propValue = prop.GetValue(entity);
+                    row[prop.Name] = propValue ?? DBNull.Value;
+                }
+
+                table.Rows.Add(row);
+            }
+
+            return table;
+        }
+
+
         /// <summary>
         /// Determines whether the given exception is a foreign key violation on delete
         /// </summary>

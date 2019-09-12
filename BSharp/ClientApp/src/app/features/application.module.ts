@@ -114,22 +114,22 @@ const routes: Routes = [
       //   canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       // },
 
-      // // Product Categories
-      // {
-      //   path: 'product-categories',
-      //   component: ProductCategoriesMasterComponent,
-      //   canDeactivate: [SaveInProgressGuard]
-      // },
-      // {
-      //   path: 'product-categories/import',
-      //   component: ProductCategoriesImportComponent,
-      //   canDeactivate: [SaveInProgressGuard]
-      // },
-      // {
-      //   path: 'product-categories/:id',
-      //   component: ProductCategoriesDetailsComponent,
-      //   canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
-      // },
+      // Product Categories
+      {
+        path: 'product-categories',
+        component: ProductCategoriesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'product-categories/import',
+        component: ProductCategoriesImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'product-categories/:id',
+        component: ProductCategoriesDetailsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
 
       // Settings
       {
