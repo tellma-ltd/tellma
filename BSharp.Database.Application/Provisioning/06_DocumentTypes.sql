@@ -30,7 +30,6 @@ DECLARE @DocumentTypes TABLE (
 	-- UI Specs
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT (3), -- For presentation purposes
-	[DefaultVoucherTypeId]		NVARCHAR (30),
 	[CustomerLabel]				NVARCHAR (50),
 	[SupplierLabel]				NVARCHAR (50),
 	[EmployeeLabel]				NVARCHAR (50),
@@ -83,10 +82,10 @@ WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
     INSERT (
-		[Id], [IsSourceDocument], [Description], [Description2], [Description3], [Prefix], [CodeWidth], [DefaultVoucherTypeId],
+		[Id], [IsSourceDocument], [Description], [Description2], [Description3], [Prefix], [NumericalLength],
 		[CustomerLabel], [SupplierLabel], [EmployeeLabel], [FromCustodyAccountLabel], [ToCustodyAccountLabel]
 	) VALUES (
-		s.[Id], s.[IsSourceDocument], s.[Description], s.[Description2], s.[Description3], s.[Prefix], s.[CodeWidth], s.[DefaultVoucherTypeId],
+		s.[Id], s.[IsSourceDocument], s.[Description], s.[Description2], s.[Description3], s.[Prefix], s.[CodeWidth],
 		s.[CustomerLabel], s.[SupplierLabel], s.[EmployeeLabel], s.[FromCustodyAccountLabel], s.[ToCustodyAccountLabel]
 	);
 

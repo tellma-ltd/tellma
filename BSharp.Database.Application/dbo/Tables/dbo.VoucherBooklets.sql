@@ -7,7 +7,7 @@
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[StringPrefix]				NVARCHAR (10)	NOT NULL DEFAULT (N''), -- visible for IsSourceDocument = 0
-	[NumericLength]				INT				DEFAULT 0, -- If 0, then no padding zeroes. Visible for IsSourceDocument = 0
+	[NumericLength]				TINYINT			DEFAULT 0, -- If 0, then no padding zeroes. Visible for IsSourceDocument = 0
 	[RangeStarts]				INT				DEFAULT 1,
 	[RangeEnds]					INT				DEFAULT 2147483647,
 	[IsActive]					BIT				DEFAULT 1
