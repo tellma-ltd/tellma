@@ -6,7 +6,10 @@ import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from './settings';
 
 export class VoucherBookletForSave extends EntityWithKey {
-    VoucherTypeId: string;
+    Name: string;
+    Name2: string;
+    Name3: string;
+    VoucherTypeId: number | string;
     StringPrefix: string;
     NumericLength: number;
     RangeStarts: number;
@@ -156,9 +159,12 @@ export function metadata_VoucherBooklet(ws: TenantWorkspace, trx: TranslateServi
             format: (item: VoucherBookletForSave) => item.VoucherTypeId,
             properties: {
                 Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
+                Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
+                Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
 
                 // Temp
-                VoucherTypeId: { control: 'text', label: 'Voucher Type' },
+                VoucherTypeId: { control: 'number', label: 'Voucher Type', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 StringPrefix: { control: 'text', label: 'String Prefix' },
                 NumericLength: { control: 'number', label: 'Numeric Length', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
                 RangeStarts: { control: 'number', label: 'Range Starts', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },

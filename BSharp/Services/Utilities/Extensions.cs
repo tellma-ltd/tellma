@@ -302,7 +302,15 @@ namespace BSharp.Services.Utilities
                 return obj.ToString();
             }
 
-            return Convert.ChangeType(obj, t);
+            try
+            {
+                return Convert.ChangeType(obj, t);
+            }
+            catch (Exception)
+            {
+                throw new InvalidOperationException($"Failed to convert value: {obj?.ToString()} to type: {t.Name}");
+            }
+
         }
 
         /// <summary>

@@ -143,9 +143,9 @@ namespace BSharp.Controllers
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var voucherTypeId = nameof(VoucherBooklet.VoucherTypeId);
+                var stringPrefix = nameof(VoucherBooklet.StringPrefix); // TODO: Search the 
 
-                query = query.Filter($"{voucherTypeId} {Ops.contains} '{search}'");
+                query = query.Filter($"{stringPrefix} {Ops.contains} '{search}'");
             }
 
             return query;
