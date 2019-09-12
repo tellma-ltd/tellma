@@ -354,6 +354,7 @@
     <Build Include="bll\Stored Procedures\bll.ProductCategories_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.ProductCategories__Activate.sql" />
     <Build Include="dbo\Tables\dbo.AccountClassifications.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
@@ -372,9 +373,6 @@
     <None Include="Tests\14_Sales.sql" />
     <None Include="IntegrationTests.publish.xml" />
     <None Include="BSharp.Database.Application.publish.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <RefactorLog Include="BSharp.Database.Application.refactorlog" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
@@ -400,5 +398,8 @@
       <SuppressMissingDependenciesErrors>False</SuppressMissingDependenciesErrors>
       <DatabaseVariableLiteralValue>master</DatabaseVariableLiteralValue>
     </ArtifactReference>
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="BSharp.Database.Application.refactorlog" />
   </ItemGroup>
 </Project>
