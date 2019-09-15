@@ -14,9 +14,14 @@
 */
 	[IsSourceDocument]			BIT				DEFAULT 1, -- <=> IsVoucherReferenceRequired
 	[FinalState]				NVARCHAR (30)	NOT NULL DEFAULT N'Posted',
-	[Description]				NVARCHAR (255),
-	[Description2]				NVARCHAR (255),
-	[Description3]				NVARCHAR (255),
+	[DescriptionSingular]		NVARCHAR (255),
+	[DescriptionSingular2]		NVARCHAR (255),
+	[DescriptionSingular3]		NVARCHAR (255),
+	[DescriptionPlural]			NVARCHAR (255),
+	[DescriptionPlural2]		NVARCHAR (255),
+	[DescriptionPlural3]		NVARCHAR (255),
+
+	[IsImmutable]				BIT				NOT NULL DEFAULT 0, -- 1 <=> Cannot change without invalidating signatures
 	-- UI Specs
 	[SortKey]					DECIMAL (9,4),
 	[Prefix]					NVARCHAR (5)	NOT NULL,

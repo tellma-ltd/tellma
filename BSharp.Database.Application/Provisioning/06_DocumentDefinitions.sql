@@ -82,7 +82,7 @@ WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
     INSERT (
-		[Id], [IsSourceDocument], [Description], [Description2], [Description3], [Prefix], [NumericalLength],
+		[Id], [IsSourceDocument], [DescriptionSingular], [DescriptionSingular2], [DescriptionSingular3], [Prefix], [NumericalLength],
 		[CustomerLabel], [SupplierLabel], [EmployeeLabel], [FromCustodyAccountLabel], [ToCustodyAccountLabel]
 	) VALUES (
 		s.[Id], s.[IsSourceDocument], s.[Description], s.[Description2], s.[Description3], s.[Prefix], s.[CodeWidth],

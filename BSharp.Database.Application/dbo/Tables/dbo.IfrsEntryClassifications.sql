@@ -26,6 +26,3 @@
 	CONSTRAINT [CK_IfrsEntryClassifications__ForDebit_ForCredit] CHECK ([ForDebit] = 1 OR [ForCredit] = 1),
 	);
 GO
-CREATE UNIQUE CLUSTERED INDEX IfrsEntryClassifications__Node
-ON [dbo].[IfrsEntryClassifications]([Node]) ;  
-GO
