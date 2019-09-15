@@ -9,8 +9,8 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public short? Level { get; set; }
 
-        //[AlwaysAccessible]
-        //public string ParentId { get; set; }
+        [AlwaysAccessible]
+        public string ParentId { get; set; }
 
         [AlwaysAccessible]
         public int? ActiveChildCount { get; set; }
@@ -99,9 +99,9 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public HierarchyId ParentNode { get; set; }
 
-        //[Display(Name = "TreeParent")]
-        //[ForeignKey(nameof(ParentId))]
-        //public IfrsEntryClassification Parent { get; set; }
+        [Display(Name = "TreeParent")]
+        [ForeignKey(nameof(ParentId))]
+        public IfrsAccountClassification Parent { get; set; }
 
         //[Display(Name = "CreatedBy")]
         //[ForeignKey(nameof(CreatedById))]

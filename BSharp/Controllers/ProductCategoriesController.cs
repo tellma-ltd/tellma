@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace BSharp.Controllers
 {
     [Route("api/product-categories")]
-    [ApiController]
+    [ApplicationApi]
     public class ProductCategoriesController : CrudTreeControllerBase<ProductCategoryForSave, ProductCategory, int>
     {
         private readonly ApplicationRepository _repo;

@@ -271,13 +271,15 @@ namespace BSharp.Data
                     case nameof(IfrsAccountClassification):
                         return new SqlSource(@"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level],
 	(SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([Q].[Node]) = 1) As [ActiveChildCount],
-    (SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount]
+    (SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount],
+    (SELECT [Id] FROM [dbo].[IfrsAccountClassifications] WHERE [Q].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                     case nameof(IfrsEntryClassification):
-                        return new SqlSource(@"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level],
+                        return new SqlSource(@"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level], 
 	(SELECT COUNT(*) FROM [dbo].[IfrsEntryClassifications] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([Q].[Node]) = 1) As [ActiveChildCount],
-    (SELECT COUNT(*) FROM [dbo].[IfrsEntryClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount]
+    (SELECT COUNT(*) FROM [dbo].[IfrsEntryClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount],
+    (SELECT [Id] FROM [dbo].[IfrsEntryClassifications] WHERE [Q].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
 

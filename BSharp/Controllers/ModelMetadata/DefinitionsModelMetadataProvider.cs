@@ -110,6 +110,12 @@ namespace BSharp.Controllers
                         DisplayName = () =>
                         {
                             var info = _tenantInfoAccessor.GetCurrentInfo();
+                            if(info == null)
+                            {
+                                // Developer mistake
+                                throw new InvalidOperationException("TenantInfo is not set");
+                            }
+
                             string result;
 
                             switch (lang)
@@ -119,15 +125,13 @@ namespace BSharp.Controllers
                                     break;
 
                                 case Language.Secondary:
-                                    // An empty name indicates a hidden column
                                     result = string.IsNullOrWhiteSpace(info.SecondaryLanguageId) ?
-                                    "" : _localizer[name] + SecondaryPostfix(info);
+                                    Constants.HIDDEN_FIELD : _localizer[name] + SecondaryPostfix(info);
                                     break;
 
                                 case Language.Ternary:
-                                    // An empty name indicates a hidden column
                                     result = string.IsNullOrWhiteSpace(info.TernaryLanguageId) ?
-                                    "" : _localizer[name] + TernaryPostfix(info);
+                                    Constants.HIDDEN_FIELD : _localizer[name] + TernaryPostfix(info);
                                     break;
 
                                 default:

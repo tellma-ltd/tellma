@@ -20,7 +20,9 @@ namespace BSharp.Controllers
     /// 2. Ensures that the authenticated user has an active membership in that tenantId otherwise the request is aborted with a 403
     /// 3. If the user is new it updates his/her ExternalId in the tenant database as well as the centralized admin database
     /// 4. If the user has a new email it updates his/her Email in the app database
-    /// 5. If the version headers are provided, it also checks their freshness and adds appropriate response headers
+    /// 5. Add the tenant info in the HTTP context, making it accessible to our model metadata provider
+    /// 6. Ensures that the <see cref="IDefinitionsCache"/> is nice and fresh
+    /// 7. If the version headers are provided, it also checks their freshness and adds appropriate response headers
     /// IMPORTANT: This attribute should always be precedede with another attribute <see cref="AuthorizeAccessAttribute"/>
     /// </summary>
     public class ApplicationApiAttribute : TypeFilterAttribute
@@ -34,15 +36,17 @@ namespace BSharp.Controllers
         {
             private readonly ApplicationRepository _appRepo;
             private readonly ITenantIdAccessor _tenantIdAccessor;
+            private readonly ITenantInfoAccessor _tenantInfoAccessor;
             private readonly IExternalUserAccessor _externalUserAccessor;
             private readonly IServiceProvider _serviceProvider;
             private readonly IDefinitionsCache _definitionsProvider;
 
-            public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, 
+            public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, ITenantInfoAccessor tenantInfoAccessor,
                 IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsProvider)
             {
                 _appRepo = appRepo;
                 _tenantIdAccessor = tenantIdAccessor;
+                _tenantInfoAccessor = tenantInfoAccessor;
                 _externalUserAccessor = externalUserAccessor;
                 _serviceProvider = serviceProvider;
                 _definitionsProvider = definitionsProvider;
@@ -74,6 +78,7 @@ namespace BSharp.Controllers
                     // This indicates to the client to discard all cached information about this
                     // company since the user is no longer a member of it
                     context.HttpContext.Response.Headers.Add("x-settings-version", Constants.Unauthorized);
+                    context.HttpContext.Response.Headers.Add("x-definitions-version", Constants.Unauthorized);
                     context.HttpContext.Response.Headers.Add("x-permissions-version", Constants.Unauthorized);
                     context.HttpContext.Response.Headers.Add("x-user-settings-version", Constants.Unauthorized);
 
@@ -112,9 +117,11 @@ namespace BSharp.Controllers
                     await _appRepo.Users__SetEmailByUserId(userId, externalEmail);
                 }
 
-
-                // (5) Ensure the freshness of the definitions cache
+                // (5) Set the tenant info in the context, to make accessible for model metadata providers
                 var tenantInfo = await _appRepo.GetTenantInfoAsync();
+                _tenantInfoAccessor.SetInfo(tenantId, tenantInfo);
+
+                // (6) Ensure the freshness of the definitions cache
                 {
                     var databaseVersion = tenantInfo.DefinitionsVersion;
                     var serverVersion = _definitionsProvider.GetDefinitionsIfCached(tenantId)?.Version;
@@ -127,7 +134,7 @@ namespace BSharp.Controllers
                     }
                 }
 
-                // (6) If any version headers are supplied: examine their freshness
+                // (7) If any version headers are supplied: examine their freshness
                 {
                     // Permissions
                     var clientVersion = context.HttpContext.Request.Headers["X-Permissions-Version"].FirstOrDefault();
@@ -213,7 +220,7 @@ namespace BSharp.Controllers
                 return new DataWithVersion<DefinitionsForClient>
                 {
                     Data = result,
-                    Version = "1234567890"
+                    Version = appRepo.GetTenantInfo().DefinitionsVersion
                 };
             }
         }
