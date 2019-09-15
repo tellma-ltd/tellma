@@ -1,5 +1,6 @@
 ﻿using BSharp.Data.Queries;
 using BSharp.Entities;
+using BSharp.Entities.ModelMetadata;
 using BSharp.Services.ClientInfo;
 using BSharp.Services.Identity;
 using BSharp.Services.Sharding;
@@ -385,7 +386,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                             ShortCompanyName = reader.String(i++),
                             ShortCompanyName2 = reader.String(i++),
                             ShortCompanyName3 = reader.String(i++),
-                            ViewsAndSpecsVersion = reader.Guid(i++)?.ToString(),
+                            DefinitionsVersion = reader.Guid(i++)?.ToString(),
                             SettingsVersion = reader.Guid(i++)?.ToString(),
                             PrimaryLanguageId = reader.String(i++),
                             PrimaryLanguageSymbol = reader.String(i++),
@@ -1753,6 +1754,47 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 // Execute
                 await cmd.ExecuteNonQueryAsync();
             }
+        }
+
+        #endregion
+
+        #region ModelMetadata
+
+        public async Task<DatabaseModelMetadata> GetModelMetadata()
+        {
+            // TODO: Replace mock with real
+            var result = new DatabaseModelMetadata
+            {
+                Documents = new Dictionary<string, DocumentModelMetadata>
+                {
+                    ["journal-vouchers"] = new DocumentModelMetadata
+                    {
+                        // TODO: implement mock
+                    }
+                },
+
+                Resources = new Dictionary<string, ResourceModelMetadata>
+                {
+                    ["inventory"] = new ResourceModelMetadata
+                    {
+                        // TODO: implement mock
+                    }
+                },
+
+                Lines = new Dictionary<string, LineModelMetadata>
+                {
+                    ["bla"] = new LineModelMetadata
+                    {
+                        // TODO: implement mock
+                    }
+                },
+
+                Version = "1234567890"
+            };
+
+            await Task.Delay(5); // To simulate database communication
+
+            return result;
         }
 
         #endregion

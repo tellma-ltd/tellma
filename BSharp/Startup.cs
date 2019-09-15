@@ -90,7 +90,7 @@ namespace BSharp
                 {
                     // This filter checks version headers (e.g. x-translations-version) supplied by the client and efficiently
                     // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
-                    opt.Filters.Add(typeof(CheckGlobalVersionsFilter));
+                    opt.Filters.Add(typeof(GlobalFilter));
                 })
                     .AddDataAnnotationsLocalization(opt =>
                     {
@@ -239,6 +239,7 @@ namespace BSharp
                         .WithExposedHeaders("x-image-id")
                         .WithExposedHeaders("x-settings-version")
                         .WithExposedHeaders("x-permissions-version")
+                        .WithExposedHeaders("x-definitions-version")
                         .WithExposedHeaders("x-user-settings-version")
                         .WithExposedHeaders("x-global-settings-version");
                     });

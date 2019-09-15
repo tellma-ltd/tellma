@@ -32,6 +32,6 @@ namespace BSharp.Services.MultiTenancy
     //    public string TernaryLanguageId { get; set; }
     //    public string TernaryLanguageSymbol { get; set; }
     //    public string SettingsVersion { get; set; }
-    //    public string ViewsAndSpecsVersion { get; set; }
+    //    public string DefinitionsVersion { get; set; }
     //}
 }

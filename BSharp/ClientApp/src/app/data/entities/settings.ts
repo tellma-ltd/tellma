@@ -12,7 +12,7 @@ export class SettingsForSave extends Entity {
 }
 
 export class Settings extends SettingsForSave {
-    ViewsAndSpecsVersion: string;
+    DefinitionsVersion: string;
     SettingsVersion: string;
     ModifiedAt: string;
     ModifiedById: number | string;

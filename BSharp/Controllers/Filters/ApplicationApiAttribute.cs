@@ -34,14 +34,16 @@ namespace BSharp.Controllers
             private readonly ITenantIdAccessor _tenantIdAccessor;
             private readonly IExternalUserAccessor _externalUserAccessor;
             private readonly IServiceProvider _serviceProvider;
+            private readonly IDatabaseModelMetadataCache _definitionsProvider;
 
             public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, 
-                IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider)
+                IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDatabaseModelMetadataCache definitionsProvider)
             {
                 _appRepo = appRepo;
                 _tenantIdAccessor = tenantIdAccessor;
                 _externalUserAccessor = externalUserAccessor;
                 _serviceProvider = serviceProvider;
+                _definitionsProvider = definitionsProvider;
             }
 
             public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
@@ -88,8 +90,8 @@ namespace BSharp.Controllers
 
                     // Update external Id in the central Admin database too (To avoid an awkward situation
                     // where a user exists on the tenant but not on the Admin db, if they change their email in between)
-                    var adminApp = _serviceProvider.GetRequiredService<AdminRepository>();
-                    await adminApp.GlobalUsers__SetExternalIdByEmail(externalEmail, externalId);
+                    var adminRepo = _serviceProvider.GetRequiredService<AdminRepository>();
+                    await adminRepo.GlobalUsers__SetExternalIdByEmail(externalEmail, externalId);
                 }
 
                 else if(userInfo.ExternalId != externalId)
@@ -97,7 +99,7 @@ namespace BSharp.Controllers
                     // Note: there is the edge case of identity providers who allow email recycling. I.e. we can get the same email twice with 
                     // two different external Ids. This issue is so unlikely to naturally occur and cause problems here that we are not going
                     // to handle it for now. It can however happen artificually if the application is re-configured to a new identity provider,
-                    // or if someone messed with database directly, but again out of scope for now.
+                    // or if someone messed with the database directly, but again out of scope for now.
                     context.Result = new BadRequestObjectResult("The sign-in email already exists but with a different external Id");
                     return;
                 }
@@ -109,15 +111,30 @@ namespace BSharp.Controllers
                 }
 
 
-                // (5) If any version headers are supplied: examine their freshness
+                // (5) Ensure the freshness of the definitions cache
+                var tenantInfo = await _appRepo.GetTenantInfoAsync();
+                {
+                    var databaseVersion = tenantInfo.DefinitionsVersion;
+                    var serverVersion = _definitionsProvider.GetModelMetadataIfCached(tenantId)?.Version;
+
+                    if (serverVersion == null || serverVersion != databaseVersion)
+                    {
+                        // Update the cache
+                        var definitions = _appRepo.GetModelMetadata();
+                        _definitionsProvider.SetDefinitions(tenantId, definitions);
+                    }
+                }
+
+
+                // (6) If any version headers are supplied: examine their freshness
                 {
                     // Permissions
                     var clientVersion = context.HttpContext.Request.Headers["X-Permissions-Version"].FirstOrDefault();
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
-                        var serverVersion = userInfo.PermissionsVersion;
+                        var databaseVersion = userInfo.PermissionsVersion;
                         context.HttpContext.Response.Headers.Add("x-permissions-version",
-                            clientVersion == serverVersion ? Constants.Fresh : Constants.Stale);
+                            clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
 
@@ -126,21 +143,30 @@ namespace BSharp.Controllers
                     var clientVersion = context.HttpContext.Request.Headers["X-User-Settings-Version"].FirstOrDefault();
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
-                        var serverVersion = userInfo.UserSettingsVersion;
+                        var databaseVersion = userInfo.UserSettingsVersion;
                         context.HttpContext.Response.Headers.Add("x-user-settings-version",
-                            clientVersion == serverVersion ? Constants.Fresh : Constants.Stale);
+                            clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
 
-                var tenantInfo = await _appRepo.GetTenantInfoAsync();
+                {
+                    // Definitions
+                    var clientVersion = context.HttpContext.Request.Headers["X-Definitions-Version"].FirstOrDefault();
+                    if (!string.IsNullOrWhiteSpace(clientVersion))
+                    {
+                        var databaseVersion = tenantInfo.DefinitionsVersion;
+                        context.HttpContext.Response.Headers.Add("x-definitions-version",
+                            clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
+                    }
+                }
                 {
                     // Settings
                     var clientVersion = context.HttpContext.Request.Headers["X-Settings-Version"].FirstOrDefault();
                     if (!string.IsNullOrWhiteSpace(clientVersion))
                     {
-                        var serverVersion = tenantInfo.SettingsVersion;
+                        var databaseVersion = tenantInfo.SettingsVersion;
                         context.HttpContext.Response.Headers.Add("x-settings-version",
-                            clientVersion == serverVersion ? Constants.Fresh : Constants.Stale);
+                            clientVersion == databaseVersion ? Constants.Fresh : Constants.Stale);
                     }
                 }
 

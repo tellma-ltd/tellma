@@ -6,13 +6,14 @@ using System.Linq;
 namespace BSharp.Controllers
 {
     /// <summary>
-    /// This filter checks version headers of global settings such as translations, it is not dependent on any tenant
+    /// This filter is invoked with every API request, independent of any tenant.
+    /// For now it checks version headers of any global settings.
     /// </summary>
-    public class CheckGlobalVersionsFilter : IResourceFilter
+    public class GlobalFilter : IResourceFilter
     {
         private readonly IGlobalSettingsCache _globalSettings;
 
-        public CheckGlobalVersionsFilter(IGlobalSettingsCache globalSettings)
+        public GlobalFilter(IGlobalSettingsCache globalSettings)
         {
             _globalSettings = globalSettings;
         }

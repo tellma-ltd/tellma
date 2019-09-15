@@ -42,18 +42,5 @@ namespace BSharp.Services.MultiTenancy
                 throw new MultitenancyException($"The required header '{REQUEST_HEADER_TENANT_ID}' was not supplied");
             }
         }
-
-        public void TryGetTenantId(out int? tenantId)
-        {
-            try
-            {
-                tenantId = GetTenantId();
-                return;
-
-            }
-            catch { }
-
-            tenantId = null;
-        }
     }
 }

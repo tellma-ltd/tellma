@@ -18,7 +18,7 @@ namespace BSharp.Services.Sharding
         public const string ADMIN_SERVER_PLACEHOLDER = "<AdminServer>";
 
         // This efficient lock prevents concurrency issues when updating the cache
-        private static ReaderWriterLockSlim _shardingLock = new ReaderWriterLockSlim();
+        private static ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
         private readonly ITenantIdAccessor _tenantIdProvider;
         private readonly IServiceProvider _serviceProvider;
@@ -42,20 +42,20 @@ namespace BSharp.Services.Sharding
             int databaseId = tenantId ?? _tenantIdProvider.GetTenantId();
 
             // Step (1) retrieve the conn string from the cache inside a READ lock
-            _shardingLock.EnterReadLock();
+            _lock.EnterReadLock();
             try
             {
                 _cache.TryGetValue(CacheKey(databaseId), out shardConnString);
             }
             finally
             {
-                _shardingLock.ExitReadLock();
+                _lock.ExitReadLock();
             }
 
             // Step (2) if step (1) was a miss, enter inside a WRITE lock, retrieve the conn string from the source and update the cache
             if (shardConnString == null)
             {
-                _shardingLock.EnterWriteLock();
+                _lock.EnterWriteLock();
                 try
                 {
                     // To avoid a race-condition causing multiple threads to populate the cache in parallel immediately after they all 
@@ -168,7 +168,7 @@ namespace BSharp.Services.Sharding
                 }
                 finally
                 {
-                    _shardingLock.ExitWriteLock();
+                    _lock.ExitWriteLock();
                 }
             }
 

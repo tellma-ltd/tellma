@@ -3,7 +3,7 @@
 	DECLARE @ShortCompanyName NVARCHAR(255)				= '$(ShortCompanyName)'; --N'ACME International';
 	DECLARE @PrimaryLanguageId NVARCHAR(255)			= '$(PrimaryLanguageId)'; --N'en';
 	DECLARE @FunctionalCurrency NCHAR(3)				= '$(FunctionalCurrency)'; --N'ETB'
-	DECLARE @ViewsAndSpecsVersion UNIQUEIDENTIFIER		= NEWID();
+	DECLARE @DefinitionsVersion UNIQUEIDENTIFIER		= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER			= NEWID();
 END
 -- Local Variables
@@ -35,7 +35,7 @@ EXEC master.sys.sp_set_session_context 'UserId', @UserId;
 EXEC [dal].[Settings__Save]
 	@ShortCompanyName = @ShortCompanyName,
 	@PrimaryLanguageId = @PrimaryLanguageId,
-	@ViewsAndSpecsVersion = @ViewsAndSpecsVersion,
+	@DefinitionsVersion = @DefinitionsVersion,
 	@SettingsVersion = @SettingsVersion,
 	@FunctionalCurrency = @FunctionalCurrency;
 

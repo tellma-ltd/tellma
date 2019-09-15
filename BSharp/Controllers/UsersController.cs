@@ -32,7 +32,7 @@ namespace BSharp.Controllers
         private readonly ApplicationRepository _appRepo;
         private readonly AdminRepository _adminRepo;
         private readonly ITenantIdAccessor _tenantIdProvider;
-        private readonly IModelMetadataProvider _metadataProvider;
+        private readonly Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider _metadataProvider;
         private readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
         private readonly EmailTemplatesProvider _emailTemplates;
@@ -49,7 +49,7 @@ namespace BSharp.Controllers
         public UsersController(
             ApplicationRepository appRepo,
             AdminRepository adminRepo,
-            IModelMetadataProvider metadataProvider,
+            Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider metadataProvider,
             ILogger<UsersController> logger,
             IOptions<GlobalOptions> options,
             IServiceProvider serviceProvider,

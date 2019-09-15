@@ -54,7 +54,7 @@ namespace BSharp.Entities
         /// <summary>
         /// Changes whenever the client views and the specs change
         /// </summary>
-        public Guid ViewsAndSpecsVersion { get; set; }
+        public Guid DefinitionsVersion { get; set; }
 
         /// <summary>
         /// Changes whenever the client settings change
