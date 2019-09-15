@@ -1,23 +1,22 @@
 ﻿CREATE TABLE [dbo].[Resources] (
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
-	-- The resource type defines the screen. Managed by Banan
-	-- The resource classification defines the specs. Managed by User
-	[ResourceType]					NVARCHAR (255) NOT NULL CONSTRAINT [CK_Resources__ResourceType] CHECK (
-										[ResourceType] IN (
-											N'property-plant-and-equipment',
-											N'investment-property',
-											N'intangible-assets',
-											N'financial-assets',
-											N'investments',
-											N'biological-assets',
-											N'inventories',
-											N'cash-and-cash-equivalents',
-											N'trade-and-other-receivables'
-											--Lease services
-											--Employee Job
-											--general services
-										)
-									),
+	--[ResourceType]					NVARCHAR (255) NOT NULL CONSTRAINT [CK_Resources__ResourceType] CHECK (
+	--									[ResourceType] IN (
+	--										N'property-plant-and-equipment',
+	--										N'investment-property',
+	--										N'intangible-assets',
+	--										N'financial-assets',
+	--										N'investments',
+	--										N'biological-assets',
+	--										N'inventories',
+	--										N'cash-and-cash-equivalents',
+	--										N'trade-and-other-receivables'
+	--										--Lease services
+	--										--Employee Job
+	--										--general services
+	--									)
+	--								),
+	-- The resource definition defines the specs. Managed by User
 	[ResourceDefinitionId]			NVARCHAR (255)		NOT NULL CONSTRAINT [FK_Resources__ResourceDefinitionId] FOREIGN KEY ([ResourceDefinitionId]) REFERENCES [dbo].[ResourceDefinitions] ([Id]),	
 	[ResourceClassificationId]		INT					CONSTRAINT [FK_Resources__ResourceClassificationId] FOREIGN KEY ([ResourceClassificationId]) REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[Name]							NVARCHAR (255)		NOT NULL CONSTRAINT [CX_Resources__Name] UNIQUE,

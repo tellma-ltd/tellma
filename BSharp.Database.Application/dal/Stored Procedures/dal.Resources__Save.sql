@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Save]
-	@ResourceType NVARCHAR (255),
+	@ResourceDefinitionId NVARCHAR (255),
 	@Resources [dbo].[ResourceList] READONLY,
 	@Picks [dbo].[ResourcePickList] READONLY,
 	@ReturnIds BIT = 0
@@ -16,7 +16,7 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Resources] AS t
 		USING (
 			SELECT 	
-				[Index], [Id], [ResourceClassificationId], [Name], [Name2], [Name3], 
+				[Index], [Id], [ResourceDefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], 
 				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
 				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
@@ -56,12 +56,12 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ResourceType], [ResourceClassificationId], [Name], [Name2], [Name3],
+			INSERT ([ResourceDefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3],
 				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
 				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
 				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
 				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id])
-			VALUES (@ResourceType, s.[ResourceClassificationId], s.[Name], s.[Name2], s.[Name3],
+			VALUES (@ResourceDefinitionId, s.[ResourceClassificationId], s.[Name], s.[Name2], s.[Name3],
 				s.[UnitId], s.[UnitMonetaryValue], s.[CurrencyId], s.[UnitMass], s.[MassUnitId], s.[UnitVolume], s.[VolumeUnitId],
 				s.[UnitArea], s.[AreaUnitId], s.[UnitLength], s.[LengthUnitId], s.[UnitTime], s.[TimeUnitId], s.[UnitCount], s.[CountUnitId],
 				s.[Code], s.[SystemCode], s.[Memo], s.[CustomsReference] ,s.[UniversalProductCode], s.[PreferredSupplierId],

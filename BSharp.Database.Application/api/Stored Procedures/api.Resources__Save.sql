@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[Resources__Save]
-	@ResourceType NVARCHAR (255),
+	@ResourceDefinitionId NVARCHAR (255),
 	@Resources [dbo].[ResourceList] READONLY,
 	@Picks [dbo].[ResourcePickList] READONLY,
 	@ReturnIds BIT = 0,
@@ -12,12 +12,12 @@ SET NOCOUNT ON;
 
 	INSERT INTO @FilledResources
 	EXEC bll.Resources__Fill
-		@ResourceType = @ResourceType,
+		@ResourceDefinitionId = @ResourceDefinitionId,
 		@Resources = @Resources;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Resources_Validate__Save]
-		@ResourceType = @ResourceType,
+		@ResourceDefinitionId = @ResourceDefinitionId,
 		@Resources = @FilledResources,
 		@Picks = @Picks;
 
@@ -32,7 +32,7 @@ SET NOCOUNT ON;
 		RETURN;
 
 	EXEC [dal].[Resources__Save]
-		@ResourceType = @ResourceType,
+		@ResourceDefinitionId = @ResourceDefinitionId,
 		@Resources = @FilledResources,
 		@Picks = @Picks,
 		@ReturnIds = @ReturnIds;

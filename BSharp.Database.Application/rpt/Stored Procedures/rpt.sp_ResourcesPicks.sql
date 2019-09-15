@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [rpt].[sp_ResourcesPicks]
 	@Ids dbo.[IdList] READONLY
 AS
-	SELECT 	R.[Id], R.[ResourceType], RC.[Name] AS Classification, R.[Name], R.[IsActive], R.[Code],
+	SELECT 	R.[Id], RC.[IfrsResourceClassificationId], RC.[Name] AS Classification, R.[Name], R.[IsActive], R.[Code],
 		MU.[Name] AS [Unit], [UnitMonetaryValue], MF.[Name] AS [Currency], [UnitMass], MM.[Name] AS [MassUnit], [UnitVolume], MV.[Name] AS [VolumeUnit],
 		[UnitArea], MA.[Name] AS [AreaUnit], [UnitLength], ML.[Name] AS [LengthUnit], [UnitTime], MT.[Name] AS [TimeUnit], [UnitCount], MC.[Name] AS [CountUnit]
 	FROM dbo.Resources R

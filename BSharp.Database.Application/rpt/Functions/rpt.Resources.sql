@@ -5,7 +5,8 @@
 AS 
 RETURN
 	SELECT 	
-		[Id], [ResourceType], [Name], [IsActive], [Code]
-	FROM dbo.Resources
-	WHERE [Id] IN (SELECT [Id] FROM @Ids)
+		R.[Id], RC.[Name] AS CLassification, R.[Name], R.[IsActive], R.[Code]
+	FROM dbo.Resources R
+	LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
+	WHERE R.[Id] IN (SELECT [Id] FROM @Ids)
 GO
