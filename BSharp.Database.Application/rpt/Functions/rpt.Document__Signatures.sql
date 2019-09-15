@@ -15,7 +15,7 @@ SELECT
 		A3.[Name] AS [Revoked By],
 		DS.[RevokedAt] AS [Revoked At]
 	FROM dbo.Documents D
-	JOIN dbo.DocumentTypes DT ON D.[DocumentTypeId] = DT.[Id]
+	JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
 	JOIN dbo.DocumentSignatures DS ON D.[Id] = DS.DocumentId
 	JOIN dbo.Agents AG ON DS.AgentId = AG.Id
 	JOIN dbo.Roles RL ON DS.RoleId = RL.[Id]

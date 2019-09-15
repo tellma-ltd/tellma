@@ -7,7 +7,7 @@ RETURN
 		SELECT 	
 			CAST(D.[Id] AS NVARCHAR(30)) AS [Id],
 			CAST(D.[DocumentDate] AS NVARCHAR(30)) AS [DocumentDate],
-			D.[DocumentTypeId],
+			D.[DocumentDefinitionId],
 			DT.Prefix + 
 			REPLICATE(N'0', DT.[NumericalLength] - 1 - FLOOR(LOG10(D.SerialNumber))) +
 			CAST(D.SerialNumber AS NVARCHAR(30)) AS [S/N],
@@ -25,7 +25,7 @@ RETURN
 			CAST(DLE.[Quantity] AS MONEY) AS [Quantity],
 			CAST(DLE.[Value] AS MONEY) AS [Value]
 		FROM dbo.Documents D
-		JOIN dbo.DocumentTypes DT ON D.[DocumentTypeId] = DT.[Id]
+		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
 		LEFT JOIN dbo.VoucherBooklets VB ON D.VoucherBookletId = VB.Id
 		LEFT JOIN dbo.DocumentAssignments DA ON D.[Id] = DA.[DocumentId]
 		LEFT JOIN dbo.Agents AG ON DA.AssigneeId = AG.Id
@@ -39,7 +39,7 @@ RETURN
 	SELECT 
 		(CASE WHEN [SortKey] = 1 THEN [Id] ELSE '' END) AS [Id],
 		(CASE WHEN [SortKey] = 1 THEN [DocumentDate] ELSE '' END) AS [DocumentDate],
-		(CASE WHEN [SortKey] = 1 THEN [DocumentTypeId] ELSE '' END) AS [DocumentTypeId],
+		(CASE WHEN [SortKey] = 1 THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentTypeId],
 		(CASE WHEN [SortKey] = 1 THEN [S/N] ELSE '' END) AS [S/N],
 		(CASE WHEN [SortKey] = 1 THEN [State] ELSE '' END) AS [State],
 		(CASE WHEN [SortKey] = 1 THEN [VoucherRef] ELSE '' END) AS [VoucherRef],

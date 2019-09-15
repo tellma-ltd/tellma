@@ -24,7 +24,7 @@ RETURN
 		J.[DocumentDate],
 		J.[SerialNumber],
 		J.[VoucherNumericReference],
-		J.[DocumentTypeId],
+		J.[DocumentDefinitionId],
 		J.[LineTypeId],
 		J.[Direction],
 		J.[AccountId],

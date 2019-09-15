@@ -11,7 +11,7 @@ AS
 		SUM(E.[Direction] * E.[Value]) AS [Value]
 	FROM dbo.[DocumentLineEntries] E
 	JOIN dbo.[Documents] D ON E.[DocumentLineId] = D.[Id]
-	JOIN dbo.[DocumentTypes] DT ON D.[DocumentTypeId] = DT.[Id]
+	JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
 	WHERE D.[State] = N'Posted'
 	GROUP BY
 		E.[AccountId], E.[ResourceId], E.[ResourcePickId], E.[BatchCode]

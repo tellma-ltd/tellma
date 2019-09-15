@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[DocumentTypes] (
+﻿CREATE TABLE [dbo].[DocumentDefinitions] (
 -- table managed by Banan
 -- Note that, in steel production: CTS, HSP, and SM are considered 3 different document types.
 	[Id]						NVARCHAR (50) PRIMARY KEY, -- Kebab case

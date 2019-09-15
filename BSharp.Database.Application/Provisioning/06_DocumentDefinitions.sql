@@ -20,7 +20,7 @@ WHEN NOT MATCHED BY TARGET THEN
     INSERT ([Id], [Description], [Description2], [Description3])
     VALUES (s.[Id], s.[Description], s.[Description2], s.[Description3]);
 
-DECLARE @DocumentTypes TABLE (
+DECLARE @DocumentDefinitions TABLE (
 	[Id]						NVARCHAR (50)	PRIMARY KEY,
 	[IsSourceDocument]			BIT				DEFAULT (1), -- <=> IsVoucherReferenceRequired
 	--[FinalState]				NVARCHAR(30)	DEFAULT N'Posted',
@@ -36,7 +36,7 @@ DECLARE @DocumentTypes TABLE (
 	[FromCustodyAccountLabel]	NVARCHAR (50),
 	[ToCustodyAccountLabel]		NVARCHAR (50)
 );
-INSERT @DocumentTypes ([Id], [Prefix]) VALUES
+INSERT @DocumentDefinitions ([Id], [Prefix]) VALUES
 	-- The list includes the following transaction types, and their variant flavours depending on country and industry:
 	-- lease-in agreement, lease-in receipt, lease-in invoice
 	-- cash sale w/invoice, sales agreement (w/invoice, w/collection, w/issue), cash collection (w/invoice), G/S issue (w/invoice), sales invoice
@@ -75,8 +75,8 @@ INSERT @DocumentTypes ([Id], [Prefix]) VALUES
 	
 	(N'production-events', N'PRD');
 
-MERGE [dbo].[DocumentTypes] AS t
-USING @DocumentTypes AS s
+MERGE [dbo].[DocumentDefinitions] AS t
+USING @DocumentDefinitions AS s
 ON s.Id = t.Id
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
@@ -89,14 +89,14 @@ WHEN NOT MATCHED BY TARGET THEN
 		s.[CustomerLabel], s.[SupplierLabel], s.[EmployeeLabel], s.[FromCustodyAccountLabel], s.[ToCustodyAccountLabel]
 	);
 
-DECLARE @DocumentTypesLineTypes TABLE(
-	[DocumentTypeid]		NVARCHAR (50), 
+DECLARE @DocumentDefinitionsLineTypes TABLE(
+	[DocumentDefinitionid]		NVARCHAR (50), 
 	[LineTypeId]			NVARCHAR (50), 
 	[IsVisibleByDefault]	BIT,
-	PRIMARY KEY([DocumentTypeid], [LineTypeId])
+	PRIMARY KEY([DocumentDefinitionid], [LineTypeId])
 );
 
-INSERT @DocumentTypesLineTypes ([DocumentTypeid], [LineTypeId], [IsVisibleByDefault]) VALUES
+INSERT @DocumentDefinitionsLineTypes ([DocumentDefinitionid], [LineTypeId], [IsVisibleByDefault]) VALUES
 	(N'manual-journals', N'ManualLine', 1),
 	(N'purchasing-international', N'GoodReceiptInTransitWithInvoice', 1),
 

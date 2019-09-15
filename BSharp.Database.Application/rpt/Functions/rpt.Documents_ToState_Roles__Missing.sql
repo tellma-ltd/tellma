@@ -8,7 +8,7 @@ RETURN
 	SELECT T.Id AS DocumentId, T.RoleId FROM (
 		SELECT D.[Id], WS.[RoleId]
 		FROM dbo.Documents D
-		JOIN dbo.Workflows W ON W.[DocumentTypeId] = D.[DocumentTypeId]
+		JOIN dbo.Workflows W ON W.[DocumentTypeId] = D.[DocumentDefinitionId]
 		JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.WorkflowId
 		WHERE W.[ToState] = @ToState
 		AND WS.Criteria IS NULL

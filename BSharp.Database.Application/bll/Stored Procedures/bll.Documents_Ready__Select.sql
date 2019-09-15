@@ -7,7 +7,7 @@ WITH
 RequiredSignatures AS (
 	SELECT D.[Id], WS.[RoleId]
 	FROM dbo.[Documents] D
-	JOIN dbo.[Workflows] W ON D.[DocumentTypeId] = W.[DocumentTypeId]
+	JOIN dbo.[Workflows] W ON D.[DocumentDefinitionId] = W.[DocumentTypeId]
 	JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
 	WHERE D.[Id] IN (SELECT [Id] FROM @Ids)
 	AND W.[ToState] = @ToState
@@ -44,7 +44,7 @@ RequiredSignaturedCount AS (
 	UNION 
 	SELECT [Id]	FROM dbo.Documents
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)
-	AND [DocumentTypeId] NOT IN (
+	AND [DocumentDefinitionId] NOT IN (
 		SELECT [DocumentTypeId] FROM dbo.Workflows
 	)
 

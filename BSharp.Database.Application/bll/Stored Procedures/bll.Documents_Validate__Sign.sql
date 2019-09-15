@@ -19,7 +19,7 @@ SET NOCOUNT ON;
 		WHERE [Id] IN (
 			SELECT D.[Id] 
 			FROM dbo.Documents D
-			JOIN dbo.Workflows W ON W.DocumentTypeId = D.DocumentTypeId
+			JOIN dbo.Workflows W ON W.DocumentTypeId = D.[DocumentDefinitionId]
 			WHERE W.ToState = @ToState AND [IsPaperless] = 1
 		);
 
