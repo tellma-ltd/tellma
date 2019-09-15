@@ -22,7 +22,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services
                 .AddHttpContextAccessor()
-                .AddSingleton<ITenantIdAccessor, TenantIdAccessor>();
+                .AddSingleton<ITenantIdAccessor, TenantIdAccessor>()
+                .AddSingleton<ITenantInfoAccessor, TenantInfoAccessor>();
 
             return services;
         }

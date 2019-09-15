@@ -19,16 +19,18 @@ import { appconfig } from './appconfig';
 import { Agent } from './entities/agent';
 import { Role } from './entities/role';
 import { View } from './entities/view';
-import { Settings, SettingsForClient } from './entities/settings';
+import { Settings } from './entities/settings';
+import { SettingsForClient } from './dto/settings-for-client';
 import { DataWithVersion } from './dto/data-with-version';
-import { PermissionsForClient } from './entities/permission';
+import { PermissionsForClient } from './dto/permissions-for-client';
 import { SaveSettingsResponse } from './dto/save-settings-response';
-import { UserSettingsForClient } from './entities/user';
+import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { IfrsNote } from './entities/ifrs-note';
 import { ProductCategory } from './entities/product-category';
 import { GetEntityResponse } from './dto/get-entity-response';
+import { DefinitionsForClient } from './dto/definitions-for-client';
 
 @Injectable({
   providedIn: 'root'
@@ -255,6 +257,23 @@ export class ApiService {
       getForClient: () => {
         const url = appconfig.apiAddress + `api/permissions/client`;
         const obs$ = this.http.get<DataWithVersion<PermissionsForClient>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+    };
+  }
+
+  public definitionsApi(cancellationToken$: Observable<void>) {
+    return {
+      getForClient: () => {
+        const url = appconfig.apiAddress + `api/definitions/client`;
+        const obs$ = this.http.get<DataWithVersion<DefinitionsForClient>>(url).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);

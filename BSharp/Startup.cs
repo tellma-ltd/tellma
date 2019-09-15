@@ -1,11 +1,11 @@
 ﻿using BSharp.Controllers;
-using BSharp.Services.ModelMetadata;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,7 +76,7 @@ namespace BSharp
 
                 // More custom services
                 services.AddBlobService(_config);
-                services.AddDynamicModelMetadata();
+                services.AddDefinitionsModelMetadata();
                 services.AddGlobalSettingsCache(_config.GetSection("GlobalSettingsCache"));
 
                 // Add the default localization that relies on resource files in /Resources

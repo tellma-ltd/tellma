@@ -3,16 +3,9 @@
 namespace BSharp.Controllers.Dto
 {
     /// <summary>
-    /// Represents all user settings that a user can save: TODO
-    /// </summary>
-    public class UserSettingsForClientForSave
-    {
-    }
-
-    /// <summary>
     /// Represents all user settings in a particular tenant
     /// </summary>
-    public class UserSettingsForClient : UserSettingsForClientForSave
+    public class UserSettingsForClient
     {
         public int? UserId { get; set; }
 

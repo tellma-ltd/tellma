@@ -8,6 +8,8 @@ namespace BSharp.Controllers.Dto
 
         public string ShortCompanyName2 { get; set; }
 
+        public string ShortCompanyName3 { get; set; }
+
         public string PrimaryLanguageId { get; set; }
 
         public string PrimaryLanguageName { get; set; }

@@ -1,4 +1,5 @@
-﻿using BSharp.Data;
+﻿using BSharp.Controllers.Dto;
+using BSharp.Data;
 using BSharp.Services.ApiAuthentication;
 using BSharp.Services.Identity;
 using BSharp.Services.MultiTenancy;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,10 +36,10 @@ namespace BSharp.Controllers
             private readonly ITenantIdAccessor _tenantIdAccessor;
             private readonly IExternalUserAccessor _externalUserAccessor;
             private readonly IServiceProvider _serviceProvider;
-            private readonly IDatabaseModelMetadataCache _definitionsProvider;
+            private readonly IDefinitionsCache _definitionsProvider;
 
             public ApplicationApiFilter(ITenantIdAccessor tenantIdAccessor, ApplicationRepository appRepo, 
-                IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDatabaseModelMetadataCache definitionsProvider)
+                IExternalUserAccessor externalUserAccessor, IServiceProvider serviceProvider, IDefinitionsCache definitionsProvider)
             {
                 _appRepo = appRepo;
                 _tenantIdAccessor = tenantIdAccessor;
@@ -115,16 +117,15 @@ namespace BSharp.Controllers
                 var tenantInfo = await _appRepo.GetTenantInfoAsync();
                 {
                     var databaseVersion = tenantInfo.DefinitionsVersion;
-                    var serverVersion = _definitionsProvider.GetModelMetadataIfCached(tenantId)?.Version;
+                    var serverVersion = _definitionsProvider.GetDefinitionsIfCached(tenantId)?.Version;
 
                     if (serverVersion == null || serverVersion != databaseVersion)
                     {
                         // Update the cache
-                        var definitions = _appRepo.GetModelMetadata();
+                        var definitions = await LoadDefinitions(_appRepo);
                         _definitionsProvider.SetDefinitions(tenantId, definitions);
                     }
                 }
-
 
                 // (6) If any version headers are supplied: examine their freshness
                 {
@@ -172,6 +173,48 @@ namespace BSharp.Controllers
 
                 // Call the Action itself
                 await next();
+            }
+
+            private async Task<DataWithVersion<DefinitionsForClient>> LoadDefinitions(ApplicationRepository appRepo)
+            {
+                // TODO: Replace mock with real
+                var result = new DefinitionsForClient
+                {
+                    Documents = new Dictionary<string, DocumentDefinitionForClient>
+                    {
+                        ["journal-vouchers"] = new DocumentDefinitionForClient
+                        {
+                            IsSourceDocument = true,
+                            FinalState = "Posted",
+
+                            // TODO: implement mock
+                        }
+                    },
+
+                    Resources = new Dictionary<string, ResourceDefinitionForClient>
+                    {
+                        ["inventory"] = new ResourceDefinitionForClient
+                        {
+                            // TODO: implement mock
+                        }
+                    },
+
+                    Lines = new Dictionary<string, LineDefinitionForClient>
+                    {
+                        ["bla"] = new LineDefinitionForClient
+                        {
+                            // TODO: implement mock
+                        }
+                    },
+                };
+
+                await Task.Delay(5); // To simulate database communication
+
+                return new DataWithVersion<DefinitionsForClient>
+                {
+                    Data = result,
+                    Version = "1234567890"
+                };
             }
         }
     }

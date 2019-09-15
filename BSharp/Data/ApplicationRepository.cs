@@ -1,6 +1,5 @@
 ﻿using BSharp.Data.Queries;
 using BSharp.Entities;
-using BSharp.Entities.ModelMetadata;
 using BSharp.Services.ClientInfo;
 using BSharp.Services.Identity;
 using BSharp.Services.Sharding;
@@ -1758,45 +1757,48 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
         #endregion
 
-        #region ModelMetadata
+        //#region ModelMetadata
 
-        public async Task<DatabaseModelMetadata> GetModelMetadata()
-        {
-            // TODO: Replace mock with real
-            var result = new DatabaseModelMetadata
-            {
-                Documents = new Dictionary<string, DocumentModelMetadata>
-                {
-                    ["journal-vouchers"] = new DocumentModelMetadata
-                    {
-                        // TODO: implement mock
-                    }
-                },
+        //public async Task<DatabaseModelMetadata> Definitions_ForClient()
+        //{
+        //    // TODO: Replace mock with real
+        //    var result = new DatabaseModelMetadata
+        //    {
+        //        Documents = new Dictionary<string, DocumentModelMetadata>
+        //        {
+        //            ["journal-vouchers"] = new DocumentModelMetadata
+        //            {
+        //                IsSourceDocument = true,
+        //                FinalState = "Posted",
 
-                Resources = new Dictionary<string, ResourceModelMetadata>
-                {
-                    ["inventory"] = new ResourceModelMetadata
-                    {
-                        // TODO: implement mock
-                    }
-                },
+        //                // TODO: implement mock
+        //            }
+        //        },
 
-                Lines = new Dictionary<string, LineModelMetadata>
-                {
-                    ["bla"] = new LineModelMetadata
-                    {
-                        // TODO: implement mock
-                    }
-                },
+        //        Resources = new Dictionary<string, ResourceModelMetadata>
+        //        {
+        //            ["inventory"] = new ResourceModelMetadata
+        //            {
+        //                // TODO: implement mock
+        //            }
+        //        },
 
-                Version = "1234567890"
-            };
+        //        Lines = new Dictionary<string, LineModelMetadata>
+        //        {
+        //            ["bla"] = new LineModelMetadata
+        //            {
+        //                // TODO: implement mock
+        //            }
+        //        },
 
-            await Task.Delay(5); // To simulate database communication
+        //        Version = "1234567890"
+        //    };
 
-            return result;
-        }
+        //    await Task.Delay(5); // To simulate database communication
 
-        #endregion
+        //    return result;
+        //}
+
+        //#endregion
     }
 }

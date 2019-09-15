@@ -25,11 +25,3 @@ export const Permission_Level = {
   IsActive: 'Permission_IsActive',
   ResendInvitationEmail: 'ResendInvitationEmail',
 };
-
-export class PermissionsForClient {
-  [viewId: string]: ViewPermissionsForClient;
-}
-
-export class ViewPermissionsForClient {
-  [action: string]: boolean;
-}

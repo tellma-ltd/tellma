@@ -4,20 +4,22 @@ import { WorkspaceService } from './workspace.service';
 import { tap, exhaustMap, retry, catchError } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { DataWithVersion } from './dto/data-with-version';
-import { SettingsForClient } from './entities/settings';
-import { PermissionsForClient } from './entities/permission';
+import { SettingsForClient } from './dto/settings-for-client';
+import { PermissionsForClient } from './dto/permissions-for-client';
 import { StorageService } from './storage.service';
 import {
-  handleFreshPermissions, versionStorageKey,
-  storageKey, SETTINGS_PREFIX, PERMISSIONS_PREFIX, USER_SETTINGS_PREFIX, handleFreshUserSettings, handleFreshSettings
+  handleFreshPermissions, versionStorageKey, storageKey,
+  SETTINGS_PREFIX, PERMISSIONS_PREFIX, USER_SETTINGS_PREFIX, DEFINITIONS_PREFIX,
+  handleFreshUserSettings, handleFreshSettings, handleFreshDefinitions
 } from './tenant-resolver.guard';
 import { Router } from '@angular/router';
-import { UserSettingsForClient } from './entities/user';
+import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './cleaner.service';
 import { TranslateService } from '@ngx-translate/core';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { handleFreshGlobalSettings } from './global-resolver.guard';
+import { DefinitionsForClient } from './dto/definitions-for-client';
 
 type VersionStatus = 'Fresh' | 'Stale' | 'Unauthorized';
 
@@ -25,11 +27,13 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
   private notifyRefreshGlobalSettings$: Subject<void>;
   private notifyRefreshSettings$: Subject<void>;
+  private notifyRefreshDefinitions$: Subject<void>;
   private notifyRefreshPermissions$: Subject<void>;
   private notifyRefreshUserSettings$: Subject<void>;
   private cancellationToken$: Subject<void>;
   private globalSettingsApi: () => Observable<DataWithVersion<GlobalSettingsForClient>>;
   private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
+  private definitionsApi: () => Observable<DataWithVersion<DefinitionsForClient>>;
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
   private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
 
@@ -51,6 +55,11 @@ export class RootHttpInterceptor implements HttpInterceptor {
       exhaustMap(() => this.doRefreshSettings())
     ).subscribe();
 
+    this.notifyRefreshDefinitions$ = new Subject<void>();
+    this.notifyRefreshDefinitions$.pipe(
+      exhaustMap(() => this.doRefreshDefinitions())
+    ).subscribe();
+
     this.notifyRefreshPermissions$ = new Subject<void>();
     this.notifyRefreshPermissions$.pipe(
       exhaustMap(() => this.doRefreshPermissions())
@@ -64,8 +73,8 @@ export class RootHttpInterceptor implements HttpInterceptor {
     this.cancellationToken$ = new Subject<void>();
 
     this.globalSettingsApi = this.api.globalSettingsApi(this.cancellationToken$).getForClient;
-    // this.translationsApi = this.api.tranlationsApi(this.cancellationToken$).getForClient;
     this.settingsApi = this.api.settingsApi(this.cancellationToken$).getForClient;
+    this.definitionsApi = this.api.definitionsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
     this.userSettingsApi = this.api.usersApi(this.cancellationToken$).getForClient;
   }
@@ -73,8 +82,8 @@ export class RootHttpInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     // we accumulate all the headers params in these objects
-    const headers: {[key: string]: string} = {};
-    const params: {[key: string]: string} = {};
+    const headers: { [key: string]: string } = {};
+    const params: { [key: string]: string } = {};
 
     // tenant ID
     const tenantId = this.workspace.ws.tenantId;
@@ -110,6 +119,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
       const current = this.workspace.current;
       if (!!current) {
         headers['X-Settings-Version'] = current.settingsVersion || '???';
+        headers['X-Definitions-Version'] = current.definitionsVersion || '???';
         headers['X-Permissions-Version'] = current.permissionsVersion || '???';
         headers['X-User-Settings-Version'] = current.userSettingsVersion || '???';
       }
@@ -174,6 +184,8 @@ export class RootHttpInterceptor implements HttpInterceptor {
             // (2) Delete from local storage everything related
             this.storage.removeItem(storageKey(SETTINGS_PREFIX, tenantId));
             this.storage.removeItem(versionStorageKey(SETTINGS_PREFIX, tenantId));
+            this.storage.removeItem(storageKey(DEFINITIONS_PREFIX, tenantId));
+            this.storage.removeItem(versionStorageKey(DEFINITIONS_PREFIX, tenantId));
             this.storage.removeItem(storageKey(PERMISSIONS_PREFIX, tenantId));
             this.storage.removeItem(versionStorageKey(PERMISSIONS_PREFIX, tenantId));
             this.storage.removeItem(storageKey(USER_SETTINGS_PREFIX, tenantId));
@@ -181,6 +193,14 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
             // (3) Take the user to unauthorized screen
             this.router.navigate(['root', 'error', 'unauthorized']);
+          }
+        }
+
+        // definitions
+        {
+          const v = e.headers.get('x-definitions-version') as VersionStatus;
+          if (v === 'Stale') {
+            this.refreshDefinitions();
           }
         }
 
@@ -222,6 +242,32 @@ export class RootHttpInterceptor implements HttpInterceptor {
     return obs$;
   }
 
+  refreshDefinitions() {
+    this.notifyRefreshDefinitions$.next();
+  }
+
+  doRefreshDefinitions = () => {
+    const current = this.workspace.current;
+    const tenantId = this.workspace.ws.tenantId;
+
+    const obs$ = this.definitionsApi().pipe(
+      tap(result => {
+        // Cache the definitions and set them in the workspace
+        handleFreshDefinitions(result, tenantId, current, this.storage);
+      }),
+      catchError((err: { status: number, error: any }) => {
+        if (err.status === 403) {
+          // Delete all cached information
+          delete this.workspace.ws.tenants[tenantId];
+        } else {
+          return throwError(err);
+        }
+      }),
+      retry(2)
+    );
+
+    return obs$;
+  }
 
   refreshSettings() {
     this.notifyRefreshSettings$.next();
