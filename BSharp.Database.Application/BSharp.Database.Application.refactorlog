@@ -42,4 +42,25 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[DefinitionsVersion]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1989e5ac-29b3-408a-a7ad-f1e702488be0" ChangeDateTime="09/15/2019 16:58:50">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[Description]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DescriptionSingular]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c0a1e34a-a01e-4763-85c2-ac86b86802c5" ChangeDateTime="09/15/2019 16:59:04">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[Description2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DescriptionSingular2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d349a30c-3d5a-4ebf-894f-2592c9170a69" ChangeDateTime="09/15/2019 16:59:18">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[Description3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DescriptionSingular3]" />
+  </Operation>
 </Operations>
