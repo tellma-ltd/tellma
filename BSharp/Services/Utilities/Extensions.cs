@@ -27,6 +27,14 @@ namespace BSharp.Services.Utilities
         }
 
         /// <summary>
+        /// Checks whether a certain type has a certain property name defined
+        /// </summary>
+        public static bool IsSameOrSubClassOf<TParent>(this Type child)
+        {
+            return typeof(TParent) == child || child.IsSubclassOf(typeof(TParent));
+        }
+
+        /// <summary>
         /// Retrieves the username of the authenticated claims principal
         /// </summary>
         public static string ExternalUserId(this ClaimsPrincipal user)

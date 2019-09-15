@@ -3,16 +3,18 @@ import { MeasurementUnit } from './entities/measurement-unit';
 import { Injectable } from '@angular/core';
 import { Role } from './entities/role';
 import { View } from './entities/view';
-import { User, UserSettingsForClient } from './entities/user';
+import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { EntityWithKey } from './entities/base/entity-with-key';
-import { SettingsForClient } from './entities/settings';
-import { PermissionsForClient } from './entities/permission';
+import { SettingsForClient } from './dto/settings-for-client';
+import { PermissionsForClient } from './dto/permissions-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { IfrsNote } from './entities/ifrs-note';
 import { ProductCategory } from './entities/product-category';
 import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
+import { User } from './entities/user';
+import { DefinitionsForClient } from './dto/definitions-for-client';
 
 export enum MasterStatus {
 
@@ -141,6 +143,9 @@ export class TenantWorkspace {
 
   userSettings: UserSettingsForClient;
   userSettingsVersion: string;
+
+  definitions: DefinitionsForClient;
+  definitionsVersion: string;
 
   // Keeps the state of every master-details pair in screen mode
   mdState: { [key: string]: MasterDetailsStore };

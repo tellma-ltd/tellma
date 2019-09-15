@@ -2,7 +2,7 @@
 import { EntityForSave } from './base/entity-for-save';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { SettingsForClient } from './settings';
+import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 

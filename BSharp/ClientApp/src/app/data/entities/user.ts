@@ -1,10 +1,10 @@
 // tslint:disable:variable-name
 import { RoleMembership, RoleMembershipForSave } from './role-membership';
-import { SettingsForClient } from './settings';
 import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
+import { SettingsForClient } from '../dto/settings-for-client';
 
 export class UserForSave<TRoleMembership = RoleMembershipForSave> extends EntityForSave {
   Email: string;
@@ -22,17 +22,6 @@ export class User extends UserForSave<RoleMembership> {
   CreatedById: number | string;
   ModifiedAt: string;
   ModifiedById: number | string;
-}
-
-export class UserSettingsForClientForSave {
-}
-
-export class UserSettingsForClient {
-  UserId: number;
-  ImageId: string;
-  Name: string;
-  Name2: string;
-  CustomSettings: { [key: string]: string };
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

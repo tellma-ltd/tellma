@@ -1,9 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BSharp.Services.MultiTenancy
 {
@@ -41,19 +36,6 @@ namespace BSharp.Services.MultiTenancy
             {
                 throw new MultitenancyException($"The required header '{REQUEST_HEADER_TENANT_ID}' was not supplied");
             }
-        }
-
-        public void TryGetTenantId(out int? tenantId)
-        {
-            try
-            {
-                tenantId = GetTenantId();
-                return;
-
-            }
-            catch { }
-
-            tenantId = null;
         }
     }
 }

@@ -10,7 +10,7 @@
 	[TernaryLanguageId]			NVARCHAR (255) NULL,
 	[TernaryLanguageSymbol]		NVARCHAR (255) NULL,
 	[BrandColor]				NVARCHAR (255) NULL,
-	[ViewsAndSpecsVersion]		UNIQUEIDENTIFIER NOT NULL,
+	[DefinitionsVersion]		UNIQUEIDENTIFIER NOT NULL,
 	[SettingsVersion]			UNIQUEIDENTIFIER NOT NULL,
 
 	[FunctionalCurrency]		NCHAR(3),

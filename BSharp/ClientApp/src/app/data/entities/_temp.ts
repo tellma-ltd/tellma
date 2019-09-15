@@ -3,13 +3,13 @@ import { EntityWithKey } from './base/entity-with-key';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
-import { SettingsForClient } from './settings';
+import { SettingsForClient } from '../dto/settings-for-client';
 
 export class VoucherBookletForSave extends EntityWithKey {
     Name: string;
     Name2: string;
     Name3: string;
-    VoucherTypeId: number | string;
+    VoucherTypeId: string;
     StringPrefix: string;
     NumericLength: number;
     RangeStarts: number;

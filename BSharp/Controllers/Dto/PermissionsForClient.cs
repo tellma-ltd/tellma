@@ -11,9 +11,4 @@ namespace BSharp.Controllers.Dto
     {
         // ViewId -> Action -> True
     }
-
-    public class ViewPermissionsForClient : Dictionary<string, bool>
-    {
-        // Action -> True
-    }
 }

@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-import { SettingsForClient } from './settings';
+import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';

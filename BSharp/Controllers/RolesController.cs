@@ -18,7 +18,7 @@ namespace BSharp.Controllers
     [ApplicationApi]
     public class RolesController : CrudControllerBase<RoleForSave, Role, int>
     {
-        private readonly IModelMetadataProvider _metadataProvider;
+        private readonly Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider _metadataProvider;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
@@ -29,7 +29,7 @@ namespace BSharp.Controllers
             ILogger<RolesController> logger,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
-            IModelMetadataProvider metadataProvider) : base(logger, localizer)
+            Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider metadataProvider) : base(logger, localizer)
         {
             _logger = logger;
             _localizer = localizer;

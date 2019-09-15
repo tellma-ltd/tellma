@@ -2,11 +2,11 @@
 import { EntityForSave } from './base/entity-for-save';
 import { Permission, PermissionForSave } from './permission';
 import { RoleMembershipForSave, RoleMembership } from './role-membership';
-import { SettingsForClient } from './settings';
 import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
+import { SettingsForClient } from '../dto/settings-for-client';
 
 export class RoleForSave<TPermission = PermissionForSave,
     TRoleMembership = RoleMembershipForSave> extends EntityForSave {

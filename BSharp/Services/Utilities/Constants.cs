@@ -28,7 +28,7 @@ namespace BSharp.Services.Utilities
         public const int TokenExpiryInDays = 3;
 
         // Indicates a hidden field when exporting to Excel
-        public const string Hidden = "<HIDDEN-FIELD>";
+        public const string HIDDEN_FIELD = "<HIDDEN-FIELD>";
 
         // Indicates a restricted
         public const string Restricted = "*******";

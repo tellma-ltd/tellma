@@ -9,7 +9,7 @@
         public string ShortCompanyName { get; set; }
         public string ShortCompanyName2 { get; set; }
         public string ShortCompanyName3 { get; set; }
-        public string ViewsAndSpecsVersion { get; set; }
+        public string DefinitionsVersion { get; set; }
         public string SettingsVersion { get; set; }
         public string PrimaryLanguageId { get; set; }
         public string PrimaryLanguageSymbol { get; set; }

@@ -3,21 +3,30 @@ import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/ro
 import { Observable, Subject, forkJoin, of } from 'rxjs';
 import { WorkspaceService, TenantWorkspace } from './workspace.service';
 import { StorageService } from './storage.service';
-import { SettingsForClient } from './entities/settings';
+import { SettingsForClient } from './dto/settings-for-client';
 import { ApiService } from './api.service';
 import { DataWithVersion } from './dto/data-with-version';
-import { PermissionsForClient } from './entities/permission';
+import { PermissionsForClient } from './dto/permissions-for-client';
 import { tap, map, catchError, finalize, retry } from 'rxjs/operators';
 import { CanActivate } from '@angular/router';
-import { UserSettingsForClient } from './entities/user';
+import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { ProgressOverlayService } from './progress-overlay.service';
+import { DefinitionsForClient } from './dto/definitions-for-client';
 
 export const SETTINGS_PREFIX = 'settings';
+export const DEFINITIONS_PREFIX = 'definitions';
 export const PERMISSIONS_PREFIX = 'permissions';
 export const USER_SETTINGS_PREFIX = 'user_settings';
 
+// Those are incremented when the structure of the data changes
+export const SETTINGS_METAVERSION = '1.0';
+export const DEFINITIONS_METAVERSION = '1.0';
+export const PERMISSIONS_METAVERSION = '1.0';
+export const USER_SETTINGS_METAVERSION = '1.0';
+
 export function storageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}`; }
 export function versionStorageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}_version`; }
+export function metaVersionStorageKey(prefix: string, tenantId: number) { return `${prefix}_${tenantId}_metaversion`; }
 
 export function handleFreshSettings(
   result: DataWithVersion<SettingsForClient>,
@@ -26,11 +35,30 @@ export function handleFreshSettings(
   const settings = result.Data;
   const version = result.Version;
   const prefix = SETTINGS_PREFIX;
+  const metaversion = SETTINGS_METAVERSION;
   storage.setItem(storageKey(prefix, tenantId), JSON.stringify(settings));
   storage.setItem(versionStorageKey(prefix, tenantId), version);
+  storage.setItem(metaVersionStorageKey(prefix, tenantId), metaversion);
 
   tws.settings = settings;
   tws.settingsVersion = version;
+  tws.notifyStateChanged();
+}
+
+export function handleFreshDefinitions(
+  result: DataWithVersion<DefinitionsForClient>,
+  tenantId: number, tws: TenantWorkspace, storage: StorageService) {
+
+  const definitions = result.Data;
+  const version = result.Version;
+  const prefix = DEFINITIONS_PREFIX;
+  const metaversion = DEFINITIONS_METAVERSION;
+  storage.setItem(storageKey(prefix, tenantId), JSON.stringify(definitions));
+  storage.setItem(versionStorageKey(prefix, tenantId), version);
+  storage.setItem(metaVersionStorageKey(prefix, tenantId), metaversion);
+
+  tws.definitions = definitions;
+  tws.definitionsVersion = version;
   tws.notifyStateChanged();
 }
 
@@ -41,8 +69,10 @@ export function handleFreshPermissions(
   const permissions = result.Data;
   const version = result.Version;
   const prefix = PERMISSIONS_PREFIX;
+  const metaversion = PERMISSIONS_METAVERSION;
   storage.setItem(storageKey(prefix, tenantId), JSON.stringify(permissions));
   storage.setItem(versionStorageKey(prefix, tenantId), version);
+  storage.setItem(metaVersionStorageKey(prefix, tenantId), metaversion);
 
   tws.permissions = permissions;
   tws.permissionsVersion = version;
@@ -56,8 +86,10 @@ export function handleFreshUserSettings(
   const userSettings = result.Data;
   const version = result.Version;
   const prefix = USER_SETTINGS_PREFIX;
+  const metaversion = USER_SETTINGS_METAVERSION;
   storage.setItem(storageKey(prefix, tenantId), JSON.stringify(userSettings));
   storage.setItem(versionStorageKey(prefix, tenantId), version);
+  storage.setItem(metaVersionStorageKey(prefix, tenantId), metaversion);
 
   tws.userSettings = userSettings;
   tws.userSettingsVersion = version;
@@ -74,6 +106,7 @@ export class TenantResolverGuard implements CanActivate {
 
   private cancellationToken$: Subject<void>;
   private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
+  private definitionsApi: () => Observable<DataWithVersion<DefinitionsForClient>>;
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
   private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
   private ping: () => Observable<any>;
@@ -86,6 +119,7 @@ export class TenantResolverGuard implements CanActivate {
     const settingsApi = this.api.settingsApi(this.cancellationToken$);
     this.settingsApi = settingsApi.getForClient;
     this.ping = settingsApi.ping;
+    this.definitionsApi = this.api.definitionsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
     this.userSettingsApi = this.api.usersApi(this.cancellationToken$).getForClient;
   }
@@ -108,7 +142,8 @@ export class TenantResolverGuard implements CanActivate {
           const prefix = SETTINGS_PREFIX;
           const cachedSettings = JSON.parse(this.storage.getItem(storageKey(prefix, tenantId))) as SettingsForClient;
           const cachedSettingsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
-          if (!!cachedSettings) {
+          const cachedSettingsMetaVersion = this.storage.getItem(metaVersionStorageKey(prefix, tenantId));
+          if (!!cachedSettings && cachedSettingsMetaVersion === SETTINGS_METAVERSION) {
             current.settings = cachedSettings;
             current.settingsVersion = cachedSettingsVersion || '???';
           }
@@ -118,6 +153,24 @@ export class TenantResolverGuard implements CanActivate {
           getSettingsFromStorage();
         }
 
+        // check definitions
+        const getDefinitionsFromStorage = () => {
+
+          // Try to retrieve the definitions from local storage
+          const prefix = DEFINITIONS_PREFIX;
+          const cachedDefinitions = JSON.parse(this.storage.getItem(storageKey(prefix, tenantId))) as DefinitionsForClient;
+          const cachedDefinitionsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
+          const cachedDefinitionsMetaVersion = this.storage.getItem(metaVersionStorageKey(prefix, tenantId));
+          if (!!cachedDefinitions && cachedDefinitionsMetaVersion === DEFINITIONS_METAVERSION) {
+            current.definitions = cachedDefinitions;
+            current.definitionsVersion = cachedDefinitionsVersion || '???';
+          }
+        };
+
+        if (!current.definitions) {
+          getDefinitionsFromStorage();
+        }
+
         // check permissions
         const getPermissionsFromStorage = () => {
 
@@ -125,7 +178,8 @@ export class TenantResolverGuard implements CanActivate {
           const prefix = PERMISSIONS_PREFIX;
           const cachedPermissions = JSON.parse(this.storage.getItem(storageKey(prefix, tenantId))) as PermissionsForClient;
           const cachedPermissionsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
-          if (!!cachedPermissions) {
+          const cachedPermissionsMetaVersion = this.storage.getItem(metaVersionStorageKey(prefix, tenantId));
+          if (!!cachedPermissions && cachedPermissionsMetaVersion === PERMISSIONS_METAVERSION) {
             current.permissions = cachedPermissions;
             current.permissionsVersion = cachedPermissionsVersion || '???';
           }
@@ -143,7 +197,9 @@ export class TenantResolverGuard implements CanActivate {
           const prefix = USER_SETTINGS_PREFIX;
           const cachedUserSettings = JSON.parse(this.storage.getItem(storageKey(prefix, tenantId))) as UserSettingsForClient;
           const cachedUserSettingsVersion = this.storage.getItem(versionStorageKey(prefix, tenantId));
-          if (!!cachedUserSettings) {
+          const cachedUserSettingsMetaVersion = this.storage.getItem(metaVersionStorageKey(prefix, tenantId));
+          if (!!cachedUserSettings && cachedUserSettingsMetaVersion === USER_SETTINGS_METAVERSION) {
+
             current.userSettings = cachedUserSettings;
             current.userSettingsVersion = cachedUserSettingsVersion || '???';
           }
@@ -168,6 +224,14 @@ export class TenantResolverGuard implements CanActivate {
             }
           }
 
+          // definitions
+          const definitionsKey = versionStorageKey(DEFINITIONS_PREFIX, tenantId);
+          if (e.key === definitionsKey) {
+            if (e.newValue !== current.definitionsVersion) {
+              getDefinitionsFromStorage();
+            }
+          }
+
           // permissions
           const permissionsKey = versionStorageKey(PERMISSIONS_PREFIX, tenantId);
           if (e.key === permissionsKey) {
@@ -186,9 +250,8 @@ export class TenantResolverGuard implements CanActivate {
 
         });
 
-
         // IF this is a new browser/machine, need to get the globals from the backend
-        if (current.settings && current.permissions && current.userSettings) {
+        if (current.settings && current.definitionsVersion && current.permissions && current.userSettings) {
           // In case our cached globals are stale this will trigger their refresh
           this.ping().pipe(retry(2)).subscribe();
 
@@ -199,13 +262,14 @@ export class TenantResolverGuard implements CanActivate {
           this.progress.startAsyncOperation(key, 'LoadingCompanySettings'); // To show the rotator
 
           // using forkJoin is recommended for running HTTP calls in parallel
-          const obs$ = forkJoin(this.settingsApi(), this.permissionsApi(), this.userSettingsApi()).pipe(
+          const obs$ = forkJoin(this.settingsApi(), this.definitionsApi(), this.permissionsApi(), this.userSettingsApi()).pipe(
             tap(result => {
               this.progress.completeAsyncOperation(key);
               // cache the settings and set it in the workspace
               handleFreshSettings(result[0], tenantId, current, this.storage);
-              handleFreshPermissions(result[1], tenantId, current, this.storage);
-              handleFreshUserSettings(result[2], tenantId, current, this.storage);
+              handleFreshDefinitions(result[1], tenantId, current, this.storage);
+              handleFreshPermissions(result[2], tenantId, current, this.storage);
+              handleFreshUserSettings(result[3], tenantId, current, this.storage);
             }),
             map(() => true),
             catchError((err: { status: number, error: any }) => {

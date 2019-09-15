@@ -254,28 +254,5 @@ namespace BSharp.Controllers
                     _localizer["Error_TheField0MustBeAValidColorFormat", _localizer["Settings_BrandColor"]]);
             }
         }
-
-
-        //// Implementation of ReadControllerBase<Settings>
-
-        //protected override IRepository GetRepository()
-        //{
-        //    return _repo;
-        //}
-
-        //protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
-        //{
-        //    return _repo.UserPermissions(action, VIEW);
-        //}
-
-        //protected override Query<Settings> Search(Query<Settings> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
-        //{
-        //    return query;
-        //}
-
-        //protected override OrderByExpression DefaultOrderBy()
-        //{
-        //    return OrderByExpression.Parse(nameof(Settings.ShortCompanyName));
-        //}
     }
 }

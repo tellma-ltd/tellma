@@ -3,7 +3,7 @@ import { EntityWithKey } from './base/entity-with-key';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
-import { SettingsForClient } from './settings';
+import { SettingsForClient } from '../dto/settings-for-client';
 import { supportedCultures } from '../supported-cultures';
 
 export class AgentForSave extends EntityWithKey {

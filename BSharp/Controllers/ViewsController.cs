@@ -20,13 +20,13 @@ namespace BSharp.Controllers
     public class ViewsController : ReadEntitiesControllerBase<View, string>
     {
         private readonly ApplicationRepository _repo;
-        private readonly IModelMetadataProvider _metadataProvider;
+        private readonly Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider _metadataProvider;
         private readonly ILogger<ViewsController> _logger;
         private readonly IStringLocalizer _localizer;
 
         private string VIEW => "views";
 
-        public ViewsController(ApplicationRepository repo, IModelMetadataProvider metadataProvider, 
+        public ViewsController(ApplicationRepository repo, Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider metadataProvider, 
             ILogger<ViewsController> logger,
             IStringLocalizer<Strings> localizer) : base(logger, localizer)
         {

@@ -35,6 +35,13 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[DocumentDefinitionId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="01e8300b-0b99-4f79-bdc3-74ede5667747" ChangeDateTime="09/15/2019 10:41:07">
+    <Property Name="ElementName" Value="[dbo].[Settings].[ViewsAndSpecsVersion]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Settings]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefinitionsVersion]" />
+  </Operation>
   <Operation Name="Rename Refactor" Key="1989e5ac-29b3-408a-a7ad-f1e702488be0" ChangeDateTime="09/15/2019 16:58:50">
     <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[Description]" />
     <Property Name="ElementType" Value="SqlSimpleColumn" />

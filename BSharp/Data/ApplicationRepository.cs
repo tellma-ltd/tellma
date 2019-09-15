@@ -271,13 +271,15 @@ namespace BSharp.Data
                     case nameof(IfrsAccountClassification):
                         return new SqlSource(@"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level],
 	(SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([Q].[Node]) = 1) As [ActiveChildCount],
-    (SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount]
+    (SELECT COUNT(*) FROM [dbo].[IfrsAccountClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount],
+    (SELECT [Id] FROM [dbo].[IfrsAccountClassifications] WHERE [Q].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                     case nameof(IfrsEntryClassification):
-                        return new SqlSource(@"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level],
+                        return new SqlSource(@"(SELECT [Q].*, [Q].[Node].GetLevel() AS [Level], 
 	(SELECT COUNT(*) FROM [dbo].[IfrsEntryClassifications] WHERE [IsActive] = 1 AND [Node].IsDescendantOf([Q].[Node]) = 1) As [ActiveChildCount],
-    (SELECT COUNT(*) FROM [dbo].[IfrsEntryClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount]
+    (SELECT COUNT(*) FROM [dbo].[IfrsEntryClassifications] WHERE [Node].IsDescendantOf([Q].[Node]) = 1) As [ChildCount],
+    (SELECT [Id] FROM [dbo].[IfrsEntryClassifications] WHERE [Q].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
 
@@ -385,7 +387,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                             ShortCompanyName = reader.String(i++),
                             ShortCompanyName2 = reader.String(i++),
                             ShortCompanyName3 = reader.String(i++),
-                            ViewsAndSpecsVersion = reader.Guid(i++)?.ToString(),
+                            DefinitionsVersion = reader.Guid(i++)?.ToString(),
                             SettingsVersion = reader.Guid(i++)?.ToString(),
                             PrimaryLanguageId = reader.String(i++),
                             PrimaryLanguageSymbol = reader.String(i++),
@@ -1756,5 +1758,49 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
         }
 
         #endregion
+
+        //#region ModelMetadata
+
+        //public async Task<DatabaseModelMetadata> Definitions_ForClient()
+        //{
+        //    // TODO: Replace mock with real
+        //    var result = new DatabaseModelMetadata
+        //    {
+        //        Documents = new Dictionary<string, DocumentModelMetadata>
+        //        {
+        //            ["journal-vouchers"] = new DocumentModelMetadata
+        //            {
+        //                IsSourceDocument = true,
+        //                FinalState = "Posted",
+
+        //                // TODO: implement mock
+        //            }
+        //        },
+
+        //        Resources = new Dictionary<string, ResourceModelMetadata>
+        //        {
+        //            ["inventory"] = new ResourceModelMetadata
+        //            {
+        //                // TODO: implement mock
+        //            }
+        //        },
+
+        //        Lines = new Dictionary<string, LineModelMetadata>
+        //        {
+        //            ["bla"] = new LineModelMetadata
+        //            {
+        //                // TODO: implement mock
+        //            }
+        //        },
+
+        //        Version = "1234567890"
+        //    };
+
+        //    await Task.Delay(5); // To simulate database communication
+
+        //    return result;
+        //}
+
+        //#endregion
     }
 }

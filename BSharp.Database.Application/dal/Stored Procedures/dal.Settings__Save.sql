@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[Settings__Save]
 	@ShortCompanyName NVARCHAR(255),
 	@PrimaryLanguageId NVARCHAR(255),
-	@ViewsAndSpecsVersion UNIQUEIDENTIFIER,
+	@DefinitionsVersion UNIQUEIDENTIFIER,
 	@SettingsVersion UNIQUEIDENTIFIER,
 	@FunctionalCurrency NCHAR(3)
 AS
@@ -14,11 +14,11 @@ IF Exists(SELECT * FROM dbo.Settings)
 	SET 
 		[ShortCompanyName]		= @ShortCompanyName,
 		[PrimaryLanguageId]		= @PrimaryLanguageId,
-		[ViewsAndSpecsVersion]	= @ViewsAndSpecsVersion,
+		[DefinitionsVersion]	= @DefinitionsVersion,
 		[SettingsVersion]		= @SettingsVersion,
 		[FunctionalCurrency]	= @FunctionalCurrency,
 		[ModifiedAt]			= @Now,
 		[ModifiedById]			= @UserId
 ELSE
-	INSERT dbo.[Settings] ([ShortCompanyName], [PrimaryLanguageId], [ViewsAndSpecsVersion], [SettingsVersion], [FunctionalCurrency])
-	VALUES(@ShortCompanyName, @PrimaryLanguageId, @ViewsAndSpecsVersion, @SettingsVersion, @FunctionalCurrency);
+	INSERT dbo.[Settings] ([ShortCompanyName], [PrimaryLanguageId], [DefinitionsVersion], [SettingsVersion], [FunctionalCurrency])
+	VALUES(@ShortCompanyName, @PrimaryLanguageId, @DefinitionsVersion, @SettingsVersion, @FunctionalCurrency);

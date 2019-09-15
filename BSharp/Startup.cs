@@ -1,11 +1,11 @@
 ﻿using BSharp.Controllers;
-using BSharp.Services.ModelMetadata;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,7 +76,7 @@ namespace BSharp
 
                 // More custom services
                 services.AddBlobService(_config);
-                services.AddDynamicModelMetadata();
+                services.AddDefinitionsModelMetadata();
                 services.AddGlobalSettingsCache(_config.GetSection("GlobalSettingsCache"));
 
                 // Add the default localization that relies on resource files in /Resources
@@ -90,7 +90,7 @@ namespace BSharp
                 {
                     // This filter checks version headers (e.g. x-translations-version) supplied by the client and efficiently
                     // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
-                    opt.Filters.Add(typeof(CheckGlobalVersionsFilter));
+                    opt.Filters.Add(typeof(GlobalFilter));
                 })
                     .AddDataAnnotationsLocalization(opt =>
                     {
@@ -239,6 +239,7 @@ namespace BSharp
                         .WithExposedHeaders("x-image-id")
                         .WithExposedHeaders("x-settings-version")
                         .WithExposedHeaders("x-permissions-version")
+                        .WithExposedHeaders("x-definitions-version")
                         .WithExposedHeaders("x-user-settings-version")
                         .WithExposedHeaders("x-global-settings-version");
                     });
