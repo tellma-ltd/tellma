@@ -23,6 +23,7 @@
 	[DocumentLookup3Id]						INT,
 	[DocumentText1]							NVARCHAR (255),
 	[DocumentText2]							NVARCHAR (255),
+	[SortKey]								DECIMAL (9,4)	NOT NULL,
 	-- Additional properties to simplify data entry. No report should be based on them!!!
 	[Memo]									NVARCHAR (255),
 	[MemoIsCommon]							BIT				DEFAULT 1,

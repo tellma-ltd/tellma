@@ -32,6 +32,8 @@
 	-- The resource being tracked in the account
 	[IsMultiResource]							BIT					NOT NULL DEFAULT 1,
 	[ResourceId]								INT					,--DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_Accounts__DefaultResourceId] REFERENCES [dbo].[Resources] ([Id]),
+	-- The measures being tracked by the account, over and above the value in functional currency
+		
 	-- To transfer a document from requested to authorized, we need an evidence that the responsible actor
 	-- has authorized it. If responsibility changes frequently, we use roles. 
 	-- However, if responsibility center can be external to account, we may have to move these
