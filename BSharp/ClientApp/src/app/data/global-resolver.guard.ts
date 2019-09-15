@@ -11,6 +11,8 @@ import { ProgressOverlayService } from './progress-overlay.service';
 
 export const GLOBAL_SETTINGS_KEY = 'global_settings';
 export const GLOBAL_SETTINGS_VERSION_KEY = 'global_settings_version';
+export const GLOBAL_SETTINGS_METAVERSION_KEY = 'global_settings_metaversion';
+export const GLOBAL_SETTINGS_METAVERSION = '1.0';
 
 export function handleFreshGlobalSettings(
   result: DataWithVersion<GlobalSettingsForClient>,
@@ -21,6 +23,7 @@ export function handleFreshGlobalSettings(
   const key = GLOBAL_SETTINGS_KEY;
   storage.setItem(key, JSON.stringify(globalSettings));
   storage.setItem(GLOBAL_SETTINGS_VERSION_KEY, version);
+  storage.setItem(GLOBAL_SETTINGS_METAVERSION_KEY, GLOBAL_SETTINGS_METAVERSION);
 
   tws.globalSettings = globalSettings;
   tws.globalSettingsVersion = version;
@@ -59,7 +62,8 @@ export class GlobalResolverGuard implements CanActivate {
         const versionKey = GLOBAL_SETTINGS_VERSION_KEY;
         const cachedGlobalSettings = JSON.parse(this.storage.getItem(key)) as GlobalSettingsForClient;
         const cachedGlobalSettingsVersion = this.storage.getItem(versionKey);
-        if (!!cachedGlobalSettings) {
+        const cachedGlobalSettingsMetaVersion = this.storage.getItem(GLOBAL_SETTINGS_METAVERSION_KEY);
+        if (!!cachedGlobalSettings && cachedGlobalSettingsMetaVersion === GLOBAL_SETTINGS_METAVERSION) {
           wss.globalSettings = cachedGlobalSettings;
           wss.globalSettingsVersion = cachedGlobalSettingsVersion || '???';
           wss.notifyStateChanged();
