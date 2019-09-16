@@ -5,7 +5,7 @@
 AS
 SET NOCOUNT ON;
 DECLARE @FilledEntries [dbo].[DocumentLineEntryList];
-DECLARE @FunctionalCurrencyId INT = CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId'));
+DECLARE @FunctionalCurrencyId INT = CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId'));
 
 INSERT INTO @FilledEntries
 SELECT * FROM @Entries;
@@ -25,20 +25,6 @@ FROM @FilledEntries E
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE A.AgentId IS NOT NULL
 
--- copy quantity to the corresponding measure
-UPDATE E
-SET
-	E.[MonetaryValue]	= CASE WHEN R.[UnitId] = R.[CurrencyId]		THEN E.[Quantity] ELSE E.[MonetaryValue] END,
-	E.[Mass]			= CASE WHEN R.[UnitId] = R.[MassUnitId]		THEN E.[Quantity] ELSE E.[Mass] END,
-	E.[Volume]			= CASE WHEN R.[UnitId] = R.[VolumeUnitId]	THEN E.[Quantity] ELSE E.[Volume] END,
-	E.[Area]			= CASE WHEN R.[UnitId] = R.[AreaUnitId]		THEN E.[Quantity] ELSE E.[Area] END,
-	E.[Length]			= CASE WHEN R.[UnitId] = R.[LengthUnitId]	THEN E.[Quantity] ELSE E.[Length] END,
-	E.[Time]			= CASE WHEN R.[UnitId] = R.[TimeUnitId]		THEN E.[Quantity] ELSE E.[Time] END,
-	E.[Count]			= CASE WHEN R.[UnitId] = R.[CountUnitId]	THEN E.[Quantity] ELSE E.[Count] END
-FROM @FilledEntries E
-JOIN dbo.Resources R ON E.ResourceId = R.Id
-WHERE  R.[UnitId] = R.[CurrencyId];
-
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
 SET E.[Value] = E.[MonetaryValue]
@@ -46,8 +32,10 @@ FROM @FilledEntries E
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
-WHERE R.UnitId = @FunctionalCurrencyId
-AND (E.[Value] <> E.[MonetaryValue]);
+WHERE
+	R.CurrencyId IS NOT NULL
+	AND R.CurrencyId = @FunctionalCurrencyId
+	AND (E.[Value] <> E.[MonetaryValue]);
 
 -- for financial amounts in 
 UPDATE E 
@@ -56,9 +44,10 @@ FROM @FilledEntries E
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
-WHERE R.UnitId IN (SELECT [Id] FROM dbo.MeasurementUnits WHERE UnitType = N'MonetaryValue')
-AND R.UnitId <> @FunctionalCurrencyId
-AND (E.[Value] <> dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue]));
+WHERE
+	R.CurrencyId IS NOT NULL
+	AND R.CurrencyId <> @FunctionalCurrencyId
+	AND (E.[Value] <> dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue]));
 
 -- if one value only is zero at the line level, set it to the sum of the rest. Otherwise, the accountant has to set it.
 WITH SingletonLines

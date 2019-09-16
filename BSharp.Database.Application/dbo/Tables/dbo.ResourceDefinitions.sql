@@ -1,8 +1,10 @@
 ﻿CREATE TABLE [dbo].[ResourceDefinitions]
 (
-	[Id]							NVARCHAR(255)				NOT NULL PRIMARY KEY,
-	[Name]							NVARCHAR(255)	NOT NULL,
-	[Code]							NVARCHAR(255)	NOT NULL DEFAULT N'', -- unique per resource type
+	[Id]							NVARCHAR (255)				NOT NULL PRIMARY KEY,
+	[Name]							NVARCHAR (255)	NOT NULL,
+	[Code]							NVARCHAR (255)	NOT NULL DEFAULT N'', -- unique per resource type
+	--
+	[IfrsResourceClassficationId]	NVARCHAR (255), -- FK IfrsResourceClassifications
 	-- Specs
 	[HasMonetaryAmount]				BIT						DEFAULT 0,
 	[HasMass]						BIT						DEFAULT 0,

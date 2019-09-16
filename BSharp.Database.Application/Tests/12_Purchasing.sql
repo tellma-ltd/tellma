@@ -74,24 +74,24 @@ BEGIN -- Inserting
 
 	WITH CompactLines AS (
 		SELECT [AccountId], [IfrsEntryClassificationId], [ResourceId],
-			SUM([Direction] * [Quantity]) AS [Quantity],
-			--SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
-			--SUM([Direction] * [Mass]) AS [Mass],
+			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
+			SUM([Direction] * [Mass]) AS [Mass],
 			SUM([Direction] * [Value]) AS [Value]
 		FROM DocumentLineEntries
 		GROUP BY [AccountId], [IfrsEntryClassificationId], [ResourceId]
 	)
 	SELECT A.[Name] AS [Account], IEC.Label AS [Note], R.[Name] AS [Resource],
-	CAST([Quantity] AS MONEY) AS [Quantity], MU.[Name] AS [Unit],
-	--CAST([MonetaryValue] AS MONEY) AS [MoneyAmount],
-	--CAST([Mass] AS MONEY) AS [Mass],
+	MUM.[Name] AS [MassUnit], MUV.[Name] AS [VolumeUnit],
+	CAST([MonetaryValue] AS MONEY) AS [MoneyAmount],
+	CAST([Mass] AS MONEY) AS [Mass],
 	CAST([Value] AS MONEY) AS [Value]
 	FROM CompactLines CL
-	JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
-	JOIN dbo.MeasurementUnits MU ON R.UnitId = MU.Id
+	LEFT JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
+	LEFT JOIN dbo.MeasurementUnits MUM ON R.MassUnitId = MUM.Id
+	LEFT JOIN dbo.MeasurementUnits MUV ON R.VolumeUnitId = MUV.Id
 	JOIN dbo.Accounts A ON CL.[AccountId] = A.[Id]
 	JOIN dbo.IfrsEntryClassifications IEC ON CL.IfrsEntryClassificationId = IEC.Id
-	WHERE CL.[Quantity] <> 0 --OR CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
+	WHERE CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
 	OR CL.[Value] <> 0;
 
 	

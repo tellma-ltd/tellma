@@ -92,7 +92,7 @@ BEGIN
 	USING (
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
-				[AgentId], [ResponsibilityCenterId], [ResourceId], [ResourcePickId], [BatchCode], [DueDate], [Quantity],
+				[AgentId], [ResponsibilityCenterId], [ResourceId], [ResourcePickId], [BatchCode], [DueDate],
 				[MonetaryValue], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value], E.[Memo],
 				[ExternalReference], [AdditionalReference], 
 				[RelatedResourceId], [RelatedAgentId], [RelatedMoneyAmount]
@@ -110,7 +110,6 @@ BEGIN
 			t.[ResourceId]				= s.[ResourceId],
 			t.[ResourcePickId]			= s.[ResourcePickId],
 			t.[BatchCode]				= s.[BatchCode],
-			t.[Quantity]				= s.[Quantity],
 			t.[MonetaryValue]			= s.[MonetaryValue],
 			t.[Mass]					= s.[Mass],
 			t.[Volume]					= s.[Volume],
@@ -129,11 +128,11 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
-				[AgentId], [ResponsibilityCenterId], [ResourceId], [ResourcePickId], [BatchCode], [Quantity],
+				[AgentId], [ResponsibilityCenterId], [ResourceId], [ResourcePickId], [BatchCode],
 				[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value], [Memo],
 				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount])
 		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IfrsEntryClassificationId],
-				s.[AgentId], s.[ResponsibilityCenterId], s.[ResourceId], s.[ResourcePickId], s.[BatchCode], s.[Quantity],
+				s.[AgentId], s.[ResponsibilityCenterId], s.[ResourceId], s.[ResourcePickId], s.[BatchCode],
 				s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value], s.[Memo],
 				s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount])
 	WHEN NOT MATCHED BY SOURCE THEN

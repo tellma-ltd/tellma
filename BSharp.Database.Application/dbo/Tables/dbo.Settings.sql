@@ -14,7 +14,6 @@
 	[SettingsVersion]			UNIQUEIDENTIFIER NOT NULL,
 
 	[FunctionalCurrency]		NCHAR(3),
-	[FunctionalCurrencyId]		INT,
 	-- The date before which data is frozen.
 	[ArchiveDate]				DATE				NOT NULL DEFAULT ('1900.01.01'),
 	[ResourceLookup1Label]		NVARCHAR (50),

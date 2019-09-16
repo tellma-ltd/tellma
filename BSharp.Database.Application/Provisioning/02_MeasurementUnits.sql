@@ -26,8 +26,8 @@ INSERT INTO @MU ([Index],
 (17, N'ltr', N'Volume', N'Liter', 1, 1, NULL),
 (18, N'usg', N'Volume', N'US Gallon', 1, 3.785411784, NULL),
 
-(19, N'ETB', N'MonetaryValue', N'Ethiopian Birr', 27.8, 1, N'ETB'),
-(20, N'USD', N'MonetaryValue', N'US Dollar', 1, 1, N'USD'),
+--(19, N'ETB', N'MonetaryValue', N'Ethiopian Birr', 27.8, 1, N'ETB'),
+--(20, N'USD', N'MonetaryValue', N'US Dollar', 1, 1, N'USD'),
 
 (21, N'cm', N'Distance', N'Centimeter', 1, 1, NULL),
 (22, N'm', N'Distance', N'meter', 1, 100, NULL),
@@ -35,10 +35,10 @@ INSERT INTO @MU ([Index],
 
 -- TODO: it is better to avoid defining any currency, except the functional, which we can retrieve from a table of currencies
 -- and assume it is the base, so BaseAmount = UnitAmount = 1
-IF NOT EXISTS(SELECT * FROM @MU WHERE [Name] = @FunctionalCurrency)
+IF NOT EXISTS(SELECT * FROM dbo.Currencies WHERE [Id] = @FunctionalCurrency)
 BEGIN
-	INSERT INTO dbo.[MeasurementUnits]([UnitType], [Name], [Description])
-	VALUES (N'MonetaryValue', @FunctionalCurrency, @FunctionalCurrency)
+	INSERT INTO dbo.[Currencies]([Id], [Name])
+	VALUES (@FunctionalCurrency, @FunctionalCurrency)
 END
 
 EXEC [api].[MeasurementUnits__Save]

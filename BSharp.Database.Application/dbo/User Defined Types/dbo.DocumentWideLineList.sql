@@ -16,7 +16,6 @@
 	[InstanceId1]			INT,
 	[BatchCode1]			NVARCHAR (255),
 	[DueDate1]				DATE, -- applies to temporary accounts, such as loans and borrowings
-	[Quantity1]				VTYPE				NOT NULL DEFAULT 0, -- measure on which the value is based. If it is MassMeasure then [Mass] must equal [ValueMeasure] and so on.
 	[MoneyAmount1]			MONEY				NOT NULL DEFAULT 0, -- Amount in foreign Currency 
 	[Mass1]					DECIMAL				NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
 	[Volume1]				DECIMAL				NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
@@ -40,7 +39,6 @@
 	[InstanceId2]			INT,
 	[BatchCode2]			NVARCHAR (255),
 	[DueDate2]				DATE, -- applies to temporary accounts, such as loans and borrowings
-	[Quantity2]				VTYPE				NOT NULL DEFAULT 0, -- measure on which the value is based. If it is MassMeasure then [Mass] must equal [ValueMeasure] and so on.
 	[MoneyAmount2]			MONEY				NOT NULL DEFAULT 0, -- Amount in foreign Currency 
 	[Mass2]					DECIMAL				NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
 	[Volume2]				DECIMAL				NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping

@@ -16,10 +16,10 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Resources] AS t
 		USING (
 			SELECT 	
-				[Index], [Id], [ResourceDefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], 
-				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
+				[Index], [Id], [ResourceClassificationId], [Name], [Name2], [Name3], 
+				[UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
 				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
-				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
+				[Code], [SystemCode], [Memo], [CustomsReference], [PreferredSupplierId],
 				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id]
 			FROM @Resources 
 		) AS s ON (t.Id = s.Id)
@@ -30,7 +30,6 @@ SET NOCOUNT ON;
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
-				t.[UnitId]					= s.[UnitId],
 				t.[UnitMonetaryValue]		= s.[UnitMonetaryValue],
 				t.[CurrencyId]				= s.[CurrencyId],
 				t.[UnitMass]				= s.[UnitMass],
@@ -47,7 +46,7 @@ SET NOCOUNT ON;
 				t.[SystemCode]				= s.[SystemCode],
 				t.[Memo]					= s.[Memo],      
 				t.[CustomsReference]		= s.[CustomsReference],
-				t.[UniversalProductCode]	= s.[UniversalProductCode],
+			--	t.[UniversalProductCode]	= s.[UniversalProductCode],
 				t.[PreferredSupplierId]		= s.[PreferredSupplierId],
 				t.[ResourceLookup1Id]		= s.[ResourceLookup1Id],
 				t.[ResourceLookup2Id]		= s.[ResourceLookup2Id],
@@ -57,14 +56,14 @@ SET NOCOUNT ON;
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([ResourceDefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3],
-				[UnitId], [UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
+				[UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
 				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
-				[Code], [SystemCode], [Memo], [CustomsReference] ,[UniversalProductCode], [PreferredSupplierId],
+				[Code], [SystemCode], [Memo], [CustomsReference] , [PreferredSupplierId],
 				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id])
 			VALUES (@ResourceDefinitionId, s.[ResourceClassificationId], s.[Name], s.[Name2], s.[Name3],
-				s.[UnitId], s.[UnitMonetaryValue], s.[CurrencyId], s.[UnitMass], s.[MassUnitId], s.[UnitVolume], s.[VolumeUnitId],
+				s.[UnitMonetaryValue], s.[CurrencyId], s.[UnitMass], s.[MassUnitId], s.[UnitVolume], s.[VolumeUnitId],
 				s.[UnitArea], s.[AreaUnitId], s.[UnitLength], s.[LengthUnitId], s.[UnitTime], s.[TimeUnitId], s.[UnitCount], s.[CountUnitId],
-				s.[Code], s.[SystemCode], s.[Memo], s.[CustomsReference] ,s.[UniversalProductCode], s.[PreferredSupplierId],
+				s.[Code], s.[SystemCode], s.[Memo], s.[CustomsReference], s.[PreferredSupplierId],
 				s.[ResourceLookup1Id], s.[ResourceLookup2Id], s.[ResourceLookup3Id], s.[ResourceLookup4Id])
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x

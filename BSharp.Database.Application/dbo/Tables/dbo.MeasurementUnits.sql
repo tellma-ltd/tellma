@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[MeasurementUnits] (
 	[Id]			INT PRIMARY KEY IDENTITY,
-	[UnitType]		NVARCHAR (255)		NOT NULL CONSTRAINT [CK_MeasurementUnits__UnitType] CHECK ([UnitType] IN (N'Pure', N'Time', N'Distance', N'Count', N'Mass', N'Volume', N'MonetaryValue')),
+	[UnitType]		NVARCHAR (255)		NOT NULL CONSTRAINT [CK_MeasurementUnits__UnitType] CHECK ([UnitType] IN (N'Pure', N'Time', N'Distance', N'Count', N'Mass', N'Volume')),
 	[Name]			NVARCHAR (255)		NOT NULL,
 	[Name2]			NVARCHAR (255),
 	[Name3]			NVARCHAR (255),
