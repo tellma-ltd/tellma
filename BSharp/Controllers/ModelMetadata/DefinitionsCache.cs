@@ -19,6 +19,7 @@ namespace BSharp.Controllers
         /// </summary>
         private static readonly ConcurrentDictionary<int, DataWithVersion<DefinitionsForClient>> _cache 
             = new ConcurrentDictionary<int, DataWithVersion<DefinitionsForClient>>();
+
         private readonly ITenantIdAccessor _tenantIdAccessor;
 
         public DefinitionsCache(ITenantIdAccessor tenantIdAccessor)
