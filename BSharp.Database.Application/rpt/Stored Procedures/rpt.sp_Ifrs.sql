@@ -7,8 +7,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 	IF @PresentationCurrencyCode IS NULL
-	SELECT @PresentationCurrencyCode = Code FROM dbo.Resources 
-	WHERE Id = (SELECT FunctionalCurrencyId FROM dbo.Settings)
+	SELECT @PresentationCurrencyCode = FunctionalCurrency FROM dbo.Settings;
 	
 	DECLARE @PresentationCurrency NVARCHAR (255);
 	SELECT @PresentationCurrency = [Description] FROM dbo.[MeasurementUnits]

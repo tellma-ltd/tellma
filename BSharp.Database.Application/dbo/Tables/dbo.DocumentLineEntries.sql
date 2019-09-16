@@ -30,7 +30,6 @@
 	[BatchCode]					NVARCHAR (255),
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings
 -- Tracking additive measures, the data type is to be decided by AA
-	[Quantity]					VTYPE			NOT NULL DEFAULT 0, -- measure on which the value is based.
 	[MonetaryValue]				MONEY			NOT NULL DEFAULT 0, -- Amount in foreign Currency 
 	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
 	[Volume]					DECIMAL (18,2)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping

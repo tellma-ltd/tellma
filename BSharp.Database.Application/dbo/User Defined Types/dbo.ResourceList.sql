@@ -5,10 +5,8 @@
 	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
-	[IsBatch]						BIT					NOT NULL DEFAULT 0,
-	[UnitId]						INT,
 	[UnitMonetaryValue]				DECIMAL,
-	[CurrencyId]					INT,
+	[CurrencyId]					NCHAR (3),
 	[UnitMass]						DECIMAL,
 	[MassUnitId]					INT,
 	[UnitVolume]					DECIMAL,
@@ -26,7 +24,6 @@
 	[SystemCode]					NVARCHAR (255),
 	[Memo]							NVARCHAR (2048), -- description
 	[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
-	[UniversalProductCode]			NVARCHAR (255), -- for barcode readers
 	[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
 	-- The following properties are user-defined, used for reporting
 	[ResourceLookup1Id]				INT,			-- UDL 

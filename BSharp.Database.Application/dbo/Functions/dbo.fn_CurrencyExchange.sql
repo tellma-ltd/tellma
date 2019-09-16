@@ -1,7 +1,7 @@
 ﻿CREATE FUNCTION [dbo].[fn_CurrencyExchange] (
 	@Date DATE = NULL,
-	@BaseCurrency char(3),
-	@TargetCurrency char(3) = NULL,
+	@BaseCurrency nchar(3),
+	@TargetCurrency nchar(3) = NULL,
 	@Amount money
 )
 RETURNS money

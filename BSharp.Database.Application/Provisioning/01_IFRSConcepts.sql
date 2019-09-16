@@ -7352,7 +7352,6 @@ BEGIN -- Ifrs amendments (missing member) and extensions (common practice not re
 
 END
 
-
 DECLARE @DistinctIfrsConcepts AS TABLE (
 	[Pk]				INT IDENTITY PRIMARY KEY,
 	[Id]				NVARCHAR (255)		UNIQUE,

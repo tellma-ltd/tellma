@@ -20,17 +20,13 @@ AS
 		D.[CreatedById],
 		D.[ModifiedAt],
 		D.[ModifiedById],
-		CASE
-			WHEN SUM(E.[Direction] * E.[Quantity]) > 0 OR 
-					SUM(E.[Direction] * E.[Value]) > 0
-			THEN 1 ELSE -1 END AS [Direction],
+		CASE WHEN SUM(E.[Direction] * E.[Value]) > 0 THEN 1 ELSE -1 END AS [Direction],
 		E.[AccountId],
 		E.[IfrsEntryClassificationId],
 		A.[ResponsibilityCenterId],
 		E.[ResourceId],
 		E.[ResourcePickId],
 		E.[BatchCode],
-		SUM(E.[Direction] * E.[Quantity]) AS [Quantity],
 		SUM(E.[Direction] * E.[MonetaryValue]) AS [MonetaryValue],
 		SUM(E.[Direction] * E.[Mass]) AS [Mass],
 		SUM(E.[Direction] * E.[Volume]) AS [Volume],
@@ -84,7 +80,6 @@ AS
 		E.[RelatedResourceId],
 		E.[RelatedAccountId]
 	HAVING
-			SUM(E.[Direction] * E.[Quantity]) <> 0 OR
-			SUM(E.[Direction] * E.[Value]) <> 0
+		SUM(E.[Direction] * E.[Value]) <> 0
 	;
 GO;

@@ -20,7 +20,7 @@ WITH IfrsInventoryAccounts AS (
 		J.[Id],
 		J.[Direction],
 		J.[AccountId],
-		J.[IfrsAccountClassificationId] AS [IfrsAccountClassificationId],
+		J.[IfrsAccountClassificationId],
 		J.[ResponsibilityCenterId],
 		J.[ResourceId],
 		J.[Mass],
@@ -34,11 +34,12 @@ WITH IfrsInventoryAccounts AS (
 		J.[RelatedResourceId],
 		J.[RelatedAccountId],
 		J.[RelatedMoneyAmount],
-		R.[ResourceType] As [IfrsResourceClassificationId],
+		RC.[IfrsResourceClassificationId],
 		R.[ResourceLookup1Id],
 		R.[ResourceLookup2Id],
 		R.[ResourceLookup3Id],
 		R.[ResourceLookup4Id]
 	FROM dbo.[fi_NormalizedJournal](NULL, NULL, @MassUnitId, @CountUnitId) J
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
+	LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
 	WHERE J.[IfrsAccountClassificationId] IN (SELECT Id FROM IfrsInventoryAccounts);

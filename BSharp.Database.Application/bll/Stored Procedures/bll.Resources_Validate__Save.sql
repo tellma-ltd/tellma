@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Resources_Validate__Save]
-	@ResourceType NVARCHAR (255),
+	@ResourceDefinitionId NVARCHAR (255),
 	@Resources [dbo].[ResourceList] READONLY,
 	@Picks [dbo].[ResourcePickList] READONLY,
 	@Top INT = 10

@@ -14,14 +14,14 @@ AS
 	INSERT INTO @Entries(
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	[DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
-	[ResourceId], [ResourcePickId], [BatchCode], [DueDate], [Quantity],
+	[ResourceId], [ResourcePickId], [BatchCode], [DueDate],
 	[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value], [Memo],
 	[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId],
 	[RelatedQuantity], [RelatedMoneyAmount])
 	SELECT
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	[DocumentLineId], 1, [Direction1], [AccountId1], [IfrsEntryClassificationId1],
-	[ResourceId1], [InstanceId1], [BatchCode1], [DueDate1], [Quantity1],
+	[ResourceId1], [InstanceId1], [BatchCode1], [DueDate1],
 	[MoneyAmount1], [Mass1], [Volume1], [Area1], [Length1], [Time1], [Count1], [Value1], [Memo1],
 	[ExternalReference1], [AdditionalReference1], [RelatedResourceId1], [RelatedAgentId1],
 	[RelatedQuantity1], [RelatedMoneyAmount1]
@@ -30,7 +30,7 @@ AS
 	SELECT
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	[DocumentLineId], 2, [Direction2], [AccountId2], [IfrsEntryClassificationId2],
-	[ResourceId2], [InstanceId2], [BatchCode2], [DueDate2], [Quantity2],
+	[ResourceId2], [InstanceId2], [BatchCode2], [DueDate2],
 	[MoneyAmount2], [Mass2], [Volume2], [Area2], [Length2], [Time2], [Count2], [Value2], [Memo2],
 	[ExternalReference2], [AdditionalReference2], [RelatedResourceId2], [RelatedAgentId2],
 	[RelatedQuantity2], [RelatedMoneyAmount2]
@@ -65,20 +65,20 @@ AS
 						WHERE EI.EntryNumber = LTS.ResourceIdEntryNumber
 						AND EI.DocumentLineIndex = E.DocumentLineIndex
 					)
-				ELSE E.AccountId END,
-			E.Quantity = CASE 
-				WHEN LTS.QuantityExpression = N'Constant' THEN LTS.Quantity 
-				WHEN LTS.QuantityExpression = N'Quantity' THEN (
-						SELECT Quantity FROM @Entries EI
-						WHERE EI.EntryNumber = LTS.QuantityEntryNumber
-						AND EI.DocumentLineIndex = E.DocumentLineIndex
-					)
-				WHEN LTS.QuantityExpression = N'Net' THEN (
-						SELECT ABS(SUM([Direction] * [Quantity])) FROM @Entries EI
-						WHERE EI.EntryNumber <> LTS.QuantityEntryNumber
-						AND EI.DocumentLineIndex = E.DocumentLineIndex
-					)
-				ELSE E.Quantity END
+				ELSE E.AccountId END
+			--E.Quantity = CASE 
+			--	WHEN LTS.QuantityExpression = N'Constant' THEN LTS.Quantity 
+			--	WHEN LTS.QuantityExpression = N'Quantity' THEN (
+			--			SELECT Quantity FROM @Entries EI
+			--			WHERE EI.EntryNumber = LTS.QuantityEntryNumber
+			--			AND EI.DocumentLineIndex = E.DocumentLineIndex
+			--		)
+			--	WHEN LTS.QuantityExpression = N'Net' THEN (
+			--			SELECT ABS(SUM([Direction] * [Quantity])) FROM @Entries EI
+			--			WHERE EI.EntryNumber <> LTS.QuantityEntryNumber
+			--			AND EI.DocumentLineIndex = E.DocumentLineIndex
+			--		)
+			--	ELSE E.Quantity END
 		FROM @Entries E
 		JOIN @Lines L ON E.[DocumentLineIndex] = L.[Index]
 		JOIN dbo.LineTypesSpecifications LTS
@@ -87,10 +87,11 @@ AS
 
 		SET @EntryNumber = @EntryNumber	 + 1;
 	END
-
-	UPDATE E
-	SET
-		E.Mass = E.[Quantity] * R.UnitMass,
-		E.Volume = E.[Quantity] * R.UnitVolume
-	FROM @Entries E JOIN dbo.Resources R ON E.ResourceId = R.Id
-	WHERE R.[UnitId] = R.[CountUnitId];
+	
+	-- TODO: find a way to dill the dependent parameters
+	--UPDATE E
+	--SET
+	--	E.Mass = E.[Quantity] * R.UnitMass,
+	--	E.Volume = E.[Quantity] * R.UnitVolume
+	--FROM @Entries E JOIN dbo.Resources R ON E.ResourceId = R.Id
+	--WHERE R.[UnitId] = R.[CountUnitId];

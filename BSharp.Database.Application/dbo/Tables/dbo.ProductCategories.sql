@@ -15,12 +15,4 @@
 	-- Pure SQL properties and computed properties
 	[Node]				HIERARCHYID				NOT NULL,
 	[ParentNode]		AS [Node].GetAncestor(1),
-	CONSTRAINT [FK_ProductCategories__ParentId] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[ProductCategories] ([Id]),
-	CONSTRAINT [FK_ProductCategories__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_ProductCategories__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 );
-GO
-CREATE UNIQUE INDEX [IX_ProductCategories__Code] ON [dbo].[ProductCategories]([Code]) WHERE [Code] IS NOT NULL;
-GO
-CREATE UNIQUE CLUSTERED INDEX [IX_ProductCategories__Node] ON [dbo].[ProductCategories]([Node]);
-GO

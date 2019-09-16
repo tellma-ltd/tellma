@@ -28,7 +28,6 @@ AS
 		E.[ResourcePickId],
 		E.[BatchCode],
 		E.[DueDate],
-		E.[Quantity],
 		E.[MonetaryValue], -- normalization is already done in the Value and stored in the entry
 		E.[Mass],
 		E.[Volume],
