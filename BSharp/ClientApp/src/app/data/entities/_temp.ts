@@ -50,10 +50,10 @@ export class ResourceForSave extends EntityWithKey {
     Name2: string;
     Name3: string;
     Code: string;
-    ResourceType: string;
+    // ResourceType: string;
     ResourceClassificationId: number | string;
-    IsBatch: boolean;
-    UnitId: number | string;
+    // IsBatch: boolean;
+    // UnitId: number | string;
     UnitMonetaryValue: number;
     CurrencyId: number | string;
     UnitMass: number;
@@ -71,7 +71,7 @@ export class ResourceForSave extends EntityWithKey {
     SystemCode: string;
     Memo: string;
     CustomsReference: string;
-    UniversalProductCode: string;
+    // UniversalProductCode: string;
     PreferredSupplierId: number | string;
     ExpenseAccountId: number | string;
     RevenueAccountId: number | string;
@@ -248,15 +248,15 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, _s
                 Code: { control: 'text', label: trx.instant('Code') },
 
                 // Temp
-                ResourceType: { control: 'text', label: 'Resource Type' },
+                // ResourceType: { control: 'text', label: 'Resource Type' },
                 ResourceClassificationId: {
                     control: 'number', label: 'Resource Classification Id', minDecimalPlaces: 0, maxDecimalPlaces: 0
                 },
 
                 // ResourceClassification: TODO
-                IsBatch: { control: 'boolean', label: 'Is Batch' },
-                UnitId: { control: 'number', label: 'Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Unit: { control: 'navigation', label: 'Unit', type: 'MeasurementUnit', foreignKeyName: 'UnitId' },
+                // IsBatch: { control: 'boolean', label: 'Is Batch' },
+                // UnitId: { control: 'number', label: 'Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                // Unit: { control: 'navigation', label: 'Unit', type: 'MeasurementUnit', foreignKeyName: 'UnitId' },
                 CurrencyId: { control: 'number', label: 'Currency Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Currency: { control: 'navigation', label: 'Currency', type: 'MeasurementUnit', foreignKeyName: 'CurrencyId' },
                 UnitMass: { control: 'number', label: 'Unit Mass', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -280,7 +280,7 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, _s
                 SystemCode: { control: 'text', label: 'System Code' },
                 Memo: { control: 'text', label: 'Memo' },
                 CustomsReference: { control: 'text', label: 'Customs Reference' },
-                UniversalProductCode: { control: 'text', label: 'Universal Product Code' },
+                // UniversalProductCode: { control: 'text', label: 'Universal Product Code' },
                 ProductCategoryId: { control: 'number', label: 'Product Category Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 ProductCategory: {
                     control: 'navigation', label: 'Product Category', type: 'ProductCategory', foreignKeyName: 'ProductCategoryId'

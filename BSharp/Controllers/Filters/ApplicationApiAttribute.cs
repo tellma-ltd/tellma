@@ -214,6 +214,24 @@ namespace BSharp.Controllers
                             // TODO: implement mock
                         }
                     },
+
+                    ResourceLookups = new Dictionary<string, ResourceLookupDefinitionForClient>
+                    {
+                        ["colors"] = new ResourceLookupDefinitionForClient
+                        {
+                            TitleSingular = "Color",
+                            TitleSingular2 = "لون",
+                            TitlePlural = "Colors",
+                            TitlePlural2 = "ألوان"
+                        },
+                        ["thicknesses"] = new ResourceLookupDefinitionForClient
+                        {
+                            TitleSingular = "Thickness",
+                            TitleSingular2 = "سماكة",
+                            TitlePlural = "Thicknesses",
+                            TitlePlural2 = "سماكات"
+                        }
+                    }
                 };
 
                 await Task.Delay(5); // To simulate database communication
@@ -221,7 +239,7 @@ namespace BSharp.Controllers
                 return new DataWithVersion<DefinitionsForClient>
                 {
                     Data = result,
-                    Version = appRepo.GetTenantInfo().DefinitionsVersion
+                    Version = appRepo.GetTenantInfo().DefinitionsVersion + "y"
                 };
             }
         }

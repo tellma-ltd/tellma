@@ -132,7 +132,7 @@ namespace BSharp.Controllers
                     {
                         // This error indicates a bug
                         var index = indices[entity];
-                        ModelState.AddModelError($"[{index}].Id", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
+                        ModelState.AddModelError($"[{index}].Code", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
                     }
                 }
             }
