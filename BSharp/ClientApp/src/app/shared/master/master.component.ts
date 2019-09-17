@@ -155,53 +155,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   public exportErrorMessage: string;
   public actionErrorMessage: string;
   public actionValidationErrors: { [id: string]: string[] } = {};
-
-  ////////////////// TREE STUFF
-
   public treeControl = new FlatTreeControl<NodeInfo>(node => node.level - 1, node => node.hasChildren);
-
-  showTreeNode(node: NodeInfo) {
-    const parent = node.parent;
-    return !parent || (parent.isExpanded && this.showTreeNode(parent));
-  }
-
-  public get treeNodes(): NodeInfo[] {
-    return this.state.treeNodes;
-  }
-
-  public onExpand(node: NodeInfo): void {
-    node.isExpanded = !node.isExpanded;
-    if (node.isExpanded && node.status !== MasterStatus.loaded &&
-      node.status !== MasterStatus.loading && !this.searchOrFilter) {
-      this.fetchNodeChildren(node);
-    }
-  }
-
-  public paddingLeft(node: NodeInfo): string {
-    return this.workspace.ws.isRtl ? '0' : (this.treeControl.getLevel(node) * 30) + 'px';
-  }
-  public paddingRight(node: NodeInfo): string {
-    return this.workspace.ws.isRtl ? (this.treeControl.getLevel(node) * 30) + 'px' : '0';
-  }
-
-  public flipNode(node: NodeInfo): string {
-    // this is to flip the UI icons in RTL
-    return this.workspace.ws.isRtl && !node.isExpanded ? 'horizontal' : null;
-  }
-
-  public rotateNode(node: NodeInfo): number {
-    return node.isExpanded ? 90 : 0;
-  }
-
-  public showNodeSpinner(node: NodeInfo): boolean {
-    return node.status === MasterStatus.loading;
-  }
-
-  public hasChildren(node: NodeInfo): boolean {
-    return node.hasChildren;
-  }
-
-  ////////////////// END - TREE STUFF
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private router: Router, private cdr: ChangeDetectorRef,
@@ -209,8 +163,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-
-    this._subscriptions = new Subscription();
 
     // Use some RxJS magic to refresh the data as the user changes the parameters
     const searchBoxSignals = this.searchChanged$.pipe(
@@ -223,17 +175,15 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     const otherSignals = this.notifyFetch$;
     const allSignals = merge(searchBoxSignals, otherSignals);
-    const sub = allSignals.pipe(
+
+    this._subscriptions = new Subscription();
+    this._subscriptions.add(allSignals.pipe(
       switchMap(() => this.doFetch())
-    ).subscribe();
+    ).subscribe());
 
-    this._subscriptions.add(sub);
-
-    const sub2 = this.workspace.stateChanged$.subscribe({
+    this._subscriptions.add(this.workspace.stateChanged$.subscribe({
       next: () => this.cdr.markForCheck()
-    });
-
-    this._subscriptions.add(sub2);
+    }));
 
     // Reset the state of the master component state
     this.localState = new MasterDetailsStore();
@@ -1539,4 +1489,49 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   public entity(id: string | number) {
     return this.workspace.current.get(this.collection, id);
   }
+
+  ////////////////// TREE STUFF
+
+  public showTreeNode(node: NodeInfo) {
+    const parent = node.parent;
+    return !parent || (parent.isExpanded && this.showTreeNode(parent));
+  }
+
+  public get treeNodes(): NodeInfo[] {
+    return this.state.treeNodes;
+  }
+
+  public onExpand(node: NodeInfo): void {
+    node.isExpanded = !node.isExpanded;
+    if (node.isExpanded && node.status !== MasterStatus.loaded &&
+      node.status !== MasterStatus.loading && !this.searchOrFilter) {
+      this.fetchNodeChildren(node);
+    }
+  }
+
+  public paddingLeft(node: NodeInfo): string {
+    return this.workspace.ws.isRtl ? '0' : (this.treeControl.getLevel(node) * 30) + 'px';
+  }
+
+  public paddingRight(node: NodeInfo): string {
+    return this.workspace.ws.isRtl ? (this.treeControl.getLevel(node) * 30) + 'px' : '0';
+  }
+
+  public flipNode(node: NodeInfo): string {
+    // this is to flip the UI icons in RTL
+    return this.workspace.ws.isRtl && !node.isExpanded ? 'horizontal' : null;
+  }
+
+  public rotateNode(node: NodeInfo): number {
+    return node.isExpanded ? 90 : 0;
+  }
+
+  public showNodeSpinner(node: NodeInfo): boolean {
+    return node.status === MasterStatus.loading;
+  }
+
+  public hasChildren(node: NodeInfo): boolean {
+    return node.hasChildren;
+  }
+
 }

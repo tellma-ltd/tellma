@@ -1,4 +1,4 @@
-<b-details apiEndpoint="roles" viewId="roles" [expand]="expand"
+<b-details viewId="roles" [expand]="expand"
   collection="Role" [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [idString]="idString" [masterCrumb]="'Roles' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -101,7 +101,7 @@
               {{ ws.getMultilingualValue('View', item.ViewId, 'Name') }}
             </div>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId"
-              (ngModelChange)="update(item); onPermissionChanged(item);" apiEndpoint="views" collection="View" expand="Actions">
+              (ngModelChange)="update(item); onPermissionChanged(item);" collection="View" expand="Actions">
             </b-details-picker>
           </b-form-group>
         </ng-template>
@@ -170,10 +170,10 @@
         <ng-template #row_AgentId let-item="item" let-index="originalIndex" let-update="update">
           <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.AgentId">
             <b-view-link *ngIf="!isEdit" link="../../users" [itemId]="item?.AgentId">
-              {{ ws.User[item.AgentId]?.Email }}
+              {{ getMultilingualValue(ws.User[item.AgentId], 'Name', ws) }}
             </b-view-link>
-            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.AgentId" (ngModelChange)="update(item)"
-              apiEndpoint="users" [detailsOptions]="[{ id: 'users', name: '- not important -' }]"
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.AgentId" (ngModelChange)="update(item)" 
+            [detailsOptions]="[{ id: 'users', name: '- not important -' }]"
               [masterTemplate]="usersMaster" [detailsTemplate]="usersDetails" collection="User">
             </b-details-picker>
 

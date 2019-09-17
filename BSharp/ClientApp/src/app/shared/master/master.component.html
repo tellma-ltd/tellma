@@ -43,7 +43,7 @@
             <div class="bg-danger b-indicator" *ngIf="isAnyFilterChecked"></div>
           </button>
 
-          <ul class="b-filter-dropdown-menu small shadow" style="min-width: 250px" ngbDropdownMenu>
+          <ul class="b-filter-dropdown-menu shadow" style="min-width: 250px" ngbDropdownMenu>
 
             <!-- Include Inactive -->
             <li class="dropdown-item" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{

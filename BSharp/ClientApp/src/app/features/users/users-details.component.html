@@ -1,4 +1,4 @@
-<b-details apiEndpoint="users" viewId="users" [expand]="expand" [idString]="idString" collection="User"
+<b-details viewId="users" [expand]="expand" [idString]="idString" collection="User"
   [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [masterCrumb]="'Users' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [isInactive]="isInactive"
   [documentHeaderTemplate]="documentHeader" [actions]="[
@@ -44,7 +44,7 @@
         {{ ws.getMultilingualValue('Agent', model?.Id, 'Name') }}
       </b-view-link>
     </b-restricted>
-    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.Id" apiEndpoint="agents" collection="Agent"
+    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.Id" collection="Agent"
       [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" required [disabled]="!isNew"
       filter="User/Id eq null">
     </b-details-picker>
@@ -108,7 +108,7 @@
               item.RoleId, 'Name') }}</b-view-link>
             </b-restricted>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)"
-              apiEndpoint="roles" [detailsOptions]="[{ id: 'roles', name: '- not important -' }]"
+              [detailsOptions]="[{ id: 'roles', name: '- not important -' }]"
               [masterTemplate]="roleMaster" [detailsTemplate]="roleDetails" collection="Role">
             </b-details-picker>
 

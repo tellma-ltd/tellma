@@ -1,6 +1,9 @@
 // tslint:disable:no-string-literal
 import { Location } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, TemplateRef, ViewChild, Output } from '@angular/core';
+import {
+  Component, EventEmitter, Input, OnDestroy, OnInit, TemplateRef,
+  ViewChild, Output, SimpleChanges, OnChanges, HostListener
+} from '@angular/core';
 import { ActivatedRoute, ParamMap, Router, Params } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,6 +16,7 @@ import { addSingleToWorkspace, addToWorkspace } from '~/app/data/util';
 import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/workspace.service';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { Subject, Observable, of, Subscription } from 'rxjs';
+import { EntityDescriptor, metadata } from '~/app/data/entities/base/metadata';
 
 export interface DropdownAction {
   template: TemplateRef<any>;
@@ -26,13 +30,10 @@ export interface DropdownAction {
   selector: 'b-details',
   templateUrl: './details.component.html'
 })
-export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
+export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeactivate {
 
   @Input()
   viewId: string; // for the permissions
-
-  @Input()
-  collection: string;
 
   @Input()
   expand: string;
@@ -70,7 +71,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @Input() // popup: only the title and the document are visible
   mode: 'popup' | 'screen' = 'screen';
 
-  // apiEndpoint and idString both represent the identity of an abstract "instance" of this screen
+  // (collection, definition, idString) represent the identity of an abstract "instance" of this screen
   // so when they change it will be as if a screen closed and another screen opened from the point
   // of view of the user, for performance reasons Angular does not destroy and recreate the component
   // if the same component is still used but its input has changed, so to simulate a screen change
@@ -78,45 +79,13 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   // first time they are being set, the same pattern is used in the master screen
 
   @Input()
-  public set apiEndpoint(v: string) {
-    // apiEndpoint cannot be reset to null
-    if (!!v && this._apiEndpoint !== v) {
-      if (this.alreadyInit) {
-        this.ngOnDestroy();
-      }
-
-      this._apiEndpoint = v;
-
-      if (this.alreadyInit) {
-        this.ngOnInit();
-      }
-      // this.fetch();
-    }
-  }
-
-  public get apiEndpoint() {
-    return this._apiEndpoint;
-  }
+  collection: string;
 
   @Input()
-  public set idString(v: string) {
-    // idString cannot be reset to null
-    if (!!v && this._idString !== v) {
-      if (this.alreadyInit) {
-        this.ngOnDestroy();
-      }
+  definition: string;
 
-      this._idString = v;
-
-      if (this.alreadyInit) {
-        this.ngOnInit();
-      }
-    }
-  }
-
-  public get idString() {
-    return this._idString;
-  }
+  @Input()
+  idString: string;
 
   @Output()
   saved = new EventEmitter<number | string>();
@@ -124,19 +93,16 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   @Output()
   cancel = new EventEmitter<void>();
 
-  @ViewChild('errorModal', { static : true })
-  public errorModal: TemplateRef<any>;
+  @ViewChild('errorModal', { static: true })
+  errorModal: TemplateRef<any>;
 
-  @ViewChild('successModal', { static : true })
-  public successModal: TemplateRef<any>;
+  @ViewChild('successModal', { static: true })
+  successModal: TemplateRef<any>;
 
-  @ViewChild('unsavedChangesModal', { static : true })
-  public unsavedChangesModal: TemplateRef<any>;
+  @ViewChild('unsavedChangesModal', { static: true })
+  unsavedChangesModal: TemplateRef<any>;
 
   private paramMapSubscription: Subscription;
-  private alreadyInit: boolean;
-  private _idString: string;
-  private _apiEndpoint: string;
   private _editModel: EntityForSave;
   private notifyFetch$: Subject<void>;
   private notifyDestruct$ = new Subject<void>();
@@ -175,6 +141,13 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
+  @HostListener('window:beforeunload', ['$event'])
+  doSomething($event: BeforeUnloadEvent) {
+    if (this.isDirty) {
+      $event.returnValue = this.translate.instant('UnsavedChangesConfirmationMessage');
+    }
+  }
+
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private location: Location,
     private router: Router, private route: ActivatedRoute, public modalService: NgbModal, private translate: TranslateService) {
@@ -204,21 +177,24 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     this.paramMapSubscription = this.route.paramMap.subscribe((params: ParamMap) => {
       // the id parameter from the URI is only avaialble in screen mode
       // when it changes set idString which triggers a new refresh
-      if (this.isScreenMode) {
+      if (this.isScreenMode && params.has('id')) {
         // even though this might get set in a popup because the parent has an id param,
         // it gets wiped out afterwards when angular initializes the input properties
-        if (params.has('id')) {
-          this.idString = params.get('id');
+        const newId = params.get('id');
+        if (this.idString !== newId) {
+          const notFirstTime = !!this.idString;
+          this.idString = newId;
+
+          // Call this manually since Angular won't call ngOnChanges automatically
+          if (notFirstTime) {
+            this.newScreen();
+          }
         }
       }
     });
 
     // Fetch the data of the screen based on apiEndpoint and idString
     this.fetch();
-
-    // This signals the setters of apiEndpoint and idString to manually
-    // invoke ngOnInit next time they are called
-    this.alreadyInit = true;
   }
 
   ngOnDestroy() {
@@ -228,6 +204,40 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     if (!!this.paramMapSubscription) {
       this.paramMapSubscription.unsubscribe();
     }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+
+    // the combination of these properties defines a whole new screen from the POV of the user
+    // when either of these properties change it is equivalent to a screen closing and
+    // and another screen opening even though Angular may reuse the same
+    // component and never call ngOnDestroy and ngOnInit. So we call them
+    // manually here if this is not the first time these properties are set
+    // to simulate a screen closing and opening again
+    const screenDefProperties = [changes.collection, changes.apiEndpoint, changes.idString];
+
+    const anyChanges = screenDefProperties.some(prop => !!prop);
+    const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+
+    if (anyChanges && notFirstChange) {
+      this.newScreen();
+    }
+  }
+
+  private newScreen(): void {
+    // This method simulates navigating away from the screen and then navigating back
+    this.ngOnDestroy();
+    this.ngOnInit();
+  }
+
+  get entityDescriptor(): EntityDescriptor {
+    const coll = this.collection;
+    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.definition) : null;
+  }
+
+  get apiEndpoint(): string {
+    const meta = this.entityDescriptor;
+    return !!meta ? meta.apiEndpoint : null;
   }
 
   private fetch() {

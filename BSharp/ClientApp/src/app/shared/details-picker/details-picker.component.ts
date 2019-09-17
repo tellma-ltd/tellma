@@ -9,7 +9,7 @@ import { GetResponse } from '~/app/data/dto/get-response';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { addToWorkspace, Key, addSingleToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
-import { metadata } from '~/app/data/entities/base/metadata';
+import { metadata, EntityDescriptor } from '~/app/data/entities/base/metadata';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
 
 enum SearchStatus {
@@ -46,22 +46,19 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   w100 = true;
 
   @Input()
-  apiEndpoint: string;
-
-  @Input()
   expand: string;
 
   @Input()
   select = null;
 
   @Input()
+  filter: string;
+
+  @Input()
   collection: string;
 
   @Input()
-  subtype: string;
-
-  @Input()
-  filter: string;
+  definition: string;
 
   @Input()
   masterTemplate: TemplateRef<any>;
@@ -95,7 +92,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   @Input()
   formatter: (item: any) => string = (item: any) => {
-    return metadata[this.collection](this.workspace.current, this.translate, this.subtype).format(item);
+    return metadata[this.collection](this.workspace.current, this.translate, this.definition).format(item);
   }
 
   ///////////////// Lifecycle Hooks
@@ -195,6 +192,16 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   ///////////////// Helper Functions
+
+  get entityDescriptor(): EntityDescriptor {
+    const coll = this.collection;
+    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.definition) : null;
+  }
+
+  get apiEndpoint(): string {
+    const meta = this.entityDescriptor;
+    return !!meta ? meta.apiEndpoint : null;
+  }
 
   private fetchUnloadedItem(id: string | number) {
     this.notifyFetchUnloadedItem$.next(id);
