@@ -8,133 +8,207 @@ Missing
 	- Deactivating
 */
 BEGIN -- Cleanup & Declarations
-	DECLARE @R1 [dbo].ResourceList, @R2 [dbo].ResourceList, @R3 [dbo].ResourceList, @R4 [dbo].ResourceList, @R5 [dbo].ResourceList, @R6 [dbo].ResourceList;
-	DECLARE @RP1 [dbo].ResourcePickList, @RP2 [dbo].ResourcePickList, @RP3 [dbo].ResourcePickList, @RP4 [dbo].ResourcePickList, @RP5 [dbo].ResourcePickList, @RP6 [dbo].ResourcePickList;
+	DECLARE @R1 [dbo].ResourceList, @R2 [dbo].ResourceList, @R3 [dbo].ResourceList, @R4 [dbo].ResourceList, @R5 [dbo].ResourceList, @R6 [dbo].ResourceList, @R7 [dbo].ResourceList;
+	DECLARE @RP1 [dbo].ResourcePickList, @RP2 [dbo].ResourcePickList, @RP3 [dbo].ResourcePickList, @RP4 [dbo].ResourcePickList, @RP5 [dbo].ResourcePickList, @RP6 [dbo].ResourcePickList, @RP7 [dbo].ResourcePickList;
 	DECLARE @R1Ids dbo.[IdList], @R2Ids dbo.[IdList], @R3Ids dbo.[idList];
 	DECLARE @R1IndexedIds dbo.IndexedIdList, @R2IndexedIds dbo.IndexedIdList, @R3IndexedIds dbo.IndexedIdList;
 
-
 END
-	INSERT INTO dbo.ResourceClassifications
-	([ResourceType],					[Name],									[IsLeaf]) VALUES
-	(N'property-plant-and-equipment',	N'Property, plant and equipment',		0),
-	(N'investment-property',			N'Investment property',					1),
-	(N'intangible-assets',				N'Intangible assets other than goodwill',1),
-	(N'financial-assets',				N'Financial assets',					1),
-	(N'investments',					N'Investments',							1),	
-	(N'biological-assets',				N'Biological assets',					1),
-	(N'inventories',					N'Inventories',							0),
-	(N'cash-and-cash-equivalents',		N'Cash and cash equivalents',			1),
-	(N'trade-and-other-receivables',	N'Trade and other receivables',			1);
-DECLARE @RTPPE INT, @RTFIA INT, @RTSTK INT, @RTCCE INT
-SELECT 
-	@RTPPE = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'property-plant-and-equipment' AND [Code] = N''),
-	@RTFIA = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'financial-assets' AND [Code] = N''),
-	@RTSTK = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'inventories' AND [Code] = N''),
-	@RTCCE = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'cash-and-cash-equivalents' AND [Code] = N'')
-
+	INSERT INTO dbo.ResourceDefinitions
+	([Id],								[Name],									[IfrsResourceClassificationId]) VALUES
+	(N'property-plant-and-equipment',	N'Property, plant and equipment',		N'PropertyPlantAndEquipment'),
+	(N'motor-vehicles',					N'Motor vehicles',						N'MotorVehicles'),
+	(N'computer-equipment',				N'Computer equipment',					N'ComputerEquipment'),
+	(N'investment-property',			N'Investment property',					N'InvestmentProperty'),
+	(N'intangible-assets',				N'Intangible assets other than goodwill',N'IntangibleAssets'),
+	(N'financial-assets',				N'Financial assets',					N'FinancialAssets'),
+	(N'received-checks',				N'Checks (received)',					N'FinancialAssets'),
+	(N'investments',					N'Investments',							N'Investments'),	
+	(N'biological-assets',				N'Biological assets',					N'BiologicalAssets'),
+	(N'inventories',					N'Inventories',							N'Inventories'),
+	(N'unfinished-goods',				N'Work in progress',					N'WorkInProgress'),
+	(N'raw-materials',					N'Raw Materials',						N'RawMaterials'),
+	(N'steel-products',					N'Steel products',						N'FinishedGoods'),
+	(N'plastic-products',				N'Plastic products',					N'FinishedGoods'),
+	(N'vehicles',						N'Vehicles',							N'FinishedGoods'),
+	(N'spare-parts',					N'Spare parts',							N'Merchandise'),
+	(N'cash-and-cash-equivalents',		N'Cash and cash equivalents',			N'CashAndCashEquivalents'),
+	(N'trade-and-other-receivables',	N'Trade and other receivables',			N'TradeAndOtherReceivables'),
+	(N'financial-liabilities',			N'Financial liabilities',				N'FinancialLiabilities'),
+	(N'issued-checks',					N'Checks (issued)',						N'FinancialLiabilities'),
+	(N'issued-letters-of-credit',		N'Letters of credit (issued)',			N'FinancialLiabilities')
+	;
+	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'property-plant-and-equipment'
+										[Name],								[IsLeaf],	[Node]) VALUES
+	(N'property-plant-and-equipment',	N'Land and buildings',					0,			N'/1/'),
+	(N'property-plant-and-equipment',	N'Land',								1,			N'/1/1/'),
+	(N'property-plant-and-equipment',	N'Buildings',							1,			N'/1/2/'),
+	(N'property-plant-and-equipment',	N'Machinery',							1,			N'/2/'),
+	(N'property-plant-and-equipment',	N'Vehicles',							0,			N'/3/'),
+	(N'property-plant-and-equipment',	N'Ships',								1,			N'/3/1/'),
+	(N'property-plant-and-equipment',	N'Aircraft',							1,			N'/3/2/'),
+	(N'property-plant-and-equipment',	N'Motor vehicles',						1,			N'/3/3/'),
+	(N'property-plant-and-equipment',	N'Fixture and fittings',				1,			N'/4/'),
+	(N'property-plant-and-equipment',	N'Office equipment',					1,			N'/5/'),
+--	(N'property-plant-and-equipment',	N'Computer equipment',					1,			N'/6/'),
+	(N'property-plant-and-equipment',	N'Communication and network equipment',	1,			N'/7/'),
+	(N'property-plant-and-equipment',	N'Nework infrastructure',				1,			N'/8/'),
+	(N'property-plant-and-equipment',	N'Bearer plants',						1,			N'/9/'),
+	(N'property-plant-and-equipment',	N'Bearer plants',						1,			N'/10/'),
+	(N'property-plant-and-equipment',	N'Tangible exploration and evaluation assets',1,	N'/11/'),
+	(N'property-plant-and-equipment',	N'Mining assets',						1,			N'/12/'),
+	(N'property-plant-and-equipment',	N'Oil and gas assets',					1,			N'/13/'),
+	(N'property-plant-and-equipment',	N'Power generating assets',				1,			N'/14/'),
+	(N'property-plant-and-equipment',	N'Leashold improvements',				1,			N'/15/'),
+	(N'property-plant-and-equipment',	N'Construction in progress',			0,			N'/16/'),
+	(N'property-plant-and-equipment',	N'Affordable complexes',				1,			N'/16/1/'),
+	(N'property-plant-and-equipment',	N'Luxury Complexes',					1,			N'/16/2/');
+	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'computer-equipment'
+							[Name],				[IsLeaf],	[Node]) VALUES
+	(N'computer-equipment',	N'Servers',			1,			N'/1/'),
+	(N'computer-equipment',	N'Desktops',		1,			N'/2/'),
+	(N'computer-equipment',	N'Laptops',			1,			N'/3/'),
+	(N'computer-equipment',	N'Mobiles',			1,			N'/4/'),
+	(N'computer-equipment',	N'Printers',		0,			N'/5/'),
+	(N'computer-equipment',	N'Color printers',	1,			N'/5/1/'),
+	(N'computer-equipment',	N'B/W printers',	1,			N'/5/2/');
+	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'steel-products'
+						[Name],	[IsLeaf],	[Node]) VALUES
+	(N'steel-products',	N'D',	1,			N'/1/'),
+	(N'steel-products',	N'HSP',	0,			N'/2/'),
+	(N'steel-products',	N'CHS',	1,			N'/2/1/'),
+	(N'steel-products',	N'RHS',	1,			N'/2/2/'),
+	(N'steel-products',	N'SHS',	1,			N'/2/3/'),
+	(N'steel-products',	N'LTZ',	0,			N'/3/'),
+	(N'steel-products',	N'L',	1,			N'/3/1/'),
+	(N'steel-products',	N'T',	1,			N'/3/2/'),
+	(N'steel-products',	N'Z',	1,			N'/3/3/'),
+	(N'steel-products',	N'SM',	1,			N'/4/'),
+	(N'steel-products',	N'CP',	1,			N'/5/'),
+	(N'steel-products',	N'X',	1,			N'/6/');
+	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'vehicles'
+					[Name],		[IsLeaf],	[Node]) VALUES
+	(N'vehicles',	N'Cars',	1,			N'/1/'),
+	(N'vehicles',	N'Sedan',	1,			N'/1/1/'),
+	(N'vehicles',	N'4xDrive',	1,			N'/1/2/'),
+	(N'vehicles',	N'Sports',	1,			N'/1/3/'),
+	(N'vehicles',	N'Trucks',	0,			N'/2/');
+	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'financial-assets
+							[Name],				[IsLeaf],	[Node]) VALUES
+	(N'financial-assets',	N'Checks (received)',1,			N'/1/'),
+	(N'financial-assets',	N'CPO (received)',	0,			N'/2/'),
+	(N'financial-assets',	N'L/C (received)',	1,			N'/3/'),
+	(N'financial-assets',	N'L/G (received)',	1,			N'/4/');
+	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'financial-liabilities
+								[Name],				[IsLeaf],	[Node]) VALUES
+	(N'financial-liabilities',	N'Checks (issued)',	1,			N'/1/'),
+	(N'financial-liabilities',	N'L/G (issued)',	1,			N'/2/'),
+	(N'financial-liabilities',	N'L/C (issued)',	1,			N'/3/');
+	UPDATE RC_Child -- Fix Parent Id
+	SET RC_Child.ParentId = RC_Parent.Id
+	FROM dbo.ResourceClassifications RC_Child
+	JOIN dbo.ResourceClassifications RC_Parent 
+	ON RC_Child.[ParentNode] = RC_Parent.[Node]
+	AND RC_Child.[ResourceDefinitionId] = RC_Parent.[ResourceDefinitionId];
 BEGIN -- Inserting
 	INSERT INTO @R1 ([Index],
-	[ResourceClassificationId],	[Name],					[Code],		[UnitId], [CountUnitId]) VALUES
-	(0, @RTCCE,					N'Cash/ETB',			N'ETB',		@ETBUnit, @pcsUnit),
-	(1, @RTCCE,					N'Cash/USD',			N'USD',		@USDUnit, @pcsUnit),
-	(2, @RTCCE,					N'Received Checks/ETB',	N'RCKETB',	@ETBUnit, @pcsUnit); --1
-DECLARE @RCKETBIndex INT = (SELECT [Index] FROM @R1 WHERE [Code] = N'RCKETB');
-DECLARE @CBEBank INT, @AWBBank INT;
-	INSERT INTO @RP1([Index], 
-	[ResourceIndex], [ProductionDate], [Code], [MonetaryValue], [IssuingBankId]) VALUES
-	(0,@RCKETBIndex,	N'2017.10.01',	N'101009',	6900,		@CBEBank),
-	(1,@RCKETBIndex,	N'2017.10.15',	N'2308',	17550,		@AWBBank);
-
-	EXEC [api].[Resources__Save]
-		@ResourceType = N'cash-and-cash-equivalents',
+		[Name],			[Code],		[CurrencyId]) VALUES
+	(0, N'Cash/ETB',	N'ETB',		N'ETB'), -- may not be needed. Implicit in Account
+	(1, N'Cash/USD',	N'USD',		N'USD'); -- may not be needed. Implicit in Account
+	EXEC [api].[Resources__Save] --  N'cash-and-cash-equivalents',
+		@ResourceDefinitionId =  N'cash-and-cash-equivalents',
 		@Resources = @R1,
 		@Picks = @RP1,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
 		Print 'Inserting Cash and cash equivalents'
 		GOTO Err_Label;
 	END;
 
-	INSERT INTO dbo.ResourceClassifications
-	([ResourceType],	[ParentId],	[Name],			[Code], [IsLeaf]) VALUES
-	(N'inventories',	@RTSTK,		N'Vehicles',	N'1',	0);
-DECLARE @RTVHC INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'inventories' AND [Code] = N'1');
-
-	INSERT INTO dbo.ResourceClassifications
-	([ResourceType],	[ParentId],	[Name],			[Code], [IsLeaf]) VALUES
-	(N'inventories',	@RTVHC,		N'Sedan',		N'11',	1),
-	(N'inventories',	@RTVHC,		N'4x Drive',	N'12',	1),
-	(N'inventories',	@RTVHC,		N'Sports',		N'13',	1);
-
-DECLARE @RCVS INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'inventories' AND [Code] = N'11');
 	INSERT INTO @R2 ([Index],
-	[ResourceClassificationId],	[Name],					[Code],	[UnitId]) VALUES
-	(0, @RCVS,					N'Toyota Camry 2018',	NULL,	@pcsUnit),--1
-	(1, @RCVS,					N'Fake',				NULL,	@pcsUnit),--1
-	(2, @RCVS,					N'Toyota Yaris 2018',	NULL,	@pcsUnit);--1
-
-DECLARE @ToyotaCamryIndex INT = (SELECT [Index] FROM @R2 WHERE [Name] = N'Toyota Camry 2018');
-DECLARE @ToyotaYarisIndex INT = (SELECT [Index] FROM @R2 WHERE [Name] = N'Toyota Yaris 2018');
-	INSERT INTO @RP2([Index],
-	[ResourceIndex],		[ProductionDate], [Code]) VALUES
-	(0,@ToyotaCamryIndex,	N'2017.10.01',		N'101'),
-	(1,@ToyotaCamryIndex,	N'2017.10.15',		N'102'),
-	(2,@ToyotaCamryIndex,	N'2017.10.15',		N'199'),
-	(3,@ToyotaYarisIndex,	N'2017.10.01',		N'201');
-
-	INSERT INTO dbo.ResourceClassifications
-	([ResourceType],	[ParentId],	[Name],				[Code], [IsLeaf], [HasMass], [HasCount]) VALUES
-	(N'inventories',	@RTSTK,		N'Raw Materials',	N'2',	1,			1,			1);
-DECLARE @RCRM INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceType] = N'inventories' AND [Code] = N'2');
-
-	INSERT INTO @R2 ([Index],
-	[ResourceClassificationId],	[Name],					[Code],			[UnitId], [CountUnitId]) VALUES
-	(3, @RCRM,					N'HR 1000MMx1.9MM',		N'HR1000x1.9',	@KgUnit, @pcsUnit),
-	(4, @RCRM,					N'CR 1000MMx1.4MM',		N'CR1000x1.4',	@KgUnit, @pcsUnit);
-
-DECLARE @HotRollIndex INT =  (SELECT [Index] FROM @R2 WHERE [Name] = N'HR 1000MMx1.9MM');
-	INSERT INTO @RP2([Index],
-	[ResourceIndex], [ProductionDate], [Code], [Mass]) VALUES
-	(4,@HotRollIndex,		N'2017.10.01',	N'54001', 7891),
-	(5,@HotRollIndex,		N'2017.10.15',	N'54002', 6985),
-	(6,@HotRollIndex,		N'2017.10.15',	N'60032', 7320),
-	(7,@HotRollIndex,		N'2017.10.01',	N'60342', 7100);
-
-	EXEC [api].[Resources__Save]
-		@ResourceType = N'inventories',
-		@Resources = @R2,
-		@Picks = @RP2,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
+		[Name],						[Code],		[CurrencyId]) VALUES
+	(0,	N'Checks (received)/ETB',	N'RCKETB',	N'ETB'); -- may not be needed. Implicit in Account
+	INSERT INTO @RP2([Index], [ResourceIndex],
+		[ProductionDate],	[Code],		[MonetaryValue], [IssuingBankId]) VALUES
+	(0,0,	N'2017.10.01',	N'101009',	6900,			@CBE),
+	(1,0,	N'2017.10.15',	N'2308',	17550,			@AWB);	
+	EXEC [api].[Resources__Save] -- N'received-checks'
+	@ResourceDefinitionId =  N'received-checks',
+	@Resources = @R2,
+	@Picks = @RP2,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Inserting inventories'
+		Print 'Inserting received checks'
 		GOTO Err_Label;
 	END;
-
+	
 	INSERT INTO @R3 ([Index],
-	[ResourceClassificationId],	[Name],				[Code],			[UnitId]) VALUES
-	(0, @RTFIA,					N'Common Stock',	N'CMNSTCK',		@shareUnit),
-	(1, @RTFIA,					N'Premium Stock',	N'PRMMSTCK',	@shareUnit);
-
-	EXEC [api].[Resources__Save]
-		@ResourceType = N'financial-assets',
+		[Name],				[Code],			[MassUnitId], [CountUnitId]) VALUES
+	(0,	N'HR 1000MMx1.9MM',	N'HR1000x1.9',	@KgUnit, @pcsUnit),
+	(1,	N'CR 1000MMx1.4MM',	N'CR1000x1.4',	@KgUnit, @pcsUnit);
+	INSERT INTO @RP3([Index], [ResourceIndex],
+	[ProductionDate],	[Code],		[Mass]) VALUES
+	(4,0,N'2017.10.01',	N'54001',	7891),
+	(5,0,N'2017.10.15',	N'54002',	6985),
+	(6,0,N'2017.10.15',	N'60032',	7320),
+	(7,0,N'2017.10.01',	N'60342',	7100);
+	EXEC [api].[Resources__Save] --  N'raw-materials'
+		@ResourceDefinitionId = N'raw-materials',
 		@Resources = @R3,
 		@Picks = @RP3,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Inserting financial assets'
+		Print 'Inserting raw materials'
+		GOTO Err_Label;
+	END;
+
+	DECLARE @RCVS INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceDefinitionId] = N'vehicles' AND [Node] = N'/1/1/');
+	INSERT INTO @R6 ([Index],
+	[ResourceClassificationId],	[Name],					[CountUnitId]) VALUES
+	(0, @RCVS,					N'Toyota Camry 2018',	@pcsUnit),--1
+	(1, @RCVS,					N'Fake',				@pcsUnit),--1
+	(2, @RCVS,					N'Toyota Yaris 2018',	@pcsUnit);--1
+	INSERT INTO @RP6([Index], [ResourceIndex],
+			[ProductionDate],	[Code]) VALUES
+	(0,0,	N'2017.10.01',		N'101'),
+	(1,0,	N'2017.10.15',		N'102'),
+	(2,0,	N'2017.10.15',		N'199'),
+	(3,2,	N'2017.10.01',		N'201');
+	EXEC [api].[Resources__Save] -- N'vehicles'
+		@ResourceDefinitionId = N'vehicles',
+		@Resources = @R6,
+		@Picks = @RP6,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Inserting vehicles'
+		GOTO Err_Label;
+	END;
+
+	INSERT INTO @R7 ([Index],
+		[Name],				[Code],			[CountUnitId]) VALUES
+	(0, N'Common Stock',	N'CMNSTCK',		@shareUnit),
+	(1, N'Premium Stock',	N'PRMMSTCK',	@shareUnit);
+	EXEC [api].[Resources__Save] -- N'financial-liabilities'
+		@ResourceDefinitionId = N'financial-liabilities',
+		@Resources = @R7,
+		@Picks = @RP7,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Inserting financial liabilities'
 		GOTO Err_Label;
 	END;
 
 	IF @DebugResources = 1
 	BEGIN
-		SELECT * FROM dbo.ResourceClassifications ORDER BY [ResourceType], [Code];
+		SELECT * FROM dbo.[ResourceDefinitions];
+		SELECT	[ResourceDefinitionId], [Id], [ParentId], [Node].ToString() As [Path], REPLICATE(N'    ', [Node].GetLevel() - 1) + [Name] AS [Name],
+				[Code], [IsActive], [IsLeaf]
+		FROM dbo.ResourceClassifications ORDER BY [ResourceDefinitionId], [Node];
 		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
 		EXEC rpt.[sp_ResourcesPicks] @R2Ids;
 	END

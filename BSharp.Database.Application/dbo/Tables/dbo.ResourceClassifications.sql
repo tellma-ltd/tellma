@@ -7,9 +7,8 @@
 	[Name]							NVARCHAR(255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
-	[Code]							NVARCHAR(255)		NOT NULL DEFAULT N'', -- unique per resource type
-	-- for Ifrs Reporting, and to check resource-account compatibility.
-	[IfrsResourceClassificationId]	NVARCHAR(255), -- This can be the same of resource definition or child of its parent. FK IfrsResourceClassifications
+	[Code]							NVARCHAR(255), -- unique per resource definition
+
 	-- Additional properties, Is Active at the end
 	[IsActive]						BIT					NOT NULL DEFAULT 1,
 	-- Audit details
@@ -21,8 +20,10 @@
 	[Node]							HIERARCHYID			NOT NULL,
 	[ParentNode]					AS [Node].GetAncestor(1),
 );
+GO;
+CREATE UNIQUE CLUSTERED INDEX [IX_ResourceClassifications__ResourceDefinitionId_Node]
+	ON [dbo].[ResourceClassifications]([ResourceDefinitionId], [Node]);
 GO
-CREATE UNIQUE INDEX [IX_ResourceClassifications__Code] ON [dbo].[ResourceClassifications]([Code]) WHERE [Code] IS NOT NULL;
-GO
-CREATE UNIQUE CLUSTERED INDEX [IX_ResourceClassifications__Node] ON [dbo].[ResourceClassifications]([Node]);
+CREATE UNIQUE INDEX [IX_ResourceClassifications__ResourceDefinitionId_Code]
+	ON [dbo].[ResourceClassifications]([ResourceDefinitionId], [Code]) WHERE [Code] IS NOT NULL;
 GO

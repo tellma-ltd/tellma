@@ -1,21 +1,20 @@
 ﻿CREATE TABLE [dbo].[ResourceDefinitions]
 (
-	[Id]							NVARCHAR (255)				NOT NULL PRIMARY KEY,
+	[Id]							NVARCHAR (255)	NOT NULL PRIMARY KEY,
 	[Name]							NVARCHAR (255)	NOT NULL,
-	[Code]							NVARCHAR (255)	NOT NULL DEFAULT N'', -- unique per resource type
-	--
-	[IfrsResourceClassficationId]	NVARCHAR (255), -- FK IfrsResourceClassifications
-	-- Specs
-	[HasMonetaryAmount]				BIT						DEFAULT 0,
-	[HasMass]						BIT						DEFAULT 0,
-	[HasVolume]						BIT						DEFAULT 0,
-	[HasArea]						BIT						DEFAULT 0,
-	[HasLength]						BIT						DEFAULT 0,
-	[HasTime]						BIT						DEFAULT 0,
-	[HasCount]						BIT						DEFAULT 0,
+	[IfrsResourceClassificationId]	NVARCHAR (255), -- FK IfrsResourceClassifications
 
+	-- One method to auto generate codes/names
+	[CodeRegEx]						NVARCHAR (255), -- Null means manually defined
+	[NameRegEx]						NVARCHAR (255), -- Null means manually defined
+
+	[HasResourceClassification]		BIT						DEFAULT 0, -- Computer Equipment: Servers, Desktops, etc
 	[HasResourceLookup1]			BIT						DEFAULT 0, -- Vehicle: Internal Color, External color, Make, Model
+	[ResourceLookup1DefinitionId]	INT,
 	[HasResourceLookup2]			BIT						DEFAULT 0, -- Steel: Thickness, Product type
+	[ResourceLookup2DefinitionId]	INT,
 	[HasResourceLookup3]			BIT						DEFAULT 0, -- Dress: Size, Color 
+	[ResourceLookup3DefinitionId]	INT,
 	[HasResourceLookup4]			BIT						DEFAULT 0, --  
+	[ResourceLookup4DefinitionId]	INT
 );

@@ -105,4 +105,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ResourceLookups__Save]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="32985a41-50fa-4bd9-aad5-4d8e086dc5be" ChangeDateTime="09/17/2019 13:32:13">
+    <Property Name="ElementName" Value="[dbo].[ResourceClassifications].[IfrsResourceClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceDefinitionId]" />
+  </Operation>
 </Operations>

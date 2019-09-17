@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[ResourcePicks] (
 	[Id]					INT					PRIMARY KEY IDENTITY(0, 1),
-	[ResourceId]			INT					NOT NULL,
+	[ResourceId]			INT					NOT NULL CONSTRAINT [FK_ResourcePicks__ResourceId]	FOREIGN KEY ([ResourceId])	REFERENCES [dbo].[Resources] ([Id]),
 --	Tag #, Coil #, Check #, LC #
 	[Code]					NVARCHAR (255)		NOT NULL,
 	[ProductionDate]		DATE,

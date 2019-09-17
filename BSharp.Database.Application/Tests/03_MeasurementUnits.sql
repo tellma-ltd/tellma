@@ -1,7 +1,7 @@
 ﻿BEGIN -- Cleanup & Declarations
 	DECLARE @MU1 [dbo].MeasurementUnitList, @MU2 [dbo].MeasurementUnitList, @MU3 [dbo].MeasurementUnitList,
 			@MUIndexedIds dbo.[IndexedIdList];
-	DECLARE @ETBUnit INT, @USDUnit INT, @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT, @LiterUnit INT,
+	DECLARE @ETBUnit NCHAR (3) = N'ETB', @USDUnit NCHAR (3) = N'USD', @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT, @LiterUnit INT,
 			@wmoUnit INT, @hrUnit INT, @yrUnit INT, @dayUnit INT, @moUnit INT;
 END
 BEGIN -- Inserting
@@ -37,7 +37,7 @@ DECLARE @TestingValidation bit = 0;
 IF (@TestingValidation = 1)
 INSERT INTO @MU2 ( [Index],
 				[Name], [UnitType], [Description], [UnitAmount], [BaseAmount], [Code]) Values
-	(@RowCount+1, N'AED', N'MonetaryValue', N'AE Dirhams', 3.67, 1, N'AED'),
+	--(@RowCount+1, N'AED', N'MonetaryValue', N'AE Dirhams', 3.67, 1, N'AED'),
 	(@RowCount+2, N'c', N'Time', N'Century', 1, 3110400000, NULL),
 	(@RowCount+3, N'dozen', N'Count', N'Dazzina', 1, 12, NULL);
 -- Updating
@@ -81,8 +81,6 @@ BEGIN
 END
 
 SELECT
-	@ETBUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ETB'),
-	@USDUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'USD'),
 	@KgUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'Kg'),
 	@LiterUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ltr'),
 	@pcsUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'pcs'),
