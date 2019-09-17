@@ -38,7 +38,7 @@ BEGIN
 		LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
 		WHERE J.[IfrsEntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		-- TODO: we need a way to separate finished goods from the rest
-		AND RC.IfrsResourceClassificationId = N'FinishedGoods'
+		AND RC.[ResourceDefinitionId] = N'FinishedGoods'
 		GROUP BY J.[ResponsibilityCenterId], R.ResourceLookup1Id
 	),
 	PlannedDetails AS (

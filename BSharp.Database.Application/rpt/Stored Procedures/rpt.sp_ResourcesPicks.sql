@@ -1,12 +1,12 @@
 ﻿CREATE PROCEDURE [rpt].[sp_ResourcesPicks]
 	@Ids dbo.[IdList] READONLY
 AS
-	SELECT 	R.[Id], RC.[IfrsResourceClassificationId], RC.[Name] AS Classification, R.[Name], R.[IsActive], R.[Code],
-		[UnitMonetaryValue], MF.[Name] AS [Currency], [UnitMass], MM.[Name] AS [MassUnit], [UnitVolume], MV.[Name] AS [VolumeUnit],
+	SELECT 	R.[ResourceDefinitionId], R.[Id], RC.[Name] AS Classification, R.[Name], R.[IsActive], R.[Code],
+		[UnitMonetaryValue], C.[Name] AS [Currency], [UnitMass], MM.[Name] AS [MassUnit], [UnitVolume], MV.[Name] AS [VolumeUnit],
 		[UnitArea], MA.[Name] AS [AreaUnit], [UnitLength], ML.[Name] AS [LengthUnit], [UnitTime], MT.[Name] AS [TimeUnit], [UnitCount], MC.[Name] AS [CountUnit]
 	FROM dbo.Resources R
-	JOIN dbo.ResourceClassifications RC ON R.[ResourceClassificationId] = RC.[Id]
-	LEFT JOIN dbo.Currencies MF ON R.[CurrencyId] = MF.[Id]
+	LEFT JOIN dbo.ResourceClassifications RC ON R.[ResourceClassificationId] = RC.[Id]
+	LEFT JOIN dbo.Currencies C ON R.[CurrencyId] = C.[Id]
 	LEFT JOIN dbo.MeasurementUnits MM ON R.[MassUnitId] = MM.[Id]
 	LEFT JOIN dbo.MeasurementUnits MV ON R.[VolumeUnitId] = MV.[Id]
 	LEFT JOIN dbo.MeasurementUnits MA ON R.[AreaUnitId] = MA.[Id]
