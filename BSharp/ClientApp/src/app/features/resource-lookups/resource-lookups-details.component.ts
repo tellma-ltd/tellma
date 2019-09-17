@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { ResourceLookup, ResourceLookupForSave } from '~/app/data/entities/resource-lookup';
-import { Subject } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -16,7 +15,6 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 })
 export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private notifyDestruct$ = new Subject<void>();
   private resourceLookupsApi = this.api.resourceLookupsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
 

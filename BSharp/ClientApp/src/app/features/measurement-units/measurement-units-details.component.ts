@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { MeasurementUnit, MeasurementUnitForSave, metadata_MeasurementUnit } from '~/app/data/entities/measurement-unit';
@@ -8,7 +7,6 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
-import { DropdownAction } from '~/app/shared/details/details.component';
 
 @Component({
   selector: 'b-measurement-units-details',
@@ -17,7 +15,6 @@ import { DropdownAction } from '~/app/shared/details/details.component';
 export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
 
   private _unitTypeChoices: { name: string, value: any }[];
-  private notifyDestruct$ = new Subject<void>();
   private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';

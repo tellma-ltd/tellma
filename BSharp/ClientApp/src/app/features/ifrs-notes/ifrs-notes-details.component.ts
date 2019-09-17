@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { Subject } from 'rxjs';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { IfrsNote, IfrsConcept_IfrsType } from '~/app/data/entities/ifrs-note';
@@ -14,7 +13,6 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class IfrsNotesDetailsComponent extends DetailsBaseComponent {
 
-  private notifyDestruct$ = new Subject<void>();
   private ifrsNotesApi = this.api.ifrsNotesApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Parent';
