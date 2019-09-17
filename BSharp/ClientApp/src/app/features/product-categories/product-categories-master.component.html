@@ -4,8 +4,8 @@
   [tableDescriptionColumnTemplate]="descriptionColumn"
   selectDefault="Code,IsActive" selectForTiles="Code"
   [multiselectActions]="[
-            { template : activate, action: onActivate, requiresUpdatePermission: true },
-            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
+          { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+          { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}

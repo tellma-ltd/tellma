@@ -26,6 +26,14 @@ import { IfrsNotesDetailsComponent } from './ifrs-notes/ifrs-notes-details.compo
 import { ProductCategoriesMasterComponent } from './product-categories/product-categories-master.component';
 import { ProductCategoriesImportComponent } from './product-categories/product-categories-import.component';
 import { ProductCategoriesDetailsComponent } from './product-categories/product-categories-details.component';
+import { ResourceLookupsMasterComponent } from './resource-lookups/resource-lookups-master.component';
+import { ResourceLookupsDetailsComponent } from './resource-lookups/resource-lookups-details.component';
+import { ResourceLookupsImportComponent } from './resource-lookups/resource-lookups-import.component';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import {
+  faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
+  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder
+} from '@fortawesome/free-solid-svg-icons';
 
 const routes: Routes = [
   {
@@ -131,6 +139,23 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
+      // Resource Lookups
+      {
+        path: 'resource-lookups/:definitionId',
+        component: ResourceLookupsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'resource-lookups/:definitionId/import',
+        component: ResourceLookupsImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'resource-lookups/:definitionId/:id',
+        component: ResourceLookupsDetailsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -174,10 +199,22 @@ const routes: Routes = [
     IfrsNotesDetailsComponent,
     ProductCategoriesMasterComponent,
     ProductCategoriesImportComponent,
-    ProductCategoriesDetailsComponent],
+    ProductCategoriesDetailsComponent,
+    ResourceLookupsMasterComponent,
+    ResourceLookupsDetailsComponent,
+    ResourceLookupsImportComponent],
   imports: [
     SharedModule,
     RouterModule.forChild(routes)
   ]
 })
-export class ApplicationModule { }
+export class ApplicationModule {
+  constructor(library: FaIconLibrary) {
+    // Icons to be used in the web app
+    library.addIcons(
+      // Main menu icons
+      faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
+      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder
+    );
+  }
+}

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Agent, AgentForSave, metadata_Agent } from '~/app/data/entities/agent';
@@ -19,7 +18,6 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
 
   private _languageChoices: { name: string, value: any }[];
   private _agentTypeChoices: { name: string, value: any }[];
-  private notifyDestruct$ = new Subject<void>();
   private agentsApi = this.api.agentsApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'User';

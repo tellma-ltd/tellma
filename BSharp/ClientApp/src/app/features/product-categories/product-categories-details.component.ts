@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { Subject } from 'rxjs';
 import { ProductCategoryForSave, ProductCategory } from '~/app/data/entities/product-category';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -14,7 +13,6 @@ import { addToWorkspace } from '~/app/data/util';
 })
 export class ProductCategoriesDetailsComponent extends DetailsBaseComponent {
 
-  private notifyDestruct$ = new Subject<void>();
   private productCategoriesApi = this.api.productCategoriesApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Parent';

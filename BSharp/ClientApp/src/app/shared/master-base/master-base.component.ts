@@ -5,7 +5,7 @@ import { MasterComponent } from '../master/master.component';
 @Component({
   template: ''
 })
-export class MasterBaseComponent implements OnInit, OnDestroy {
+export class MasterBaseComponent implements OnDestroy {
 
   // a convenience class that canonical master components can inherit from
   // it provides all common functionality of the TypeScript part of the component
@@ -62,9 +62,6 @@ export class MasterBaseComponent implements OnInit, OnDestroy {
     if (!!this.masterCancel) {
       this.masterCancel.unsubscribe();
     }
-  }
-
-  ngOnInit(): void {
   }
 
   ngOnDestroy(): void {

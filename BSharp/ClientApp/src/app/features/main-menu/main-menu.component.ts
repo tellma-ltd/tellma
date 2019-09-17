@@ -5,9 +5,12 @@ import { Key } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
+import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { SettingsForClient } from '~/app/data/dto/settings-for-client';
+import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
 
-interface MenuSectionInfo { label: string; background: string; items: MenuItemInfo[]; }
-interface MenuItemInfo { icon: string; label: string; background?: string; link: string; viewId?: string; }
+interface MenuSectionInfo { label?: string; background: string; items: MenuItemInfo[]; }
+interface MenuItemInfo { icon: string; label: string; link: string; viewId?: string; sortKey: number; }
 
 @Component({
   selector: 'b-main-menu',
@@ -37,42 +40,109 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // TODO: replace below with a dynamically constructed mainMenu
   quickAccess: MenuItemInfo[] = [
-    { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units' },
-    { label: 'IfrsNotes', icon: 'clipboard', background: 'b-cyan', link: '../ifrs-notes', viewId: 'ifrs-notes' },
-    { label: 'ProductCategories', icon: 'list', background: 'b-cyan', link: '../product-categories', viewId: 'product-categories' },
-    { label: 'Users', icon: 'users', background: 'b-green', link: '../users', viewId: 'users' },
-    { label: 'Roles', icon: 'tasks', background: 'b-green', link: '../roles', viewId: 'roles' },
-    { label: 'Settings', icon: 'cog', background: 'b-blue', link: '../settings', viewId: 'settings' },
+    { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units', sortKey: 10 },
+    { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 20 },
+    { label: 'ProductCategories', icon: 'list', link: '../product-categories', viewId: 'product-categories', sortKey: 30 },
+    { label: 'Users', icon: 'users', link: '../users', viewId: 'users', sortKey: 40 },
+    { label: 'Roles', icon: 'tasks', link: '../roles', viewId: 'roles', sortKey: 50 },
+    { label: 'Settings', icon: 'cog', link: '../settings', viewId: 'settings', sortKey: 60 },
   ];
 
-  mainMenu: MenuSectionInfo[] = [{
-    label: 'Financials',
-    background: 'b-green',
-    items: [
-      { label: 'Payment Orders to Custody', icon: 'money-check-alt', background: 'b-green', link: '.' },
-      { label: 'Cash on Hand Accounts', icon: 'hand-holding-usd', background: 'b-cyan', link: '.' },
-      { label: 'Bank Accounts', icon: 'landmark', background: 'b-cyan', link: '.' },
-      { label: 'Creditor Account Statement', icon: 'list-ul', background: 'b-cyan', link: '.' },
-      { label: 'Internal Checks Custodies', icon: 'money-check', background: 'b-green', link: '.' },
-      { label: 'Borrowing Contracts', icon: 'file-contract', background: 'b-green', link: '.' },
-      { label: 'Cash Account Statement', icon: 'list-ul', background: 'b-green', link: '.' },
-      { label: 'Cash Receipts From Creditors', icon: 'file-invoice-dollar', background: 'b-green', link: '.' },
-      { label: 'Cash Payments To Creditors', icon: 'money-bill-wave', background: 'b-green', link: '.' },
-      { label: 'Creditors', icon: 'users', background: 'b-blue', link: '.' },
-      { label: 'External Checks Custodies', icon: 'money-check', background: 'b-blue', link: '.' },
-      { label: 'IfrsNotes', icon: 'clipboard', background: 'b-green', link: '../ifrs-notes', viewId: 'ifrs-notes' },
-      { label: 'ProductCategories', icon: 'list', background: 'b-green', link: '../product-categories', viewId: 'product-categories' },
-    ]
-  }, {
-    label: 'Administration',
-    background: 'b-blue',
-    items: [
-      { label: 'Users', icon: 'users', background: 'b-green', link: '../users', viewId: 'users' },
-      { label: 'Roles', icon: 'tasks', background: 'b-green', link: '../roles', viewId: 'roles' },
-      { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units' },
-      { label: 'Settings', icon: 'cog', background: 'b-blue', link: '../settings', viewId: 'settings' },
-    ]
-  }];
+  mainMenuBase: { [section: string]: MenuSectionInfo } = {
+    Financials: {
+      background: 'b-green',
+      items: [
+        { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
+        { label: 'ProductCategories', icon: 'list', link: '../product-categories', viewId: 'product-categories', sortKey: 200 },
+      ]
+    },
+    Administration: {
+      background: 'b-blue',
+      items: [
+        { label: 'Users', icon: 'users', link: '../users', viewId: 'users', sortKey: 100 },
+        { label: 'Roles', icon: 'tasks', link: '../roles', viewId: 'roles', sortKey: 200 },
+        { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units', sortKey: 300 },
+        { label: 'Settings', icon: 'cog', link: '../settings', viewId: 'settings', sortKey: 400 },
+      ]
+    },
+    Miscellaneous: { // TODO
+      background: 'b-grey',
+      items: [
+      ]
+    }
+  };
+
+  get mainMenu(): MenuSectionInfo[] {
+    this.initializeMainMenu();
+    return this._mainMenu;
+  }
+
+  _permissions: PermissionsForClient = null;
+  _definitions: DefinitionsForClient = null;
+  _settings: SettingsForClient = null;
+  _mainMenu: MenuSectionInfo[];
+  _currentCulture: string;
+
+  public initializeMainMenu(): MenuSectionInfo[] {
+    if (this._definitions !== this.workspace.current.definitions ||
+      this._settings !== this.workspace.current.settings ||
+      this._currentCulture !== this.workspace.ws.culture ||
+      this._permissions !== this.workspace.current.permissions) {
+
+      this._definitions = this.workspace.current.definitions;
+      this._settings = this.workspace.current.settings;
+      this._currentCulture = this.workspace.ws.culture;
+      this._permissions = this.workspace.current.permissions;
+
+      // Clone the main menu base and add to the clone
+      const menu = JSON.parse(JSON.stringify(this.mainMenuBase)) as { [section: string]: MenuSectionInfo };
+
+      // translate all the labels to the current language
+      for (const sectionKey of Object.keys(menu)) {
+        for (const item of menu[sectionKey].items) {
+          item.label = this.translate.instant(item.label);
+        }
+      }
+
+      // add custom screens from definitions
+      for (const definitions of Object.keys(this.workspace.current.definitions).map(d => this.workspace.current.definitions[d])) {
+
+        if (!!definitions) {
+          for (const definitionId of Object.keys(definitions).filter(e => this.canView(e))) {
+
+            // get the definition
+            const definition = definitions[definitionId];
+
+            // get the name
+            const label = (this.workspace.current.isSecondaryLanguage ? definition.TitlePlural2 :
+              this.workspace.current.isTernaryLanguage ? definition.TitlePlural3 : definition.TitlePlural)
+              || this.translate.instant('Untitled');
+
+            // add the menu section if missing
+            if (!menu[definition.MainMenuSection]) {
+              definition.MainMenuSection = 'Miscellaneous';
+            }
+
+            // push the menu item
+            menu[definition.MainMenuSection].items.push({
+              label,
+              sortKey: definition.MainMenuSortKey,
+              icon: definition.MainMenuIcon || 'folder',
+              link: `../resource-lookups/${definitionId}`
+            });
+          }
+        }
+      }
+
+      this._mainMenu = Object.keys(menu).map(e => ({
+        label: this.translate.instant(e),
+        items: menu[e].items.sort((x1, x2) => x1.sortKey - x2.sortKey),
+        background: menu[e].background
+      }));
+    }
+
+    return this._mainMenu;
+  }
 
   // constructor
   constructor(
@@ -105,13 +175,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   initialize() {
     this.initialized = true;
-    this.mainMenu.forEach(section => {
-      if (!!section.items) {
-        section.items.forEach(item => {
-          item.background = section.background;
-        });
-      }
-    });
   }
 
   // this captures all keydown events from the root document

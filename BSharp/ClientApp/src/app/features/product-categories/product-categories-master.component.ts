@@ -5,6 +5,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-product-categories-master',
@@ -16,7 +17,7 @@ export class ProductCategoriesMasterComponent extends MasterBaseComponent {
 
   public expand = '';
 
-  constructor(private workspace: WorkspaceService, private api: ApiService) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
     this.productCategoriesApi = this.api.productCategoriesApi(this.notifyDestruct$);
   }
@@ -45,4 +46,9 @@ export class ProductCategoriesMasterComponent extends MasterBaseComponent {
     // The master template handles any errors
     return obs$;
   }
+
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('product-categories', 'IsActive', null);
+
+  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

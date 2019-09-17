@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BSharp.Controllers.Misc
+namespace BSharp.Controllers.Utilities
 {
     /// <summary>
     /// Represents a permission mask in an efficient-to-manipulate data structure, and provides utilties for common operations on mask trees

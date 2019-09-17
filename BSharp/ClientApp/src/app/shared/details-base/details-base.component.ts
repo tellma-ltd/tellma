@@ -1,6 +1,6 @@
 import { Component, ViewChild, Input, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { DetailsComponent } from '~/app/shared/details/details.component';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, Subject } from 'rxjs';
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { TenantWorkspace } from '~/app/data/workspace.service';
 
@@ -32,6 +32,7 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   private _details: DetailsComponent;
   private detailsSave: Subscription;
   private detailsCancel: Subscription;
+  public notifyDestruct$ = new Subject<void>();
 
   @ViewChild(DetailsComponent, { static: true })
   set details(v: DetailsComponent) {
@@ -70,6 +71,8 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
     if (!!this.detailsCancel) {
       this.detailsCancel.unsubscribe();
     }
+
+    this.notifyDestruct$.next();
   }
 
   // triggers the user confirmation modal

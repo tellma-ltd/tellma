@@ -58,6 +58,11 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
     return obs$;
   }
 
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('agents', 'IsActive', null);
+
+  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+
   public agentTypeLookup(value: string): string {
     const descriptor = metadata_Agent(this.ws, this.translate, null).properties.AgentType as ChoicePropDescriptor;
     return descriptor.format(value);

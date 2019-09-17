@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BSharp.Controllers.Misc
+namespace BSharp.Controllers.Utilities
 {
     public class MaskTreeComparer : IEqualityComparer<MaskTree>
     {

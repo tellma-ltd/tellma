@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { MeasurementUnit, MeasurementUnitForSave, metadata_MeasurementUnit } from '~/app/data/entities/measurement-unit';
@@ -16,7 +15,6 @@ import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
 
   private _unitTypeChoices: { name: string, value: any }[];
-  private notifyDestruct$ = new Subject<void>();
   private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';

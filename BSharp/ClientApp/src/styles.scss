@@ -1016,6 +1016,10 @@ tr.b-highlight {
   @include background-color(#159f85);
 }
 
+.b-grey, .b-gray {
+  @include background-color(#858f85);
+}
+
 .b-menu-section {
   color: #6c757d;
   margin-bottom: 1rem;

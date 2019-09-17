@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Role, RoleForSave } from '~/app/data/entities/role';
@@ -26,7 +25,6 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   public showIsPublic = true;
 
   private _permissionActionChoices: { [viewId: string]: { name: string, value: any }[] } = {};
-  private notifyDestruct$ = new Subject<void>();
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Permissions/View/Actions,Members/Agent';

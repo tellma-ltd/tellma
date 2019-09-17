@@ -159,10 +159,10 @@ namespace BSharp.Entities
 
         // Temp
 
-        public string ResourceType { get; set; }
+        //public string ResourceType { get; set; }
         public int? ResourceClassificationId { get; set; }
-        public bool? IsBatch { get; set; }
-        public int? UnitId { get; set; }
+        //public bool? IsBatch { get; set; }
+        //public int? UnitId { get; set; }
         public decimal? UnitMonetaryValue { get; set; }
         public int? CurrencyId { get; set; }
         public decimal? UnitMass { get; set; }
@@ -180,7 +180,7 @@ namespace BSharp.Entities
         public string SystemCode { get; set; }
         public string Memo { get; set; }
         public string CustomsReference { get; set; }
-        public string UniversalProductCode { get; set; }
+        //public string UniversalProductCode { get; set; }
         public int? PreferredSupplierId { get; set; }
         public int? ExpenseAccountId { get; set; }
         public int? RevenueAccountId { get; set; }
@@ -216,8 +216,9 @@ namespace BSharp.Entities
         // Temp
 
         //public ResourceClassification ResourceClassification { get; set; }
-        [ForeignKey(nameof(UnitId))]
-        public MeasurementUnit Unit { get; set; }
+
+        //[ForeignKey(nameof(UnitId))]
+        //public MeasurementUnit Unit { get; set; }
 
         [ForeignKey(nameof(CurrencyId))]
         public MeasurementUnit Currency { get; set; }

@@ -115,7 +115,7 @@
 
   <!-- Is Active -->
   <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+    <b-auto-cell collection="MeasurementUnit" [entity]="model" path="IsActive"></b-auto-cell>
   </b-form-group>
 </ng-template>
 

@@ -1,11 +1,8 @@
-<b-master collection="Agent" viewId="agents" [mode]="mode"
-  [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
-  [tableDescriptionColumnTemplate]="descriptionColumn"
-  selectDefault="Code,AgentType,IsRelated" selectForTiles="Code,ImageId"
-  [filterDefault]="filterDefault"
-  [multiselectActions]="[
-            { template : activate, action: onActivate, requiresUpdatePermission: true },
-            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
+<b-master collection="Agent" viewId="agents" [mode]="mode" [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
+  [tableDescriptionColumnTemplate]="descriptionColumn" selectDefault="Code,AgentType,IsRelated"
+  selectForTiles="Code,ImageId" [filterDefault]="filterDefault" [multiselectActions]="[
+  { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+  { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
@@ -41,7 +38,7 @@
 <!-- Description Column -->
 <ng-template #descriptionColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell baseCollection="Agent" [entity]="c[id]"></b-auto-cell>
+    <b-auto-cell collection="Agent" [entity]="c[id]"></b-auto-cell>
   </span>
 </ng-template>
 

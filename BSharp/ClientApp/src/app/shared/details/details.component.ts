@@ -14,6 +14,14 @@ import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { Subject, Observable, of, Subscription } from 'rxjs';
 
+export interface DropdownAction {
+  template: TemplateRef<any>;
+  action: (model: EntityForSave) => void;
+  canAction?: (model: EntityForSave) => boolean;
+  actionTooltip?: (model: EntityForSave) => string;
+  showAction?: (model: EntityForSave) => boolean;
+}
+
 @Component({
   selector: 'b-details',
   templateUrl: './details.component.html'
@@ -57,13 +65,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
   savePreprocessing: (mode: EntityForSave) => void;
 
   @Input()
-  actions: {
-    template: TemplateRef<any>,
-    action: (model: EntityForSave) => void,
-    canAction?: (model: EntityForSave) => boolean,
-    actionTooltip?: (model: EntityForSave) => string,
-    showAction?: (model: EntityForSave) => boolean
-  }[] = [];
+  actions: DropdownAction[] = [];
 
   @Input() // popup: only the title and the document are visible
   mode: 'popup' | 'screen' = 'screen';
@@ -812,9 +814,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return this.workspace.ws.isRtl ? 'bottom-right' : 'bottom-left';
   }
 
-  public canAction(action: {
-    canAction?: (model: EntityForSave) => boolean,
-  }): boolean {
+  public canAction(action: DropdownAction): boolean {
 
     if (!!action.canAction) {
       return action.canAction(this.activeModel);
@@ -824,9 +824,7 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
-  public showAction(action: {
-    showAction?: (model: EntityForSave) => boolean
-  }): boolean {
+  public showAction(action: DropdownAction): boolean {
 
     if (!!action.showAction) {
       return action.showAction(this.activeModel);
@@ -836,9 +834,11 @@ export class DetailsComponent implements OnInit, OnDestroy, ICanDeactivate {
     }
   }
 
-  public actionTooltip(action: {
-    actionTooltip?: (model: EntityForSave) => string
-  }): string {
+  public onAction(action: DropdownAction) {
+    action.action(this.activeModel);
+  }
+
+  public actionTooltip(action: DropdownAction): string {
 
     if (!!action.actionTooltip) {
       return action.actionTooltip(this.activeModel);

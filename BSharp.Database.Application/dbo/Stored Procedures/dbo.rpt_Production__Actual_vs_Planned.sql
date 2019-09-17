@@ -77,7 +77,7 @@ BEGIN
 	SELECT RL.Id, RL.SortKey, RL.[Name],
 		A.[Mass] AS MassActual, P.Mass As MassPlanned, A.Mass/P.Mass * 100 As [PercentOfMassPlanned],
 		A.[Count] AS CountActual, P.[Count] AS CountPlanned, A.[Count]/P.[Count] * 100 As [PercentOfCountPlanned]
-	FROM dbo.ResourceLookup1s RL
+	FROM dbo.[ResourceLookups] RL
 	LEFT JOIN Actual A ON RL.Id = A.ResourceLookup1Id
 	LEFT JOIN Planned P ON RL.Id = P.ResourceLookup1Id
 	AND 

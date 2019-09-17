@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.Misc;
+﻿using BSharp.Controllers.Utilities;
 using BSharp.Entities;
 
 namespace BSharp.Controllers.Dto

@@ -1,9 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { User, UserForSave } from '~/app/data/entities/user';
-import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -18,7 +15,6 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   @Input()
   showRoles = true;
 
-  private notifyDestruct$ = new Subject<void>();
   private usersApi = this.api.usersApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Roles/Role,Agent';

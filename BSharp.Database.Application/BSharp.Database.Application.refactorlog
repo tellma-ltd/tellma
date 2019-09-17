@@ -70,6 +70,41 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ResourceProviders]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="26bc2916-5408-4273-a2f0-4400f8c6b71a" ChangeDateTime="09/16/2019 13:35:44">
+    <Property Name="ElementName" Value="[dbo].[ResourceLookup1s]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceLookups]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e04d8066-7fed-4273-9a35-67d8354d9b65" ChangeDateTime="09/16/2019 13:54:10">
+    <Property Name="ElementName" Value="[dbo].[bll_ResourceLookup1s_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceLookups_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="74974bb9-2eda-4592-9648-9e38606b30e9" ChangeDateTime="09/16/2019 13:56:40">
+    <Property Name="ElementName" Value="[dal].[dal_ResourceLookup1s__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceLookups__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="eb16f0ed-49ec-48a6-bd03-4f93fa84e477" ChangeDateTime="09/16/2019 13:57:10">
+    <Property Name="ElementName" Value="[dal].[dal_ResourceLookup1s__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceLookups__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="99373239-6062-48f9-9aed-faaa6bded4a2" ChangeDateTime="09/16/2019 13:57:44">
+    <Property Name="ElementName" Value="[dal].[dal_ResourceLookup1s__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceLookups__Save]" />
+  </Operation>
   <Operation Name="Rename Refactor" Key="32985a41-50fa-4bd9-aad5-4d8e086dc5be" ChangeDateTime="09/17/2019 13:32:13">
     <Property Name="ElementName" Value="[dbo].[ResourceClassifications].[IfrsResourceClassificationId]" />
     <Property Name="ElementType" Value="SqlSimpleColumn" />

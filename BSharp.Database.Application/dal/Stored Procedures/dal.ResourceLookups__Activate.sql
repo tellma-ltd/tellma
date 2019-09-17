@@ -1,11 +1,11 @@
-﻿CREATE PROCEDURE [dbo].[dal_ResourceLookup1s__Activate]
+﻿CREATE PROCEDURE [dal].[ResourceLookups__Activate]
 	@Ids [dbo].[IdList] READONLY,
 	@IsActive bit
 AS
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	MERGE INTO [dbo].ResourceLookup1s AS t
+	MERGE INTO [dbo].[ResourceLookups] AS t
 	USING (
 		SELECT [Id]
 		FROM @Ids

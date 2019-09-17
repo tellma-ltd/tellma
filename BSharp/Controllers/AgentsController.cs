@@ -1,5 +1,5 @@
 ﻿using BSharp.Controllers.Dto;
-using BSharp.Controllers.Misc;
+using BSharp.Controllers.Utilities;
 using BSharp.Data;
 using BSharp.Data.Queries;
 using BSharp.Entities;
@@ -191,7 +191,7 @@ namespace BSharp.Controllers
                     {
                         // This error indicates a bug
                         var index = indices[entity];
-                        ModelState.AddModelError($"[{index}].Id", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
+                        ModelState.AddModelError($"[{index}].Code", _localizer["Error_TheCode0IsDuplicated", entity.Code]);
                     }
                 }
             }

@@ -5,6 +5,7 @@ import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-roles-master',
@@ -16,7 +17,7 @@ export class RolesMasterComponent extends MasterBaseComponent {
 
   public expand = '';
 
-  constructor(private workspace: WorkspaceService, private api: ApiService) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
     this.rolesApi = this.api.rolesApi(this.notifyDestruct$);
   }
@@ -46,4 +47,9 @@ export class RolesMasterComponent extends MasterBaseComponent {
     // The master template handles any errors
     return obs$;
   }
+
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('roles', 'IsActive', null);
+
+  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

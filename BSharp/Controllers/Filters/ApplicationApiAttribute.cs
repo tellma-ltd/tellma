@@ -69,7 +69,7 @@ namespace BSharp.Controllers
 
                 // (2) Make sure the user is a member of this tenant
                 UserInfo userInfo = await _appRepo.GetUserInfoAsync();
-                
+
                 if (userInfo.UserId == null)
                 {
                     // If there is no user cut the pipeline short and return a Forbidden 403
@@ -101,7 +101,7 @@ namespace BSharp.Controllers
                     await adminRepo.GlobalUsers__SetExternalIdByEmail(externalEmail, externalId);
                 }
 
-                else if(userInfo.ExternalId != externalId)
+                else if (userInfo.ExternalId != externalId)
                 {
                     // Note: there is the edge case of identity providers who allow email recycling. I.e. we can get the same email twice with 
                     // two different external Ids. This issue is so unlikely to naturally occur and cause problems here that we are not going
@@ -189,30 +189,55 @@ namespace BSharp.Controllers
                 {
                     Documents = new Dictionary<string, DocumentDefinitionForClient>
                     {
-                        ["journal-vouchers"] = new DocumentDefinitionForClient
-                        {
-                            IsSourceDocument = true,
-                            FinalState = "Posted",
+                        //["journal-vouchers"] = new DocumentDefinitionForClient
+                        //{
+                        //    IsSourceDocument = true,
+                        //    FinalState = "Posted",
 
-                            // TODO: implement mock
-                        }
+
+                        //    // TODO: implement mock
+                        //}
                     },
 
                     Resources = new Dictionary<string, ResourceDefinitionForClient>
                     {
-                        ["inventory"] = new ResourceDefinitionForClient
-                        {
-                            // TODO: implement mock
-                        }
+                        //["inventory"] = new ResourceDefinitionForClient
+                        //{
+                        ////     TODO: implement mock
+                        //}
                     },
 
                     Lines = new Dictionary<string, LineDefinitionForClient>
                     {
-                        ["bla"] = new LineDefinitionForClient
-                        {
-                            // TODO: implement mock
-                        }
+                        //["bla"] = new LineDefinitionForClient
+                        //{
+                        //    // TODO: implement mock
+                        //}
                     },
+
+                    ResourceLookups = new Dictionary<string, ResourceLookupDefinitionForClient>
+                    {
+                        ["colors"] = new ResourceLookupDefinitionForClient
+                        {
+                            TitleSingular = "Color",
+                            TitleSingular2 = "لون",
+                            TitlePlural = "Colors",
+                            TitlePlural2 = "ألوان",
+                            MainMenuIcon = "list",
+                            MainMenuSection = "Administration",
+                            MainMenuSortKey = 202m
+                        },
+                        ["thicknesses"] = new ResourceLookupDefinitionForClient
+                        {
+                            TitleSingular = "Thickness",
+                            TitleSingular2 = "سماكة",
+                            TitlePlural = "Thicknesses",
+                            TitlePlural2 = "سماكات",
+                            MainMenuIcon = "list",
+                            MainMenuSection = "Administration",
+                            MainMenuSortKey = 101m
+                        }
+                    }
                 };
 
                 await Task.Delay(5); // To simulate database communication
@@ -220,7 +245,7 @@ namespace BSharp.Controllers
                 return new DataWithVersion<DefinitionsForClient>
                 {
                     Data = result,
-                    Version = appRepo.GetTenantInfo().DefinitionsVersion
+                    Version = appRepo.GetTenantInfo().DefinitionsVersion + "y"
                 };
             }
         }

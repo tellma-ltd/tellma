@@ -54,4 +54,9 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
     // The master template handles any errors
     return obs$;
   }
+
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('measurement-units', 'IsActive', null);
+
+  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }
