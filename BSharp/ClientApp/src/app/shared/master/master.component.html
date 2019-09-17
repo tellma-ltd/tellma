@@ -203,10 +203,10 @@
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngFor="let action of multiselectActions">
-              <div [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action.requiresUpdatePermission)"
+              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action)"
                 container="body">
-                <button type="button" class="dropdown-item btn-light" (click)="onAction(action.action)"
-                  [disabled]="!canAction(action.requiresUpdatePermission)">
+                <button type="button" class="dropdown-item btn-light" (click)="onAction(action)"
+                  [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
               </div>

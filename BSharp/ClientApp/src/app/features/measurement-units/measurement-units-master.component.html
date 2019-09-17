@@ -3,9 +3,10 @@
   [tableDescriptionColumnTemplate]="descriptionColumn"
   selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive" selectForTiles="Code,Name,Name2,Name3"
   [multiselectActions]="[
-            { template : activate, action: onActivate, requiresUpdatePermission: true },
-            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
-          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+            { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+          ]"
+  [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],

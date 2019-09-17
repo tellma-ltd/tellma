@@ -6,6 +6,7 @@ import { IfrsConcept_IfrsType } from '~/app/data/entities/ifrs-note';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { addToWorkspace } from '~/app/data/util';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-ifrs-notes-master',
@@ -17,7 +18,7 @@ export class IfrsNotesMasterComponent extends MasterBaseComponent {
 
   public expand = '';
 
-  constructor(private workspace: WorkspaceService, private api: ApiService) {
+  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
     this.ifrsNotesApi = this.api.ifrsNotesApi(this.notifyDestruct$);
   }
@@ -52,4 +53,9 @@ export class IfrsNotesMasterComponent extends MasterBaseComponent {
     // The master template handles any errors
     return obs$;
   }
+
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('ifrs-notes', 'IsActive', null);
+
+  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 }

@@ -57,8 +57,8 @@
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngFor="let action of actions">
               <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
-                [ngbTooltip]="actionTooltip(action)" container="body" container="body">
-                <button type="button" class="dropdown-item btn-light" (click)="action.action(activeModel)"
+                [ngbTooltip]="actionTooltip(action)" container="body">
+                <button type="button" class="dropdown-item btn-light" (click)="onAction(action)"
                   [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>

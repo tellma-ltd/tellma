@@ -29,6 +29,14 @@ enum SearchView {
   table = 'table'
 }
 
+export interface MultiselectAction {
+  template: TemplateRef<any>;
+  action: (ids: (string | number)[]) => Observable<any>;
+  canAction?: (ids: (string | number)[]) => boolean;
+  actionTooltip?: (ids: (string | number)[]) => string;
+  showAction?: (ids: (string | number)[]) => boolean;
+}
+
 @Component({
   selector: 'b-master',
   templateUrl: './master.component.html',
@@ -76,11 +84,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   inactiveFilter = 'IsActive eq true';
 
   @Input()
-  multiselectActions: {
-    template: TemplateRef<any>,
-    action: (p: (string | number)[]) => Observable<any>,
-    requiresUpdatePermission: boolean
-  }[] = [];
+  multiselectActions: MultiselectAction[] = [];
 
   @Input()
   includeInactiveLabel: string;
@@ -1208,21 +1212,41 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this.actionValidationErrors = {};
   }
 
-  canAction(requiresUpdatePermission: boolean) {
-    return !requiresUpdatePermission || this.workspace.current.canUpdate(this.viewId, null);
+  canAction(action: MultiselectAction) {
+    if (!!action.canAction) {
+      return action.canAction(this.checkedIds);
+    } else {
+      // true by default
+      return true;
+    }
   }
 
-  actionTooltip(requiresUpdatePermission: boolean) {
-    return this.canAction(requiresUpdatePermission) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  public showAction(action: MultiselectAction): boolean {
+
+    if (!!action.showAction) {
+      return action.showAction(this.checkedIds);
+    } else {
+      // true by default
+      return true;
+    }
   }
 
-  onAction(action: (p: (string | number)[]) => Observable<void>) {
+  actionTooltip(action: MultiselectAction) {
+    if (!!action.actionTooltip) {
+      return action.actionTooltip(this.checkedIds);
+    } else {
+      // don't show a tooltip by default
+      return '';
+    }
+  }
+
+  onAction(action: MultiselectAction) {
     // clear any previous errors
     this.actionErrorMessage = null;
     this.actionValidationErrors = {};
 
     const ids = this.checkedIds;
-    action(ids).pipe(tap(
+    action.action(ids).pipe(tap(
       () => this.checked = {},
       (friendlyError: any) => {
         this.handleActionError(ids, friendlyError);

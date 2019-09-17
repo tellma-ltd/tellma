@@ -6,6 +6,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'b-resource-lookups-master',
@@ -31,7 +32,9 @@ export class ResourceLookupsMasterComponent extends MasterBaseComponent implemen
 
   public expand = '';
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private workspace: WorkspaceService, private api: ApiService, private router: Router,
+    private route: ActivatedRoute, private translate: TranslateService) {
     super();
   }
 
@@ -79,6 +82,11 @@ export class ResourceLookupsMasterComponent extends MasterBaseComponent implemen
     // The master template handles any errors
     return obs$;
   }
+
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.definitionId, 'IsActive', null);
+
+  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
+    this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
     const definitionId = this.definitionId;

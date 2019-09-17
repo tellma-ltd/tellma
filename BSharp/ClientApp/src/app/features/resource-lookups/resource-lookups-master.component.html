@@ -1,10 +1,8 @@
 <b-master collection="ResourceLookup" [definition]="definitionId" [viewId]="definitionId" [mode]="mode"
-  [masterCrumb]="masterCrumb" [tileTemplate]="tile"
-  [tableDescriptionColumnTemplate]="descriptionColumn"
-  selectDefault="Code,IsActive" selectForTiles="Code,Name,Name2,Name3"
-  [multiselectActions]="[
-            { template : activate, action: onActivate, requiresUpdatePermission: true },
-            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
+  [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableDescriptionColumnTemplate]="descriptionColumn"
+  selectDefault="Code,IsActive" selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
+              { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+              { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}

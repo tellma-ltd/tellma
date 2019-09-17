@@ -88,7 +88,7 @@ export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implem
   public showActivate = (model: ResourceLookup) => !!model && !model.IsActive;
   public showDeactivate = (model: ResourceLookup) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: ResourceLookup) => this.ws.canDo('measurement-units', 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: ResourceLookup) => this.ws.canDo(this.definitionId, 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: ResourceLookup) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

@@ -1,4 +1,4 @@
-<b-details [apiEndpoint]="'resource-lookups/' + definitionId" viewId="measurement-units" collection="ResourceLookup" [createFunc]="create"
+<b-details [apiEndpoint]="'resource-lookups/' + definitionId" [viewId]="definitionId" collection="ResourceLookup" [createFunc]="create"
   [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
   [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -64,7 +64,7 @@
 
   <!-- Is Active -->
   <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
+    <b-auto-cell collection="ResourceLookup" [definition]="definitionId" [entity]="model" path="IsActive"></b-auto-cell>
   </b-form-group>
 </ng-template>
 

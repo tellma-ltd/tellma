@@ -8,6 +8,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { DropdownAction } from '~/app/shared/details/details.component';
 
 @Component({
   selector: 'b-measurement-units-details',
