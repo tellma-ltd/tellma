@@ -18,7 +18,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace BSharp.Controllers.Misc
+namespace BSharp.Controllers.Utilities
 {
     public static class ControllerUtilities
     {

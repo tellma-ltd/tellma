@@ -18,16 +18,16 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   // This component automatically displays the property value from its metadata
 
   @Input()
-  baseCollection: string;
+  collection: string;
+
+  @Input()
+  definition: string;
 
   @Input()
   entity: Entity;
 
   @Input()
   path: string;
-
-  @Input()
-  subtype: string;
 
   _subscription: Subscription;
 
@@ -83,13 +83,13 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
     this._control = null;
 
     try {
-      if (!this.baseCollection) {
-        throw new Error(`The baseCollection is not specified`);
+      if (!this.collection) {
+        throw new Error(`The collection is not specified`);
       }
 
       const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
 
-      this._entityDescriptor = this.metadataFactory(this.baseCollection)(this.ws.current, this.translate, this.subtype);
+      this._entityDescriptor = this.metadataFactory(this.collection)(this.ws.current, this.translate, this.definition);
       this._value = this.entity;
 
       if (pathArray.length === 0) {
@@ -98,15 +98,15 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
         this._control = 'navigation';
 
       } else {
-        let currentCollection = this.baseCollection;
-        let currentSubtype = this.subtype;
+        let currentCollection = this.collection;
+        let currentDefinition = this.definition;
 
         for (let i = 0; i < pathArray.length; i++) {
           const step = pathArray[i];
 
           this._propDescriptor = this._entityDescriptor.properties[step];
           if (!this._propDescriptor) {
-            throw new Error(`'${step}' does not exist on '${currentCollection}', subtype:'${currentSubtype}'`);
+            throw new Error(`'${step}' does not exist on '${currentCollection}', definition:'${currentDefinition}'`);
 
           } else {
 
@@ -116,8 +116,8 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
             if (this._propDescriptor.control === 'navigation') {
 
               currentCollection = this._propDescriptor.collection || this._propDescriptor.type;
-              currentSubtype = this._propDescriptor.subtype;
-              this._entityDescriptor = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentSubtype);
+              currentDefinition = this._propDescriptor.definition;
+              this._entityDescriptor = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentDefinition);
 
               if (this._metavalue === 2 && this._value && this._value.EntityMetadata) {
                 this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
@@ -131,7 +131,7 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
             } else {
               // only allowed at the last step
               if (i !== pathArray.length - 1) {
-                throw new Error(`'${step}' is not a navigation property on '${currentCollection}', subtype:'${currentSubtype}'`);
+                throw new Error(`'${step}' is not a navigation property on '${currentCollection}', definition:'${currentDefinition}'`);
               }
 
               // set the property and control at the end

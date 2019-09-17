@@ -184,11 +184,7 @@ export class SharedModule {
       faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
       faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
       faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
-      faTasks, faMale, faBuilding, faBars,
-
-      // Main menu icons
-      faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
-      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard
+      faTasks, faMale, faBuilding, faBars
     );
   }
 }

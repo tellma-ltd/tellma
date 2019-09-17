@@ -56,5 +56,9 @@ namespace BSharp.Controllers.Dto
         public string TitlePlural { get; set; }
         public string TitlePlural2 { get; set; }
         public string TitlePlural3 { get; set; }
+        public string MainMenuSection { get; set; }
+        public string MainMenuIcon { get; set; }
+        public decimal MainMenuSortKey { get; set; }
+
     }
 }

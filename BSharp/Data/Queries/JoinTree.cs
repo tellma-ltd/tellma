@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.Misc;
+﻿using BSharp.Controllers.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;

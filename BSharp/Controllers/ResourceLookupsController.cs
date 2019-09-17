@@ -1,5 +1,5 @@
 ﻿using BSharp.Controllers.Dto;
-using BSharp.Controllers.Misc;
+using BSharp.Controllers.Utilities;
 using BSharp.Data;
 using BSharp.Data.Queries;
 using BSharp.Entities;
@@ -97,7 +97,8 @@ namespace BSharp.Controllers
 
         protected override IRepository GetRepository()
         {
-            return _repo;
+            string filter = $"{nameof(ResourceLookup.ResourceLookupDefinitionId)} eq '{VIEW}'";
+            return new FilteredRepository<ResourceLookup>(_repo, filter);
         }
 
         protected override Query<ResourceLookup> Search(Query<ResourceLookup> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)

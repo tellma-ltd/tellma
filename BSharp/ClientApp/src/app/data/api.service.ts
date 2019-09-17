@@ -84,6 +84,13 @@ export class ApiService {
     };
   }
 
+  public resourceLookupsApi(definitionId: string, cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<Agent>(`resource-lookups/${definitionId}`, cancellationToken$),
+      deactivate: this.deactivateFactory<Agent>(`resource-lookups/${definitionId}`, cancellationToken$)
+    };
+  }
+
   public usersApi(cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<View>('users', cancellationToken$),

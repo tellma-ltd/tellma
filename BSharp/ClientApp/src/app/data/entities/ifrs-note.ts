@@ -26,12 +26,12 @@ let _currentLang: string;
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_IfrsNote(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_IfrsNote(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
     _currentLang = trx.currentLang;
     _settings = ws.settings;
-    _cache = metadata_IfrsConceptInner(ws, trx, _subtype);
+    _cache = metadata_IfrsConceptInner(ws, trx, definitionId);
     _cache.apiEndpoint = 'ifrs-notes';
     _cache.properties.IsAggregate = { control: 'boolean', label: trx.instant('IfrsNotes_IsAggregate') };
     _cache.properties.ForDebit = { control: 'boolean', label: trx.instant('IfrsNotes_ForDebit') };

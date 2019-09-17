@@ -1,4 +1,4 @@
-﻿namespace BSharp.Controllers.Misc
+﻿namespace BSharp.Controllers.Utilities
 {
     public static class FileFormats
     {

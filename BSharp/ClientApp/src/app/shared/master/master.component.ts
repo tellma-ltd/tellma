@@ -43,7 +43,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   collection: string; // This is one of two properties that define the screen
 
   @Input()
-  subtype: string; // This is one of two properties that define the screen
+  definition: string; // This is one of two properties that define the screen
 
   @Input()
   viewId: string; // for the permissions
@@ -129,9 +129,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('errorModal', { static: true })
   public errorModal: TemplateRef<any>;
 
-  private _changeSubscription: Subscription;
-  // private _collection: string;
-  // private _subtype: string;
   private localState = new MasterDetailsStore();  // Used in popup mode
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
@@ -140,7 +137,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   private _selectOld = 'null';
   private _tableColumnPaths: string[] = [];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
-  private _subscriptions = new Subscription();
+  private _subscriptions: Subscription;
   private _computeOrderByCache: { [path: string]: string } = {}; // need to be erased on screen startup
   private _computeOrderByLang: string = null;
   private _reverseOrderByCache: { [path: string]: string } = {}; // need to be erased on screen startup
@@ -205,6 +202,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private router: Router, private cdr: ChangeDetectorRef,
     private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) {
+  }
+
+  ngOnInit() {
+
+    this._subscriptions = new Subscription();
 
     // Use some RxJS magic to refresh the data as the user changes the parameters
     const searchBoxSignals = this.searchChanged$.pipe(
@@ -222,13 +224,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     ).subscribe();
 
     this._subscriptions.add(sub);
-  }
 
-  ngOnInit() {
-
-    this._changeSubscription = this.workspace.stateChanged$.subscribe({
+    const sub2 = this.workspace.stateChanged$.subscribe({
       next: () => this.cdr.markForCheck()
     });
+
+    this._subscriptions.add(sub2);
 
     // Reset the state of the master component state
     this.localState = new MasterDetailsStore();
@@ -344,43 +345,25 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this.notifyDestruct$.next();
     this._subscriptions.unsubscribe();
     this.cancelAllTreeQueries();
-
-    if (!!this._changeSubscription) {
-      this._changeSubscription.unsubscribe();
-    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
 
-    // the combinatino of these two properties defines a whole new screen from the POV of the user
+    // the combination of these two properties defines a whole new screen from the POV of the user
     // when either of these properties change it is equivalent to a screen closing and
     // and another screen opening even though Angular may reuse the same
     // component and never call ngOnDestroy and ngOnInit. So we call them
     // manually here if this is not the first time these properties are set
     // to simulate a screen closing and opening again
-    const screenDefProperties = [changes.collection, changes.subtype];
+    const screenDefProperties = [changes.collection, changes.definition];
 
     const anyChanges = screenDefProperties.some(prop => !!prop);
     const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
 
-    if (anyChanges) {
+    if (anyChanges && notFirstChange) {
 
-      if (notFirstChange) {
         this.ngOnDestroy();
-      }
-
-      // if (!!changes.collection) {
-      //   this._collection = changes.collection.currentValue;
-      // }
-
-      // if (!!changes.subtype) {
-      //   this._subtype = changes.subtype.currentValue;
-      // }
-
-      // set the values
-      if (notFirstChange) {
         this.ngOnInit();
-      }
     }
   }
 
@@ -612,7 +595,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   get entityDescriptor(): EntityDescriptor {
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.subtype) : null;
+    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.definition) : null;
   }
 
   get apiEndpoint(): string {
@@ -641,7 +624,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       try {
         const currentDesc = entityDescriptorImpl(steps, this.collection,
-          this.subtype, this.workspace.current, this.translate);
+          this.definition, this.workspace.current, this.translate);
 
         currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
       } catch {
@@ -667,7 +650,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private get selectKey(): string {
-    return `${this.collection + (!!this.subtype ? '/' + this.subtype : '')}/select`;
+    return `${this.collection + (!!this.definition ? '/' + this.definition : '')}/select`;
   }
 
   private get selectFromUserSettings(): string {
@@ -759,7 +742,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
         try {
           const entityDesc = entityDescriptorImpl(result.split('/'),
-            this.collection, this.subtype, this.workspace.current, this.translate);
+            this.collection, this.definition, this.workspace.current, this.translate);
 
           if (!!entityDesc) {
             result = entityDesc.orderby.map(e => `${result}/${e}`).join(',');

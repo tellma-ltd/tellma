@@ -14,13 +14,13 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
   // This component automatically displays the property label from its metadata
 
   @Input()
-  baseCollection: string;
+  collection: string;
+
+  @Input()
+  definition: string;
 
   @Input()
   path: string;
-
-  @Input()
-  subtype: string;
 
   _subscription: Subscription;
   _label: string;
@@ -61,8 +61,8 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
     this._label = null;
 
     try {
-      if (!this.baseCollection) {
-        throw new Error(`The baseCollection is not specified`);
+      if (!this.collection) {
+        throw new Error(`The collection is not specified`);
       }
 
       const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
@@ -74,9 +74,9 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
 
         const labelArray = [];
 
-        let currentEntityDesc = this.metadataFactory(this.baseCollection)(this.ws.current, this.translate, this.subtype);
-        let currentCollection = this.baseCollection;
-        let currentSubtype = this.subtype;
+        let currentEntityDesc = this.metadataFactory(this.collection)(this.ws.current, this.translate, this.definition);
+        let currentCollection = this.collection;
+        let currentDefinition = this.definition;
         let currentPropDesc: PropDescriptor;
 
         for (let i = 0; i < pathArray.length; i++) {
@@ -85,16 +85,16 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
           currentPropDesc = currentEntityDesc.properties[step];
 
           if (!currentPropDesc) {
-            throw new Error(`'${step}' does not exist on '${currentCollection}', subtype:'${currentSubtype}'`);
+            throw new Error(`'${step}' does not exist on '${currentCollection}', definition:'${currentDefinition}'`);
 
           } else if (currentPropDesc.control === 'navigation') {
 
             currentCollection = currentPropDesc.collection || currentPropDesc.type;
-            currentSubtype = currentPropDesc.subtype;
-            currentEntityDesc = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentSubtype);
+            currentDefinition = currentPropDesc.definition;
+            currentEntityDesc = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentDefinition);
 
           } else if (i !== pathArray.length - 1) {
-            throw new Error(`'${step}' is not a navigation property on '${currentCollection}', subtype:'${currentSubtype}'`);
+            throw new Error(`'${step}' is not a navigation property on '${currentCollection}', definition:'${currentDefinition}'`);
           }
 
           labelArray.push(currentPropDesc.label);

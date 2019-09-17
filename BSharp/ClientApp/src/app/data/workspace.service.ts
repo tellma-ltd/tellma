@@ -15,6 +15,7 @@ import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 import { User } from './entities/user';
 import { DefinitionsForClient } from './dto/definitions-for-client';
+import { ResourceLookup } from './entities/resource-lookup';
 
 export enum MasterStatus {
 
@@ -157,6 +158,7 @@ export class TenantWorkspace {
   Agent: EntityWorkspace<Agent>;
   IfrsNote: EntityWorkspace<IfrsNote>;
   ProductCategory: EntityWorkspace<ProductCategory>;
+  ResourceLookup: EntityWorkspace<ResourceLookup>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -173,6 +175,7 @@ export class TenantWorkspace {
     this.Agent = new EntityWorkspace<Agent>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
     this.ProductCategory = new EntityWorkspace<ProductCategory>();
+    this.ResourceLookup = new EntityWorkspace<ResourceLookup>();
 
     this.notifyStateChanged();
   }

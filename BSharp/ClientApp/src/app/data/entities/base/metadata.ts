@@ -8,6 +8,7 @@ import { metadata_ProductCategory } from '../product-category';
 import { metadata_IfrsNote } from '../ifrs-note';
 import { metadata_Agent } from '../agent';
 import { metadata_View } from '../view';
+import { metadata_ResourceLookup } from '../resource-lookup';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -16,7 +17,8 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     Role: metadata_Role,
     ProductCategory: metadata_ProductCategory,
     IfrsNote: metadata_IfrsNote,
-    View: metadata_View
+    View: metadata_View,
+    ResourceLookup: metadata_ResourceLookup,
 };
 
 export interface EntityDescriptor {
@@ -131,7 +133,7 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
     /**
      * Determines the subtype of the entities that reside in these properties (e.g. Inventory vs. Resource)
      */
-    subtype?: string;
+    definition?: string;
 
     /**
      * The name of the foreign key property
@@ -154,14 +156,14 @@ export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor |
     | NumberPropDescriptor | DatePropDscriptor | DatetimePropDscriptor | NavigationPropDescriptor | StatePropDescriptor;
 
 export function entityDescriptorImpl(
-    pathArray: string[], baseCollection: string, baseSubtype: string,
+    pathArray: string[], baseCollection: string, baseDefinition: string,
     ws: TenantWorkspace, trx: TranslateService): EntityDescriptor {
 
     if (!baseCollection) {
         throw new Error(`The baseCollection is not specified, therefore cannot retrieve the Entity descriptor`);
     }
 
-    let currentEntityDesc = metadata[baseCollection](ws, trx, baseSubtype);
+    let currentEntityDesc = metadata[baseCollection](ws, trx, baseDefinition);
 
     for (const step of pathArray) {
         const propDesc = currentEntityDesc.properties[step];
@@ -175,9 +177,9 @@ export function entityDescriptorImpl(
         } else {
 
             const coll = propDesc.collection || propDesc.type;
-            const subtype = propDesc.subtype;
+            const definition = propDesc.definition;
 
-            currentEntityDesc = metadata[coll](ws, trx, subtype);
+            currentEntityDesc = metadata[coll](ws, trx, definition);
         }
     }
 

@@ -27,7 +27,7 @@
     <span class="d-block text-truncate">{{ ws.getMultilingualValue('MeasurementUnit', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <b-auto-cell baseCollection="MeasurementUnit" path="Description" [entity]="c[id]"></b-auto-cell>
+    <b-auto-cell collection="MeasurementUnit" path="Description" [entity]="c[id]"></b-auto-cell>
   </div>
 </ng-template>
 
@@ -35,7 +35,7 @@
 <!-- Description Column -->
 <ng-template #descriptionColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell baseCollection="MeasurementUnit" [entity]="c[id]"></b-auto-cell>
+    <b-auto-cell collection="MeasurementUnit" [entity]="c[id]"></b-auto-cell>
   </span>
 </ng-template>
 

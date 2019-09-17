@@ -1,0 +1,41 @@
+<b-master collection="ResourceLookup" [definition]="definitionId" [viewId]="definitionId" [mode]="mode"
+  [masterCrumb]="masterCrumb" [tileTemplate]="tile"
+  [tableDescriptionColumnTemplate]="descriptionColumn"
+  selectDefault="Code,IsActive" selectForTiles="Code,Name,Name2,Name3"
+  [multiselectActions]="[
+            { template : activate, action: onActivate, requiresUpdatePermission: true },
+            { template : deactivate, action: onDeactivate, requiresUpdatePermission: true }
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedById eq me'}
+            ]
+          }">
+</b-master>
+
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <div class="d-flex justify-content-between">
+    <b-auto-cell collection="ResourceLookup" [definition]="definitionId" path="" [entity]="c[id]"></b-auto-cell>
+  </div>
+  <div class="d-flex justify-content-between mt-1 small">
+    <b-auto-cell collection="ResourceLookup" [definition]="definitionId" path="Code" [entity]="c[id]"></b-auto-cell>
+  </div>
+</ng-template>
+
+
+<!-- Description Column -->
+<ng-template #descriptionColumn let-id="id">
+  <span class="text-truncate">
+    <b-auto-cell collection="ResourceLookup" [definition]="definitionId" [entity]="c[id]"></b-auto-cell>
+  </span>
+</ng-template>
+
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>

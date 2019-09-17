@@ -1,4 +1,4 @@
-﻿using BSharp.Controllers.Misc;
+﻿using BSharp.Controllers.Utilities;
 using BSharp.Data;
 using BSharp.Services.ApiAuthentication;
 using BSharp.Services.Identity;

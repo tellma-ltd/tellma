@@ -32,7 +32,7 @@ let _currentLang: string;
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
     _currentLang = trx.currentLang;
@@ -68,7 +68,7 @@ export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateServ
             }
           }
         },
-        UnitAmount: { control: 'number', label: trx.instant('MU_UnitAmount'),  minDecimalPlaces: 0, maxDecimalPlaces: 9 },
+        UnitAmount: { control: 'number', label: trx.instant('MU_UnitAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9 },
         BaseAmount: { control: 'number', label: trx.instant('MU_BaseAmount'), minDecimalPlaces: 0, maxDecimalPlaces: 9 },
         IsActive: { control: 'boolean', label: trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
@@ -77,6 +77,16 @@ export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateServ
         ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
       }
     };
+
+    if (!ws.settings.SecondaryLanguageId) {
+      delete _cache.properties.Name2;
+      delete _cache.properties.Description2;
+    }
+
+    if (!ws.settings.TernaryLanguageId) {
+      delete _cache.properties.Name3;
+      delete _cache.properties.Description3;
+    }
   }
 
   return _cache;

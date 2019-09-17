@@ -29,7 +29,7 @@ let _currentLang: string;
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
-export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_User(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
     _currentLang = trx.currentLang;
@@ -72,6 +72,14 @@ export function metadata_User(ws: TenantWorkspace, trx: TranslateService, _subty
         ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
       }
     };
+
+    if (!ws.settings.SecondaryLanguageId) {
+      delete _cache.properties.Name2;
+    }
+
+    if (!ws.settings.TernaryLanguageId) {
+      delete _cache.properties.Name3;
+    }
   }
 
   return _cache;

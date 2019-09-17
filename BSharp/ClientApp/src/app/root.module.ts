@@ -134,7 +134,7 @@ export const routes: Routes = [
   imports: [
     BrowserModule,
     FontAwesomeModule,
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, enableTracing: false }),
     HttpClientModule,
     NgbCollapseModule,
     NgbDropdownModule,
