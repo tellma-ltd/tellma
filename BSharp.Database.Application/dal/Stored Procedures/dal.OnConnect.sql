@@ -6,8 +6,8 @@
 AS
 BEGIN
     -- Set the global values of the session context
-    EXEC master.sys.sp_set_session_context @key = N'Culture', @value = @Culture;
-    EXEC master.sys.sp_set_session_context @key = N'NeutralCulture', @value = @NeutralCulture;
+	DECLARE @UserLanguageIndex TINYINT = [dbo].[fn_User__Language](@Culture, @NeutralCulture);
+    EXEC master.sys.sp_set_session_context @key = N'UserLanguageIndex', @value = @UserLanguageIndex;
 
     -- Get the User Id
     DECLARE 

@@ -213,7 +213,7 @@ namespace BSharp.Controllers
                         }
                     },
 
-                    Lines = new Dictionary<string, LineDefinitionForClient>
+                    Lines = new Dictionary<string, LineTypeForClient>
                     {
                         //["bla"] = new LineDefinitionForClient
                         //{

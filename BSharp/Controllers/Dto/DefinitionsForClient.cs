@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace BSharp.Controllers.Dto
 {
@@ -11,23 +8,23 @@ namespace BSharp.Controllers.Dto
     public class DefinitionsForClient
     {
         /// <summary>
-        /// Mapping from document type to document definition
+        /// Mapping from document definition Id to document definition
         /// </summary>
         public Dictionary<string, DocumentDefinitionForClient> Documents { get; set; }
 
         /// <summary>
-        /// Mapping from line type to line definition
+        /// Mapping from line type Id to line type
         /// </summary>
-        public Dictionary<string, LineDefinitionForClient> Lines { get; set; }
+        public Dictionary<string, LineTypeForClient> Lines { get; set; }
 
         /// <summary>
-        /// Mapping from resource type to resource definition
+        /// Mapping from resource definition Id to resource definition
         /// </summary>
         public Dictionary<string, ResourceDefinitionForClient> Resources { get; set; }
 
 
         /// <summary>
-        /// Mapping from resource type to resource definition
+        /// Mapping from resource lookup definition Id to resource definition
         /// </summary>
         public Dictionary<string, ResourceLookupDefinitionForClient> ResourceLookups { get; set; }
     }
@@ -52,7 +49,7 @@ namespace BSharp.Controllers.Dto
         public string FinalState { get; internal set; }
     }
 
-    public class LineDefinitionForClient : DefinitionForClient
+    public class LineTypeForClient // related entity for document definition
     {
         // TODO
     }
@@ -61,6 +58,7 @@ namespace BSharp.Controllers.Dto
     {
         // TODO
     }
+
     public class ResourceLookupDefinitionForClient : DefinitionForClient
     {
 
