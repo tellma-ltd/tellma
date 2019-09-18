@@ -1012,4 +1012,7 @@
   <data name="Currency_DecimalPlaces" xml:space="preserve">
     <value>عدد المنازل العشرية</value>
   </data>
+  <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
+    <value>ال{0} ({1}) مستخدمة في بعض المستندات</value>
+  </data>
 </root>

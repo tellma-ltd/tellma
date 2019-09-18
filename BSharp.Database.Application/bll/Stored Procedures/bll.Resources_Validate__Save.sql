@@ -12,8 +12,7 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotModifyInactiveItem'
     FROM @Resources
-    WHERE Id IN (SELECT Id from [dbo].[Resources] WHERE IsActive = 0)
-	OPTION(HASH JOIN);
+    WHERE Id IN (SELECT Id from [dbo].[Resources] WHERE IsActive = 0);
 
     -- Non zero Ids must exist
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -47,7 +46,7 @@ SET NOCOUNT ON;
 		WHERE [Code] IS NOT NULL
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
-	) OPTION(HASH JOIN);
+	);
 
 	-- Name must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -57,8 +56,7 @@ SET NOCOUNT ON;
 		FE.[Name]
 	FROM @Resources FE 
 	JOIN [dbo].[Resources] BE ON FE.[Name] = BE.[Name]
-	WHERE (FE.Id <> BE.Id)
-	OPTION(HASH JOIN);
+	WHERE (FE.Id <> BE.Id);
 
 	-- Name2 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -68,8 +66,7 @@ SET NOCOUNT ON;
 		FE.[Name2]
 	FROM @Resources FE 
 	JOIN [dbo].[Resources] BE ON FE.[Name2] = BE.[Name2]
-	WHERE (FE.Id <> BE.Id)
-	OPTION(HASH JOIN);
+	WHERE (FE.Id <> BE.Id);
 
 	-- Name3 must not exist in the db
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -79,8 +76,7 @@ SET NOCOUNT ON;
 		FE.[Name3]
 	FROM @Resources FE 
 	JOIN [dbo].[Resources] BE ON FE.[Name3] = BE.[Name3]
-	WHERE (FE.Id <> BE.Id)
-	OPTION(HASH JOIN);
+	WHERE (FE.Id <> BE.Id);
 
 	-- Name must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -94,7 +90,7 @@ SET NOCOUNT ON;
 		FROM @Resources
 		GROUP BY [Name]
 		HAVING COUNT(*) > 1
-	) OPTION(HASH JOIN);
+	);
 
 	-- Name2 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -109,7 +105,7 @@ SET NOCOUNT ON;
 		WHERE [Name2] IS NOT NULL
 		GROUP BY [Name2]
 		HAVING COUNT(*) > 1
-	) OPTION(HASH JOIN);
+	);
 
 	-- Name3 must be unique in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -124,6 +120,6 @@ SET NOCOUNT ON;
 		WHERE [Name3] IS NOT NULL
 		GROUP BY [Name3]
 		HAVING COUNT(*) > 1
-	) OPTION(HASH JOIN);
+	);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

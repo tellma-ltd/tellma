@@ -1021,7 +1021,7 @@
     <value>Is Leaf</value>
   </data>
   <data name="Error_TheCurrency0IsUsedIn12" xml:space="preserve">
-    <value>The currency '{0}' is used in {1} '{2}'</value>
+    <value>The Currency '{0}' is used in {1} '{2}'</value>
   </data>
   <data name="Currency_DecimalPlaces" xml:space="preserve">
     <value>Decimal Places</value>
@@ -1031,5 +1031,8 @@
   </data>
   <data name="Currency" xml:space="preserve">
     <value>Currency</value>
+  </data>
+  <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
+    <value>The {0} '{1}' is used in one or more documents</value>
   </data>
 </root>
