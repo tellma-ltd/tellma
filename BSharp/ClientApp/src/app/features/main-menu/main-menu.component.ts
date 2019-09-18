@@ -41,7 +41,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   // TODO: replace below with a dynamically constructed mainMenu
   quickAccess: MenuItemInfo[] = [
     { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units', sortKey: 10 },
-    { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 20 },
+    // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 20 },
     { label: 'ProductCategories', icon: 'list', link: '../product-categories', viewId: 'product-categories', sortKey: 30 },
     { label: 'Users', icon: 'users', link: '../users', viewId: 'users', sortKey: 40 },
     { label: 'Roles', icon: 'tasks', link: '../roles', viewId: 'roles', sortKey: 50 },
@@ -52,7 +52,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     Financials: {
       background: 'b-green',
       items: [
-        { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
+        // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
         { label: 'ProductCategories', icon: 'list', link: '../product-categories', viewId: 'product-categories', sortKey: 200 },
         { label: 'Currencies', icon: 'euro-sign', link: '../currencies', viewId: 'currencies', sortKey: 300 },
       ]
