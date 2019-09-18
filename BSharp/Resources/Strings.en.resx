@@ -582,9 +582,6 @@
   <data name="MU_Mass" xml:space="preserve">
     <value>Mass</value>
   </data>
-  <data name="MU_MonetaryValue" xml:space="preserve">
-    <value>Monetary Value</value>
-  </data>
   <data name="MU_Pure" xml:space="preserve">
     <value>Pure</value>
   </data>
@@ -1022,5 +1019,17 @@
   </data>
   <data name="IfrsConcepts_IsLeaf" xml:space="preserve">
     <value>Is Leaf</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedIn12" xml:space="preserve">
+    <value>The currency '{0}' is used in {1} '{2}'</value>
+  </data>
+  <data name="Currency_DecimalPlaces" xml:space="preserve">
+    <value>Decimal Places</value>
+  </data>
+  <data name="Currencies" xml:space="preserve">
+    <value>Currencies</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Currency</value>
   </data>
 </root>

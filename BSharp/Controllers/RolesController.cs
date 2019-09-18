@@ -5,7 +5,6 @@ using BSharp.Data.Queries;
 using BSharp.Entities;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;

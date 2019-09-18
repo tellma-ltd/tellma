@@ -5,15 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class MeasurementUnitForSave : EntityWithKey<int>
+    public class CurrencyForSave : EntityWithKey<string>
     {
-        [Display(Name = "MU_UnitType")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [ChoiceList(new object[] { "Pure", "Time", "Distance", "Count", "Mass", "Volume" },
-            new string[] { "MU_Pure", "MU_Time", "MU_Distance", "MU_Count", "MU_Mass", "MU_Volume" })]
-        public string UnitType { get; set; }
-
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -29,11 +22,6 @@ namespace BSharp.Entities
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Name3 { get; set; }
-
-        [Display(Name = "Code")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string Code { get; set; }
 
         [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -51,16 +39,13 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Description3 { get; set; }
 
+        [Display(Name = "Currency_DecimalPlaces")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [Display(Name = "MU_UnitAmount")]
-        public double? UnitAmount { get; set; }
-
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [Display(Name = "MU_BaseAmount")]
-        public double? BaseAmount { get; set; }
+        [ChoiceList(new object[] { (byte)0, (byte)2, (byte)3 })]
+        public byte E { get; set; }
     }
 
-    public class MeasurementUnit : MeasurementUnitForSave
+    public class Currency : CurrencyForSave
     {
         [AlwaysAccessible]
         [Display(Name = "IsActive")]
@@ -84,7 +69,7 @@ namespace BSharp.Entities
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
 
-        [Display(Name = "ModifiedBy")] 
+        [Display(Name = "ModifiedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
     }

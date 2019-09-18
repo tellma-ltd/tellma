@@ -118,7 +118,6 @@
   "MU_Count": "عدد",
   "MU_Distance": "مسافة",
   "MU_Mass": "كتلة",
-  "MU_MonetaryValue": "نقد",
   "MU_Pure": "محض",
   "MU_Time": "زمن",
   "MU_UnitAmount": "الكمية بالوحدة الحالية",
@@ -257,5 +256,8 @@
   "CreateUser": "مستخدم جديد...",
   "Miscellaneous": "متفرقات",
   "Untitled": "بدون عنوان",
-  "Id": "المفتاح"
+  "Id": "المفتاح",
+  "Currency": "عملة",
+  "Currencies": "عملات",
+  "Currency_DecimalPlaces": "عدد المنازل العشرية"
 }

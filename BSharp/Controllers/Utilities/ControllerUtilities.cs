@@ -123,7 +123,10 @@ namespace BSharp.Controllers.Utilities
             }
 
             // Check that Ids are unique
-            var duplicateIds = entities.Where(e => !e.GetId().Equals(0)).GroupBy(e => e.GetId()).Where(g => g.Count() > 1);
+            var duplicateIds = entities.Where(e => !(e.GetId()?.Equals(0) ?? true)) // takes away the nulls too
+                .GroupBy(e => e.GetId())
+                .Where(g => g.Count() > 1);
+
             if(duplicateIds.Any())
             {
                 // Hash the entities' indices for performance

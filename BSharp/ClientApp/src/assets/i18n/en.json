@@ -118,7 +118,6 @@
   "MU_Count": "Count",
   "MU_Distance": "Distance",
   "MU_Mass": "Mass",
-  "MU_MonetaryValue": "Monetary Value",
   "MU_Pure": "Pure",
   "MU_Time": "Time",
   "MU_UnitAmount": "Amount in this Unit",
@@ -258,5 +257,8 @@
   "CreateUser": "Create User...",
   "Miscellaneous": "Miscellaneous",
   "Untitled": "Untitled",
-  "Id": "Id"
+  "Id": "Id",
+  "Currency": "Currency",
+  "Currencies": "Currencies",
+  "Currency_DecimalPlaces": "Decimal Places"
 }
