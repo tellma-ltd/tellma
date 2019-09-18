@@ -49,10 +49,8 @@ BEGIN -- reset Identities
 	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = '$(DeployEmail)';-- N'support@banan-it.com';
 	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
 
-	DECLARE @FunctionalCurrency NCHAR(3), @FunctionalCurrencyId INT;
+	DECLARE @FunctionalCurrency NCHAR(3);
 	SELECT @FunctionalCurrency = [FunctionalCurrency] FROM dbo.Settings;
-	SELECT @FunctionalCurrencyId = [Id] FROM dbo.[MeasurementUnits] WHERE [Name] = @FunctionalCurrency;
-	EXEC sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 END

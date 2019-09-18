@@ -36,11 +36,11 @@ INSERT INTO @MU ([Index],
 -- TODO: it is better to avoid defining any currency, except the functional, which we can retrieve from a table of currencies
 -- and assume it is the base, so BaseAmount = UnitAmount = 1
 IF NOT EXISTS(SELECT * FROM dbo.Currencies WHERE [Id] = @FunctionalCurrency)
-	INSERT INTO dbo.Currencies([Id], [Name]) VALUES (@FunctionalCurrency,@FunctionalCurrency);
+	INSERT INTO dbo.Currencies([Id], [Name], [Description]) VALUES (@FunctionalCurrency,@FunctionalCurrency, @FunctionalCurrency);
 IF NOT EXISTS(SELECT * FROM dbo.Currencies WHERE [Id] = N'ETB')
-	INSERT INTO dbo.Currencies([Id], [Name]) VALUES (N'ETB', N'ETB');
+	INSERT INTO dbo.Currencies([Id], [Name], [Description]) VALUES (N'ETB', N'ETB', N'Ethiopian Birr');
 IF NOT EXISTS(SELECT * FROM dbo.Currencies WHERE [Id] = N'USD')
-	INSERT INTO dbo.Currencies([Id], [Name]) VALUES (N'USD', N'USD');
+	INSERT INTO dbo.Currencies([Id], [Name], [Description]) VALUES (N'USD', N'USD', N'US Dollar');
 
 EXEC [api].[MeasurementUnits__Save]
 	@Entities = @MU,

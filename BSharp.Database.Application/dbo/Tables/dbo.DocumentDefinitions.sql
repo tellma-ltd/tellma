@@ -32,9 +32,9 @@
 	[FromCustodyAccountLabel]	NVARCHAR (50),
 	[ToCustodyAccountLabel]		NVARCHAR (50),
 
-	[State]							NVARCHAR				DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
-	[MainMenuIcon]					NVARCHAR(50),
-	[MainMenuSection]				NVARCHAR(50),			-- IF Null, it does not show on the main menu
-	[MainMenuSortKey]				DECIMAL (9,4)
+	[State]						NVARCHAR (50)			DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
+	[MainMenuIcon]				NVARCHAR (50),
+	[MainMenuSection]			NVARCHAR (50),			-- IF Null, it does not show on the main menu
+	[MainMenuSortKey]			DECIMAL (9,4)
 );
 GO;

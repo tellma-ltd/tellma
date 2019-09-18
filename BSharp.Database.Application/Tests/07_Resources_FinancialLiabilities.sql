@@ -2,10 +2,13 @@
 
 	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'financial-liabilities
 								[Name],				[IsLeaf],	[Node]) VALUES
-	(N'financial-liabilities',	N'Checks (issued)',	1,			N'/1/'),
-	(N'financial-liabilities',	N'L/G (issued)',	1,			N'/2/'),
-	(N'financial-liabilities',	N'L/C (issued)',	1,			N'/3/'),
-	(N'financial-liabilities',	N'Shares (issued)',	1,			N'/4/');
+	(N'financial-liabilities',	N'Shares (issued)',	1,			N'/1/'),
+	(N'financial-liabilities',	N'Bonds (issued)',	1,			N'/2/'),
+	(N'financial-liabilities',	N'L/G (issued)',	1,			N'/3/'),
+	(N'financial-liabilities',	N'Notes (issued)',	1,			N'/4/')
+	;
+	--	at fair value through profit or loss
+	-- at amortised cost.
 	
 	DECLARE @RCFL INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceDefinitionId] = N'financial-liabilities' AND [Node] = N'/4/');
 	INSERT INTO @R7 ([Index], [ResourceClassificationId],

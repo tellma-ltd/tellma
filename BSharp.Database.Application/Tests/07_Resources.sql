@@ -61,9 +61,11 @@ BEGIN -- Inserting
 	IF @DebugResources = 1
 	BEGIN
 	--	SELECT * FROM dbo.[ResourceDefinitions];
-		SELECT	[ResourceDefinitionId], [Id], [ParentId], [Node].ToString() As [Path], REPLICATE(N'    ', [Node].GetLevel() - 1) + [Name] AS [Name],
-				[Code], [IsActive], [IsLeaf]
-		FROM dbo.ResourceClassifications ORDER BY [ResourceDefinitionId], [Node];
+		SELECT	RD.[Id] AS [ResourceDefinitionId], RC.[Id], RC.[ParentId], RC.[Node].ToString() As [Path],
+				REPLICATE(N'    ', RC.[Node].GetLevel() - 1) + RC.[Name] AS [Name],
+				RC.[Code], RC.[IsActive], RC.[IsLeaf]
+		FROM dbo.ResourceClassifications RC
+		RIGHT JOIN dbo.ResourceDefinitions RD ON RC.ResourceDefinitionId = RD.Id ORDER BY RD.[SortKey], [ResourceDefinitionId], [Node];
 		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
 	--	EXEC rpt.[sp_ResourcesPicks] @R2Ids;
 	END

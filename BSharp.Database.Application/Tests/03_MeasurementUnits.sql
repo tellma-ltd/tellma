@@ -1,7 +1,8 @@
 ﻿BEGIN -- Cleanup & Declarations
 	DECLARE @MU1 [dbo].MeasurementUnitList, @MU2 [dbo].MeasurementUnitList, @MU3 [dbo].MeasurementUnitList,
 			@MUIndexedIds dbo.[IndexedIdList];
-	DECLARE @ETBUnit NCHAR (3) = N'ETB', @USDUnit NCHAR (3) = N'USD', @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT, @LiterUnit INT,
+	DECLARE @ETBUnit NCHAR (3) = N'ETB', @USDUnit NCHAR (3) = N'USD'
+	DECLARE @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT, @LiterUnit INT,
 			@wmoUnit INT, @hrUnit INT, @yrUnit INT, @dayUnit INT, @moUnit INT;
 END
 BEGIN -- Inserting

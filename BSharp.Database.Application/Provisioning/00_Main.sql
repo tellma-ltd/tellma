@@ -7,7 +7,7 @@
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER			= NEWID();
 END
 -- Local Variables
-DECLARE @UserId INT, @RoleId INT, @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET(), @FunctionalCurrencyId INT, @ValidationErrorsJson NVARCHAR(MAX);
+DECLARE @UserId INT, @RoleId INT, @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET(), @ValidationErrorsJson NVARCHAR(MAX);
 -- Add the support account
 IF NOT EXISTS(SELECT * FROM [dbo].[Users] WHERE [Email] = @DeployEmail)
 BEGIN
