@@ -99,10 +99,8 @@
     <Build Include="dbo\Tables\dbo.Settings.sql" />
     <Build Include="dbo\Tables\dbo.DocumentDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.MeasurementUnits.sql" />
-    <Build Include="dbo\Tables\dbo.ExchangeRatesHistory.sql" />
     <Build Include="dbo\Tables\dbo.ResponsibilityCenters.sql" />
     <Build Include="dbo\Functions\dbo.fn_FunctionalCurrency.sql" />
-    <Build Include="dbo\Functions\dbo.fn_CurrencyExchange.sql" />
     <Build Include="dbo\Functions\dbo.fi_Journal.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Notes__Update.sql" />
     <Build Include="dbo\User Defined Types\dbo.ValidationErrorList.sql" />
@@ -377,6 +375,15 @@
     <None Include="Tests\14_Sales.sql" />
     <None Include="IntegrationTests.publish.xml" />
     <None Include="BSharp.Database.Application.publish.xml" />
+    <None Include="Tests\07_Resources_Cash.sql" />
+    <None Include="Tests\07_Resources_ReceivedChecks.sql" />
+    <None Include="Tests\07_Resources_RawMaterials.sql" />
+    <None Include="Tests\07_Resources_Vehicles.sql" />
+    <None Include="Tests\07_Resources_PropertyPlantAndEquipment.sql" />
+    <None Include="Tests\07_Resources_SteelProducts.sql" />
+    <None Include="Tests\07_Resources_FinancialLiabilities.sql" />
+    <None Include="Tests\07_Resources_FinancialAssets.sql" />
+    <None Include="Tests\07_Resources_ComputerEquipment.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

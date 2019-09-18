@@ -48,7 +48,7 @@
 	
 	[TimeUnitId]					INT					CONSTRAINT [FK_Resources__TimeUnitId] FOREIGN KEY ([TimeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[UnitTime]						DECIMAL,		-- if not null, it specifies the conversion rate Time/Primary Unit
-	[TImeVariance]					DECIMAL (5,2)		DEFAULT 0,
+	[TimeVariance]					DECIMAL (5,2)		DEFAULT 0,
 
 	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] FOREIGN KEY ([CountUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[UnitCount]						DECIMAL,		-- if not null, it specifies the conversion rate Count/Primary Unit

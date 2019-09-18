@@ -38,16 +38,16 @@ WHERE
 	AND (E.[Value] <> E.[MonetaryValue]);
 
 -- for financial amounts in 
-UPDATE E 
-SET E.[Value] = dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue])
-FROM @FilledEntries E
-JOIN dbo.Resources R ON E.ResourceId = R.Id
-JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
-JOIN @Documents D ON L.DocumentIndex = D.[Index]
-WHERE
-	R.CurrencyId IS NOT NULL
-	AND R.CurrencyId <> @FunctionalCurrencyId
-	AND (E.[Value] <> dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue]));
+--UPDATE E 
+--SET E.[Value] = dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue])
+--FROM @FilledEntries E
+--JOIN dbo.Resources R ON E.ResourceId = R.Id
+--JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
+--JOIN @Documents D ON L.DocumentIndex = D.[Index]
+--WHERE
+--	R.CurrencyId IS NOT NULL
+--	AND R.CurrencyId <> @FunctionalCurrencyId
+--	AND (E.[Value] <> dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue]));
 
 -- if one value only is zero at the line level, set it to the sum of the rest. Otherwise, the accountant has to set it.
 WITH SingletonLines

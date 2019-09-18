@@ -30,6 +30,11 @@
 	[SupplierLabel]				NVARCHAR (50),
 	[EmployeeLabel]				NVARCHAR (50),
 	[FromCustodyAccountLabel]	NVARCHAR (50),
-	[ToCustodyAccountLabel]		NVARCHAR (50)
+	[ToCustodyAccountLabel]		NVARCHAR (50),
+
+	[State]							NVARCHAR				DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
+	[MainMenuIcon]					NVARCHAR(50),
+	[MainMenuSection]				NVARCHAR(50),			-- IF Null, it does not show on the main menu
+	[MainMenuSortKey]				DECIMAL (9,4)
 );
 GO;
