@@ -357,6 +357,11 @@
     <Build Include="bll\Stored Procedures\bll.ResourceLookups_Validate__Delete.sql" />
     <Build Include="Mapping\ResourceLookups.sql" />
     <Build Include="Mapping\ResourceLookups__AsQuery.sql" />
+    <Build Include="dbo\User Defined Types\dbo.CurrencyList.sql" />
+    <Build Include="bll\Stored Procedures\bll.Currencies_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Currencies__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.Currencies_Validate__Delete.sql" />
+    <Build Include="dbo\Functions\dbo.fn__Localize.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

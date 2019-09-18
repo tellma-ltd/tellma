@@ -2,6 +2,13 @@
 (
 	[Id]							NVARCHAR (255)	NOT NULL PRIMARY KEY,
 	[Name]							NVARCHAR (255)	NOT NULL,
+
+	[TitleSingular]					NVARCHAR (255),
+	[TitleSingular2]				NVARCHAR (255),
+	[TitleSingular3]				NVARCHAR (255),
+	[TitlePlural]					NVARCHAR (255),
+	[TitlePlural2]					NVARCHAR (255),
+	[TitlePlural3]					NVARCHAR (255),
 	[IfrsResourceClassificationId]	NVARCHAR (255), -- FK IfrsResourceClassifications
 	[SortKey]						DECIMAL (9,4),
 	-- One method to auto generate codes/names

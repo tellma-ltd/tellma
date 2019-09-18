@@ -18,7 +18,7 @@ namespace BSharp.Controllers.Dto
         /// <summary>
         /// Mapping from line type to line definition
         /// </summary>
-        public Dictionary<string, LineDefinitionForClient> Lines { get; set; }
+        public Dictionary<string, LineTypeForClient> Lines { get; set; }
 
         /// <summary>
         /// Mapping from resource type to resource definition
@@ -52,7 +52,7 @@ namespace BSharp.Controllers.Dto
         public string FinalState { get; internal set; }
     }
 
-    public class LineDefinitionForClient : DefinitionForClient
+    public class LineTypeForClient // related entity for document definition
     {
         // TODO
     }
