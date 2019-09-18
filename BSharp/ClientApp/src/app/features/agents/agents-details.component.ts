@@ -24,7 +24,13 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
 
   create = () => {
     const result = new AgentForSave();
-    result.Name = this.initialText;
+    if (this.ws.isPrimaryLanguage) {
+      result.Name = this.initialText;
+    } else if (this.ws.isSecondaryLanguage) {
+      result.Name2 = this.initialText;
+    } else if (this.ws.isTernaryLanguage) {
+      result.Name3 = this.initialText;
+    }
     result.AgentType = 'Individual';
     result.IsRelated = false;
     result.PreferredLanguage = this.ws.settings.PrimaryLanguageId;

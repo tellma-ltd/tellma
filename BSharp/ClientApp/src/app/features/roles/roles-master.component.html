@@ -1,7 +1,7 @@
 <b-master collection="Role" viewId="roles" [mode]="mode"
   [masterCrumb]="'Roles' | translate" [tileTemplate]="tile"
-  [tableDescriptionColumnTemplate]="descriptionColumn" selectForTiles="Code"
-  selectDefault="Code,IsPublic,IsActive"
+  [tableSummaryColumnTemplate]="summaryColumn" selectForTiles="Code"
+  selectDefault="Code,IsPublic,IsActive" [tableSummaryHeaderTemplate]="summaryHeader"
   [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -27,8 +27,13 @@
   </div>
 </ng-template>
 
-<!-- Description Column -->
-<ng-template #descriptionColumn let-id="id">
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'Role' | translate }}
+  </ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
     <span class="text-truncate">{{ ws.getMultilingualValue('Role', id, 'Name') }}</span>
 </ng-template>
 

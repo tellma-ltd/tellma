@@ -16,6 +16,7 @@ import { Agent } from './entities/agent';
 import { User } from './entities/user';
 import { DefinitionsForClient } from './dto/definitions-for-client';
 import { ResourceLookup } from './entities/resource-lookup';
+import { Currency } from './entities/currency';
 
 export enum MasterStatus {
 
@@ -159,6 +160,7 @@ export class TenantWorkspace {
   IfrsNote: EntityWorkspace<IfrsNote>;
   ProductCategory: EntityWorkspace<ProductCategory>;
   ResourceLookup: EntityWorkspace<ResourceLookup>;
+  Currency: EntityWorkspace<Currency>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -176,6 +178,7 @@ export class TenantWorkspace {
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
     this.ProductCategory = new EntityWorkspace<ProductCategory>();
     this.ResourceLookup = new EntityWorkspace<ResourceLookup>();
+    this.Currency = new EntityWorkspace<Currency>();
 
     this.notifyStateChanged();
   }

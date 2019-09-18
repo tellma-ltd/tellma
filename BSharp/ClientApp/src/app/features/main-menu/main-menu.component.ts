@@ -54,6 +54,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       items: [
         { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
         { label: 'ProductCategories', icon: 'list', link: '../product-categories', viewId: 'product-categories', sortKey: 200 },
+        { label: 'Currencies', icon: 'euro-sign', link: '../currencies', viewId: 'currencies', sortKey: 300 },
       ]
     },
     Administration: {

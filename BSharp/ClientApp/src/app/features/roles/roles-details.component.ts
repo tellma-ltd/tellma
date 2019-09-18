@@ -33,8 +33,10 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     const result = new RoleForSave();
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
-    } else {
+    } else if (this.ws.isSecondaryLanguage) {
       result.Name2 = this.initialText;
+    } else if (this.ws.isTernaryLanguage) {
+      result.Name3 = this.initialText;
     }
     result.IsPublic = false;
     result.Permissions = [];

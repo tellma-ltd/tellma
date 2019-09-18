@@ -12,6 +12,7 @@ export class RoleForSave<TPermission = PermissionForSave,
     TRoleMembership = RoleMembershipForSave> extends EntityForSave {
     Name: string;
     Name2: string;
+    Name3: string;
     Code: string;
     IsPublic: boolean;
     Permissions: TPermission[];

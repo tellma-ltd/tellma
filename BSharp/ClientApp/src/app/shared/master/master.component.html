@@ -203,8 +203,8 @@
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngFor="let action of multiselectActions">
-              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement" [ngbTooltip]="actionTooltip(action)"
-                container="body">
+              <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
+                [ngbTooltip]="actionTooltip(action)" container="body">
                 <button type="button" class="dropdown-item btn-light" (click)="onAction(action)"
                   [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
@@ -310,7 +310,14 @@
               <!-- Description -->
               <th class="b-pointer" [style.width]="colWidth('(Description)')"
                 [class.dropdown-toggle]="isOrderedBy('(Description)')" (click)="onOrderBy('(Description)')">
-                {{ 'Description' | translate }}
+                <ng-content
+                  *ngTemplateOutlet="(tableSummaryHeaderTemplate || tableSummaryHeaderTemplateDefault);context: { id: id }">
+                </ng-content>
+
+                <ng-template #tableSummaryHeaderTemplateDefault let-modal>
+                  {{ 'Description' | translate }}
+                </ng-template>
+
               </th>
 
               <!-- Custom feature columns -->
@@ -355,7 +362,7 @@
 
                 <!-- Description -->
                 <td class="b-pointer" (click)="onSelect(id)">
-                  <ng-content *ngTemplateOutlet="tableDescriptionColumnTemplate;context: { id: id }">
+                  <ng-content *ngTemplateOutlet="tableSummaryColumnTemplate;context: { id: id }">
                   </ng-content>
                 </td>
 
@@ -393,7 +400,7 @@
                     <!-- Expand button -->
                     <div class="b-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"
                       (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight">
-                      <ng-content *ngTemplateOutlet="tableDescriptionColumnTemplate;context: { id: node.id }">
+                      <ng-content *ngTemplateOutlet="tableSummaryColumnTemplate;context: { id: node.id }">
                       </ng-content>
                       <b-spinner class="mx-2" *ngIf="showNodeSpinner(node)"></b-spinner>
                     </div>

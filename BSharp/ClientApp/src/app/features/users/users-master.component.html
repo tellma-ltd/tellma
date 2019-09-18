@@ -1,6 +1,6 @@
 <b-master collection="User" viewId="users" [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
-  [tableDescriptionColumnTemplate]="descriptionColumn" selectDefault="Email,State,LastAccess"
-  selectForTiles="ImageId,State,Email" inactiveFilter="Agent/IsActive eq true"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Email,State,LastAccess"
+  selectForTiles="ImageId,State,Email" inactiveFilter="Agent/IsActive eq true" 
   [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
@@ -38,12 +38,15 @@
   </div>
 </ng-template>
 
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'User' | translate }}
+  </ng-template>
 
-<!-- Description Column -->
-<ng-template #descriptionColumn let-id="id">
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
   <b-auto-cell collection="User" [entity]="c[id]"></b-auto-cell>
 </ng-template>
-
 
 <!-- Multiselect Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>

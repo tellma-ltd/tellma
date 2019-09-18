@@ -1,7 +1,7 @@
 <b-master collection="IfrsNote" viewId="ifrs-notes" [mode]="mode" [enableTreeView]="true"
   [showCreateButton]="false" [showImportButton]="false" [showDeleteButton]="false"
   [masterCrumb]="'IfrsNotes' | translate" [tileTemplate]="tile"
-  [tableDescriptionColumnTemplate]="descriptionColumn" 
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="IfrsType,EffectiveDate,ExpiryDate,IsAggregate,ForDebit,ForCredit,IsActive"
   [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -28,8 +28,14 @@
   </div>
 </ng-template>
 
-<!-- Description Column -->
-<ng-template #descriptionColumn let-id="id">
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'IfrsNote' | translate }}
+  </ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
     <span class="text-truncate">{{ ws.getMultilingualValue('IfrsNote', id, 'Label') }}</span>
 </ng-template>
 

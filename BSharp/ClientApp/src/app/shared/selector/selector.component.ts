@@ -20,8 +20,6 @@ export class SelectorComponent implements ControlValueAccessor {
   @HostBinding('class.w-100')
   w100 = true;
 
-  public nullValue = null;
-
   ///////////////// Implementation of ControlValueAccessor
   @ViewChild('selector', { static : true })
   selector: ElementRef;
@@ -33,7 +31,6 @@ export class SelectorComponent implements ControlValueAccessor {
 
   writeValue(v: any): void {
 
-    v = v || '';
     if (this.selector.nativeElement.value !== v) {
       this.selector.nativeElement.value = v; // Format
     }

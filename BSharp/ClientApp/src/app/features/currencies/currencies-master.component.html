@@ -1,22 +1,12 @@
-<b-master collection="MeasurementUnit" viewId="measurement-units" [mode]="mode"
-  [masterCrumb]="'MeasurementUnits' | translate" [tileTemplate]="tile"
-  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive" selectForTiles="Code,Name,Name2,Name3"
+<b-master collection="Currency" viewId="currencies" [mode]="mode" [masterCrumb]="'Currencies' | translate"
+  [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="E,IsActive" selectForTiles="Name,Name2,Name3,Description,Description2,Description3"
   [multiselectActions]="[
             { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-          ]"
-  [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
-            ],
-            'UnitType' : [
-              { template: pure, expression: 'UnitType eq \'Pure\''},
-              { template: time, expression: 'UnitType eq \'Time\''},
-              { template: distance, expression: 'UnitType eq \'Distance\''},
-              { template: count, expression: 'UnitType eq \'Count\''},
-              { template: mass, expression: 'UnitType eq \'Mass\''},
-              { template: volume, expression: 'UnitType eq \'Volume\''}
             ]
           }">
 </b-master>
@@ -25,25 +15,25 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ ws.getMultilingualValue('MeasurementUnit', id, 'Name') }}</span>
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Currency', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <span class="d-block text-truncate">{{ ws.getMultilingualValue('MeasurementUnit', id, 'Description') }}</span>
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Currency', id, 'Description') }}</span>
   </div>
 </ng-template>
 
+
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ 'MeasurementUnit' | translate }}
-  </ng-template>
+  {{ 'Currency' | translate }}
+</ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell collection="MeasurementUnit" [entity]="c[id]"></b-auto-cell>
+    <b-auto-cell collection="Currency" [entity]="c[id]"></b-auto-cell>
   </span>
 </ng-template>
-
 
 <!-- Multiselect Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>

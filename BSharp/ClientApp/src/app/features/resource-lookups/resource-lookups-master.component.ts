@@ -97,4 +97,14 @@ export class ResourceLookupsMasterComponent extends MasterBaseComponent implemen
 
     return this.ws.getMultilingualValueImmediate(definition, 'TitlePlural');
   }
+
+  public get summary(): string {
+    const definitionId = this.definitionId;
+    const definition = this.workspace.current.definitions.ResourceLookups[definitionId];
+    if (!definition) {
+      this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
+    }
+
+    return this.ws.getMultilingualValueImmediate(definition, 'TitleSingular');
+  }
 }

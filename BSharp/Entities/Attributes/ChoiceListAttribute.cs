@@ -42,7 +42,7 @@ namespace BSharp.Entities
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             // If it doesn't match any of the choices => error
-            if (value != null && !Choices.Contains(value))
+            if (!string.IsNullOrWhiteSpace(value?.ToString()) && !Choices.Contains(value))
             {
                 string concatenatedChoices = string.Join(", ", Choices.Select(e => e.ToString()));
 

@@ -64,6 +64,12 @@
           </a>
         </li> -->
         <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./currencies"
+            (click)="onCollapse()">
+            {{ 'Currencies' | translate }}
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./resource-lookups/colors"
             (click)="onCollapse()">
             {{ 'Colors' | translate }}

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -186,6 +187,23 @@ namespace BSharp.Controllers
         protected override Query<Currency> GetAsQuery(List<CurrencyForSave> entities)
         {
             return _repo.Currencies__AsQuery(entities);
+        }
+
+        protected override OrderByExpression DefaultOrderBy()
+        {
+            // By default: Order currencies by name
+            var tenantInfo = _repo.GetTenantInfo();
+            string nameProperty = nameof(Currency.Name);
+            if (tenantInfo.SecondaryLanguageId == CultureInfo.CurrentUICulture.Name)
+            {
+                nameProperty = $"{nameof(Currency.Name2)},{nameof(Currency.Name)}";
+            }
+            else if (tenantInfo.TernaryLanguageId == CultureInfo.CurrentUICulture.Name)
+            {
+                nameProperty = $"{nameof(Currency.Name3)},{nameof(Currency.Name)}";
+            }
+
+            return OrderByExpression.Parse(nameProperty);
         }
     }
 }
