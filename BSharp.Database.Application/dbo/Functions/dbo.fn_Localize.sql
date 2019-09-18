@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn__Localize]
+﻿CREATE FUNCTION [dbo].[fn_Localize]
 (
 	@param1 NVARCHAR(255),
 	@param2 NVARCHAR(255),

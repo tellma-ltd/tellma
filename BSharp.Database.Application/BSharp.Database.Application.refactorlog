@@ -112,4 +112,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ResourceDefinitionId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="70e6c8d3-ba51-434e-aff4-ce7dcea76aa0" ChangeDateTime="09/18/2019 13:07:19">
+    <Property Name="ElementName" Value="[dbo].[fn__Localize]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_Localize]" />
+  </Operation>
 </Operations>
