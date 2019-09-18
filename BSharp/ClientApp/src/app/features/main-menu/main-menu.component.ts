@@ -5,7 +5,7 @@ import { Key } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
-import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
 
@@ -105,34 +105,9 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       // add custom screens from definitions
-      for (const definitions of Object.keys(this.workspace.current.definitions).map(d => this.workspace.current.definitions[d])) {
-
-        if (!!definitions) {
-          for (const definitionId of Object.keys(definitions).filter(e => this.canView(e))) {
-
-            // get the definition
-            const definition = definitions[definitionId];
-
-            // get the name
-            const label = (this.workspace.current.isSecondaryLanguage ? definition.TitlePlural2 :
-              this.workspace.current.isTernaryLanguage ? definition.TitlePlural3 : definition.TitlePlural)
-              || this.translate.instant('Untitled');
-
-            // add the menu section if missing
-            if (!menu[definition.MainMenuSection]) {
-              definition.MainMenuSection = 'Miscellaneous';
-            }
-
-            // push the menu item
-            menu[definition.MainMenuSection].items.push({
-              label,
-              sortKey: definition.MainMenuSortKey,
-              icon: definition.MainMenuIcon || 'folder',
-              link: `../resource-lookups/${definitionId}`
-            });
-          }
-        }
-      }
+      this.addDefinitions(menu, this.workspace.current.definitions.ResourceLookups, 'resource-lookups');
+      this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
+      this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');
 
       this._mainMenu = Object.keys(menu).map(e => ({
         label: this.translate.instant(e),
@@ -142,6 +117,34 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     return this._mainMenu;
+  }
+
+  private addDefinitions(menu: { [section: string]: MenuSectionInfo}, definitions: { [defId: string]: DefinitionForClient}, url: string) {
+    if (!!definitions) {
+      for (const definitionId of Object.keys(definitions).filter(e => this.canView(e))) {
+
+        // get the definition
+        const definition = definitions[definitionId];
+
+        // get the name
+        const label = (this.workspace.current.isSecondaryLanguage ? definition.TitlePlural2 :
+          this.workspace.current.isTernaryLanguage ? definition.TitlePlural3 : definition.TitlePlural)
+          || this.translate.instant('Untitled');
+
+        // add the menu section if missing
+        if (!menu[definition.MainMenuSection]) {
+          definition.MainMenuSection = 'Miscellaneous';
+        }
+
+        // push the menu item
+        menu[definition.MainMenuSection].items.push({
+          label,
+          sortKey: definition.MainMenuSortKey,
+          icon: definition.MainMenuIcon || 'folder',
+          link: `../${url}/${definitionId}`
+        });
+      }
+    }
   }
 
   // constructor

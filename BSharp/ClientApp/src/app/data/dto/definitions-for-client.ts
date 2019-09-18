@@ -7,21 +7,7 @@ export class DefinitionsForClient {
     ResourceLookups: { [subtype: string]: ResourceLookupDefinitionForClient };
 }
 
-export class DocumentDefinitionForClient {
-    // TODO
-    IsSourceDocument: boolean;
-    FinalState: string;
-}
-
-export class LineDefinitionForClient {
-    // TODO
-}
-
-export class ResourceDefinitionForClient {
-    // TODO
-}
-
-export class ResourceLookupDefinitionForClient {
+export abstract class DefinitionForClient {
     TitleSingular: string;
     TitleSingular2: string;
     TitleSingular3: string;
@@ -31,5 +17,22 @@ export class ResourceLookupDefinitionForClient {
     MainMenuSection: string;
     MainMenuIcon: string;
     MainMenuSortKey: number;
+}
+
+export class DocumentDefinitionForClient extends DefinitionForClient {
+    // TODO
+    IsSourceDocument: boolean;
+    FinalState: string;
+}
+
+export class LineDefinitionForClient extends DefinitionForClient {
+    // TODO
+}
+
+export class ResourceDefinitionForClient extends DefinitionForClient {
+    // TODO
+}
+
+export class ResourceLookupDefinitionForClient extends DefinitionForClient {
 }
 
