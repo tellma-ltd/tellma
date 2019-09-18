@@ -49,12 +49,13 @@
           </button>
         </div>
 
+        <!-- Actions -->
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
           <button type="button"
             class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle" ngbDropdownToggle>
             {{ 'Actions' | translate }}
           </button>
-          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
+          <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
             <ng-container *ngFor="let action of actions">
               <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
                 [ngbTooltip]="actionTooltip(action)" container="body">

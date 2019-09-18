@@ -256,5 +256,6 @@
   "Settings_TernaryLanguageSymbol": "رمز اللغة الثالثة",
   "CreateUser": "مستخدم جديد...",
   "Miscellaneous": "متفرقات",
-  "Untitled": "بدون عنوان"
+  "Untitled": "بدون عنوان",
+  "Id": "المفتاح"
 }

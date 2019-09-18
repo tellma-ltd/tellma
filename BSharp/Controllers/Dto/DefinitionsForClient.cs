@@ -32,23 +32,7 @@ namespace BSharp.Controllers.Dto
         public Dictionary<string, ResourceLookupDefinitionForClient> ResourceLookups { get; set; }
     }
 
-    public class DocumentDefinitionForClient
-    {
-        // TODO
-        public bool IsSourceDocument { get; internal set; }
-        public string FinalState { get; internal set; }
-    }
-
-    public class LineDefinitionForClient
-    {
-        // TODO
-    }
-
-    public class ResourceDefinitionForClient
-    {
-        // TODO
-    }
-    public class ResourceLookupDefinitionForClient
+    public abstract class DefinitionForClient
     {
         public string TitleSingular { get; set; }
         public string TitleSingular2 { get; set; }
@@ -59,6 +43,26 @@ namespace BSharp.Controllers.Dto
         public string MainMenuSection { get; set; }
         public string MainMenuIcon { get; set; }
         public decimal MainMenuSortKey { get; set; }
+    }
+
+    public class DocumentDefinitionForClient : DefinitionForClient
+    {
+        // TODO
+        public bool IsSourceDocument { get; internal set; }
+        public string FinalState { get; internal set; }
+    }
+
+    public class LineDefinitionForClient : DefinitionForClient
+    {
+        // TODO
+    }
+
+    public class ResourceDefinitionForClient : DefinitionForClient
+    {
+        // TODO
+    }
+    public class ResourceLookupDefinitionForClient : DefinitionForClient
+    {
 
     }
 }

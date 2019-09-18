@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, HostListener } from '@angular/core';
 import { Settings } from '~/app/data/entities/settings';
 import { Subject, Observable, of } from 'rxjs';
 import { WorkspaceService, DetailsStatus } from '~/app/data/workspace.service';
@@ -40,6 +40,13 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
 
   @ViewChild('unsavedChangesModal', { static: true })
   public unsavedChangesModal: TemplateRef<any>;
+
+  @HostListener('window:beforeunload', ['$event'])
+  doSomething($event: BeforeUnloadEvent) {
+    if (this.isDirty) {
+      $event.returnValue = this.translate.instant('UnsavedChangesConfirmationMessage');
+    }
+  }
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private storage: StorageService,

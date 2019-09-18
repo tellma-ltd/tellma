@@ -201,10 +201,16 @@ namespace BSharp.Controllers
 
                     Resources = new Dictionary<string, ResourceDefinitionForClient>
                     {
-                        //["inventory"] = new ResourceDefinitionForClient
-                        //{
-                        ////     TODO: implement mock
-                        //}
+                        ["computer-equipment"] = new ResourceDefinitionForClient
+                        {
+                            TitleSingular = "Computer Equipment",
+                            TitleSingular2 = "معدات حاسوب",
+                            TitlePlural = "Computer Equipment",
+                            TitlePlural2 = "معدات حاسوب",
+                            MainMenuIcon = "list",
+                            MainMenuSection = "Financials",
+                            MainMenuSortKey = 202m
+                        }
                     },
 
                     Lines = new Dictionary<string, LineDefinitionForClient>
