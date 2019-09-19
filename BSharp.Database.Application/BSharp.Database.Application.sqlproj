@@ -389,6 +389,7 @@
     <None Include="Tests\07_Resources_FinancialLiabilities.sql" />
     <None Include="Tests\07_Resources_FinancialAssets.sql" />
     <None Include="Tests\07_Resources_ComputerEquipment.sql" />
+    <None Include="Tests\07_Resources_ProductionSupplies.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

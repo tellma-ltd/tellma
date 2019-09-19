@@ -16,8 +16,6 @@ DECLARE @VR1_2 VTYPE, @VRU_3 VTYPE, @Frequency NVARCHAR (255), @P1_2 int, @P1_U 
 		--:r .\12_ManualMisc.sql
 SELECT @fromDate = '2017.01.01', @toDate = '2017.01.31'
 
-INSERT INTO dbo.ExchangeRatesHistory([BaseCurrency], [TargetCurrency], [ExchangeRate])
-VALUES(N'USD', N'ETB', 30);
 --SELECT * from [fi_Journal](@fromDate, @toDate) ORDER BY [Id], [EntryId];
 --EXEC rpt_TrialBalance @fromDate = @fromDate, @toDate = @toDate, @PrintQuery=1;
 --SELECT * FROM dbo.Documents;

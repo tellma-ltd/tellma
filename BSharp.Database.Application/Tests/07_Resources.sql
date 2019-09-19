@@ -8,8 +8,8 @@ Missing
 	- Deactivating
 */
 BEGIN -- Cleanup & Declarations
-	DECLARE @R4 [dbo].ResourceList, @R5 [dbo].ResourceList, @R8 [dbo].ResourceList, @R9 [dbo].ResourceList, @R10 [dbo].ResourceList;
-	DECLARE @RP4 [dbo].ResourcePickList, @RP5 [dbo].ResourcePickList,  @RP8 [dbo].ResourcePickList, @RP9 [dbo].ResourcePickList, @RP10 [dbo].ResourcePickList;
+	DECLARE @R5 [dbo].ResourceList, @R8 [dbo].ResourceList, @R9 [dbo].ResourceList, @R10 [dbo].ResourceList;
+	DECLARE  @RP5 [dbo].ResourcePickList,  @RP8 [dbo].ResourcePickList, @RP9 [dbo].ResourcePickList, @RP10 [dbo].ResourcePickList;
 	DECLARE @R1Ids dbo.[IdList], @R2Ids dbo.[IdList], @R3Ids dbo.[idList];
 	DECLARE @R1IndexedIds dbo.IndexedIdList, @R2IndexedIds dbo.IndexedIdList, @R3IndexedIds dbo.IndexedIdList;
 
@@ -27,17 +27,16 @@ END
 	(9,N'biological-assets',				N'Biological assets',					N'BiologicalAssets'),
 	(10,N'inventories',						N'Inventories',							N'Inventories'),
 	(11,N'raw-materials',					N'Raw Materials',						N'RawMaterials'),
-	(12,N'unfinished-goods',				N'Work in progress',					N'WorkInProgress'),
-	(13,N'steel-products',					N'Steel products',						N'FinishedGoods'),
-	(14,N'plastic-products',				N'Plastic products',					N'FinishedGoods'),
-	(15,N'vehicles',						N'Vehicles',							N'FinishedGoods'),
-	(16,N'spare-parts',						N'Spare parts',							N'Merchandise'),
-	(17,N'cash-and-cash-equivalents',		N'Cash and cash equivalents',			N'CashAndCashEquivalents'),
-	(18,N'trade-and-other-receivables',		N'Trade and other receivables',			N'TradeAndOtherReceivables'),
+	(12,N'production-supplies',				N'Production Supplies',					N'ProductionSupplies'),
+	(13,N'unfinished-goods',				N'Work in progress',					N'WorkInProgress'),
+	(14,N'steel-products',					N'Steel products',						N'FinishedGoods'),
+	(15,N'plastic-products',				N'Plastic products',					N'FinishedGoods'),
+	(16,N'vehicles',						N'Vehicles',							N'FinishedGoods'),
+	(17,N'spare-parts',						N'Spare parts',							N'SpareParts'),
+	(18,N'cash-and-cash-equivalents',		N'Cash and cash equivalents',			N'CashAndCashEquivalents'),
 	(19,N'financial-liabilities',			N'Financial liabilities',				N'FinancialLiabilities'),
 	(20,N'issued-checks',					N'Checks (issued)',						N'FinancialLiabilities'),
-	(21,N'issued-letters-of-credit',		N'Letters of credit (issued)',			N'FinancialLiabilities'),
-	(21,N'trade-and-other-payables',		N'Trade and other payables',			N'FinancialLiabilities')
+	(21,N'issued-letters-of-credit',		N'Letters of credit (issued)',			N'FinancialLiabilities')
 	;
 
 	UPDATE RC_Child -- Fix Parent Id
@@ -53,6 +52,7 @@ BEGIN -- Inserting
 	:r .\07_Resources_FinancialAssets.sql
 	:r .\07_Resources_ReceivedChecks.sql
 	:r .\07_Resources_RawMaterials.sql
+	:r .\07_Resources_ProductionSupplies.sql
 	:r .\07_Resources_SteelProducts.sql
 	:r .\07_Resources_Vehicles.sql
 	:r .\07_Resources_Cash.sql
@@ -77,10 +77,7 @@ BEGIN -- Inserting
 --[IfrsResourceClassificationId],	[Name],		[Code],	[SystemCode], [UnitId]) VALUES
 --	(11, N'general-goods',		N'Cotton',	NULL,	NULL,		@KgUnit);
 
---INSERT INTO @R1 ([Index],
---[IfrsResourceClassificationId],	[Name],		[Code],	[SystemCode], [UnitId]) VALUES
---	(12, N'general-goods',		N'Oil',		NULL,	NULL,		@LiterUnit),
---	(13, N'general-goods',		N'Diesel',	NULL,	NULL,		@LiterUnit);
+
 
 --INSERT INTO @R1 ([Index],
 --[IfrsResourceClassificationId],	[Name],					[Code],		[SystemCode],	[UnitId]) VALUES
@@ -184,8 +181,8 @@ END
 
 DECLARE @ETB int, @USD int, @CommonStock int;
 DECLARE @Camry2018 int, @Cotton int, @TeddyBear int, @Car1 int, @Car2 int;
-DECLARE @HOvertime int, @ROvertime int, @Basic int, @Transportation int, 
-		@LaborHourly int, @LaborDaily int, @Car1Svc int, @GOff int;
+--DECLARE @HOvertime int, @ROvertime int, @Basic int, @Transportation int, 
+--		@LaborHourly int, @LaborDaily int, @Car1Svc int, @GOff int;
 DECLARE @HR1000x1_9 INT, @CR1000x1_4 INT;
 DECLARE @Oil INT, @Diesel INT;
 
@@ -196,16 +193,16 @@ SELECT
 	@Car1 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'101'),
 	@Car2 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'102'),
 	--@Car1Svc = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'101D'),
-	@GOff = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'Goff'),
+	--@GOff = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'Goff'),
 	@Cotton = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Cotton'),
 	@TeddyBear = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Teddy bear'),
 	@CommonStock = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Common Stock'),
-	@HOvertime = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'HolidayOvertime'),
-	@ROvertime = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'RestOvertime'),
-	@Basic = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Basic'),
-	@Transportation = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Transportation'),
-	@LaborHourly = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborHourly'),
-	@LaborDaily = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborDaily'),
+	--@HOvertime = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'HolidayOvertime'),
+	--@ROvertime = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'RestOvertime'),
+	--@Basic = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Basic'),
+	--@Transportation = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Transportation'),
+	--@LaborHourly = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborHourly'),
+	--@LaborDaily = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborDaily'),
 	@HR1000x1_9 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'HR1000x1.9'),
 	@CR1000x1_4 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'CR1000x1.4'),
 	@Oil = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Oil'),
