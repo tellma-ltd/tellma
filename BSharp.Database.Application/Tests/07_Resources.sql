@@ -17,12 +17,12 @@ END
 	INSERT INTO dbo.ResourceDefinitions ([SortKey],
 		[Id],								[Name],									[IfrsResourceClassificationId]) VALUES
 	(1,N'property-plant-and-equipment',		N'Property, plant and equipment',		N'PropertyPlantAndEquipment'),
-	(2,N'motor-vehicles',					N'Motor vehicles',						N'MotorVehicles'),
-	(3,N'computer-equipment',				N'Computer equipment',					N'ComputerEquipment'),
+	(2,N'motor-vehicles',					N'Motor vehicles',						N'MotorVehicles'), --
+	(3,N'computer-equipment',				N'Computer equipment',					N'ComputerEquipment'), --
 	(4,N'investment-property',				N'Investment property',					N'InvestmentProperty'),
 	(5,N'intangible-assets',				N'Intangible assets other than goodwill',N'IntangibleAssets'),
 	(6,N'financial-assets',					N'Financial assets',					N'FinancialAssets'),
-	(7,N'received-checks',					N'Checks (received)',					N'FinancialAssets'),
+	(7,N'received-checks',					N'Checks (received)',					N'FinancialAssets'), --
 	(8,N'investments',						N'Investments',							N'Investments'),	
 	(9,N'biological-assets',				N'Biological assets',					N'BiologicalAssets'),
 	(10,N'inventories',						N'Inventories',							N'Inventories'),
