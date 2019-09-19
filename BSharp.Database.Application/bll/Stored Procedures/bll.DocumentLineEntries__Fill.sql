@@ -5,7 +5,7 @@
 AS
 SET NOCOUNT ON;
 DECLARE @FilledEntries [dbo].[DocumentLineEntryList];
-DECLARE @FunctionalCurrencyId INT = CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId'));
+DECLARE @FunctionalCurrencyId NCHAR(3) = CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId'));
 
 INSERT INTO @FilledEntries
 SELECT * FROM @Entries;
