@@ -367,6 +367,9 @@
     <Build Include="Mapping\Currencies.sql" />
     <Build Include="Mapping\Currencies__AsQuery.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexedStringList.sql" />
+    <Build Include="dal\Stored Procedures\dal.Resources__Activate.sql" />
+    <Build Include="Mapping\Resources.sql" />
+    <Build Include="Mapping\Resources__AsQuery.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

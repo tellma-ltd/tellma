@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Resources_Validate__Save]
 	@ResourceDefinitionId NVARCHAR (255),
 	@Resources [dbo].[ResourceList] READONLY,
-	@Picks [dbo].[ResourcePickList] READONLY,
+	--@Picks [dbo].[ResourcePickList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
