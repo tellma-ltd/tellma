@@ -39,7 +39,7 @@ BEGIN -- reset Identities
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
 	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @DebugIfrsConcepts bit = 0, @DebugMeasurementUnits bit = 0;
-	DECLARE @DebugProductCategories bit = 0, @DebugOperations bit = 1, @DebugResources bit = 1;
+	DECLARE @DebugProductCategories bit = 0, @DebugOperations bit = 1, @DebugResources bit = 0;
 	DECLARE @DebugAgents bit = 0, @DebugPlaces bit = 0;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
@@ -64,8 +64,8 @@ BEGIN TRY
 		:r .\05_Agents.sql
 		:r .\06_ResponsibilityCenters.sql
 		:r .\07_Resources.sql
-		--:r .\08_Accounts.sql
-		--:r .\10_JournalVouchers.sql
+		:r .\08_Accounts.sql
+		:r .\10_JournalVouchers.sql
 
 		--:r .\71_Operations.sql
 		--:r .\72_ProductCategories.sql

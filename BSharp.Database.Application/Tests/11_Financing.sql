@@ -15,11 +15,11 @@ BEGIN -- Inserting
 		(3,0,	N'ManualLine', 2);
 
 	INSERT INTO @E11 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
-					[AccountId], [IfrsEntryClassificationId],		[ResourceId], [Quantity], [MonetaryValue], [Value]) VALUES
-		(0,0,0,1,+1,@CBEUSD,		N'ProceedsFromIssuingShares', 	@USD,			200000,		200000,			4700000), -- No other measure is visible etc...
-		(1,1,0,1,-1,@CapitalMA,		N'IssueOfEquity',		@CommonStock,			1000,		100050,			2351175), -- only monetary amount is also visible
-		(2,2,0,1,-1,@CapitalAA,		N'IssueOfEquity',		@CommonStock,			1000,		100050,			2351175),
-		(3,3,0,1,+1,@CBEUSD,		N'ProceedsFromIssuingShares', 	@USD,			100,		100,			2000);
+					[AccountId], [IfrsEntryClassificationId],	[ResourceId],	[Value], [Count], [MonetaryValue]) VALUES
+		(0,0,0,1,+1,@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,			4700000,	0,		200000), -- No other measure is visible etc...
+		(1,1,0,1,-1,@CapitalMA,	N'IssueOfEquity',				@CommonStock,	2351175, 1000,		100050), -- only monetary amount is also visible
+		(2,2,0,1,-1,@CapitalAA,	N'IssueOfEquity',				@CommonStock,	2351175, 1000,		100050),
+		(3,3,0,1,+1,@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,			2000,		0,		100);
 
 	EXEC [api].[Documents__Save]
 		@DocumentTypeId = N'manual-journals',
