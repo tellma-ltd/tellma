@@ -12,6 +12,7 @@ DELETE FROM [dbo].[RoleMemberships];
 DELETE FROM [dbo].[Roles] WHERE [Id] <> @RoleId;
 DELETE FROM [dbo].[Users] WHERE [Id] <> @UserId;
 DELETE FROM [dbo].[Agents] WHERE [Id]<> @UserId;
+DELETE FROM [dbo].[Currencies] WHERE [Id] NOT IN (N'ETB', N'USD');
 
 
 DELETE FROM [dbo].[MeasurementUnits];

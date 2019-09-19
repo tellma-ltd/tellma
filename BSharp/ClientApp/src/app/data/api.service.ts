@@ -31,6 +31,8 @@ import { IfrsNote } from './entities/ifrs-note';
 import { ProductCategory } from './entities/product-category';
 import { GetEntityResponse } from './dto/get-entity-response';
 import { DefinitionsForClient } from './dto/definitions-for-client';
+import { Currency } from './entities/currency';
+import { ResourceLookup } from './entities/resource-lookup';
 
 @Injectable({
   providedIn: 'root'
@@ -86,8 +88,15 @@ export class ApiService {
 
   public resourceLookupsApi(definitionId: string, cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<Agent>(`resource-lookups/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Agent>(`resource-lookups/${definitionId}`, cancellationToken$)
+      activate: this.activateFactory<ResourceLookup>(`resource-lookups/${definitionId}`, cancellationToken$),
+      deactivate: this.deactivateFactory<ResourceLookup>(`resource-lookups/${definitionId}`, cancellationToken$)
+    };
+  }
+
+  public currenciesApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<Currency>('currencies', cancellationToken$),
+      deactivate: this.deactivateFactory<Currency>('currencies', cancellationToken$)
     };
   }
 

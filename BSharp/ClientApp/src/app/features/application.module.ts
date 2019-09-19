@@ -32,8 +32,11 @@ import { ResourceLookupsImportComponent } from './resource-lookups/resource-look
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
-  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder
+  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign
 } from '@fortawesome/free-solid-svg-icons';
+import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
+import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
+import { CurrenciesImportComponent } from './currencies/currencies-import.component';
 
 const routes: Routes = [
   {
@@ -156,6 +159,23 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
+      // Currencies
+      {
+        path: 'currencies',
+        component: CurrenciesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'currencies/import',
+        component: CurrenciesImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'currencies/:id',
+        component: CurrenciesDetailsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -202,7 +222,10 @@ const routes: Routes = [
     ProductCategoriesDetailsComponent,
     ResourceLookupsMasterComponent,
     ResourceLookupsDetailsComponent,
-    ResourceLookupsImportComponent],
+    ResourceLookupsImportComponent,
+    CurrenciesMasterComponent,
+    CurrenciesDetailsComponent,
+    CurrenciesImportComponent],
   imports: [
     SharedModule,
     RouterModule.forChild(routes)
@@ -214,7 +237,7 @@ export class ApplicationModule {
     library.addIcons(
       // Main menu icons
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
-      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder
+      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign
     );
   }
 }

@@ -362,6 +362,11 @@
     <Build Include="dal\Stored Procedures\dal.Currencies__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Currencies_Validate__Delete.sql" />
     <Build Include="dbo\Functions\dbo.fn_Localize.sql" />
+    <Build Include="dal\Stored Procedures\dal.Currencies__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Currencies__Activate.sql" />
+    <Build Include="Mapping\Currencies.sql" />
+    <Build Include="Mapping\Currencies__AsQuery.sql" />
+    <Build Include="dbo\User Defined Types\dbo.IndexedStringList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

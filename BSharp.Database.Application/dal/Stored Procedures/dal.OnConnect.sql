@@ -48,7 +48,7 @@ BEGIN
     -- Set LastAccess (Works only when @UserId IS NOT NULL)
     UPDATE [dbo].[Users] SET [LastAccess] = SYSDATETIMEOFFSET() WHERE [Id] = @UserId;
 
-    -- Get hashes
+    -- Get settings
     SELECT 
 		@ShortCompanyName		= [ShortCompanyName],
 		@ShortCompanyName2		= [ShortCompanyName2],

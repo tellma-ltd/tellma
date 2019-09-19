@@ -60,7 +60,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   tileTemplate: TemplateRef<any>;
 
   @Input()
-  tableDescriptionColumnTemplate: TemplateRef<any>;
+  tableSummaryColumnTemplate: TemplateRef<any>;
+
+  @Input()
+  tableSummaryHeaderTemplate: TemplateRef<any>;
 
   @Input()
   showCreateButton = true;

@@ -5,26 +5,26 @@
 	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
-	[UnitMonetaryValue]				DECIMAL,
+	[Code]							NVARCHAR (255),
+	--[UnitMonetaryValue]				DECIMAL,
 	[CurrencyId]					NCHAR (3),
-	[UnitMass]						DECIMAL,
+	--[UnitMass]						DECIMAL,
 	[MassUnitId]					INT,
-	[UnitVolume]					DECIMAL,
+	--[UnitVolume]						DECIMAL,
 	[VolumeUnitId]					INT,
-	[UnitArea]						DECIMAL,
+	--[UnitArea]						DECIMAL,
 	[AreaUnitId]					INT,
-	[UnitLength]					DECIMAL,
+	--[UnitLength]					DECIMAL,
 	[LengthUnitId]					INT,
-	[UnitCount]						DECIMAL,
+	--[UnitCount]						DECIMAL,
 	[TimeUnitId]					INT,
 	[CountUnitId]					INT,
-	[UnitTime]						DECIMAL,
-	[Code]							NVARCHAR (255),
+	--[UnitTime]						DECIMAL,
  -- functional currency, common stock, basic, allowance, overtime/types, 
-	[SystemCode]					NVARCHAR (255),
+	--[SystemCode]					NVARCHAR (255),
 	[Memo]							NVARCHAR (2048), -- description
 	[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
-	[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
+	--[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
 	-- The following properties are user-defined, used for reporting
 	[ResourceLookup1Id]				INT,			-- UDL 
 	[ResourceLookup2Id]				INT,			-- UDL 

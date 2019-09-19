@@ -562,9 +562,6 @@
   <data name="MU_Mass" xml:space="preserve">
     <value>كتلة</value>
   </data>
-  <data name="MU_MonetaryValue" xml:space="preserve">
-    <value>نقد</value>
-  </data>
   <data name="MU_Pure" xml:space="preserve">
     <value>محض</value>
   </data>
@@ -1002,5 +999,20 @@
   </data>
   <data name="IfrsConcepts_IsLeaf" xml:space="preserve">
     <value>بدون فروع</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedIn12" xml:space="preserve">
+    <value>العملة ({0}) مستخدمة في {1} ({2})</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>عملة</value>
+  </data>
+  <data name="Currencies" xml:space="preserve">
+    <value>عملات</value>
+  </data>
+  <data name="Currency_DecimalPlaces" xml:space="preserve">
+    <value>عدد المنازل العشرية</value>
+  </data>
+  <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
+    <value>ال{0} ({1}) مستخدمة في بعض المستندات</value>
   </data>
 </root>

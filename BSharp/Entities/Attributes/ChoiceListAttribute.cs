@@ -44,9 +44,8 @@ namespace BSharp.Entities
             // If it doesn't match any of the choices => error
             if (!string.IsNullOrEmpty(value?.ToString()) && !Choices.Contains(value))
             {
-                string concatenatedChoices = string.Join(", ", Choices.Select(e => e.ToString()));
-
                 // This is a programmer error, no need to localize it
+                string concatenatedChoices = string.Join(", ", Choices.Select(e => e.ToString()));
                 return new ValidationResult($"Only the following values are allowed: {concatenatedChoices}");
             }
 

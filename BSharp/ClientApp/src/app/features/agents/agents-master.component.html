@@ -1,5 +1,5 @@
 <b-master collection="Agent" viewId="agents" [mode]="mode" [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
-  [tableDescriptionColumnTemplate]="descriptionColumn" selectDefault="Code,AgentType,IsRelated"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,AgentType,IsRelated"
   selectForTiles="Code,ImageId" [filterDefault]="filterDefault" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -35,8 +35,13 @@
   </div>
 </ng-template>
 
-<!-- Description Column -->
-<ng-template #descriptionColumn let-id="id">
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'Agent' | translate }}
+  </ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
     <b-auto-cell collection="Agent" [entity]="c[id]"></b-auto-cell>
   </span>

@@ -16,11 +16,34 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Resources] AS t
 		USING (
 			SELECT 	
-				[Index], [Id], [ResourceClassificationId], [Name], [Name2], [Name3], 
-				[UnitMonetaryValue], [CurrencyId], [UnitMass], [MassUnitId], [UnitVolume], [VolumeUnitId],
-				[UnitArea], [AreaUnitId], [UnitLength], [LengthUnitId], [UnitTime], [TimeUnitId], [UnitCount], [CountUnitId],
-				[Code], [SystemCode], [Memo], [CustomsReference], [PreferredSupplierId],
-				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id]
+				[Index], [Id], 
+				[ResourceClassificationId], 
+				[Name], 
+				[Name2], 
+				[Name3], 
+				[UnitMonetaryValue], 
+				[CurrencyId], 
+				[UnitMass], 
+				[MassUnitId], 
+				[UnitVolume], 
+				[VolumeUnitId],
+				[UnitArea], 
+				[AreaUnitId], 
+				[UnitLength], 
+				[LengthUnitId], 
+				[UnitTime], 
+				[TimeUnitId], 
+				[UnitCount], 
+				[CountUnitId],
+				[Code], 
+				[SystemCode], 
+				[Memo], 
+				[CustomsReference], 
+				[PreferredSupplierId],
+				[ResourceLookup1Id], 
+				[ResourceLookup2Id], 
+				[ResourceLookup3Id], 
+				[ResourceLookup4Id]
 			FROM @Resources 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 

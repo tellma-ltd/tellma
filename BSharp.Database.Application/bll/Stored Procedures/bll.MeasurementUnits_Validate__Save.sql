@@ -4,6 +4,16 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	
+    -- Non Null Ids must exist
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+    SELECT
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Id',
+		N'Error_TheId0WasNotFound',
+		CAST([Id] As NVARCHAR (255))
+    FROM @Entities
+    WHERE Id <> 0
+	AND Id NOT IN (SELECT Id from [dbo].[MeasurementUnits]);
 
 	-- Code must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -16,8 +26,7 @@ SET NOCOUNT ON;
 	WHERE
 		FE.[Code] IS NOT NULL
 	AND BE.[Code] IS NOT NULL
-	AND FE.Id <> BE.Id
-	OPTION (HASH JOIN);
+	AND FE.Id <> BE.Id;
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

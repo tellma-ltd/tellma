@@ -13,8 +13,7 @@ SET NOCOUNT ON;
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
     WHERE Id <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[Agents])
-	OPTION(HASH JOIN);
+	AND Id NOT IN (SELECT Id from [dbo].[Agents]);
 
 	-- Code must be unique
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0]) 
@@ -27,3 +26,18 @@ SET NOCOUNT ON;
 	WHERE ((FE.Id IS NULL) OR (FE.Id <> BE.Id));
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
+
+		-- Code must not be duplicated in the uploaded list
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Code',
+		N'Error_TheCode0IsDuplicated',
+		[Code]
+	FROM @Entities
+	WHERE [Code] IN (
+		SELECT [Code]
+		FROM @Entities
+		WHERE [Code] IS NOT NULL
+		GROUP BY [Code]
+		HAVING COUNT(*) > 1
+	) OPTION (HASH JOIN);

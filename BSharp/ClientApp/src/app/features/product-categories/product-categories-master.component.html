@@ -1,7 +1,8 @@
 <b-master collection="ProductCategory" viewId="product-categories" [mode]="mode"
   [enableTreeView]="true" [masterCrumb]="'ProductCategories' | translate"
   [tileTemplate]="tile"  
-  [tableDescriptionColumnTemplate]="descriptionColumn"
+  [tableSummaryColumnTemplate]="summaryColumn"
+  [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="Code,IsActive" selectForTiles="Code"
   [multiselectActions]="[
           { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -23,8 +24,13 @@
   </div>
 </ng-template>
 
-<!-- Description Column -->
-<ng-template #descriptionColumn let-id="id">
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'ProductCategory' | translate }}
+  </ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
     <span class="text-truncate">{{ ws.getMultilingualValue('ProductCategory', id, 'Name') }}</span>
 </ng-template>
 

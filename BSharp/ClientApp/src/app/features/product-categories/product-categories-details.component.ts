@@ -19,6 +19,13 @@ export class ProductCategoriesDetailsComponent extends DetailsBaseComponent {
 
   create = () => {
     const result = new ProductCategoryForSave();
+    if (this.ws.isPrimaryLanguage) {
+      result.Name = this.initialText;
+    } else if (this.ws.isSecondaryLanguage) {
+      result.Name2 = this.initialText;
+    } else if (this.ws.isTernaryLanguage) {
+      result.Name3 = this.initialText;
+    }
     return result;
   }
 

@@ -17,7 +17,7 @@
                     new ViewInfo {
                         Id = "all",
                         Name = "View_All",
-                        Levels = new LevelInfo[] 
+                        Actions = new ActionInfo[] 
                         {
                             Li("Read", false)
                         }
@@ -28,7 +28,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Levels = new LevelInfo[] 
+                        Actions = new ActionInfo[] 
                         {
                             Li("IsActive")
                         }
@@ -39,7 +39,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Levels = new LevelInfo[] 
+                        Actions = new ActionInfo[] 
                         {
                             Li("IsActive")
                         }
@@ -50,7 +50,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Levels = new LevelInfo[]
+                        Actions = new ActionInfo[]
                         {
                             Li("IsActive")
                         }
@@ -61,7 +61,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Levels = new LevelInfo[] 
+                        Actions = new ActionInfo[] 
                         {
                             Li("ResendInvitationEmail")
                         }
@@ -70,7 +70,7 @@
                         Id = "views",
                         Name = "Views",
                         Read = true,
-                        Levels = new LevelInfo[] 
+                        Actions = new ActionInfo[] 
                         {
                             Li("IsActive")
                         }
@@ -79,7 +79,7 @@
                         Id = "ifrs-notes",
                         Name = "IfrsNotes",
                         Read = true,
-                        Levels = new LevelInfo[] 
+                        Actions = new ActionInfo[] 
                         {
                             Li("IsActive")
                         }
@@ -90,7 +90,18 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Levels = new LevelInfo[] 
+                        Actions = new ActionInfo[]
+                        {
+                            Li("IsActive")
+                        }
+                    },
+                    new ViewInfo {
+                        Id = "currencies",
+                        Name = "Currencies",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
                         {
                             Li("IsActive")
                         }
@@ -98,7 +109,7 @@
                     new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
-                        Levels = new LevelInfo[] 
+                        Actions = new ActionInfo[] 
                         {
                             Li("Read", false),
                             Li("Update", false)
@@ -108,9 +119,9 @@
             }
         }
 
-        private static LevelInfo Li(string name, bool criteria = true)
+        private static ActionInfo Li(string name, bool criteria = true)
         {
-            return new LevelInfo { Action = name, Criteria = criteria };
+            return new ActionInfo { Action = name, Criteria = criteria };
         }
 
         public class ViewInfo
@@ -131,10 +142,10 @@
 
             public bool Delete { get; set; }
 
-            public LevelInfo[] Levels { get; set; }
+            public ActionInfo[] Actions { get; set; }
         }
 
-        public class LevelInfo
+        public class ActionInfo
         {
             public string Action { get; set; }
 
