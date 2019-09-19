@@ -259,5 +259,19 @@
   "Id": "المفتاح",
   "Currency": "عملة",
   "Currencies": "عملات",
-  "Currency_DecimalPlaces": "عدد المنازل العشرية"
+  "Currency_DecimalPlaces": "عدد المنازل العشرية",
+  
+  "Resource_Classification": "التصنيف",
+  "Resource_Currency": "العملة",
+  "Resource_MassUnit": "وحدة قياس الوزن",
+  "Resource_VolumeUnit": "وحدة قياس الحجم",
+  "Resource_AreaUnit": "وحدة قياس المساحة",
+  "Resource_LengthUnit": "وحدة قياس الطول",
+  "Resource_TimeUnit": "وحدة قياس الزمن",
+  "Resource_CountUnit": "وحدة قياس العدد",
+  "Resource_CustomsReference": "الرقم الجمركي",
+  "Resource_ResourceLookup1": "الصفة 1",
+  "Resource_ResourceLookup2": "الصفة 2",
+  "Resource_ResourceLookup3": "الصفة 3",
+  "Resource_ResourceLookup4": "الصفة 4"
 }

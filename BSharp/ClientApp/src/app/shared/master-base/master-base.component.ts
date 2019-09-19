@@ -49,6 +49,14 @@ export class MasterBaseComponent implements OnDestroy {
     return this._master;
   }
 
+  get isScreenMode(): boolean {
+    return this.mode === 'screen';
+  }
+
+  get isPopupMode(): boolean {
+    return this.mode === 'popup';
+  }
+
   private cleanupSubscriptions() {
 
     if (!!this.masterSelect) {

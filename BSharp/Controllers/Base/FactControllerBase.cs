@@ -17,10 +17,14 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
+    /// <summary>
+    /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type using OData-like parameters
+    /// </summary>
     [AuthorizeAccess]
     [ApiController]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public abstract class ReadControllerBase<TEntity> : ControllerBase
+    public abstract class FactControllerBase<TEntity> : ControllerBase
         where TEntity : Entity
     {
         // Private Fields
@@ -40,7 +44,7 @@ namespace BSharp.Controllers
         private static int MAXIMUM_AGGREGATE_RESULT_SIZE => 65536;
 
         // Constructor
-        public ReadControllerBase(ILogger logger, IStringLocalizer localizer)
+        public FactControllerBase(ILogger logger, IStringLocalizer localizer)
         {
             _logger = logger;
             _localizer = localizer;

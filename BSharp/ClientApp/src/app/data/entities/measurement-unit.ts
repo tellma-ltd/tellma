@@ -27,7 +27,7 @@ export class MeasurementUnit extends MeasurementUnitForSave {
   ModifiedById: number | string;
 }
 
-const _select = ['', '2', '3'].map(pf => 'Description' + pf);
+const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _currentLang: string;
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;

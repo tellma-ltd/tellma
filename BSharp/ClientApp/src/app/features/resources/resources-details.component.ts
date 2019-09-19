@@ -1,28 +1,29 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { ResourceLookup, ResourceLookupForSave } from '~/app/data/entities/resource-lookup';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { ResourceForSave, Resource, metadata_Resource } from '~/app/data/entities/resource';
+import { PropDescriptor } from '~/app/data/entities/base/metadata';
 
 @Component({
-  selector: 'b-resource-lookups-details',
-  templateUrl: './resource-lookups-details.component.html',
+  selector: 'b-resources-details',
+  templateUrl: './resources-details.component.html',
   styles: []
 })
-export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implements OnInit {
+export class ResourcesDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private resourceLookupsApi = this.api.resourceLookupsApi('', this.notifyDestruct$); // for intellisense
+  private resourcesApi = this.api.resourcesApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
 
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
       this._definitionId = t;
-      this.resourceLookupsApi = this.api.resourceLookupsApi(t, this.notifyDestruct$);
+      this.resourcesApi = this.api.resourcesApi(t, this.notifyDestruct$);
     }
   }
 
@@ -30,7 +31,8 @@ export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implem
     return this._definitionId;
   }
 
-  public expand = '';
+  public expand = `Currency,MassUnit,VolumeUnit,AreaUnit,LengthUnit,TimeUnit,
+CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -46,7 +48,7 @@ export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implem
 
         const definitionId = params.get('definitionId');
 
-        if (!definitionId || !this.workspace.current.definitions.ResourceLookups[definitionId]) {
+        if (!definitionId || !this.workspace.current.definitions.Resources[definitionId]) {
           this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
         }
 
@@ -59,7 +61,7 @@ export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implem
   // UI Binding
 
   create = () => {
-    const result = new ResourceLookupForSave();
+    const result = new ResourceForSave();
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -74,33 +76,37 @@ export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implem
     return this.workspace.current;
   }
 
-  public onActivate = (model: ResourceLookup): void => {
+  public get p(): { [prop: string]: PropDescriptor } {
+    return metadata_Resource(this.ws, this.translate, this.definitionId).properties;
+  }
+
+  public onActivate = (model: Resource): void => {
     if (!!model && !!model.Id) {
-      this.resourceLookupsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.resourcesApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onDeactivate = (model: ResourceLookup): void => {
+  public onDeactivate = (model: Resource): void => {
     if (!!model && !!model.Id) {
-      this.resourceLookupsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.resourcesApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public showActivate = (model: ResourceLookup) => !!model && !model.IsActive;
-  public showDeactivate = (model: ResourceLookup) => !!model && model.IsActive;
+  public showActivate = (model: Resource) => !!model && !model.IsActive;
+  public showDeactivate = (model: Resource) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: ResourceLookup) => this.ws.canDo(this.definitionId, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Resource) => this.ws.canDo(this.definitionId, 'IsActive', model.Id);
 
-  public activateDeactivateTooltip = (model: ResourceLookup) => this.canActivateDeactivateItem(model) ? '' :
+  public activateDeactivateTooltip = (model: Resource) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
     const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.ResourceLookups[definitionId];
+    const definition = this.workspace.current.definitions.Resources[definitionId];
     if (!definition) {
       this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
     }

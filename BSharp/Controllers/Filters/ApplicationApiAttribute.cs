@@ -201,15 +201,51 @@ namespace BSharp.Controllers
 
                     Resources = new Dictionary<string, ResourceDefinitionForClient>
                     {
-                        ["computer-equipment"] = new ResourceDefinitionForClient
+                        //["computer-equipment"] = new ResourceDefinitionForClient
+                        //{
+                        //    TitleSingular = "Computer Equipment",
+                        //    TitleSingular2 = "معدات حاسوب",
+                        //    TitlePlural = "Computer Equipment",
+                        //    TitlePlural2 = "معدات حاسوب",
+                        //    MainMenuIcon = "list",
+                        //    MainMenuSection = "Financials",
+                        //    MainMenuSortKey = 202m
+                        //},
+                        ["raw-materials"] = new ResourceDefinitionForClient
                         {
-                            TitleSingular = "Computer Equipment",
-                            TitleSingular2 = "معدات حاسوب",
-                            TitlePlural = "Computer Equipment",
-                            TitlePlural2 = "معدات حاسوب",
-                            MainMenuIcon = "list",
+                            TitlePlural = "Raw Materials",
+                            TitlePlural2 = "مواد الخام",
+                            TitleSingular = "Raw Material",
+                            TitleSingular2 = "مادة خام",
+                            MainMenuIcon = "clipboard",
                             MainMenuSection = "Financials",
-                            MainMenuSortKey = 202m
+                            MainMenuSortKey = 203m,
+                            ResourceLookup1_Label = "Thickness",
+                            ResourceLookup1_Label2 = "السماكة",
+                            ResourceLookup1_Visibility = 1,
+                            ResourceLookup1_DefinitionId = "thicknesses",
+                            MassUnit_Visibility = 1,
+                            VolumeUnit_Visibility = 1,
+                            AreaUnit_Visibility = 1,
+                            LengthUnit_Visibility = 1,
+                            TimeUnit_Visibility = 1,
+                            CountUnit_Visibility = 1,
+                            Memo_Visibility = 1,
+                            CustomsReference_Visibility = 1
+                        },
+                        ["finished-goods"] = new ResourceDefinitionForClient
+                        {
+                            TitlePlural = "Finished Goods",
+                            TitlePlural2 = "سلع مصنعة",
+                            TitleSingular = "Finished Good",
+                            TitleSingular2 = "سلعة مصنعة",
+                            MainMenuIcon = "truck",
+                            MainMenuSection = "Financials",
+                            MainMenuSortKey = 204m,
+                            ResourceLookup1_Label = "Color",
+                            ResourceLookup1_Label2 = "اللون",
+                            ResourceLookup1_Visibility = 1,
+                            ResourceLookup1_DefinitionId = "colors"
                         }
                     },
 

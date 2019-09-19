@@ -260,5 +260,19 @@
   "Id": "Id",
   "Currency": "Currency",
   "Currencies": "Currencies",
-  "Currency_DecimalPlaces": "Decimal Places"
+  "Currency_DecimalPlaces": "Decimal Places",
+  
+  "Resource_Classification": "Classification",
+  "Resource_Currency": "Currency",
+  "Resource_MassUnit": "Mass Unit",
+  "Resource_VolumeUnit": "Volume Unit",
+  "Resource_AreaUnit": "Area Unit",
+  "Resource_LengthUnit": "Length Unit",
+  "Resource_TimeUnit": "Time Unit",
+  "Resource_CountUnit": "Count Unit",
+  "Resource_CustomsReference": "Customs Reference",
+  "Resource_ResourceLookup1": "Resource Lookup 1",
+  "Resource_ResourceLookup2": "Resource Lookup 2",
+  "Resource_ResourceLookup3": "Resource Lookup 3",
+  "Resource_ResourceLookup4": "Resource Lookup 4"
 }

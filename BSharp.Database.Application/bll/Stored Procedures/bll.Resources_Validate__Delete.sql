@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Resources_Validate__Delete]
+	@DefinitionId NVARCHAR(255),
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS

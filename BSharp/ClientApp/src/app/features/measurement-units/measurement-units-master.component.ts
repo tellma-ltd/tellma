@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
@@ -18,6 +18,9 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
   private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
+
+  @Input()
+  filter: string;
 
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();

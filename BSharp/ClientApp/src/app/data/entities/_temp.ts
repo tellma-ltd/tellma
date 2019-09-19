@@ -45,46 +45,6 @@ export class ResourcePick extends ResourcePickForSave {
     ModifiedById: number | string;
 }
 
-export class ResourceForSave extends EntityWithKey {
-    Name: string;
-    Name2: string;
-    Name3: string;
-    Code: string;
-    // ResourceType: string;
-    ResourceClassificationId: number | string;
-    // IsBatch: boolean;
-    // UnitId: number | string;
-    UnitMonetaryValue: number;
-    CurrencyId: number | string;
-    UnitMass: number;
-    MassUnitId: number | string;
-    UnitVolume: number;
-    VolumeUnitId: number | string;
-    UnitArea: number;
-    AreaUnitId: number | string;
-    UnitLength: number;
-    LengthUnitId: number | string;
-    UnitTime: number;
-    TimeUnitId: number | string;
-    UnitCount: number;
-    CountUnitId: number | string;
-    SystemCode: string;
-    Memo: string;
-    CustomsReference: string;
-    // UniversalProductCode: string;
-    PreferredSupplierId: number | string;
-    ExpenseAccountId: number | string;
-    RevenueAccountId: number | string;
-    ProductCategoryId: number | string;
-}
-
-export class Resource extends ResourceForSave {
-    IsActive: boolean;
-    CreatedAt: string;
-    CreatedById: number | string;
-    ModifiedAt: string;
-    ModifiedById: number | string;
-}
 
 export class ResponsibilityCenterForSave extends EntityWithKey {
     ParentId: number | string;
@@ -226,80 +186,6 @@ export function metadata_ResourcePick(ws: TenantWorkspace, trx: TranslateService
     return _resourcePickCache;
 }
 
-let _resourceLang: string;
-let _resourceSettings: SettingsForClient;
-let _resourceCache: EntityDescriptor;
-
-export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
-    // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-    if (trx.currentLang !== _resourceLang || ws.settings !== _resourceSettings) {
-        _resourceLang = trx.currentLang;
-        _resourceSettings = ws.settings;
-        _resourceCache = {
-            select: _select,
-            apiEndpoint: 'resources',
-            orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
-            format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
-            properties: {
-                Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
-                Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
-                Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
-                Code: { control: 'text', label: trx.instant('Code') },
-
-                // Temp
-                // ResourceType: { control: 'text', label: 'Resource Type' },
-                ResourceClassificationId: {
-                    control: 'number', label: 'Resource Classification Id', minDecimalPlaces: 0, maxDecimalPlaces: 0
-                },
-
-                // ResourceClassification: TODO
-                // IsBatch: { control: 'boolean', label: 'Is Batch' },
-                // UnitId: { control: 'number', label: 'Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                // Unit: { control: 'navigation', label: 'Unit', type: 'MeasurementUnit', foreignKeyName: 'UnitId' },
-                CurrencyId: { control: 'number', label: 'Currency Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                Currency: { control: 'navigation', label: 'Currency', type: 'MeasurementUnit', foreignKeyName: 'CurrencyId' },
-                UnitMass: { control: 'number', label: 'Unit Mass', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                MassUnitId: { control: 'number', label: 'Mass Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                MassUnit: { control: 'navigation', label: 'Mass Unit', type: 'MeasurementUnit', foreignKeyName: 'MassUnitId' },
-                UnitVolume: { control: 'number', label: 'Unit Volume', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                VolumeUnitId: { control: 'number', label: 'Volume Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                VolumeUnit: { control: 'navigation', label: 'Volume Unit', type: 'MeasurementUnit', foreignKeyName: 'VolumeUnitId' },
-                UnitArea: { control: 'number', label: 'Unit Area', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                AreaUnitId: { control: 'number', label: 'Area Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                AreaUnit: { control: 'navigation', label: 'Area Unit', type: 'MeasurementUnit', foreignKeyName: 'AreaUnitId' },
-                UnitLength: { control: 'number', label: 'Unit Length', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                LengthUnitId: { control: 'number', label: 'Length Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                LengthUnit: { control: 'navigation', label: 'Length Unit', type: 'MeasurementUnit', foreignKeyName: 'LengthUnitId' },
-                UnitTime: { control: 'number', label: 'Unit Time', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                TimeUnitId: { control: 'number', label: 'Time Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                TimeUnit: { control: 'navigation', label: 'Time Unit', type: 'MeasurementUnit', foreignKeyName: 'TimeUnitId' },
-                UnitCount: { control: 'number', label: 'Unit Count', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CountUnitId: { control: 'number', label: 'Count Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                CountUnit: { control: 'navigation', label: 'Count Unit', type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' },
-                SystemCode: { control: 'text', label: 'System Code' },
-                Memo: { control: 'text', label: 'Memo' },
-                CustomsReference: { control: 'text', label: 'Customs Reference' },
-                // UniversalProductCode: { control: 'text', label: 'Universal Product Code' },
-                ProductCategoryId: { control: 'number', label: 'Product Category Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ProductCategory: {
-                    control: 'navigation', label: 'Product Category', type: 'ProductCategory', foreignKeyName: 'ProductCategoryId'
-                },
-                // TODO: PreferredSupplierId, ExpenseAccountId, RevenueAccountId
-
-                // End Temp
-
-                IsActive: { control: 'boolean', label: trx.instant('IsActive') },
-                CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
-                CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-                ModifiedAt: { control: 'datetime', label: trx.instant('ModifiedAt') },
-                ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
-            }
-        };
-    }
-
-    return _resourceCache;
-}
 
 let _responsibilityCenterLang: string;
 let _responsibilityCenterSettings: SettingsForClient;

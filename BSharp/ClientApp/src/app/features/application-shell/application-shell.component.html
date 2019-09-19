@@ -64,20 +64,32 @@
           </a>
         </li> -->
         <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+            routerLink="./resources/raw-materials" (click)="onCollapse()">
+            {{ 'Raw Materials' | translate }}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+            routerLink="./resources/finished-goods" (click)="onCollapse()">
+            {{ 'Finished Goods' | translate }}
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./currencies"
             (click)="onCollapse()">
             {{ 'Currencies' | translate }}
           </a>
         </li>
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./resource-lookups/colors"
-            (click)="onCollapse()">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+            routerLink="./resource-lookups/colors" (click)="onCollapse()">
             {{ 'Colors' | translate }}
           </a>
         </li>
         <li class="nav-item">
-          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./resource-lookups/thicknesses"
-            (click)="onCollapse()">
+          <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
+            routerLink="./resource-lookups/thicknesses" (click)="onCollapse()">
             {{ 'Thicknesses' | translate }}
           </a>
         </li>
@@ -94,9 +106,7 @@
           <button class="h-100 w-100 d-flex b-navbar-button b-no-arrow" ngbDropdownToggle>
             <div class="align-self-center">
               <div class="b-dp-wrapper b-dp-dark bg-white mx-1">
-                <b-image
-                  [src]="'agents/' + ws?.userSettings?.UserId + '/image'"
-                  [imageId]="ws?.userSettings?.ImageId"
+                <b-image [src]="'agents/' + ws?.userSettings?.UserId + '/image'" [imageId]="ws?.userSettings?.ImageId"
                   shape="circle" [size]="28"></b-image>
               </div>
             </div>
@@ -107,20 +117,22 @@
             </div>
             &nbsp;&nbsp;
           </button>
-          <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action" [class.dropdown-menu-right]="!isRtl">
+          <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
+            [class.dropdown-menu-right]="!isRtl">
             <ng-container *ngIf="ws?.settings?.SecondaryLanguageId">
               <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isPrimaryLanguage"
                 (click)="onPrimary();onCollapse()">
                 {{ settings?.PrimaryLanguageName }}
               </button>
-              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isSecondaryLanguage && !!ws.settings?.SecondaryLanguageId"
+              <button type="button" class="dropdown-item btn-light"
+                *ngIf="!ws.isSecondaryLanguage && !!ws.settings?.SecondaryLanguageId"
                 (click)="onSecondary();onCollapse()">
                 {{ settings?.SecondaryLanguageName }}
               </button>
-              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isTernaryLanguage && !!ws.settings?.TernaryLanguageId"
-              (click)="onSecondary();onCollapse()">
-              {{ settings?.SecondaryLanguageName }}
-            </button>
+              <button type="button" class="dropdown-item btn-light"
+                *ngIf="!ws.isTernaryLanguage && !!ws.settings?.TernaryLanguageId" (click)="onSecondary();onCollapse()">
+                {{ settings?.SecondaryLanguageName }}
+              </button>
               <hr />
             </ng-container>
 

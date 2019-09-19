@@ -20,7 +20,13 @@ using System.Transactions;
 
 namespace BSharp.Controllers
 {
-    public abstract class CrudControllerBase<TEntityForSave, TEntity, TKey> : ReadEntitiesControllerBase<TEntity, TKey>
+    /// <summary>
+    /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
+    /// and allow selecting a certain record by Id, as well as updating, deleting and importing lists
+    /// of that entity
+    /// </summary>
+    public abstract class CrudControllerBase<TEntityForSave, TEntity, TKey> : FactGetByIdControllerBase<TEntity, TKey>
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()
     {

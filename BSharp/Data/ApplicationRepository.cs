@@ -260,13 +260,13 @@ namespace BSharp.Data
                     case nameof(Currency):
                         return new SqlSource("[rpt].[Currencies]()");
 
+                    case nameof(Resource):
+                        return new SqlSource("[dbo].[Resources]"); // TODO: use mapping
+
                     #region _Temp
 
                     case nameof(ResponsibilityCenter):
                         return new SqlSource("[dbo].[ResponsibilityCenters]");
-
-                    case nameof(Resource):
-                        return new SqlSource("[dbo].[Resources]");
 
                     case nameof(ResourcePick):
                         return new SqlSource("[dbo].[ResourcePicks]");
@@ -1950,7 +1950,6 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             }
         }
 
-
         #endregion
 
         #region Currencies
@@ -2106,5 +2105,191 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
         #endregion
 
+        #region Resources
+
+        public Query<Resource> Resources__AsQuery(string definitionId, List<ResourceForSave> entities)
+        {
+            // This method returns the provided entities as a Query that can be selected, filtered etc...
+            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
+
+            // Parameters
+            SqlParameter definitionParameter = new SqlParameter("@DefinitionId", definitionId);
+
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Resource)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+
+            // Query
+            var query = Query<Resource>();
+            return query.FromSql($"[bll].[{nameof(Resources__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
+        }
+
+        public async Task<IEnumerable<ValidationError>> Resources_Validate__Save(string definitionId, List<ResourceForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Resource)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Resources_Validate__Save)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task<List<int>> Resources__Save(string definitionId, List<ResourceForSave> entities, bool returnIds)
+        {
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Resource)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Resources__Save)}]";
+
+                if (returnIds)
+                {
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            int i = 0;
+                            result.Add(new IndexedId
+                            {
+                                Index = reader.GetInt32(i++),
+                                Id = reader.GetInt32(i++)
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
+        }
+
+        public async Task Resources__Activate(List<int> ids, bool isActive)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                var isActiveParam = new SqlParameter("@IsActive", isActive);
+
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Resources__Activate)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> Resources_Validate__Delete(string definitionId, List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Resources_Validate__Delete)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task Resources__Delete(IEnumerable<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Resources__Delete)}]";
+
+                // Execute
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+                {
+                    throw new ForeignKeyViolationException();
+                }
+            }
+        }
+
+        #endregion
     }
 }

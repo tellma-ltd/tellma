@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Save]
-	@ResourceDefinitionId NVARCHAR (255),
-	@Resources [dbo].[ResourceList] READONLY,
+	@DefinitionId NVARCHAR (255),
+	@Entities [dbo].[ResourceList] READONLY,
 	--@Picks [dbo].[ResourcePickList] READONLY,
 	@ReturnIds BIT = 0
 AS
@@ -44,7 +44,7 @@ SET NOCOUNT ON;
 				[ResourceLookup2Id], 
 				[ResourceLookup3Id], 
 				[ResourceLookup4Id]
-			FROM @Resources 
+			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
 		THEN
@@ -105,7 +105,7 @@ SET NOCOUNT ON;
 				[ResourceLookup2Id],
 				[ResourceLookup3Id],
 				[ResourceLookup4Id])
-			VALUES (@ResourceDefinitionId, 
+			VALUES (@DefinitionId, 
 				s.[Name],
 				s.[Name2],
 				s.[Name3],

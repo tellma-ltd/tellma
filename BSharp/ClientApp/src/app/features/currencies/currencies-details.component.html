@@ -33,6 +33,12 @@
     </b-text-editor>
   </b-form-group>
 
+  <!-- Id -->
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Id">
+    <div *ngIf="!isEdit">{{ model?.Id }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Id" [ngModelOptions]="{ updateOn: 'blur' }" required [disabled]="!isNew"></b-text-editor>
+  </b-form-group>
+
   <!-- Name -->
   <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
     [serverErrors]="model?.serverErrors?.Name">
@@ -53,12 +59,6 @@
     [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
     <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-  </b-form-group>
-
-  <!-- Id -->
-  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Id">
-    <div *ngIf="!isEdit">{{ model?.Id }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Id" [ngModelOptions]="{ updateOn: 'blur' }" required [disabled]="!isNew"></b-text-editor>
   </b-form-group>
 
   <!-- Description -->

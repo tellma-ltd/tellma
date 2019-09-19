@@ -32,11 +32,14 @@ import { ResourceLookupsImportComponent } from './resource-lookups/resource-look
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
-  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign
+  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
 import { CurrenciesImportComponent } from './currencies/currencies-import.component';
+import { ResourcesMasterComponent } from './resources/resources-master.component';
+import { ResourcesImportComponent } from './resources/resources-import.component';
+import { ResourcesDetailsComponent } from './resources/resources-details.component';
 
 const routes: Routes = [
   {
@@ -176,6 +179,23 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
+      // Resources
+      {
+        path: 'resources/:definitionId',
+        component: ResourcesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'resources/:definitionId/import',
+        component: ResourcesImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'resources/:definitionId/:id',
+        component: ResourcesDetailsComponent,
+        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -195,7 +215,6 @@ const routes: Routes = [
     pathMatch: 'full'
   }
 ];
-
 
 @NgModule({
   declarations: [
@@ -225,7 +244,11 @@ const routes: Routes = [
     ResourceLookupsImportComponent,
     CurrenciesMasterComponent,
     CurrenciesDetailsComponent,
-    CurrenciesImportComponent],
+    CurrenciesImportComponent,
+    ResourcesMasterComponent,
+    ResourcesDetailsComponent,
+    ResourcesImportComponent
+  ],
   imports: [
     SharedModule,
     RouterModule.forChild(routes)
@@ -237,7 +260,7 @@ export class ApplicationModule {
     library.addIcons(
       // Main menu icons
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
-      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign
+      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck
     );
   }
 }

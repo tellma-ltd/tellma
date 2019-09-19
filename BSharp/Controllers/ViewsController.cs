@@ -17,7 +17,7 @@ namespace BSharp.Controllers
 {
     [Route("api/views")]
     [ApplicationApi]
-    public class ViewsController : ReadEntitiesControllerBase<View, string>
+    public class ViewsController : FactGetByIdControllerBase<View, string>
     {
         private readonly ApplicationRepository _repo;
         private readonly Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider _metadataProvider;

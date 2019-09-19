@@ -38,29 +38,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Empty(responseData.Result); // First 
         }
 
-        [Fact(DisplayName = "02 Resources")]
-        public async Task Test02()
-        {
-            await GrantPermissionToSecurityAdministrator("resources", Constants.Update, "Id gt 0");
-
-            var response = await Client.GetAsync("/api/resources?search=Bla");
-
-            // Call the API
-            Output.WriteLine(await response.Content.ReadAsStringAsync());
-
-            // Assert the result is 200 OK
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            // Confirm the result is well formed
-            var responseData = await response.Content.ReadAsAsync<GetResponse<Resource>>();
-
-            // Assert the result makes sense
-            Assert.Equal(nameof(Resource), responseData.CollectionName);
-            Assert.Empty(responseData.Result); // First 
-        }
-
-
-        [Fact(DisplayName = "03 Resource Picks")]
+        [Fact(DisplayName = "02 Resource Picks")]
         public async Task Test03()
         {
             await GrantPermissionToSecurityAdministrator("resource-picks", Constants.Update, "Id gt 0");
@@ -81,7 +59,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Empty(responseData.Result); // First 
         }
 
-        [Fact(DisplayName = "04 Voucher Booklets")]
+        [Fact(DisplayName = "03 Voucher Booklets")]
         public async Task Test04()
         {
             await GrantPermissionToSecurityAdministrator("voucher-booklets", Constants.Update, "Id gt 0");
@@ -102,7 +80,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Empty(responseData.Result); // First 
         }
 
-        [Fact(DisplayName = "05 IFRS Account Classifications")]
+        [Fact(DisplayName = "04 IFRS Account Classifications")]
         public async Task Test05()
         {
             await GrantPermissionToSecurityAdministrator("ifrs-account-classifications", Constants.Update, "Id ne 'bla'");
@@ -124,7 +102,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
 
 
-        [Fact(DisplayName = "06 IFRS Entry Classifications")]
+        [Fact(DisplayName = "05 IFRS Entry Classifications")]
         public async Task Test06()
         {
             await GrantPermissionToSecurityAdministrator("ifrs-entry-classifications", Constants.Update, "Id ne 'bla'");
