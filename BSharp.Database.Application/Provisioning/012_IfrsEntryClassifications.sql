@@ -222,6 +222,8 @@ INSERT INTO @IfrsEntryClassifications([IfrsType], IsActive, [ForDebit], [ForCred
 ,('Extension', 1, 0, 1, '/10/3/', 'InventorySalesExtension', 'Inventory sales')
 ,('Extension', 1, 0, 1, '/10/4/', 'InventoryConsumptionExtension', 'Inventory consumption')
 ,('Extension', 1, 0, 1, '/10/5/', 'InventoryLossExtension', 'Inventory loss')
+,('Extension', 1, 0, 1, '/10/6/', 'InventoryToFixedAssetExtension', 'Inventory to fixed asset conversion')
+,('Extension', 1, 1, 0, '/10/7/', 'InventoryFromFixedAssetExtension', 'Fixed asset to inventory conversion')
 ,('Extension', 1, 1, 1, '/10/9/', 'InventoryTransferExtension', 'Inventory transfer')
 
 -- The IfrsType is determined from the IfrsAccountClassifications and IfrsEntryClassifications tables

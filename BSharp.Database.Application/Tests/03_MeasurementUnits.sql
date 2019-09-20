@@ -2,7 +2,7 @@
 	DECLARE @MU1 [dbo].MeasurementUnitList, @MU2 [dbo].MeasurementUnitList, @MU3 [dbo].MeasurementUnitList,
 			@MUIndexedIds dbo.[IndexedIdList];
 	DECLARE @ETBUnit NCHAR (3) = N'ETB', @USDUnit NCHAR (3) = N'USD'
-	DECLARE @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT, @LiterUnit INT,
+	DECLARE @eaUnit INT, @pcsUnit INT, @shareUnit INT, @kgUnit INT, @LiterUnit INT, @KmUnit INT,
 			@wmoUnit INT, @hrUnit INT, @yrUnit INT, @dayUnit INT, @moUnit INT;
 END
 BEGIN -- Inserting
@@ -65,7 +65,7 @@ INSERT INTO @MU3 ([Index], [Id], [Code], [UnitType], [Name], [Description], [Uni
 SELECT ROW_NUMBER() OVER(ORDER BY [Id]),
 	[Id], [Code], [UnitType], [Name], [Description], [UnitAmount], [BaseAmount]
 FROM [dbo].MeasurementUnits
-WHERE [UnitType] = N'Distance';
+WHERE [UnitType] = N'Distance' AND [Name] <> N'Km';
 
 -- Calling Delete API
 INSERT INTO @MUIndexedIds([Index], [Id]) SELECT [Index], [Id] FROM @MU3;
@@ -84,6 +84,7 @@ END
 SELECT
 	@KgUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'Kg'),
 	@LiterUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ltr'),
+	@KmUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'Km'),
 	@pcsUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'pcs'),
 	@eaUnit = (SELECT [Id] FROM [dbo].MeasurementUnits	WHERE [Name] = N'ea'),
 	@shareUnit = (SELECT [Id] FROM [dbo].MeasurementUnits WHERE [Name] = N'share'),

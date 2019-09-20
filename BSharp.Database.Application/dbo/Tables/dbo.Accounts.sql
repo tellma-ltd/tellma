@@ -18,8 +18,7 @@
 	-- necessary to generate notes such as cash flow (direct), statement of change of equity, notes on non current assets
 	-- notes on expenses by nature, etc.
 	[IsMultiEntryClassification]				BIT					NOT NULL DEFAULT 1,
-	[DebitIfrsEntryClassificationId]			NVARCHAR (255)		CONSTRAINT [FK_Accounts__DebitIfrsEntryClassificationId] FOREIGN KEY ([DebitIfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),
-	[CreditIfrsEntryClassificationId]			NVARCHAR (255)		CONSTRAINT [FK_Accounts__CreditIfrsEntryClassificationId] FOREIGN KEY ([CreditIfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),
+	[IfrsEntryClassificationId]					NVARCHAR (255)		CONSTRAINT [FK_Accounts__IfrsEntryClassificationId] FOREIGN KEY ([IfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),
 	-- to link several accounts to the same agent.
 	[IsMultiAgent]								BIT					NOT NULL DEFAULT 0,
 	[AgentId]									INT					CONSTRAINT [FK_Accounts__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),
@@ -51,14 +50,10 @@
 	[ModifiedById]								INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Accounts__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),
 	CONSTRAINT [CK_Accounts__ExpenseByNatureIsRequired] CHECK(
 		([IfrsAccountClassificationId] NOT IN (N'CostOfSales', N'DistributionCosts', N'AdministrativeExpense'))
-		OR (
-			[DebitIfrsEntryClassificationId] IS NOT NULL
-			AND [CreditIfrsEntryClassificationId] IS NOT NULL
-			AND [DebitIfrsEntryClassificationId] = [CreditIfrsEntryClassificationId]
-		)
+		OR ([IfrsEntryClassificationId] IS NOT NULL) -- from IfrsExpenseFunction
 	),
 	CONSTRAINT [CK_Account__MultiAgent] CHECK ([IsMultiAgent] = 0 OR [AgentId] IS NULL),
-	CONSTRAINT [CK_Account__MultiEntryClassification] CHECK ([IsMultiEntryClassification] = 0 OR [DebitIfrsEntryClassificationId] IS NULL AND [CreditIfrsEntryClassificationId] IS NULL),
+	CONSTRAINT [CK_Account__MultiEntryClassification] CHECK ([IsMultiEntryClassification] = 0 OR [IfrsEntryClassificationId] IS NULL),
 	CONSTRAINT [CK_Account__MultiResponsibilityCenter] CHECK ([IsMultiResponsibilityCenter] = 0 OR [ResponsibilityCenterId] IS NULL),
 	CONSTRAINT [CK_Account__MultiResource] CHECK ([IsMultiResource] = 0 OR [ResourceId] IS NULL)
 );

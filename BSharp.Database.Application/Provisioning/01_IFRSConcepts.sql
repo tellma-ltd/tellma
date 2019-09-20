@@ -7348,6 +7348,8 @@ BEGIN -- Ifrs amendments (missing member) and extensions (common practice not re
 ,('Extension', N'InventorySalesExtension', 'Inventory sales')
 ,('Extension', N'InventoryConsumptionExtension', 'Inventory consumption')
 ,('Extension', N'InventoryLossExtension', 'Inventory loss')
+,('Extension', 'InventoryToFixedAssetExtension', 'Inventory to fixed asset conversion')
+,('Extension', 'InventoryFromFixedAssetExtension', 'Fixed asset to inventory conversion')
 ,('Extension', N'InventoryTransferExtension', 'Inventory transfer')
 
 END

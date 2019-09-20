@@ -4,8 +4,8 @@ DECLARE @D11Ids dbo.[IdList], @D12Ids dbo.[IdList], @D13Ids dbo.[IdList];
 
 BEGIN -- Inserting
 	INSERT INTO @D11([Index],
-	[DocumentDate],	[Memo],				[EvidenceTypeId]) VALUES (
-	0, '2017.01.01',N'Capital investment', N'Attachment'
+	[DocumentDate],	[SortKey], [Memo],				[EvidenceTypeId]) VALUES (
+	0, '2017.01.01',	1,		N'Capital investment', N'Attachment'
 	);
 	INSERT INTO @L11([Index], [DocumentIndex],
 				[LineTypeId], [SortKey]) VALUES
@@ -31,10 +31,7 @@ BEGIN -- Inserting
 		Print 'Capital Investment (M): Insert'
 		GOTO Err_Label;
 	END;
-	--SELECT * FROM dbo.Documents; SELECT * FROM dbo.DocumentLines; SELECT * FROM dbo.DocumentLineEntries;
-	SELECT * FROM dbo.Accounts;
-	INSERT INTO @D11Ids([Id]) SELECT [Id] FROM dbo.Documents;
-	SELECT * FROM rpt.Documents(@D11Ids) ORDER BY [SortKey], [EntryNumber];
+
 END
 
 --IF (1=0)

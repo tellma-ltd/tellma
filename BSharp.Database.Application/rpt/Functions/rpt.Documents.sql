@@ -22,11 +22,13 @@ RETURN
 			DLE.[Direction],
 			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[IfrsEntryClassificationId], 
 			R.[Name] AS [Resource],
-			-- TODO: Add other unittypes
-			MUM.[Name] AS [MassUnit],
-			
 			DLE.[ResourcePickId],
-			CAST(DLE.[Value] AS MONEY) AS [Value]
+			CAST(DLE.[Value] AS MONEY) AS [Value],
+			-- TODO: Add other unittypes
+			CAST(DLE.[MonetaryValue] AS MONEY) AS [MonetaryValue],
+			C.[Name] AS Currency,
+			CAST(DLE.[Mass] AS MONEY) AS [Mass],
+			MUM.[Name] AS [MassUnit]
 		FROM dbo.Documents D
 		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
 		LEFT JOIN dbo.VoucherBooklets VB ON D.VoucherBookletId = VB.Id
@@ -36,6 +38,7 @@ RETURN
 		LEFT JOIN dbo.DocumentLineEntries DLE ON DL.[Id] = DLE.[DocumentLineId]
 		JOIN dbo.Accounts A ON DLE.AccountId = A.[Id]
 		LEFT JOIN dbo.Resources R ON DLE.[ResourceId] = R.[Id]
+		LEFT JOIN dbo.Currencies C ON R.[CurrencyId] = C.[Id]
 		LEFT JOIN dbo.MeasurementUnits MUM ON R.[MassUnitId] = MUM.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @Ids)
 	)
@@ -51,6 +54,6 @@ RETURN
 		CAST([SortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineTypeId],
 		[EntryNumber], [Account], [IfrsEntryClassificationId],[Resource], [ResourcePickId],
-		[Direction], [MassUnit], [Value]
+		[Direction], [Value], [MonetaryValue], [Currency], [Mass], [MassUnit]
 	FROM Docs;
 GO

@@ -14,13 +14,13 @@
 	-- issued shares are actually equity instruments, since there is no obligation to repay
 	DECLARE @RCFL INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [ResourceDefinitionId] = N'financial-liabilities' AND [Node] = N'/4/');
 	INSERT INTO @R7 ([Index], [ResourceClassificationId],
-				[Name],				[Code],			[CountUnitId]) VALUES
-	(0, @RCFL,	N'Common Stock',	N'CMNSTCK',		@shareUnit),
-	(1, @RCFL,	N'Premium Stock',	N'PRMMSTCK',	@shareUnit);
+				[Name],				[Code],			[CountUnitId], [CurrencyId]) VALUES
+	(0, @RCFL,	N'Common Stock',	N'CMNSTCK',		@shareUnit, N'USD'),
+	(1, @RCFL,	N'Premium Stock',	N'PRMMSTCK',	@shareUnit, N'USD');
 	EXEC [api].[Resources__Save] -- N'financial-liabilities'
 		@ResourceDefinitionId = N'financial-liabilities',
 		@Resources = @R7,
-		@Picks = @RP7,
+	--	@Picks = @RP7,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN

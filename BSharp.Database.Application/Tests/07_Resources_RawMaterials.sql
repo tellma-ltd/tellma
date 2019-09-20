@@ -13,7 +13,7 @@
 	EXEC [api].[Resources__Save] --  N'raw-materials'
 		@ResourceDefinitionId = N'raw-materials',
 		@Resources = @R3,
-		@Picks = @RP3,
+	--	@Picks = @RP3,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN

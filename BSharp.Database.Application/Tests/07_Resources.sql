@@ -8,8 +8,8 @@ Missing
 	- Deactivating
 */
 BEGIN -- Cleanup & Declarations
-	DECLARE @R5 [dbo].ResourceList, @R8 [dbo].ResourceList, @R9 [dbo].ResourceList, @R10 [dbo].ResourceList;
-	DECLARE  @RP5 [dbo].ResourcePickList,  @RP8 [dbo].ResourcePickList, @RP9 [dbo].ResourcePickList, @RP10 [dbo].ResourcePickList;
+	DECLARE @R8 [dbo].ResourceList, @R9 [dbo].ResourceList, @R10 [dbo].ResourceList;
+	DECLARE   @RP8 [dbo].ResourcePickList, @RP9 [dbo].ResourcePickList, @RP10 [dbo].ResourcePickList;
 	DECLARE @R1Ids dbo.[IdList], @R2Ids dbo.[IdList], @R3Ids dbo.[idList];
 	DECLARE @R1IndexedIds dbo.IndexedIdList, @R2IndexedIds dbo.IndexedIdList, @R3IndexedIds dbo.IndexedIdList;
 
@@ -65,9 +65,10 @@ BEGIN -- Inserting
 				REPLICATE(N'    ', RC.[Node].GetLevel() - 1) + RC.[Name] AS [Name],
 				RC.[Code], RC.[IsActive], RC.[IsLeaf]
 		FROM dbo.ResourceClassifications RC
-		RIGHT JOIN dbo.ResourceDefinitions RD ON RC.ResourceDefinitionId = RD.Id ORDER BY RD.[SortKey], [ResourceDefinitionId], [Node];
+		RIGHT JOIN dbo.ResourceDefinitions RD ON RC.ResourceDefinitionId = RD.Id
+		ORDER BY RD.[SortKey], [ResourceDefinitionId], [Node];
 		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
-	--	EXEC rpt.[sp_ResourcesPicks] @R2Ids;
+		EXEC rpt.[sp_ResourcesPicks] @R2Ids;
 	END
 
 	--(6, N'general-goods',		N'Teddy bear',			NULL,		NULL,			@pcsUnit),
@@ -190,8 +191,8 @@ SELECT
 	@ETB = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'ETB'), 
 	@USD = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'USD'),
 	@Camry2018 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Toyota Camry 2018'),
-	@Car1 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'101'),
-	@Car2 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'102'),
+	--@Car1 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'101'),
+	--@Car2 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'102'),
 	--@Car1Svc = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'101D'),
 	--@GOff = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'Goff'),
 	@Cotton = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Cotton'),

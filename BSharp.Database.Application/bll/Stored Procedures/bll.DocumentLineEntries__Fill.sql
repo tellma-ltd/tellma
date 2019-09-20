@@ -14,8 +14,7 @@ UPDATE E
 SET
 	E.IfrsEntryClassificationId = 
 		CASE
-			WHEN Direction = +1 AND A.DebitIfrsEntryClassificationId IS NOT NULL THEN A.DebitIfrsEntryClassificationId
-			WHEN Direction = -1 AND A.CreditIfrsEntryClassificationId IS NOT NULL THEN A.CreditIfrsEntryClassificationId
+			WHEN A.[IfrsEntryClassificationId] IS NOT NULL THEN A.[IfrsEntryClassificationId]
 			ELSE E.IfrsEntryClassificationId
 		END,
 	E.AgentId = CASE WHEN A.AgentId IS NOT NULL THEN A.AgentId ELSE E.AgentId END,
@@ -23,7 +22,7 @@ SET
 	E.ResourceId = CASE WHEN A.ResourceId IS NOT NULL THEN A.ResourceId ELSE E.ResourceId END
 FROM @FilledEntries E
 JOIN dbo.Accounts A ON E.AccountId = A.Id
-WHERE A.AgentId IS NOT NULL
+WHERE (A.[IfrsEntryClassificationId] IS NOT NULL) OR (A.AgentId IS NOT NULL) OR (A.ResponsibilityCenterId IS NOT NULL) OR (A.ResourceId IS NOT NULL)
 
 -- for financial amounts in functional currency, the value is known
 UPDATE E 

@@ -5,7 +5,7 @@
 			@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
 			@MesfinWolde int;
 	DECLARE @BananIT int, @WaliaSteel int, @Lifan int, @Sesay int, @ERCA int, @Paint int, @Plastic int, @CBE int, @AWB int,
-			@NIB int, @Regus int, @NocJimma INT;
+			@NIB int, @Regus int, @NocJimma INT, @Toyota INT;
 	DECLARE @ExecutiveOffice int, @Production int, @SalesAndMarketing int, @Finance int, @HR int,
 			@MaterialsAndPurchasing int;
 END
@@ -76,13 +76,13 @@ BEGIN -- Insert individuals and organizations
 	(23,N'Organization', N'Regus',0),
 	
 	(24,N'Organization', N'Noc Jimma Ber Service Station',	0),
-
-	(25,N'Organization', N'Executive Office',1),
-	(26,N'Organization', N'Production Department',0),
-	(27,N'Organization', N'Sales & Marketing Department',0),
-	(28,N'Organization', N'Finance Department',0),
-	(29,N'Organization', N'Human Resources Department',0),
-	(30,N'Organization', N'Materials & Purchasing Department',0);
+	(25,N'Organization', N'Toyota, Ethiopia',	0),
+	(26,N'Organization', N'Executive Office',1),
+	(27,N'Organization', N'Production Department',0),
+	(28,N'Organization', N'Sales & Marketing Department',0),
+	(29,N'Organization', N'Finance Department',0),
+	(30,N'Organization', N'Human Resources Department',0),
+	(31,N'Organization', N'Materials & Purchasing Department',0);
 	EXEC [api].[Agents__Save]
 		@Entities = @Agents1,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -118,8 +118,8 @@ END
 --		GOTO Err_Label;
 --	END;
 
---	IF @DebugAgents = 1
---		SELECT * FROM [dbo].[Agents];
+	IF @DebugAgents = 1
+		SELECT * FROM [dbo].[Agents];
 
 SELECT 
 	@MohamadAkra = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Mohamad Akra'), 
@@ -147,6 +147,7 @@ SELECT
 	@NIB = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'NIB'),
 	@Regus = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Regus'),
 	@NocJimma = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Noc Jimma Ber Service Station'),
+	@Toyota =  (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Toyota, Ethiopia'),
 
 	@ExecutiveOffice = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Executive Office'),
 	@Production = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Production Department'),

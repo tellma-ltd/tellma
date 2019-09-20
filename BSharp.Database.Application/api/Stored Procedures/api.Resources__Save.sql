@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [api].[Resources__Save]
 	@ResourceDefinitionId NVARCHAR (255),
 	@Resources [dbo].[ResourceList] READONLY,
-	@Picks [dbo].[ResourcePickList] READONLY,
+	--@Picks [dbo].[ResourcePickList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -18,8 +18,8 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Resources_Validate__Save]
 		@ResourceDefinitionId = @ResourceDefinitionId,
-		@Resources = @FilledResources,
-		@Picks = @Picks;
+		@Resources = @FilledResources;
+	--	@Picks = @Picks;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -34,6 +34,6 @@ SET NOCOUNT ON;
 	EXEC [dal].[Resources__Save]
 		@ResourceDefinitionId = @ResourceDefinitionId,
 		@Resources = @FilledResources,
-		@Picks = @Picks,
+	--	@Picks = @Picks,
 		@ReturnIds = @ReturnIds;
 END;

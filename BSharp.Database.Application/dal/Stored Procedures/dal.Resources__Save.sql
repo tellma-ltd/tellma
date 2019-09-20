@@ -77,12 +77,7 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ResourceDefinitionId], 
-				[Name], 
-				[Name2], 
-				[Name3],
-				[Code], 
-				[ResourceClassificationId], 
+			INSERT ([ResourceDefinitionId], [Name], [Name2], [Name3], [Code], [ResourceClassificationId], 
 				--[UnitMonetaryValue], 
 				[CurrencyId], 
 				--[UnitMass], 
@@ -101,16 +96,8 @@ SET NOCOUNT ON;
 				[Memo], 
 				[CustomsReference] ,
 				--[PreferredSupplierId],
-				[ResourceLookup1Id], 
-				[ResourceLookup2Id],
-				[ResourceLookup3Id],
-				[ResourceLookup4Id])
-			VALUES (@ResourceDefinitionId, 
-				s.[Name],
-				s.[Name2],
-				s.[Name3],
-				s.[Code],
-				s.[ResourceClassificationId],
+				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id])
+			VALUES (@ResourceDefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[ResourceClassificationId],
 				--s.[UnitMonetaryValue],
 				s.[CurrencyId],
 				--s.[UnitMass],
@@ -129,10 +116,7 @@ SET NOCOUNT ON;
 				s.[Memo],
 				s.[CustomsReference],
 				--s.[PreferredSupplierId],
-				s.[ResourceLookup1Id],
-				s.[ResourceLookup2Id],
-				s.[ResourceLookup3Id],
-				s.[ResourceLookup4Id])
+				s.[ResourceLookup1Id], s.[ResourceLookup2Id], s.[ResourceLookup3Id], s.[ResourceLookup4Id])
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x
 	OPTION (RECOMPILE);

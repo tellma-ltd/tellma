@@ -12,9 +12,9 @@
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__Accounts]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
 -- Analysis of accounts including: cash, non current assets, equity, and expenses. Can be updated after posting
 	-- Note that the responsibility center might define the Ifrs Note
-	[IfrsEntryClassificationId]	NVARCHAR (255)	CONSTRAINT [FK_DocumentLineEntries__IfrsEntryClassifications] FOREIGN KEY ([IfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),	
-	[AgentId]					INT				CONSTRAINT [FK_DocumentLineEntries__AgentId] FOREIGN KEY ([AgentId])	REFERENCES [dbo].[Resources] ([Id]),
-	[ResponsibilityCenterId]	INT				CONSTRAINT [FK_DocumentLineEntries__ResponsibilityCenterId] FOREIGN KEY ([ResponsibilityCenterId])	REFERENCES [dbo].[Resources] ([Id]),
+	[IfrsEntryClassificationId]	NVARCHAR (255)	CONSTRAINT [FK_DocumentLineEntries__IfrsEntryClassifications]	FOREIGN KEY ([IfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),	
+	[AgentId]					INT				CONSTRAINT [FK_DocumentLineEntries__AgentId]					FOREIGN KEY ([AgentId])	REFERENCES [dbo].[Agents] ([Id]),
+	[ResponsibilityCenterId]	INT				CONSTRAINT [FK_DocumentLineEntries__ResponsibilityCenterId]		FOREIGN KEY ([ResponsibilityCenterId])	REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 -- Resource is defined as
 --	The actual asset, liability
 --	The good/service sold for revenues and direct expenses
@@ -63,6 +63,7 @@
 	[CreatedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__CreatedById] FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[ModifiedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__ModifiedById] FOREIGN KEY ([ModifiedById])REFERENCES [dbo].[Users] ([Id]),	
+	CONSTRAINT [CK_DocumentLineEntries__ResourceId_Measures] CHECK ([ResourceId] IS NOT NULL OR [MonetaryValue] = 0 AND [Mass] = 0 AND [Volume] = 0 AND [Area] = 0 AND [Length] = 0 AND [Time] = 0 AND [Count] = 0)
 );
 GO
 CREATE INDEX [IX_DocumentLineEntries__DocumentId] ON [dbo].[DocumentLineEntries]([DocumentLineId]);

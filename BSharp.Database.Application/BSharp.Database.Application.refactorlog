@@ -119,4 +119,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fn_Localize]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="90d6c18e-8b91-4d8c-b05f-8b5b0bbc4449" ChangeDateTime="09/19/2019 17:26:57">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DebitIfrsEntryClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IfrsEntryClassificationId]" />
+  </Operation>
 </Operations>

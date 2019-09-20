@@ -7,7 +7,7 @@
 	EXEC [api].[Resources__Save] --  N'cash-and-cash-equivalents',
 		@ResourceDefinitionId =  N'cash-and-cash-equivalents',
 		@Resources = @R1,
-		@Picks = @RP1,
+	--	@Picks = @RP1,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN

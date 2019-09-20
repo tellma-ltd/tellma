@@ -11,6 +11,7 @@
 	[DocumentLookup3Id]						INT,
 	[DocumentText1]							NVARCHAR (255),
 	[DocumentText2]							NVARCHAR (255),
+	[SortKey]								DECIMAL (9,4)	NOT NULL,
 	[Memo]									NVARCHAR (255),	
 	[MemoIsCommon]							BIT				DEFAULT 1,
 	[CustomerAccountId]						INT,

@@ -9,7 +9,7 @@ INSERT INTO @R4 ([Index],
 	EXEC [api].[Resources__Save] -- N'vehicles'
 		@ResourceDefinitionId = N'production-supplies',
 		@Resources = @R4,
-		@Picks = @RP4,
+	--	@Picks = @RP4,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 

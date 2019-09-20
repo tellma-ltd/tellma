@@ -1,31 +1,85 @@
-﻿INSERT INTO @DSave( 
-[Memo],				[Frequency], [Duration], [StartDateTime]
-) VALUES
-(N'Exchange of $50000',		N'OneTime',		0,	'2017.01.01'),
-(N'Vehicles receipt on account',N'OneTime',	0,	'2017.01.05'),
-(N'Invoice for vehicles',	N'OneTime',		0,	'2017.01.06'),
-(N'Vehicles Invoice payment',N'OneTime',	0,	'2017.01.15'),
-(N'Invoice for rental',		N'OneTime',		0,	'2017.01.25'),
-(N'Rental payment',			N'OneTime',		0,	'2017.01.30'),
-(N'Vehicles Put in use',	N'OneTime',		0,	'2017.02.01'),
-(N'Vehicles Depreciation',	N'Monthly',		60,	@d1),
-(N'Sales Point Rental',		N'Monthly',		60,	'2017.02.01'),
-(N'Vehicle 1 Reinforcement',N'OneTime',		0,	@dU),
-(N'Reverse Depreciation',	N'Monthly',		48,	@dU),
-(N'Vehicles Depreciation',	N'Monthly',		60,	@dU),
-(N'Employee Hire',			N'Monthly',		60,	'2018.02.01'),
-(N'Feb 2018 Overtime',		N'OneTime',		0,	'2018.02.15'),
-(N'Job 1 Hours Loging',		N'OneTime',		0,	'2018.02.20'),
-(N'Feb 2018 Paysheet',		N'OneTime',		0,	'2018.02.25'),
-(N'Feb 2018 Salaries Xfer',	N'OneTime',		0,	'2018.02.28'),
-(N'Feb 2018 Month Closing',	N'OneTime',		0,	'2018.02.28');
+﻿DECLARE @DM1 [dbo].[DocumentList], @LM1 [dbo].DocumentLineList, @EM1 [dbo].DocumentLineEntryList;
+DECLARE @DM2 [dbo].[DocumentList], @LM2 [dbo].DocumentLineList, @EM2 [dbo].DocumentLineEntryList;
+DECLARE @DM1Ids dbo.[IdList], @DM2Ids dbo.[IdList], @DM3Ids dbo.[IdList];
 
-INSERT INTO @LSave ([DocumentIndex]) VALUES 
-	(1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12),
-	(13), 
-	(14), (15),
-	(16), (16), (16), (16), (16), (16),
-	(17);--, (18), (19), (20);
+BEGIN -- Inserting
+ -- N'Exchange of $50000'
+	INSERT INTO @DM1([Index], [SortKey],
+	[Memo],					[DocumentDate],	[EvidenceTypeId]) VALUES
+(0,2,N'Exchange of $50000',	'2017.01.01',	 N'Attachment');
+INSERT INTO @LM1 ([Index], [DocumentIndex],	
+			[LineTypeId],	[SortKey]) VALUES
+	(0,	0, N'ManualLine',	1), 
+	(1,	0, N'ManualLine',	2);
+INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
+				[AccountId], [IfrsEntryClassificationId],		[Value], [MonetaryValue]) VALUES
+	(0,0,0,1,+1,@CBEETB,	N'InternalCashTransferExtension', 	1175000, 0),
+	(1,1,0,1,-1,@CBEUSD,	N'InternalCashTransferExtension',	1175000, 50000); 
+ --N'Vehicles purchase receipt on account w/invoice'
+	INSERT INTO @DM1([Index], [SortKey],
+	[Memo],							[DocumentDate],	[EvidenceTypeId]) VALUES
+(1,3,N'Vehicles purchase receipt on account','2017.01.05',	 N'Attachment');
+INSERT INTO @LM1 ([Index], [DocumentIndex],	
+			[LineTypeId],	[SortKey]) VALUES
+	(2,	1, N'ManualLine',	1), 
+	(3,	1, N'ManualLine',	2);
+	-- TODO: Add information about the invoice, since this is purchase w/ invoice
+DECLARE @Camry2018_101 INT = (SELECT [Id] FROM dbo.ResourcePicks WHERE [ResourceId] = @Camry2018 AND [Code] = N'101')
+DECLARE @Camry2018_102 INT = (SELECT [Id] FROM dbo.ResourcePicks WHERE [ResourceId] = @Camry2018 AND [Code] = N'102')
+INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
+				[AccountId],	[IfrsEntryClassificationId],	[ResourceId],	[ResourcePickId], [Value]) VALUES
+	(2,2,1,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 	@Camry2018,		@Camry2018_101,		600000),
+	(3,2,1,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 	@Camry2018,		@Camry2018_102,		600000),
+	(4,3,1,1,-1,@ToyotaAccount,	NULL,							@ETB,			NULL,				1200000);
+-- Converting the inventory into
+	INSERT INTO @DM1([Index], [SortKey],
+	[Memo],							[DocumentDate],	[EvidenceTypeId]) VALUES
+(2,4,N'Putting one vehicle into use','2017.01.06',	 N'Attachment');
+INSERT INTO @LM1 ([Index], [DocumentIndex],	
+			[LineTypeId],	[SortKey]) VALUES
+	(4,	2, N'ManualLine',	1), 
+	(5,	2, N'ManualLine',	2);
+
+DECLARE @Car1PPE INT = (SELECT [Id] FROM dbo.ResourcePicks WHERE [ResourceId] = @CarsRC AND [Code] = N'101');
+INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
+				[AccountId],	[IfrsEntryClassificationId],										[ResponsibilityCenterId], [ResourceId],	[ResourcePickId],	[Value], [Length]) VALUES
+	(5,4,2,1,+1,@PPEVehicles,	'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment', @ExecutiveOfficeOps,	@CarsRC,	@Car1PPE,			600000,		200000),
+	(6,5,2,1,-1,@PPEWarehouse,	N'InventoryToFixedAssetExtension',										NULL,					@Camry2018,	@Camry2018_101,		600000,		0);
+
+
+	EXEC [api].[Documents__Save]
+		@DocumentTypeId = N'manual-journals',
+		@Documents = @DM1, @Lines = @LM1, @Entries = @EM1,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Misc Journals (M): Insert'
+		GOTO Err_Label;
+	END;
+END	
+/*
+(2,3,N'Invoice for vehicles',		N'OneTime',		0,	'2017.01.06'),
+(3,4,N'Vehicles Invoice payment',	N'OneTime',		0,	'2017.01.15'),
+(4,5,N'Invoice for rental',			N'OneTime',		0,	'2017.01.25'),
+(5,6,N'Rental payment',				N'OneTime',		0,	'2017.01.30'),
+(7,8,N'Vehicles Depreciation',		N'Monthly',		60,	@d1),
+(8,9,N'Sales Point Rental',			N'Monthly',		60,	'2017.02.01'),
+(9,10,N'Vehicle 1 Reinforcement',	N'OneTime',		0,	@dU),
+(10,11,N'Reverse Depreciation',		N'Monthly',		48,	@dU),
+(11,12,N'Vehicles Depreciation',	N'Monthly',		60,	@dU),
+(12,13,N'Employee Hire',			N'Monthly',		60,	'2018.02.01'),
+(13,14,N'Feb 2018 Overtime',		N'OneTime',		0,	'2018.02.15'),
+(14,15,N'Job 1 Hours Loging',		N'OneTime',		0,	'2018.02.20'),
+(15,16,N'Feb 2018 Paysheet',		N'OneTime',		0,	'2018.02.25'),
+(16,17,N'Feb 2018 Salaries Xfer',	N'OneTime',		0,	'2018.02.28'),
+(17,18,N'Feb 2018 Month Closing',	N'OneTime',		0,	'2018.02.28');
+
+	--(2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12),
+	--(13), 
+	--(14), (15),
+	--(16), (16), (16), (16), (16), (16),
+	--(17);--, (18), (19), (20);
 
 SELECT @Frequency = N'Monthly';
 SELECT
@@ -54,12 +108,6 @@ SELECT @VRU_3 = (420000 - @P1_U * @VR1_2)/@PU_3;
 
 INSERT INTO @ESave -- Purchases and Rentals
 ([LineIndex],EntryNumber,OperationId,AccountId,		AgentId,		ResourceId,	Direction, Amount,	[Value],	NoteId,							[Reference],	[RelatedReference], [RelatedAgentId], [RelatedAmount]) VALUES
--- Exchange of $50000
-(	1,	1,	@WSI,	N'BalancesWithBanks',		@CBEETB,		@ETB,			+1,		1175000, NULL,		N'InternalCashTransfer',		NULL,			NULL,				NULL,					NULL),
-(	1,	2,	@WSI,	N'BalancesWithBanks',		@CBEUSD,		@USD,			-1,		50000,	1175000,	N'InternalCashTransfer',		NULL,			NULL,				NULL,					NULL),
--- Vehicles receipt on account
-(	2,	1,	@WSI,	N'OtherInventories',		@MiscWarehouse,	@Camry2018,		+1,		2,		600000,		NULL,							NULL,			NULL,				NULL,					NULL),
-(	2,	2,	@WSI,	N'GoodsAndServicesReceivedFromSupplierButNotBilled',@Lifan,@Camry2018,-1,2,	600000,		NULL,							NULL,			NULL,				NULL,					NULL),
 -- Invoice for vehicles
 (	3,	1,	@WSI,	N'GoodsAndServicesReceivedFromSupplierButNotBilled',@Lifan,@Camry2018,+1,2,	600000,		NULL,							NULL,			NULL,				NULL,					NULL),
 (	3,	2,	@WSI,	N'CurrentValueAddedTaxReceivables',@ERCA,	@ETB,			+1,		90000,	NULL,		NULL,							N'INV-YM01',	N'FS0987',			@Lifan,					600000),
@@ -76,9 +124,6 @@ INSERT INTO @ESave -- Purchases and Rentals
 (	6,	1,	@Sales,		N'CurrentPayablesToLessors',@Regus,			@ETB,			+1,		27600,	NULL,		NULL,							NULL,			NULL,				NULL,					NULL),
 (	6,	2,	@Sales,		N'CurrentWithholdingTaxPayable',@ERCA,		@ETB,			-1,		480,	NULL,		NULL,							N'WT0902',		NULL,				@Regus,					12000),
 (	6,	3,	@Sales,		N'BalancesWithBanks',		@CBEETB,		@ETB,			-1,		27120,	NULL,		N'PaymentsToSuppliersForGoodsAndServices',N'Ck003',	NULL,			NULL,					NULL),
--- Vehicles Put in use
-(	7,	1,	@ExecOffice,N'MotorVehicles',			@ExecutiveOffice,@Car1Svc,		+1,		@P1_2,	300000,		N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',NULL,NULL,NULL,	NULL),
-(	7,	2,	@WSI,	N'OtherInventories',		@MiscWarehouse,	@Camry2018,		-1,		1,		300000,		NULL,							NULL,			NULL,				NULL,					NULL),
 -- Vehicles Depreciation
 (	8,	1,	@ExecOffice,N'AdministrativeExpense',	@ExecutiveOffice,@Car1Svc,		+1,		+1,		@VR1_2,		N'DepreciationExpense',			NULL,			NULL,				NULL,					NULL),
 (	8,	2,	@ExecOffice,N'MotorVehicles',			@ExecutiveOffice,@Car1Svc,		-1,		+1,		@VR1_2,		N'DepreciationPropertyPlantAndEquipment',NULL,	NULL,				NULL,					NULL),
@@ -136,3 +181,4 @@ INSERT INTO @ESave -- Payroll
 -- Feb 2018 Salaries Xfer: Similar to Rental payment. We can deduct loans, and cost sharing before payments
 (	22,	1,	@Production,N'CurrentPayablesToEmployees',@MesfinWolde,	@ETB,			+1,		12360,	NULL,		NULL,							NULL,			NULL,				NULL,					NULL),
 (	22,	2,	@Production,N'BalancesWithBanks',		@CBEETB,		@ETB,			-1,		12360,	NULL,		N'PaymentsToAndOnBehalfOfEmployees',N'Ck004',	NULL,				NULL,					NULL);
+*/

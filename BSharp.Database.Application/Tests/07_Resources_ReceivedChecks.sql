@@ -10,7 +10,7 @@ INSERT INTO @R2 ([Index],
 	EXEC [api].[Resources__Save] -- N'received-checks'
 	@ResourceDefinitionId =  N'received-checks',
 	@Resources = @R2,
-	@Picks = @RP2,
+--	@Picks = @RP2,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN

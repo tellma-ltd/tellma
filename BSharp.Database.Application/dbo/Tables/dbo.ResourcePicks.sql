@@ -1,6 +1,9 @@
 ﻿CREATE TABLE [dbo].[ResourcePicks] (
-	[Id]					INT					PRIMARY KEY IDENTITY(0, 1),
+	[Id]					INT					PRIMARY KEY IDENTITY,
 	[ResourceId]			INT					NOT NULL CONSTRAINT [FK_ResourcePicks__ResourceId]	FOREIGN KEY ([ResourceId])	REFERENCES [dbo].[Resources] ([Id]),
+	[Name]					NVARCHAR(255),
+	[Name2]					NVARCHAR(255),
+	[Name3]					NVARCHAR(255),
 --	Tag #, Coil #, Check #, LC #
 	[Code]					NVARCHAR (255)		NOT NULL,
 	[ProductionDate]		DATE,
@@ -12,7 +15,7 @@
 	[Area]					DECIMAL,
 	[Length]				DECIMAL,
 	[Time]					DECIMAL,
-	[Count]					DECIMAL				DEFAULT 1,
+	[Count]					DECIMAL,
 -- Case of Issued Payments
 	[Beneficiary]			NVARCHAR (255),
 	[IssuingBankAccountId]	INT,
