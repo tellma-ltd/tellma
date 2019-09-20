@@ -126,4 +126,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[IfrsEntryClassificationId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="c3facb15-315d-466d-8fd1-b6be410028cf" ChangeDateTime="09/20/2019 19:15:55">
+    <Property Name="ElementName" Value="[map].[Resources2]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Resources]" />
+  </Operation>
 </Operations>

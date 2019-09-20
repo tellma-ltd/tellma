@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [rpt].[MeasurementUnits] ()
+﻿CREATE FUNCTION [map].[MeasurementUnits] ()
 RETURNS TABLE
 AS
 RETURN (

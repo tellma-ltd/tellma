@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[Agents__AsQuery]
+﻿CREATE FUNCTION [map].[Agents__AsQuery]
 (	
 @Entities [dbo].[AgentList] READONLY
 )

@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[Users__AsQuery]
+﻿CREATE FUNCTION [map].[Users__AsQuery]
 (
 	@Entities [dbo].[UserList] READONLY
 )

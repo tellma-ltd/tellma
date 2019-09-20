@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [rpt].[Users] ()
+﻿CREATE FUNCTION [map].[Users] ()
 RETURNS TABLE
 AS
 RETURN (

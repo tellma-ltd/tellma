@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[Currencies__AsQuery] (
+﻿CREATE FUNCTION [map].[Currencies__AsQuery] (
 	@Entities [dbo].[CurrencyList] READONLY
 )
 RETURNS TABLE

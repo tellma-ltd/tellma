@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [rpt].[Currencies] ()
+﻿CREATE FUNCTION [map].[Currencies] ()
 RETURNS TABLE
 AS
 RETURN (

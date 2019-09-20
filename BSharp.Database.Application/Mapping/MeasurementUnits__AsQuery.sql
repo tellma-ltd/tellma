@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[MeasurementUnits__AsQuery] (
+﻿CREATE FUNCTION [map].[MeasurementUnits__AsQuery] (
 	@Entities [dbo].[MeasurementUnitList] READONLY
 )
 RETURNS TABLE

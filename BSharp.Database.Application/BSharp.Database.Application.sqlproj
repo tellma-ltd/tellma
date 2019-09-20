@@ -370,6 +370,7 @@
     <Build Include="dal\Stored Procedures\dal.Resources__Activate.sql" />
     <Build Include="Mapping\Resources.sql" />
     <Build Include="Mapping\Resources__AsQuery.sql" />
+    <Build Include="Security\map.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[ProductCategories__AsQuery] (
+﻿CREATE FUNCTION [map].[ProductCategories__AsQuery] (
 	@Entities [dbo].[ProductCategoryList] READONLY
 )
 RETURNS TABLE

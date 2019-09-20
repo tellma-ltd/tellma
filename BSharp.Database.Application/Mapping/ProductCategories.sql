@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [rpt].[ProductCategories] ()
+﻿CREATE FUNCTION [map].[ProductCategories] ()
 RETURNS TABLE
 AS
 RETURN (

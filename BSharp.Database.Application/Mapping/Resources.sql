@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [rpt].[Resources2] ()
+﻿CREATE FUNCTION [map].[Resources] ()
 RETURNS TABLE
 AS
 RETURN (

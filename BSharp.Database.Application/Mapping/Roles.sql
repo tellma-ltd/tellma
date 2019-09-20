@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [rpt].[Roles] ()
+﻿CREATE FUNCTION [map].[Roles] ()
 RETURNS TABLE
 AS
 RETURN (

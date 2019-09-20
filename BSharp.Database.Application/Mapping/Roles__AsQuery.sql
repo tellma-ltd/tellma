@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[Roles__AsQuery]
+﻿CREATE FUNCTION [map].[Roles__AsQuery]
 (	
 @Entities [dbo].[RoleList] READONLY
 )

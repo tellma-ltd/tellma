@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[Resources__AsQuery]
+﻿CREATE FUNCTION [map].[Resources__AsQuery]
 (	
 	@DefinitionId NVARCHAR(255),
 	@Entities [dbo].[ResourceList] READONLY
