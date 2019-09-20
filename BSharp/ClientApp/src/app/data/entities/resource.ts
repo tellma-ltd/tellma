@@ -54,6 +54,7 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
         _cache = {};
     }
 
+    definitionId = definitionId || '_'; // undefined
     if (!_cache[definitionId]) {
         const entityDesc: EntityDescriptor = {
             select: _select,

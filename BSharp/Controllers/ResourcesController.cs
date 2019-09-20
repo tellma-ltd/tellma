@@ -4,14 +4,18 @@ using BSharp.Data;
 using BSharp.Data.Queries;
 using BSharp.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace BSharp.Controllers
-{   
+{
     // Specific API, works with a certain definitionId, and allows read-write
     [Route("api/resources/{definitionId}")]
     [ApplicationApi]
@@ -20,18 +24,24 @@ namespace BSharp.Controllers
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
+        private readonly IDefinitionsCache _definitionsCache;
+        private readonly IModelMetadataProvider _modelMetadataProvider;
 
-        private string VIEW => RouteData.Values["definitionId"]?.ToString() ?? 
+        private string VIEW => RouteData.Values["definitionId"]?.ToString() ??
             throw new BadRequestException("URI must be of the form 'api/resources/{definitionId}'");
 
         public ResourcesController(
             ILogger<ResourcesController> logger,
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+            ApplicationRepository repo,
+            IDefinitionsCache definitionsCache,
+            IModelMetadataProvider modelMetadataProvider) : base(logger, localizer)
         {
             _logger = logger;
             _localizer = localizer;
             _repo = repo;
+            _definitionsCache = definitionsCache;
+            _modelMetadataProvider = modelMetadataProvider;
         }
 
         [HttpPut("activate")]
@@ -107,12 +117,94 @@ namespace BSharp.Controllers
 
         protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
         {
+            var definition = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources?.GetValueOrDefault(VIEW) ?? 
+                throw new InvalidOperationException($"Definition for '{VIEW}' was missing from the cache");
+
+            // Set default values
+            SetDefaultValue(entities, e => e.MassUnitId, definition.MassUnit_DefaultValue);
+            SetDefaultValue(entities, e => e.VolumeUnitId, definition.VolumeUnit_DefaultValue);
+            SetDefaultValue(entities, e => e.AreaUnitId, definition.AreaUnit_DefaultValue);
+            SetDefaultValue(entities, e => e.LengthUnitId, definition.LengthUnit_DefaultValue);
+            SetDefaultValue(entities, e => e.TimeUnitId, definition.TimeUnit_DefaultValue);
+            SetDefaultValue(entities, e => e.CountUnitId, definition.CountUnit_DefaultValue);
+            SetDefaultValue(entities, e => e.Memo, definition.Memo_DefaultValue);
+            SetDefaultValue(entities, e => e.CustomsReference, definition.CustomsReference_DefaultValue);
+            SetDefaultValue(entities, e => e.ResourceLookup1Id, definition.ResourceLookup1_DefaultValue);
+            SetDefaultValue(entities, e => e.ResourceLookup2Id, definition.ResourceLookup2_DefaultValue);
+            SetDefaultValue(entities, e => e.ResourceLookup3Id, definition.ResourceLookup3_DefaultValue);
+            SetDefaultValue(entities, e => e.ResourceLookup4Id, definition.ResourceLookup4_DefaultValue);
+
+            // Validate required stuff
+            ValidateIfRequired(entities, e => e.MassUnitId, definition.MassUnit_Visibility);
+            ValidateIfRequired(entities, e => e.VolumeUnitId, definition.VolumeUnit_Visibility);
+            ValidateIfRequired(entities, e => e.AreaUnitId, definition.AreaUnit_Visibility);
+            ValidateIfRequired(entities, e => e.LengthUnitId, definition.LengthUnit_Visibility);
+            ValidateIfRequired(entities, e => e.TimeUnitId, definition.TimeUnit_Visibility);
+            ValidateIfRequired(entities, e => e.CountUnitId, definition.CountUnit_Visibility);
+            ValidateIfRequired(entities, e => e.Memo, definition.Memo_Visibility);
+            ValidateIfRequired(entities, e => e.CustomsReference, definition.CustomsReference_Visibility);
+            ValidateIfRequired(entities, e => e.ResourceLookup1Id, definition.ResourceLookup1_Visibility);
+            ValidateIfRequired(entities, e => e.ResourceLookup2Id, definition.ResourceLookup2_Visibility);
+            ValidateIfRequired(entities, e => e.ResourceLookup3Id, definition.ResourceLookup3_Visibility);
+            ValidateIfRequired(entities, e => e.ResourceLookup4Id, definition.ResourceLookup4_Visibility);
+
+            // No need to invoke SQL if the model state is full of errors
+            if (ModelState.HasReachedMaxErrors)
+            {
+                // null Ids will cause an error when calling the SQL validation
+                return;
+            }
+
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.Resources_Validate__Save(VIEW, entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
+        }
+
+        private void SetDefaultValue<TKey>(List<ResourceForSave> entities, Expression<Func<ResourceForSave, TKey>> selector, TKey defaultValue)
+        {
+            if (defaultValue != null)
+            {
+                Func<ResourceForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
+                Action<ResourceForSave, TKey> setPropValue = ControllerUtilities.GetAssigner(selector).Compile();
+
+                entities.ForEach(entity =>
+                {
+                    if (getPropValue(entity) == null)
+                    {
+                        setPropValue(entity, defaultValue);
+                    }
+                });
+            }
+        }
+
+        private void ValidateIfRequired<TKey>(List<ResourceForSave> entities, Expression<Func<ResourceForSave, TKey>> selector, byte visibility)
+        {
+            if (visibility == Visibility.Required && !ModelState.HasReachedMaxErrors)
+            {
+                Func<ResourceForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
+
+                foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+                {
+                    if (getPropValue(entity) == null)
+                    {
+                        string propName = (selector.Body as MemberExpression).Member.Name; // The name of the property we're validating
+                        string path = $"[{index}].{propName}";
+                        string propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(ResourceForSave), propName)?.DisplayName;
+                        string errorMsg = _localizer[nameof(RequiredAttribute), propDisplayName];
+
+                        ModelState.AddModelError(path, errorMsg);
+
+                        if (ModelState.HasReachedMaxErrors)
+                        {
+                            // No need to keep going forever
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, ExpandExpression expand, bool returnIds)
@@ -160,7 +252,7 @@ namespace BSharp.Controllers
         public ResourcesGenericController(
             ILogger<ResourcesController> logger,
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo, 
+            ApplicationRepository repo,
             IDefinitionsCache definitionsCache) : base(logger, localizer)
         {
             _repo = repo;
@@ -176,7 +268,7 @@ namespace BSharp.Controllers
         {
             // Retrieve the definitions
             var resourceDefinitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources;
-            if(resourceDefinitions == null)
+            if (resourceDefinitions == null)
             {
                 // Programmer mistake
                 throw new BadRequestException("Resource definitions cache was empty");
@@ -188,7 +280,7 @@ namespace BSharp.Controllers
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)
-            foreach(var permission in permissions.Where(e => e.ViewId != "all"))
+            foreach (var permission in permissions.Where(e => e.ViewId != "all"))
             {
                 string definitionPredicate = $"{nameof(Resource.ResourceDefinitionId)} eq '{permission.ViewId}'";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))

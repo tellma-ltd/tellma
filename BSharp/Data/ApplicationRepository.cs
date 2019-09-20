@@ -288,7 +288,6 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
     (SELECT [Id] FROM [dbo].[IfrsEntryClassifications] WHERE [Q].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
-
                     #endregion
 
                     case nameof(View):

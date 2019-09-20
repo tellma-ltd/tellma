@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ResourceForSave, Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { PropDescriptor } from '~/app/data/entities/base/metadata';
+import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
   selector: 'b-resources-details',
@@ -69,6 +70,22 @@ CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
     } else if (this.ws.isTernaryLanguage) {
       result.Name3 = this.initialText;
     }
+
+    const defs = this.ws.definitions.Resources[this.definitionId];
+
+    result.MassUnitId = defs.MassUnit_DefaultValue;
+    result.VolumeUnitId = defs.VolumeUnit_DefaultValue;
+    result.AreaUnitId = defs.AreaUnit_DefaultValue;
+    result.LengthUnitId = defs.LengthUnit_DefaultValue;
+    result.TimeUnitId = defs.TimeUnit_DefaultValue;
+    result.CountUnitId = defs.CountUnit_DefaultValue;
+    result.Memo = defs.Memo_DefaultValue;
+    result.CustomsReference = defs.CustomsReference_DefaultValue;
+    result.ResourceLookup1Id = defs.ResourceLookup1_DefaultValue;
+    result.ResourceLookup2Id = defs.ResourceLookup2_DefaultValue;
+    result.ResourceLookup3Id = defs.ResourceLookup3_DefaultValue;
+    result.ResourceLookup4Id = defs.ResourceLookup4_DefaultValue;
+
     return result;
   }
 
@@ -78,6 +95,10 @@ CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
 
   public get p(): { [prop: string]: PropDescriptor } {
     return metadata_Resource(this.ws, this.translate, this.definitionId).properties;
+  }
+
+  public get d(): ResourceDefinitionForClient {
+    return this.ws.definitions.Resources[this.definitionId];
   }
 
   public onActivate = (model: Resource): void => {

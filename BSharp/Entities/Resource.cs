@@ -26,10 +26,10 @@ namespace BSharp.Entities
         [Display(Name = "Code")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
-        public string Code { get; set; } // IsVisible (Yes), Label (No), IsRequired (Yes), DefaultValue (No) (make sure 
+        public string Code { get; set; }
 
         [Display(Name = "Resource_Classification")]
-        public int? ResourceClassificationId { get; set; } // IsVisible (Yes), Label (Yes), IsRequired (Yes), DefaultValue (No)
+        public int? ResourceClassificationId { get; set; }
 
         [Display(Name = "Resource_Currency")]
         public string CurrencyId { get; set; } 
@@ -54,11 +54,11 @@ namespace BSharp.Entities
 
         [Display(Name = "Memo")]
         [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
-        public string Memo { get; set; } // 3 values
+        public string Memo { get; set; }
 
         [Display(Name = "Resource_CustomsReference")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        public string CustomsReference { get; set; } // 3 values
+        public string CustomsReference { get; set; }
 
         [Display(Name = "Resource_ResourceLookup1")]
         public int? ResourceLookup1Id { get; set; }

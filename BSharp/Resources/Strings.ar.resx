@@ -1015,4 +1015,43 @@
   <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
     <value>ال{0} ({1}) مستخدمة في بعض المستندات</value>
   </data>
+  <data name="Resource_Classification" xml:space="preserve">
+    <value>التصنيف</value>
+  </data>
+  <data name="Resource_Currency" xml:space="preserve">
+    <value>العملة</value>
+  </data>
+  <data name="Resource_MassUnit" xml:space="preserve">
+    <value>وحدة قياس الوزن</value>
+  </data>
+  <data name="Resource_VolumeUnit" xml:space="preserve">
+    <value>وحدة قياس الحجم</value>
+  </data>
+  <data name="Resource_AreaUnit" xml:space="preserve">
+    <value>وحدة قياس المساحة</value>
+  </data>
+  <data name="Resource_LengthUnit" xml:space="preserve">
+    <value>وحدة قياس الطول</value>
+  </data>
+  <data name="Resource_TimeUnit" xml:space="preserve">
+    <value>وحدة قياس الزمن</value>
+  </data>
+  <data name="Resource_CountUnit" xml:space="preserve">
+    <value>وحدة قياس العدد</value>
+  </data>
+  <data name="Resource_CustomsReference" xml:space="preserve">
+    <value>الرقم الجمركي</value>
+  </data>
+  <data name="Resource_ResourceLookup1" xml:space="preserve">
+    <value>الصفة 1</value>
+  </data>
+  <data name="Resource_ResourceLookup2" xml:space="preserve">
+    <value>الصفة 2</value>
+  </data>
+  <data name="Resource_ResourceLookup3" xml:space="preserve">
+    <value>الصفة 3</value>
+  </data>
+  <data name="Resource_ResourceLookup4" xml:space="preserve">
+    <value>الصفة 4</value>
+  </data>
 </root>

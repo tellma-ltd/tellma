@@ -219,5 +219,21 @@ namespace BSharp.Controllers.Utilities
         {
             return TimeSpan.FromMinutes(5);
         }
+
+        /// <summary>
+        /// From an <see cref="Expression"/> that accesses the property (e.g. "e => e.Name"),
+        /// it computes another <see cref="Expression"/> that sets the property, (e.g. "(e, v) => e.Name = v")
+        /// </summary>
+        public static Expression<Action<TClass, TProp>> GetAssigner<TClass, TProp>(Expression<Func<TClass, TProp>> propAccessor)
+        {
+            var prop = ((MemberExpression)propAccessor.Body).Member;
+            var typeParam = Expression.Parameter(typeof(TClass));
+            var valueParam = Expression.Parameter(typeof(TProp));
+
+            return Expression.Lambda<Action<TClass, TProp>>(
+                Expression.Assign(
+                    Expression.MakeMemberAccess(typeParam, prop),
+                    valueParam), typeParam, valueParam);
+        }
     }
 }
