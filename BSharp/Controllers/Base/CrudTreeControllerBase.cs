@@ -10,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
+    /// <summary>
+    /// Controllers inheriting from this class allow searching, aggregating and exporting a certain
+    /// entity type that inherits from <see cref="EntityWithKey{TKey}"/> using OData-like parameters
+    /// and allow selecting a certain record by Id, as well as updating, deleting, deleting with descendants
+    /// and importing lists of that entity
+    /// </summary>
     public abstract class CrudTreeControllerBase<TEntityForSave, TEntity, TKey> : CrudControllerBase<TEntityForSave, TEntity, TKey>
         where TEntityForSave : EntityWithKey<TKey>, new()
         where TEntity : EntityWithKey<TKey>, new()

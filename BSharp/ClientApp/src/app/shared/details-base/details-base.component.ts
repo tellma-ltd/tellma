@@ -62,6 +62,14 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
     return this._details;
   }
 
+  get isScreenMode(): boolean {
+    return this.mode === 'screen';
+  }
+
+  get isPopupMode(): boolean {
+    return this.mode === 'popup';
+  }
+
   ngOnDestroy(): void {
     // cleanup duty
     if (!!this.detailsSave) {

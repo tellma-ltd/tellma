@@ -33,6 +33,7 @@ import { GetEntityResponse } from './dto/get-entity-response';
 import { DefinitionsForClient } from './dto/definitions-for-client';
 import { Currency } from './entities/currency';
 import { ResourceLookup } from './entities/resource-lookup';
+import { Resource } from './entities/resource';
 
 @Injectable({
   providedIn: 'root'
@@ -97,6 +98,13 @@ export class ApiService {
     return {
       activate: this.activateFactory<Currency>('currencies', cancellationToken$),
       deactivate: this.deactivateFactory<Currency>('currencies', cancellationToken$)
+    };
+  }
+
+  public resourcesApi(definitionId: string, cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<Resource>(`resources/${definitionId}`, cancellationToken$),
+      deactivate: this.deactivateFactory<Resource>(`resources/${definitionId}`, cancellationToken$)
     };
   }
 

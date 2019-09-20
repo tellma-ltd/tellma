@@ -1,4 +1,5 @@
-﻿using BSharp.Data;
+﻿using BSharp.Controllers.Dto;
+using BSharp.Data;
 using BSharp.Entities;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
@@ -9,6 +10,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 
 namespace BSharp.Controllers
@@ -61,38 +65,86 @@ namespace BSharp.Controllers
             // Call the base implementation
             var propsDetails = base.CreatePropertyDetails(key);
 
-            ///// Below are types which have dynamic properties
-            //if (key.ModelType.IsSameOrSubClassOf<ResourceForSave>())
-            //{
-            //    // Get the route data from http context
-            //    // Loop over the properties and special treatment to the dynamic ones
-            //    foreach (var propDetails in propsDetails)
-            //    {
-            //        switch (propDetails.Key.Name)
-            //        {
-            //            case nameof(ResourceForSave.PreferredSupplierId):
-            //                propDetails.DisplayMetadata = new DisplayMetadata
-            //                {
-            //                    DisplayName = () =>
-            //                    {
-            //                        var tenantId = _tenantIdAccessor.GetTenantId();
-            //                        var definitions = _definitionsCache.GetDefinitionsIfCached(tenantId)?.Resources ?? 
-            //                            throw new InvalidOperationException($"The definitions for tenantId {tenantId} were missing from the cache");
+            // Customize the label of Resource properties
+            if (key.ModelType.IsSameOrSubClassOf<ResourceForSave>())
+            {
+                // Get the route data from http context
+                // Loop over the properties and special treatment to the dynamic ones
+                foreach (var propDetails in propsDetails)
+                {
+                    var defaultName = propDetails.ModelAttributes.PropertyAttributes
+                        .OfType<DisplayAttribute>().FirstOrDefault()?.Name ?? propDetails.Key.Name;
 
-            //                        var routeData = _httpContextAccessor.HttpContext.GetRouteData();
-            //                        var resourceType = routeData.Values["resourceType"]?.ToString();
-            //                        var definition = definitions[resourceType];
+                    DisplayMetadata displayMetadata;
 
-            //                        var label = definition.ToString(); // TODO
-            //                        return label;
-            //                    }
-            //                };
-            //                break;
-            //            default:
-            //                break;
-            //        }
-            //    }
-            //}
+                    switch (propDetails.Key.Name)
+                    {
+                        // All dynamically labelled properties
+                        case nameof(Resource.MassUnit):
+                        case nameof(Resource.MassUnitId):
+                            displayMetadata = LocalizeResourceProperty(e => e.MassUnit_Label, e => e.MassUnit_Label2, e => e.MassUnit_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.VolumeUnit):
+                        case nameof(Resource.VolumeUnitId):
+                            displayMetadata = LocalizeResourceProperty(e => e.VolumeUnit_Label, e => e.VolumeUnit_Label2, e => e.VolumeUnit_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.AreaUnit):
+                        case nameof(Resource.AreaUnitId):
+                            displayMetadata = LocalizeResourceProperty(e => e.AreaUnit_Label, e => e.AreaUnit_Label2, e => e.AreaUnit_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.LengthUnit):
+                        case nameof(Resource.LengthUnitId):
+                            displayMetadata = LocalizeResourceProperty(e => e.LengthUnit_Label, e => e.LengthUnit_Label2, e => e.LengthUnit_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.TimeUnit):
+                        case nameof(Resource.TimeUnitId):
+                            displayMetadata = LocalizeResourceProperty(e => e.TimeUnit_Label, e => e.TimeUnit_Label2, e => e.TimeUnit_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.CountUnit):
+                        case nameof(Resource.CountUnitId):
+                            displayMetadata = LocalizeResourceProperty(e => e.CountUnit_Label, e => e.CountUnit_Label2, e => e.CountUnit_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.Memo):
+                            displayMetadata = LocalizeResourceProperty(e => e.Memo_Label, e => e.Memo_Label2, e => e.Memo_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.CustomsReference):
+                            displayMetadata = LocalizeResourceProperty(e => e.CustomsReference_Label, e => e.CustomsReference_Label2, e => e.CustomsReference_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.ResourceLookup1):
+                        case nameof(Resource.ResourceLookup1Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup1_Label, e => e.ResourceLookup1_Label2, e => e.ResourceLookup1_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.ResourceLookup2):
+                        case nameof(Resource.ResourceLookup2Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup2_Label, e => e.ResourceLookup2_Label2, e => e.ResourceLookup2_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.ResourceLookup3):
+                        case nameof(Resource.ResourceLookup3Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup3_Label, e => e.ResourceLookup3_Label2, e => e.ResourceLookup3_Label3, defaultName);
+                            break;
+
+                        case nameof(Resource.ResourceLookup4):
+                        case nameof(Resource.ResourceLookup4Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup4_Label, e => e.ResourceLookup4_Label2, e => e.ResourceLookup4_Label3, defaultName);
+                            break;
+                        default:
+                            displayMetadata = null;
+                            break;
+                    }
+
+                    propDetails.DisplayMetadata = displayMetadata;
+                }
+            }
 
             // In general: append the language name to the labels of multilingual
             foreach (var propDetails in propsDetails)
@@ -110,7 +162,7 @@ namespace BSharp.Controllers
                         DisplayName = () =>
                         {
                             var info = _tenantInfoAccessor.GetCurrentInfo();
-                            if(info == null)
+                            if (info == null)
                             {
                                 // Developer mistake
                                 throw new InvalidOperationException("TenantInfo is not set");
@@ -148,6 +200,41 @@ namespace BSharp.Controllers
             return propsDetails;
         }
 
+        DisplayMetadata LocalizeResourceProperty(
+            Func<ResourceDefinitionForClient, string> s1Func,
+            Func<ResourceDefinitionForClient, string> s2Func,
+            Func<ResourceDefinitionForClient, string> s3Func,
+            string defaultDisplayName)
+        {
+            return new DisplayMetadata
+            {
+                // Return a dynamic display name from the definitions, and fall back to
+                // the default if non are available. Be as forgiving as possible
+                DisplayName = () =>
+                {
+                    string result = _localizer[defaultDisplayName];
+                    var routeData = _httpContextAccessor.HttpContext.GetRouteData();
+                    var definitionId = routeData.Values["definitionId"]?.ToString();
+
+                    if (!string.IsNullOrWhiteSpace(definitionId))
+                    {
+                        var tenantId = _tenantIdAccessor.GetTenantId();
+                        var definition = _definitionsCache.GetDefinitionsIfCached(tenantId)?.Data?.Resources?.GetValueOrDefault(definitionId);
+
+                        if(definition != null)
+                        {
+                            result = _tenantInfoAccessor.Localize(
+                                s1Func(definition),
+                                s2Func(definition),
+                                s3Func(definition)) ?? result;
+                        }
+                    }
+
+                    return result;
+                }
+            };
+        }
+
         private string PrimaryPostfix(TenantInfo info)
         {
             if (info != null && (info.SecondaryLanguageId != null || info.TernaryLanguageId != null))
@@ -176,6 +263,18 @@ namespace BSharp.Controllers
             }
 
             return "";
+        }
+    }
+
+    public static class MetadataProviderExtensions
+    {
+        public static string Localize(this ITenantInfoAccessor tenantInfoAccessor, string s, string s2, string s3)
+        {
+            var cultureName = CultureInfo.CurrentUICulture.Name;
+            var tenantInfo = tenantInfoAccessor.GetCurrentInfo();
+
+            var currentLangIndex = cultureName == tenantInfo.TernaryLanguageId ? 3 : cultureName == tenantInfo.SecondaryLanguageId ? 2 : 1;
+            return currentLangIndex == 3 ? (s3 ?? s) : currentLangIndex == 2 ? (s2 ?? s) : s;
         }
     }
 }

@@ -10,6 +10,7 @@ import { metadata_Agent } from '../agent';
 import { metadata_View } from '../view';
 import { metadata_ResourceLookup } from '../resource-lookup';
 import { metadata_Currency } from '../currency';
+import { metadata_Resource } from '../resource';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -20,7 +21,8 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     IfrsNote: metadata_IfrsNote,
     View: metadata_View,
     ResourceLookup: metadata_ResourceLookup,
-    Currency: metadata_Currency
+    Currency: metadata_Currency,
+    Resource: metadata_Resource
 };
 
 export interface EntityDescriptor {

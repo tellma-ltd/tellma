@@ -511,18 +511,6 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
   // The following methods handle displaying and interacting with master and details template
 
-  onMagnifier() {
-
-    // it would be confusing if the user opens the details form the master
-    // and find the text s/he typed in the input field a while ago
-    this._initialText = '';
-
-    this.modalService.open(this.masterWrapperTemplate, { windowClass: 'b-master-modal' })
-
-      // this guarantees that the input will be focused again when the modal closes
-      .result.then(this.onFocusInput, this.onFocusInput);
-  }
-
   onUpdate = (id: number | string) => {
     // Called externally by the master or the details template
     // to specify the item Id just saved or selected
@@ -559,8 +547,39 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     this.openCreateModal();
   }
 
+  public openMasterModal = () => {
+    if (!!this.detailsOptions && this.detailsOptions.length > 1) {
+      this.modalService.open(this.detailsOptionsTemplate)
+        .result.then(
+          (viewId) => {
+            this.openMasterModalInner(viewId);
+          },
+          (_: any) => {
+
+          }
+        );
+    } else {
+      const detailsOption = !!this.detailsOptions ? this.detailsOptions[0] : null;
+      const viewId = !!detailsOption ? detailsOption.id : null;
+      this.openMasterModalInner(viewId);
+    }
+  }
+
+  private openMasterModalInner(viewId?: string) {
+
+    // it would be confusing if the user opens the details form the master
+    // and find the text s/he typed in the input field a while ago
+    this._initialText = '';
+    this._viewId = viewId;
+
+    this.modalService.open(this.masterWrapperTemplate, { windowClass: 'b-master-modal' })
+
+      // this guarantees that the input will be focused again when the modal closes
+      .result.then(this.onFocusInput, this.onFocusInput);
+  }
+
   private openCreateModal = () => {
-    if (this.detailsOptions.length > 1) {
+    if (!!this.detailsOptions && this.detailsOptions.length > 1) {
       this.modalService.open(this.detailsOptionsTemplate)
         .result.then(
           (viewId) => {
@@ -574,8 +593,9 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
           }
         );
     } else {
-      const detailsOption = this.detailsOptions[0];
-      this.openCreateModalInner(!!detailsOption ? detailsOption.id : null);
+      const detailsOption = !!this.detailsOptions ? this.detailsOptions[0] : null;
+      const viewId = !!detailsOption ? detailsOption.id : null;
+      this.openCreateModalInner(viewId);
     }
   }
 

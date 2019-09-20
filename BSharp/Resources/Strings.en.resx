@@ -1035,4 +1035,43 @@
   <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
     <value>The {0} '{1}' is used in one or more documents</value>
   </data>
+  <data name="Resource_TimeUnit" xml:space="preserve">
+    <value>Time Unit</value>
+  </data>
+  <data name="Resource_CountUnit" xml:space="preserve">
+    <value>Count Unit</value>
+  </data>
+  <data name="Resource_CustomsReference" xml:space="preserve">
+    <value>Customs Reference</value>
+  </data>
+  <data name="Resource_ResourceLookup1" xml:space="preserve">
+    <value>Resource Lookup 1</value>
+  </data>
+  <data name="Resource_ResourceLookup2" xml:space="preserve">
+    <value>Resource Lookup 2</value>
+  </data>
+  <data name="Resource_ResourceLookup3" xml:space="preserve">
+    <value>Resource Lookup 3</value>
+  </data>
+  <data name="Resource_ResourceLookup4" xml:space="preserve">
+    <value>Resource Lookup 4</value>
+  </data>
+  <data name="Resource_Classification" xml:space="preserve">
+    <value>Classification</value>
+  </data>
+  <data name="Resource_Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="Resource_MassUnit" xml:space="preserve">
+    <value>Mass Unit</value>
+  </data>
+  <data name="Resource_VolumeUnit" xml:space="preserve">
+    <value>Volume Unit</value>
+  </data>
+  <data name="Resource_AreaUnit" xml:space="preserve">
+    <value>Area Unit</value>
+  </data>
+  <data name="Resource_LengthUnit" xml:space="preserve">
+    <value>Length Unit</value>
+  </data>
 </root>

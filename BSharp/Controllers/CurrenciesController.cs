@@ -142,7 +142,7 @@ namespace BSharp.Controllers
             }
 
             // No need to invoke SQL if the model state is full of errors
-            if (!ModelState.IsValid)
+            if (ModelState.HasReachedMaxErrors)
             {
                 // null Ids will cause an error when calling the SQL validation
                 return;

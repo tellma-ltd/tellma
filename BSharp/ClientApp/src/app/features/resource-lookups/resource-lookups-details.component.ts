@@ -42,7 +42,7 @@ export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implem
     this.route.paramMap.subscribe((params: ParamMap) => {
       // This triggers changes on the screen
 
-      if (this.details.isScreenMode) {
+      if (this.isScreenMode) {
 
         const definitionId = params.get('definitionId');
 

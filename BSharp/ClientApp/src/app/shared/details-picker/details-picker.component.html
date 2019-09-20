@@ -4,8 +4,9 @@
   <div class="d-flex">
     <input class="form-control b-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
       ngbDropdownAnchor autocomplete="off" />
+      &nbsp;
     <button class="btn btn-light btn-sm text-primary b-white-button p-0 pl-1 pr-1" *ngIf="showMagnifier" type="button"
-      title="{{ 'Search' | translate }}" (click)="onMagnifier()" [disabled]="isDisabled">
+      title="{{ 'Search' | translate }}" (click)="openMasterModal()" [disabled]="isDisabled">
       <fa-icon icon="search"></fa-icon>
     </button>
   </div>
@@ -49,7 +50,7 @@
 </ng-template>
 
 <ng-template #masterWrapperTemplate let-modal>
-  <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal, filter: filter }">
+  <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal, filter: filter, viewId: viewId }">
   </ng-container>
 </ng-template>
 
