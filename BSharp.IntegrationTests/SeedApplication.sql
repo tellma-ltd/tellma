@@ -21,6 +21,7 @@ DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[MeasurementUnits];
 DELETE FROM [dbo].[ProductCategories];
 DELETE FROM [dbo].[ResourceLookups];
+DELETE FROM [dbo].[Resources];
 
 -- Populate
 

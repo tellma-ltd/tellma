@@ -214,7 +214,7 @@ namespace BSharp.Controllers
                         ["raw-materials"] = new ResourceDefinitionForClient
                         {
                             TitlePlural = "Raw Materials",
-                            TitlePlural2 = "مواد الخام",
+                            TitlePlural2 = "مواد خام",
                             TitleSingular = "Raw Material",
                             TitleSingular2 = "مادة خام",
                             MainMenuIcon = "clipboard",
@@ -228,11 +228,11 @@ namespace BSharp.Controllers
 
                             ResourceLookup2_Label = "Color",
                             ResourceLookup2_Label2 = "اللون",
-                            ResourceLookup2_Visibility = Visibility.Required,
+                            ResourceLookup2_Visibility = Visibility.Visible,
                             ResourceLookup2_DefinitionId = "colors",
 
-                            MassUnit_Visibility = Visibility.Required,
-                            MassUnit_DefaultValue = 81,
+                            MassUnit_Visibility = Visibility.Visible,
+                            // MassUnit_DefaultValue = 81, // kg
                             VolumeUnit_Visibility = Visibility.Visible,
                             AreaUnit_Visibility = Visibility.Visible,
                             LengthUnit_Visibility = Visibility.Visible,
@@ -240,7 +240,7 @@ namespace BSharp.Controllers
                             CountUnit_Visibility = Visibility.Visible,
                             Memo_Visibility = Visibility.Visible,
                             Memo_DefaultValue = "My default memo",
-                            CustomsReference_Visibility = Visibility.Visible
+                           // CustomsReference_Visibility = Visibility.Visible
                         },
                         ["finished-goods"] = new ResourceDefinitionForClient
                         {

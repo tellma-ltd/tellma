@@ -82,60 +82,60 @@ namespace BSharp.Controllers
                         // All dynamically labelled properties
                         case nameof(Resource.MassUnit):
                         case nameof(Resource.MassUnitId):
-                            displayMetadata = LocalizeResourceProperty(e => e.MassUnit_Label, e => e.MassUnit_Label2, e => e.MassUnit_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.MassUnit_Visibility, e => e.MassUnit_Label, e => e.MassUnit_Label2, e => e.MassUnit_Label3, defaultName);
                             break;
 
                         case nameof(Resource.VolumeUnit):
                         case nameof(Resource.VolumeUnitId):
-                            displayMetadata = LocalizeResourceProperty(e => e.VolumeUnit_Label, e => e.VolumeUnit_Label2, e => e.VolumeUnit_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.VolumeUnit_Visibility, e => e.VolumeUnit_Label, e => e.VolumeUnit_Label2, e => e.VolumeUnit_Label3, defaultName);
                             break;
 
                         case nameof(Resource.AreaUnit):
                         case nameof(Resource.AreaUnitId):
-                            displayMetadata = LocalizeResourceProperty(e => e.AreaUnit_Label, e => e.AreaUnit_Label2, e => e.AreaUnit_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.AreaUnit_Visibility, e => e.AreaUnit_Label, e => e.AreaUnit_Label2, e => e.AreaUnit_Label3, defaultName);
                             break;
 
                         case nameof(Resource.LengthUnit):
                         case nameof(Resource.LengthUnitId):
-                            displayMetadata = LocalizeResourceProperty(e => e.LengthUnit_Label, e => e.LengthUnit_Label2, e => e.LengthUnit_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.LengthUnit_Visibility, e => e.LengthUnit_Label, e => e.LengthUnit_Label2, e => e.LengthUnit_Label3, defaultName);
                             break;
 
                         case nameof(Resource.TimeUnit):
                         case nameof(Resource.TimeUnitId):
-                            displayMetadata = LocalizeResourceProperty(e => e.TimeUnit_Label, e => e.TimeUnit_Label2, e => e.TimeUnit_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.TimeUnit_Visibility, e => e.TimeUnit_Label, e => e.TimeUnit_Label2, e => e.TimeUnit_Label3, defaultName);
                             break;
 
                         case nameof(Resource.CountUnit):
                         case nameof(Resource.CountUnitId):
-                            displayMetadata = LocalizeResourceProperty(e => e.CountUnit_Label, e => e.CountUnit_Label2, e => e.CountUnit_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.CountUnit_Visibility, e => e.CountUnit_Label, e => e.CountUnit_Label2, e => e.CountUnit_Label3, defaultName);
                             break;
 
                         case nameof(Resource.Memo):
-                            displayMetadata = LocalizeResourceProperty(e => e.Memo_Label, e => e.Memo_Label2, e => e.Memo_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.Memo_Visibility, e => e.Memo_Label, e => e.Memo_Label2, e => e.Memo_Label3, defaultName);
                             break;
 
                         case nameof(Resource.CustomsReference):
-                            displayMetadata = LocalizeResourceProperty(e => e.CustomsReference_Label, e => e.CustomsReference_Label2, e => e.CustomsReference_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.CustomsReference_Visibility, e => e.CustomsReference_Label, e => e.CustomsReference_Label2, e => e.CustomsReference_Label3, defaultName);
                             break;
 
                         case nameof(Resource.ResourceLookup1):
                         case nameof(Resource.ResourceLookup1Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup1_Label, e => e.ResourceLookup1_Label2, e => e.ResourceLookup1_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup1_Visibility, e => e.ResourceLookup1_Label, e => e.ResourceLookup1_Label2, e => e.ResourceLookup1_Label3, defaultName);
                             break;
 
                         case nameof(Resource.ResourceLookup2):
                         case nameof(Resource.ResourceLookup2Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup2_Label, e => e.ResourceLookup2_Label2, e => e.ResourceLookup2_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup2_Visibility, e => e.ResourceLookup2_Label, e => e.ResourceLookup2_Label2, e => e.ResourceLookup2_Label3, defaultName);
                             break;
 
                         case nameof(Resource.ResourceLookup3):
                         case nameof(Resource.ResourceLookup3Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup3_Label, e => e.ResourceLookup3_Label2, e => e.ResourceLookup3_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup3_Visibility, e => e.ResourceLookup3_Label, e => e.ResourceLookup3_Label2, e => e.ResourceLookup3_Label3, defaultName);
                             break;
 
                         case nameof(Resource.ResourceLookup4):
                         case nameof(Resource.ResourceLookup4Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup4_Label, e => e.ResourceLookup4_Label2, e => e.ResourceLookup4_Label3, defaultName);
+                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup4_Visibility, e => e.ResourceLookup4_Label, e => e.ResourceLookup4_Label2, e => e.ResourceLookup4_Label3, defaultName);
                             break;
                         default:
                             displayMetadata = null;
@@ -201,6 +201,7 @@ namespace BSharp.Controllers
         }
 
         DisplayMetadata LocalizeResourceProperty(
+            Func<ResourceDefinitionForClient, byte> visibiilityFunc,
             Func<ResourceDefinitionForClient, string> s1Func,
             Func<ResourceDefinitionForClient, string> s2Func,
             Func<ResourceDefinitionForClient, string> s3Func,
@@ -212,6 +213,7 @@ namespace BSharp.Controllers
                 // the default if non are available. Be as forgiving as possible
                 DisplayName = () =>
                 {
+
                     string result = _localizer[defaultDisplayName];
                     var routeData = _httpContextAccessor.HttpContext.GetRouteData();
                     var definitionId = routeData.Values["definitionId"]?.ToString();
@@ -223,10 +225,17 @@ namespace BSharp.Controllers
 
                         if(definition != null)
                         {
-                            result = _tenantInfoAccessor.Localize(
-                                s1Func(definition),
-                                s2Func(definition),
-                                s3Func(definition)) ?? result;
+                            if (visibiilityFunc(definition) >= Visibility.Visible)
+                            {
+                                result = _tenantInfoAccessor.Localize(
+                                    s1Func(definition),
+                                    s2Func(definition),
+                                    s3Func(definition)) ?? result;
+                            }
+                            else
+                            {
+                                result = Constants.HIDDEN_FIELD;
+                            }
                         }
                     }
 
@@ -266,7 +275,7 @@ namespace BSharp.Controllers
         }
     }
 
-    public static class MetadataProviderExtensions
+    public static class TenantInfoAccessorExtensions
     {
         public static string Localize(this ITenantInfoAccessor tenantInfoAccessor, string s, string s2, string s3)
         {
