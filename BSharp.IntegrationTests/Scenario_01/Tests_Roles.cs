@@ -18,12 +18,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
         }
 
-        public const string rolesURL = "/api/roles";
+        public readonly string _baseAddress = "roles";
+
+        public string Url => $"/api/{_baseAddress}";
 
         [Fact(DisplayName = "01 Getting all roles before creating any returns a 200 OK singleton collection")]
         public async Task Test01()
         {
-            var response = await Client.GetAsync(rolesURL);
+            var response = await Client.GetAsync(Url);
 
             // Call the API
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -45,7 +47,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test02()
         {
             int nonExistentId = 999;
-            var response = await Client.GetAsync($"{rolesURL}/{nonExistentId}");
+            var response = await Client.GetAsync($"{Url}/{nonExistentId}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -107,7 +109,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<RoleForSave> { dtoForSave, dtoForSave2 };
-            var response = await Client.PostAsJsonAsync($"{rolesURL}?expand=Permissions/View,Members/Agent", dtosForSave);
+            var response = await Client.PostAsJsonAsync($"{Url}?expand=Permissions/View,Members/Agent", dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -178,7 +180,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var entity = Shared.Get<Role>("Role_SalesManager");
             var id = entity.Id;
-            var response = await Client.GetAsync($"{rolesURL}/{id}?expand=Permissions/View,Members/Agent");
+            var response = await Client.GetAsync($"{Url}/{id}?expand=Permissions/View,Members/Agent");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -264,7 +266,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the entity we just saved
             var id = Shared.Get<Role>("Role_SalesManager").Id;
-            var response1 = await Client.GetAsync($"{rolesURL}/{id}?expand=Permissions/View,Members/Agent");
+            var response1 = await Client.GetAsync($"{Url}/{id}?expand=Permissions/View,Members/Agent");
             var dto = (await response1.Content.ReadAsAsync<GetByIdResponse<Role>>()).Result;
 
             // Modify it slightly
@@ -275,7 +277,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it and get the result back
             var dtosForSave = new List<Role> { dto };
-            var response2 = await Client.PostAsJsonAsync($"{rolesURL}?expand=Permissions/View,Members/Agent", dtosForSave);
+            var response2 = await Client.PostAsJsonAsync($"{Url}?expand=Permissions/View,Members/Agent", dtosForSave);
             Output.WriteLine(await response2.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
             var dto2 = (await response2.Content.ReadAsAsync<EntitiesResponse<Role>>()).Result.FirstOrDefault();
@@ -303,7 +305,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = Shared.Get<Role>("Role_SalesManager").Id;
 
             // Call the API
-            var response = await Client.PutAsJsonAsync($"{rolesURL}/deactivate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"{Url}/deactivate", new List<int>() { id });
 
             // Assert that the response status code is correct
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -325,7 +327,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = Shared.Get<Role>("Role_SalesManager").Id;
 
             // Call the API
-            var response = await Client.PutAsJsonAsync($"{rolesURL}/activate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"{Url}/activate", new List<int>() { id });
 
             // Assert that the response status code is correct
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -347,7 +349,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = Shared.Get<Role>("Role_SalesManager").Id;
 
             // Query the delete API
-            var msg = new HttpRequestMessage(HttpMethod.Delete, rolesURL);
+            var msg = new HttpRequestMessage(HttpMethod.Delete, Url);
             msg.Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter());
             var deleteResponse = await Client.SendAsync(msg);
 
@@ -362,7 +364,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = Shared.Get<Role>("Role_SalesManager").Id;
 
             // Verify that the id was deleted by calling get        
-            var getResponse = await Client.GetAsync($"{rolesURL}/{id}");
+            var getResponse = await Client.GetAsync($"{Url}/{id}");
 
             // Assert that the response is correct
             Output.WriteLine(await getResponse.Content.ReadAsStringAsync());

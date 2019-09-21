@@ -28,6 +28,16 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
 export interface EntityDescriptor {
 
     /**
+     * The plural name of the entity (e.g. Agents)
+     */
+    titlePlural: string;
+
+    /**
+     * The singular name of the entity (e.g. Agent)
+     */
+    titleSingular: string;
+
+    /**
      * The Entity properties that need to be selected from the server for the format function to succeed
      */
     select: string[];

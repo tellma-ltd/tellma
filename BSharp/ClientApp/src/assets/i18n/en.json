@@ -274,5 +274,7 @@
   "Resource_ResourceLookup1": "Resource Lookup 1",
   "Resource_ResourceLookup2": "Resource Lookup 2",
   "Resource_ResourceLookup3": "Resource Lookup 3",
-  "Resource_ResourceLookup4": "Resource Lookup 4"
+  "Resource_ResourceLookup4": "Resource Lookup 4",
+  "SearchOptions": "Search Options",
+  "SearchOptionsMessage": "Which records would you like to search?"
 }

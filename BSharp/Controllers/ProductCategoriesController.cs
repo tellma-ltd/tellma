@@ -5,7 +5,6 @@ using BSharp.Data.Queries;
 using BSharp.Entities;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -14,15 +13,17 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/product-categories")]
+    [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
     public class ProductCategoriesController : CrudTreeControllerBase<ProductCategoryForSave, ProductCategory, int>
     {
+        public const string BASE_ADDRESS = "product-categories";
+
         private readonly ApplicationRepository _repo;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
 
-        private string VIEW => "product-categories";
+        private string ViewId => "product-categories";
 
         public ProductCategoriesController(
             ILogger<ProductCategoriesController> logger,
@@ -91,7 +92,7 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.UserPermissions(action, VIEW);
+            return await _repo.UserPermissions(action, ViewId);
         }
 
         protected override IRepository GetRepository()

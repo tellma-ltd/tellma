@@ -1,5 +1,4 @@
-<b-details viewId="roles" [expand]="expand"
-  collection="Role" [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [idString]="idString" [masterCrumb]="'Roles' | translate"
+<b-details [expand]="expand" collection="Role" [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [idString]="idString" [masterCrumb]="'Roles' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -173,7 +172,6 @@
               {{ getMultilingualValue(ws.User[item.AgentId], 'Name', ws) }}
             </b-view-link>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.AgentId" (ngModelChange)="update(item)" 
-            [detailsOptions]="[{ id: 'users', name: '- not important -' }]"
               [masterTemplate]="usersMaster" [detailsTemplate]="usersDetails" collection="User">
             </b-details-picker>
 

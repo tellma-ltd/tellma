@@ -273,5 +273,7 @@
   "Resource_ResourceLookup1": "الصفة 1",
   "Resource_ResourceLookup2": "الصفة 2",
   "Resource_ResourceLookup3": "الصفة 3",
-  "Resource_ResourceLookup4": "الصفة 4"
+  "Resource_ResourceLookup4": "الصفة 4",
+  "SearchOptions": "خيارات البحث",
+  "SearchOptionsMessage": "ما نوع البيانات التي تود البحث فيها؟"
 }

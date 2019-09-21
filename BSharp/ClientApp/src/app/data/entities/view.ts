@@ -39,6 +39,8 @@ export function metadata_View(ws: TenantWorkspace, trx: TranslateService, defini
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     _cache = {
+      titleSingular: trx.instant('View'),
+      titlePlural:  trx.instant('Views'),
       select: _select,
       apiEndpoint: 'views',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],

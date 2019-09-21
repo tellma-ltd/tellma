@@ -1,4 +1,4 @@
-<b-master collection="Agent" viewId="agents" [mode]="mode" [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
+<b-master collection="Agent" [mode]="mode" [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,AgentType,IsRelated"
   selectForTiles="Code,ImageId" [filterDefault]="filterDefault" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },

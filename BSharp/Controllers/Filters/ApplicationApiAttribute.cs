@@ -226,10 +226,10 @@ namespace BSharp.Controllers
                             ResourceLookup1_Visibility = Visibility.Visible,
                             ResourceLookup1_DefinitionId = "thicknesses",
 
-                            ResourceLookup2_Label = "Color",
-                            ResourceLookup2_Label2 = "اللون",
-                            ResourceLookup2_Visibility = Visibility.Visible,
-                            ResourceLookup2_DefinitionId = "colors",
+                            //ResourceLookup2_Label = "Color",
+                            //ResourceLookup2_Label2 = "اللون",
+                            //ResourceLookup2_Visibility = Visibility.Visible,
+                            //ResourceLookup2_DefinitionId = "colors",
 
                             MassUnit_Visibility = Visibility.Visible,
                             // MassUnit_DefaultValue = 81, // kg

@@ -19,15 +19,18 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
         }
 
-        public const string agentsUrl = "/api/agents";
+        public readonly string _baseAddress = "agents";
+
+        public string Url => $"/api/{_baseAddress}";
+        private string ViewId => _baseAddress;
 
         [Fact(DisplayName = "01 Getting all agents before creating any returns a 200 OK singleton collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator("agents", Constants.Update, "Id lt 100000");
+            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id lt 100000");
 
             // Call the API
-            var response = await Client.GetAsync(agentsUrl);
+            var response = await Client.GetAsync(Url);
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK
@@ -47,7 +50,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test03()
         {
             int nonExistentId = 500;
-            var response = await Client.GetAsync($"{agentsUrl}/{nonExistentId}");
+            var response = await Client.GetAsync($"{Url}/{nonExistentId}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -79,7 +82,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<AgentForSave> { dtoForSave, dtoForSave2 };
-            var response = await Client.PostAsJsonAsync(agentsUrl, dtosForSave);
+            var response = await Client.PostAsJsonAsync(Url, dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -122,7 +125,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var entity = Shared.Get<Agent>("Agent_JohnWick");
             var id = entity.Id;
-            var response = await Client.GetAsync($"{agentsUrl}/{id}");
+            var response = await Client.GetAsync($"{Url}/{id}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -157,7 +160,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(agentsUrl, list);
+            var response = await Client.PostAsJsonAsync(Url, list);
 
             // Assert that the response status code is 422 unprocessable entity (validation errors)
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -191,7 +194,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(agentsUrl, new List<AgentForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<AgentForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed
@@ -212,14 +215,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "07 Deleting an existing agent Id returns a 200 OK")]
         public async Task Test08()
         {
-            await GrantPermissionToSecurityAdministrator("agents", Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<Agent>("Agent_Matilda");
             var id = entity.Id;
 
             // Query the delete API
-            var msg = new HttpRequestMessage(HttpMethod.Delete, agentsUrl)
+            var msg = new HttpRequestMessage(HttpMethod.Delete, Url)
             {
                 Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter())
             };
@@ -238,7 +241,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
-            var getResponse = await Client.GetAsync($"{agentsUrl}/{id}");
+            var getResponse = await Client.GetAsync($"{Url}/{id}");
 
             // Assert that the response is correct
             Output.WriteLine(await getResponse.Content.ReadAsStringAsync());
@@ -248,14 +251,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "09 Deactivating an active agent returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator("agents", "IsActive", null);
+            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
 
             // Get the Id
             var entity = Shared.Get<Agent>("Agent_JohnWick");
             var id = entity.Id;
 
             // Call the API
-            var response = await Client.PutAsJsonAsync($"{agentsUrl}/deactivate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"{Url}/deactivate", new List<int>() { id });
 
             // Assert that the response status code is correct
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -278,7 +281,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id;
 
             // Call the API
-            var response = await Client.PutAsJsonAsync($"{agentsUrl}/activate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"{Url}/activate", new List<int>() { id });
 
             // Assert that the response status code is correct
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -300,7 +303,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var entity = Shared.Get<Agent>("Agent_JohnWick");
             var id = entity.Id;
 
-            var response = await Client.GetAsync($"{agentsUrl}/{id}?select=Name");
+            var response = await Client.GetAsync($"{Url}/{id}?select=Name");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

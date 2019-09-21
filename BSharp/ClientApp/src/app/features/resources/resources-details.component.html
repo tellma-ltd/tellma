@@ -1,4 +1,4 @@
-<b-details [viewId]="definitionId" collection="Resource" [definition]="definitionId" [createFunc]="create"
+<b-details collection="Resource" [definition]="definitionId" [createFunc]="create"
     [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
     [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -70,7 +70,7 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId"
-            [detailsOptions]="[{ id: 'currencies', name: '- not important -' }]" [masterTemplate]="currenciesMaster"
+            [masterTemplate]="currenciesMaster"
             [detailsTemplate]="currenciesDetails" collection="Currency">
         </b-details-picker>
 
@@ -101,7 +101,6 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.MassUnitId" filter="UnitType eq 'Mass'"
-            [detailsOptions]="[{ id: 'measurement-units', name: '- not important -' }]"
             [masterTemplate]="measurementUnitsMaster" [detailsTemplate]="measurementUnitsDetails"
             collection="MeasurementUnit" [required]="d.MassUnit_Visibility === 2">
         </b-details-picker>
@@ -115,7 +114,6 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.VolumeUnitId" filter="UnitType eq 'Volume'"
-            [detailsOptions]="[{ id: 'measurement-units', name: '- not important -' }]"
             [masterTemplate]="measurementUnitsMaster" [detailsTemplate]="measurementUnitsDetails"
             collection="MeasurementUnit" [required]="d.VolumeUnit_Visibility === 2">
         </b-details-picker>
@@ -129,7 +127,6 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.AreaUnitId" filter="UnitType eq 'Area'"
-            [detailsOptions]="[{ id: 'measurement-units', name: '- not important -' }]"
             [masterTemplate]="measurementUnitsMaster" [detailsTemplate]="measurementUnitsDetails"
             collection="MeasurementUnit" [required]="d.AreaUnit_Visibility === 2">
         </b-details-picker>
@@ -143,7 +140,6 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.LengthUnitId" filter="UnitType eq 'Distance'"
-            [detailsOptions]="[{ id: 'measurement-units', name: '- not important -' }]"
             [masterTemplate]="measurementUnitsMaster" [detailsTemplate]="measurementUnitsDetails"
             collection="MeasurementUnit" [required]="d.LengthUnit_Visibility === 2">
         </b-details-picker>
@@ -157,7 +153,6 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.TimeUnitId" filter="UnitType eq 'Time'"
-            [detailsOptions]="[{ id: 'measurement-units', name: '- not important -' }]"
             [masterTemplate]="measurementUnitsMaster" [detailsTemplate]="measurementUnitsDetails"
             collection="MeasurementUnit" [required]="d.TimeUnit_Visibility === 2">
         </b-details-picker>
@@ -171,8 +166,9 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup1Id"
-            [detailsOptions]="[{ id: p.ResourceLookup1.definition, name: '' }]" [masterTemplate]="resourceLookupsMaster"
-            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [definition]="p.ResourceLookup1.definition" [required]="d.ResourceLookup1_Visibility === 2">
+            [definitionIds]="[p.ResourceLookup1.definition]" definitionProperty="ResourceLookupDefinitionId" 
+            [masterTemplate]="resourceLookupsMaster" [detailsTemplate]="resourceLookupsDetails"
+            collection="ResourceLookup" [required]="d.ResourceLookup1_Visibility === 2">
         </b-details-picker>
     </b-form-group>
     
@@ -184,8 +180,8 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup2Id"
-            [detailsOptions]="[{ id: p.ResourceLookup2.definition, name: '' }]" [masterTemplate]="resourceLookupsMaster"
-            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [definition]="p.ResourceLookup2.definition" [required]="d.ResourceLookup2_Visibility === 2">
+            [definitionIds]="[p.ResourceLookup2.definition]" definitionProperty="ResourceLookupDefinitionId"  [masterTemplate]="resourceLookupsMaster"
+            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [required]="d.ResourceLookup2_Visibility === 2">
         </b-details-picker>
     </b-form-group>
     
@@ -197,8 +193,8 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup3Id"
-            [detailsOptions]="[{ id: p.ResourceLookup3.definition, name: '' }]" [masterTemplate]="resourceLookupsMaster"
-            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [definition]="p.ResourceLookup3.definition" [required]="d.ResourceLookup3_Visibility === 2">
+        [definitionIds]="[p.ResourceLookup3.definition]" definitionProperty="ResourceLookupDefinitionId"  [masterTemplate]="resourceLookupsMaster"
+            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [required]="d.ResourceLookup3_Visibility === 2">
         </b-details-picker>
     </b-form-group>
     
@@ -210,8 +206,8 @@
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup4Id"
-            [detailsOptions]="[{ id: p.ResourceLookup4.definition, name: '' }]" [masterTemplate]="resourceLookupsMaster"
-            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [definition]="p.ResourceLookup4.definition" [required]="d.ResourceLookup4_Visibility === 2">
+            [definitionIds]="[p.ResourceLookup4.definition]" definitionProperty="ResourceLookupDefinitionId"  [masterTemplate]="resourceLookupsMaster"
+            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [required]="d.ResourceLookup4_Visibility === 2">
         </b-details-picker>
     </b-form-group>
 
@@ -258,18 +254,18 @@
 
 <!-- The Resource Lookup Details Modal -->
 <ng-template #resourceLookupsDetails let-modal="modal" let-update="update" let-initialText="initialText"
-    let-viewId="viewId">
+    let-definitionId="definitionId">
     <div class="modal-body">
-        <b-resource-lookups-details mode="popup" idString="new" [initialText]="initialText" [definitionId]="viewId"
+        <b-resource-lookups-details mode="popup" idString="new" [initialText]="initialText" [definitionId]="definitionId"
             (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
         </b-resource-lookups-details>
     </div>
 </ng-template>
 
 <!-- The Resource Lookup Master Modal -->
-<ng-template #resourceLookupsMaster let-modal="modal" let-update="update" let-create="create" let-viewId="viewId">
+<ng-template #resourceLookupsMaster let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId">
     <div class="modal-body">
-        <b-resource-lookups-master mode="popup" (cancel)="modal.close(false);" [definitionId]="viewId"
+        <b-resource-lookups-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId"
             (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
         </b-resource-lookups-master>
     </div>

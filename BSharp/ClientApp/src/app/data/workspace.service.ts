@@ -298,32 +298,11 @@ export class TenantWorkspace {
   }
 
   public canCreate(viewId: string) {
-    if (!viewId) {
-      return false;
-    }
-
-    if (viewId === 'all') {
-      return true;
-    }
-
-    const viewPerms = this.permissions[viewId];
-    const allPerms = this.permissions.all;
-    return (!!viewPerms && (viewPerms.Update || viewPerms.All))
-      || (!!allPerms && (allPerms.Update || allPerms.All));
+    return this.canDo(viewId, 'Update', null);
   }
 
   public canUpdate(viewId: string, createdById: string | number) {
-
-    if (!viewId) {
-      return false;
-    }
-
-    const viewPerms = this.permissions[viewId];
-    const allPerms = this.permissions.all;
-    // const userId = this.userSettings.UserId;
-    // (userId === createdById) ||
-    return (!!viewPerms && (viewPerms.Update || viewPerms.All))
-      || (!!allPerms && (allPerms.Update || allPerms.All));
+    return this.canDo(viewId, 'Update', createdById);
   }
 
   public canDo(viewId: string, action: 'Read' | 'Update' | 'Delete' | 'IsActive' | 'ResendInvitationEmail', createdById: string | number) {

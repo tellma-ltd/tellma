@@ -24,15 +24,17 @@ using System.Transactions;
 
 namespace BSharp.Controllers
 {
-    [Route("api/users")]
+    [Route("api/" + BASE_ADDRESS)]
     [AuthorizeAccess]
     [ApplicationApi]
     public class UsersController : CrudControllerBase<UserForSave, User, int>
     {
+        public const string BASE_ADDRESS = "users";
+
         private readonly ApplicationRepository _appRepo;
         private readonly AdminRepository _adminRepo;
         private readonly ITenantIdAccessor _tenantIdProvider;
-        private readonly Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider _metadataProvider;
+        private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
         private readonly EmailTemplatesProvider _emailTemplates;
@@ -44,12 +46,12 @@ namespace BSharp.Controllers
         private TransactionScope _adminTrxScope;
         private TransactionScope _identityTrxScope;
 
-        public string VIEW => "users";
+        private string ViewId => BASE_ADDRESS;
 
         public UsersController(
             ApplicationRepository appRepo,
             AdminRepository adminRepo,
-            Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider metadataProvider,
+            IModelMetadataProvider metadataProvider,
             ILogger<UsersController> logger,
             IOptions<GlobalOptions> options,
             IServiceProvider serviceProvider,
@@ -114,7 +116,7 @@ namespace BSharp.Controllers
         [HttpPut("invite")]
         public async Task<ActionResult> ResendInvitationEmail(int id)
         {
-            return await ControllerUtilities.InvokeActionImpl((Func<Task<ActionResult>>)(async () =>
+            return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 if (!_options.EmailEnabled)
                 {
@@ -159,7 +161,7 @@ namespace BSharp.Controllers
                 await _emailSender.SendEmailAsync(toEmail, subject, htmlMessage);
                 return base.Ok();
 
-            }), _logger);
+            }, _logger);
         }
 
         private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, Agent recipient)
@@ -483,7 +485,7 @@ namespace BSharp.Controllers
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return _appRepo.UserPermissions(action, VIEW);
+            return _appRepo.UserPermissions(action, ViewId);
         }
     }
 }

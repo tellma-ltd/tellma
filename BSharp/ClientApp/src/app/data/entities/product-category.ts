@@ -36,6 +36,8 @@ export function metadata_ProductCategory(ws: TenantWorkspace, trx: TranslateServ
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     _cache = {
+      titleSingular: trx.instant('ProductCategory'),
+      titlePlural:  trx.instant('ProductCategories'),
       select: _select,
       apiEndpoint: 'product-categories',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],

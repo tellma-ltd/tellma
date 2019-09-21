@@ -1,4 +1,4 @@
-<b-details viewId="users" [expand]="expand" [idString]="idString" collection="User"
+<b-details [expand]="expand" [idString]="idString" collection="User"
   [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [masterCrumb]="'Users' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [isInactive]="isInactive"
   [documentHeaderTemplate]="documentHeader" [actions]="[
@@ -108,7 +108,6 @@
               item.RoleId, 'Name') }}</b-view-link>
             </b-restricted>
             <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)"
-              [detailsOptions]="[{ id: 'roles', name: '- not important -' }]"
               [masterTemplate]="roleMaster" [detailsTemplate]="roleDetails" collection="Role">
             </b-details-picker>
 

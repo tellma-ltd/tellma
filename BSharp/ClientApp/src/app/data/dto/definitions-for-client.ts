@@ -1,10 +1,10 @@
 // tslint:disable:variable-name
 export class DefinitionsForClient {
 
-    Documents: { [subtype: string]: DocumentDefinitionForClient };
-    Lines: { [subtype: string]: LineDefinitionForClient };
-    Resources: { [subtype: string]: ResourceDefinitionForClient };
-    ResourceLookups: { [subtype: string]: ResourceLookupDefinitionForClient };
+    Documents: { [definitionId: string]: DocumentDefinitionForClient };
+    Lines: { [definitionId: string]: LineDefinitionForClient };
+    Resources: { [definitionId: string]: ResourceDefinitionForClient };
+    ResourceLookups: { [definitionId: string]: ResourceLookupDefinitionForClient };
 }
 
 export interface DefinitionForClient {

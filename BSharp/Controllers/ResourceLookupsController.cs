@@ -14,16 +14,20 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/resource-lookups/{definitionId}")]
+    [Route("api/" + BASE_ADDRESS + "{definitionId}")]
     [ApplicationApi]
     public class ResourceLookupsController : CrudControllerBase<ResourceLookupForSave, ResourceLookup, int>
     {
+        public const string BASE_ADDRESS = "resource-lookups/";
+
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
-        private string VIEW => RouteData.Values["definitionId"]?.ToString() ?? 
+        private string Definition => RouteData.Values["definitionId"]?.ToString() ?? 
             throw new BadRequestException("URI must be of the form 'api/resource-lookups/{definitionId}'");
+
+        private string ViewId => $"{BASE_ADDRESS}{Definition}";
 
         public ResourceLookupsController(
             ILogger<ResourceLookupsController> logger,
@@ -92,12 +96,12 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.UserPermissions(action, VIEW);
+            return await _repo.UserPermissions(action, ViewId);
         }
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(ResourceLookup.ResourceLookupDefinitionId)} eq '{VIEW}'";
+            string filter = $"{nameof(ResourceLookup.ResourceLookupDefinitionId)} eq '{Definition}'";
             return new FilteredRepository<ResourceLookup>(_repo, filter);
         }
 
@@ -124,7 +128,7 @@ namespace BSharp.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ResourceLookups_Validate__Save(VIEW, entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceLookups_Validate__Save(Definition, entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -132,14 +136,14 @@ namespace BSharp.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceLookupForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.ResourceLookups__Save(VIEW, entities, returnIds: returnIds);
+            return await _repo.ResourceLookups__Save(Definition, entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ResourceLookups_Validate__Delete(VIEW, ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceLookups_Validate__Delete(Definition, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -159,7 +163,7 @@ namespace BSharp.Controllers
 
         protected override Query<ResourceLookup> GetAsQuery(List<ResourceLookupForSave> entities)
         {
-            return _repo.ResourceLookups__AsQuery(VIEW, entities);
+            return _repo.ResourceLookups__AsQuery(Definition, entities);
         }
 
         protected override OrderByExpression DefaultOrderBy()

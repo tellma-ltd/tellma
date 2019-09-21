@@ -51,6 +51,8 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     _cache = {
+      titleSingular: trx.instant('Agent'),
+      titlePlural:  trx.instant('Agents'),
       select: _select,
       apiEndpoint: 'agents',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],

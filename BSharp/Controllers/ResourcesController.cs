@@ -17,18 +17,22 @@ using System.Threading.Tasks;
 namespace BSharp.Controllers
 {
     // Specific API, works with a certain definitionId, and allows read-write
-    [Route("api/resources/{definitionId}")]
+    [Route("api/" + BASE_ADDRESS + "{definitionId}")]
     [ApplicationApi]
     public class ResourcesController : CrudControllerBase<ResourceForSave, Resource, int>
     {
+        public const string BASE_ADDRESS = "resources/";
+
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly IDefinitionsCache _definitionsCache;
         private readonly IModelMetadataProvider _modelMetadataProvider;
 
-        private string VIEW => RouteData.Values["definitionId"]?.ToString() ??
-            throw new BadRequestException("URI must be of the form 'api/resources/{definitionId}'");
+        private string Definition => RouteData.Values["definitionId"]?.ToString() ??
+            throw new BadRequestException("URI must be of the form 'api/" + BASE_ADDRESS + "{definitionId}'");
+
+        private string ViewId => $"{BASE_ADDRESS}{Definition}";
 
         public ResourcesController(
             ILogger<ResourcesController> logger,
@@ -101,12 +105,12 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.UserPermissions(action, VIEW);
+            return await _repo.UserPermissions(action, ViewId);
         }
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Resource.ResourceDefinitionId)} eq '{VIEW}'";
+            string filter = $"{nameof(Resource.ResourceDefinitionId)} eq '{Definition}'";
             return new FilteredRepository<Resource>(_repo, filter);
         }
 
@@ -117,8 +121,8 @@ namespace BSharp.Controllers
 
         protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
         {
-            var definition = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources?.GetValueOrDefault(VIEW) ?? 
-                throw new InvalidOperationException($"Definition for '{VIEW}' was missing from the cache");
+            var definition = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources?.GetValueOrDefault(Definition) ?? 
+                throw new InvalidOperationException($"Definition for '{Definition}' was missing from the cache");
 
             // Set default values
             SetDefaultValue(entities, e => e.MassUnitId, definition.MassUnit_DefaultValue);
@@ -157,7 +161,7 @@ namespace BSharp.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Resources_Validate__Save(VIEW, entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.Resources_Validate__Save(Definition, entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -209,14 +213,14 @@ namespace BSharp.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.Resources__Save(VIEW, entities, returnIds: returnIds);
+            return await _repo.Resources__Save(Definition, entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Resources_Validate__Delete(VIEW, ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Resources_Validate__Delete(Definition, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -236,7 +240,7 @@ namespace BSharp.Controllers
 
         protected override Query<Resource> GetAsQuery(List<ResourceForSave> entities)
         {
-            return _repo.Resources__AsQuery(VIEW, entities);
+            return _repo.Resources__AsQuery(Definition, entities);
         }
     }
 
@@ -266,23 +270,16 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            // Retrieve the definitions
-            var resourceDefinitions = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources;
-            if (resourceDefinitions == null)
-            {
-                // Programmer mistake
-                throw new BadRequestException("Resource definitions cache was empty");
-            }
-
-            // Retrieve all the permissions pertaining to the above definitions
-            var viewIds = resourceDefinitions.Keys.ToArray();
-            var permissions = await _repo.UserPermissions(action, viewIds);
+            // Get all permissions pertaining to resources
+            string prefix = ResourcesController.BASE_ADDRESS;
+            var permissions = await _repo.GenericUserPermissions(action, prefix);
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)
             foreach (var permission in permissions.Where(e => e.ViewId != "all"))
             {
-                string definitionPredicate = $"{nameof(Resource.ResourceDefinitionId)} eq '{permission.ViewId}'";
+                string definitionId = permission.ViewId.Remove(0, prefix.Length).Replace("'", "''");
+                string definitionPredicate = $"{nameof(Resource.ResourceDefinitionId)} eq '{definitionId}'";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
                     permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";

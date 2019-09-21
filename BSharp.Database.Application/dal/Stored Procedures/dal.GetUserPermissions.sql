@@ -1,6 +1,7 @@
 ﻿-- Returns all the permissions of the current user
 CREATE PROCEDURE [dal].[GetUserPermissions]
 AS
+-- When changing this, remember to also change [dal].[Action_View__Permissions] and [dal].[Action_ViewPrefix__Permissions]
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
     SELECT [ViewId], [Action], [Criteria], [Mask] 

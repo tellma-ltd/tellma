@@ -19,12 +19,15 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
         }
 
-        public const string CurrenciesUrl = "/api/currencies";
+        public readonly string _baseAddress = "currencies";
+
+        public string Url => $"/api/{_baseAddress}";
+        private string ViewId => _baseAddress;
 
         [Fact(DisplayName = "01 Getting all currencies before granting permissions returns a 403 Forbidden response")]
         public async Task Test01()
         {
-            var response = await Client.GetAsync(CurrenciesUrl);
+            var response = await Client.GetAsync(Url);
 
             // Call the API
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -36,10 +39,10 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting all currencies before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator("currencies", Constants.Update, "Id ne 'Bla'");
+            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id ne 'Bla'");
 
             // Call the API
-            var response = await Client.GetAsync(CurrenciesUrl);
+            var response = await Client.GetAsync(Url);
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK
@@ -58,7 +61,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test03()
         {
             int nonExistentId = 1;
-            var response = await Client.GetAsync($"{CurrenciesUrl}/{nonExistentId}");
+            var response = await Client.GetAsync($"{Url}/{nonExistentId}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -80,7 +83,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<CurrencyForSave> { dtoForSave };
-            var response = await Client.PostAsJsonAsync(CurrenciesUrl, dtosForSave);
+            var response = await Client.PostAsJsonAsync(Url, dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -112,7 +115,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var entity = Shared.Get<Currency>("Currency_EUR");
             var id = entity.Id;
-            var response = await Client.GetAsync($"{CurrenciesUrl}/{id}");
+            var response = await Client.GetAsync($"{Url}/{id}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -146,7 +149,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(CurrenciesUrl, list);
+            var response = await Client.PostAsJsonAsync(Url, list);
 
             // Assert that the response status code is 422 unprocessable entity (validation errors)
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -180,7 +183,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(CurrenciesUrl, new List<CurrencyForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<CurrencyForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed
@@ -199,14 +202,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "08 Deleting an existing currency Id returns a 200 OK")]
         public async Task Test08()
         {
-            await GrantPermissionToSecurityAdministrator("currencies", Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<Currency>("Currency_AED");
             var id = entity.Id;
 
             // Query the delete API
-            var deleteResponse = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, CurrenciesUrl)
+            var deleteResponse = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, Url)
             {
                 Content = new ObjectContent<List<string>>(new List<string> { id }, new JsonMediaTypeFormatter())
             });
@@ -223,7 +226,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
-            var getResponse = await Client.GetAsync($"{CurrenciesUrl}/{id}");
+            var getResponse = await Client.GetAsync($"{Url}/{id}");
 
             // Assert that the response is correct
             Output.WriteLine(await getResponse.Content.ReadAsStringAsync());
@@ -233,14 +236,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deactivating an active currency returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator("currencies", "IsActive", null);
+            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
 
             // Get the Id
             var entity = Shared.Get<Currency>("Currency_EUR");
             var id = entity.Id;
 
             // Call the API
-            var response = await Client.PutAsJsonAsync($"{CurrenciesUrl}/deactivate", new List<string>() { id });
+            var response = await Client.PutAsJsonAsync($"{Url}/deactivate", new List<string>() { id });
 
             // Assert that the response status code is correct
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -263,7 +266,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id;
 
             // Call the API
-            var response = await Client.PutAsJsonAsync($"{CurrenciesUrl}/activate", new List<string>() { id });
+            var response = await Client.PutAsJsonAsync($"{Url}/activate", new List<string>() { id });
 
             // Assert that the response status code is correct
             Output.WriteLine(await response.Content.ReadAsStringAsync());
