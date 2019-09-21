@@ -17,7 +17,8 @@ DECLARE @VR1_2 VTYPE, @VRU_3 VTYPE, @Frequency NVARCHAR (255), @P1_2 int, @P1_U 
 
 SELECT @fromDate = '2017.01.01', @toDate = '2017.01.31'
 
---SELECT * FROM dbo.Documents; SELECT * FROM dbo.DocumentLines; SELECT * FROM dbo.DocumentLineEntries;
+--SELECT count(*) FROM dbo.Documents;-- SELECT * FROM dbo.DocumentLines; SELECT * FROM dbo.DocumentLineEntries;
+
 SELECT
 	[Id], [AccountClassificationId], [Name], [Code],
 	[IsMultiEntryClassification], [IfrsEntryClassificationId],
@@ -79,14 +80,14 @@ WITH Docs AS (
 		WHERE D.[Id] IN (SELECT [Id] FROM @D11Ids)
 	)
 	SELECT 
-		(CASE WHEN [LineSortKey] = 1 THEN [Id] ELSE '' END) AS [Id],
-		(CASE WHEN [LineSortKey] = 1 THEN [DocumentDate] ELSE '' END) AS [DocumentDate],
-		--(CASE WHEN [LineSortKey] = 1 THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentTypeId],
-		(CASE WHEN [LineSortKey] = 1 THEN [S/N] ELSE '' END) AS [S/N],
-		(CASE WHEN [LineSortKey] = 1 THEN [State] ELSE '' END) AS [State],
-		--(CASE WHEN [LineSortKey] = 1 THEN [VoucherRef] ELSE '' END) AS [VoucherRef],
-		(CASE WHEN [LineSortKey] = 1 THEN [Memo] ELSE '' END) AS [Memo],
-		--(CASE WHEN [LineSortKey] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
+		(CASE WHEN [LineSortKey] = 1 AND [EntryNumber] = 1 THEN [Id] ELSE '' END) AS [Id],
+		(CASE WHEN [LineSortKey] = 1 AND [EntryNumber] = 1 THEN [DocumentDate] ELSE '' END) AS [DocumentDate],
+		--(CASE WHEN [LineSortKey] = 1 AND [EntryNumber] = 1 THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentTypeId],
+		(CASE WHEN [LineSortKey] = 1 AND [EntryNumber] = 1 THEN [S/N] ELSE '' END) AS [S/N],
+		(CASE WHEN [LineSortKey] = 1 AND [EntryNumber] = 1 THEN [State] ELSE '' END) AS [State],
+		--(CASE WHEN [LineSortKey] = 1 AND [EntryNumber] = 1 THEN [VoucherRef] ELSE '' END) AS [VoucherRef],
+		(CASE WHEN [LineSortKey] = 1 AND [EntryNumber] = 1 THEN [Memo] ELSE '' END) AS [Memo],
+		--(CASE WHEN [LineSortKey] = 1 AND [EntryNumber] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
 		--CAST([DocumentSortKey] AS TINYINT) AS [DocumentSortKey],
 		--CAST([LineSortKey] AS TINYINT) AS [LineSortKey],
 		--[LineId], [LineTypeId],

@@ -7,8 +7,8 @@
 
 INSERT @LineTypes([Id]) VALUES
 (N'CashIssue'),
-(N'GoodReceiptWithInvoice'),
-(N'GoodReceiptWithInvoiceAndVAT'),
+(N'VATInvoiceWithGoodReceipt'),
+(N'VATInvoiceWithoutGoodReceipt'),
 (N'ManualLine');
 
 MERGE [dbo].LineTypes AS t

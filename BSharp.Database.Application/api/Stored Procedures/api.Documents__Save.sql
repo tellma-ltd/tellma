@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[Documents__Save]
-	@DocumentTypeId NVARCHAR(30),
+	@DefinitionId NVARCHAR(255),
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[DocumentLineList] READONLY, 
 	@Entries [dbo].[DocumentLineEntryList] READONLY,
@@ -34,7 +34,7 @@ BEGIN
 		RETURN;
 
 	EXEC [dal].[Documents__Save]
-		@DocumentTypeId = @DocumentTypeId,
+		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @Lines,
 		@Entries = @FilledEntries,

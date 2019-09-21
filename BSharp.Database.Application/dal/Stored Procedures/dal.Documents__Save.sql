@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Save]
-	@DocumentTypeId NVARCHAR(50),
+	@DefinitionId NVARCHAR(255),
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[DocumentLineList] READONLY, 
 	@Entries [dbo].[DocumentLineEntryList] READONLY,
@@ -21,7 +21,7 @@ BEGIN
 				[Index], [Id], [DocumentDate], [VoucherNumericReference], [SortKey], [Memo], [EvidenceTypeId], [Frequency], [Repetitions],
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
-					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DocumentDefinitionId] = @DocumentTypeId
+					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DocumentDefinitionId] = @DefinitionId
 				) As [SerialNumber]
 			FROM @Documents D
 		) AS s ON (t.Id = s.Id)
@@ -43,7 +43,7 @@ BEGIN
 				[DocumentDefinitionId], [SerialNumber], [DocumentDate], [VoucherNumericReference], [SortKey], [Memo], [EvidenceTypeId], [Frequency], [Repetitions]
 			)
 			VALUES (
-				@DocumentTypeId, s.[SerialNumber], s.[DocumentDate], s.[VoucherNumericReference], s.[SortKey], s.[Memo], s.[EvidenceTypeId], s.[Frequency], s.[Repetitions]
+				@DefinitionId, s.[SerialNumber], s.[DocumentDate], s.[VoucherNumericReference], s.[SortKey], s.[Memo], s.[EvidenceTypeId], s.[Frequency], s.[Repetitions]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
