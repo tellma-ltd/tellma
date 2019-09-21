@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [dbo].[bll_ProductCategories_Validate__Save]
+	EXEC [bll].[ProductCategories_Validate__Save]
 		@Entities = @Entities;
 
 	SELECT @ValidationErrorsJson = 
@@ -21,6 +21,6 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dbo].[dal_ProductCategories__Save]
+	EXEC [dal].[ProductCategories__Save]
 		@Entities = @Entities;
 END;

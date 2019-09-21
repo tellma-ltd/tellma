@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[ProductCategories_Validate__Delete]
-		@Entities = @Ids;
+		@Ids = @Ids;
 
 	SELECT @ValidationErrorsJson = 
 	(

@@ -234,12 +234,9 @@
     <Build Include="dbo\Stored Procedures\dbo.rpt_Production__Actual_vs_Planned.sql" />
     <Build Include="dbo\Functions\dbo.fn_MeasurementUnitRatio.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceLookupList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_ResourceLooup1s__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_ResourceLookup1s__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_SalesOrderLines__Price.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_SalesOrder__Discount.sql" />
     <Build Include="dbo\User Defined Types\dbo.IdList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_ResourceLookup1s__Delete.sql" />
     <Build Include="api\Stored Procedures\api.IfrsDisclosureDetails__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.OnConnect.sql" />
     <Build Include="api\Stored Procedures\api.IfrsConcepts__Activate.sql" />
@@ -276,7 +273,7 @@
     <Build Include="rpt\Functions\rpt.MeasurementUnits__Select.sql" />
     <Build Include="rpt\Stored Procedures\rpt.sp_TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.sp_Ifrs.sql" />
-    <Build Include="rpt\Functions\dbo.rpt_Account__Statement.sql" />
+    <Build Include="rpt\Functions\rpt.Account__Statement.sql" />
     <Build Include="rpt\Functions\rpt.Documents.sql" />
     <Build Include="rpt\Functions\rpt.Document__Signatures.sql" />
     <Build Include="bll\Functions\bll.fn_Document_Criteria__Satisfied.sql" />
@@ -371,6 +368,9 @@
     <Build Include="Mapping\Resources.sql" />
     <Build Include="Mapping\Resources__AsQuery.sql" />
     <Build Include="Security\map.sql" />
+    <Build Include="api\Stored Procedures\api.ResourceLookups__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.ResourceLookups__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.ResourceLooups__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

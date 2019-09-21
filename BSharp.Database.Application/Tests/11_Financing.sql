@@ -22,7 +22,7 @@ BEGIN -- Inserting
 		(3,3,0,1,+1,@CBEUSD,	N'ProceedsFromIssuingShares', 	@USD,			2000,		0,		100);
 
 	EXEC [api].[Documents__Save]
-		@DocumentTypeId = N'manual-journals',
+		@DefinitionId = N'manual-journals',
 		@Documents = @D11, @Lines = @L11, @Entries = @E11,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -58,7 +58,7 @@ END
 --	DELETE FROM @L12 WHERE [Index] = 3;
 
 --	EXEC [api].[Documents__Save]
---		@DocumentTypeId = N'manual-journals',
+--		@DefinitionId = N'manual-journals',
 --		@Documents = @D12, @Lines = @L12, @Entries = @E12,
 --		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

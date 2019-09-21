@@ -12,11 +12,11 @@ RETURN (
 		NULL AS [Name3],
 		NULL AS [ImageId],
 		[Email],
-		NULL AS [ExternalId],										-- TODO join and read from table
-		N'New' AS [State],											-- TODO join and read from table
-		NULL AS [LastAccess],										-- TODO join and read from table
-		SYSDATETIMEOFFSET() AS [CreatedAt],							-- TODO join and read from table
-		CONVERT(INT, SESSION_CONTEXT(N'UserId')) AS [CreatedById],	-- TODO join and read from table
+		NULL AS [ExternalId],										-- TODO: join and read from table
+		N'New' AS [State],											-- TODO: join and read from table
+		NULL AS [LastAccess],										-- TODO: join and read from table
+		SYSDATETIMEOFFSET() AS [CreatedAt],							-- TODO: join and read from table
+		CONVERT(INT, SESSION_CONTEXT(N'UserId')) AS [CreatedById],	-- TODO: join and read from table
 		SYSDATETIMEOFFSET() AS [ModifiedAt],
 		CONVERT(INT, SESSION_CONTEXT(N'UserId')) AS [ModifiedById]
 	FROM @Entities

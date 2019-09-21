@@ -17,8 +17,8 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Resources_Validate__Save]
-		@ResourceDefinitionId = @ResourceDefinitionId,
-		@Resources = @FilledResources;
+		@DefinitionId = @ResourceDefinitionId,
+		@Entities = @FilledResources;
 	--	@Picks = @Picks;
 
 	SELECT @ValidationErrorsJson = 

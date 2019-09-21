@@ -15,40 +15,62 @@ INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], 
 				[AccountId], [IfrsEntryClassificationId],		[Value], [MonetaryValue]) VALUES
 	(0,0,0,1,+1,@CBEETB,	N'InternalCashTransferExtension', 	1175000, 0),
 	(1,1,0,1,-1,@CBEUSD,	N'InternalCashTransferExtension',	1175000, 50000); 
- --N'Vehicles purchase receipt on account w/invoice'
+-- N'Vehicles purchase receipt on account w/invoice'
 	INSERT INTO @DM1([Index], [SortKey],
 	[Memo],							[DocumentDate],	[EvidenceTypeId]) VALUES
 (1,3,N'Vehicles purchase receipt on account','2017.01.05',	 N'Attachment');
 INSERT INTO @LM1 ([Index], [DocumentIndex],	
 			[LineTypeId],	[SortKey]) VALUES
-	(2,	1, N'ManualLine',	1), 
-	(3,	1, N'ManualLine',	2);
-	-- TODO: Add information about the invoice, since this is purchase w/ invoice
+	(2,	1, N'VATInvoiceWithGoodReceipt',	1), 
+	(3,	1, N'VATInvoiceWithGoodReceipt',	2),
+	(4,	1, N'ManualLine',	3)
+	;
+	-- TODO: Add the invoice number in ExternalReference
 DECLARE @Camry2018_101 INT = (SELECT [Id] FROM dbo.ResourcePicks WHERE [ResourceId] = @Camry2018 AND [Code] = N'101')
 DECLARE @Camry2018_102 INT = (SELECT [Id] FROM dbo.ResourcePicks WHERE [ResourceId] = @Camry2018 AND [Code] = N'102')
 INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],	[IfrsEntryClassificationId],	[ResourceId],	[ResourcePickId], [Value]) VALUES
-	(2,2,1,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 	@Camry2018,		@Camry2018_101,		600000),
-	(3,2,1,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 	@Camry2018,		@Camry2018_102,		600000),
-	(4,3,1,1,-1,@ToyotaAccount,	NULL,							@ETB,			NULL,				1200000);
+				[AccountId],	[IfrsEntryClassificationId],	[ResourceId],	[ResourcePickId], [Value], [ExternalReference]) VALUES
+	(2,2,1,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 	@Camry2018,		@Camry2018_101,		600000, N'C-14209'),
+	(3,2,1,2,+1,@VATInput,		NULL, 							NULL,			NULL,				90000, N'C-14209'),
+	(4,3,1,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 	@Camry2018,		@Camry2018_102,		600000, N'C-14209'),
+	(5,3,1,2,+1,@VATInput,		NULL, 							NULL,			NULL,				90000, N'C-14209'),
+	(6,4,1,1,-1,@ToyotaAccount,	NULL,							NULL,			NULL,				1380000, NULL);
+
 -- Converting the inventory into
 	INSERT INTO @DM1([Index], [SortKey],
 	[Memo],							[DocumentDate],	[EvidenceTypeId]) VALUES
 (2,4,N'Putting one vehicle into use','2017.01.06',	 N'Attachment');
+
 INSERT INTO @LM1 ([Index], [DocumentIndex],	
-			[LineTypeId],	[SortKey]) VALUES
-	(4,	2, N'ManualLine',	1), 
-	(5,	2, N'ManualLine',	2);
+			[LineTypeId],						[SortKey]) VALUES
+	(7,	2, N'ManualLine',	1), 
+	(8,	2, N'ManualLine',	2);
 
 DECLARE @Car1PPE INT = (SELECT [Id] FROM dbo.ResourcePicks WHERE [ResourceId] = @CarsRC AND [Code] = N'101');
 INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],	[IfrsEntryClassificationId],										[ResponsibilityCenterId], [ResourceId],	[ResourcePickId],	[Value], [Length]) VALUES
-	(5,4,2,1,+1,@PPEVehicles,	'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment', @ExecutiveOfficeOps,	@CarsRC,	@Car1PPE,			600000,		200000),
-	(6,5,2,1,-1,@PPEWarehouse,	N'InventoryToFixedAssetExtension',										NULL,					@Camry2018,	@Camry2018_101,		600000,		0);
+	(7,7,2,1,+1,@PPEVehicles,	'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment', @ExecutiveOfficeOps,	@CarsRC,	@Car1PPE,			600000,		200000),
+	(8,8,2,1,-1,@PPEWarehouse,	N'InventoryToFixedAssetExtension',										NULL,					@Camry2018,	@Camry2018_101,		600000,		0);
+
+-- N'Office rental invoice'
+	INSERT INTO @DM1([Index], [SortKey],
+	[Memo],				[DocumentDate],	[EvidenceTypeId]) VALUES
+(3,5,N'Office Rental Q1','2017.01.25',	 N'Attachment');
+INSERT INTO @LM1 ([Index], [DocumentIndex],	
+			[LineTypeId],				[SortKey]) VALUES
+	(9,	3, N'VATInvoiceWithoutGoodReceipt',	1),
+	(10,3, N'ManualLine',	2);
+INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
+				[AccountId],	[IfrsEntryClassificationId],			[Value], [ExternalReference]) VALUES
+	(9,9,3,1,+1,@VATInput,			NULL,								2250, N'C-25301'),
+	(10,9,3,2,+1,@PrepaidRental,		NULL,							15000, N'C-25301'),
+	(11,9,3,3,-1,@RegusAccount,	NULL, 									17250, N'C-25301');
+--	(12,10,3,2,-1,@CBEETB,	N'PaymentsToSuppliersForGoodsAndServices',	17250, NULL);
+
 
 
 	EXEC [api].[Documents__Save]
-		@DocumentTypeId = N'manual-journals',
+		@DefinitionId = N'manual-journals',
 		@Documents = @DM1, @Lines = @LM1, @Entries = @EM1,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -59,7 +81,6 @@ INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], 
 	END;
 END	
 /*
-(2,3,N'Invoice for vehicles',		N'OneTime',		0,	'2017.01.06'),
 (3,4,N'Vehicles Invoice payment',	N'OneTime',		0,	'2017.01.15'),
 (4,5,N'Invoice for rental',			N'OneTime',		0,	'2017.01.25'),
 (5,6,N'Rental payment',				N'OneTime',		0,	'2017.01.30'),
