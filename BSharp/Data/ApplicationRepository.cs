@@ -234,13 +234,13 @@ namespace BSharp.Data
                         return new SqlSource("[dbo].[Settings]");
 
                     case nameof(User):
-                        return new SqlSource("[rpt].[Users]()");
+                        return new SqlSource("[map].[Users]()");
 
                     case nameof(Agent):
-                        return new SqlSource("[rpt].[Agents]()");
+                        return new SqlSource("[map].[Agents]()");
 
                     case nameof(MeasurementUnit):
-                        return new SqlSource("[rpt].[MeasurementUnits]()");
+                        return new SqlSource("[map].[MeasurementUnits]()");
 
                     case nameof(Permission):
                         return new SqlSource("[dbo].[Permissions]");
@@ -252,16 +252,16 @@ namespace BSharp.Data
                         return new SqlSource("[dbo].[Roles]");
 
                     case nameof(ProductCategory):
-                        return new SqlSource("[rpt].[ProductCategories]()");
+                        return new SqlSource("[map].[ProductCategories]()");
 
                     case nameof(ResourceLookup):
-                        return new SqlSource("[rpt].[ResourceLookups]()");
+                        return new SqlSource("[map].[ResourceLookups]()");
 
                     case nameof(Currency):
-                        return new SqlSource("[rpt].[Currencies]()");
+                        return new SqlSource("[map].[Currencies]()");
 
                     case nameof(Resource):
-                        return new SqlSource("[dbo].[Resources]"); // TODO: use mapping
+                        return new SqlSource("[map].[Resources]()"); // TODO: use mapping
 
                     #region _Temp
 
@@ -565,7 +565,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
             // Query
             var query = Query<MeasurementUnit>();
-            return query.FromSql($"[bll].[{nameof(MeasurementUnits__AsQuery)}] (@Entities)", null, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(MeasurementUnits__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
         public async Task<IEnumerable<ValidationError>> MeasurementUnits_Validate__Save(List<MeasurementUnitForSave> entities, int top)
@@ -743,7 +743,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
             // Query
             var query = Query<Agent>();
-            return query.FromSql($"[bll].[{nameof(Agents__AsQuery)}] (@Entities)", null, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(Agents__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
         public async Task<List<int>> Agents__Save(List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
@@ -1000,7 +1000,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
             // Query
             var query = Query<User>();
-            return query.FromSql($"[bll].[{nameof(Users__AsQuery)}] (@Entities)", null, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(Users__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
         public async Task<IEnumerable<ValidationError>> Users_Validate__Save(List<UserForSave> entities, int top)
@@ -1186,7 +1186,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
             // Query
             var query = Query<Role>();
-            return query.FromSql($"[bll].[{nameof(Roles__AsQuery)}] (@Entities)", null, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(Roles__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
         public async Task<List<int>> Roles__Save(List<RoleForSave> entities, bool returnIds)
@@ -1428,7 +1428,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
             // Query
             var query = Query<ProductCategory>();
-            return query.FromSql($"[bll].[{nameof(ProductCategories__AsQuery)}] (@Entities)", null, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(ProductCategories__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
         public async Task<IEnumerable<ValidationError>> ProductCategories_Validate__Save(List<ProductCategoryForSave> entities, int top)
@@ -1784,7 +1784,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
             // Query
             var query = Query<ResourceLookup>();
-            return query.FromSql($"[bll].[{nameof(ResourceLookups__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(ResourceLookups__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
         public async Task<IEnumerable<ValidationError>> ResourceLookups_Validate__Save(string definitionId, List<ResourceLookupForSave> entities, int top)
@@ -1968,7 +1968,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
             // Query
             var query = Query<Currency>();
-            return query.FromSql($"[bll].[{nameof(Currencies__AsQuery)}] (@Entities)", null, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(Currencies__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
         public async Task<IEnumerable<ValidationError>> Currencies_Validate__Save(List<CurrencyForSave> entities, int top)
@@ -2124,7 +2124,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
             // Query
             var query = Query<Resource>();
-            return query.FromSql($"[bll].[{nameof(Resources__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(Resources__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
         public async Task<IEnumerable<ValidationError>> Resources_Validate__Save(string definitionId, List<ResourceForSave> entities, int top)

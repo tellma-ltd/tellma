@@ -21,12 +21,12 @@
     </button>
     <div class="collapse navbar-collapse align-items-stretch" [ngbCollapse]="isCollapsed">
       <ol class="nav navbar-nav px-4 px-lg-0" [class.mr-auto]="!isRtl" [class.ml-auto]="isRtl">
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./main-menu"
             (click)="onCollapse()">
             {{ 'Home' | translate }}
           </a>
-        </li>
+        </li> -->
         <!-- <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./ifrs-notes"
             (click)="onCollapse()">
@@ -51,18 +51,18 @@
             {{ 'Roles' | translate }}
           </a>
         </li>
-        <!-- <li class="nav-item">
+        <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./measurement-units" (click)="onCollapse()">
             {{ 'MeasurementUnits' | translate }}
           </a>
-        </li> -->
-        <!-- <li class="nav-item">
+        </li>
+        <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./product-categories" (click)="onCollapse()">
             {{ 'ProductCategories' | translate }}
           </a>
-        </li> -->
+        </li> 
         <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./resources/raw-materials" (click)="onCollapse()">
