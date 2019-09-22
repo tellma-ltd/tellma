@@ -13,13 +13,18 @@
 	[IsPostedOrInvalid]			BIT				DEFAULT (1),
 */
 	[IsSourceDocument]			BIT				DEFAULT 1, -- <=> IsVoucherReferenceRequired
+	-- EvidenceType = Authentication <=> Document is paperless. Workflow and Account signatures are required
+	-- EvidenceType = SourceDocument <=> There is a external booklet from which we are copying. In that case, Include voucher booklet and reference. Only workflow required
+	-- EvidenceType = Attachment <=> There is no external booklet. Instead, there are support documents proving what happened. In that case, attach them. Only workflow required
+	-- EvidenceType = Trust <=> There is no supporting document proving what happened. Simply accept the posting as is. Only workflow required
+	[EvidenceTypeId]			NVARCHAR(30)	NOT NULL DEFAULT N'Trust' CONSTRAINT [CK_DocumentDefinitions__EvidenceTypeId] CHECK ([EvidenceTypeId] IN (N'Authentication', N'SourceDocument', N'Attachment', N'Trust')),
 	[FinalState]				NVARCHAR (30)	NOT NULL DEFAULT N'Posted',
-	[DescriptionSingular]		NVARCHAR (255),
-	[DescriptionSingular2]		NVARCHAR (255),
-	[DescriptionSingular3]		NVARCHAR (255),
-	[DescriptionPlural]			NVARCHAR (255),
-	[DescriptionPlural2]		NVARCHAR (255),
-	[DescriptionPlural3]		NVARCHAR (255),
+	[TitleSingular]				NVARCHAR (255),
+	[TitleSingular2]			NVARCHAR (255),
+	[TitleSingular3]			NVARCHAR (255),
+	[TitlePlural]				NVARCHAR (255),
+	[TitlePlural2]				NVARCHAR (255),
+	[TitlePlural3]				NVARCHAR (255),
 
 	[IsImmutable]				BIT				NOT NULL DEFAULT 0, -- 1 <=> Cannot change without invalidating signatures
 	-- UI Specs

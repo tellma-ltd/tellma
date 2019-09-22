@@ -8,7 +8,7 @@ INSERT INTO @R2 ([Index],
 	(0,0,	N'2017.10.01',	N'101009',	6900,			@CBE),
 	(1,0,	N'2017.10.15',	N'2308',	17550,			@AWB);	
 	EXEC [api].[Resources__Save] -- N'received-checks'
-	@ResourceDefinitionId =  N'received-checks',
+	@DefinitionId =  N'received-checks',
 	@Resources = @R2,
 --	@Picks = @RP2,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

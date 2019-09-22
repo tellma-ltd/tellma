@@ -11,12 +11,9 @@
 	[State]									NVARCHAR (30)	NOT NULL DEFAULT N'Draft' CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
 	
 	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
-	[EvidenceTypeId]						NVARCHAR(30)	NOT NULL CONSTRAINT [CK_Documents__EvidenceTypeId] CHECK ([EvidenceTypeId] IN (N'Authentication', N'SourceDocument', N'Attachment', N'Trust')),
 	-- When evidence type = source document
 	[VoucherBookletId]						INT, -- each range might be dedicated for a special purpose
 	[VoucherNumericReference]				INT, -- must fall between RangeStarts and RangeEnds of the booklet
-	-- when evidence type = attachment or evidence type = source document (take snapshot of it)
-	[BlobName]								NVARCHAR(255),		-- for attachments including videos, images, and audio messages
 	-- Dynamic properties defined by document type specification
 	[DocumentLookup1Id]						INT, -- e.g., cash machine serial in the case of a sale
 	[DocumentLookup2Id]						INT,
@@ -72,4 +69,7 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Documents__VoucherBooklet_VoucherNumericReference]
   ON [dbo].[Documents]([VoucherBookletId], [VoucherNumericReference])
   WHERE [VoucherNumericReference] IS NOT NULL;
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Documents__DocumentDefinitionId_SerialNumber]
+  ON [dbo].[Documents]([DocumentDefinitionId], [SerialNumber])
 GO

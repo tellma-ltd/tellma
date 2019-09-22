@@ -22,7 +22,7 @@
 	(2,0,	N'2017.10.15',		N'199', N'199'),
 	(3,2,	N'2017.10.01',		N'201', N'201');
 	EXEC [api].[Resources__Save] -- N'vehicles'
-		@ResourceDefinitionId = N'vehicles',
+		@DefinitionId = N'vehicles',
 		@Resources = @R6,
 --		@Picks = @RP6,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
