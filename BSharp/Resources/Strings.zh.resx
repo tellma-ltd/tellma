@@ -89,7 +89,7 @@
     <value>组织</value>
   </data>
   <data name="Agent_AgentType_System" xml:space="preserve">
-    <value>机</value>
+    <value>系统</value>
   </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>性别</value>
@@ -827,7 +827,7 @@
     <value>在供应</value>
   </data>
   <data name="Settings_SecondaryLanguage" xml:space="preserve">
-    <value>允许用户输入2种语言的数据和查看报表</value>
+    <value>中学语文</value>
   </data>
   <data name="Settings_SecondaryLanguageSymbol" xml:space="preserve">
     <value>第二语言符号</value>

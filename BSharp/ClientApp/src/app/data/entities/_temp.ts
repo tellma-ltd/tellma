@@ -316,3 +316,96 @@ export function metadata_IfrsEntryClassification(ws: TenantWorkspace, trx: Trans
     }
   };
 }
+
+
+let _accountsLang: string;
+let _accountsSettings: SettingsForClient;
+let _accountsCache: EntityDescriptor;
+
+export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
+  // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
+  if (trx.currentLang !== _accountsLang || ws.settings !== _accountsSettings) {
+    _accountsLang = trx.currentLang;
+    _accountsSettings = ws.settings;
+    _accountsCache = {
+      titleSingular: trx.instant('Account'),
+      titlePlural: trx.instant('Accounts'),
+      select: _select,
+      apiEndpoint: 'accounts',
+      orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
+      format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+      properties: {
+        Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
+        Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
+        Code: { control: 'text', label: trx.instant('Code') },
+
+        // Temp
+        AccountClassificationId: { control: 'number', label: 'Resource', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        AccountClassification: {
+          control: 'navigation', label: 'Classification', type: 'AccountClassification', foreignKeyName: 'AccountClassificationId'
+        },
+        IfrsAccountClassificationId: { control: 'text', label: 'IFRS Classification Id' },
+        IfrsAccountClassification: {
+          control: 'navigation', label: 'IFRS Classification',
+          type: 'IfrsAccountClassification', foreignKeyName: 'IfrsAccountClassificationId'
+        },
+        PartyReference: { control: 'text', label: 'Party Reference' },
+        IsMultiEntryClassification: { control: 'boolean', label: 'Is Multi-Entry Classification' },
+        IfrsEntryClassificationId: { control: 'text', label: 'IFRS Entry Classification Id' },
+        IfrsEntryClassification: {
+          control: 'navigation', label: 'IFRS Entry Classification',
+          type: 'IfrsEntryClassification', foreignKeyName: 'IfrsEntryClassificationId'
+        },
+        IsMultiAgent: { control: 'boolean', label: 'Is Multi-Agent' },
+        AgentId: { control: 'number', label: 'Agent Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Agent: { control: 'navigation', label: 'Agent', type: 'Agent', foreignKeyName: 'AgentId' },
+        IsMultiResponsibilityCenter: { control: 'boolean', label: 'Is Multi-Responsibility Center' },
+        ResponsibilityCenterId: { control: 'number', label: 'Responsibility Center Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        ResponsibilityCenter: {
+          control: 'navigation', label: 'Responsibility Center', type: 'ResponsibilityCenter', foreignKeyName: 'ResponsibilityCenterId'
+        },
+        IsMultiResource: { control: 'boolean', label: 'Is Multi-Resource' },
+        ResourceId: { control: 'number', label: 'Resource Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Resource: { control: 'navigation', label: 'Resource', type: 'Resource', foreignKeyName: 'ResourceId' },
+        ResponsibleActorId: { control: 'number', label: 'Responsible Actor Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        ResponsibleActor: {
+          control: 'navigation', label: 'Responsible Actor', type: 'ResponsibleActor', foreignKeyName: 'ResponsibleActorId'
+        },
+        ResponsibleRoleId: { control: 'number', label: 'Responsible Role Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        ResponsibleRole: {
+          control: 'navigation', label: 'Responsible Role', type: 'ResponsibleRole', foreignKeyName: 'ResponsibleRoleId'
+        },
+        CustodianActorId: { control: 'number', label: 'Custodian Actor Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        CustodianActor: {
+          control: 'navigation', label: 'Custodian Actor', type: 'CustodianActor', foreignKeyName: 'CustodianActorId'
+        },
+        CustodianRoleId: { control: 'number', label: 'Custodian Role Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        CustodianRole: {
+          control: 'navigation', label: 'Custodian Role', type: 'CustodianRole', foreignKeyName: 'CustodianRoleId'
+        },
+
+        // End Temp
+
+        IsActive: { control: 'boolean', label: trx.instant('IsActive') },
+        CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
+        CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
+        ModifiedAt: { control: 'datetime', label: trx.instant('ModifiedAt') },
+        ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+      }
+    };
+
+    if (!ws.settings.SecondaryLanguageId) {
+      delete _accountsCache.properties.Name2;
+      delete _accountsCache.properties.Description2;
+    }
+
+    if (!ws.settings.TernaryLanguageId) {
+      delete _accountsCache.properties.Name3;
+      delete _accountsCache.properties.Description3;
+    }
+  }
+
+  return _accountsCache;
+}
