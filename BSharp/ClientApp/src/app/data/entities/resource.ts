@@ -57,6 +57,8 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
     definitionId = definitionId || '_'; // undefined
     if (!_cache[definitionId]) {
         const entityDesc: EntityDescriptor = {
+            titleSingular: ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular'),
+            titlePlural:  ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural'),
             select: _select,
             apiEndpoint: 'resources/' + (definitionId || ''),
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],

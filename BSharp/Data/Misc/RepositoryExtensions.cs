@@ -11,11 +11,19 @@ namespace BSharp.Data
     public static class RepositoryExtensions
     {
         /// <summary>
-        /// Just makes it easier to call <see cref="ApplicationRepository.Action_Views__Permissions(string, IEnumerable{string})"/> where there is a single view Id
+        /// Syntactic sugar for <see cref="ApplicationRepository.Action_View__Permissions(string, string)"/>
         /// </summary>
-        public static async Task<IEnumerable<AbstractPermission>> UserPermissions(this ApplicationRepository repo, string action, params string[] viewIds)
+        public static async Task<IEnumerable<AbstractPermission>> UserPermissions(this ApplicationRepository repo, string action, string viewId)
         {
-            return await repo.Action_Views__Permissions(action, viewIds);
+            return await repo.Action_View__Permissions(action, viewId);
+        }
+
+        /// <summary>
+        /// Syntactic sugar for <see cref="ApplicationRepository.Action_ViewPrefix__Permissions(string, string)"/>
+        /// </summary>
+        public static async Task<IEnumerable<AbstractPermission>> GenericUserPermissions(this ApplicationRepository repo, string action, string prefix)
+        {
+            return await repo.Action_ViewPrefix__Permissions(action, prefix);
         }
 
         /// <summary>

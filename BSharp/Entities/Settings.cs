@@ -16,6 +16,11 @@ namespace BSharp.Entities
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string ShortCompanyName2 { get; set; }
 
+
+        [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Ternary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        public string ShortCompanyName3 { get; set; }
+
         [Display(Name = "Settings_PrimaryLanguage")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]

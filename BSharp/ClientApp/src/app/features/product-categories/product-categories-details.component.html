@@ -1,4 +1,4 @@
-<b-details viewId="product-categories" collection="ProductCategory" [idString]="idString"
+<b-details collection="ProductCategory" [idString]="idString"
   [createFunc]="create" [expand]="expand" [mode]="mode" [masterCrumb]="'ProductCategories' | translate"
   [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -72,13 +72,11 @@
         model?.ParentId, 'Name') }}</b-view-link>
     </b-restricted>
     <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ParentId"
-      collection="ProductCategory" [masterTemplate]="productCategoriesMaster" [detailsTemplate]="productCategoriesDetail"
-      [detailsOptions]="[{ id: 'product-categories', name: 'not important' }]">
+      collection="ProductCategory" [masterTemplate]="productCategoriesMaster" [detailsTemplate]="productCategoriesDetail">
     </b-details-picker>
 
     <!-- The Product Categories Details Modal -->
-    <ng-template #productCategoriesDetail let-modal="modal" let-update="update" let-initialText="initialText"
-      let-viewId="viewId">
+    <ng-template #productCategoriesDetail let-modal="modal" let-update="update" let-initialText="initialText">
       <div class="modal-body">
         <b-product-categories-details mode="popup" idString="new" [initialText]="initialText"
           (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">

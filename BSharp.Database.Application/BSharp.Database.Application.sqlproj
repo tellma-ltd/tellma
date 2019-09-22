@@ -264,7 +264,7 @@
     <Build Include="bll\Stored Procedures\bll.IfrsDisclosureDetails_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentRoleList.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Assign.sql" />
-    <Build Include="dal\Stored Procedures\dal.Action_Views__Permissions.sql" />
+    <Build Include="dal\Stored Procedures\dal.Action_View__Permissions.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Assign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Assign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Sign.sql" />
@@ -371,6 +371,7 @@
     <Build Include="api\Stored Procedures\api.ResourceLookups__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceLookups__Activate.sql" />
     <Build Include="api\Stored Procedures\api.ResourceLooups__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.Action_ViewPrefix__Permissions.sql" />
     <Build Include="bll\Functions\bll.fi_EmployeesIncomeTaxes.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentBalanceList.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />

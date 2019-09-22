@@ -18,7 +18,7 @@ namespace BSharp
     public class Startup
     {
         // The UI cultures currently supported by the system
-        public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar" };
+        public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar", "zh" };
 
         private readonly IConfiguration _config;
         private readonly IHostingEnvironment _env;

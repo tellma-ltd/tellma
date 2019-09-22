@@ -1,76 +1,37 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-		Microsoft ResX Schema
-
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
                 <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
                 <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -89,16 +50,16 @@
     <value>text/microsoft-resx</value>
   </resheader>
   <resheader name="version">
-    <value>1.3</value>
+    <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name=", " xml:space="preserve">
-    <value>، </value>
+  <data name="," xml:space="preserve">
+    <value>،</value>
   </data>
   <data name="AccessDenied" xml:space="preserve">
     <value>غير مسموح بالدخول</value>
@@ -121,23 +82,38 @@
   <data name="Agent_AgentType" xml:space="preserve">
     <value>نوع الذمة</value>
   </data>
-  <data name="Agent_Gender_Female" xml:space="preserve">
-    <value>أنثى</value>
+  <data name="Agent_AgentType_Individual" xml:space="preserve">
+    <value>فرد</value>
+  </data>
+  <data name="Agent_AgentType_Organization" xml:space="preserve">
+    <value>مؤسسة</value>
+  </data>
+  <data name="Agent_AgentType_System" xml:space="preserve">
+    <value>آلة</value>
   </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>الجنس</value>
   </data>
-  <data name="Agent_IsRelated" xml:space="preserve">
-    <value>ذو علاقة</value>
+  <data name="Agent_Gender_Female" xml:space="preserve">
+    <value>أنثى</value>
   </data>
   <data name="Agent_Gender_Male" xml:space="preserve">
     <value>ذكر</value>
+  </data>
+  <data name="Agent_IsRelated" xml:space="preserve">
+    <value>ذو علاقة</value>
+  </data>
+  <data name="Agent_PreferredLanguage" xml:space="preserve">
+    <value>اللغة المفضلة</value>
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>رقم السجل الضريبي</value>
   </data>
   <data name="Agent_Title" xml:space="preserve">
     <value>اللقب</value>
+  </data>
+  <data name="Agent_User" xml:space="preserve">
+    <value>المستخدم</value>
   </data>
   <data name="Agents" xml:space="preserve">
     <value>ذمم</value>
@@ -207,6 +183,15 @@
   </data>
   <data name="CreatedBy" xml:space="preserve">
     <value>الإنشاء من قبل</value>
+  </data>
+  <data name="Currencies" xml:space="preserve">
+    <value>عملات</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>عملة</value>
+  </data>
+  <data name="Currency_DecimalPlaces" xml:space="preserve">
+    <value>عدد المنازل العشرية</value>
   </data>
   <data name="CurrentPassword" xml:space="preserve">
     <value>كلمة المرور الحالية</value>
@@ -337,6 +322,9 @@
   <data name="Error_NoFileWasUploaded" xml:space="preserve">
     <value>لم يتم رفع أي ملف</value>
   </data>
+  <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
+    <value>النقاط البيانية تجاوزت {0} وهو العدد الأقصى المسموح به</value>
+  </data>
   <data name="Error_ParsingForDeleteIsNotSupported" xml:space="preserve">
     <value>وضع الحذف ليس مدعوما من هذه الواجهة</value>
   </data>
@@ -349,6 +337,9 @@
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية هي نفسها اللغة الرئيسية</value>
   </data>
+  <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
+    <value>ال{0} ({1}) مستخدمة في بعض المستندات</value>
+  </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>الكود ({0}) غير موجود</value>
   </data>
@@ -357,6 +348,12 @@
   </data>
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>الكود ({0}) مستخدم حاليا</value>
+  </data>
+  <data name="Error_TheCurrency0IsUsedIn12" xml:space="preserve">
+    <value>العملة ({0}) مستخدمة في {1} ({2})</value>
+  </data>
+  <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
+    <value>البريد الإلكتروني ({0}) مكرر</value>
   </data>
   <data name="Error_TheEmail0IsUsed" xml:space="preserve">
     <value>عنوان البريد ({0}) مستخدم حاليا</value>
@@ -368,7 +365,7 @@
     <value>البيان ذو المفتاح ({0}) مذكور أكثر من مرة</value>
   </data>
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
-    <value>حقل {0} يجب أن يكون لون HTML سداسي عشري صالح، مثال: #AB12E5 </value>
+    <value>حقل {0} يجب أن يكون لون HTML سداسي عشري صالح، مثال: #AB12E5</value>
   </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) غير موجود، لعل بعضهم حذفه، يرجى محاولة التحديث</value>
@@ -381,6 +378,12 @@
   </data>
   <data name="Error_ThePasswordAndConfirmationPasswordDoNotMatch" xml:space="preserve">
     <value>كلمة المرور وتأكيدها غير متطابقين</value>
+  </data>
+  <data name="Error_TheRole0IsInactive" xml:space="preserve">
+    <value>الدور ({0}) غير منشط</value>
+  </data>
+  <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
+    <value>الدور ذو المفتاح ({0}) غير موجود أو لم يعد موجودا</value>
   </data>
   <data name="Error_TheUser0IsInactive" xml:space="preserve">
     <value>المستخدم ({0}) غير منشط</value>
@@ -396,6 +399,9 @@
   </data>
   <data name="Error_UnknownFileFormat" xml:space="preserve">
     <value>صيغة الملف غير معروفة</value>
+  </data>
+  <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
+    <value>المستخدم ({0}) قد قبل الدعوة</value>
   </data>
   <data name="Error_Value0IsNotValidFor1AcceptableValuesAre2" xml:space="preserve">
     <value>القيمة ({0}) ليست صالحة لحقل {1}، القيم الصالحة هي: {2}</value>
@@ -442,6 +448,9 @@
   <data name="IfrsConcepts_ExpiryDate" xml:space="preserve">
     <value>تاريخ الانتهاء</value>
   </data>
+  <data name="IfrsConcepts_IsLeaf" xml:space="preserve">
+    <value>بدون فروع</value>
+  </data>
   <data name="IfrsConcepts_Label" xml:space="preserve">
     <value>الاسم</value>
   </data>
@@ -456,9 +465,6 @@
   </data>
   <data name="Inactive" xml:space="preserve">
     <value>غير منشط</value>
-  </data>
-  <data name="Agent_AgentType_Individual" xml:space="preserve">
-    <value>فرد</value>
   </data>
   <data name="InvalidAuthenticatorCode" xml:space="preserve">
     <value>الكود غير سليم.</value>
@@ -589,9 +595,6 @@
   <data name="Or" xml:space="preserve">
     <value>أو</value>
   </data>
-  <data name="Agent_AgentType_Organization" xml:space="preserve">
-    <value>مؤسسة</value>
-  </data>
   <data name="Page_TwoFactorAuthentication" xml:space="preserve">
     <value>التوثيق مزدوج العوامل</value>
   </data>
@@ -630,6 +633,9 @@
   </data>
   <data name="Permission_Criteria" xml:space="preserve">
     <value>تقييد</value>
+  </data>
+  <data name="Permission_Delete" xml:space="preserve">
+    <value>حذف</value>
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>تنشيط - إيقاف النشاط</value>
@@ -731,13 +737,52 @@
     <value>أعيد تعيين كلمة مرورك بنجاح، يمكنك تسجيل دخولك بالضغط على الزر أدناه</value>
   </data>
   <data name="ResetPasswordEmailMessage" xml:space="preserve">
-    <value>حدد كلمة مرور جديدة عبر &lt;a href='{0}'&gt;هذه الوصلة&lt;/a&gt;.</value>
+    <value>حدد كلمة مرور جديدة عبر <a href='{0}'>هذه الوصلة</a>.</value>
   </data>
   <data name="ResetRecoveryCodes" xml:space="preserve">
     <value>إعادة توليد أكواد الاسترداد</value>
   </data>
   <data name="ResetYourPassword" xml:space="preserve">
     <value>إعادة تعيين كلمة المرور</value>
+  </data>
+  <data name="Resource_AreaUnit" xml:space="preserve">
+    <value>وحدة قياس المساحة</value>
+  </data>
+  <data name="Resource_Classification" xml:space="preserve">
+    <value>التصنيف</value>
+  </data>
+  <data name="Resource_CountUnit" xml:space="preserve">
+    <value>وحدة قياس العدد</value>
+  </data>
+  <data name="Resource_Currency" xml:space="preserve">
+    <value>العملة</value>
+  </data>
+  <data name="Resource_CustomsReference" xml:space="preserve">
+    <value>الرقم الجمركي</value>
+  </data>
+  <data name="Resource_LengthUnit" xml:space="preserve">
+    <value>وحدة قياس الطول</value>
+  </data>
+  <data name="Resource_MassUnit" xml:space="preserve">
+    <value>وحدة قياس الوزن</value>
+  </data>
+  <data name="Resource_ResourceLookup1" xml:space="preserve">
+    <value>الصفة 1</value>
+  </data>
+  <data name="Resource_ResourceLookup2" xml:space="preserve">
+    <value>الصفة 2</value>
+  </data>
+  <data name="Resource_ResourceLookup3" xml:space="preserve">
+    <value>الصفة 3</value>
+  </data>
+  <data name="Resource_ResourceLookup4" xml:space="preserve">
+    <value>الصفة 4</value>
+  </data>
+  <data name="Resource_TimeUnit" xml:space="preserve">
+    <value>وحدة قياس الزمن</value>
+  </data>
+  <data name="Resource_VolumeUnit" xml:space="preserve">
+    <value>وحدة قياس الحجم</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>دور</value>
@@ -790,6 +835,18 @@
   <data name="Settings_ShortCompanyName" xml:space="preserve">
     <value>اسم المؤسسة</value>
   </data>
+  <data name="Settings_TernaryLanguage" xml:space="preserve">
+    <value>اللغة الثالثة</value>
+  </data>
+  <data name="Settings_TernaryLanguage" xml:space="preserve">
+    <value>اللغة الثالثة</value>
+  </data>
+  <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
+    <value>رمز اللغة الثالثة</value>
+  </data>
+  <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
+    <value>رمز اللغة الثالثة</value>
+  </data>
   <data name="Signatures" xml:space="preserve">
     <value>توقيعات</value>
   </data>
@@ -813,6 +870,21 @@
   </data>
   <data name="SignOutMessage0" xml:space="preserve">
     <value>هل تود تسجيل خروجك من {0}؟</value>
+  </data>
+  <data name="SqlDatabase_DatabaseName" xml:space="preserve">
+    <value>اسم قاعدة البيانات</value>
+  </data>
+  <data name="SqlDatabase_Server" xml:space="preserve">
+    <value>المخدم</value>
+  </data>
+  <data name="SqlServer_PasswordKey" xml:space="preserve">
+    <value>مفتاح كلمة المرور</value>
+  </data>
+  <data name="SqlServer_ServerName" xml:space="preserve">
+    <value>اسم المخدم</value>
+  </data>
+  <data name="SqlServer_UserName" xml:space="preserve">
+    <value>اسم الحساب</value>
   </data>
   <data name="State" xml:space="preserve">
     <value>الحالة</value>
@@ -860,7 +932,7 @@
     <value>حسابك محمي بتطبيق (authenticator)، أدخل الكود الذي يعرضه التطبيق في الحقل أدناه</value>
   </data>
   <data name="TwoFactorAuthenticationRecoveryInstructions" xml:space="preserve">
-    <value>تطبيق (authenticator) ليس في متناول يدك؟ لتسجيل دخولك باستخدام كود استرداد </value>
+    <value>تطبيق (authenticator) ليس في متناول يدك؟ لتسجيل دخولك باستخدام كود استرداد</value>
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>تم تعطيل التوثيق مزدوج العوامل، لإعادة تشغيله ثقم بضبط تطبيق (authenticator)</value>
@@ -948,110 +1020,5 @@
   </data>
   <data name="YouShouldGenerateNewRecoveryCodes" xml:space="preserve">
     <value>عليك بتوليد مجموعة جديدة من أكواد الاسترداد.</value>
-  </data>
-  <data name="Error_NumberOfDataPointsExceedsMaximum0" xml:space="preserve">
-    <value>النقاط البيانية تجاوزت {0} وهو العدد الأقصى المسموح به</value>
-  </data>
-  <data name="Permission_Delete" xml:space="preserve">
-    <value>حذف</value>
-  </data>
-  <data name="SqlServer_ServerName" xml:space="preserve">
-    <value>اسم المخدم</value>
-  </data>
-  <data name="SqlServer_UserName" xml:space="preserve">
-    <value>اسم الحساب</value>
-  </data>
-  <data name="SqlServer_PasswordKey" xml:space="preserve">
-    <value>مفتاح كلمة المرور</value>
-  </data>
-  <data name="SqlDatabase_DatabaseName" xml:space="preserve">
-    <value>اسم قاعدة البيانات</value>
-  </data>
-  <data name="SqlDatabase_Server" xml:space="preserve">
-    <value>المخدم</value>
-  </data>
-  <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
-    <value>البريد الإلكتروني ({0}) مكرر</value>
-  </data>
-  <data name="Agent_User" xml:space="preserve">
-    <value>المستخدم</value>
-  </data>
-  <data name="Agent_PreferredLanguage" xml:space="preserve">
-    <value>اللغة المفضلة</value>
-  </data>
-  <data name="Settings_TernaryLanguage" xml:space="preserve">
-    <value>اللغة الثالثة</value>
-  </data>
-  <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
-    <value>رمز اللغة الثالثة</value>
-  </data>
-  <data name="Error_User0HasAlreadyAcceptedTheInvitation" xml:space="preserve">
-    <value>المستخدم ({0}) قد قبل الدعوة</value>
-  </data>
-  <data name="Agent_AgentType_System" xml:space="preserve">
-    <value>System</value>
-  </data>
-  <data name="Error_TheRole0IsInactive" xml:space="preserve">
-    <value>الدور ({0}) غير منشط</value>
-  </data>
-  <data name="Error_TheRole0IsNonExistent" xml:space="preserve">
-    <value>الدور ذو المفتاح ({0}) غير موجود أو لم يعد موجودا</value>
-  </data>
-  <data name="IfrsConcepts_IsLeaf" xml:space="preserve">
-    <value>بدون فروع</value>
-  </data>
-  <data name="Error_TheCurrency0IsUsedIn12" xml:space="preserve">
-    <value>العملة ({0}) مستخدمة في {1} ({2})</value>
-  </data>
-  <data name="Currency" xml:space="preserve">
-    <value>عملة</value>
-  </data>
-  <data name="Currencies" xml:space="preserve">
-    <value>عملات</value>
-  </data>
-  <data name="Currency_DecimalPlaces" xml:space="preserve">
-    <value>عدد المنازل العشرية</value>
-  </data>
-  <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
-    <value>ال{0} ({1}) مستخدمة في بعض المستندات</value>
-  </data>
-  <data name="Resource_Classification" xml:space="preserve">
-    <value>التصنيف</value>
-  </data>
-  <data name="Resource_Currency" xml:space="preserve">
-    <value>العملة</value>
-  </data>
-  <data name="Resource_MassUnit" xml:space="preserve">
-    <value>وحدة قياس الوزن</value>
-  </data>
-  <data name="Resource_VolumeUnit" xml:space="preserve">
-    <value>وحدة قياس الحجم</value>
-  </data>
-  <data name="Resource_AreaUnit" xml:space="preserve">
-    <value>وحدة قياس المساحة</value>
-  </data>
-  <data name="Resource_LengthUnit" xml:space="preserve">
-    <value>وحدة قياس الطول</value>
-  </data>
-  <data name="Resource_TimeUnit" xml:space="preserve">
-    <value>وحدة قياس الزمن</value>
-  </data>
-  <data name="Resource_CountUnit" xml:space="preserve">
-    <value>وحدة قياس العدد</value>
-  </data>
-  <data name="Resource_CustomsReference" xml:space="preserve">
-    <value>الرقم الجمركي</value>
-  </data>
-  <data name="Resource_ResourceLookup1" xml:space="preserve">
-    <value>الصفة 1</value>
-  </data>
-  <data name="Resource_ResourceLookup2" xml:space="preserve">
-    <value>الصفة 2</value>
-  </data>
-  <data name="Resource_ResourceLookup3" xml:space="preserve">
-    <value>الصفة 3</value>
-  </data>
-  <data name="Resource_ResourceLookup4" xml:space="preserve">
-    <value>الصفة 4</value>
   </data>
 </root>

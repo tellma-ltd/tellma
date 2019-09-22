@@ -1,4 +1,5 @@
 export const supportedCultures: { [id: string]: string } = {
     en : 'English',
-    ar : 'العربية'
+    ar : 'العربية',
+    zh: '中文'
 };

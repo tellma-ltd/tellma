@@ -226,10 +226,10 @@ namespace BSharp.Controllers
                             ResourceLookup1_Visibility = Visibility.Visible,
                             ResourceLookup1_DefinitionId = "thicknesses",
 
-                            ResourceLookup2_Label = "Color",
-                            ResourceLookup2_Label2 = "اللون",
-                            ResourceLookup2_Visibility = Visibility.Visible,
-                            ResourceLookup2_DefinitionId = "colors",
+                            //ResourceLookup2_Label = "Color",
+                            //ResourceLookup2_Label2 = "اللون",
+                            //ResourceLookup2_Visibility = Visibility.Visible,
+                            //ResourceLookup2_DefinitionId = "colors",
 
                             MassUnit_Visibility = Visibility.Visible,
                             // MassUnit_DefaultValue = 81, // kg
@@ -248,6 +248,8 @@ namespace BSharp.Controllers
                             TitlePlural2 = "سلع مصنعة",
                             TitleSingular = "Finished Good",
                             TitleSingular2 = "سلعة مصنعة",
+                            TitlePlural3 = "完成品",
+                            TitleSingular3 = "成品",
                             MainMenuIcon = "truck",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 204m,

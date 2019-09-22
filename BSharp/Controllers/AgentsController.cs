@@ -21,17 +21,19 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/agents")]
+    [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
     public class AgentsController : CrudControllerBase<AgentForSave, Agent, int>
     {
+        public const string BASE_ADDRESS = "agents";
+
         private readonly ILogger<AgentsController> _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
 
-        public string VIEW => "agents";
+        private string ViewId => BASE_ADDRESS;
 
         public AgentsController(ILogger<AgentsController> logger, IStringLocalizer<Strings> localizer,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService) : base(logger, localizer)
@@ -149,7 +151,7 @@ namespace BSharp.Controllers
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return _repo.UserPermissions(action, VIEW);
+            return _repo.UserPermissions(action, ViewId);
         }
 
         protected override Query<Agent> GetAsQuery(List<AgentForSave> entities)

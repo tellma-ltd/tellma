@@ -33,9 +33,6 @@ export interface DropdownAction {
 export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeactivate {
 
   @Input()
-  viewId: string; // for the permissions
-
-  @Input()
   expand: string;
 
   @Input()
@@ -113,7 +110,6 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   private _unboundServerErrors: string[]; // in the modal
   private _viewModelJson: string;
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
-
 
   // Moved below the fields to keep tslint happy
   @Input()
@@ -357,6 +353,10 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
       // screen mode on the other hand use the global state
       return this.globalState;
     }
+  }
+
+  private get viewId(): string {
+    return this.entityDescriptor.apiEndpoint;
   }
 
   private get globalState(): MasterDetailsStore {

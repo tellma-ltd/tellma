@@ -42,6 +42,11 @@ export class ApplicationShellComponent implements OnInit {
     this.translate.use(lang);
   }
 
+  onTernary() {
+    const lang = this.settings.TernaryLanguageId;
+    this.translate.use(lang);
+  }
+
   get settings(): SettingsForClient {
     return !!this.workspace.current ? this.workspace.current.settings : null;
   }

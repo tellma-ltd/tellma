@@ -14,15 +14,17 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/currencies")]
+    [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
     public class CurrenciesController : CrudControllerBase<CurrencyForSave, Currency, string>
     {
+        public const string BASE_ADDRESS = "currencies";
+
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
-        private string VIEW => "currencies";
+        private string ViewId => BASE_ADDRESS;
 
         public CurrenciesController(
             ILogger<CurrenciesController> logger,
@@ -91,7 +93,7 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.UserPermissions(action, VIEW);
+            return await _repo.UserPermissions(action, ViewId);
         }
 
         protected override IRepository GetRepository()

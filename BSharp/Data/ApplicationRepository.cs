@@ -288,6 +288,9 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
     (SELECT [Id] FROM [dbo].[IfrsEntryClassifications] WHERE [Q].[Node].GetAncestor(1) = [Node]) As [ParentId]
 FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
+                    case nameof(Account):
+                        return new SqlSource("[dbo].[Accounts]");
+
                     #endregion
 
                     case nameof(View):
@@ -450,7 +453,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             }
         }
 
-        public async Task<IEnumerable<AbstractPermission>> Action_Views__Permissions(string action, IEnumerable<string> viewIds)
+        public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string viewId)
         {
             var result = new List<AbstractPermission>();
 
@@ -458,19 +461,45 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Parameters
-                var viewIdsTable = RepositoryUtilities.DataTable(viewIds.Select(e => new StringListItem { Id = e }));
-                var viewIdsTvp = new SqlParameter("@ViewIds", viewIdsTable)
-                {
-                    TypeName = $"[dbo].[StringList]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.Add(viewIdsTvp);
                 cmd.Parameters.Add("@Action", action);
+                cmd.Parameters.Add("@ViewId", viewId);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Action_Views__Permissions)}]";
+                cmd.CommandText = $"[dal].[{nameof(Action_View__Permissions)}]";
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        int i = 0;
+                        result.Add(new AbstractPermission
+                        {
+                            ViewId = reader.GetString(i++),
+                            Action = reader.GetString(i++),
+                            Criteria = reader.String(i++),
+                            Mask = reader.String(i++)
+                        });
+                    }
+                }
+            }
+
+            return result;
+        }
+        public async Task<IEnumerable<AbstractPermission>> Action_ViewPrefix__Permissions(string action, string viewIdPrefix)
+        {
+            var result = new List<AbstractPermission>();
+
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                // Parameters
+                cmd.Parameters.Add("@Action", action);
+                cmd.Parameters.Add("@ViewIdPrefix", viewIdPrefix);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Action_ViewPrefix__Permissions)}]";
 
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {

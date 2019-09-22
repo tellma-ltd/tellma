@@ -11,6 +11,10 @@ import { metadata_View } from '../view';
 import { metadata_ResourceLookup } from '../resource-lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
+import {
+    metadata_VoucherBooklet, metadata_ResourcePick, metadata_ResponsibilityCenter,
+    metadata_IfrsAccountClassification, metadata_IfrsEntryClassification, metadata_Account
+} from '../_temp';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -22,10 +26,28 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     View: metadata_View,
     ResourceLookup: metadata_ResourceLookup,
     Currency: metadata_Currency,
-    Resource: metadata_Resource
+    Resource: metadata_Resource,
+
+    // Temp
+    VoucherBooklet: metadata_VoucherBooklet,
+    ResourcePick: metadata_ResourcePick,
+    ResponsibilityCenter: metadata_ResponsibilityCenter,
+    IfrsAccountClassification: metadata_IfrsAccountClassification,
+    IfrsEntryClassification: metadata_IfrsEntryClassification,
+    Account: metadata_Account,
 };
 
 export interface EntityDescriptor {
+
+    /**
+     * The plural name of the entity (e.g. Agents)
+     */
+    titlePlural: string;
+
+    /**
+     * The singular name of the entity (e.g. Agent)
+     */
+    titleSingular: string;
 
     /**
      * The Entity properties that need to be selected from the server for the format function to succeed

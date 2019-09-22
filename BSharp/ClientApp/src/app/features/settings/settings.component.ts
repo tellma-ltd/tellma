@@ -165,19 +165,15 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   ////////// UI Bindings
 
   get primaryPostfix(): string {
-    if (this.model && this.model.SecondaryLanguageId) {
-      return ` (${this.model.PrimaryLanguageSymbol})`;
-    }
-
-    return '';
+    return this.workspace.current.primaryPostfix;
   }
 
   get secondaryPostfix(): string {
-    if (this.model && this.model.SecondaryLanguageId) {
-      return ` (${this.model.SecondaryLanguageSymbol})`;
-    }
+    return this.workspace.current.secondaryPostfix;
+  }
 
-    return '';
+  get ternaryPostfix(): string {
+    return this.workspace.current.ternaryPostfix;
   }
 
   public get ws() {

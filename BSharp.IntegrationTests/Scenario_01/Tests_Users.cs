@@ -14,7 +14,9 @@ namespace BSharp.IntegrationTests.Scenario_01
 {
     public class Tests_Users : Scenario_01
     {
-        public const string usersURL = "/api/users";
+        public readonly string _baseAddress = "users";
+
+        public string Url => $"/api/{_baseAddress}";
 
         public Tests_Users(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
@@ -23,7 +25,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "01 Getting all Users before creating any returns a 200 OK singleton collection")]
         public async Task Test01()
         {
-            var response = await Client.GetAsync(usersURL);
+            var response = await Client.GetAsync(Url);
 
             // Call the API
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -43,7 +45,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test02()
         {
             int nonExistentId = 9999999;
-            var response = await Client.GetAsync($"{usersURL}/{nonExistentId}");
+            var response = await Client.GetAsync($"{Url}/{nonExistentId}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -72,7 +74,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<UserForSave> { dtoForSave };
-            var response = await Client.PostAsJsonAsync($"{usersURL}?expand=Roles/Role", dtosForSave);
+            var response = await Client.PostAsJsonAsync($"{Url}?expand=Roles/Role", dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -107,7 +109,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var entity = Shared.Get<User>("Users_AhmadAkra");
             var id = entity.Id;
-            var response = await Client.GetAsync($"{usersURL}/{id}?expand=Roles/Role");
+            var response = await Client.GetAsync($"{Url}/{id}?expand=Roles/Role");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -151,7 +153,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(usersURL, new List<UserForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<UserForSave> { dtoForSave });
 
             // Assert that the response status code is 422 unprocessable entity (validation errors)
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -172,7 +174,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Fix the email
             dtoForSave.Email = "jason.bourne@banan-it.com";
-            response = await Client.PostAsJsonAsync(usersURL, new List<UserForSave> { dtoForSave });
+            response = await Client.PostAsJsonAsync(Url, new List<UserForSave> { dtoForSave });
 
             // Assert that the response status code is 422 unprocessable entity (validation errors)
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -197,7 +199,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the entity we just saved
             var id = Shared.Get<User>("Users_AhmadAkra").Id;
-            var response1 = await Client.GetAsync($"{usersURL}/{id}?expand=Roles/Role");
+            var response1 = await Client.GetAsync($"{Url}/{id}?expand=Roles/Role");
             var dto = (await response1.Content.ReadAsAsync<GetByIdResponse<User>>()).Result;
 
             // Modify it slightly
@@ -205,7 +207,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it and get the result back
             var dtosForSave = new List<User> { dto };
-            var response2 = await Client.PostAsJsonAsync($"{usersURL}?expand=Roles/Role", dtosForSave);
+            var response2 = await Client.PostAsJsonAsync($"{Url}?expand=Roles/Role", dtosForSave);
             Output.WriteLine(await response2.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
             var dto2 = (await response2.Content.ReadAsAsync<EntitiesResponse<User>>()).Result.FirstOrDefault();
@@ -229,7 +231,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = Shared.Get<User>("Users_AhmadAkra").Id;
 
             // Query the delete API
-            var msg = new HttpRequestMessage(HttpMethod.Delete, usersURL);
+            var msg = new HttpRequestMessage(HttpMethod.Delete, Url);
             msg.Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter());
             var deleteResponse = await Client.SendAsync(msg);
 
@@ -245,7 +247,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = Shared.Get<User>("Users_AhmadAkra").Id;
 
             // Verify that the id was deleted by calling get        
-            var getResponse = await Client.GetAsync($"{usersURL}/{id}");
+            var getResponse = await Client.GetAsync($"{Url}/{id}");
 
             // Assert that the response is correct
             Output.WriteLine(await getResponse.Content.ReadAsStringAsync());

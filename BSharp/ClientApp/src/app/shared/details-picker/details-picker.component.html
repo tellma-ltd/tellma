@@ -4,9 +4,9 @@
   <div class="d-flex">
     <input class="form-control b-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
       ngbDropdownAnchor autocomplete="off" />
-      &nbsp;
+    &nbsp;
     <button class="btn btn-light btn-sm text-primary b-white-button p-0 pl-1 pr-1" *ngIf="showMagnifier" type="button"
-      title="{{ 'Search' | translate }}" (click)="openMasterModal()" [disabled]="isDisabled">
+      title="{{ 'Search' | translate }}" (click)="openSearchModal()" [disabled]="isDisabled">
       <fa-icon icon="search"></fa-icon>
     </button>
   </div>
@@ -14,8 +14,9 @@
   <!-- The Results Dropdown -->
   <div class="shadow" ngbDropdownMenu aria-labelledby="drop" style="z-index:1050">
     <ng-container *ngIf="showResults">
-      <button class="dropdown-item" *ngFor="let item of searchResults; let i = index" [class.active]="i===highlightedIndex"
-        (mouseenter)="onMouseEnter(i)" style="cursor:default" (focus)="onFocus(item)">
+      <button class="dropdown-item" *ngFor="let item of searchResults; let i = index"
+        [class.active]="i===highlightedIndex" (mouseenter)="onMouseEnter(i)" style="cursor:default"
+        (focus)="onFocus(item)">
         {{ formatterInner(item) }}
       </button>
     </ng-container>
@@ -34,8 +35,9 @@
         Edit Selected...
       </button> -->
       <div [placement]="placement" [ngbTooltip]="createNewTooltip">
-        <button class="dropdown-item b-slightly-bold" [class.text-primary]="canCreateNew" [class.text-muted]="!canCreateNew"
-          [class.active]="highlightCreateNew" (click)="onCreateFromFocus()" [disabled]="!canCreateNew">
+        <button class="dropdown-item b-slightly-bold" [class.text-primary]="canCreateNew"
+          [class.text-muted]="!canCreateNew" [class.active]="highlightCreateNew" (click)="onCreateFromFocus()"
+          [disabled]="!canCreateNew">
           {{ 'Create' | translate }}...
         </button>
       </div>
@@ -45,16 +47,18 @@
 </div>
 
 <ng-template #detailsWrapperTemplate let-modal>
-  <ng-container *ngTemplateOutlet="detailsTemplate;context: { update: onUpdate, modal: modal, initialText: initialText, viewId: viewId }">
+  <ng-container
+    *ngTemplateOutlet="detailsTemplate;context: { update: onUpdate, modal: modal, initialText: initialText, definitionId: definitionId }">
   </ng-container>
 </ng-template>
 
 <ng-template #masterWrapperTemplate let-modal>
-  <ng-container *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal, filter: filter, viewId: viewId }">
+  <ng-container
+    *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal, filter: filter, definitionId: definitionId }">
   </ng-container>
 </ng-template>
 
-<!-- Details Options Modal -->
+<!-- Create Options Modal -->
 <ng-template #detailsOptionsTemplate let-modal>
 
   <!-- header -->
@@ -68,10 +72,44 @@
   <!-- body -->
   <div class="modal-body">
     <div class="mb-2"> {{ 'CreateOptionsMessage' | translate }} </div>
-    <div class="d-inline-block" *ngFor="let option of detailsOptions; let i= index" [placement]="placement"
-      [ngbTooltip]="createFromOptionsTooltip(option.id)">
-      <button class="btn btn-primary m-1" (click)="modal.close(option.id)" ngbAutofocus [disabled]="!canCreateFromOptions(option.id)">
-        {{ option.name }}
+    <div class="d-inline-block" *ngFor="let definitionId of definitionIds; let i= index" [placement]="placement"
+      [ngbTooltip]="createFromOptionsTooltip(definitionId)">
+      <button class="btn btn-primary m-1" (click)="modal.close(definitionId)" ngbAutofocus
+        [disabled]="!canCreateFromOptions(definitionId)">
+        {{ optionName(definitionId) }}
+      </button>
+
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="modal-footer">
+    <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()">
+      <fa-icon icon="times"></fa-icon>
+      &nbsp;{{ 'Cancel' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+<!-- Search Options Modal -->
+<ng-template #masterOptionsTemplate let-modal>
+
+  <!-- header -->
+  <div class="modal-header">
+    <h5 class="modal-title"> {{ 'SearchOptions' | translate }} </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- body -->
+  <div class="modal-body">
+    <div class="mb-2"> {{ 'SearchOptionsMessage' | translate }} </div>
+    <div class="d-inline-block" *ngFor="let definitionId of definitionIds; let i= index" [placement]="placement"
+      [ngbTooltip]="createFromOptionsTooltip(definitionId)">
+      <button class="btn btn-primary m-1" (click)="modal.close(definitionId)" ngbAutofocus
+        [disabled]="!canCreateFromOptions(definitionId)">
+        {{ optionName(definitionId) }}
       </button>
 
     </div>

@@ -1,9 +1,11 @@
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, HostBinding, TemplateRef } from '@angular/core';
+import {
+  Component, ElementRef, Input, OnDestroy, ViewChild, HostBinding, TemplateRef, OnChanges, SimpleChanges, OnInit
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgbDropdown, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlacementArray } from '@ng-bootstrap/ng-bootstrap/util/positioning';
 import { fromEvent, of, Subject, Subscription } from 'rxjs';
-import { catchError, debounceTime, map, switchMap, tap, expand, exhaustMap } from 'rxjs/operators';
+import { catchError, debounceTime, map, switchMap, tap, exhaustMap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -23,9 +25,32 @@ enum SearchStatus {
   templateUrl: './details-picker.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: DetailsPickerComponent }]
 })
-export class DetailsPickerComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
+export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
 
   ///////////////// Input and Other Fields
+  @Input()
+  expand: string;
+
+  @Input()
+  select = null;
+
+  @Input()
+  filter: string;
+
+  @Input()
+  collection: string;
+
+  @Input()
+  definitionProperty: string;
+
+  @Input()
+  definitionIds: string[] = [];
+
+  @Input()
+  masterTemplate: TemplateRef<any>;
+
+  @Input()
+  detailsTemplate: TemplateRef<any>;
 
   @ViewChild('input', { static: true })
   input: ElementRef;
@@ -42,43 +67,18 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   @ViewChild('detailsOptionsTemplate', { static: true })
   detailsOptionsTemplate: TemplateRef<any>;
 
+  @ViewChild('masterOptionsTemplate', { static: true })
+  masterOptionsTemplate: TemplateRef<any>;
+
   @HostBinding('class.w-100')
   w100 = true;
 
-  @Input()
-  expand: string;
-
-  @Input()
-  select = null;
-
-  @Input()
-  filter: string;
-
-  @Input()
-  collection: string;
-
-  @Input()
-  definition: string;
-
-  @Input()
-  masterTemplate: TemplateRef<any>;
-
-  @Input()
-  detailsTemplate: TemplateRef<any>;
-
-  @Input()
-  detailsOptions: { id: string, name: string }[] = [];
-
-  @Input()
-  focusIf = false;
-
-  private MIN_CHARS_TO_SEARCH = 2;
+  private MIN_CHARS_TO_SEARCH = 1;
   private SEARCH_PAGE_SIZE = 15;
 
   private cancelRunningCall$ = new Subject<void>();
   private notifyFetchUnloadedItem$ = new Subject<string | number>();
-  private userInputSubscription: Subscription;
-  private notifyFethcUnloadedItemSubscription: Subscription;
+  private subscriptions: Subscription;
   private _status: SearchStatus = null;
   private _isDisabled = false;
   private _searchResults: (string | number)[] = [];
@@ -86,13 +86,13 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   private chosenItem: string | number = null;
   private _errorMessage: string;
   private _initialText: string;
-  private _viewId: string;
-  private langChangeSubscription: Subscription;
-  private api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$); // for intellisense
+  private _definitionId: string;
+  private api = this.apiService.crudFactory('', null); // for intellisense
 
   @Input()
   formatter: (item: any) => string = (item: any) => {
-    return metadata[this.collection](this.workspace.current, this.translate, this.definition).format(item);
+    const definition = !!this.definitionIds && this.definitionIds.length === 1 ? this.definitionIds[0] : null;
+    return metadata[this.collection](this.workspace.current, this.translate, definition).format(item);
   }
 
   ///////////////// Lifecycle Hooks
@@ -100,32 +100,52 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     private apiService: ApiService, private workspace: WorkspaceService,
     public modalService: NgbModal, private translate: TranslateService) {
 
-    this.notifyFethcUnloadedItemSubscription = this.notifyFetchUnloadedItem$.pipe(
-      exhaustMap((id) => this.doFetchUnloadedItem(id))
-    ).subscribe();
   }
 
   public focus = () => {
     this.input.nativeElement.focus();
   }
 
-  ngAfterViewInit() {
+  ngOnInit() {
 
-    if (this.focusIf) {
-      this.input.nativeElement.focus();
-    }
+    // If there is 0 or 1 definitionId, use the specific API, otherwise use the generic one with a filter
+    const apiEndpoint = this.apiEndpoint(this.definitionIdsSingleOrDefault);
+    this.api = this.apiService.crudFactory(apiEndpoint, this.cancelRunningCall$);
 
-    this.api = this.apiService.crudFactory(this.apiEndpoint, this.cancelRunningCall$);
+    this.subscriptions = new Subscription();
+    this.subscriptions.add(this.notifyFetchUnloadedItem$.pipe(
+      exhaustMap((id) => this.doFetchUnloadedItem(id))
+    ).subscribe());
+
+    // adds a definition filter if we have more than a single definitionId
+    const filter: () => string = () => {
+      if (this.definitionIds.length > 1) {
+
+        const definitionProperty = this.definitionProperty || 'DefinitionId';
+        const definitionfilter = this.definitionIds
+          .map(e => `${definitionProperty} eq '${e.replace('\'', '\'\'')}'`)
+          .reduce((e1, e2) => `${e1} or ${e2}`);
+
+        if (!!this.filter) {
+          return `${definitionfilter} and ${this.filter}`;
+
+        } else {
+          return definitionfilter;
+        }
+      } else {
+        return this.filter;
+      }
+    };
 
     // use some RxJS magic to listen to user input and call the backend
     // in order to show the results in a dropdown
-    this.userInputSubscription = fromEvent(this.input.nativeElement, 'input').pipe(
+    this.subscriptions.add(fromEvent(this.input.nativeElement, 'input').pipe(
       map((e: any) => e.target.value as string),
       tap(term => {
 
         // here capture what the user is typing, in case s/he clicks on 'Create'
         // we pass this value to the details template which can use it as an initial
-        // value for the name saving the user from having to type again what s/he just typed
+        // value for the name saving the user from having to type it again
         this._initialText = term;
 
         // As soon as the user starts typing:
@@ -149,7 +169,7 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
             top: this.SEARCH_PAGE_SIZE,
             skip: 0,
             expand: this.expand,
-            filter: this.filter,
+            filter: filter(),
             select: this.select
           }).pipe(
             tap(() => this.status = SearchStatus.showResults),
@@ -169,37 +189,44 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
 
       // Auto select the first result
       this._highlightedIndex = 0; // auto select the first item
-    });
+    }));
 
-    // it's frequently the case that the displayed value depends on the translation
-    this.langChangeSubscription = this.translate.onLangChange.subscribe(() => {
+    // Listen to changes in the application state and update the UI
+    this.subscriptions.add(this.translate.onLangChange.subscribe(() => {
       this.updateUI(this.chosenItem);
-    });
+    }));
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // the combination of these two properties define
+    const screenDefProperties = [changes.definitions, changes.defini];
+
+    const anyChanges = screenDefProperties.some(prop => !!prop);
+    const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+
+    if (anyChanges && notFirstChange) {
+
+      this.ngOnDestroy();
+      this.ngOnInit();
+    }
   }
 
   ngOnDestroy(): void {
     // cleanup duty
-    if (!!this.userInputSubscription) {
-      this.userInputSubscription.unsubscribe();
-    }
-
-    if (!!this.langChangeSubscription) {
-      this.langChangeSubscription.unsubscribe();
-    }
-    if (!!this.notifyFethcUnloadedItemSubscription) {
-      this.notifyFethcUnloadedItemSubscription.unsubscribe();
+    if (!!this.subscriptions) {
+      this.subscriptions.unsubscribe();
     }
   }
 
   ///////////////// Helper Functions
 
-  get entityDescriptor(): EntityDescriptor {
+  entityDescriptor(definition: string): EntityDescriptor {
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, this.definition) : null;
+    return !!coll ? metadata[coll](this.workspace.current, this.translate, definition) : null;
   }
 
-  get apiEndpoint(): string {
-    const meta = this.entityDescriptor;
+  apiEndpoint(definition: string): string {
+    const meta = this.entityDescriptor(definition);
     return !!meta ? meta.apiEndpoint : null;
   }
 
@@ -493,8 +520,8 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   get canCreateNewPermissions(): boolean {
-    return !!this.detailsOptions && (this.detailsOptions.length !== 1 ||
-      (this.canCreatePermissions(this.detailsOptions[0].id)));
+    return !!this.definitionIds && (this.definitionIds.length !== 1 ||
+      (this.canCreatePermissions(this.definitionIds[0])));
   }
 
   get canCreateNew(): boolean {
@@ -547,30 +574,34 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     this.openCreateModal();
   }
 
-  public openMasterModal = () => {
-    if (!!this.detailsOptions && this.detailsOptions.length > 1) {
-      this.modalService.open(this.detailsOptionsTemplate)
+  private get definitionIdsSingleOrDefault() {
+    return !!this.definitionIds && this.definitionIds.length === 1 ? this.definitionIds[0] : null;
+  }
+
+  public openSearchModal = () => {
+    // If there are multiple definitions ask the user
+    if (!!this.definitionIds && this.definitionIds.length > 1) {
+      this.modalService.open(this.masterOptionsTemplate)
         .result.then(
-          (viewId) => {
-            this.openMasterModalInner(viewId);
+          (definitionId) => {
+            this.openSearchModalInner(definitionId);
           },
           (_: any) => {
 
           }
         );
     } else {
-      const detailsOption = !!this.detailsOptions ? this.detailsOptions[0] : null;
-      const viewId = !!detailsOption ? detailsOption.id : null;
-      this.openMasterModalInner(viewId);
+      // If there is one definition or none, open the modal right away
+      this.openSearchModalInner(this.definitionIdsSingleOrDefault);
     }
   }
 
-  private openMasterModalInner(viewId?: string) {
+  private openSearchModalInner(definitionId?: string) {
 
     // it would be confusing if the user opens the details form the master
     // and find the text s/he typed in the input field a while ago
     this._initialText = '';
-    this._viewId = viewId;
+    this._definitionId = definitionId;
 
     this.modalService.open(this.masterWrapperTemplate, { windowClass: 'b-master-modal' })
 
@@ -579,29 +610,28 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
   }
 
   private openCreateModal = () => {
-    if (!!this.detailsOptions && this.detailsOptions.length > 1) {
+    if (!!this.definitionIds && this.definitionIds.length > 1) {
       this.modalService.open(this.detailsOptionsTemplate)
         .result.then(
-          (viewId) => {
-            if (!this.canCreateFromOptions(viewId)) {
+          (definitionId) => {
+            if (!this.canCreateFromOptions(definitionId)) {
               return;
             }
-            this.openCreateModalInner(viewId);
+            this.openCreateModalInner(definitionId);
           },
           (_: any) => {
 
           }
         );
     } else {
-      const detailsOption = !!this.detailsOptions ? this.detailsOptions[0] : null;
-      const viewId = !!detailsOption ? detailsOption.id : null;
-      this.openCreateModalInner(viewId);
+      // get the first one or null
+      this.openCreateModalInner(this.definitionIdsSingleOrDefault);
     }
   }
 
-  private openCreateModalInner = (viewId?: string) => {
+  private openCreateModalInner = (definitionId?: string) => {
     // Launch the details modal
-    this._viewId = viewId;
+    this._definitionId = definitionId;
     this.modalService.open(this.detailsWrapperTemplate, { windowClass: 'b-details-modal' })
 
       // this guarantees that the input will be focused again when the modal closes
@@ -616,20 +646,24 @@ export class DetailsPickerComponent implements AfterViewInit, OnDestroy, Control
     return this._initialText;
   }
 
-  get viewId(): string {
-    return this._viewId;
+  get definitionId(): string {
+    return this._definitionId;
   }
 
-  public canCreatePermissions = (viewId: string): boolean => {
+  public canCreatePermissions = (definitionId: string): boolean => {
+    const viewId = this.apiEndpoint(definitionId);
     return this.workspace.current.canCreate(viewId);
   }
 
-  public canCreateFromOptions = (viewId: string): boolean => {
-    return this.canCreatePermissions(viewId);
+  public canCreateFromOptions = (definitionId: string): boolean => {
+    return this.canCreatePermissions(definitionId);
   }
 
-  public createFromOptionsTooltip = (viewId: string): string => {
-    return this.canCreatePermissions(viewId) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  public createFromOptionsTooltip = (definitionId: string): string => {
+    return this.canCreatePermissions(definitionId) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
+  public optionName(definitionId: string) {
+    return this.entityDescriptor(definitionId).titlePlural;
+  }
 }

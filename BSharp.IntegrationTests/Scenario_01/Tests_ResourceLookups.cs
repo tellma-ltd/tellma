@@ -20,12 +20,16 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
 
         public readonly string _definitionId = "colors";
-        public string ResourceLookupsUrl => $"/api/resource-lookups/{_definitionId}";
+        public readonly string _baseAddress = "resource-lookups";
+
+        public string ViewId => $"{_baseAddress}/{_definitionId}"; // For permissions
+        public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific resource definition
+
 
         [Fact(DisplayName = "01 Getting all resource lookups before granting permissions returns a 403 Forbidden response")]
         public async Task Test01()
         {
-            var response = await Client.GetAsync(ResourceLookupsUrl);
+            var response = await Client.GetAsync(Url);
 
             // Call the API
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -37,10 +41,10 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting all resource lookups before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator(_definitionId, Constants.Update, "Id lt 100000");
+            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id lt 100000");
 
             // Call the API
-            var response = await Client.GetAsync(ResourceLookupsUrl);
+            var response = await Client.GetAsync(Url);
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Assert the result is 200 OK
@@ -60,7 +64,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test03()
         {
             int nonExistentId = 1;
-            var response = await Client.GetAsync($"{ResourceLookupsUrl}/{nonExistentId}");
+            var response = await Client.GetAsync($"{Url}/{nonExistentId}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -79,7 +83,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<ResourceLookupForSave> { dtoForSave };
-            var response = await Client.PostAsJsonAsync(ResourceLookupsUrl, dtosForSave);
+            var response = await Client.PostAsJsonAsync(Url, dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -111,7 +115,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var entity = Shared.Get<ResourceLookup>("ResourceLookup_Red");
             var id = entity.Id;
-            var response = await Client.GetAsync($"{ResourceLookupsUrl}/{id}");
+            var response = await Client.GetAsync($"{Url}/{id}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -142,7 +146,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(ResourceLookupsUrl, list);
+            var response = await Client.PostAsJsonAsync(Url, list);
 
             // Assert that the response status code is 422 unprocessable entity (validation errors)
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -173,7 +177,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(ResourceLookupsUrl, new List<ResourceLookupForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<ResourceLookupForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed
@@ -194,14 +198,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "08 Deleting an existing resource lookup Id returns a 200 OK")]
         public async Task Test08()
         {
-            await GrantPermissionToSecurityAdministrator(_definitionId, Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<ResourceLookup>("ResourceLookup_Blue");
             var id = entity.Id;
 
             // Query the delete API
-            var deleteResponse = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, ResourceLookupsUrl)
+            var deleteResponse = await Client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, Url)
             {
                 Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter())
             });
@@ -218,7 +222,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
-            var getResponse = await Client.GetAsync($"{ResourceLookupsUrl}/{id}");
+            var getResponse = await Client.GetAsync($"{Url}/{id}");
 
             // Assert that the response is correct
             Output.WriteLine(await getResponse.Content.ReadAsStringAsync());
@@ -228,14 +232,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deactivating an active resource lookup returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator(_definitionId, "IsActive", null);
+            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
 
             // Get the Id
             var entity = Shared.Get<ResourceLookup>("ResourceLookup_Red");
             var id = entity.Id;
 
             // Call the API
-            var response = await Client.PutAsJsonAsync($"{ResourceLookupsUrl}/deactivate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"{Url}/deactivate", new List<int>() { id });
 
             // Assert that the response status code is correct
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -258,7 +262,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id;
 
             // Call the API
-            var response = await Client.PutAsJsonAsync($"{ResourceLookupsUrl}/activate", new List<int>() { id });
+            var response = await Client.PutAsJsonAsync($"{Url}/activate", new List<int>() { id });
 
             // Assert that the response status code is correct
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -280,7 +284,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var entity = Shared.Get<ResourceLookup>("ResourceLookup_Red");
             var id = entity.Id;
 
-            var response = await Client.GetAsync($"{ResourceLookupsUrl}/{id}?select=Name");
+            var response = await Client.GetAsync($"{Url}/{id}?select=Name");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

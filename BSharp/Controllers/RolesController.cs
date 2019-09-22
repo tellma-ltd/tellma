@@ -13,16 +13,19 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/roles")]
+    [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
     public class RolesController : CrudControllerBase<RoleForSave, Role, int>
     {
+        public const string BASE_ADDRESS = "roles";
+
+
         private readonly Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider _metadataProvider;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
-        private string VIEW => "roles";
+        private string ViewId => BASE_ADDRESS;
 
         public RolesController(
             ILogger<RolesController> logger,
@@ -93,7 +96,7 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.UserPermissions(action, VIEW);
+            return await _repo.UserPermissions(action, ViewId);
         }
 
         protected override IRepository GetRepository()

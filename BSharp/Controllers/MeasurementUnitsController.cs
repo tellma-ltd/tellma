@@ -11,15 +11,17 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/measurement-units")]
+    [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
     public class MeasurementUnitsController : CrudControllerBase<MeasurementUnitForSave, MeasurementUnit, int>
     {
+        public const string BASE_ADDRESS = "measurement-units";
+
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
 
-        private string VIEW => "measurement-units";
+        private string ViewId => BASE_ADDRESS;
 
         public MeasurementUnitsController(
             ILogger<MeasurementUnitsController> logger,
@@ -88,7 +90,7 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.UserPermissions(action, VIEW);
+            return await _repo.UserPermissions(action, ViewId);
         }
 
         protected override IRepository GetRepository()

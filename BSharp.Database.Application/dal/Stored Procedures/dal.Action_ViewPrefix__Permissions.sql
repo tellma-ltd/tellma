@@ -1,7 +1,8 @@
-﻿CREATE PROCEDURE [dal].[Action_Views__Permissions]
+﻿CREATE PROCEDURE [dal].[Action_ViewPrefix__Permissions]
 	@Action NVARCHAR (255),
-	@ViewIds [dbo].[StringList] READONLY
+	@ViewIdPrefix NVARCHAR (255)
 AS
+-- When changing this, remember to also change [dal].[Action_View__Permissions] and [dal].[GetUserPermissions] accordingly
 DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 SELECT [ViewId], [Action], [Criteria], [Mask] FROM (
 
@@ -12,7 +13,7 @@ SELECT [ViewId], [Action], [Criteria], [Mask] FROM (
     JOIN [dbo].[RoleMemberships] AS RM ON R.[Id] = RM.[RoleId]
     WHERE R.[IsActive] = 1 
     AND RM.[AgentId] = @UserId
-    AND (P.ViewId = N'all' OR P.[ViewId] IN (SELECT [Id] FROM @ViewIds))
+    AND (P.ViewId = N'all' OR P.[ViewId] LIKE @ViewIdPrefix + '%')
 
 	UNION
 	-- Permissions in public roles
@@ -21,7 +22,7 @@ SELECT [ViewId], [Action], [Criteria], [Mask] FROM (
     JOIN [dbo].[Roles] R ON P.[RoleId] = R.[Id]
     WHERE R.[IsPublic] = 1 
     AND R.[IsActive] = 1
-    AND (P.ViewId = N'all' OR P.[ViewId] IN (SELECT [Id] FROM @ViewIds))
+    AND (P.ViewId = N'all' OR P.[ViewId] LIKE @ViewIdPrefix + '%')
 
 ) AS E 
 -- Any action implicitly includes the "Read" action,

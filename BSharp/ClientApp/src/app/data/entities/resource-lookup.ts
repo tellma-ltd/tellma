@@ -43,6 +43,8 @@ export function metadata_ResourceLookup(ws: TenantWorkspace, trx: TranslateServi
 
     if (!_cache[definitionId]) {
         const entityDesc: EntityDescriptor = {
+            titleSingular: ws.getMultilingualValueImmediate(ws.definitions.ResourceLookups[definitionId], 'TitleSingular'),
+            titlePlural:  ws.getMultilingualValueImmediate(ws.definitions.ResourceLookups[definitionId], 'TitlePlural'),
             select: _select,
             apiEndpoint: 'resource-lookups/' + (definitionId || ''),
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
@@ -54,12 +56,6 @@ export function metadata_ResourceLookup(ws: TenantWorkspace, trx: TranslateServi
                 Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
                 Code: { control: 'text', label: trx.instant('Code') },
                 SortKey: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
-                // ResourceLookupDefinitionId: {
-                //     control: 'choice',
-                //     label: trx.instant('ResourceLookup_Definition'),
-                //     choices: Object.keys(ws.definitions.ResourceLookups),
-                //     format: (c: string) => ws.getMultilingualValueImmediate(ws.definitions.ResourceLookups[c], 'TitleSingular')
-                // },
                 IsActive: { control: 'boolean', label: trx.instant('IsActive') },
                 CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

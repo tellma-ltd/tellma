@@ -15,16 +15,18 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/views")]
+    [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
     public class ViewsController : FactGetByIdControllerBase<View, string>
     {
+        public const string BASE_ADDRESS = "views";
+
         private readonly ApplicationRepository _repo;
         private readonly Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider _metadataProvider;
         private readonly ILogger<ViewsController> _logger;
         private readonly IStringLocalizer _localizer;
 
-        private string VIEW => "views";
+        private string ViewId => BASE_ADDRESS;
 
         public ViewsController(ApplicationRepository repo, Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider metadataProvider, 
             ILogger<ViewsController> logger,
@@ -34,7 +36,6 @@ namespace BSharp.Controllers
             _metadataProvider = metadataProvider;
             _logger = logger;
             _localizer = localizer;
-
         }
 
         protected override IRepository GetRepository()
@@ -63,7 +64,7 @@ namespace BSharp.Controllers
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return _repo.UserPermissions(action, VIEW);
+            return _repo.UserPermissions(action, ViewId);
         }
     }
 }

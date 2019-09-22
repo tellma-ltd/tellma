@@ -54,9 +54,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   definition: string; // This is one of two properties that define the screen
 
   @Input()
-  viewId: string; // for the permissions
-
-  @Input()
   tileTemplate: TemplateRef<any>;
 
   @Input()
@@ -508,6 +505,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       return this.workspace.current.mdState[this.apiEndpoint];
     }
+  }
+
+  private get viewId(): string {
+    return this.entityDescriptor.apiEndpoint;
   }
 
   private urlStateChange(): void {

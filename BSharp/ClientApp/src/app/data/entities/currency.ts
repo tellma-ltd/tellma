@@ -35,6 +35,8 @@ export function metadata_Currency(ws: TenantWorkspace, trx: TranslateService, _:
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     _cache = {
+      titleSingular: trx.instant('Currency'),
+      titlePlural:  trx.instant('Currencies'),
       select: _select,
       apiEndpoint: 'currencies',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],

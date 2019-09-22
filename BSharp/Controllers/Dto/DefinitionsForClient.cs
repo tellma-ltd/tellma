@@ -151,8 +151,8 @@ namespace BSharp.Controllers.Dto
 
     public static class Visibility
     {
-        public static readonly byte Hidden = 0;
-        public static readonly byte Visible = 1;
-        public static readonly byte Required = 2;
+        public const byte Hidden = 0;
+        public const byte Visible = 1;
+        public const byte Required = 2;
     }
 }
