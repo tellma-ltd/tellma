@@ -35,13 +35,13 @@ AS
 		SUM(E.[Direction] * E.[Time]) AS [Time],
 		SUM(E.[Direction] * E.[Count]) AS [Count], -- we can normalize every measure, but just showing a proof of concept
 		SUM(E.[Direction] * E.[Value]) AS [Value],
-		E.[Memo],
-		E.[ExternalReference],
-		E.[AdditionalReference],
-		E.[RelatedResourceId],
-		E.[RelatedAccountId],
-		SUM(E.[Direction] * E.[RelatedQuantity]) AS [RelatedQuantity],
-		SUM(E.[Direction] * E.[RelatedMoneyAmount]) AS [RelatedMoneyAmount]
+		L.[Memo],
+		L.[ExternalReference],
+		L.[AdditionalReference],
+		L.[RelatedResourceId],
+		L.[RelatedAccountId],
+		SUM(E.[Direction] * L.[RelatedQuantity]) AS [RelatedQuantity],
+		SUM(E.[Direction] * L.[RelatedMoneyAmount]) AS [RelatedMoneyAmount]
 	FROM 
 		[dbo].[DocumentLineEntries] E
 		JOIN [dbo].[DocumentLines] L ON E.[DocumentLineId] = L.Id
@@ -74,11 +74,11 @@ AS
 		E.[ResourceId],
 		E.[ResourcePickId],
 		E.[BatchCode],
-		E.[Memo],
-		E.[ExternalReference],
-		E.[AdditionalReference],
-		E.[RelatedResourceId],
-		E.[RelatedAccountId]
+		L.[Memo],
+		L.[ExternalReference],
+		L.[AdditionalReference],
+		L.[RelatedResourceId],
+		L.[RelatedAccountId]
 	HAVING
 		SUM(E.[Direction] * E.[Value]) <> 0
 	;

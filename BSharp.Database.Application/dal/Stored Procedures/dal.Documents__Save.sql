@@ -30,7 +30,6 @@ BEGIN
 			UPDATE SET
 				t.[DocumentDate]			= s.[DocumentDate],
 				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
-				t.[SortKey]					= s.[SortKey],
 				t.[Memo]					= s.[Memo],
 				t.[Frequency]				= s.[Frequency],
 				t.[Repetitions]				= s.[Repetitions],
@@ -63,21 +62,30 @@ BEGIN
 	(
 		MERGE INTO BL AS t
 		USING (
-			SELECT L.[Index], L.[Id], DI.Id AS DocumentId, L.[LineTypeId], L.[TemplateLineId], L.[ScalingFactor], L.[SortKey]
+			SELECT L.[Index], L.[Id], DI.Id AS DocumentId, L.[LineTypeId], L.[TemplateLineId], L.[ScalingFactor], L.[SortKey],
+					L.[Memo], L.[ExternalReference], L.[AdditionalReference], L.[RelatedResourceId], L.[RelatedAgentId], L.[RelatedMoneyAmount]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
-				t.[LineTypeId]		= s.[LineTypeId],
-				t.[TemplateLineId]	= s.[TemplateLineId], 
-				t.[ScalingFactor]	= s.[ScalingFactor],
-				t.[SortKey]			= s.[SortKey],
-				t.[ModifiedAt]		= @Now,
-				t.[ModifiedById]	= @UserId
+				t.[LineTypeId]			= s.[LineTypeId],
+				t.[TemplateLineId]		= s.[TemplateLineId], 
+				t.[ScalingFactor]		= s.[ScalingFactor],
+				t.[Memo]				= s.[Memo],
+				t.[ExternalReference]	= s.[ExternalReference],
+				t.[AdditionalReference]	= s.[AdditionalReference],
+				t.[RelatedResourceId]	= s.[RelatedResourceId],
+				t.[RelatedAccountId]	= s.[RelatedAgentId],
+				t.[RelatedMoneyAmount]	= s.[RelatedMoneyAmount],
+				t.[ModifiedAt]			= @Now,
+				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [LineTypeId], [TemplateLineId], [ScalingFactor], [SortKey])
-			VALUES (s.[DocumentId], s.[LineTypeId], s.[TemplateLineId], s.[ScalingFactor], s.[SortKey])
+			INSERT ([DocumentId], [LineTypeId], [TemplateLineId], [ScalingFactor], [SortKey]
+				, [Memo],				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount]
+			)
+			VALUES (s.[DocumentId], s.[LineTypeId], s.[TemplateLineId], s.[ScalingFactor], s.[SortKey],
+			s.[Memo],s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
 		OUTPUT s.[Index], inserted.[Id] 
@@ -93,9 +101,8 @@ BEGIN
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
 				[AgentId], [ResponsibilityCenterId], [ResourceId], [ResourcePickId], [BatchCode], [DueDate],
-				[MonetaryValue], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value], E.[Memo],
-				[ExternalReference], [AdditionalReference], 
-				[RelatedResourceId], [RelatedAgentId], [RelatedMoneyAmount]
+				[MonetaryValue], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value]
+				
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[DocumentLineIndex] = LI.[Index]
@@ -118,23 +125,25 @@ BEGIN
 			t.[Time]					= s.[Time],
 			t.[Count]					= s.[Count],
 			t.[Value]					= s.[Value],
-			t.[Memo]					= s.[Memo],
-			t.[ExternalReference]		= s.[ExternalReference],
-			t.[AdditionalReference]		= s.[AdditionalReference],
-			t.[RelatedResourceId]		= s.[RelatedResourceId],
-			t.[RelatedAccountId]		= s.[RelatedAgentId],
-			t.[RelatedMoneyAmount]		= s.[RelatedMoneyAmount],
+			--t.[Memo]					= s.[Memo],
+			--t.[ExternalReference]		= s.[ExternalReference],
+			--t.[AdditionalReference]		= s.[AdditionalReference],
+			--t.[RelatedResourceId]		= s.[RelatedResourceId],
+			--t.[RelatedAccountId]		= s.[RelatedAgentId],
+			--t.[RelatedMoneyAmount]		= s.[RelatedMoneyAmount],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
 				[AgentId], [ResponsibilityCenterId], [ResourceId], [ResourcePickId], [BatchCode],
-				[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value], [Memo],
-				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount])
+				[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value]
+				
+				)
 		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IfrsEntryClassificationId],
 				s.[AgentId], s.[ResponsibilityCenterId], s.[ResourceId], s.[ResourcePickId], s.[BatchCode],
-				s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value], s.[Memo],
-				s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount])
+				s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value]
+				--s.[Memo],s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount]
+				)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

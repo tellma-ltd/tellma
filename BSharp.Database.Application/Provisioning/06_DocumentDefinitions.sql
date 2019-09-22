@@ -1,18 +1,19 @@
-﻿DECLARE @LineTypes TABLE (
+﻿DECLARE @LineDefinitions TABLE (
 	[Id]						NVARCHAR (50)			PRIMARY KEY,
 	[Description]				NVARCHAR (255),
 	[Description2]				NVARCHAR (255),
 	[Description3]				NVARCHAR (255)
 );
 
-INSERT @LineTypes([Id]) VALUES
+INSERT @LineDefinitions([Id]) VALUES
 (N'CashIssue'),
 (N'VATInvoiceWithGoodReceipt'),
 (N'VATInvoiceWithoutGoodReceipt'),
+(N'PaysheetLine'),
 (N'ManualLine');
 
 MERGE [dbo].LineTypes AS t
-USING @LineTypes AS s
+USING @LineDefinitions AS s
 ON s.Id = t.Id
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE

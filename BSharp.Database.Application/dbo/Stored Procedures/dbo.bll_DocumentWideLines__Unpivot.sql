@@ -15,25 +15,19 @@ AS
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	[DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
 	[ResourceId], [ResourcePickId], [BatchCode], [DueDate],
-	[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value], [Memo],
-	[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId],
-	[RelatedQuantity], [RelatedMoneyAmount])
+	[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value])
 	SELECT
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	[DocumentLineId], 1, [Direction1], [AccountId1], [IfrsEntryClassificationId1],
 	[ResourceId1], [InstanceId1], [BatchCode1], [DueDate1],
-	[MoneyAmount1], [Mass1], [Volume1], [Area1], [Length1], [Time1], [Count1], [Value1], [Memo1],
-	[ExternalReference1], [AdditionalReference1], [RelatedResourceId1], [RelatedAgentId1],
-	[RelatedQuantity1], [RelatedMoneyAmount1]
+	[MoneyAmount1], [Mass1], [Volume1], [Area1], [Length1], [Time1], [Count1], [Value1]
 	FROM @WideLines
 	UNION
 	SELECT
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	[DocumentLineId], 2, [Direction2], [AccountId2], [IfrsEntryClassificationId2],
 	[ResourceId2], [InstanceId2], [BatchCode2], [DueDate2],
-	[MoneyAmount2], [Mass2], [Volume2], [Area2], [Length2], [Time2], [Count2], [Value2], [Memo2],
-	[ExternalReference2], [AdditionalReference2], [RelatedResourceId2], [RelatedAgentId2],
-	[RelatedQuantity2], [RelatedMoneyAmount2]
+	[MoneyAmount2], [Mass2], [Volume2], [Area2], [Length2], [Time2], [Count2], [Value2]
 	FROM @WideLines
 
 	-- Assuming there is no circular dependency in the logic (needs a way to test it)

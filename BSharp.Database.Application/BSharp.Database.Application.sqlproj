@@ -375,6 +375,8 @@
     <Build Include="bll\Functions\bll.fi_EmployeesIncomeTaxes.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentBalanceList.sql" />
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
+    <Build Include="api\Stored Procedures\api.Paysheet__Prepare.sql" />
+    <Build Include="api\Stored Procedures\api.ExchangeVariances__Prepare.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
@@ -404,6 +406,7 @@
     <None Include="Tests\07_Resources_ComputerEquipment.sql" />
     <None Include="Tests\07_Resources_ProductionSupplies.sql" />
     <None Include="Tests\07_Resources_EmployeeBenefits.sql" />
+    <None Include="Tests\13_HRCycle.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
