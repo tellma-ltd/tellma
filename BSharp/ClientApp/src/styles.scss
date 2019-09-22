@@ -1,6 +1,8 @@
 // Override a few of the default variables of bootstrap before importing it
 $enable-rounded: false; // Square corners
 $font-size-base: 0.9rem; // The default font (1rem) is too big
+// $font-family-base: Calibri, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
 
 $primary: #17a2b8; // Classy cyan
 $dark-primary: #008784;
@@ -381,7 +383,7 @@ input.b-h2,
   margin-bottom: 0.5rem;
   font-family: inherit;
   line-height: 1.2;
-  font-size: 1.8rem;
+  font-size: 2 * $font-size-base;
 }
 
 .b-input {
