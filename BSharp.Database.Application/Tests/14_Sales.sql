@@ -4,8 +4,8 @@ DECLARE @D41Ids dbo.[IdList], @D42Ids dbo.[IdList], @D43Ids dbo.[IdList];
 
 BEGIN -- Inserting
 	INSERT INTO @D41(
-	[DocumentDate],	[Memo], [EvidenceTypeId]) VALUES (
-	'2017.01.05',		N'Sale of HSP products', N'Attachment'
+	[DocumentDate],	[Memo]) VALUES (
+	'2017.01.05',		N'Sale of HSP products'
 	);
 	INSERT INTO @L41( --DocumentIndex DEFAULT 0
 		[LineTypeId], [SortKey]) VALUES
@@ -76,8 +76,8 @@ END
 	
 /*
 BEGIN -- Updating document and deleting lines/entries
-	INSERT INTO @D42([Id], [DocumentDate],	[Memo], [EvidenceTypeId])
-	SELECT [Id], [DocumentDate],	[Memo], [EvidenceTypeId] 
+	INSERT INTO @D42([Id], [DocumentDate],	[Memo])
+	SELECT [Id], [DocumentDate],	[Memo] 
 	FROM dbo.Documents
 	WHERE [DocumentTypeId] = N'purchasing-international' AND [SerialNumber] = 1;
 

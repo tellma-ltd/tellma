@@ -371,6 +371,9 @@
     <Build Include="api\Stored Procedures\api.ResourceLookups__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceLookups__Activate.sql" />
     <Build Include="api\Stored Procedures\api.ResourceLooups__Save.sql" />
+    <Build Include="bll\Functions\bll.fi_EmployeesIncomeTaxes.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AgentBalanceList.sql" />
+    <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
@@ -399,6 +402,7 @@
     <None Include="Tests\07_Resources_FinancialAssets.sql" />
     <None Include="Tests\07_Resources_ComputerEquipment.sql" />
     <None Include="Tests\07_Resources_ProductionSupplies.sql" />
+    <None Include="Tests\07_Resources_EmployeeBenefits.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

@@ -13,7 +13,8 @@ DECLARE @CBEUSD INT, @CBEETB INT, @CBELC INT, @ESL INT, @CapitalMA INT, @Capital
 	@RegusAccount INT, @VimeksAccount INT, @NocJimmaAccount INT, @ToyotaAccount INT, @PrepaidRental INT;
 DECLARE @PPEVehicles INT, @PPEWarehouse INT;
 DECLARE @fuelHR INT, @fuelSalesAdminAG INT, @fuelProduction INT, @fuelSalesDistAG INT;
-DECLARE @VATInput INT, @VATOutput INT--, @PurchaseInvoices INT, @SalesInvoices INT;
+DECLARE @VATInput INT, @VATOutput INT, @SalariesAdmin INT, @SalariesAccrualsTaxable INT, @OvertimeAdmin INT,
+		@SalariesAccrualsNonTaxable INT, @EmployeesPayable INT, @EmployeesIncomeTaxPayable INT;
 
 INSERT INTO dbo.Accounts([Name], [Code], [IfrsAccountClassificationId], [IsMultiResource], [ResourceId]) VALUES
 (N'CBE - USD', N'1101', N'BalancesWithBanks', 0, @USD),
@@ -39,11 +40,23 @@ INSERT INTO dbo.Accounts
 (N'VAT Output',			N'2401',  N'CurrentValueAddedTaxPayables',					@ERCA)
 ;
 
+INSERT INTO dbo.Accounts
+([Name],							[Code],	[IfrsAccountClassificationId],						[IsMultiAgent]) VALUES
+(N'Salaries Accruals, taxable',		N'2501',  N'ShorttermEmployeeBenefitsAccruals',					1),
+(N'Salaries Accruals, non taxable',	N'2502',  N'ShorttermEmployeeBenefitsAccruals',					1),
+(N'Employees payable',				N'2503',  N'ShorttermEmployeeBenefitsAccruals',					1),
+(N'Employees Income Tax payable',	N'2504',  N'CurrentPayablesOnSocialSecurityAndTaxesOtherThanIncomeTax', 1)
+;
+
 INSERT INTO dbo.Accounts([Name], [Code], [IfrsAccountClassificationId], [IsMultiEntryClassification], [IfrsEntryClassificationId], [ResponsibilityCenterId]) VALUES
 (N'fuel - HR', N'5101', N'AdministrativeExpense', 0, N'TransportationExpense', @HROps),
 (N'fuel - Sales - admin - AG', N'5102', N'AdministrativeExpense', 0, N'TransportationExpense', @SalesOpsAG),
 (N'fuel - Production', N'5103', N'AdministrativeExpense', 0, N'TransportationExpense', @ProductionOps),
-(N'fuel - Sales - distribution - AG', N'5201', N'DistributionCosts', 0, N'TransportationExpense', @SalesOpsAG)
+(N'fuel - Sales - distribution - AG', N'5201', N'DistributionCosts', 0, N'TransportationExpense', @SalesOpsAG);
+
+INSERT INTO dbo.Accounts([Name], [Code], [IfrsAccountClassificationId], [IsMultiEntryClassification], [IfrsEntryClassificationId], [IsMultiResponsibilityCenter]) VALUES
+(N'Salaries - Admin', N'5202', N'AdministrativeExpense', 0, N'WagesAndSalaries', 1),
+(N'Overtime - Admin', N'5203', N'AdministrativeExpense', 0, N'WagesAndSalaries', 1)
 ;
 
 SELECT @CBEUSD = [Id] FROM dbo.Accounts WHERE Code = N'1101';
@@ -69,5 +82,9 @@ SELECT @fuelProduction = [Id] FROM dbo.Accounts WHERE Code = N'5103';
 SELECT @fuelSalesDistAG = [Id] FROM dbo.Accounts WHERE Code = N'5201';
 SELECT @VATInput = [Id] FROM dbo.Accounts WHERE Code = N'1401';
 SELECT @VATOutput = [Id] FROM dbo.Accounts WHERE Code = N'2401';
-
---SELECT @SalesInvoices = [Id] FROM dbo.Accounts WHERE Code = N'9002';
+SELECT @SalariesAdmin = [Id] FROM dbo.Accounts WHERE Code = N'5202';
+SELECT @SalariesAccrualsTaxable = [Id] FROM dbo.Accounts WHERE Code = N'2501';
+SELECT @SalariesAccrualsNonTaxable = [Id] FROM dbo.Accounts WHERE Code = N'2502';
+SELECT @EmployeesPayable = [Id] FROM dbo.Accounts WHERE Code = N'2503';
+SELECT @EmployeesIncomeTaxPayable = [Id] FROM dbo.Accounts WHERE Code = N'2504';
+SELECT @OvertimeAdmin = [Id] FROM dbo.Accounts WHERE Code = N'5203';

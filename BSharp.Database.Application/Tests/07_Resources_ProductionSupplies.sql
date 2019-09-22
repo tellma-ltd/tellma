@@ -7,7 +7,7 @@ INSERT INTO @R4 ([Index],
 	(1, N'Diesel',	@LiterUnit);
 
 	EXEC [api].[Resources__Save] -- N'vehicles'
-		@ResourceDefinitionId = N'production-supplies',
+		@DefinitionId = N'production-supplies',
 		@Resources = @R4,
 	--	@Picks = @RP4,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

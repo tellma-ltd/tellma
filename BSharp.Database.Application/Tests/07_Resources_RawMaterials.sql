@@ -11,7 +11,7 @@
 	(6,0,N'2017.10.15',	N'60032',	7320),
 	(7,0,N'2017.10.01',	N'60342',	7100);
 	EXEC [api].[Resources__Save] --  N'raw-materials'
-		@ResourceDefinitionId = N'raw-materials',
+		@DefinitionId = N'raw-materials',
 		@Resources = @R3,
 	--	@Picks = @RP3,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

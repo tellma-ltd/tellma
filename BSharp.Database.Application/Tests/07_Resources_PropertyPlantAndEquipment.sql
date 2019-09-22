@@ -39,7 +39,7 @@
 	(3,1,	N'2017.10.15',	N'104', N'Toyota Minivan 2016, Plate LM999812');
 
 	EXEC [api].[Resources__Save] -- N'property-plant-and-equipment'
-		@ResourceDefinitionId = N'property-plant-and-equipment',
+		@DefinitionId = N'property-plant-and-equipment',
 		@Resources = @R5,
 --		@Picks = @RP5,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

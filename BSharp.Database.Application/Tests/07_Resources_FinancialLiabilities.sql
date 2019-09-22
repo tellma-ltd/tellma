@@ -18,7 +18,7 @@
 	(0, @RCFL,	N'Common Stock',	N'CMNSTCK',		@shareUnit, N'USD'),
 	(1, @RCFL,	N'Premium Stock',	N'PRMMSTCK',	@shareUnit, N'USD');
 	EXEC [api].[Resources__Save] -- N'financial-liabilities'
-		@ResourceDefinitionId = N'financial-liabilities',
+		@DefinitionId = N'financial-liabilities',
 		@Resources = @R7,
 	--	@Picks = @RP7,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

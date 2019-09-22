@@ -4,8 +4,8 @@ DECLARE @D11Ids dbo.[IdList], @D12Ids dbo.[IdList], @D13Ids dbo.[IdList];
 
 BEGIN -- Inserting
 	INSERT INTO @D11([Index],
-	[DocumentDate],	[SortKey], [Memo],				[EvidenceTypeId]) VALUES (
-	0, '2017.01.01',	1,		N'Capital investment', N'Attachment'
+	[DocumentDate],	[SortKey], [Memo]) VALUES (
+	0, '2017.01.01',	1,		N'Capital investment'
 	);
 	INSERT INTO @L11([Index], [DocumentIndex],
 				[LineTypeId], [SortKey]) VALUES
@@ -36,8 +36,8 @@ END
 
 --IF (1=0)
 --BEGIN -- Updating document and deleting lines/entries
---	INSERT INTO @D12([Index], [Id], [DocumentDate],	[Memo], [EvidenceTypeId])
---	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id], [DocumentDate],	[Memo], [EvidenceTypeId] 
+--	INSERT INTO @D12([Index], [Id], [DocumentDate],	[Memo])
+--	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id], [DocumentDate],	[Memo]
 --	FROM dbo.Documents
 --	WHERE [DocumentDefinitionId] = N'manual-journals' AND [SerialNumber] = 1;
 

@@ -8,8 +8,8 @@ Missing
 	- Deactivating
 */
 BEGIN -- Cleanup & Declarations
-	DECLARE @R8 [dbo].ResourceList, @R9 [dbo].ResourceList, @R10 [dbo].ResourceList;
-	DECLARE   @RP8 [dbo].ResourcePickList, @RP9 [dbo].ResourcePickList, @RP10 [dbo].ResourcePickList;
+	DECLARE @R9 [dbo].ResourceList, @R10 [dbo].ResourceList;
+	DECLARE @RP9 [dbo].ResourcePickList, @RP10 [dbo].ResourcePickList;
 	DECLARE @R1Ids dbo.[IdList], @R2Ids dbo.[IdList], @R3Ids dbo.[idList];
 	DECLARE @R1IndexedIds dbo.IndexedIdList, @R2IndexedIds dbo.IndexedIdList, @R3IndexedIds dbo.IndexedIdList;
 
@@ -36,7 +36,8 @@ END
 	(18,N'cash-and-cash-equivalents',		N'Cash and cash equivalents',			N'CashAndCashEquivalents'),
 	(19,N'financial-liabilities',			N'Financial liabilities',				N'FinancialLiabilities'),
 	(20,N'issued-checks',					N'Checks (issued)',						N'FinancialLiabilities'),
-	(21,N'issued-letters-of-credit',		N'Letters of credit (issued)',			N'FinancialLiabilities')
+	(21,N'issued-letters-of-credit',		N'Letters of credit (issued)',			N'FinancialLiabilities'),
+	(21,N'employee-benefits',				N'Employee benefits',					N'EmployeeBenefitsExpense')
 	;
 
 	UPDATE RC_Child -- Fix Parent Id
@@ -57,6 +58,7 @@ BEGIN -- Inserting
 	:r .\07_Resources_Vehicles.sql
 	:r .\07_Resources_Cash.sql
 	:r .\07_Resources_FinancialLiabilities.sql
+	:r .\07_Resources_EmployeeBenefits.sql
 	
 	IF @DebugResources = 1
 	BEGIN
@@ -80,14 +82,7 @@ BEGIN -- Inserting
 
 
 
---INSERT INTO @R1 ([Index],
---[IfrsResourceClassificationId],	[Name],					[Code],		[SystemCode],	[UnitId]) VALUES
---	(14, N'wages-and-salaries',	N'Basic',			NULL,		N'Basic',		@moUnit),
---	(15, N'wages-and-salaries',	N'Transportation',	NULL,		N'Transportation',@moUnit),
---	(16, N'wages-and-salaries',	N'Holiday Overtime',NULL,		N'HolidayOvertime',@hrUnit),
---	(17, N'wages-and-salaries',	N'Rest Overtime',	NULL,		N'RestOvertime',@hrUnit),
---	(18, N'wages-and-salaries',	N'Labor (hourly)',	NULL,		N'LaborHourly',	@hrUnit),
---	(19, N'wages-and-salaries',	N'Labor (daily)',	NULL,		N'LaborDaily',	@dayUnit),
+
 --	(20, N'PPEServices',		N'Girgi Office',	N'Goff',	NULL,			@moUnit),
 --	(21, N'PPEServices',		N'Car 101 - Svc',	N'101D',	NULL,			@moUnit),
 --	(22, N'PPEServices',		N'Car 102 - Svc',	N'102D',	NULL,			@dayUnit);
@@ -182,8 +177,8 @@ END
 
 DECLARE @ETB int, @USD int, @CommonStock int;
 DECLARE @Camry2018 int, @Cotton int, @TeddyBear int, @Car1 int, @Car2 int;
---DECLARE @HOvertime int, @ROvertime int, @Basic int, @Transportation int, 
---		@LaborHourly int, @LaborDaily int, @Car1Svc int, @GOff int;
+DECLARE @HOvertime int, @ROvertime int, @Basic int, @Transportation int, 
+		@LaborHourly int, @LaborDaily int;--, @Car1Svc int, @GOff int;
 DECLARE @HR1000x1_9 INT, @CR1000x1_4 INT;
 DECLARE @Oil INT, @Diesel INT;
 
@@ -198,12 +193,12 @@ SELECT
 	@Cotton = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Cotton'),
 	@TeddyBear = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Teddy bear'),
 	@CommonStock = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Common Stock'),
-	--@HOvertime = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'HolidayOvertime'),
-	--@ROvertime = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'RestOvertime'),
-	--@Basic = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Basic'),
-	--@Transportation = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Transportation'),
-	--@LaborHourly = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborHourly'),
-	--@LaborDaily = (SELECT [Id] FROM [dbo].[Resources] WHERE [SystemCode] = N'LaborDaily'),
+	@HOvertime = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Holiday Overtime'),
+	@ROvertime = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Rest Overtime'),
+	@Basic = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Basic'),
+	@Transportation = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Transportation'),
+	@LaborHourly = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Labor (Hourly)'),
+	@LaborDaily = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Labor (Daily)'),
 	@HR1000x1_9 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'HR1000x1.9'),
 	@CR1000x1_4 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'CR1000x1.4'),
 	@Oil = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Oil'),

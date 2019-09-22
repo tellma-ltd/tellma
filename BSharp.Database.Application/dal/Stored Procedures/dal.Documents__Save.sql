@@ -18,7 +18,7 @@ BEGIN
 		MERGE INTO [dbo].[Documents] AS t
 		USING (
 			SELECT 
-				[Index], [Id], [DocumentDate], [VoucherNumericReference], [SortKey], [Memo], [EvidenceTypeId], [Frequency], [Repetitions],
+				[Index], [Id], [DocumentDate], [VoucherNumericReference], [SortKey], [Memo], [Frequency], [Repetitions],
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DocumentDefinitionId] = @DefinitionId
@@ -32,7 +32,6 @@ BEGIN
 				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
 				t.[SortKey]					= s.[SortKey],
 				t.[Memo]					= s.[Memo],
-				t.[EvidenceTypeId]			= s.[EvidenceTypeId],
 				t.[Frequency]				= s.[Frequency],
 				t.[Repetitions]				= s.[Repetitions],
 
@@ -40,10 +39,10 @@ BEGIN
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[DocumentDefinitionId], [SerialNumber], [DocumentDate], [VoucherNumericReference], [SortKey], [Memo], [EvidenceTypeId], [Frequency], [Repetitions]
+				[DocumentDefinitionId], [SerialNumber], [DocumentDate], [VoucherNumericReference], [SortKey], [Memo], [Frequency], [Repetitions]
 			)
 			VALUES (
-				@DefinitionId, s.[SerialNumber], s.[DocumentDate], s.[VoucherNumericReference], s.[SortKey], s.[Memo], s.[EvidenceTypeId], s.[Frequency], s.[Repetitions]
+				@DefinitionId, s.[SerialNumber], s.[DocumentDate], s.[VoucherNumericReference], s.[SortKey], s.[Memo], s.[Frequency], s.[Repetitions]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
