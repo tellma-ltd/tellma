@@ -3,7 +3,6 @@
 	[DocumentLineIndex]		INT					NOT NULL DEFAULT 0,
 	[DocumentIndex]			INT					NOT NULL DEFAULT 0,
 	[Id]					INT					NOT NULL DEFAULT 0,
-	[DocumentLineId]		INT					NOT NULL DEFAULT 0,
 	[EntryNumber]			INT					NOT NULL DEFAULT 1,
 	[Direction]				SMALLINT			NOT NULL,
 	[AccountId]				INT					NOT NULL,
