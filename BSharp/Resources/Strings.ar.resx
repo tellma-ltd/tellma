@@ -89,7 +89,7 @@
     <value>مؤسسة</value>
   </data>
   <data name="Agent_AgentType_System" xml:space="preserve">
-    <value>System</value>
+    <value>آلة</value>
   </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>الجنس</value>
@@ -837,6 +837,12 @@
   </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>اللغة الثالثة</value>
+  </data>
+  <data name="Settings_TernaryLanguage" xml:space="preserve">
+    <value>اللغة الثالثة</value>
+  </data>
+  <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
+    <value>رمز اللغة الثالثة</value>
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>رمز اللغة الثالثة</value>

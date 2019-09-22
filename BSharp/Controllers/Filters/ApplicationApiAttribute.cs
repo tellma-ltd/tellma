@@ -248,6 +248,8 @@ namespace BSharp.Controllers
                             TitlePlural2 = "سلع مصنعة",
                             TitleSingular = "Finished Good",
                             TitleSingular2 = "سلعة مصنعة",
+                            TitlePlural3 = "完成品",
+                            TitleSingular3 = "成品",
                             MainMenuIcon = "truck",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 204m,

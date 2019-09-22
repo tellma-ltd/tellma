@@ -81,6 +81,16 @@
               <div *ngIf="!isEdit">{{ model?.ShortCompanyName2 }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName2"
                 [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+            </b-form-group>            
+
+            <!-- Short Company Name 3 -->
+            <b-form-group class="b-form-group" *ngIf="model.TernaryLanguageId"
+              [label]="('Settings_ShortCompanyName' | translate) + ternaryPostfix"
+              [description]="'Settings_ShortCompanyNameDescription' | translate"
+              [serverErrors]="validationErrors.ShortCompanyName3">
+              <div *ngIf="!isEdit">{{ model?.ShortCompanyName3 }}</div>
+              <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName3"
+                [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
             </b-form-group>
 
             <!-- Primary Language -->
@@ -88,7 +98,8 @@
               [description]="'Settings_PrimaryLanguageDescription' | translate"
               [serverErrors]="validationErrors.PrimaryLanguageId">
               <div *ngIf="!isEdit">{{ cultureName(model?.PrimaryLanguageId) || '-' }}</div>
-              <b-selector *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageId" [choices]="cultures" required></b-selector>
+              <b-selector *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageId" [choices]="cultures" required>
+              </b-selector>
             </b-form-group>
 
             <!-- Secondary Language -->
@@ -96,7 +107,17 @@
               [description]="'Settings_SecondaryLanguageDescription' | translate"
               [serverErrors]="validationErrors.SecondaryLanguageId">
               <div *ngIf="!isEdit">{{ cultureName(model?.SecondaryLanguageId) || '-' }}</div>
-              <b-selector *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageId" [choices]="cultures" isOptional="true"></b-selector>
+              <b-selector *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageId" [choices]="cultures" isOptional="true">
+              </b-selector>
+            </b-form-group>
+
+            <!-- Ternary Language -->
+            <b-form-group class="b-form-group" [label]="'Settings_TernaryLanguage' | translate"
+              [description]="'Settings_TernaryLanguageDescription' | translate"
+              [serverErrors]="validationErrors.TernaryLanguageId">
+              <div *ngIf="!isEdit">{{ cultureName(model?.TernaryLanguageId) || '-' }}</div>
+              <b-selector *ngIf="isEdit" [(ngModel)]="model.TernaryLanguageId" [choices]="cultures" isOptional="true">
+              </b-selector>
             </b-form-group>
 
             <!-- Primary Language Symbol -->
@@ -116,6 +137,16 @@
               [serverErrors]="validationErrors.SecondaryLanguageSymbol">
               <div *ngIf="!isEdit">{{ model?.SecondaryLanguageSymbol || '-' }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageSymbol"
+                [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+            </b-form-group>
+            
+            <!-- Ternary Language Symbol -->
+            <b-form-group class="b-form-group" *ngIf="model.TernaryLanguageId"
+              [label]="'Settings_TernaryLanguageSymbol' | translate"
+              [description]="'Settings_LanguageSymbolDescription' | translate"
+              [serverErrors]="validationErrors.TernaryLanguageSymbol">
+              <div *ngIf="!isEdit">{{ model?.TernaryLanguageSymbol || '-' }}</div>
+              <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TernaryLanguageSymbol"
                 [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
             </b-form-group>
           </div>

@@ -63,7 +63,7 @@
             {{ 'ProductCategories' | translate }}
           </a>
         </li> 
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./resources/raw-materials" (click)="onCollapse()">
             {{ 'Raw Materials' | translate }}
@@ -74,14 +74,14 @@
             routerLink="./resources/finished-goods" (click)="onCollapse()">
             {{ 'Finished Goods' | translate }}
           </a>
-        </li>
+        </li> -->
         <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./currencies"
             (click)="onCollapse()">
             {{ 'Currencies' | translate }}
           </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./resource-lookups/colors" (click)="onCollapse()">
             {{ 'Colors' | translate }}
@@ -92,7 +92,7 @@
             routerLink="./resource-lookups/thicknesses" (click)="onCollapse()">
             {{ 'Thicknesses' | translate }}
           </a>
-        </li>
+        </li> -->
         <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100" routerLink="./settings"
             (click)="onCollapse()">
@@ -130,8 +130,8 @@
                 {{ settings?.SecondaryLanguageName }}
               </button>
               <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isTernaryLanguage && !!ws.settings?.TernaryLanguageId" (click)="onSecondary();onCollapse()">
-                {{ settings?.SecondaryLanguageName }}
+                *ngIf="!ws.isTernaryLanguage && !!ws.settings?.TernaryLanguageId" (click)="onTernary();onCollapse()">
+                {{ settings?.TernaryLanguageName }}
               </button>
               <hr />
             </ng-container>
