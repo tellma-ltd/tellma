@@ -42,11 +42,11 @@ BEGIN
 		GROUP BY [AgentId]
 	) EA ON EIT.AgentId = EA.[AgentId];
 	   
-	INSERT INTO @Lines ([Index], [DocumentIndex], [LineTypeId],[SortKey])
-	SELECT	[DocumentLineIndex], 0 AS [DocumentIndex], N'PaysheetLine', [DocumentLineIndex] 
+	INSERT INTO @Lines ([Index], [DocumentIndex])
+	SELECT	[DocumentLineIndex], 0 AS [DocumentIndex]
 	FROM @Entries
 	GROUP BY [DocumentLineIndex];
 
-	INSERT INTO @Documents([SortKey]) VALUES(1);
-	SELECT * FROM @Documents; SELECT * FROM @Lines; SELECT * FROM @Entries;
+	INSERT INTO @Documents([DocumentDate]) VALUES(DEFAULT);
+	SELECT * FROM @Documents; SELECT *,  N'PaysheetLine' AS [LineDefinitionId] FROM @Lines; SELECT * FROM @Entries;
 END

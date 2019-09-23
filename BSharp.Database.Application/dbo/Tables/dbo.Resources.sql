@@ -17,7 +17,7 @@
 	--									)
 	--								),
 	-- The resource definition defines the specs. Managed by User
-	[ResourceDefinitionId]			NVARCHAR (255)		NOT NULL CONSTRAINT [FK_Resources__ResourceDefinitionId] FOREIGN KEY ([ResourceDefinitionId]) REFERENCES [dbo].[ResourceDefinitions] ([Id]),	
+	[ResourceDefinitionId]			NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Resources__ResourceDefinitionId] FOREIGN KEY ([ResourceDefinitionId]) REFERENCES [dbo].[ResourceDefinitions] ([Id]),	
 	[ResourceClassificationId]		INT					CONSTRAINT [FK_Resources__ResourceClassificationId] FOREIGN KEY ([ResourceClassificationId]) REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[Name]							NVARCHAR (255)		NOT NULL CONSTRAINT [CX_Resources__Name] UNIQUE,
 	[Name2]							NVARCHAR (255),

@@ -13,26 +13,14 @@
 	[Name2]										NVARCHAR (255),
 	[Name3]										NVARCHAR (255),
 	-- To import accounts, or to control sort order, a code is required. Otherwise, it is not.
-	[Code]										NVARCHAR (30)		CONSTRAINT [CK_Accounts__Code] UNIQUE,
+	[Code]										NVARCHAR (50)		CONSTRAINT [CK_Accounts__Code] UNIQUE,
 	[PartyReference]							NVARCHAR (255), -- how it is referred to by the other party
-	-- necessary to generate notes such as cash flow (direct), statement of change of equity, notes on non current assets
-	-- notes on expenses by nature, etc.
-	[IsMultiEntryClassification]				BIT					NOT NULL DEFAULT 1,
+	-- if set here, it is forced in the Entries table and cannot be changed
 	[IfrsEntryClassificationId]					NVARCHAR (255)		CONSTRAINT [FK_Accounts__IfrsEntryClassificationId] FOREIGN KEY ([IfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),
-	-- to link several accounts to the same agent.
-	[IsMultiAgent]								BIT					NOT NULL DEFAULT 0,
-	[AgentId]									INT					CONSTRAINT [FK_Accounts__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),
-	-- The business segment that "owns" the asset/liablity, and whose performance is assessed by the revenue/expense
--- I propose making it part of the account, especially to track budget. Jiad complained about opening accounts
--- also, smart sales posting is easier since a resource can tell the nature of expense, but not the responsibility center
-	-- called SegmentId in B10. When not needed, we use the entity itself.
-	[IsMultiResponsibilityCenter]				BIT					NOT NULL DEFAULT 0,
-	[ResponsibilityCenterId]					INT					DEFAULT CONVERT(INT, SESSION_CONTEXT(N'BusinessEntityId')) CONSTRAINT [FK_Accounts__ResponsibilityCenterId] FOREIGN KEY ([ResponsibilityCenterId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
-	-- The resource being tracked in the account
-	[IsMultiResource]							BIT					NOT NULL DEFAULT 1,
-	[ResourceId]								INT					,--DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_Accounts__DefaultResourceId] REFERENCES [dbo].[Resources] ([Id]),
-	-- The measures being tracked by the account, over and above the value in functional currency
-		
+	[HasMultiAgent]								BIT					NOT NULL DEFAULT 0,	
+	[HasMultiResource]							BIT					NOT NULL DEFAULT 0,	
+	[HasMultiResponsibilityCenter]				BIT					NOT NULL DEFAULT 0,	
+	[HasMultiLocation]							BIT					NOT NULL DEFAULT 0,	
 	-- To transfer a document from requested to authorized, we need an evidence that the responsible actor
 	-- has authorized it. If responsibility changes frequently, we use roles. 
 	-- However, if responsibility center can be external to account, we may have to move these
@@ -51,10 +39,6 @@
 	CONSTRAINT [CK_Accounts__ExpenseByNatureIsRequired] CHECK(
 		([IfrsAccountClassificationId] NOT IN (N'CostOfSales', N'DistributionCosts', N'AdministrativeExpense'))
 		OR ([IfrsEntryClassificationId] IS NOT NULL) -- from IfrsExpenseFunction
-	),
-	CONSTRAINT [CK_Account__MultiAgent] CHECK ([IsMultiAgent] = 0 OR [AgentId] IS NULL),
-	CONSTRAINT [CK_Account__MultiEntryClassification] CHECK ([IsMultiEntryClassification] = 0 OR [IfrsEntryClassificationId] IS NULL),
-	CONSTRAINT [CK_Account__MultiResponsibilityCenter] CHECK ([IsMultiResponsibilityCenter] = 0 OR [ResponsibilityCenterId] IS NULL),
-	CONSTRAINT [CK_Account__MultiResource] CHECK ([IsMultiResource] = 0 OR [ResourceId] IS NULL)
+	)
 );
 GO

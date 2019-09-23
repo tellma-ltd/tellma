@@ -41,11 +41,11 @@ BEGIN
 	FROM ExchangeVarianceEntries E 
 	JOIN LineIndices L ON E.AgentId = L.AgentId AND E.AccountId = L.AccountId AND E.ResourceId = L.ResourceId
 
-	INSERT INTO @Lines ([Index], [DocumentIndex], [LineTypeId],[SortKey])
-	SELECT	[DocumentLineIndex], 0 AS [DocumentIndex], N'ManualLine', [DocumentLineIndex] 
+	INSERT INTO @Lines ([Index], [DocumentIndex])
+	SELECT	[DocumentLineIndex], 0 AS [DocumentIndex]
 	FROM @Entries
 	GROUP BY [DocumentLineIndex];
 
-	INSERT INTO @Documents([DocumentDate], [SortKey]) VALUES(@DocumentDate, 1);
-	SELECT * FROM @Documents; SELECT * FROM @Lines; SELECT * FROM @Entries;
+	INSERT INTO @Documents([DocumentDate]) VALUES(@DocumentDate);
+	SELECT * FROM @Documents; SELECT *, N'ManualLine' As [LineDefinitionId] FROM @Lines; SELECT * FROM @Entries;
 END

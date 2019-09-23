@@ -707,7 +707,7 @@ INSERT INTO @WideLineTypesSpecifications(
 	-- depends on whether IsCommonCustomerAccountId is true or false.
 	NULL, N'!Document.CustomerAccountId' -- Related Account
 );
-MERGE dbo.LineTypes AS t
+MERGE dbo.[LineDefinitions] AS t
 USING (
 	SELECT [id], [DocumentCategory] FROM @LineTypes
 	) AS s

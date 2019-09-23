@@ -16,13 +16,58 @@ SET
 		CASE
 			WHEN A.[IfrsEntryClassificationId] IS NOT NULL THEN A.[IfrsEntryClassificationId]
 			ELSE E.IfrsEntryClassificationId
-		END,
-	E.AgentId = CASE WHEN A.AgentId IS NOT NULL THEN A.AgentId ELSE E.AgentId END,
-	E.ResponsibilityCenterId = CASE WHEN A.ResponsibilityCenterId IS NOT NULL THEN A.ResponsibilityCenterId ELSE E.ResponsibilityCenterId END,
-	E.ResourceId = CASE WHEN A.ResourceId IS NOT NULL THEN A.ResourceId ELSE E.ResourceId END
+		END
 FROM @FilledEntries E
 JOIN dbo.Accounts A ON E.AccountId = A.Id
-WHERE (A.[IfrsEntryClassificationId] IS NOT NULL) OR (A.AgentId IS NOT NULL) OR (A.ResponsibilityCenterId IS NOT NULL) OR (A.ResourceId IS NOT NULL)
+WHERE (A.[IfrsEntryClassificationId] IS NOT NULL)
+
+UPDATE E
+SET E.AgentId = A.AccountId
+FROM @FilledEntries E
+JOIN dbo.AccountsAgents A ON E.AccountId = A.AccountId
+WHERE E.AgentId IS NULL 
+AND A.AccountId IN (
+	SELECT [AccountId] 
+	FROM dbo.AccountsAgents T
+	GROUP BY [AccountId]
+	HAVING COUNT(*) = 1
+);
+
+UPDATE E
+SET E.ResourceId = A.ResourceId
+FROM @FilledEntries E
+JOIN dbo.AccountsResources A ON E.AccountId = A.AccountId
+WHERE E.ResourceId IS NULL 
+AND A.AccountId IN (
+	SELECT [AccountId] 
+	FROM dbo.AccountsResources T
+	GROUP BY [AccountId]
+	HAVING COUNT(*) = 1
+);
+
+UPDATE E
+SET E.ResponsibilityCenterId = A.ResponsibilityCenterId
+FROM @FilledEntries E
+JOIN dbo.AccountsResponsibilityCenters A ON E.AccountId = A.AccountId
+WHERE E.ResponsibilityCenterId IS NULL 
+AND A.AccountId IN (
+	SELECT [AccountId] 
+	FROM dbo.AccountsResponsibilityCenters T
+	GROUP BY [AccountId]
+	HAVING COUNT(*) = 1
+);
+
+UPDATE E
+SET E.LocationId = A.LocationId
+FROM @FilledEntries E
+JOIN dbo.AccountsLocations A ON E.AccountId = A.AccountId
+WHERE E.LocationId IS NULL 
+AND A.AccountId IN (
+	SELECT [AccountId] 
+	FROM dbo.AccountsLocations T
+	GROUP BY [AccountId]
+	HAVING COUNT(*) = 1
+);
 
 -- for financial amounts in functional currency, the value is known
 UPDATE E 

@@ -15,8 +15,8 @@ SET NOCOUNT ON;
 		USING (
 			SELECT
 				[Index], [Id], [AccountClassificationId], [IfrsAccountClassificationId],
-				[Name], [Name2], [Name3], [Code], [PartyReference], [AgentId],
-				[IfrsEntryClassificationId], [ResponsibilityCenterId], [ResourceId]
+				[Name], [Name2], [Name3], [Code], [PartyReference],-- [AgentId],
+				[IfrsEntryClassificationId]--, [ResponsibilityCenterId], [ResourceId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -30,18 +30,20 @@ SET NOCOUNT ON;
 				t.[Code]							= s.[Code],
 				t.[PartyReference]					= s.[PartyReference],
 				t.[IfrsEntryClassificationId]		= s.[IfrsEntryClassificationId],
-				t.[ResponsibilityCenterId]			= s.[ResponsibilityCenterId],
-				t.[AgentId]							= s.[AgentId],
-				t.[ResourceId]						= s.[ResourceId],
+				--t.[ResponsibilityCenterId]			= s.[ResponsibilityCenterId],
+				--t.[AgentId]							= s.[AgentId],
+				--t.[ResourceId]						= s.[ResourceId],
 				t.[ModifiedAt]						= @Now,
 				t.[ModifiedById]					= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([AccountClassificationId], [IfrsAccountClassificationId],
-				[Name], [Name2], [Name3], [Code], [PartyReference], [AgentId],
-				[IfrsEntryClassificationId], [ResponsibilityCenterId], [ResourceId])
+				[Name], [Name2], [Name3], [Code], [PartyReference],-- [AgentId],
+				[IfrsEntryClassificationId]--, [ResponsibilityCenterId], [ResourceId]
+				)
 			VALUES (s.[AccountClassificationId], s.[IfrsAccountClassificationId],
-				s.[Name], s.[Name2], s.[Name3], s.[Code], s.[PartyReference], s.[AgentId],
-				s.[IfrsEntryClassificationId], s.[ResponsibilityCenterId], s.[ResourceId])
+				s.[Name], s.[Name2], s.[Name3], s.[Code], s.[PartyReference], --s.[AgentId],
+				s.[IfrsEntryClassificationId]--, s.[ResponsibilityCenterId], s.[ResourceId]
+				)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x
 	OPTION (RECOMPILE);

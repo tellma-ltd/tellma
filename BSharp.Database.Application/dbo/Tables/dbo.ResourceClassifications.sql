@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[ResourceClassifications]
 (
 	[Id]							INT					PRIMARY KEY NONCLUSTERED IDENTITY,
-	[ResourceDefinitionId]			NVARCHAR(255)		NOT NULL CONSTRAINT [FK_ResourceClassifications__ResourceDefinitionId] FOREIGN KEY ([ResourceDefinitionId]) REFERENCES [dbo].[ResourceDefinitions] ([Id]),
+	[ResourceDefinitionId]			NVARCHAR(50)		NOT NULL CONSTRAINT [FK_ResourceClassifications__ResourceDefinitionId] FOREIGN KEY ([ResourceDefinitionId]) REFERENCES [dbo].[ResourceDefinitions] ([Id]),
 	[ParentId]						INT					CONSTRAINT [FK_ResourceClassifications__ParentId] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[IsLeaf]						BIT					NOT NULL DEFAULT 1,
 	[Name]							NVARCHAR(255)		NOT NULL,

@@ -1,16 +1,17 @@
 ﻿CREATE TYPE [dbo].DocumentLineEntryList AS TABLE (
 	[Index]					INT					PRIMARY KEY,-- IDENTITY (0,1),
-	[DocumentLineIndex]		INT					NOT NULL DEFAULT 0,
+	[DocumentLineIndex]		INT					NOT NULL DEFAULT 0 INDEX IX_DocumentEntryList_DocumentLineIndex ([DocumentLineIndex]),
 	[DocumentIndex]			INT					NOT NULL DEFAULT 0,
 	[Id]					INT					NOT NULL DEFAULT 0,
 	[EntryNumber]			INT					NOT NULL DEFAULT 1,
-	[Direction]				SMALLINT			NOT NULL,
+	[Direction]				SMALLINT			NOT NULL CHECK ([Direction] IN (-1, 1)),
 	[AccountId]				INT					NOT NULL,
 	[IfrsEntryClassificationId]					NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
 	[AgentId]				INT,
 	[ResponsibilityCenterId]INT,			
-	[ResourceId]			INT					DEFAULT CONVERT(INT, SESSION_CONTEXT(N'FunctionalCurrencyId')), -- because it may be specified by Account				
+	[ResourceId]			INT,
 	[ResourcePickId]		INT,
+	[LocationId]			INT,
 	[BatchCode]				NVARCHAR (255),
 	[DueDate]				DATE,
 	[MonetaryValue]			MONEY				NOT NULL DEFAULT 0, -- Amount in foreign Currency 
@@ -20,9 +21,5 @@
 	[Length]				DECIMAL				NOT NULL DEFAULT 0, 
 	[Time]					DECIMAL				NOT NULL DEFAULT 0, -- ServiceTimeUnit
 	[Count]					DECIMAL				NOT NULL DEFAULT 0, -- CountUnit
-	[Value]					VTYPE				NOT NULL DEFAULT 0, -- equivalent in functional currency
-
-
-	INDEX IX_DocumentEntryList_DocumentLineIndex ([DocumentLineIndex]),
-	CHECK ([Direction] IN (-1, 1))
+	[Value]					VTYPE				NOT NULL DEFAULT 0 -- equivalent in functional currency
 );

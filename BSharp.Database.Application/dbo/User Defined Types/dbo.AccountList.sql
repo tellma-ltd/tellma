@@ -9,10 +9,8 @@
 	[Code]							NVARCHAR (255) INDEX IX_Code UNIQUE,
 	[PartyReference]				NVARCHAR (255),
 	[IfrsEntryClassificationId]		NVARCHAR (255),
-	[IsMultiAgent]					BIT				NOT NULL DEFAULT 0,
-	[AgentId]						INT,
-	[IsMultiResponsibilityCenter]	BIT				NOT NULL DEFAULT 0,
-	[ResponsibilityCenterId]		INT,
-	[IsMultiResource]				BIT				NOT NULL DEFAULT 1,
-	[ResourceId]					INT
+	[HasMultiAgent]					BIT				NOT NULL DEFAULT 0,
+	[HasMultiResource]				BIT				NOT NULL DEFAULT 0,
+	[HasMultiResponsibilityCenter]	BIT				NOT NULL DEFAULT 0,
+	[HasMultiLocation]				BIT				NOT NULL DEFAULT 0
 );

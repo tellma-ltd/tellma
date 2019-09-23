@@ -14,6 +14,9 @@
 	-- Note that the responsibility center might define the Ifrs Note
 	[IfrsEntryClassificationId]	NVARCHAR (255)	CONSTRAINT [FK_DocumentLineEntries__IfrsEntryClassifications]	FOREIGN KEY ([IfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),	
 	[AgentId]					INT				CONSTRAINT [FK_DocumentLineEntries__AgentId]					FOREIGN KEY ([AgentId])	REFERENCES [dbo].[Agents] ([Id]),
+	-- The business segment that "owns" the asset/liablity, and whose performance is assessed by the revenue/expense
+	-- Smart sales posting is easier since a resource can tell the nature of expense, but not the responsibility center
+	-- called SegmentId in B10. When not needed, we use the entity itself.
 	[ResponsibilityCenterId]	INT				CONSTRAINT [FK_DocumentLineEntries__ResponsibilityCenterId]		FOREIGN KEY ([ResponsibilityCenterId])	REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 -- Resource is defined as
 --	The actual asset, liability
@@ -27,6 +30,7 @@
 --  Used for tracking of raw materials, production supplies, and finished goods.
 --	We always show the non zero balances per triplet (ResourceId, InstanceId, BatchCode)
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
+	[LocationId]				INT				CONSTRAINT [FK_DocumentLineEntries__LocationId] FOREIGN KEY ([LocationId])	REFERENCES [dbo].[Locations] ([Id]),
 	[BatchCode]					NVARCHAR (255),
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings
 -- Tracking additive measures, the data type is to be decided by AA

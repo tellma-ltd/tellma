@@ -1,6 +1,6 @@
 ﻿CREATE FUNCTION [dbo].[fn_User__Language]( -- TODO: What is this?
 	@Culture NVARCHAR (255),
-	@Neutralculture NVARCHAR (255)
+	@NeutralCulture NVARCHAR (255)
 )
 RETURNS INT
 AS

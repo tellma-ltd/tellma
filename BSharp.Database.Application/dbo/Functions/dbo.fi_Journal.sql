@@ -17,7 +17,7 @@ RETURN
 		V.[SerialNumber],
 		V.[VoucherNumericReference],
 		V.[DocumentDefinitionId],
-		V.[LineTypeId],
+		V.[LineDefinitionId],
 		V.[Direction],
 		V.[AccountId],
 		V.[IfrsAccountClassificationId],

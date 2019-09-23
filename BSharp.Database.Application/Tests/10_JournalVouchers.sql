@@ -21,9 +21,7 @@ SELECT @fromDate = '2017.01.01', @toDate = '2017.01.31'
 --SELECT count(*) FROM dbo.Documents;-- SELECT * FROM dbo.DocumentLines; SELECT * FROM dbo.DocumentLineEntries;
 
 SELECT
-	[Id], [AccountClassificationId], [Name], [Code],
-	[IsMultiEntryClassification], [IfrsEntryClassificationId],
-	[IsMultiAgent], [AgentId],[IsMultiResponsibilityCenter], [ResponsibilityCenterId], [IsMultiResource], [ResourceId]
+	[Id], [AccountClassificationId], [Name], [Code]
 FROM dbo.Accounts;
 INSERT INTO @D11Ids([Id]) SELECT [Id] FROM dbo.Documents;
 --SELECT * FROM rpt.Documents(@D11Ids) ORDER BY [SortKey], [EntryNumber];
@@ -43,7 +41,7 @@ WITH Docs AS (
 			D.[Memo],
 			DL.[Id] As [LineId],
 			DL.[SortKey] AS [LineSortKey],
-			DL.[LineTypeId],
+			DL.[LineDefinitionId],
 			DLE.[Direction],
 			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[IfrsEntryClassificationId],
 			RC.[Name] AS [ResponsibilityCenter],

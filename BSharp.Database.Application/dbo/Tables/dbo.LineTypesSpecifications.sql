@@ -105,5 +105,5 @@
 	[RelatedMoneyAmount]			MONEY 				NOT NULL DEFAULT 0, -- e.g., amount subject to tax
 
     CONSTRAINT [PK_LineTypeSpecifications] PRIMARY KEY CLUSTERED ([LineTypeId], [EntryNumber]),
-	CONSTRAINT [FK_LineTypeSpecifications_LineTypes] FOREIGN KEY ([LineTypeId]) REFERENCES [dbo].[LineTypes] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT [FK_LineTypeSpecifications_LineTypes] FOREIGN KEY ([LineTypeId]) REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
 );

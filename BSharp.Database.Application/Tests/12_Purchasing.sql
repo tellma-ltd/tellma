@@ -61,9 +61,9 @@ BEGIN -- Inserting
 
 	WITH GritwiLines AS (
 		SELECT
-			SortKey, LineId, LineTypeId, EntryNumber, Account, IfrsEntryClassificationId, [Resource], Direction, Quantity, [Unit], [Value]
+			SortKey, LineId, [LineDefinitionId], EntryNumber, Account, IfrsEntryClassificationId, [Resource], Direction, Quantity, [Unit], [Value]
 		FROM rpt.Documents(@D21Ids)
-		WHERE LineTypeId = N'GoodReceiptInWithInvoice'
+		WHERE [LineDefinitionId] = N'GoodReceiptInWithInvoice'
 	)
 	SELECT L1.Account As LC, L1.[Resource] As [Item], L1.[Quantity], L1.[Unit], L2.[Quantity] As [Price], L2.[Resource] AS [Currency], L2.[Account] AS [Supplier]
 	FROM (

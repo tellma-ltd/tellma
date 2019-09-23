@@ -6,7 +6,7 @@
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	--[ShortName]					NVARCHAR (255),		-- Nickname
-	[Code]						NVARCHAR (30),
+	[Code]						NVARCHAR (50),
 	[SystemCode]				NVARCHAR (30), -- some used are: anoymous, self, parent
 --	Common
 	[AgentType]					NVARCHAR (30)	NOT NULL	CONSTRAINT [CK_Agents_AgentType] CHECK ([AgentType] IN (N'Individual', N'Organization', N'System')), -- Organization includes Dept, Team

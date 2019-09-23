@@ -377,6 +377,12 @@
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
     <Build Include="api\Stored Procedures\api.Paysheet__Prepare.sql" />
     <Build Include="api\Stored Procedures\api.ExchangeVariances__Prepare.sql" />
+    <Build Include="dbo\Tables\dbo.AccountsAgents.sql" />
+    <Build Include="dbo\Tables\dbo.AccountsResources.sql" />
+    <Build Include="dbo\Tables\dbo.AccountsResponsibilityCenters.sql" />
+    <Build Include="dbo\Tables\dbo.Locations.sql" />
+    <Build Include="dbo\Tables\dbo.LocationDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AccountsLocations.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

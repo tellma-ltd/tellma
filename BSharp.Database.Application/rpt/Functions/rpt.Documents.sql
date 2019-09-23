@@ -18,7 +18,7 @@ RETURN
 			D.[Memo],
 			DL.[Id] As [LineId],
 			DL.[SortKey],
-			DL.[LineTypeId],
+			DL.[LineDefinitionId],
 			DLE.[Direction],
 			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[IfrsEntryClassificationId], 
 			R.[Name] AS [Resource],
@@ -52,7 +52,7 @@ RETURN
 		(CASE WHEN [SortKey] = 1 THEN [Memo] ELSE '' END) AS [Memo],
 		(CASE WHEN [SortKey] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
 		CAST([SortKey] AS TINYINT) AS [SortKey],
-		[LineId], [LineTypeId],
+		[LineId], [LineDefinitionId],
 		[EntryNumber], [Account], [IfrsEntryClassificationId],[Resource], [ResourcePickId],
 		[Direction], [Value], [MonetaryValue], [Currency], [Mass], [MassUnit]
 	FROM Docs;

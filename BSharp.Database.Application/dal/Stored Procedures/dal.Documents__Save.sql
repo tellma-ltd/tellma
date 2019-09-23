@@ -18,7 +18,8 @@ BEGIN
 		MERGE INTO [dbo].[Documents] AS t
 		USING (
 			SELECT 
-				[Index], [Id], [DocumentDate], [VoucherNumericReference], [SortKey], [Memo], [Frequency], [Repetitions],
+				[Index], [Id], [DocumentDate], [VoucherNumericReference], --[SortKey],
+				[Memo], [Frequency], [Repetitions],
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DocumentDefinitionId] = @DefinitionId
@@ -31,17 +32,19 @@ BEGIN
 				t.[DocumentDate]			= s.[DocumentDate],
 				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
 				t.[Memo]					= s.[Memo],
-				t.[Frequency]				= s.[Frequency],
-				t.[Repetitions]				= s.[Repetitions],
+				--t.[Frequency]				= s.[Frequency],
+				--t.[Repetitions]				= s.[Repetitions],
 
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[DocumentDefinitionId], [SerialNumber], [DocumentDate], [VoucherNumericReference], [SortKey], [Memo], [Frequency], [Repetitions]
+				[DocumentDefinitionId], [SerialNumber], [DocumentDate], [VoucherNumericReference],-- [SortKey],
+				[Memo]--, [Frequency], [Repetitions]
 			)
 			VALUES (
-				@DefinitionId, s.[SerialNumber], s.[DocumentDate], s.[VoucherNumericReference], s.[SortKey], s.[Memo], s.[Frequency], s.[Repetitions]
+				@DefinitionId, s.[SerialNumber], s.[DocumentDate], s.[VoucherNumericReference], --s.[SortKey], 
+				s.[Memo]--, s.[Frequency], s.[Repetitions]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
@@ -62,14 +65,14 @@ BEGIN
 	(
 		MERGE INTO BL AS t
 		USING (
-			SELECT L.[Index], L.[Id], DI.Id AS DocumentId, L.[LineTypeId], L.[TemplateLineId], L.[ScalingFactor], L.[SortKey],
+			SELECT L.[Index], L.[Id], DI.Id AS DocumentId, L.[LineDefinitionId], L.[TemplateLineId], L.[ScalingFactor], L.[SortKey],
 					L.[Memo], L.[ExternalReference], L.[AdditionalReference], L.[RelatedResourceId], L.[RelatedAgentId], L.[RelatedMoneyAmount]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
-				t.[LineTypeId]			= s.[LineTypeId],
+				t.[LineDefinitionId]	= s.[LineDefinitionId],
 				t.[TemplateLineId]		= s.[TemplateLineId], 
 				t.[ScalingFactor]		= s.[ScalingFactor],
 				t.[Memo]				= s.[Memo],
@@ -81,10 +84,10 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [LineTypeId], [TemplateLineId], [ScalingFactor], [SortKey]
+			INSERT ([DocumentId], [LineDefinitionId], [TemplateLineId], [ScalingFactor]--, [SortKey]
 				, [Memo],				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount]
 			)
-			VALUES (s.[DocumentId], s.[LineTypeId], s.[TemplateLineId], s.[ScalingFactor], s.[SortKey],
+			VALUES (s.[DocumentId], s.[LineDefinitionId], s.[TemplateLineId], s.[ScalingFactor],-- s.[SortKey],
 			s.[Memo],s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE

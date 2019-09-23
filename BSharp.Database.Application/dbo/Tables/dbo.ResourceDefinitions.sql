@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[ResourceDefinitions]
 (
-	[Id]							NVARCHAR (255)	NOT NULL PRIMARY KEY,
+	[Id]							NVARCHAR (50)	NOT NULL PRIMARY KEY,
 	[Name]							NVARCHAR (255)	NOT NULL,
 
 	[TitleSingular]					NVARCHAR (255),

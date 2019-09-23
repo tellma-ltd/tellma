@@ -5,27 +5,30 @@ AS
 	DECLARE @Entries dbo.DocumentLineEntryList;
 
 	INSERT INTO @Lines(
-		[Id], [DocumentIndex], [DocumentId], [LineTypeId], [TemplateLineId], [ScalingFactor]
+		[Id], [DocumentIndex] --[DocumentId], [LineDefinitionId], [TemplateLineId], [ScalingFactor]
 		)
 	SELECT 
-		[Id], [DocumentIndex], [DocumentId], [LineTypeId], [TemplateLineId], [ScalingFactor]
+		[Id], [DocumentIndex] --[DocumentId], [LineDefinitionId] , [TemplateLineId], [ScalingFactor]
 	FROM @WideLines;
 
 	INSERT INTO @Entries(
 	[DocumentLineIndex], [DocumentIndex], [Id],
-	[DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
+	--[DocumentLineId],
+	[EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
 	[ResourceId], [ResourcePickId], [BatchCode], [DueDate],
 	[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value])
 	SELECT
 	[DocumentLineIndex], [DocumentIndex], [Id],
-	[DocumentLineId], 1, [Direction1], [AccountId1], [IfrsEntryClassificationId1],
+	--[DocumentLineId],
+	1, [Direction1], [AccountId1], [IfrsEntryClassificationId1],
 	[ResourceId1], [InstanceId1], [BatchCode1], [DueDate1],
 	[MoneyAmount1], [Mass1], [Volume1], [Area1], [Length1], [Time1], [Count1], [Value1]
 	FROM @WideLines
 	UNION
 	SELECT
 	[DocumentLineIndex], [DocumentIndex], [Id],
-	[DocumentLineId], 2, [Direction2], [AccountId2], [IfrsEntryClassificationId2],
+--	[DocumentLineId], 
+	2, [Direction2], [AccountId2], [IfrsEntryClassificationId2],
 	[ResourceId2], [InstanceId2], [BatchCode2], [DueDate2],
 	[MoneyAmount2], [Mass2], [Volume2], [Area2], [Length2], [Time2], [Count2], [Value2]
 	FROM @WideLines

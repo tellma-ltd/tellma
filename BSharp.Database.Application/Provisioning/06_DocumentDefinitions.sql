@@ -1,8 +1,11 @@
 ﻿DECLARE @LineDefinitions TABLE (
 	[Id]						NVARCHAR (50)			PRIMARY KEY,
-	[Description]				NVARCHAR (255),
-	[Description2]				NVARCHAR (255),
-	[Description3]				NVARCHAR (255)
+	[TitleSingular]					NVARCHAR (255),
+	[TitleSingular2]				NVARCHAR (255),
+	[TitleSingular3]				NVARCHAR (255),
+	[TitlePlural]					NVARCHAR (255),
+	[TitlePlural2]					NVARCHAR (255),
+	[TitlePlural3]					NVARCHAR (255)
 );
 
 INSERT @LineDefinitions([Id]) VALUES
@@ -12,22 +15,25 @@ INSERT @LineDefinitions([Id]) VALUES
 (N'PaysheetLine'),
 (N'ManualLine');
 
-MERGE [dbo].LineTypes AS t
+MERGE [dbo].[LineDefinitions] AS t
 USING @LineDefinitions AS s
 ON s.Id = t.Id
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Id], [Description], [Description2], [Description3])
-    VALUES (s.[Id], s.[Description], s.[Description2], s.[Description3]);
+    INSERT ([Id], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3])
+    VALUES (s.[Id], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3]);
 
 DECLARE @DocumentDefinitions TABLE (
 	[Id]						NVARCHAR (50)	PRIMARY KEY,
 	[IsSourceDocument]			BIT				DEFAULT (1), -- <=> IsVoucherReferenceRequired
 	--[FinalState]				NVARCHAR(30)	DEFAULT N'Posted',
-	[Description]				NVARCHAR (255),
-	[Description2]				NVARCHAR (255),
-	[Description3]				NVARCHAR (255),
+	[TitleSingular]					NVARCHAR (255),
+	[TitleSingular2]				NVARCHAR (255),
+	[TitleSingular3]				NVARCHAR (255),
+	[TitlePlural]					NVARCHAR (255),
+	[TitlePlural2]					NVARCHAR (255),
+	[TitlePlural3]					NVARCHAR (255),
 	-- UI Specs
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT (3), -- For presentation purposes
@@ -83,21 +89,21 @@ WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
     INSERT (
-		[Id], [IsSourceDocument], [TitleSingular], [TitleSingular2], [TitleSingular3], [Prefix], [NumericalLength],
-		[CustomerLabel], [SupplierLabel], [EmployeeLabel], [FromCustodyAccountLabel], [ToCustodyAccountLabel]
+		[Id], [IsSourceDocument], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
+		[Prefix], [NumericalLength], [CustomerLabel], [SupplierLabel], [EmployeeLabel], [FromCustodyAccountLabel], [ToCustodyAccountLabel]
 	) VALUES (
-		s.[Id], s.[IsSourceDocument], s.[Description], s.[Description2], s.[Description3], s.[Prefix], s.[CodeWidth],
-		s.[CustomerLabel], s.[SupplierLabel], s.[EmployeeLabel], s.[FromCustodyAccountLabel], s.[ToCustodyAccountLabel]
+		s.[Id], s.[IsSourceDocument], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
+		s.[Prefix], s.[CodeWidth], s.[CustomerLabel], s.[SupplierLabel], s.[EmployeeLabel], s.[FromCustodyAccountLabel], s.[ToCustodyAccountLabel]
 	);
 
-DECLARE @DocumentDefinitionsLineTypes TABLE(
+DECLARE @DocumentDefinitionsLineDefinitions TABLE(
 	[DocumentDefinitionid]		NVARCHAR (50), 
-	[LineTypeId]			NVARCHAR (50), 
+	[LineDefinitionId]			NVARCHAR (50), 
 	[IsVisibleByDefault]	BIT,
-	PRIMARY KEY([DocumentDefinitionid], [LineTypeId])
+	PRIMARY KEY([DocumentDefinitionid], [LineDefinitionId])
 );
 
-INSERT @DocumentDefinitionsLineTypes ([DocumentDefinitionid], [LineTypeId], [IsVisibleByDefault]) VALUES
+INSERT @DocumentDefinitionsLineDefinitions ([DocumentDefinitionid], [LineDefinitionId], [IsVisibleByDefault]) VALUES
 	(N'manual-journals', N'ManualLine', 1),
 	(N'purchasing-international', N'GoodReceiptInTransitWithInvoice', 1),
 
