@@ -76,7 +76,7 @@ INSERT @LineTypes ([Id]) VALUES
 	(N'LaborIssue'),						-- [issued to:RelatedAccountAccount], item, Qty, issued from:[FromCustodianAccount:AgentAccount], Batch:RelatedResource, memo
 	(N'LaborConsumption');					-- [responsibility center], item, qty, [consumed by:AgentAccount]
 DECLARE @WideLineTypesSpecifications TABLE (
-	[LineTypeId]					NVARCHAR (255) PRIMARY KEY,
+	[LineDefinitionId]					NVARCHAR (255) PRIMARY KEY,
 
 	[DirectionIsVisible1]			BIT				NOT NULL DEFAULT 0,
 	[DirectionExpression1]			NVARCHAR (255),
@@ -262,7 +262,7 @@ DECLARE @WideLineTypesSpecifications TABLE (
 );
 -- ManualLine
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId], 
+	[LineDefinitionId], 
 	[DirectionIsVisible1], [DirectionExpression1], 
 	[AccountIdIsVisible1], [AccountIdExpression1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
@@ -288,7 +288,7 @@ INSERT INTO @WideLineTypesSpecifications (
 );
 -- CashReceipt.Functional
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
@@ -312,7 +312,7 @@ INSERT INTO @WideLineTypesSpecifications (
 );
 --		CheckReceipt.Functional
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
@@ -342,7 +342,7 @@ INSERT INTO @WideLineTypesSpecifications (
 );
 --		BankReceipt.Functional
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
@@ -368,7 +368,7 @@ INSERT INTO @WideLineTypesSpecifications (
 );
 -- CashIssue.Functional
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
@@ -395,7 +395,7 @@ VALUES (
 -- Here we do not define an instance, because the check is issued to the beneficiary.
 -- If it were issued to the purchasing department, then we would define it as check transfer.
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
@@ -422,7 +422,7 @@ VALUES (
 );
 --		BankIssue.Functional
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
@@ -449,7 +449,7 @@ VALUES (
 );
 -- CashTransfer.Functional
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
@@ -494,7 +494,7 @@ VALUES (
 )
 --		BankTransferToBank.Functional
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
@@ -539,7 +539,7 @@ VALUES (
 )
 --		CheckTransferToBank.Functional
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
@@ -590,7 +590,7 @@ VALUES (
 )
 --		CheckTransferToCustody (e.g., to Purchasing)
 INSERT INTO @WideLineTypesSpecifications (
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
@@ -640,7 +640,7 @@ INSERT INTO @WideLineTypesSpecifications (
 );
 --		GoodIssueWithInvoice
 INSERT INTO @WideLineTypesSpecifications(
-	[LineTypeId],
+	[LineDefinitionId],
 	[DirectionIsVisible1], [DirectionExpression1], [Direction1],
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
@@ -724,7 +724,7 @@ VALUES(s.[Id], s.[DocumentCategory]);
 MERGE [dbo].[LineTypesSpecifications] AS t
 USING (
 SELECT
-	[LineTypeId], 1 As [EntryNumber],
+	[LineDefinitionId], 1 As [EntryNumber],
 	[DirectionIsVisible1] AS [DirectionIsVisible], [DirectionExpression1] AS [DirectionExpression],
 	[DirectionEntryNumber1] AS [DirectionEntryNumber], [Direction1] AS [Direction],
 	[AccountIdIsVisible1] AS [AccountIdIsVisible], [AccountIdFilter1] AS [AccountIdIfrsFilter],
@@ -764,7 +764,7 @@ SELECT
 FROM @WideLineTypesSpecifications 
 UNION ALL
 SELECT
-	[LineTypeId], 2, [DirectionIsVisible2], [DirectionExpression2], [DirectionEntryNumber2],
+	[LineDefinitionId], 2, [DirectionIsVisible2], [DirectionExpression2], [DirectionEntryNumber2],
 	[Direction2], [AccountIdIsVisible2], [AccountIdFilter2], [AccountIdExpression2],
 	[AccountIdEntryNumber2], [IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationIdEntryNumber2],
 	[IfrsEntryClassificationId2], [ResourceIdIsVisible2], [ResourceIdExpression2],
@@ -784,7 +784,7 @@ SELECT
 FROM @WideLineTypesSpecifications
 WHERE [AccountIdExpression2] IS NOT NULL
 ) AS s
-ON s.[LineTypeId] = t.[LineTypeId]  AND s.[EntryNumber] = t.[EntryNumber]
+ON s.[LineDefinitionId] = t.[LineDefinitionId]  AND s.[EntryNumber] = t.[EntryNumber]
 WHEN MATCHED THEN
 UPDATE SET
 	t.[DirectionIsVisible] = s.[DirectionIsVisible],
@@ -857,7 +857,7 @@ UPDATE SET
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
-INSERT ([LineTypeId], [EntryNumber], [DirectionIsVisible], [DirectionExpression], [DirectionEntryNumber],
+INSERT ([LineDefinitionId], [EntryNumber], [DirectionIsVisible], [DirectionExpression], [DirectionEntryNumber],
 	[Direction], [AccountIdIsVisible], [AccountIdIfrsFilter], [AccountIdExpression],
 	[AccountIdEntryNumber], [IfrsEntryClassificationIdIsVisible], [IfrsEntryClassificationIdExpression], [IfrsEntryClassificationIdEntryNumber],
 	[IfrsEntryClassificationId], [ResourceIdIsVisible], [ResourceIdExpression],
@@ -875,7 +875,7 @@ INSERT ([LineTypeId], [EntryNumber], [DirectionIsVisible], [DirectionExpression]
 	[RelatedResourceId], [RelatedAccountIsVisible],	[RelatedAccountExpression], [RelatedAccountEntryNumber],
 	[RelatedQuantity], [RelatedMoneyAmount]
 	)
-VALUES(s.[LineTypeId], s.[EntryNumber], s.[DirectionIsVisible], s.[DirectionExpression], s.[DirectionEntryNumber],
+VALUES(s.[LineDefinitionId], s.[EntryNumber], s.[DirectionIsVisible], s.[DirectionExpression], s.[DirectionEntryNumber],
 	s.[Direction], s.[AccountIdIsVisible], s.[AccountIdIfrsFilter], s.[AccountIdExpression],
 	s.[AccountIdEntryNumber], s.[IfrsEntryClassificationIdIsVisible], s.[IfrsEntryClassificationIdExpression], s.[IfrsEntryClassificationIdEntryNumber],
 	s.[IfrsEntryClassificationId], s.[ResourceIdIsVisible], s.[ResourceIdExpression],

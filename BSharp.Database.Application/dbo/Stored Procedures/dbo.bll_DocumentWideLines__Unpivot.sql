@@ -79,7 +79,7 @@ AS
 		FROM @Entries E
 		JOIN @Lines L ON E.[DocumentLineIndex] = L.[Index]
 		JOIN dbo.LineTypesSpecifications LTS
-		ON L.[LineTypeId] = LTS.[LineTypeId] AND E.EntryNumber = LTS.EntryNumber
+		ON L.[LineDefinitionId] = LTS.[LineDefinitionId] AND E.EntryNumber = LTS.EntryNumber
 		WHERE E.EntryNumber = @EntryNumber;
 
 		SET @EntryNumber = @EntryNumber	 + 1;

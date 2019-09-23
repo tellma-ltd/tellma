@@ -53,9 +53,9 @@ RETURN
 		V.[ExternalReference],
 		V.[AdditionalReference],
 		V.[RelatedResourceId],
-		V.[RelatedAccountId],
+		V.[RelatedAgentId],
 		V.[RelatedQuantity],
-		V.[RelatedMoneyAmount]
+		V.[RelatedMonetaryAmount]
 	FROM dbo.[DocumentLineEntriesDetailsView] V
 	JOIN dbo.Resources R ON V.ResourceId = R.Id
 	--LEFT JOIN dbo.MeasurementUnits MU ON R.MassUnitId = MU.Id

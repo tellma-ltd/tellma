@@ -189,4 +189,18 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[LineDefinitions]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="cc0511f7-71b2-43c3-954d-491ad21ea363" ChangeDateTime="09/23/2019 15:16:28">
+    <Property Name="ElementName" Value="[dbo].[DocumentLines].[RelatedAccountId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLines]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[RelatedAgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b47868b7-4b8f-4fb3-b9e0-ba68121c8663" ChangeDateTime="09/23/2019 15:16:48">
+    <Property Name="ElementName" Value="[dbo].[DocumentLines].[RelatedMoneyAmount]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLines]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[RelatedMonetaryAmount]" />
+  </Operation>
 </Operations>

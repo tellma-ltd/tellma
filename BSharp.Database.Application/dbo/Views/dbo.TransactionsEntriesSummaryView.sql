@@ -39,9 +39,9 @@ AS
 		L.[ExternalReference],
 		L.[AdditionalReference],
 		L.[RelatedResourceId],
-		L.[RelatedAccountId],
+		L.[RelatedAgentId],
 		SUM(E.[Direction] * L.[RelatedQuantity]) AS [RelatedQuantity],
-		SUM(E.[Direction] * L.[RelatedMoneyAmount]) AS [RelatedMoneyAmount]
+		SUM(E.[Direction] * L.[RelatedMonetaryAmount]) AS [RelatedMoneyAmount]
 	FROM 
 		[dbo].[DocumentLineEntries] E
 		JOIN [dbo].[DocumentLines] L ON E.[DocumentLineId] = L.Id
@@ -78,7 +78,7 @@ AS
 		L.[ExternalReference],
 		L.[AdditionalReference],
 		L.[RelatedResourceId],
-		L.[RelatedAccountId]
+		L.[RelatedAgentId]
 	HAVING
 		SUM(E.[Direction] * E.[Value]) <> 0
 	;

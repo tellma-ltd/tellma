@@ -8,7 +8,7 @@ BEGIN -- Inserting
 	'2017.01.05',		N'Sale of HSP products'
 	);
 	INSERT INTO @L41( --DocumentIndex DEFAULT 0
-		[LineTypeId], [SortKey]) VALUES
+		[LineDefinitionId], [SortKey]) VALUES
 		(N'GoodReceiptInTransitWithInvoice', 1),
 		(N'GoodReceiptInTransitWithInvoice', 2),
 		(N'CashIssue', 1);
@@ -81,8 +81,8 @@ BEGIN -- Updating document and deleting lines/entries
 	FROM dbo.Documents
 	WHERE [DocumentTypeId] = N'purchasing-international' AND [SerialNumber] = 1;
 
-	INSERT INTO @L42([Id], [DocumentId], [DocumentIndex], [LineTypeId], [ScalingFactor], [SortKey])
-	SELECT DL.[Id], DL.[DocumentId], D42.[Index], DL.[LineTypeId], [ScalingFactor], [SortKey]
+	INSERT INTO @L42([Id], [DocumentId], [DocumentIndex], [LineDefinitionId], [ScalingFactor], [SortKey])
+	SELECT DL.[Id], DL.[DocumentId], D42.[Index], DL.[LineDefinitionId], [ScalingFactor], [SortKey]
 	FROM dbo.DocumentLines DL
 	JOIN @D42 D42 ON D42.[Id] = DL.[DocumentId];
 

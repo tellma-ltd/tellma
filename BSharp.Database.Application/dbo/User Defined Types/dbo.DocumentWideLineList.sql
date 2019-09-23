@@ -5,7 +5,7 @@
 	[Id]					INT					NOT NULL,
 	[DocumentLineId]		INT					NOT NULL,
 	[DocumentId]			INT					NOT NULL,
-	[LineTypeId]			NVARCHAR (255)		NOT NULL,
+	[LineDefinitionId]			NVARCHAR (255)		NOT NULL,
 	[TemplateLineId]		INT,
 	[ScalingFactor]			FLOAT,
 	

@@ -148,7 +148,7 @@
     <None Include="Provisioning\05_LineTypeSpecifications.sql" />
     <None Include="Provisioning\06_DocumentDefinitions.sql" />
     <Build Include="Security\bll.sql" />
-    <Build Include="dbo\Tables\dbo.LineTypes.sql" />
+    <Build Include="dbo\Tables\dbo.LineDefinitions.sql" />
     <Build Include="dbo\Functions\dbo.fe_EndDateTime__StartDateTime_Frequency_Duration.sql" />
     <Build Include="dbo\Stored Procedures\dbo.ui_Documents_Lines_Entries__Json.sql" />
     <None Include="dbo\Stored Procedures\dbo.bll_Documents__Fill.sql" />

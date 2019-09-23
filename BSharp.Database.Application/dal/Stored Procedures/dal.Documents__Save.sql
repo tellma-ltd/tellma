@@ -19,7 +19,7 @@ BEGIN
 		USING (
 			SELECT 
 				[Index], [Id], [DocumentDate], [VoucherNumericReference], --[SortKey],
-				[Memo], [Frequency], [Repetitions],
+				[Memo],-- [Frequency], [Repetitions],
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DocumentDefinitionId] = @DefinitionId
@@ -65,7 +65,8 @@ BEGIN
 	(
 		MERGE INTO BL AS t
 		USING (
-			SELECT L.[Index], L.[Id], DI.Id AS DocumentId, L.[LineDefinitionId], L.[TemplateLineId], L.[ScalingFactor], L.[SortKey],
+			SELECT L.[Index], L.[Id], DI.Id AS DocumentId, L.[LineDefinitionId], --L.[TemplateLineId], L.[ScalingFactor],
+					--L.[SortKey],
 					L.[Memo], L.[ExternalReference], L.[AdditionalReference], L.[RelatedResourceId], L.[RelatedAgentId], L.[RelatedMoneyAmount]
 			FROM @Lines L
 			JOIN @DocumentsIndexedIds DI ON L.[DocumentIndex] = DI.[Index]
@@ -73,21 +74,21 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[LineDefinitionId]	= s.[LineDefinitionId],
-				t.[TemplateLineId]		= s.[TemplateLineId], 
-				t.[ScalingFactor]		= s.[ScalingFactor],
+				--t.[TemplateLineId]		= s.[TemplateLineId], 
+				--t.[ScalingFactor]		= s.[ScalingFactor],
 				t.[Memo]				= s.[Memo],
 				t.[ExternalReference]	= s.[ExternalReference],
 				t.[AdditionalReference]	= s.[AdditionalReference],
 				t.[RelatedResourceId]	= s.[RelatedResourceId],
-				t.[RelatedAccountId]	= s.[RelatedAgentId],
-				t.[RelatedMoneyAmount]	= s.[RelatedMoneyAmount],
+				t.[RelatedAgentId]	= s.[RelatedAgentId],
+				t.[RelatedMonetaryAmount]	= s.[RelatedMoneyAmount],
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [LineDefinitionId], [TemplateLineId], [ScalingFactor]--, [SortKey]
-				, [Memo],				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAccountId], [RelatedMoneyAmount]
+			INSERT ([DocumentId], [LineDefinitionId]--, [TemplateLineId], [ScalingFactor]--, [SortKey]
+				, [Memo],				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId], [RelatedMonetaryAmount]
 			)
-			VALUES (s.[DocumentId], s.[LineDefinitionId], s.[TemplateLineId], s.[ScalingFactor],-- s.[SortKey],
+			VALUES (s.[DocumentId], s.[LineDefinitionId], --s.[TemplateLineId], s.[ScalingFactor],-- s.[SortKey],
 			s.[Memo],s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE

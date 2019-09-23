@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[LineTypesSpecifications] (
-	[LineTypeId]					NVARCHAR (50),
+	[LineDefinitionId]				NVARCHAR (50),
 	[EntryNumber]					INT,
 
 	-- IsEditableTill specifies the state up till which is is possible to edit the field
@@ -104,6 +104,6 @@
 	[RelatedQuantity]				MONEY ,			-- used in Tax accounts, to store the quantiy of taxable item
 	[RelatedMoneyAmount]			MONEY 				NOT NULL DEFAULT 0, -- e.g., amount subject to tax
 
-    CONSTRAINT [PK_LineTypeSpecifications] PRIMARY KEY CLUSTERED ([LineTypeId], [EntryNumber]),
-	CONSTRAINT [FK_LineTypeSpecifications_LineTypes] FOREIGN KEY ([LineTypeId]) REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT [PK_LineTypeSpecifications] PRIMARY KEY CLUSTERED ([LineDefinitionId], [EntryNumber]),
+	CONSTRAINT [FK_LineTypeSpecifications_LineTypes] FOREIGN KEY ([LineDefinitionId]) REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
 );

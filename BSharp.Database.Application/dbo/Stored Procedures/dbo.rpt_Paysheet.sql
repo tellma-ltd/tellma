@@ -50,6 +50,6 @@ BEGIN
 			THEN J.Direction * J.[Value] Else 0 
 			END) AS [Pension Contribution 11%]
 	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
-	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAccountId] = A.Id
+	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
 	GROUP BY A.TaxIdentificationNumber, A.[Name];
 END

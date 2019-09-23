@@ -5,11 +5,11 @@ DECLARE @DM1Ids dbo.[IdList], @DM2Ids dbo.[IdList], @DM3Ids dbo.[IdList];
 
 BEGIN -- Inserting
  -- N'Exchange of $50000'
-	INSERT INTO @DM1([Index], [SortKey],
+	INSERT INTO @DM1([Index],
 	[Memo],					[DocumentDate]) VALUES
 (0,2,N'Exchange of $50000',	'2017.01.01');
 INSERT INTO @LM1 ([Index], [DocumentIndex],	
-			[LineTypeId],	[SortKey]) VALUES
+			[LineDefinitionId]) VALUES
 	(0,	0, N'ManualLine',	1), 
 	(1,	0, N'ManualLine',	2);
 INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
@@ -21,7 +21,7 @@ INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], 
 	[Memo],							[DocumentDate]) VALUES
 (1,3,N'Vehicles purchase receipt on account','2017.01.05');
 INSERT INTO @LM1 ([Index], [DocumentIndex],	
-			[LineTypeId],	[SortKey]) VALUES
+			[LineDefinitionId]) VALUES
 	(2,	1, N'VATInvoiceWithGoodReceipt',	1), 
 	(3,	1, N'VATInvoiceWithGoodReceipt',	2),
 	(4,	1, N'ManualLine',	3)
@@ -43,7 +43,7 @@ INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], 
 (2,4,N'Putting one vehicle into use','2017.01.06');
 
 INSERT INTO @LM1 ([Index], [DocumentIndex],	
-			[LineTypeId],						[SortKey]) VALUES
+			[LineDefinitionId],						[SortKey]) VALUES
 	(7,	2, N'ManualLine',	1), 
 	(8,	2, N'ManualLine',	2);
 
@@ -58,7 +58,7 @@ INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], 
 	[Memo],				[DocumentDate]) VALUES
 (3,5,N'Office Rental Q1','2017.01.25');
 INSERT INTO @LM1 ([Index], [DocumentIndex],	
-			[LineTypeId],				[SortKey]) VALUES
+			[LineDefinitionId],				[SortKey]) VALUES
 	(9,	3, N'VATInvoiceWithoutGoodReceipt',	1),
 	(10,3, N'ManualLine',	2);
 INSERT INTO @EM1 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],

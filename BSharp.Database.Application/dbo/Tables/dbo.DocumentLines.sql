@@ -19,13 +19,10 @@
 -- for crediting VAT Sales account, related resource is the good/service sold
 -- for crediting VAT purchase, debiting VAT sales, or liability account: related resource is N/A
 	[RelatedResourceId]			INT, -- Good, Service, Labor, Machine usage
--- The related account is the implicit  account that had two entries, one debiting and one crediting and hence removed
--- Examples include supplier account in cash purchase, customer account in cash sales, employee account in cash payroll, 
--- supplier account in VAT purchase entry, customer account in VAT sales entry, and WIP account in direct production.
-	[RelatedAccountId]			INT,
+	[RelatedAgentId]			INT,
 	[RelatedQuantity]			MONEY ,		-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedMoneyAmount]		MONEY 			NOT NULL DEFAULT 0, -- e.g., amount subject to tax
-	[SortKey]				DECIMAL (9,4)		NOT NULL,
+	[RelatedMonetaryAmount]		MONEY 			NOT NULL DEFAULT 0, -- e.g., amount subject to tax
+	[SortKey]					INT				NOT NULL,
 -- for auditing
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET() CONSTRAINT [FK_DocumentLines__CreatedById]	FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
 	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),

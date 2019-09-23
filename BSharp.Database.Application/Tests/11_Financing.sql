@@ -8,11 +8,11 @@ BEGIN -- Inserting
 	0, '2017.01.01',	1,		N'Capital investment'
 	);
 	INSERT INTO @L11([Index], [DocumentIndex],
-				[LineTypeId], [SortKey]) VALUES
-		(0,0,	N'ManualLine', 1),
-		(1,0,	N'ManualLine', 3),
-		(2,0,	N'ManualLine', 4),
-		(3,0,	N'ManualLine', 2);
+				[LineDefinitionId]) VALUES
+		(0,0,	N'ManualLine'),
+		(1,0,	N'ManualLine'),
+		(2,0,	N'ManualLine'),
+		(3,0,	N'ManualLine');
 
 	INSERT INTO @E11 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
 					[AccountId], [IfrsEntryClassificationId],	[ResourceId],	[Value], [Count], [MonetaryValue]) VALUES
@@ -41,8 +41,8 @@ END
 --	FROM dbo.Documents
 --	WHERE [DocumentDefinitionId] = N'manual-journals' AND [SerialNumber] = 1;
 
---	INSERT INTO @L12([Index], [DocumentIndex],					[Id], [DocumentId], [LineTypeId], [ScalingFactor], [SortKey])
---	SELECT ROW_NUMBER() OVER(ORDER BY DL.[Id]), D12.[Index], DL.[Id], DL.[DocumentId],  DL.[LineTypeId], [ScalingFactor], [SortKey]
+--	INSERT INTO @L12([Index], [DocumentIndex],					[Id], [DocumentId], [LineDefinitionId], [ScalingFactor], [SortKey])
+--	SELECT ROW_NUMBER() OVER(ORDER BY DL.[Id]), D12.[Index], DL.[Id], DL.[DocumentId],  DL.[LineDefinitionId], [ScalingFactor], [SortKey]
 --	FROM dbo.DocumentLines DL
 --	JOIN @D12 D12 ON D12.[Id] = DL.[DocumentId];
 

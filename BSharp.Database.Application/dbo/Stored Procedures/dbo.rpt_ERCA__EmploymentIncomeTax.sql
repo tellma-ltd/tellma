@@ -6,10 +6,10 @@ BEGIN
 	SELECT
 		A.[TaxIdentificationNumber] As [Employee TIN],
 		A.[Name] As [Employee Full Name],
-		J.[RelatedMoneyAmount] As [Taxable Income], 
+		J.[RelatedMonetaryAmount] As [Taxable Income], 
 		J.[MonetaryValue] As [Tax Withheld]
 	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
-	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAccountId] = A.Id
+	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
 	WHERE J.[IfrsAccountClassificationId] = N'CurrentEmployeeIncomeTaxPayable'
 	AND J.Direction = -1;
 END;

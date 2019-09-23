@@ -48,9 +48,9 @@ RETURN
 		J.[ExternalReference],
 		J.[AdditionalReference],
 		J.[RelatedResourceId],
-		J.[RelatedAccountId],
+		J.[RelatedAgentId],
 		J.[RelatedQuantity],
-		J.[RelatedMoneyAmount]
+		J.[RelatedMonetaryAmount]
 	FROM dbo.fi_Journal(@fromDate, @toDate) J
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN UnitRatios MR ON R.MassUnitId = MR.Id

@@ -19,8 +19,8 @@ BEGIN
 		[Memo],
 		[ExternalReference] As [CheckRef],
 		[RelatedResourceId] As [OtherPartyCurrency],
-		[RelatedAccountId] As [OtherParty],
-		[RelatedMoneyAmount] As [OtherPartyAmount]
+		[RelatedAgentId] As [OtherParty],
+		[RelatedMonetaryAmount] As [OtherPartyAmount]
 	FROM [dbo].[fi_Journal](@fromDate, @toDate)
 	WHERE [AccountId] = @AccountId;
 END;

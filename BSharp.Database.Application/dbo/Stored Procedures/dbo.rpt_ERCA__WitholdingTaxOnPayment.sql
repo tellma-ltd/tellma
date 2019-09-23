@@ -8,13 +8,13 @@ BEGIN
 		A.[Name] As [Organization/Person Name],
 		A.[RegisteredAddress] As [Withholdee Address], 
 		J.[Memo] As [Withholding Type],
-		J.[RelatedMoneyAmount] As [Taxable Amount], 
+		J.[RelatedMonetaryAmount] As [Taxable Amount], 
 		J.[MonetaryValue] As [Tax Withheld], 
 		J.[ExternalReference] As [Receipt Number], 
 		J.DocumentDate As [Receipt Date],
 		J.[DocumentLineId] -- for navigation
 	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
-	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAccountId] = A.Id
+	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
 	WHERE J.[IfrsAccountClassificationId] = N'CurrentWithholdingTaxPayable'
 	AND J.Direction = -1;
 END;

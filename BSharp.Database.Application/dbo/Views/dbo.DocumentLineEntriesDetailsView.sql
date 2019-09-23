@@ -41,9 +41,9 @@ AS
 		L.[ExternalReference],
 		L.[AdditionalReference],
 		L.[RelatedResourceId],
-		L.[RelatedAccountId],
+		L.[RelatedAgentId],
 		L.[RelatedQuantity],
-		L.[RelatedMoneyAmount],
+		L.[RelatedMonetaryAmount],
 
 		E.[CreatedAt],
 		E.[CreatedById],

@@ -7,7 +7,7 @@ BEGIN -- Inserting
 			[DocumentDate],	[Memo]) VALUES
 		(0,	'2017.01.05',	N'Purchase of hot and cold coils');
 	INSERT INTO @L21([Index], [DocumentIndex],
-				[LineTypeId],				[SortKey]) VALUES
+				[LineDefinitionId],				[SortKey]) VALUES
 		(0,0,	N'GoodReceiptWithInvoice',	1),
 		(1,0,	N'GoodReceiptWithInvoice',	2),
 		(2,0,	N'CashIssue',				1);
@@ -24,7 +24,7 @@ BEGIN -- Inserting
 			[DocumentDate],	[Memo]) VALUES
 		(1,	'2017.01.06',	N'Purchase of fuel On Credit');
 	INSERT INTO @L21([Index], [DocumentIndex],
-				[LineTypeId],				[SortKey]) VALUES
+				[LineDefinitionId], [SortKey]) VALUES
 		(3,1,	 N'GoodReceiptWithInvoice', 1),
 		(4,1,	 N'GoodReceiptWithInvoice', 2);
 
