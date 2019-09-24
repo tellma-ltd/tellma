@@ -398,7 +398,7 @@
     <value>لا يمكنك إيقاف نشاط المستخدم خاصتك</value>
   </data>
   <data name="Error_CannotDelete0AlreadyInUse" xml:space="preserve">
-    <value>تعذر حذف بيان من نوع {0} لأنه سبق استخدامه</value>
+    <value>تعذر حذف بيان من نوع {0} لأنه مستخدم</value>
   </data>
   <data name="Error_CannotDeleteNodeWithChildren" xml:space="preserve">
     <value>لا يمكن حذف بيان شجري تنحدر منه بيانات أخرى</value>

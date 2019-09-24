@@ -72,7 +72,7 @@
 	-- The following properties are user-defined, used for reporting
 	-- Examples for Steel finished goods are: Thickness and width. For cars: make and model.
 	[ProductCategoryId]				INT,
-	[ResourceLookup1Id]				INT					CONSTRAINT [FK_Resources__ResourceLookup1Id] FOREIGN KEY ([ResourceLookup1Id]) REFERENCES [dbo].[ResourceLookups] ([Id]),
+	[ResourceLookup1Id]				INT					CONSTRAINT [FK_Resources__ResourceLookup1Id] FOREIGN KEY ([ResourceLookup1Id]) REFERENCES [dbo].[Lookups] ([Id]),
 	[ResourceLookup2Id]				INT,			-- UDL 
 	[ResourceLookup3Id]				INT,			-- UDL 
 	[ResourceLookup4Id]				INT,			-- UDL 

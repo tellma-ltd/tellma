@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { ResourceLookup, ResourceLookupForSave } from '~/app/data/entities/resource-lookup';
+import { Lookup, LookupForSave } from '~/app/data/entities/lookup';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -9,20 +9,20 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
-  selector: 'b-resource-lookups-details',
-  templateUrl: './resource-lookups-details.component.html',
+  selector: 'b-lookups-details',
+  templateUrl: './lookups-details.component.html',
   styles: []
 })
-export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implements OnInit {
+export class LookupsDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private resourceLookupsApi = this.api.resourceLookupsApi('', this.notifyDestruct$); // for intellisense
+  private lookupsApi = this.api.lookupsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
 
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
       this._definitionId = t;
-      this.resourceLookupsApi = this.api.resourceLookupsApi(t, this.notifyDestruct$);
+      this.lookupsApi = this.api.lookupsApi(t, this.notifyDestruct$);
     }
   }
 
@@ -46,7 +46,7 @@ export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implem
 
         const definitionId = params.get('definitionId');
 
-        if (!definitionId || !this.workspace.current.definitions.ResourceLookups[definitionId]) {
+        if (!definitionId || !this.workspace.current.definitions.Lookups[definitionId]) {
           this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
         }
 
@@ -59,7 +59,7 @@ export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implem
   // UI Binding
 
   create = () => {
-    const result = new ResourceLookupForSave();
+    const result = new LookupForSave();
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -74,33 +74,33 @@ export class ResourceLookupsDetailsComponent extends DetailsBaseComponent implem
     return this.workspace.current;
   }
 
-  public onActivate = (model: ResourceLookup): void => {
+  public onActivate = (model: Lookup): void => {
     if (!!model && !!model.Id) {
-      this.resourceLookupsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.lookupsApi.activate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public onDeactivate = (model: ResourceLookup): void => {
+  public onDeactivate = (model: Lookup): void => {
     if (!!model && !!model.Id) {
-      this.resourceLookupsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.lookupsApi.deactivate([model.Id], { returnEntities: true }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
   }
 
-  public showActivate = (model: ResourceLookup) => !!model && !model.IsActive;
-  public showDeactivate = (model: ResourceLookup) => !!model && model.IsActive;
+  public showActivate = (model: Lookup) => !!model && !model.IsActive;
+  public showDeactivate = (model: Lookup) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: ResourceLookup) => this.ws.canDo(this.definitionId, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Lookup) => this.ws.canDo(this.definitionId, 'IsActive', model.Id);
 
-  public activateDeactivateTooltip = (model: ResourceLookup) => this.canActivateDeactivateItem(model) ? '' :
+  public activateDeactivateTooltip = (model: Lookup) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
     const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.ResourceLookups[definitionId];
+    const definition = this.workspace.current.definitions.Lookups[definitionId];
     if (!definition) {
       this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
     }

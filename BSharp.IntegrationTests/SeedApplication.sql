@@ -19,7 +19,7 @@ DELETE FROM [dbo].[Resources];
 
 DELETE FROM [dbo].[MeasurementUnits];
 DELETE FROM [dbo].[ResourceClassifications];
-DELETE FROM [dbo].[ResourceLookups];
+DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[ResourceDefinitions];
 

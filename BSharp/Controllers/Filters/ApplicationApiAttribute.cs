@@ -268,9 +268,9 @@ namespace BSharp.Controllers
                         //}
                     },
 
-                    ResourceLookups = new Dictionary<string, ResourceLookupDefinitionForClient>
+                    Lookups = new Dictionary<string, LookupDefinitionForClient>
                     {
-                        ["colors"] = new ResourceLookupDefinitionForClient
+                        ["colors"] = new LookupDefinitionForClient
                         {
                             TitleSingular = "Color",
                             TitleSingular2 = "لون",
@@ -280,7 +280,7 @@ namespace BSharp.Controllers
                             MainMenuSection = "Administration",
                             MainMenuSortKey = 202m
                         },
-                        ["thicknesses"] = new ResourceLookupDefinitionForClient
+                        ["thicknesses"] = new LookupDefinitionForClient
                         {
                             TitleSingular = "Thickness",
                             TitleSingular2 = "سماكة",

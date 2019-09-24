@@ -32,7 +32,7 @@ import { ResourceClassification } from './entities/resource-classification';
 import { GetEntityResponse } from './dto/get-entity-response';
 import { DefinitionsForClient } from './dto/definitions-for-client';
 import { Currency } from './entities/currency';
-import { ResourceLookup } from './entities/resource-lookup';
+import { Lookup } from './entities/lookup';
 import { Resource } from './entities/resource';
 
 @Injectable({
@@ -87,10 +87,10 @@ export class ApiService {
     };
   }
 
-  public resourceLookupsApi(definitionId: string, cancellationToken$: Observable<void>) {
+  public lookupsApi(definitionId: string, cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<ResourceLookup>(`resource-lookups/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<ResourceLookup>(`resource-lookups/${definitionId}`, cancellationToken$)
+      activate: this.activateFactory<Lookup>(`lookups/${definitionId}`, cancellationToken$),
+      deactivate: this.deactivateFactory<Lookup>(`lookups/${definitionId}`, cancellationToken$)
     };
   }
 

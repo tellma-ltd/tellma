@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[ResourceLookupList] AS TABLE (
+﻿CREATE TYPE [dbo].[LookupList] AS TABLE (
 	[Index]			INT				PRIMARY KEY,
 	[Id]			INT				NOT NULL DEFAULT 0,
 	[Name]			NVARCHAR (255)	NOT NULL,

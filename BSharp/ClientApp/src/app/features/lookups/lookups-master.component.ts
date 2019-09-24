@@ -9,20 +9,20 @@ import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'b-resource-lookups-master',
-  templateUrl: './resource-lookups-master.component.html',
+  selector: 'b-lookups-master',
+  templateUrl: './lookups-master.component.html',
   styles: []
 })
-export class ResourceLookupsMasterComponent extends MasterBaseComponent implements OnInit {
+export class LookupsMasterComponent extends MasterBaseComponent implements OnInit {
 
-  private resourceLookupsApi = this.api.resourceLookupsApi('', this.notifyDestruct$); // for intellisense
+  private lookupsApi = this.api.lookupsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
 
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
       this._definitionId = t;
-      this.resourceLookupsApi = this.api.resourceLookupsApi(t, this.notifyDestruct$);
+      this.lookupsApi = this.api.lookupsApi(t, this.notifyDestruct$);
     }
   }
 
@@ -46,7 +46,7 @@ export class ResourceLookupsMasterComponent extends MasterBaseComponent implemen
 
         const definitionId = params.get('definitionId');
 
-        if (!definitionId || !this.workspace.current.definitions.ResourceLookups[definitionId]) {
+        if (!definitionId || !this.workspace.current.definitions.Lookups[definitionId]) {
           this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
         }
 
@@ -58,7 +58,7 @@ export class ResourceLookupsMasterComponent extends MasterBaseComponent implemen
   }
 
   public get c() {
-    return this.workspace.current.ResourceLookup;
+    return this.workspace.current.Lookup;
   }
 
   public get ws() {
@@ -66,7 +66,7 @@ export class ResourceLookupsMasterComponent extends MasterBaseComponent implemen
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.resourceLookupsApi.activate(ids, { returnEntities: true }).pipe(
+    const obs$ = this.lookupsApi.activate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -75,7 +75,7 @@ export class ResourceLookupsMasterComponent extends MasterBaseComponent implemen
   }
 
   public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.resourceLookupsApi.deactivate(ids, { returnEntities: true }).pipe(
+    const obs$ = this.lookupsApi.deactivate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -90,7 +90,7 @@ export class ResourceLookupsMasterComponent extends MasterBaseComponent implemen
 
   public get masterCrumb(): string {
     const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.ResourceLookups[definitionId];
+    const definition = this.workspace.current.definitions.Lookups[definitionId];
     if (!definition) {
       return '???'; // Programmer mistake
     }
@@ -100,7 +100,7 @@ export class ResourceLookupsMasterComponent extends MasterBaseComponent implemen
 
   public get summary(): string {
     const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.ResourceLookups[definitionId];
+    const definition = this.workspace.current.definitions.Lookups[definitionId];
     if (!definition) {
       return '???'; // Programmer mistake
     }

@@ -1,14 +1,14 @@
-﻿CREATE FUNCTION [map].[ResourceLookups__AsQuery]
+﻿CREATE FUNCTION [map].[Lookups__AsQuery]
 (	
 	@DefinitionId NVARCHAR(255),
-	@Entities [dbo].[ResourceLookupList] READONLY
+	@Entities [dbo].[LookupList] READONLY
 )
 RETURNS TABLE
 AS
 RETURN (
 	SELECT 
 		[Index] AS [Id],
-		@DefinitionId AS [ResourceLookupDefinitionId],
+		@DefinitionId AS [LookupDefinitionId],
 		[Name],
 		[Name2],
 		[Name3],

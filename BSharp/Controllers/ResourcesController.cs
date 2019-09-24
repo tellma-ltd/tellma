@@ -3,6 +3,7 @@ using BSharp.Controllers.Utilities;
 using BSharp.Data;
 using BSharp.Data.Queries;
 using BSharp.Entities;
+using BSharp.Services.MultiTenancy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
@@ -29,10 +30,13 @@ namespace BSharp.Controllers
         private readonly IDefinitionsCache _definitionsCache;
         private readonly IModelMetadataProvider _modelMetadataProvider;
 
-        private string Definition => RouteData.Values["definitionId"]?.ToString() ??
+        private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ??
             throw new BadRequestException("URI must be of the form 'api/" + BASE_ADDRESS + "{definitionId}'");
 
-        private string ViewId => $"{BASE_ADDRESS}{Definition}";
+        private ResourceDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources?
+            .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
+
+        private string ViewId => $"{BASE_ADDRESS}{DefinitionId}";
 
         public ResourcesController(
             ILogger<ResourcesController> logger,
@@ -110,7 +114,7 @@ namespace BSharp.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Resource.ResourceDefinitionId)} eq '{Definition}'";
+            string filter = $"{nameof(Resource.ResourceDefinitionId)} eq '{DefinitionId}'";
             return new FilteredRepository<Resource>(_repo, filter);
         }
 
@@ -121,8 +125,7 @@ namespace BSharp.Controllers
 
         protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
         {
-            var definition = _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources?.GetValueOrDefault(Definition) ?? 
-                throw new InvalidOperationException($"Definition for '{Definition}' was missing from the cache");
+            var definition = Definition();
 
             // Set default values
             SetDefaultValue(entities, e => e.MassUnitId, definition.MassUnit_DefaultValue);
@@ -161,7 +164,7 @@ namespace BSharp.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Resources_Validate__Save(Definition, entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.Resources_Validate__Save(DefinitionId, entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -213,14 +216,14 @@ namespace BSharp.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.Resources__Save(Definition, entities, returnIds: returnIds);
+            return await _repo.Resources__Save(DefinitionId, entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Resources_Validate__Delete(Definition, ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Resources_Validate__Delete(DefinitionId, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -234,13 +237,18 @@ namespace BSharp.Controllers
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Resource"]]);
+                // TODO: test
+                var definition = Definition();
+                var tenantInfo = await _repo.GetTenantInfoAsync();
+                var titleSingular = tenantInfo.Localize(definition.TitleSingular, definition.TitleSingular2, definition.TitleSingular3);
+
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", titleSingular]);
             }
         }
 
         protected override Query<Resource> GetAsQuery(List<ResourceForSave> entities)
         {
-            return _repo.Resources__AsQuery(Definition, entities);
+            return _repo.Resources__AsQuery(DefinitionId, entities);
         }
     }
 
@@ -251,16 +259,13 @@ namespace BSharp.Controllers
     public class ResourcesGenericController : FactWithIdControllerBase<Resource, int>
     {
         private readonly ApplicationRepository _repo;
-        private readonly IDefinitionsCache _definitionsCache;
 
         public ResourcesGenericController(
             ILogger<ResourcesController> logger,
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo,
-            IDefinitionsCache definitionsCache) : base(logger, localizer)
+            ApplicationRepository repo) : base(logger, localizer)
         {
             _repo = repo;
-            _definitionsCache = definitionsCache;
         }
 
         protected override IRepository GetRepository()

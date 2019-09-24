@@ -63,7 +63,7 @@
     </b-form-group>
 
     <!-- Classification -->
-    <b-form-group class="b-form-group" [label]="'Classification' | translate"
+    <b-form-group class="b-form-group" [label]="p.ResourceClassification?.label"
         [serverErrors]="model?.serverErrors?.ResourceClassificationId">
         <b-restricted [metadata]="model?.EntityMetadata?.ResourceClassification">
             <b-view-link *ngIf="!isEdit" [link]="'../../../resource-classifications/' + definitionId"
@@ -100,7 +100,7 @@
     </b-form-group>
 
     <!-- Currency -->
-    <b-form-group class="b-form-group" [label]="p['Currency']?.label" *ngIf="!!p.Currency"
+    <b-form-group class="b-form-group" [label]="p.Currency?.label" *ngIf="!!p.Currency"
         [serverErrors]="model?.serverErrors?.CurrencyId">
         <b-view-link *ngIf="!isEdit" link="../../../currencies" [itemId]="model?.CurrencyId">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="Currency">
@@ -130,7 +130,7 @@
     </b-form-group>
 
     <!-- Mass Unit -->
-    <b-form-group class="b-form-group" [label]="p['MassUnit']?.label" *ngIf="!!p.MassUnit"
+    <b-form-group class="b-form-group" [label]="p.MassUnit?.label" *ngIf="!!p.MassUnit"
         [serverErrors]="model?.serverErrors?.MassUnitId">
         <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.MassUnitId">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="MassUnit">
@@ -143,7 +143,7 @@
     </b-form-group>
 
     <!-- Volume Unit -->
-    <b-form-group class="b-form-group" [label]="p['VolumeUnit']?.label" *ngIf="!!p.VolumeUnit"
+    <b-form-group class="b-form-group" [label]="p.VolumeUnit?.label" *ngIf="!!p.VolumeUnit"
         [serverErrors]="model?.serverErrors?.VolumeUnitId">
         <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.VolumeUnitId">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="VolumeUnit">
@@ -156,7 +156,7 @@
     </b-form-group>
 
     <!-- Area Unit -->
-    <b-form-group class="b-form-group" [label]="p['AreaUnit']?.label" *ngIf="!!p.AreaUnit"
+    <b-form-group class="b-form-group" [label]="p.AreaUnit?.label" *ngIf="!!p.AreaUnit"
         [serverErrors]="model?.serverErrors?.AreaUnitId">
         <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.AreaUnitId">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="AreaUnit">
@@ -169,7 +169,7 @@
     </b-form-group>
 
     <!-- Length Unit -->
-    <b-form-group class="b-form-group" [label]="p['LengthUnit']?.label" *ngIf="!!p.LengthUnit"
+    <b-form-group class="b-form-group" [label]="p.LengthUnit?.label" *ngIf="!!p.LengthUnit"
         [serverErrors]="model?.serverErrors?.LengthUnitId">
         <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.LengthUnitId">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="LengthUnit">
@@ -182,7 +182,7 @@
     </b-form-group>
 
     <!-- Time Unit -->
-    <b-form-group class="b-form-group" [label]="p['TimeUnit']?.label" *ngIf="!!p.TimeUnit"
+    <b-form-group class="b-form-group" [label]="p.TimeUnit?.label" *ngIf="!!p.TimeUnit"
         [serverErrors]="model?.serverErrors?.TimeUnitId">
         <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.TimeUnitId">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="TimeUnit">
@@ -195,67 +195,67 @@
     </b-form-group>
 
     <!-- Resource Lookup 1 -->
-    <b-form-group class="b-form-group" [label]="p.ResourceLookup1.label" *ngIf="!!p.ResourceLookup1"
+    <b-form-group class="b-form-group" [label]="p.ResourceLookup1?.label" *ngIf="!!p.ResourceLookup1"
         [serverErrors]="model?.serverErrors?.ResourceLookup1Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p.ResourceLookup1.definition"
+        <b-view-link *ngIf="!isEdit" [link]="'../../../lookups/' + p.ResourceLookup1.definition"
             [itemId]="model?.ResourceLookup1Id">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="ResourceLookup1">
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup1Id"
-            [definitionIds]="[p.ResourceLookup1.definition]" definitionProperty="ResourceLookupDefinitionId"
-            [masterTemplate]="resourceLookupsMaster" [detailsTemplate]="resourceLookupsDetails"
-            collection="ResourceLookup" [required]="d.ResourceLookup1_Visibility === 2">
+            [definitionIds]="[resourceLookup1Definition]" definitionProperty="LookupDefinitionId"
+            [masterTemplate]="lookupsMaster" [detailsTemplate]="lookupsDetails"
+            collection="Lookup" [required]="d.ResourceLookup1_Visibility === 2">
         </b-details-picker>
     </b-form-group>
 
     <!-- Resource Lookup 2 -->
-    <b-form-group class="b-form-group" [label]="p.ResourceLookup2.label" *ngIf="!!p.ResourceLookup2"
+    <b-form-group class="b-form-group" [label]="p.ResourceLookup2?.label" *ngIf="!!p.ResourceLookup2"
         [serverErrors]="model?.serverErrors?.ResourceLookup2Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p.ResourceLookup2.definition"
+        <b-view-link *ngIf="!isEdit" [link]="'../../../lookups/' + p.ResourceLookup2.definition"
             [itemId]="model?.ResourceLookup2Id">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="ResourceLookup2">
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup2Id"
-            [definitionIds]="[p.ResourceLookup2.definition]" definitionProperty="ResourceLookupDefinitionId"
-            [masterTemplate]="resourceLookupsMaster" [detailsTemplate]="resourceLookupsDetails"
-            collection="ResourceLookup" [required]="d.ResourceLookup2_Visibility === 2">
+            [definitionIds]="[resourceLookup2Definition]" definitionProperty="LookupDefinitionId"
+            [masterTemplate]="lookupsMaster" [detailsTemplate]="lookupsDetails"
+            collection="Lookup" [required]="d.ResourceLookup2_Visibility === 2">
         </b-details-picker>
     </b-form-group>
 
     <!-- Resource Lookup 3 -->
-    <b-form-group class="b-form-group" [label]="p.ResourceLookup3.label" *ngIf="!!p.ResourceLookup3"
+    <b-form-group class="b-form-group" [label]="p.ResourceLookup3?.label" *ngIf="!!p.ResourceLookup3"
         [serverErrors]="model?.serverErrors?.ResourceLookup3Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p.ResourceLookup3.definition"
+        <b-view-link *ngIf="!isEdit" [link]="'../../../lookups/' + p.ResourceLookup3.definition"
             [itemId]="model?.ResourceLookup3Id">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="ResourceLookup3">
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup3Id"
-            [definitionIds]="[p.ResourceLookup3.definition]" definitionProperty="ResourceLookupDefinitionId"
-            [masterTemplate]="resourceLookupsMaster" [detailsTemplate]="resourceLookupsDetails"
-            collection="ResourceLookup" [required]="d.ResourceLookup3_Visibility === 2">
+            [definitionIds]="[resourceLookup3Definition]" definitionProperty="LookupDefinitionId"
+            [masterTemplate]="lookupsMaster" [detailsTemplate]="lookupsDetails"
+            collection="Lookup" [required]="d.ResourceLookup3_Visibility === 2">
         </b-details-picker>
     </b-form-group>
 
     <!-- Resource Lookup 4 -->
-    <b-form-group class="b-form-group" [label]="p['ResourceLookup4'].label" *ngIf="!!p.ResourceLookup4"
+    <b-form-group class="b-form-group" [label]="p.ResourceLookup4?.label" *ngIf="!!p.ResourceLookup4"
         [serverErrors]="model?.serverErrors?.ResourceLookup4Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p['ResourceLookup4'].definition"
+        <b-view-link *ngIf="!isEdit" [link]="'../../../lookups/' + p['ResourceLookup4'].definition"
             [itemId]="model?.ResourceLookup4Id">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="ResourceLookup4">
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup4Id"
-            [definitionIds]="[p.ResourceLookup4.definition]" definitionProperty="ResourceLookupDefinitionId"
-            [masterTemplate]="resourceLookupsMaster" [detailsTemplate]="resourceLookupsDetails"
-            collection="ResourceLookup" [required]="d.ResourceLookup4_Visibility === 2">
+            [definitionIds]="[resourceLookup4Definition]" definitionProperty="LookupDefinitionId"
+            [masterTemplate]="lookupsMaster" [detailsTemplate]="lookupsDetails"
+            collection="Lookup" [required]="d.ResourceLookup4_Visibility === 2">
         </b-details-picker>
     </b-form-group>
 
     <!-- Customs Reference -->
-    <b-form-group class="b-form-group" [label]="p['CustomsReference'].label" *ngIf="!!p.CustomsReference"
+    <b-form-group class="b-form-group" [label]="p.CustomsReference?.label" *ngIf="!!p.CustomsReference"
         [serverErrors]="model?.serverErrors?.CustomsReference">
         <div *ngIf="!isEdit">{{ model?.CustomsReference }}</div>
         <b-text-editor *ngIf="isEdit" [(ngModel)]="model.CustomsReference" [ngModelOptions]="{ updateOn: 'blur' }"
@@ -264,7 +264,7 @@
     </b-form-group>
 
     <!-- Memo -->
-    <b-form-group class="b-form-group" [label]="p['Memo']?.label" *ngIf="!!p.Memo"
+    <b-form-group class="b-form-group" [label]="p.Memo?.label" *ngIf="!!p.Memo"
         [serverErrors]="model?.serverErrors?.Memo">
         <div *ngIf="!isEdit">{{ model?.Memo }}</div>
         <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"
@@ -297,23 +297,23 @@
     </div>
 </ng-template>
 
-<!-- The Resource Lookup Details Modal -->
-<ng-template #resourceLookupsDetails let-modal="modal" let-update="update" let-initialText="initialText"
+<!-- The Lookup Details Modal -->
+<ng-template #lookupsDetails let-modal="modal" let-update="update" let-initialText="initialText"
     let-definitionId="definitionId">
     <div class="modal-body">
-        <b-resource-lookups-details mode="popup" idString="new" [initialText]="initialText"
+        <b-lookups-details mode="popup" idString="new" [initialText]="initialText"
             [definitionId]="definitionId" (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
-        </b-resource-lookups-details>
+        </b-lookups-details>
     </div>
 </ng-template>
 
-<!-- The Resource Lookup Master Modal -->
-<ng-template #resourceLookupsMaster let-modal="modal" let-update="update" let-create="create"
+<!-- The Lookup Master Modal -->
+<ng-template #lookupsMaster let-modal="modal" let-update="update" let-create="create"
     let-definitionId="definitionId">
     <div class="modal-body">
-        <b-resource-lookups-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId"
+        <b-lookups-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId"
             (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
-        </b-resource-lookups-master>
+        </b-lookups-master>
     </div>
 </ng-template>
 

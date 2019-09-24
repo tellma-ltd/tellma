@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [dal].[ResourceLookups__Save]
+﻿CREATE PROCEDURE [dal].[Lookups__Save]
 	@DefinitionId NVARCHAR(255),
-	@Entities [ResourceLookupList] READONLY,
+	@Entities [LookupList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -12,7 +12,7 @@ SET NOCOUNT ON;
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
-		MERGE INTO [dbo].[ResourceLookups] AS t
+		MERGE INTO [dbo].[Lookups] AS t
 		USING (
 			SELECT [Index], [Id], [Name], [Name2], [Name3], [Code]
 			FROM @Entities 
@@ -26,7 +26,7 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ResourceLookupDefinitionId], [Name], [Name2], [Name3], [Code])
+			INSERT ([LookupDefinitionId], [Name], [Name2], [Name3], [Code])
 			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x

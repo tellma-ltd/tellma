@@ -1,6 +1,6 @@
-﻿CREATE PROCEDURE [bll].[ResourceLookups_Validate__Save]
+﻿CREATE PROCEDURE [bll].[Lookups_Validate__Save]
 	@DefinitionId NVARCHAR(255),
-	@Entities [ResourceLookupList] READONLY,
+	@Entities [LookupList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -14,7 +14,7 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotModifyInactiveItem'
     FROM @Entities
-    WHERE Id IN (SELECT Id from [dbo].[ResourceLookups] WHERE IsActive = 0)
+    WHERE Id IN (SELECT Id from [dbo].[Lookups] WHERE IsActive = 0)
 	OPTION(HASH JOIN);
 
     -- Non Null Ids must exist
@@ -25,7 +25,7 @@ SET NOCOUNT ON;
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
     WHERE Id <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[ResourceLookups]);
+	AND Id NOT IN (SELECT Id from [dbo].[Lookups]);
 
 		-- Code must not be already in the back end
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -34,7 +34,7 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code AS Argument0
 	FROM @Entities FE 
-	JOIN [dbo].[ResourceLookups] BE ON FE.Code = BE.Code
+	JOIN [dbo].[Lookups] BE ON FE.Code = BE.Code
 	WHERE
 		FE.[Code] IS NOT NULL
 	AND BE.[Code] IS NOT NULL
@@ -47,7 +47,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[ResourceLookups] BE ON FE.[Name] = BE.[Name]
+	JOIN [dbo].[Lookups] BE ON FE.[Name] = BE.[Name]
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name2 must not exist in the db
@@ -57,7 +57,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
 	FROM @Entities FE 
-	JOIN [dbo].[ResourceLookups] BE ON FE.[Name2] = BE.[Name2]
+	JOIN [dbo].[Lookups] BE ON FE.[Name2] = BE.[Name2]
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name3 must not exist in the db
@@ -67,7 +67,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
 	FROM @Entities FE 
-	JOIN [dbo].[ResourceLookups] BE ON FE.[Name3] = BE.[Name3]
+	JOIN [dbo].[Lookups] BE ON FE.[Name3] = BE.[Name3]
 	WHERE (FE.Id <> BE.Id);
 	
 		-- Code must not be duplicated in the uploaded list

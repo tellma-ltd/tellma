@@ -138,18 +138,18 @@ namespace BSharp.Entities
 
         [Display(Name = "Resource_ResourceLookup1")]
         [ForeignKey(nameof(ResourceLookup1Id))]
-        public ResourceLookup ResourceLookup1 { get; set; }
+        public Lookup ResourceLookup1 { get; set; }
 
         [Display(Name = "Resource_ResourceLookup2")]
         [ForeignKey(nameof(ResourceLookup2Id))]
-        public ResourceLookup ResourceLookup2 { get; set; }
+        public Lookup ResourceLookup2 { get; set; }
 
         [Display(Name = "Resource_ResourceLookup3")]
         [ForeignKey(nameof(ResourceLookup3Id))]
-        public ResourceLookup ResourceLookup3 { get; set; }
+        public Lookup ResourceLookup3 { get; set; }
 
         [Display(Name = "Resource_ResourceLookup4")]
         [ForeignKey(nameof(ResourceLookup4Id))]
-        public ResourceLookup ResourceLookup4 { get; set; }
+        public Lookup ResourceLookup4 { get; set; }
     }
 }

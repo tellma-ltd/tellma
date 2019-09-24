@@ -26,9 +26,9 @@ import { IfrsNotesDetailsComponent } from './ifrs-notes/ifrs-notes-details.compo
 import { ResourceClassificationsMasterComponent } from './resource-classifications/resource-classifications-master.component';
 import { ResourceClassificationsImportComponent } from './resource-classifications/resource-classifications-import.component';
 import { ResourceClassificationsDetailsComponent } from './resource-classifications/resource-classifications-details.component';
-import { ResourceLookupsMasterComponent } from './resource-lookups/resource-lookups-master.component';
-import { ResourceLookupsDetailsComponent } from './resource-lookups/resource-lookups-details.component';
-import { ResourceLookupsImportComponent } from './resource-lookups/resource-lookups-import.component';
+import { LookupsMasterComponent } from './lookups/lookups-master.component';
+import { LookupsDetailsComponent } from './lookups/lookups-details.component';
+import { LookupsImportComponent } from './lookups/lookups-import.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
@@ -145,20 +145,20 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
-      // Resource Lookups
+      // Lookups
       {
-        path: 'resource-lookups/:definitionId',
-        component: ResourceLookupsMasterComponent,
+        path: 'lookups/:definitionId',
+        component: LookupsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'resource-lookups/:definitionId/import',
-        component: ResourceLookupsImportComponent,
+        path: 'lookups/:definitionId/import',
+        component: LookupsImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'resource-lookups/:definitionId/:id',
-        component: ResourceLookupsDetailsComponent,
+        path: 'lookups/:definitionId/:id',
+        component: LookupsDetailsComponent,
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
@@ -239,9 +239,9 @@ const routes: Routes = [
     ResourceClassificationsMasterComponent,
     ResourceClassificationsImportComponent,
     ResourceClassificationsDetailsComponent,
-    ResourceLookupsMasterComponent,
-    ResourceLookupsDetailsComponent,
-    ResourceLookupsImportComponent,
+    LookupsMasterComponent,
+    LookupsDetailsComponent,
+    LookupsImportComponent,
     CurrenciesMasterComponent,
     CurrenciesDetailsComponent,
     CurrenciesImportComponent,

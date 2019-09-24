@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [api].[ResourceLookups__Delete]
+﻿CREATE PROCEDURE [api].[Lookups__Delete]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) = NULL OUTPUT
 AS
@@ -7,4 +7,4 @@ SET NOCOUNT ON;
 
 	--INSERT INTO @ValidationErrors
 
-	EXEC [dal].[ResourceLookups__Delete] @Ids = @Ids;
+	EXEC [dal].[Lookups__Delete] @Ids = @Ids;

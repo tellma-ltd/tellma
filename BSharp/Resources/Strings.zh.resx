@@ -232,14 +232,131 @@
   <data name="DisableTwoFactorAuthenticationTitle" xml:space="preserve">
     <value>这个动作只禁止2FA。</value>
   </data>
+  <data name="Document_DocumentDate" xml:space="preserve">
+    <value>日期</value>
+  </data>
   <data name="Document_DocumentLookup1" xml:space="preserve">
-    <value>资源查找1</value>
+    <value>属性1</value>
   </data>
   <data name="Document_DocumentLookup2" xml:space="preserve">
-    <value>资源查找2</value>
+    <value>属性2</value>
   </data>
   <data name="Document_DocumentLookup3" xml:space="preserve">
-    <value>资源查找3</value>
+    <value>属性3</value>
+  </data>
+  <data name="Document_DocumentText1" xml:space="preserve">
+    <value>文本属性1</value>
+  </data>
+  <data name="Document_DocumentText2" xml:space="preserve">
+    <value>文本属性2</value>
+  </data>
+  <data name="Document_MemoIsCommon" xml:space="preserve">
+    <value>备注是常有的事</value>
+  </data>
+  <data name="Document_SerialNumber" xml:space="preserve">
+    <value>序列号</value>
+  </data>
+  <data name="Document_State" xml:space="preserve">
+    <value>州</value>
+  </data>
+  <data name="Document_State_Authorized" xml:space="preserve">
+    <value>合法</value>
+  </data>
+  <data name="Document_State_Completed" xml:space="preserve">
+    <value>已完成</value>
+  </data>
+  <data name="Document_State_Draft" xml:space="preserve">
+    <value>草案</value>
+  </data>
+  <data name="Document_State_Failed" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="Document_State_Invalid" xml:space="preserve">
+    <value>无效</value>
+  </data>
+  <data name="Document_State_Posted" xml:space="preserve">
+    <value>发布</value>
+  </data>
+  <data name="Document_State_Rejected" xml:space="preserve">
+    <value>被拒绝</value>
+  </data>
+  <data name="Document_State_Requested" xml:space="preserve">
+    <value>要求</value>
+  </data>
+  <data name="Document_State_Void" xml:space="preserve">
+    <value>空虚</value>
+  </data>
+  <data name="Document_VoucherBooklet" xml:space="preserve">
+    <value>券小册子</value>
+  </data>
+  <data name="Document_VoucherNumericReference" xml:space="preserve">
+    <value>参考凭证</value>
+  </data>
+  <data name="DocumentLine_AdditionalReference" xml:space="preserve">
+    <value>其他参考</value>
+  </data>
+  <data name="DocumentLine_ExternalReference" xml:space="preserve">
+    <value>外部参考</value>
+  </data>
+  <data name="DocumentLine_LineType" xml:space="preserve">
+    <value>线路类型</value>
+  </data>
+  <data name="DocumentLine_RelatedAccount" xml:space="preserve">
+    <value>相关帐户</value>
+  </data>
+  <data name="DocumentLine_RelatedMoneyAmount" xml:space="preserve">
+    <value>相关金额</value>
+  </data>
+  <data name="DocumentLine_RelatedQuantity" xml:space="preserve">
+    <value>相关产品数量</value>
+  </data>
+  <data name="DocumentLine_RelatedResource" xml:space="preserve">
+    <value>相关资源</value>
+  </data>
+  <data name="DocumentLineEntry_Account" xml:space="preserve">
+    <value>帐户</value>
+  </data>
+  <data name="DocumentLineEntry_Agent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="DocumentLineEntry_Area" xml:space="preserve">
+    <value>区域</value>
+  </data>
+  <data name="DocumentLineEntry_BatchCode" xml:space="preserve">
+    <value>批号</value>
+  </data>
+  <data name="DocumentLineEntry_Count" xml:space="preserve">
+    <value>计数</value>
+  </data>
+  <data name="DocumentLineEntry_IfrsEntryClassification" xml:space="preserve">
+    <value>国际财务报告准则分类</value>
+  </data>
+  <data name="DocumentLineEntry_Length" xml:space="preserve">
+    <value>长度</value>
+  </data>
+  <data name="DocumentLineEntry_Mass" xml:space="preserve">
+    <value>块</value>
+  </data>
+  <data name="DocumentLineEntry_MonetaryValue" xml:space="preserve">
+    <value>货币价值</value>
+  </data>
+  <data name="DocumentLineEntry_Resource" xml:space="preserve">
+    <value>资源</value>
+  </data>
+  <data name="DocumentLineEntry_ResourcePick" xml:space="preserve">
+    <value>匹克的资源</value>
+  </data>
+  <data name="DocumentLineEntry_ResponsibilityCenter" xml:space="preserve">
+    <value>责任中心</value>
+  </data>
+  <data name="DocumentLineEntry_Time" xml:space="preserve">
+    <value>时间</value>
+  </data>
+  <data name="DocumentLineEntry_Value" xml:space="preserve">
+    <value>值</value>
+  </data>
+  <data name="DocumentLineEntry_Volume" xml:space="preserve">
+    <value>体积</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
     <value>电子邮件“{0}”已被使用。</value>
@@ -792,6 +909,9 @@
   </data>
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>体积单位</value>
+  </data>
+  <data name="ResourceClassification_IsLeaf" xml:space="preserve">
+    <value>为叶子</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>角色</value>

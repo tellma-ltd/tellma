@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class ResourceLookupForSave : EntityWithKey<int>
+    public class LookupForSave : EntityWithKey<int>
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -29,10 +29,10 @@ namespace BSharp.Entities
         public string Code { get; set; }
     }
 
-    public class ResourceLookup : ResourceLookupForSave
+    public class Lookup : LookupForSave
     {
         [AlwaysAccessible]
-        public string ResourceLookupDefinitionId { get; set; }
+        public string LookupDefinitionId { get; set; }
 
         [AlwaysAccessible]
         public decimal SortKey { get; set; }

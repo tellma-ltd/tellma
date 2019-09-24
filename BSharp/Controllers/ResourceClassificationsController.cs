@@ -101,7 +101,7 @@ namespace BSharp.Controllers
         protected override IRepository GetRepository()
         {
             string filter = $"{nameof(ResourceClassification.ResourceDefinitionId)} eq '{DefinitionId}'";
-            return new FilteredRepository<ResourceLookup>(_repo, filter);
+            return new FilteredRepository<Lookup>(_repo, filter);
         }
 
         protected override Query<ResourceClassification> Search(Query<ResourceClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
@@ -178,8 +178,8 @@ namespace BSharp.Controllers
                 await _repo.ResourceClassifications__Delete(ids);
             }
             catch (ForeignKeyViolationException)
-            {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ResourceClassification"]]);
+            {               
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Classification"]]);
             }
         }
 
@@ -201,18 +201,13 @@ namespace BSharp.Controllers
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ResourceClassification"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Classification"]]);
             }
         }
 
         protected override Query<ResourceClassification> GetAsQuery(List<ResourceClassificationForSave> entities)
         {
             return _repo.ResourceClassifications__AsQuery(DefinitionId, entities);
-        }
-
-        protected override OrderByExpression DefaultOrderBy()
-        {
-            return OrderByExpression.Parse("Code,Id");
         }
     }
 }

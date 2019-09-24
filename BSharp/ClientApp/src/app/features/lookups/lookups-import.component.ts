@@ -3,11 +3,11 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
-  selector: 'b-resource-lookups-import',
-  templateUrl: './resource-lookups-import.component.html',
+  selector: 'b-lookups-import',
+  templateUrl: './lookups-import.component.html',
   styles: []
 })
-export class ResourceLookupsImportComponent implements OnInit {
+export class LookupsImportComponent implements OnInit {
 
   @Input()
   public definitionId: string;
@@ -21,7 +21,7 @@ export class ResourceLookupsImportComponent implements OnInit {
 
       const definitionId = params.get('definitionId');
 
-      if (!definitionId || !this.workspace.current.definitions.ResourceLookups[definitionId]) {
+      if (!definitionId || !this.workspace.current.definitions.Lookups[definitionId]) {
         this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
       }
 
@@ -37,7 +37,7 @@ export class ResourceLookupsImportComponent implements OnInit {
 
   public get masterCrumb(): string {
     const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.ResourceLookups[definitionId];
+    const definition = this.workspace.current.definitions.Lookups[definitionId];
     if (!definition) {
       this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
     }

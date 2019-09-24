@@ -1,6 +1,6 @@
-﻿CREATE TABLE [dbo].[ResourceLookups] (
+﻿CREATE TABLE [dbo].[Lookups] (
 	[Id]							INT	PRIMARY KEY NONCLUSTERED IDENTITY,
-	[ResourceLookupDefinitionId]	NVARCHAR (255)		NOT NULL,	 -- TODO: Add foreign key to definitions table
+	[LookupDefinitionId]	NVARCHAR (255)		NOT NULL,	 -- TODO: Add foreign key to definitions table
 	[Name]							NVARCHAR (255)		NOT NULL, -- appears in select lists
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
@@ -17,4 +17,4 @@
 );
 GO
 CREATE CLUSTERED INDEX [IX_ResourceLookup1s__SortKey]
-  ON [dbo].[ResourceLookups]([SortKey])
+  ON [dbo].[Lookups]([SortKey])

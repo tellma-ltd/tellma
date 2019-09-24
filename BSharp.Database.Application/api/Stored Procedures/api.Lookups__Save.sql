@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [api].[ResourceLookups__Save]
-	@Entities [ResourceLookupList] READONLY,
+﻿CREATE PROCEDURE [api].[Lookups__Save]
+	@Entities [LookupList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[ResourceLookups_Validate__Save]
+	EXEC [bll].[Lookups_Validate__Save]
 		@Entities = @Entities;
 
 	SELECT @ValidationErrorsJson = 
@@ -21,6 +21,6 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dal].[ResourceLookups__Save]
+	EXEC [dal].[Lookups__Save]
 		@Entities = @Entities
 END;

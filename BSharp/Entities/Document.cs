@@ -105,15 +105,15 @@ namespace BSharp.Entities
 
         [Display(Name = "Document_DocumentLookup1")]
         [ForeignKey(nameof(DocumentLookup1Id))]
-        public ResourceLookup DocumentLookup1 { get; set; }
+        public Lookup DocumentLookup1 { get; set; }
 
         [Display(Name = "Document_DocumentLookup2")]
         [ForeignKey(nameof(DocumentLookup2Id))]
-        public ResourceLookup DocumentLookup2 { get; set; }
+        public Lookup DocumentLookup2 { get; set; }
 
         [Display(Name = "Document_DocumentLookup3")]
         [ForeignKey(nameof(DocumentLookup3Id))]
-        public ResourceLookup DocumentLookup3 { get; set; }
+        public Lookup DocumentLookup3 { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

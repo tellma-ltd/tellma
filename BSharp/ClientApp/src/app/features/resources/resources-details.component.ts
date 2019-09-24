@@ -7,7 +7,7 @@ import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ResourceForSave, Resource, metadata_Resource } from '~/app/data/entities/resource';
-import { PropDescriptor } from '~/app/data/entities/base/metadata';
+import { PropDescriptor, NavigationPropDescriptor } from '~/app/data/entities/base/metadata';
 import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
@@ -100,6 +100,26 @@ CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
 
   public get p(): { [prop: string]: PropDescriptor } {
     return metadata_Resource(this.ws, this.translate, this.definitionId).properties;
+  }
+
+  public get resourceLookup1Definition() {
+    return (metadata_Resource(this.ws, this.translate, this.definitionId)
+    .properties.ResourceLookup1 as NavigationPropDescriptor).definition;
+  }
+
+  public get resourceLookup2Definition() {
+    return (metadata_Resource(this.ws, this.translate, this.definitionId)
+    .properties.ResourceLookup2 as NavigationPropDescriptor).definition;
+  }
+
+  public get resourceLookup3Definition() {
+    return (metadata_Resource(this.ws, this.translate, this.definitionId)
+    .properties.ResourceLookup3 as NavigationPropDescriptor).definition;
+  }
+
+  public get resourceLookup4Definition() {
+    return (metadata_Resource(this.ws, this.translate, this.definitionId)
+    .properties.ResourceLookup4 as NavigationPropDescriptor).definition;
   }
 
   public get d(): ResourceDefinitionForClient {

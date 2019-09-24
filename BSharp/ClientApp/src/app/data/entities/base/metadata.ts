@@ -8,7 +8,7 @@ import { metadata_ResourceClassification } from '../resource-classification';
 import { metadata_IfrsNote } from '../ifrs-note';
 import { metadata_Agent } from '../agent';
 import { metadata_View } from '../view';
-import { metadata_ResourceLookup } from '../resource-lookup';
+import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
 import {
@@ -24,7 +24,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     ResourceClassification: metadata_ResourceClassification,
     IfrsNote: metadata_IfrsNote,
     View: metadata_View,
-    ResourceLookup: metadata_ResourceLookup,
+    Lookup: metadata_Lookup,
     Currency: metadata_Currency,
     Resource: metadata_Resource,
 

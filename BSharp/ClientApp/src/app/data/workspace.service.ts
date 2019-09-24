@@ -15,7 +15,7 @@ import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 import { User } from './entities/user';
 import { DefinitionsForClient } from './dto/definitions-for-client';
-import { ResourceLookup } from './entities/resource-lookup';
+import { Lookup } from './entities/lookup';
 import { Currency } from './entities/currency';
 import { Resource } from './entities/resource';
 
@@ -160,7 +160,7 @@ export class TenantWorkspace {
   Agent: EntityWorkspace<Agent>;
   IfrsNote: EntityWorkspace<IfrsNote>;
   ResourceClassification: EntityWorkspace<ResourceClassification>;
-  ResourceLookup: EntityWorkspace<ResourceLookup>;
+  Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
 
@@ -179,7 +179,7 @@ export class TenantWorkspace {
     this.Agent = new EntityWorkspace<Agent>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
     this.ResourceClassification = new EntityWorkspace<ResourceClassification>();
-    this.ResourceLookup = new EntityWorkspace<ResourceLookup>();
+    this.Lookup = new EntityWorkspace<Lookup>();
     this.Currency = new EntityWorkspace<Currency>();
     this.Resource = new EntityWorkspace<Resource>();
 

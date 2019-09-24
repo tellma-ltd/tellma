@@ -24,9 +24,9 @@ namespace BSharp.Controllers.Dto
 
 
         /// <summary>
-        /// Mapping from resource lookup definition Id to resource definition
+        /// Mapping from lookup definition Id to lookup definition
         /// </summary>
-        public Dictionary<string, ResourceLookupDefinitionForClient> ResourceLookups { get; set; }
+        public Dictionary<string, LookupDefinitionForClient> Lookups { get; set; }
     }
 
     public abstract class DefinitionForClient
@@ -144,7 +144,7 @@ namespace BSharp.Controllers.Dto
         public string ResourceLookup4_DefinitionId { get; set; }
     }
 
-    public class ResourceLookupDefinitionForClient : DefinitionForClient
+    public class LookupDefinitionForClient : DefinitionForClient
     {
 
     }

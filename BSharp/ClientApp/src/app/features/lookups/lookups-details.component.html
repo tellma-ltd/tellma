@@ -1,4 +1,4 @@
-<b-details collection="ResourceLookup" [definition]="definitionId" [createFunc]="create"
+<b-details collection="Lookup" [definition]="definitionId" [createFunc]="create"
   [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
   [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -64,7 +64,7 @@
 
   <!-- Is Active -->
   <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-    <b-auto-cell collection="ResourceLookup" [definition]="definitionId" [entity]="model" path="IsActive"></b-auto-cell>
+    <b-auto-cell collection="Lookup" [definition]="definitionId" [entity]="model" path="IsActive"></b-auto-cell>
   </b-form-group>
 </ng-template>
 

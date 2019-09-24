@@ -1,4 +1,4 @@
-<b-master collection="ResourceLookup" [definition]="definitionId" [mode]="mode"
+<b-master collection="Lookup" [definition]="definitionId" [mode]="mode"
   [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="Code,IsActive" selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
               { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
@@ -14,10 +14,10 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <b-auto-cell collection="ResourceLookup" [definition]="definitionId" path="" [entity]="c[id]"></b-auto-cell>
+    <b-auto-cell collection="Lookup" [definition]="definitionId" path="" [entity]="c[id]"></b-auto-cell>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <b-auto-cell collection="ResourceLookup" [definition]="definitionId" path="Code" [entity]="c[id]"></b-auto-cell>
+    <b-auto-cell collection="Lookup" [definition]="definitionId" path="Code" [entity]="c[id]"></b-auto-cell>
   </div>
 </ng-template>
 
@@ -29,7 +29,7 @@
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell collection="ResourceLookup" [definition]="definitionId" [entity]="c[id]"></b-auto-cell>
+    <b-auto-cell collection="Lookup" [definition]="definitionId" [entity]="c[id]"></b-auto-cell>
   </span>
 </ng-template>
 

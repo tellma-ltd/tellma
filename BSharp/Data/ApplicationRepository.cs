@@ -254,8 +254,8 @@ namespace BSharp.Data
                     case nameof(ResourceClassification):
                         return new SqlSource("[map].[ResourceClassifications]()");
 
-                    case nameof(ResourceLookup):
-                        return new SqlSource("[map].[ResourceLookups]()");
+                    case nameof(Lookup):
+                        return new SqlSource("[map].[Lookups]()");
 
                     case nameof(Currency):
                         return new SqlSource("[map].[Currencies]()");
@@ -1798,9 +1798,9 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
         #endregion
 
-        #region ResourceLookups
+        #region Lookups
 
-        public Query<ResourceLookup> ResourceLookups__AsQuery(string definitionId, List<ResourceLookupForSave> entities)
+        public Query<Lookup> Lookups__AsQuery(string definitionId, List<LookupForSave> entities)
         {
             // This method returns the provided entities as a Query that can be selected, filtered etc...
             // The Ids in the result are always the indices of the original collection, even when the entity has a string key
@@ -1811,17 +1811,17 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(ResourceLookup)}List]",
+                TypeName = $"[dbo].[{nameof(Lookup)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
 
             // Query
-            var query = Query<ResourceLookup>();
-            return query.FromSql($"[map].[{nameof(ResourceLookups__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
+            var query = Query<Lookup>();
+            return query.FromSql($"[map].[{nameof(Lookups__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
-        public async Task<IEnumerable<ValidationError>> ResourceLookups_Validate__Save(string definitionId, List<ResourceLookupForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Save(string definitionId, List<LookupForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1830,7 +1830,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(ResourceLookup)}List]",
+                    TypeName = $"[dbo].[{nameof(Lookup)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -1840,14 +1840,14 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ResourceLookups_Validate__Save)}]";
+                cmd.CommandText = $"[bll].[{nameof(Lookups_Validate__Save)}]";
 
                 // Execute
                 return await RepositoryUtilities.LoadErrors(cmd);
             }
         }
 
-        public async Task<List<int>> ResourceLookups__Save(string definitionId, List<ResourceLookupForSave> entities, bool returnIds)
+        public async Task<List<int>> Lookups__Save(string definitionId, List<LookupForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -1857,7 +1857,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(ResourceLookup)}List]",
+                    TypeName = $"[dbo].[{nameof(Lookup)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -1866,7 +1866,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResourceLookups__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(Lookups__Save)}]";
 
                 if (returnIds)
                 {
@@ -1899,7 +1899,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             return sortedResult.ToList();
         }
 
-        public async Task ResourceLookups__Activate(List<int> ids, bool isActive)
+        public async Task Lookups__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1919,14 +1919,14 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResourceLookups__Activate)}]";
+                cmd.CommandText = $"[dal].[{nameof(Lookups__Activate)}]";
 
                 // Execute
                 await cmd.ExecuteNonQueryAsync();
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> ResourceLookups_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Lookups_Validate__Delete(string definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1945,14 +1945,14 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ResourceLookups_Validate__Delete)}]";
+                cmd.CommandText = $"[bll].[{nameof(Lookups_Validate__Delete)}]";
 
                 // Execute
                 return await RepositoryUtilities.LoadErrors(cmd);
             }
         }
 
-        public async Task ResourceLookups__Delete(IEnumerable<int> ids)
+        public async Task Lookups__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1969,7 +1969,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ResourceLookups__Delete)}]";
+                cmd.CommandText = $"[dal].[{nameof(Lookups__Delete)}]";
 
                 // Execute
                 try

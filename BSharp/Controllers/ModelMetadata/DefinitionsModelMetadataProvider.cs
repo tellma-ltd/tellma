@@ -227,7 +227,7 @@ namespace BSharp.Controllers
                         {
                             if (visibiilityFunc(definition) >= Visibility.Visible)
                             {
-                                result = _tenantInfoAccessor.Localize(
+                                result = _tenantInfoAccessor.GetCurrentInfo().Localize(
                                     s1Func(definition),
                                     s2Func(definition),
                                     s3Func(definition)) ?? result;
@@ -277,10 +277,9 @@ namespace BSharp.Controllers
 
     public static class TenantInfoAccessorExtensions
     {
-        public static string Localize(this ITenantInfoAccessor tenantInfoAccessor, string s, string s2, string s3)
+        public static string Localize(this TenantInfo tenantInfo, string s, string s2, string s3)
         {
             var cultureName = CultureInfo.CurrentUICulture.Name;
-            var tenantInfo = tenantInfoAccessor.GetCurrentInfo();
 
             var currentLangIndex = cultureName == tenantInfo.TernaryLanguageId ? 3 : cultureName == tenantInfo.SecondaryLanguageId ? 2 : 1;
             return currentLangIndex == 3 ? (s3 ?? s) : currentLangIndex == 2 ? (s2 ?? s) : s;

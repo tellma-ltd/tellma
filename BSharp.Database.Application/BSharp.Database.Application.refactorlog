@@ -319,4 +319,95 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ResourceClassifications__Select]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ab269a3d-1152-4b87-8660-0d67eeeb1860" ChangeDateTime="09/24/2019 17:48:33">
+    <Property Name="ElementName" Value="[dbo].[ResourceLookups]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ebcfc2b8-36a1-44b5-863c-526dbea34e4c" ChangeDateTime="09/24/2019 17:48:45">
+    <Property Name="ElementName" Value="[dbo].[Lookups].[ResourceLookupDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Lookups]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[LookupDefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8aac9889-727d-493f-86da-5767fad9eefd" ChangeDateTime="09/24/2019 17:49:30">
+    <Property Name="ElementName" Value="[dbo].[ResourceLookupList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LookupList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7ada5b4e-2d2b-4f0f-9b0e-6803feb926b9" ChangeDateTime="09/24/2019 17:50:24">
+    <Property Name="ElementName" Value="[bll].[ResourceLookups_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="13ba43bf-4382-4bac-ae67-fcf944bb1d33" ChangeDateTime="09/24/2019 17:50:38">
+    <Property Name="ElementName" Value="[bll].[ResourceLookups_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3beb2100-075f-4ece-acf9-86f61fbe5f76" ChangeDateTime="09/24/2019 17:50:57">
+    <Property Name="ElementName" Value="[dal].[ResourceLookups__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7e470499-1a70-48d9-9e07-899d944073e9" ChangeDateTime="09/24/2019 17:51:14">
+    <Property Name="ElementName" Value="[dal].[ResourceLookups__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d73e9b5f-18c3-4e74-bcdb-105ec5c15fff" ChangeDateTime="09/24/2019 17:51:37">
+    <Property Name="ElementName" Value="[dal].[ResourceLookups__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="26408ad3-b2ea-4932-9a24-bfdc2d4015dc" ChangeDateTime="09/24/2019 17:52:26">
+    <Property Name="ElementName" Value="[map].[ResourceLookups]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ffde0529-96da-4322-9080-2549618b01b4" ChangeDateTime="09/24/2019 17:52:44">
+    <Property Name="ElementName" Value="[map].[ResourceLookups__AsQuery]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups__AsQuery]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b84d57c3-3eef-42e1-91c3-4a87418a0623" ChangeDateTime="09/24/2019 17:53:16">
+    <Property Name="ElementName" Value="[api].[ResourceLookups__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3c74339f-0323-4900-8b7e-ee79bb6a8728" ChangeDateTime="09/24/2019 17:53:28">
+    <Property Name="ElementName" Value="[api].[ResourceLookups__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0b635a94-993e-4de5-9c77-679377c0c815" ChangeDateTime="09/24/2019 18:03:53">
+    <Property Name="ElementName" Value="[api].[ResourceLookups__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Lookups__Save]" />
+  </Operation>
 </Operations>

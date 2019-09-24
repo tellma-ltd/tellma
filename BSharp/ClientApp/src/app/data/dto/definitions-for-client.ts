@@ -4,7 +4,7 @@ export class DefinitionsForClient {
     Documents: { [definitionId: string]: DocumentDefinitionForClient };
     Lines: { [definitionId: string]: LineDefinitionForClient };
     Resources: { [definitionId: string]: ResourceDefinitionForClient };
-    ResourceLookups: { [definitionId: string]: ResourceLookupDefinitionForClient };
+    Lookups: { [definitionId: string]: LookupDefinitionForClient };
 }
 
 export interface DefinitionForClient {
@@ -117,7 +117,7 @@ export interface ResourceDefinitionForClient extends DefinitionForClient {
     ResourceLookup4_DefinitionId: string;
 }
 
-export interface ResourceLookupDefinitionForClient extends DefinitionForClient {
+export interface LookupDefinitionForClient extends DefinitionForClient {
     Bla: string;
 }
 
