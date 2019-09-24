@@ -25,10 +25,10 @@ INSERT INTO dbo.Accounts([Name], [Code], [IfrsAccountClassificationId]) VALUES
 (N'PPE Warehouse', N'1210', N'OtherInventories'),
 (N'PPE - Vehicles', N'1301', N'Vehicles'),
 
-(N'Vimeks', N'2101', N'TradeAndOtherCurrentPayablesToTradeSuppliers', 0, @USD),
+(N'Vimeks', N'2101', N'TradeAndOtherCurrentPayablesToTradeSuppliers'),
 
-(N'Capital - MA', N'3101', N'IssuedCapital', 0, NULL),
-(N'Capital - AA', N'3102', N'IssuedCapital', 0, NULL);
+(N'Capital - MA', N'3101', N'IssuedCapital'),
+(N'Capital - AA', N'3102', N'IssuedCapital');
 SELECT @CBEUSD = [Id] FROM dbo.Accounts WHERE Code = N'1101';
 SELECT @CBEETB = [Id] FROM dbo.Accounts WHERE Code = N'1102';
 SELECT @CBELC = [Id] FROM dbo.Accounts WHERE Code = N'1201';
@@ -103,4 +103,3 @@ INSERT INTO dbo.Accounts([Name], [Code], [IfrsAccountClassificationId], [IfrsEnt
 ;
 SELECT @SalariesAdmin = [Id] FROM dbo.Accounts WHERE Code = N'5202';
 SELECT @OvertimeAdmin = [Id] FROM dbo.Accounts WHERE Code = N'5203';
-

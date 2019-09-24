@@ -39,11 +39,11 @@ BEGIN
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[DocumentDefinitionId], [SerialNumber], [DocumentDate], [VoucherNumericReference],-- [SortKey],
+				[DocumentDefinitionId], [SerialNumber], [DocumentDate], [VoucherNumericReference], [SortKey],
 				[Memo]--, [Frequency], [Repetitions]
 			)
 			VALUES (
-				@DefinitionId, s.[SerialNumber], s.[DocumentDate], s.[VoucherNumericReference], --s.[SortKey], 
+				@DefinitionId, s.[SerialNumber], s.[DocumentDate], s.[VoucherNumericReference], s.[SerialNumber], 
 				s.[Memo]--, s.[Frequency], s.[Repetitions]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
@@ -85,10 +85,10 @@ BEGIN
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [LineDefinitionId]--, [TemplateLineId], [ScalingFactor]--, [SortKey]
+			INSERT ([DocumentId], [LineDefinitionId], [SortKey]--, [TemplateLineId], [ScalingFactor]--
 				, [Memo],				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId], [RelatedMonetaryAmount]
 			)
-			VALUES (s.[DocumentId], s.[LineDefinitionId], --s.[TemplateLineId], s.[ScalingFactor],-- s.[SortKey],
+			VALUES (s.[DocumentId], s.[LineDefinitionId], s.[Index], --s.[TemplateLineId], s.[ScalingFactor], 
 			s.[Memo],s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount])
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE

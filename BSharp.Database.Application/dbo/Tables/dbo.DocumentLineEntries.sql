@@ -13,6 +13,16 @@
 -- Analysis of accounts including: cash, non current assets, equity, and expenses. Can be updated after posting
 	-- Note that the responsibility center might define the Ifrs Note
 	[IfrsEntryClassificationId]	NVARCHAR (255)	CONSTRAINT [FK_DocumentLineEntries__IfrsEntryClassifications]	FOREIGN KEY ([IfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),	
+-- Agent is defined as follows: (like custodian, not authorizer)
+-- Cash Accounts: It is the custodian itself.
+-- Inventory Accounts: The custodian as well, which is a department
+-- Fixed asset accounts:
+-- Debtor Accounts: The debtor partner
+-- Payable Account: The creditor partner
+-- Equity Account: the shareholders, custodian of shares
+-- Revenues Account: The customer
+-- COGS: The customer (could be unnamed)
+-- Expense Accounts other than COS: The consumer.
 	[AgentId]					INT				CONSTRAINT [FK_DocumentLineEntries__AgentId]					FOREIGN KEY ([AgentId])	REFERENCES [dbo].[Agents] ([Id]),
 	-- The business segment that "owns" the asset/liablity, and whose performance is assessed by the revenue/expense
 	-- Smart sales posting is easier since a resource can tell the nature of expense, but not the responsibility center

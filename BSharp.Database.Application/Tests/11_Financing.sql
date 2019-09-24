@@ -4,8 +4,8 @@ DECLARE @D11Ids dbo.[IdList], @D12Ids dbo.[IdList], @D13Ids dbo.[IdList];
 
 BEGIN -- Inserting
 	INSERT INTO @D11([Index],
-	[DocumentDate],	[SortKey], [Memo]) VALUES (
-	0, '2017.01.01',	1,		N'Capital investment'
+	[DocumentDate],	 [Memo]) VALUES (
+	0, '2017.01.01', N'Capital investment'
 	);
 	INSERT INTO @L11([Index], [DocumentIndex],
 				[LineDefinitionId]) VALUES
