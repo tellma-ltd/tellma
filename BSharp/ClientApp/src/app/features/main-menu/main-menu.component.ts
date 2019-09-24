@@ -42,7 +42,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   quickAccess: MenuItemInfo[] = [
     { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units', sortKey: 10 },
     // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 20 },
-    { label: 'ProductCategories', icon: 'list', link: '../product-categories', viewId: 'product-categories', sortKey: 30 },
     { label: 'Users', icon: 'users', link: '../users', viewId: 'users', sortKey: 40 },
     { label: 'Roles', icon: 'tasks', link: '../roles', viewId: 'roles', sortKey: 50 },
     { label: 'Settings', icon: 'cog', link: '../settings', viewId: 'settings', sortKey: 60 },
@@ -53,7 +52,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       background: 'b-green',
       items: [
         // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
-        { label: 'ProductCategories', icon: 'list', link: '../product-categories', viewId: 'product-categories', sortKey: 200 },
         { label: 'Currencies', icon: 'euro-sign', link: '../currencies', viewId: 'currencies', sortKey: 300 },
       ]
     },
@@ -109,6 +107,9 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addDefinitions(menu, this.workspace.current.definitions.ResourceLookups, 'resource-lookups');
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
       this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');
+      this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resource-classifications',
+      e => !!e ? e + ' - ' + this.translate.instant('Classifications') : e);
+
 
       this._mainMenu = Object.keys(menu).map(e => ({
         label: this.translate.instant(e),
@@ -120,15 +121,20 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     return this._mainMenu;
   }
 
-  private addDefinitions(menu: { [section: string]: MenuSectionInfo}, definitions: { [defId: string]: DefinitionForClient}, url: string) {
+  private addDefinitions(
+    menu: { [section: string]: MenuSectionInfo },
+    definitions: { [defId: string]: DefinitionForClient },
+    url: string, titleFunc?: (title: string) => string) {
     if (!!definitions) {
+
+      titleFunc = titleFunc || (e => e);
       for (const definitionId of Object.keys(definitions).filter(e => this.canView(e))) {
 
         // get the definition
         const definition = definitions[definitionId];
 
         // get the name
-        const label = (this.workspace.current.isSecondaryLanguage ? definition.TitlePlural2 :
+        const label = titleFunc(this.workspace.current.isSecondaryLanguage ? definition.TitlePlural2 :
           this.workspace.current.isTernaryLanguage ? definition.TitlePlural3 : definition.TitlePlural)
           || this.translate.instant('Untitled');
 

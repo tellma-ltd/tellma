@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { metadata_User as metadata_User } from '../user';
 import { EntityWithKey } from './entity-with-key';
 import { metadata_Role } from '../role';
-import { metadata_ProductCategory } from '../product-category';
+import { metadata_ResourceClassification } from '../resource-classification';
 import { metadata_IfrsNote } from '../ifrs-note';
 import { metadata_Agent } from '../agent';
 import { metadata_View } from '../view';
@@ -21,7 +21,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     User: metadata_User,
     Agent: metadata_Agent,
     Role: metadata_Role,
-    ProductCategory: metadata_ProductCategory,
+    ResourceClassification: metadata_ResourceClassification,
     IfrsNote: metadata_IfrsNote,
     View: metadata_View,
     ResourceLookup: metadata_ResourceLookup,

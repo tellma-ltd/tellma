@@ -251,8 +251,8 @@ namespace BSharp.Data
                     case nameof(Role):
                         return new SqlSource("[dbo].[Roles]");
 
-                    case nameof(ProductCategory):
-                        return new SqlSource("[map].[ProductCategories]()");
+                    case nameof(ResourceClassification):
+                        return new SqlSource("[map].[ResourceClassifications]()");
 
                     case nameof(ResourceLookup):
                         return new SqlSource("[map].[ResourceLookups]()");
@@ -1440,27 +1440,29 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
         #endregion
 
-        #region ProductCategories
+        #region ResourceClassifications
 
-        public Query<ProductCategory> ProductCategories__AsQuery(List<ProductCategoryForSave> entities)
+        public Query<ResourceClassification> ResourceClassifications__AsQuery(string definitionId, List<ResourceClassificationForSave> entities)
         {
             // This method returns the provided entities as a Query that can be selected, filtered etc...
             // The Ids in the result are always the indices of the original collection, even when the entity has a string key
 
             // Parameters
+            SqlParameter definitionParameter = new SqlParameter("@DefinitionId", definitionId);
+
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
-                TypeName = $"[dbo].[{nameof(ProductCategory)}List]",
+                TypeName = $"[dbo].[{nameof(ResourceClassification)}List]",
                 SqlDbType = SqlDbType.Structured
             };
 
             // Query
-            var query = Query<ProductCategory>();
-            return query.FromSql($"[map].[{nameof(ProductCategories__AsQuery)}] (@Entities)", null, entitiesTvp);
+            var query = Query<ResourceClassification>();
+            return query.FromSql($"[map].[{nameof(ResourceClassifications__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
-        public async Task<IEnumerable<ValidationError>> ProductCategories_Validate__Save(List<ProductCategoryForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__Save(string definitionId, List<ResourceClassificationForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1469,23 +1471,24 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(ProductCategory)}List]",
+                    TypeName = $"[dbo].[{nameof(ResourceClassification)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
+                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@Top", top);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ProductCategories_Validate__Save)}]";
+                cmd.CommandText = $"[bll].[{nameof(ResourceClassifications_Validate__Save)}]";
 
                 // Execute
                 return await RepositoryUtilities.LoadErrors(cmd);
             }
         }
 
-        public async Task<List<int>> ProductCategories__Save(List<ProductCategoryForSave> entities, bool returnIds)
+        public async Task<List<int>> ResourceClassifications__Save(string definitionId, List<ResourceClassificationForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -1495,15 +1498,16 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[{nameof(ProductCategory)}List]",
+                    TypeName = $"[dbo].[{nameof(ResourceClassification)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
+                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ProductCategories__Save)}]";
+                cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__Save)}]";
 
                 if (returnIds)
                 {
@@ -1536,7 +1540,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             return sortedResult.ToList();
         }
 
-        public async Task ProductCategories__Activate(List<int> ids, bool isActive)
+        public async Task ResourceClassifications__Activate(List<int> ids, bool isActive)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1556,14 +1560,14 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ProductCategories__Activate)}]";
+                cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__Activate)}]";
 
                 // Execute
                 await cmd.ExecuteNonQueryAsync();
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> ProductCategories_Validate__Delete(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__Delete(string definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1576,19 +1580,20 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                     SqlDbType = SqlDbType.Structured
                 };
 
+                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@Top", top);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ProductCategories_Validate__Delete)}]";
+                cmd.CommandText = $"[bll].[{nameof(ResourceClassifications_Validate__Delete)}]";
 
                 // Execute
                 return await RepositoryUtilities.LoadErrors(cmd);
             }
         }
 
-        public async Task ProductCategories__Delete(IEnumerable<int> ids)
+        public async Task ResourceClassifications__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1605,7 +1610,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ProductCategories__Delete)}]";
+                cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__Delete)}]";
 
                 // Execute
                 try
@@ -1619,7 +1624,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> ProductCategories_Validate__DeleteWithDescendants(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__DeleteWithDescendants(string definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1632,19 +1637,20 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                     SqlDbType = SqlDbType.Structured
                 };
 
+                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@Top", top);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(ProductCategories_Validate__DeleteWithDescendants)}]";
+                cmd.CommandText = $"[bll].[{nameof(ResourceClassifications_Validate__DeleteWithDescendants)}]";
 
                 // Execute
                 return await RepositoryUtilities.LoadErrors(cmd);
             }
         }
 
-        public async Task ProductCategories__DeleteWithDescendants(IEnumerable<int> ids)
+        public async Task ResourceClassifications__DeleteWithDescendants(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1661,7 +1667,7 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(ProductCategories__DeleteWithDescendants)}]";
+                cmd.CommandText = $"[dal].[{nameof(ResourceClassifications__DeleteWithDescendants)}]";
 
                 // Execute
                 try
@@ -1674,7 +1680,6 @@ LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
                 }
             }
         }
-
 
         #endregion
 

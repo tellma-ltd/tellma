@@ -1,5 +1,5 @@
-<b-master collection="ProductCategory" [mode]="mode"
-  [enableTreeView]="true" [masterCrumb]="'ProductCategories' | translate"
+<b-master collection="ResourceClassification" [definition]="definitionId" [mode]="mode"
+  [enableTreeView]="true" [masterCrumb]="masterCrumb"
   [tileTemplate]="tile"  
   [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader"
@@ -17,7 +17,7 @@
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ ws.getMultilingualValue('ProductCategory', id, 'Name') }}</span>
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('ResourceClassification', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
     <span>{{ c[id].Code }}</span>
@@ -26,12 +26,12 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ 'ProductCategory' | translate }}
+    {{ 'Classification' | translate }}
   </ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
-    <span class="text-truncate">{{ ws.getMultilingualValue('ProductCategory', id, 'Name') }}</span>
+    <span class="text-truncate">{{ ws.getMultilingualValue('ResourceClassification', id, 'Name') }}</span>
 </ng-template>
 
 <!-- Multiselect Actions -->

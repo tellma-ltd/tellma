@@ -1,6 +1,6 @@
-<b-details collection="Resource" [definition]="definitionId" [createFunc]="create"
-    [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
-    [documentTemplate]="document" [actions]="[
+<b-details collection="Resource" [definition]="definitionId" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
+    [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -62,6 +62,43 @@
         <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
     </b-form-group>
 
+    <!-- Classification -->
+    <b-form-group class="b-form-group" [label]="'Classification' | translate"
+        [serverErrors]="model?.serverErrors?.ResourceClassificationId">
+        <b-restricted [metadata]="model?.EntityMetadata?.ResourceClassification">
+            <b-view-link *ngIf="!isEdit" [link]="'../../../resource-classifications/' + definitionId"
+                [itemId]="model?.ResourceClassificationId">{{
+        ws.getMultilingualValue('ResourceClassification', model?.ResourceClassificationId, 'Name') }}</b-view-link>
+        </b-restricted>
+        <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceClassificationId" [definitionIds]="[definitionId]"
+            collection="ResourceClassification" [masterTemplate]="resourceClassificationsMaster"
+            [detailsTemplate]="resourceClassificationsDetail">
+        </b-details-picker>
+
+        <!-- The Resource Classifications Details Modal -->
+        <ng-template #resourceClassificationsDetail let-modal="modal" let-update="update" let-initialText="initialText"
+            let-definitionId="definitionId">
+            <div class="modal-body">
+                <b-resource-classifications-details mode="popup" idString="new" [initialText]="initialText"
+                    [definitionId]="definitionId" (cancel)="modal.close(false);"
+                    (saved)="modal.close(true); update($event);">
+                </b-resource-classifications-details>
+            </div>
+        </ng-template>
+
+        <!-- The Resource Classifications Master Modal -->
+        <ng-template #resourceClassificationsMaster let-modal="modal" let-update="update" let-create="create"
+            let-definitionId="definitionId">
+            <div class="modal-body">
+                <b-resource-classifications-master mode="popup" (cancel)="modal.close(false);"
+                    [definitionId]="definitionId" (choose)="modal.close(true); update($event); "
+                    (create)="modal.close(false); create()">
+                </b-resource-classifications-master>
+            </div>
+        </ng-template>
+
+    </b-form-group>
+
     <!-- Currency -->
     <b-form-group class="b-form-group" [label]="p['Currency']?.label" *ngIf="!!p.Currency"
         [serverErrors]="model?.serverErrors?.CurrencyId">
@@ -69,8 +106,7 @@
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="Currency">
             </b-auto-cell>
         </b-view-link>
-        <b-details-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId"
-            [masterTemplate]="currenciesMaster"
+        <b-details-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [masterTemplate]="currenciesMaster"
             [detailsTemplate]="currenciesDetails" collection="Currency">
         </b-details-picker>
 
@@ -161,53 +197,60 @@
     <!-- Resource Lookup 1 -->
     <b-form-group class="b-form-group" [label]="p.ResourceLookup1.label" *ngIf="!!p.ResourceLookup1"
         [serverErrors]="model?.serverErrors?.ResourceLookup1Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p.ResourceLookup1.definition" [itemId]="model?.ResourceLookup1Id">
+        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p.ResourceLookup1.definition"
+            [itemId]="model?.ResourceLookup1Id">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="ResourceLookup1">
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup1Id"
-            [definitionIds]="[p.ResourceLookup1.definition]" definitionProperty="ResourceLookupDefinitionId" 
+            [definitionIds]="[p.ResourceLookup1.definition]" definitionProperty="ResourceLookupDefinitionId"
             [masterTemplate]="resourceLookupsMaster" [detailsTemplate]="resourceLookupsDetails"
             collection="ResourceLookup" [required]="d.ResourceLookup1_Visibility === 2">
         </b-details-picker>
     </b-form-group>
-    
+
     <!-- Resource Lookup 2 -->
     <b-form-group class="b-form-group" [label]="p.ResourceLookup2.label" *ngIf="!!p.ResourceLookup2"
         [serverErrors]="model?.serverErrors?.ResourceLookup2Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p.ResourceLookup2.definition" [itemId]="model?.ResourceLookup2Id">
+        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p.ResourceLookup2.definition"
+            [itemId]="model?.ResourceLookup2Id">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="ResourceLookup2">
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup2Id"
-            [definitionIds]="[p.ResourceLookup2.definition]" definitionProperty="ResourceLookupDefinitionId"  [masterTemplate]="resourceLookupsMaster"
-            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [required]="d.ResourceLookup2_Visibility === 2">
+            [definitionIds]="[p.ResourceLookup2.definition]" definitionProperty="ResourceLookupDefinitionId"
+            [masterTemplate]="resourceLookupsMaster" [detailsTemplate]="resourceLookupsDetails"
+            collection="ResourceLookup" [required]="d.ResourceLookup2_Visibility === 2">
         </b-details-picker>
     </b-form-group>
-    
+
     <!-- Resource Lookup 3 -->
     <b-form-group class="b-form-group" [label]="p.ResourceLookup3.label" *ngIf="!!p.ResourceLookup3"
         [serverErrors]="model?.serverErrors?.ResourceLookup3Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p.ResourceLookup3.definition" [itemId]="model?.ResourceLookup3Id">
+        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p.ResourceLookup3.definition"
+            [itemId]="model?.ResourceLookup3Id">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="ResourceLookup3">
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup3Id"
-        [definitionIds]="[p.ResourceLookup3.definition]" definitionProperty="ResourceLookupDefinitionId"  [masterTemplate]="resourceLookupsMaster"
-            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [required]="d.ResourceLookup3_Visibility === 2">
+            [definitionIds]="[p.ResourceLookup3.definition]" definitionProperty="ResourceLookupDefinitionId"
+            [masterTemplate]="resourceLookupsMaster" [detailsTemplate]="resourceLookupsDetails"
+            collection="ResourceLookup" [required]="d.ResourceLookup3_Visibility === 2">
         </b-details-picker>
     </b-form-group>
-    
+
     <!-- Resource Lookup 4 -->
     <b-form-group class="b-form-group" [label]="p['ResourceLookup4'].label" *ngIf="!!p.ResourceLookup4"
         [serverErrors]="model?.serverErrors?.ResourceLookup4Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p['ResourceLookup4'].definition" [itemId]="model?.ResourceLookup4Id">
+        <b-view-link *ngIf="!isEdit" [link]="'../../../resource-lookups/' + p['ResourceLookup4'].definition"
+            [itemId]="model?.ResourceLookup4Id">
             <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="ResourceLookup4">
             </b-auto-cell>
         </b-view-link>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceLookup4Id"
-            [definitionIds]="[p.ResourceLookup4.definition]" definitionProperty="ResourceLookupDefinitionId"  [masterTemplate]="resourceLookupsMaster"
-            [detailsTemplate]="resourceLookupsDetails" collection="ResourceLookup" [required]="d.ResourceLookup4_Visibility === 2">
+            [definitionIds]="[p.ResourceLookup4.definition]" definitionProperty="ResourceLookupDefinitionId"
+            [masterTemplate]="resourceLookupsMaster" [detailsTemplate]="resourceLookupsDetails"
+            collection="ResourceLookup" [required]="d.ResourceLookup4_Visibility === 2">
         </b-details-picker>
     </b-form-group>
 
@@ -215,7 +258,8 @@
     <b-form-group class="b-form-group" [label]="p['CustomsReference'].label" *ngIf="!!p.CustomsReference"
         [serverErrors]="model?.serverErrors?.CustomsReference">
         <div *ngIf="!isEdit">{{ model?.CustomsReference }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.CustomsReference" [ngModelOptions]="{ updateOn: 'blur' }" [required]="d.CustomsReference_Visibility === 2">
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.CustomsReference" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="d.CustomsReference_Visibility === 2">
         </b-text-editor>
     </b-form-group>
 
@@ -223,7 +267,8 @@
     <b-form-group class="b-form-group" [label]="p['Memo']?.label" *ngIf="!!p.Memo"
         [serverErrors]="model?.serverErrors?.Memo">
         <div *ngIf="!isEdit">{{ model?.Memo }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }" [required]="d.Memo_Visibility === 2"></b-text-editor>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="d.Memo_Visibility === 2"></b-text-editor>
     </b-form-group>
 
     <!-- Is Active -->
@@ -256,14 +301,15 @@
 <ng-template #resourceLookupsDetails let-modal="modal" let-update="update" let-initialText="initialText"
     let-definitionId="definitionId">
     <div class="modal-body">
-        <b-resource-lookups-details mode="popup" idString="new" [initialText]="initialText" [definitionId]="definitionId"
-            (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
+        <b-resource-lookups-details mode="popup" idString="new" [initialText]="initialText"
+            [definitionId]="definitionId" (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
         </b-resource-lookups-details>
     </div>
 </ng-template>
 
 <!-- The Resource Lookup Master Modal -->
-<ng-template #resourceLookupsMaster let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId">
+<ng-template #resourceLookupsMaster let-modal="modal" let-update="update" let-create="create"
+    let-definitionId="definitionId">
     <div class="modal-body">
         <b-resource-lookups-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId"
             (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">

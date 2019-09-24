@@ -35,14 +35,14 @@ namespace BSharp.Entities
         public int? AccountClassificationId { get; set; } // Nav
         public string IfrsAccountClassificationId { get; set; } // Nav
         public string PartyReference { get; set; }
-        public bool? IsMultiEntryClassification { get; set; }
+        //public bool? IsMultiEntryClassification { get; set; }
         public string IfrsEntryClassificationId { get; set; } // Nav
-        public bool? IsMultiAgent { get; set; }
-        public int? AgentId { get; set; } // Nav
-        public bool? IsMultiResponsibilityCenter { get; set; }
-        public int? ResponsibilityCenterId { get; set; } // Nev
-        public bool? IsMultiResource { get; set; }
-        public int? ResourceId { get; set; } // Nev
+        //public bool? IsMultiAgent { get; set; }
+        //public int? AgentId { get; set; } // Nav
+        //public bool? IsMultiResponsibilityCenter { get; set; }
+        //public int? ResponsibilityCenterId { get; set; } // Nev
+        //public bool? IsMultiResource { get; set; }
+        //public int? ResourceId { get; set; } // Nev
         public int? ResponsibleActorId { get; set; } // Nev
         public int? ResponsibleRoleId { get; set; } // Nev
         public int? CustodianActorId { get; set; } // Nev
@@ -87,14 +87,14 @@ namespace BSharp.Entities
         [ForeignKey(nameof(IfrsEntryClassificationId))]
         public IfrsEntryClassification IfrsEntryClassification { get; set; }
 
-        [ForeignKey(nameof(AgentId))]
-        public Agent Agent { get; set; }
+        //[ForeignKey(nameof(AgentId))]
+        //public Agent Agent { get; set; }
 
-        [ForeignKey(nameof(ResponsibilityCenterId))]
-        public ResponsibilityCenter ResponsibilityCenter { get; set; }
+        //[ForeignKey(nameof(ResponsibilityCenterId))]
+        //public ResponsibilityCenter ResponsibilityCenter { get; set; }
 
-        [ForeignKey(nameof(ResourceId))]
-        public Resource Resource { get; set; }
+        //[ForeignKey(nameof(ResourceId))]
+        //public Resource Resource { get; set; }
 
         [ForeignKey(nameof(ResponsibleActorId))]
         public Agent ResponsibleActor { get; set; }

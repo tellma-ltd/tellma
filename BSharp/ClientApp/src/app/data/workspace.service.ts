@@ -10,7 +10,7 @@ import { PermissionsForClient } from './dto/permissions-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { IfrsNote } from './entities/ifrs-note';
-import { ProductCategory } from './entities/product-category';
+import { ResourceClassification } from './entities/resource-classification';
 import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 import { User } from './entities/user';
@@ -159,7 +159,7 @@ export class TenantWorkspace {
   User: EntityWorkspace<User>;
   Agent: EntityWorkspace<Agent>;
   IfrsNote: EntityWorkspace<IfrsNote>;
-  ProductCategory: EntityWorkspace<ProductCategory>;
+  ResourceClassification: EntityWorkspace<ResourceClassification>;
   ResourceLookup: EntityWorkspace<ResourceLookup>;
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
@@ -178,7 +178,7 @@ export class TenantWorkspace {
     this.User = new EntityWorkspace<User>();
     this.Agent = new EntityWorkspace<Agent>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
-    this.ProductCategory = new EntityWorkspace<ProductCategory>();
+    this.ResourceClassification = new EntityWorkspace<ResourceClassification>();
     this.ResourceLookup = new EntityWorkspace<ResourceLookup>();
     this.Currency = new EntityWorkspace<Currency>();
     this.Resource = new EntityWorkspace<Resource>();

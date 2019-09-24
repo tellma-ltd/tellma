@@ -32,7 +32,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `Currency,MassUnit,VolumeUnit,AreaUnit,LengthUnit,TimeUnit,
+  public expand = `ResourceClassification,Currency,MassUnit,VolumeUnit,AreaUnit,LengthUnit,TimeUnit,
 CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
 
   constructor(
@@ -59,6 +59,11 @@ CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
       }
     });
   }
+
+  get viewId(): string {
+    return `resources/${this.definitionId}`;
+  }
+
   // UI Binding
 
   create = () => {
@@ -120,7 +125,7 @@ CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
   public showActivate = (model: Resource) => !!model && !model.IsActive;
   public showDeactivate = (model: Resource) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: Resource) => this.ws.canDo(this.definitionId, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Resource) => this.ws.canDo(this.viewId, 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: Resource) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

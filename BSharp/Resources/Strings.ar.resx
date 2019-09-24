@@ -139,6 +139,12 @@
   <data name="ChangePassword" xml:space="preserve">
     <value>تغير كلمة المرور</value>
   </data>
+  <data name="Classification" xml:space="preserve">
+    <value>تصنيف</value>
+  </data>
+  <data name="Classifications" xml:space="preserve">
+    <value>تصنيفات</value>
+  </data>
   <data name="ClickHere" xml:space="preserve">
     <value>إضغط هنا</value>
   </data>
@@ -225,6 +231,132 @@
   </data>
   <data name="DisableTwoFactorAuthenticationTitle" xml:space="preserve">
     <value>هذا الأمر يقوم بتعطيل التوثيق مزدوج العوامل</value>
+  </data>
+  <data name="Document_DocumentDate" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="Document_DocumentLookup1" xml:space="preserve">
+    <value>الصفة 1</value>
+  </data>
+  <data name="Document_DocumentLookup2" xml:space="preserve">
+    <value>الصفة 2</value>
+  </data>
+  <data name="Document_DocumentLookup3" xml:space="preserve">
+    <value>الصفة 3</value>
+  </data>
+  <data name="Document_DocumentText1" xml:space="preserve">
+    <value>الصفة النصية 1</value>
+  </data>
+  <data name="Document_DocumentText2" xml:space="preserve">
+    <value>الصفة النصية 2</value>
+  </data>
+  <data name="Document_MemoIsCommon" xml:space="preserve">
+    <value>الملاحظات مشتركة</value>
+  </data>
+  <data name="Document_SerialNumber" xml:space="preserve">
+    <value>الرقم المتسلسل</value>
+  </data>
+  <data name="Document_State" xml:space="preserve">
+    <value>حالة القيد</value>
+  </data>
+  <data name="Document_State_Authorized" xml:space="preserve">
+    <value>معتمد</value>
+  </data>
+  <data name="Document_State_Completed" xml:space="preserve">
+    <value>مكتمل</value>
+  </data>
+  <data name="Document_State_Draft" xml:space="preserve">
+    <value>جديد</value>
+  </data>
+  <data name="Document_State_Failed" xml:space="preserve">
+    <value>متعذر</value>
+  </data>
+  <data name="Document_State_Invalid" xml:space="preserve">
+    <value>خطأ</value>
+  </data>
+  <data name="Document_State_Posted" xml:space="preserve">
+    <value>مرحل</value>
+  </data>
+  <data name="Document_State_Rejected" xml:space="preserve">
+    <value>مرفوض</value>
+  </data>
+  <data name="Document_State_Requested" xml:space="preserve">
+    <value>مطلوب</value>
+  </data>
+  <data name="Document_State_Void" xml:space="preserve">
+    <value>ملغى</value>
+  </data>
+  <data name="Document_VoucherBooklet" xml:space="preserve">
+    <value>دفتر المستندات</value>
+  </data>
+  <data name="Document_VoucherNumericReference" xml:space="preserve">
+    <value>رقم المستند</value>
+  </data>
+  <data name="DocumentLine_AdditionalReference" xml:space="preserve">
+    <value>مرجع إضافي</value>
+  </data>
+  <data name="DocumentLine_ExternalReference" xml:space="preserve">
+    <value>رقم المرجع الخارجي</value>
+  </data>
+  <data name="DocumentLine_LineType" xml:space="preserve">
+    <value>نوع السطر</value>
+  </data>
+  <data name="DocumentLine_RelatedAccount" xml:space="preserve">
+    <value>حساب ذو صلة</value>
+  </data>
+  <data name="DocumentLine_RelatedMoneyAmount" xml:space="preserve">
+    <value>مبلغ نقدي ذو صلة</value>
+  </data>
+  <data name="DocumentLine_RelatedQuantity" xml:space="preserve">
+    <value>كمية ذات صلة</value>
+  </data>
+  <data name="DocumentLine_RelatedResource" xml:space="preserve">
+    <value>مورد ذو صلة</value>
+  </data>
+  <data name="DocumentLineEntry_Account" xml:space="preserve">
+    <value>الحساب</value>
+  </data>
+  <data name="DocumentLineEntry_Agent" xml:space="preserve">
+    <value>الذمّة</value>
+  </data>
+  <data name="DocumentLineEntry_Area" xml:space="preserve">
+    <value>المساحة</value>
+  </data>
+  <data name="DocumentLineEntry_BatchCode" xml:space="preserve">
+    <value>رقم الوثقة</value>
+  </data>
+  <data name="DocumentLineEntry_Count" xml:space="preserve">
+    <value>العدد</value>
+  </data>
+  <data name="DocumentLineEntry_IfrsEntryClassification" xml:space="preserve">
+    <value>تصنيف (IFRS)</value>
+  </data>
+  <data name="DocumentLineEntry_Length" xml:space="preserve">
+    <value>المسافة</value>
+  </data>
+  <data name="DocumentLineEntry_Mass" xml:space="preserve">
+    <value>الكتلة</value>
+  </data>
+  <data name="DocumentLineEntry_MonetaryValue" xml:space="preserve">
+    <value>المبلغ النقدي</value>
+  </data>
+  <data name="DocumentLineEntry_Resource" xml:space="preserve">
+    <value>المورد</value>
+  </data>
+  <data name="DocumentLineEntry_ResourcePick" xml:space="preserve">
+    <value>المورد المحدد</value>
+  </data>
+  <data name="DocumentLineEntry_ResponsibilityCenter" xml:space="preserve">
+    <value>مركز التكلفة</value>
+  </data>
+  <data name="DocumentLineEntry_Time" xml:space="preserve">
+    <value>الزمن</value>
+  </data>
+  <data name="DocumentLineEntry_Value" xml:space="preserve">
+    <value>القيمة</value>
+  </data>
+  <data name="DocumentLineEntry_Volume" xml:space="preserve">
+    <value>الحجم</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
     <value>عنوان البريد الإلكتروني ({0}) محجوز.</value>
@@ -673,12 +805,6 @@
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>سياسة الخصوصية</value>
   </data>
-  <data name="ProductCategories" xml:space="preserve">
-    <value>أصناف المنتجات</value>
-  </data>
-  <data name="ProductCategory" xml:space="preserve">
-    <value>صنف المنتج</value>
-  </data>
   <data name="RecoveryCode" xml:space="preserve">
     <value>كود الاسترداد</value>
   </data>
@@ -783,6 +909,9 @@
   </data>
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>وحدة قياس الحجم</value>
+  </data>
+  <data name="ResourceClassification_IsLeaf" xml:space="preserve">
+    <value>بدون فروع</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>دور</value>

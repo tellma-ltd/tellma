@@ -16,12 +16,12 @@ DELETE FROM [dbo].[Users] WHERE [Id] <> @UserId;
 DELETE FROM [dbo].[Agents] WHERE [Id]<> @UserId;
 DELETE FROM [dbo].[Currencies] WHERE [Id] NOT IN (N'ETB', N'USD');
 DELETE FROM [dbo].[Resources];
-DELETE FROM [dbo].[ResourceDefinitions];
 
 DELETE FROM [dbo].[MeasurementUnits];
-DELETE FROM [dbo].[ProductCategories];
+DELETE FROM [dbo].[ResourceClassifications];
 DELETE FROM [dbo].[ResourceLookups];
 DELETE FROM [dbo].[Resources];
+DELETE FROM [dbo].[ResourceDefinitions];
 
 -- Populate
 
@@ -35,5 +35,6 @@ VALUES (@RoleId, N'agents', N'All'),
 INSERT INTO [dbo].[RoleMemberships] ([AgentId], [RoleId])
 VALUES (@UserId, @RoleId)
 
+IF NOT EXISTS (SELECT * FROM [dbo].[ResourceDefinitions])
 INSERT INTO [dbo].[ResourceDefinitions] ([Id], [Name])
 VALUES (N'raw-materials', N'Raw Materials')

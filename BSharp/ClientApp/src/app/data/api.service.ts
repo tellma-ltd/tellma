@@ -28,7 +28,7 @@ import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { GlobalSettingsForClient } from './dto/global-settings';
 import { UserCompany } from './dto/user-company';
 import { IfrsNote } from './entities/ifrs-note';
-import { ProductCategory } from './entities/product-category';
+import { ResourceClassification } from './entities/resource-classification';
 import { GetEntityResponse } from './dto/get-entity-response';
 import { DefinitionsForClient } from './dto/definitions-for-client';
 import { Currency } from './entities/currency';
@@ -80,10 +80,10 @@ export class ApiService {
     };
   }
 
-  public productCategoriesApi(cancellationToken$: Observable<void>) {
+  public resourceClassificationsApi(definitionId: string, cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<ProductCategory>('product-categories', cancellationToken$),
-      deactivate: this.deactivateFactory<ProductCategory>('product-categories', cancellationToken$)
+      activate: this.activateFactory<ResourceClassification>(`resource-classifications/${definitionId}`, cancellationToken$),
+      deactivate: this.deactivateFactory<ResourceClassification>(`resource-classifications/${definitionId}`, cancellationToken$)
     };
   }
 

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class ProductCategoryForSave : EntityWithKey<int>
+    public class ResourceClassificationForSave : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -33,10 +33,17 @@ namespace BSharp.Entities
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Code { get; set; }
+
+        [Display(Name = "ResourceClassification_IsLeaf")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [AlwaysAccessible]
+        public bool? IsLeaf { get; set; }
     }
 
-    public class ProductCategory : ProductCategoryForSave
+    public class ResourceClassification : ResourceClassificationForSave
     {
+        public string ResourceDefinitionId { get; set; }
+
         [AlwaysAccessible]
         public short? Level { get; set; }
 
@@ -72,7 +79,7 @@ namespace BSharp.Entities
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]
-        public ProductCategory Parent { get; set; }
+        public ResourceClassification Parent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

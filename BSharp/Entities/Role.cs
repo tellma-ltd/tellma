@@ -30,8 +30,9 @@ namespace BSharp.Entities
         public string Code { get; set; }
 
         [Display(Name = "Role_IsPublic")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
-        public bool IsPublic { get; set; }
+        public bool? IsPublic { get; set; }
 
         [Display(Name = "Permissions")]
         [ForeignKey(nameof(Permission.RoleId))]

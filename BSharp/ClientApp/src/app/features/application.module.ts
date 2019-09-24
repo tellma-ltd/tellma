@@ -23,9 +23,9 @@ import { TenantResolverGuard } from '../data/tenant-resolver.guard';
 import { AuthGuard } from '../data/auth.guard';
 import { IfrsNotesMasterComponent } from './ifrs-notes/ifrs-notes-master.component';
 import { IfrsNotesDetailsComponent } from './ifrs-notes/ifrs-notes-details.component';
-import { ProductCategoriesMasterComponent } from './product-categories/product-categories-master.component';
-import { ProductCategoriesImportComponent } from './product-categories/product-categories-import.component';
-import { ProductCategoriesDetailsComponent } from './product-categories/product-categories-details.component';
+import { ResourceClassificationsMasterComponent } from './resource-classifications/resource-classifications-master.component';
+import { ResourceClassificationsImportComponent } from './resource-classifications/resource-classifications-import.component';
+import { ResourceClassificationsDetailsComponent } from './resource-classifications/resource-classifications-details.component';
 import { ResourceLookupsMasterComponent } from './resource-lookups/resource-lookups-master.component';
 import { ResourceLookupsDetailsComponent } from './resource-lookups/resource-lookups-details.component';
 import { ResourceLookupsImportComponent } from './resource-lookups/resource-lookups-import.component';
@@ -128,20 +128,20 @@ const routes: Routes = [
       //   canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       // },
 
-      // Product Categories
+      // Resource Classifications
       {
-        path: 'product-categories',
-        component: ProductCategoriesMasterComponent,
+        path: 'resource-classifications/:definitionId',
+        component: ResourceClassificationsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'product-categories/import',
-        component: ProductCategoriesImportComponent,
+        path: 'resource-classifications/:definitionId/import',
+        component: ResourceClassificationsImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'product-categories/:id',
-        component: ProductCategoriesDetailsComponent,
+        path: 'resource-classifications/:definitionId/:id',
+        component: ResourceClassificationsDetailsComponent,
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
 
@@ -236,9 +236,9 @@ const routes: Routes = [
     SettingsComponent,
     IfrsNotesMasterComponent,
     IfrsNotesDetailsComponent,
-    ProductCategoriesMasterComponent,
-    ProductCategoriesImportComponent,
-    ProductCategoriesDetailsComponent,
+    ResourceClassificationsMasterComponent,
+    ResourceClassificationsImportComponent,
+    ResourceClassificationsDetailsComponent,
     ResourceLookupsMasterComponent,
     ResourceLookupsDetailsComponent,
     ResourceLookupsImportComponent,

@@ -13,20 +13,23 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/" + BASE_ADDRESS)]
+    [Route("api/" + BASE_ADDRESS + "{definitionId}")]
     [ApplicationApi]
-    public class ProductCategoriesController : CrudTreeControllerBase<ProductCategoryForSave, ProductCategory, int>
+    public class ResourceClassificationsController : CrudTreeControllerBase<ResourceClassificationForSave, ResourceClassification, int>
     {
-        public const string BASE_ADDRESS = "product-categories";
+        public const string BASE_ADDRESS = "resource-classifications/";
 
         private readonly ApplicationRepository _repo;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
 
-        private string ViewId => "product-categories";
+        private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ??
+            throw new BadRequestException("URI must be of the form 'api/resource-classifications/{definitionId}'");
 
-        public ProductCategoriesController(
-            ILogger<ProductCategoriesController> logger,
+        private string ViewId => $"{BASE_ADDRESS}{DefinitionId}";
+
+        public ResourceClassificationsController(
+            ILogger<ResourceClassificationsController> logger,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo) : base(logger, localizer)
         {
@@ -36,7 +39,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<ProductCategory>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<ResourceClassification>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -49,7 +52,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<ProductCategory>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<ResourceClassification>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -61,7 +64,7 @@ namespace BSharp.Controllers
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<ProductCategory>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<ResourceClassification>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
@@ -73,7 +76,7 @@ namespace BSharp.Controllers
             // Execute and return
             using (var trx = ControllerUtilities.CreateTransaction())
             {
-                await _repo.ProductCategories__Activate(ids, isActive);
+                await _repo.ResourceClassifications__Activate(ids, isActive);
 
                 if (returnEntities)
                 {
@@ -97,20 +100,21 @@ namespace BSharp.Controllers
 
         protected override IRepository GetRepository()
         {
-            return _repo;
+            string filter = $"{nameof(ResourceClassification.ResourceDefinitionId)} eq '{DefinitionId}'";
+            return new FilteredRepository<ResourceLookup>(_repo, filter);
         }
 
-        protected override Query<ProductCategory> Search(Query<ProductCategory> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<ResourceClassification> Search(Query<ResourceClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(ProductCategory.Name);
-                var name2 = nameof(ProductCategory.Name2);
-                var name3 = nameof(ProductCategory.Name3);
-                var code = nameof(ProductCategory.Code);
+                var name = nameof(ResourceClassification.Name);
+                var name2 = nameof(ResourceClassification.Name2);
+                var name3 = nameof(ResourceClassification.Name3);
+                var code = nameof(ResourceClassification.Code);
 
                 query = query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
             }
@@ -118,14 +122,14 @@ namespace BSharp.Controllers
             return query;
         }
 
-        protected override async Task SaveValidateAsync(List<ProductCategoryForSave> entities)
+        protected override async Task SaveValidateAsync(List<ResourceClassificationForSave> entities)
         {
             // Check that codes are not duplicated within the arriving collection
             var duplicateCodes = entities.Where(e => e.Code != null).GroupBy(e => e.Code).Where(g => g.Count() > 1);
             if (duplicateCodes.Any())
             {
                 // Hash the entities' indices for performance
-                Dictionary<ProductCategoryForSave, int> indices = entities.ToIndexDictionary();
+                Dictionary<ResourceClassificationForSave, int> indices = entities.ToIndexDictionary();
 
                 foreach (var groupWithDuplicateCodes in duplicateCodes)
                 {
@@ -146,22 +150,22 @@ namespace BSharp.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ProductCategories_Validate__Save(entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceClassifications_Validate__Save(DefinitionId, entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<ProductCategoryForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<ResourceClassificationForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.ProductCategories__Save(entities, returnIds: returnIds);
+            return await _repo.ResourceClassifications__Save(DefinitionId, entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ProductCategories_Validate__Delete(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceClassifications_Validate__Delete(DefinitionId, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -171,11 +175,11 @@ namespace BSharp.Controllers
         {
             try
             {
-                await _repo.ProductCategories__Delete(ids);
+                await _repo.ResourceClassifications__Delete(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ProductCategory"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ResourceClassification"]]);
             }
         }
 
@@ -183,7 +187,7 @@ namespace BSharp.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ProductCategories_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceClassifications_Validate__DeleteWithDescendants(DefinitionId, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -193,17 +197,22 @@ namespace BSharp.Controllers
         {
             try
             {
-                await _repo.ProductCategories__DeleteWithDescendants(ids);
+                await _repo.ResourceClassifications__DeleteWithDescendants(ids);
             }
             catch (ForeignKeyViolationException)
             {
-                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ProductCategory"]]);
+                throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["ResourceClassification"]]);
             }
         }
 
-        protected override Query<ProductCategory> GetAsQuery(List<ProductCategoryForSave> entities)
+        protected override Query<ResourceClassification> GetAsQuery(List<ResourceClassificationForSave> entities)
         {
-            return _repo.ProductCategories__AsQuery(entities);
+            return _repo.ResourceClassifications__AsQuery(DefinitionId, entities);
+        }
+
+        protected override OrderByExpression DefaultOrderBy()
+        {
+            return OrderByExpression.Parse("Code,Id");
         }
     }
 }

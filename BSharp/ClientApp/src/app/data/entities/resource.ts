@@ -57,8 +57,8 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
     definitionId = definitionId || '_'; // undefined
     if (!_cache[definitionId]) {
         const entityDesc: EntityDescriptor = {
-            titleSingular: ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular'),
-            titlePlural:  ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural'),
+            titleSingular: ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular') || '???',
+            titlePlural:  ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || '???',
             select: _select,
             apiEndpoint: 'resources/' + (definitionId || ''),
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
@@ -70,7 +70,7 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                 Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
                 Code: { control: 'text', label: trx.instant('Code') },
                 ResourceClassificationId: { control: 'number', label: trx.instant('Resource_Classification'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                // ResourceClassification: TODO
+                ResourceClassification: { control: 'navigation', label: trx.instant('Resource_Classification'), type: 'ResourceClassification', definition: definitionId, foreignKeyName: 'ResourceClassificationId' },
                 CurrencyId: { control: 'text', label: `${trx.instant('Resource_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: trx.instant('Resource_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
                 MassUnitId: { control: 'number', label: `${trx.instant('Resource_MassUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
@@ -118,6 +118,10 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
             // Programmer mistake
             console.error(`defintionId '${definitionId}' doesn't exist`);
         } else {
+            entityDesc.titleSingular = ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular') || '???';
+            entityDesc.titlePlural =  ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || '???';
+
+
             for (const propName of ['Memo', 'CustomsReference']) {
                 if (!definition[propName + '_Visibility']) {
                     delete entityDesc.properties[propName];

@@ -139,6 +139,12 @@
   <data name="ChangePassword" xml:space="preserve">
     <value>更改密码</value>
   </data>
+  <data name="Classification" xml:space="preserve">
+    <value>分类</value>
+  </data>
+  <data name="Classifications" xml:space="preserve">
+    <value>分类</value>
+  </data>
   <data name="ClickHere" xml:space="preserve">
     <value>点击这里</value>
   </data>
@@ -225,6 +231,15 @@
   </data>
   <data name="DisableTwoFactorAuthenticationTitle" xml:space="preserve">
     <value>这个动作只禁止2FA。</value>
+  </data>
+  <data name="Document_DocumentLookup1" xml:space="preserve">
+    <value>资源查找1</value>
+  </data>
+  <data name="Document_DocumentLookup2" xml:space="preserve">
+    <value>资源查找2</value>
+  </data>
+  <data name="Document_DocumentLookup3" xml:space="preserve">
+    <value>资源查找3</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
     <value>电子邮件“{0}”已被使用。</value>
@@ -672,12 +687,6 @@
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>隐私政策</value>
-  </data>
-  <data name="ProductCategories" xml:space="preserve">
-    <value>产品类别</value>
-  </data>
-  <data name="ProductCategory" xml:space="preserve">
-    <value>产品分类</value>
   </data>
   <data name="RecoveryCode" xml:space="preserve">
     <value>恢复码</value>
