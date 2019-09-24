@@ -1,6 +1,5 @@
-﻿CREATE PROCEDURE [dbo].[api_ProductCategories__Save]
-	@Entities [ProductCategoryList] READONLY,
-	@ReturnIds BIT = 0,
+﻿CREATE PROCEDURE [api].[ResourceClassifications__Delete]
+	@Ids [IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -8,8 +7,8 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[ProductCategories_Validate__Save]
-		@Entities = @Entities;
+	EXEC [bll].[ResourceClassifications_Validate__Delete]
+		@Ids = @Ids;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -21,6 +20,6 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dal].[ProductCategories__Save]
-		@Entities = @Entities;
+	EXEC [dal].[ResourceClassifications__Delete]
+		@Ids = @Ids;
 END;

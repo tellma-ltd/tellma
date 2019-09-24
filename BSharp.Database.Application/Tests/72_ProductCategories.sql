@@ -15,7 +15,7 @@ BEGIN -- Inserting
 	(10, N'Sheet Metals',				NULL,			N'3')
 	;
 
-	EXEC [dbo].[api_ProductCategories__Save]
+	EXEC [api].[ResourceClassifications__Save]
 		@Entities = @ProductCategoriesDTO,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
 		@ReturnIds = 1;
@@ -27,11 +27,11 @@ BEGIN -- Inserting
 	END
 
 	IF @DebugProductCategories = 1
-		EXEC [dbo].[api_ProductCategories__Select];
+		EXEC [api].[ResourceClassifications__Select];
 
 	DELETE FROM @ProductCategoriesDTO;
 	INSERT INTO @ProductCategoriesDTO([Id], [Index], [Name], [ParentId], [ParentIndex], [Code], [EntityState])
-	SELECT [Id], [Id], [Name], [ParentId], NULL, [Code], N'Unchanged' FROM dbo.ProductCategories;
+	SELECT [Id], [Id], [Name], [ParentId], NULL, [Code], N'Unchanged' FROM dbo.[ResourceClassifications];
 
 	UPDATE @ProductCategoriesDTO SET [Name] = N'L-T-Z Products', [EntityState] = N'Updated' WHERE [Code] = N'2';
 	
@@ -45,7 +45,7 @@ BEGIN -- Inserting
 	[Index], [Name],				[ParentIndex], [ParentId], [Code]) VALUES
 	(@MaxIndex + 3, N'Checkered Slitted Sheet Metal',(SELECT [Index] FROM @ProductCategoriesDTO WHERE [Code] = '31'), NULL,	N'312');
 	
-	EXEC [dbo].[api_ProductCategories__Save]
+	EXEC [api].[ResourceClassifications__Save]
 		@Entities = @ProductCategoriesDTO,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
 		@ReturnIds = 1;
@@ -57,5 +57,5 @@ BEGIN -- Inserting
 	END
 
 	IF @DebugProductCategories = 1
-		EXEC [dbo].[api_ProductCategories__Select];
+		EXEC [api].[ResourceClassifications__Select];
 END

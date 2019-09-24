@@ -1,7 +1,7 @@
-﻿CREATE PROCEDURE [dbo].[api_ProductCategories__Select]
+﻿CREATE PROCEDURE [api].[ResourceClassifications__Select]
 AS
 BEGIN
 	SELECT [Id], [ParentId], [Name], [Code], [Node].ToString() As NodePath
-	FROM dbo.ProductCategories
+	FROM dbo.[ResourceClassifications]
 	ORDER BY [Node];
 END;

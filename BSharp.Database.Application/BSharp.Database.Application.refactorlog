@@ -203,4 +203,120 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[RelatedMonetaryAmount]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="463e6ffd-947d-49bd-b619-c6c9ba9ff7f4" ChangeDateTime="09/24/2019 14:35:23">
+    <Property Name="ElementName" Value="[dbo].[ProductCategories]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ab2332a3-8cec-402c-a8a2-a4751a02f776" ChangeDateTime="09/24/2019 14:36:44">
+    <Property Name="ElementName" Value="[bll].[ProductCategories_Validate__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications_Validate__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="35d7405f-a6e6-43be-bd0c-d0c0d0ae982c" ChangeDateTime="09/24/2019 14:37:17">
+    <Property Name="ElementName" Value="[bll].[ProductCategories_Validate__DeleteWithDescendants]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications_Validate__DeleteWithDescendants]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7ff0bee1-9e62-40b5-99ca-23fc9f2ce716" ChangeDateTime="09/24/2019 14:37:44">
+    <Property Name="ElementName" Value="[bll].[ProductCategories_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bb8657d8-61e0-462c-b216-914c1974ad86" ChangeDateTime="09/24/2019 14:38:06">
+    <Property Name="ElementName" Value="[dal].[ProductCategories__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications__Activate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4155e2f5-a63f-47b8-8eab-1ac50fe29a99" ChangeDateTime="09/24/2019 14:38:27">
+    <Property Name="ElementName" Value="[dal].[ProductCategories__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="26791780-c9ab-4f36-b26b-0b51e699da9a" ChangeDateTime="09/24/2019 14:38:53">
+    <Property Name="ElementName" Value="[dal].[ProductCategories__DeleteWithDescendants]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications__DeleteWithDescendants]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1a6f376f-5a95-4548-b116-7ecb0b685d73" ChangeDateTime="09/24/2019 14:39:31">
+    <Property Name="ElementName" Value="[dal].[ProductCategories__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="260b9cbf-beaf-4907-9472-96c3e2049ef6" ChangeDateTime="09/24/2019 14:44:27">
+    <Property Name="ElementName" Value="[dbo].[api_ProductCategories__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0ff3a1a1-ddc7-4733-9a47-dda405c1bda4" ChangeDateTime="09/24/2019 14:44:43">
+    <Property Name="ElementName" Value="[api].[api_ProductCategories__Delete]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications__Delete]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="21c21281-17f5-4b99-9525-0a79a267fa49" ChangeDateTime="09/24/2019 14:45:21">
+    <Property Name="ElementName" Value="[dbo].[ProductCategoryList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassificationList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="63ca29b4-6db0-41cd-89a6-98b59f453f6c" ChangeDateTime="09/24/2019 14:46:05">
+    <Property Name="ElementName" Value="[map].[ProductCategories]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0798884f-cf18-40cc-ad89-8542653b01d0" ChangeDateTime="09/24/2019 14:46:26">
+    <Property Name="ElementName" Value="[map].[ProductCategories__AsQuery]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications__AsQuery]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="c6fa67f9-dccd-4020-ad49-5aba76df5733" ChangeDateTime="09/24/2019 14:47:15">
+    <Property Name="ElementName" Value="[dbo].[api_ProductCategories__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a8f718be-20c3-4574-8cd6-9578f1ed7e8a" ChangeDateTime="09/24/2019 14:47:27">
+    <Property Name="ElementName" Value="[api].[api_ProductCategories__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="fa51bd1f-ec1c-44bf-9957-9872066cb10d" ChangeDateTime="09/24/2019 14:51:38">
+    <Property Name="ElementName" Value="[dbo].[api_ProductCategories__Select]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b84ddfb5-8a18-472d-9ee8-b15ef31c3d43" ChangeDateTime="09/24/2019 14:51:52">
+    <Property Name="ElementName" Value="[api].[api_ProductCategories__Select]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceClassifications__Select]" />
+  </Operation>
 </Operations>

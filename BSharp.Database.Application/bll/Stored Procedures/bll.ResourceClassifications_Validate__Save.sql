@@ -1,5 +1,6 @@
-﻿CREATE PROCEDURE [bll].[ProductCategories_Validate__Save]
-	@Entities [dbo].[ProductCategoryList] READONLY,
+﻿CREATE PROCEDURE [bll].[ResourceClassifications_Validate__Save]
+	@DefinitionId NVARCHAR(50),
+	@Entities [dbo].[ResourceClassificationList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -10,7 +11,7 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_CannotModifyInactiveItem'
     FROM @Entities
-    WHERE Id IN (SELECT Id from [dbo].[ProductCategories] WHERE IsActive = 0)
+    WHERE Id IN (SELECT Id from [dbo].[ResourceClassifications] WHERE IsActive = 0)
 	OPTION(HASH JOIN);
 
     -- Non Null Ids must exist
@@ -21,7 +22,7 @@ SET NOCOUNT ON;
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
     WHERE Id <> 0
-	AND Id NOT IN (SELECT Id from [dbo].[ProductCategories])
+	AND Id NOT IN (SELECT Id from [dbo].[ResourceClassifications])
 	OPTION(HASH JOIN);
 
 	-- Code must not be already in the back end
@@ -31,7 +32,7 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code AS Argument0
 	FROM @Entities FE 
-	JOIN [dbo].[ProductCategories] BE ON FE.Code = BE.Code
+	JOIN [dbo].[ResourceClassifications] BE ON FE.Code = BE.Code
 	WHERE FE.[Code] IS NOT NULL
 	AND (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
@@ -58,7 +59,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[ProductCategories] BE ON FE.[Name] = BE.[Name]
+	JOIN [dbo].[ResourceClassifications] BE ON FE.[Name] = BE.[Name]
 	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
@@ -69,7 +70,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
 	FROM @Entities FE 
-	JOIN [dbo].[ProductCategories] BE ON FE.[Name2] = BE.[Name2]
+	JOIN [dbo].[ResourceClassifications] BE ON FE.[Name2] = BE.[Name2]
 	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 
@@ -80,7 +81,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
 	FROM @Entities FE 
-	JOIN [dbo].[ProductCategories] BE ON FE.[Name3] = BE.[Name3]
+	JOIN [dbo].[ResourceClassifications] BE ON FE.[Name3] = BE.[Name3]
 	WHERE (FE.Id <> BE.Id)
 	OPTION(HASH JOIN);
 

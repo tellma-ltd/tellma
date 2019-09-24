@@ -1,5 +1,6 @@
-﻿CREATE PROCEDURE [dal].[ProductCategories__Save]
-	@Entities [ProductCategoryList] READONLY,
+﻿CREATE PROCEDURE [dal].[ResourceClassifications__Save]
+	@DefinitionId NVARCHAR(50),
+	@Entities [ResourceClassificationList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -11,12 +12,12 @@ SET NOCOUNT ON;
 	SELECT x.[Index], x.[Id]
 	FROM
 	(
-		MERGE INTO [dbo].[ProductCategories] AS t
+		MERGE INTO [dbo].[ResourceClassifications] AS t
 		USING (
 			SELECT
 				E.[Index], E.[Id], E.[ParentId],
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
-				E.[Name], E.[Name2], E.[Name3], E.[Code]
+				E.[Name], E.[Name2], E.[Name3], E.[Code], E.[IsLeaf]
 			FROM @Entities E
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -27,16 +28,17 @@ SET NOCOUNT ON;
 				t.[Name2]			= s.[Name2],
 				t.[Name3]			= s.[Name3],
 				t.[Code]			= s.[Code],
+				t.[IsLeaf]			= s.[IsLeaf],
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ( [ParentId], [Node], [Name],	[Name2], [Name3], [Code])
-			VALUES (s.[Parentid], s.[Node], s.[Name], s.[Name2], s.[Name3], s.[Code])
+			INSERT ([ResourceDefinitionId], [ParentId], [Node], [Name],	[Name2], [Name3], [Code], [IsLeaf])
+			VALUES (@DefinitionId, s.[Parentid], s.[Node], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[IsLeaf])
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 
 	-- The following code is needed for bulk import, when the reliance is on Parent Index
-	MERGE [dbo].[ProductCategories] As t
+	MERGE [dbo].[ResourceClassifications] As t
 	USING (
 		SELECT II.[Id], IIParent.[Id] As ParentId
 		FROM @Entities O
@@ -49,8 +51,8 @@ SET NOCOUNT ON;
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (
 		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
-		FROM [dbo].[ProductCategories] E
-		LEFT JOIN [dbo].[ProductCategories] E2 ON E.[ParentId] = E2.[Id]
+		FROM [dbo].[ResourceClassifications] E
+		LEFT JOIN [dbo].[ResourceClassifications] E2 ON E.[ParentId] = E2.[Id]
 	),
 	Paths ([Node], [Id]) AS (  
 		-- This section provides the value for the roots of the hierarchy  
@@ -63,7 +65,7 @@ SET NOCOUNT ON;
 		FROM Children C
 		JOIN Paths P ON C.[ParentId] = P.[Id]
 	)
-	MERGE INTO [dbo].[ProductCategories] As t
+	MERGE INTO [dbo].[ResourceClassifications] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
 
