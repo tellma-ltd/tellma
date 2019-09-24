@@ -8,7 +8,7 @@
           ]"
   [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
-              { template: createdByMe, expression: 'CreatedByMe'}
+              { template: createdByMe, expression: 'SavedById eq me'}
             ],
             'IsPublic' : [
               { template: isPublic, expression: 'IsPublic eq true'},
