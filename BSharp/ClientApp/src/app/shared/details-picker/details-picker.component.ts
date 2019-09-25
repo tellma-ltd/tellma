@@ -191,15 +191,15 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       this._highlightedIndex = 0; // auto select the first item
     }));
 
-    // Listen to changes in the application state and update the UI
+    // Listen to changes in the application language and update the UI
     this.subscriptions.add(this.translate.onLangChange.subscribe(() => {
       this.updateUI(this.chosenItem);
     }));
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // the combination of these two properties define
-    const screenDefProperties = [changes.definitions, changes.defini];
+    // the combination of these properties define a new details picker
+    const screenDefProperties = [changes.definitions, changes.collection];
 
     const anyChanges = screenDefProperties.some(prop => !!prop);
     const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());

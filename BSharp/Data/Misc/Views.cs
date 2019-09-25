@@ -6,7 +6,9 @@
     public static class Views
     {
         /// <summary>
-        /// All the built-in views that do NOT depend on any specifications or definitions
+        /// All the built-in views that do NOT depend on any definitions
+        /// IMPORTANT: there is a replica of this on the Client side in
+        /// TS, make sure any changes here are reflected there
         /// </summary>
         public static ViewInfo[] BUILT_IN
         {
@@ -64,15 +66,6 @@
                         Actions = new ActionInfo[] 
                         {
                             Li("ResendInvitationEmail")
-                        }
-                    },
-                    new ViewInfo {
-                        Id = "views",
-                        Name = "Views",
-                        Read = true,
-                        Actions = new ActionInfo[] 
-                        {
-                            Li("IsActive")
                         }
                     },
                     new ViewInfo {

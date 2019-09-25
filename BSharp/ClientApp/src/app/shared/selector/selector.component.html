@@ -1,5 +1,5 @@
 <select class="form-control b-input" #selector (change)="onChange($event.target.value); onTouched();" (blur)="onTouched();"
   [disabled]="isDisabled">
-  <option [disabled]="!isOptional" value=""></option>
+  <option value=""></option>
   <option *ngFor="let choice of choices; trackBy: trackByFn" value="{{choice.value}}">{{ choice.name | translate }}</option>
 </select>

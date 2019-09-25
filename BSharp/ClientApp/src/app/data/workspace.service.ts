@@ -2,7 +2,6 @@
 import { MeasurementUnit } from './entities/measurement-unit';
 import { Injectable } from '@angular/core';
 import { Role } from './entities/role';
-import { View } from './entities/view';
 import { UserSettingsForClient } from './dto/user-settings-for-client';
 import { EntityWithKey } from './entities/base/entity-with-key';
 import { SettingsForClient } from './dto/settings-for-client';
@@ -155,7 +154,6 @@ export class TenantWorkspace {
 
   MeasurementUnit: EntityWorkspace<MeasurementUnit>;
   Role: EntityWorkspace<Role>;
-  View: EntityWorkspace<View>;
   User: EntityWorkspace<User>;
   Agent: EntityWorkspace<Agent>;
   IfrsNote: EntityWorkspace<IfrsNote>;
@@ -174,7 +172,6 @@ export class TenantWorkspace {
 
     this.MeasurementUnit = new EntityWorkspace<MeasurementUnit>();
     this.Role = new EntityWorkspace<Role>();
-    this.View = new EntityWorkspace<View>();
     this.User = new EntityWorkspace<User>();
     this.Agent = new EntityWorkspace<Agent>();
     this.IfrsNote = new EntityWorkspace<IfrsNote>();
