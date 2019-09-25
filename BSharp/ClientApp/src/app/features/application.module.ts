@@ -62,7 +62,7 @@ const routes: Routes = [
       {
         path: 'measurement-units/:id',
         component: MeasurementUnitsDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
       },
 
       // Roles
@@ -79,7 +79,7 @@ const routes: Routes = [
       {
         path: 'roles/:id',
         component: RolesDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
       },
 
       // Users
@@ -96,7 +96,7 @@ const routes: Routes = [
       {
         path: 'users/:id',
         component: UsersDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
       },
 
       // Agents
@@ -113,7 +113,7 @@ const routes: Routes = [
       {
         path: 'agents/:id',
         component: AgentsDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
       },
 
       // // IFRS Notes
@@ -125,7 +125,7 @@ const routes: Routes = [
       // {
       //   path: 'ifrs-notes/:id',
       //   component: IfrsNotesDetailsComponent,
-      //   canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+      //   canDeactivate: [UnsavedChangesGuard]
       // },
 
       // Resource Classifications
@@ -142,7 +142,7 @@ const routes: Routes = [
       {
         path: 'resource-classifications/:definitionId/:id',
         component: ResourceClassificationsDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
       },
 
       // Lookups
@@ -159,7 +159,7 @@ const routes: Routes = [
       {
         path: 'lookups/:definitionId/:id',
         component: LookupsDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
       },
 
       // Currencies
@@ -176,7 +176,7 @@ const routes: Routes = [
       {
         path: 'currencies/:id',
         component: CurrenciesDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
       },
 
       // Resources
@@ -193,7 +193,7 @@ const routes: Routes = [
       {
         path: 'resources/:definitionId/:id',
         component: ResourcesDetailsComponent,
-        canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
+        canDeactivate: [UnsavedChangesGuard]
       },
 
       // Settings

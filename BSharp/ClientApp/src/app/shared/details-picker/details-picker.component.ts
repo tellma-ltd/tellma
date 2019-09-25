@@ -164,7 +164,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
           return of(null);
         } else {
           this.status = SearchStatus.showSpinner;
-          return this.api.get({
+          return this.api.get({ // TODO don't always use the API
             search: term,
             top: this.SEARCH_PAGE_SIZE,
             skip: 0,
