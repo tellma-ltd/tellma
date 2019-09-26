@@ -50,10 +50,10 @@
     </b-details-picker>
 
     <!-- The Agents Details Modal -->
-    <ng-template #agentDetails let-modal="modal" let-update="update" let-initialText="initialText">
+    <ng-template #agentDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
       <div class="modal-body">
-        <b-agents-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);"
-          (saved)="modal.close(true); update($event);">
+        <b-agents-details mode="popup" [initialText]="initialText" (cancel)="modal.close(false);"
+          (saved)="modal.close(true); update($event);" [idString]="idString">
         </b-agents-details>
       </div>
     </ng-template>
@@ -114,7 +114,7 @@
             <!-- The Role Details Modal -->
             <ng-template #roleDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
               <div class="modal-body">
-                <b-roles-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);" [idString]="idString"
+                <b-roles-details mode="popup" [initialText]="initialText" (cancel)="modal.close(false);" [idString]="idString"
                   (saved)="modal.close(true); update($event);" [showMembers]="false" [showIsPublic]="false">
                 </b-roles-details>
               </div>

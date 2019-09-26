@@ -101,7 +101,7 @@ namespace BSharp.Controllers
         protected override IRepository GetRepository()
         {
             string filter = $"{nameof(ResourceClassification.ResourceDefinitionId)} eq '{DefinitionId}'";
-            return new FilteredRepository<Lookup>(_repo, filter);
+            return new FilteredRepository<ResourceClassification>(_repo, filter);
         }
 
         protected override Query<ResourceClassification> Search(Query<ResourceClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)

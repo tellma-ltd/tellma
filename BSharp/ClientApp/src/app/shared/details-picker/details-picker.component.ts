@@ -571,8 +571,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return !!this.masterTemplate;
   }
 
-  get showPen(): boolean {
-    return !!this.detailsTemplate && !!this.chosenItem && this.canUpdatePermissions(this.chosenItemDefinition);
+  get showEditSelected(): boolean {
+    return !!this.detailsTemplate && !!this.chosenItem;
+  }
+
+  get disableEditSelected(): boolean {
+    return !this.canUpdatePermissions(this.chosenItemDefinition);
   }
 
   // The following methods handle displaying and interacting with master and details template
@@ -733,4 +737,13 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   get idString(): string {
     return this._idString;
   }
+
+  get editSelectedLeftMargin(): string {
+    return this.workspace.ws.isRtl ? null : '-24px';
+  }
+
+  get editSelectedRightMargin(): string {
+    return this.workspace.ws.isRtl ? '-24px' : null;
+  }
+
 }

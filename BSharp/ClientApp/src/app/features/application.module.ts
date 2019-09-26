@@ -40,6 +40,8 @@ import { CurrenciesImportComponent } from './currencies/currencies-import.compon
 import { ResourcesMasterComponent } from './resources/resources-master.component';
 import { ResourcesImportComponent } from './resources/resources-import.component';
 import { ResourcesDetailsComponent } from './resources/resources-details.component';
+import { MeasurementUnitsPickerComponent } from './measurement-units/measurement-units-picker.component';
+import { LookupsPickerComponent } from './lookups/lookups-picker.component';
 
 const routes: Routes = [
   {
@@ -247,7 +249,9 @@ const routes: Routes = [
     CurrenciesImportComponent,
     ResourcesMasterComponent,
     ResourcesDetailsComponent,
-    ResourcesImportComponent
+    ResourcesImportComponent,
+    MeasurementUnitsPickerComponent,
+    LookupsPickerComponent
   ],
   imports: [
     SharedModule,
