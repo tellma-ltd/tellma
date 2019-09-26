@@ -112,9 +112,9 @@
             </b-details-picker>
 
             <!-- The Role Details Modal -->
-            <ng-template #roleDetails let-modal="modal" let-update="update" let-initialText="initialText">
+            <ng-template #roleDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
               <div class="modal-body">
-                <b-roles-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);"
+                <b-roles-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);" [idString]="idString"
                   (saved)="modal.close(true); update($event);" [showMembers]="false" [showIsPublic]="false">
                 </b-roles-details>
               </div>

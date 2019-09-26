@@ -189,9 +189,9 @@
             </b-details-picker>
 
             <!-- The User Details Modal -->
-            <ng-template #usersDetails let-modal="modal" let-update="update" let-initialText="initialText">
+            <ng-template #usersDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
               <div class="modal-body">
-                <b-users-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);"
+                <b-users-details mode="popup" idString="new" [initialText]="initialText" (cancel)="modal.close(false);" [idString]="idString"
                   (saved)="modal.close(true); update($event);" [showRoles]="false">
                 </b-users-details>
               </div>

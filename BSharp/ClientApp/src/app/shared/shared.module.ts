@@ -63,7 +63,8 @@ import {
   faBars,
   faTable,
   faList,
-  faCodeBranch
+  faCodeBranch,
+  faExternalLinkAlt
 
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
@@ -184,7 +185,7 @@ export class SharedModule {
       faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
       faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
       faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
-      faTasks, faMale, faBuilding, faBars
+      faTasks, faMale, faBuilding, faBars, faExternalLinkAlt
     );
   }
 }

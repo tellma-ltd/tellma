@@ -71,15 +71,15 @@
         ws.getMultilingualValue('ResourceClassification', model?.ResourceClassificationId, 'Name') }}</b-view-link>
         </b-restricted>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceClassificationId" [definitionIds]="[definitionId]"
-            collection="ResourceClassification" [masterTemplate]="resourceClassificationsMaster"
+            collection="ResourceClassification" [masterTemplate]="resourceClassificationsMaster" definitionProperty="ResourceDefinitionId"
             [detailsTemplate]="resourceClassificationsDetail">
         </b-details-picker>
 
         <!-- The Resource Classifications Details Modal -->
-        <ng-template #resourceClassificationsDetail let-modal="modal" let-update="update" let-initialText="initialText"
+        <ng-template #resourceClassificationsDetail let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString"
             let-definitionId="definitionId">
             <div class="modal-body">
-                <b-resource-classifications-details mode="popup" idString="new" [initialText]="initialText"
+                <b-resource-classifications-details mode="popup" idString="new" [initialText]="initialText" [idString]="idString"
                     [definitionId]="definitionId" (cancel)="modal.close(false);"
                     (saved)="modal.close(true); update($event);">
                 </b-resource-classifications-details>
@@ -111,9 +111,9 @@
         </b-details-picker>
 
         <!-- The Currency Details Modal -->
-        <ng-template #currenciesDetails let-modal="modal" let-update="update" let-initialText="initialText">
+        <ng-template #currenciesDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
             <div class="modal-body">
-                <b-currencies-details mode="popup" idString="new" [initialText]="initialText"
+                <b-currencies-details mode="popup" [idString]="idString" [initialText]="initialText"
                     (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
                 </b-currencies-details>
             </div>
@@ -280,9 +280,9 @@
 
 
 <!-- The Measurement Unit Details Modal -->
-<ng-template #measurementUnitsDetails let-modal="modal" let-update="update" let-initialText="initialText">
+<ng-template #measurementUnitsDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
     <div class="modal-body">
-        <b-measurement-units-details mode="popup" idString="new" [initialText]="initialText"
+        <b-measurement-units-details mode="popup" idString="new" [initialText]="initialText" [idString]="idString"
             (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
         </b-measurement-units-details>
     </div>
@@ -298,10 +298,10 @@
 </ng-template>
 
 <!-- The Lookup Details Modal -->
-<ng-template #lookupsDetails let-modal="modal" let-update="update" let-initialText="initialText"
+<ng-template #lookupsDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString"
     let-definitionId="definitionId">
     <div class="modal-body">
-        <b-lookups-details mode="popup" idString="new" [initialText]="initialText"
+        <b-lookups-details mode="popup" idString="new" [initialText]="initialText" [idString]="idString"
             [definitionId]="definitionId" (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
         </b-lookups-details>
     </div>

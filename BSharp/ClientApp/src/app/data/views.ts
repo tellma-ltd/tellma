@@ -25,8 +25,11 @@ export const ACTIONS: { [action: string]: string } = {
     'IsActive': 'Permission_IsActive',
     'ResendInvitationEmail': 'ResendInvitationEmail',
     'All': 'View_All',
-  };
+};
 
+
+// IMPORTANT: This mimmicks another C# structure on the server, it is important
+// to keep them in sync
 export const VIEWS_BUILT_IN: { [viewId: string]: ViewInfo } = {
     'all': {
         name: 'View_All',

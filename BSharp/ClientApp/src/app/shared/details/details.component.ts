@@ -313,10 +313,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
             } else {
               // display the item in readonly if it's a screen
               // or in edit if it's a popup
-              if (this.mode === 'screen') {
-                this.state.detailsStatus = DetailsStatus.loaded;
-
-              } else {
+              this.state.detailsStatus = DetailsStatus.loaded;
+              if (this.isPopupMode) {
                 this.onEdit();
               }
             }
