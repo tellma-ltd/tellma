@@ -5,7 +5,6 @@
 	[Name2]						NVARCHAR (255),
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (30),
-	--[SystemCode]				NVARCHAR (30), -- some used are anoymous, self, parent
 --	Common
 	[AgentType]					NVARCHAR (30)		NOT NULL,  -- -- 'Individual', 'System' (software), 'Organization' (Dept, Team)
 	[IsRelated]					BIT					NOT NULL DEFAULT 0,

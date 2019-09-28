@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[dal_Views__Activate]
+﻿CREATE PROCEDURE [dal].[Views__Activate]
 	@Ids dbo.ViewList READONLY,
 	@IsActive bit
 AS
@@ -13,6 +13,6 @@ AS
 		WHEN MATCHED AND (t.IsActive <> @IsActive)
 		THEN
 			UPDATE SET 
-				t.[IsActive]	= @IsActive,
-				t.[ModifiedAt]	= @Now,
+				t.[IsActive]		= @IsActive,
+				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId;

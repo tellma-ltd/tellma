@@ -89,7 +89,7 @@ BEGIN -- Inserting
 	LEFT JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
 	LEFT JOIN dbo.MeasurementUnits MUM ON R.MassUnitId = MUM.Id
 	LEFT JOIN dbo.MeasurementUnits MUV ON R.VolumeUnitId = MUV.Id
-	JOIN dbo.Accounts A ON CL.[AccountId] = A.[Id]
+	JOIN dbo.[GLAccounts] A ON CL.[AccountId] = A.[Id]
 	JOIN dbo.IfrsEntryClassifications IEC ON CL.IfrsEntryClassificationId = IEC.Id
 	WHERE CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
 	OR CL.[Value] <> 0;

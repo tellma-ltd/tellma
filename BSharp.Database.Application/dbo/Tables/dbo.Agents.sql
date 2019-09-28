@@ -7,7 +7,6 @@
 	[Name3]						NVARCHAR (255),
 	--[ShortName]					NVARCHAR (255),		-- Nickname
 	[Code]						NVARCHAR (50),
-	[SystemCode]				NVARCHAR (30), -- some used are: anoymous, self, parent
 --	Common
 	[AgentType]					NVARCHAR (30)	NOT NULL	CONSTRAINT [CK_Agents_AgentType] CHECK ([AgentType] IN (N'Individual', N'Organization', N'System')), -- Organization includes Dept, Team
 	[IsRelated]					BIT				NOT NULL DEFAULT 0,
@@ -69,6 +68,3 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Agents__Code]
   ON [dbo].[Agents]([Code]) WHERE [Code] IS NOT NULL;
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Agents__SystemCode]
-  ON [dbo].[Agents]([Code]) WHERE [SystemCode] IS NOT NULL;
- GO

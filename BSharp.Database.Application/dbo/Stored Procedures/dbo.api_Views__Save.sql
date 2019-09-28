@@ -8,7 +8,7 @@ BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [dbo].[bll_Views_Validate__Save]
+	EXEC [bll].[Views_Validate__Save]
 		@Views = @Views,
 		@Permissions = @Permissions;
 

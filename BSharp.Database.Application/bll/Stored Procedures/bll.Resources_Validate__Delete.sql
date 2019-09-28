@@ -9,12 +9,12 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors ([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_The01IsUsedInOneOrMoreDocuments',
+		N'Error_The01IsUsedInOneOrMoreAccounts',
 		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinitionTitleSingular,
 		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS ResourceName
 	FROM [dbo].[Resources] R 
 	JOIN [dbo].[ResourceDefinitions] RD ON R.ResourceDefinitionId = RD.Id
 	JOIN @Ids FE ON FE.[Id] = R.[Id]
-	WHERE R.[Id] IN (SELECT ResourceId FROM dbo.DocumentLineEntries);
+	WHERE R.[Id] IN (SELECT ResourceId FROM dbo.Accounts);
 	
 	SELECT TOP(@Top) * FROM @ValidationErrors;

@@ -6,8 +6,8 @@ AS
 RETURN
 	SELECT S.* FROM dbo.[IfrsDisclosureDetails] S
 	JOIN (
-		SELECT [IfrsDisclosureId], MAX([ValidSince]) AS ValidSince
+		SELECT [IfrsDisclosureId], [Concept], MAX([ValidSince]) AS ValidSince
 		FROM [dbo].[IfrsDisclosureDetails]
 		WHERE [ValidSince] <= @toDate
-		GROUP BY [IfrsDisclosureId]
-	) H ON S.[IfrsDisclosureId] = H.[IfrsDisclosureId] AND S.[ValidSince] = H.[ValidSince];
+		GROUP BY [IfrsDisclosureId], [Concept]
+	) H ON S.[IfrsDisclosureId] = H.[IfrsDisclosureId] AND S.[Concept] = H.[Concept] AND S.[ValidSince] = H.[ValidSince];

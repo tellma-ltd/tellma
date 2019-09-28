@@ -46,47 +46,63 @@ BEGIN -- Insert individuals and organizations
 	--(28,N'Organization', N'Finance Department',0,	NULL,						NULL,				NULL,		9,	NULL),
 	--(29,N'Organization', N'Human Resources Department',0,NULL,					NULL,				NULL,		9,	NULL),
 	--(30,N'Organization', N'Materials & Purchasing Department',0,NULL,			NULL,				NULL,		9,	NULL);
+	INSERT INTO dbo.AgentRelationDefinitions([Id], [SingularLabel], [PluralLabel], [Prefix]) VALUES
+	(N'customers', N'Customer', N'Customers', N'C'),
+	(N'suppliers', N'Supplier', N'Suppliers', N'P'),
+	(N'employees', N'Employee', N'Employees', N'E'),
+	(N'owners', N'Owner', N'Owners', N'O'),
+	(N'responsibility-centers', N'Responsibility Center', N'Responsibility Centers', N'R'),
+	(N'tax-offices', N'Tax Office', N'Tax Offices', N'T'),
+	(N'creditors', N'Creditor', N'Creditors', N'B'),
+	(N'depositors', N'Debtor', N'Debtors', N'B')
+	;
 
-		INSERT INTO @Agents1([Index],
-		[AgentType],		[Name],		[IsRelated]) VALUES
-	(0,N'Individual',	N'Mohamad Akra',	0),
-	(1,N'Individual',	N'Ahmad Akra',		0),
-	(2,N'Individual',	N'Badege Kebede',	1),
-	(3,N'Individual',	N'Tizita Nigussie',	0),
-	(4,N'Individual',	N'Ashenafi Fantahun',0),
-	(5,N'Individual',	N'Yisak Tegene',	0),
-	(6,N'Individual',	N'Zewdinesh Hora',	0),
-	(7,N'Individual',	N'Tigist Negash',	0),
-	(8,N'Individual',	N'Roman Zenebe',	0),
-	(9,N'Individual',	N'Mestawet G/Egziyabhare',	0),
-	(10,N'Individual',	N'Ayelech Hora',	0),
-	(11,N'Individual',	N'Yigezu Legesse',	0),
-	(12,N'Individual',	N'Mesfin Wolde',	0),
+	INSERT INTO @Agents1([Index],
+	[AgentType],		[Name],		[IsRelated], [Code]) VALUES
+	(0,N'Individual',	N'Mohamad Akra',	0,		''), -- shareholders
+	(1,N'Individual',	N'Ahmad Akra',		0,		''),
+	(2,N'Individual',	N'Badege Kebede',	1,		'E'), -- employees
+	(3,N'Individual',	N'Tizita Nigussie',	0,		'E'),
+	(4,N'Individual',	N'Ashenafi Fantahun',0,		'E'),
+	(5,N'Individual',	N'Yisak Tegene',	0, 'E'),
+	(6,N'Individual',	N'Zewdinesh Hora',	0, 'E'),
+	(7,N'Individual',	N'Tigist Negash',	0, 'E'),
+	(8,N'Individual',	N'Roman Zenebe',	0, 'E'),
+	(9,N'Individual',	N'Mestawet G/Egziyabhare',	0, 'E'),
+	(10,N'Individual',	N'Ayelech Hora',	0, 'E'),
+	(11,N'Individual',	N'Yigezu Legesse',	0, 'E'),
+	(12,N'Individual',	N'Mesfin Wolde',	0, 'E'),
 
-	(13,N'Organization', N'Banan Information technologies, plc', 1),
-	(14,N'Organization', N'Walia Steel Industry, plc', 1),
-	(15,N'Organization', N'Yangfan Motors, PLC', 0),
-	(16,N'Organization', N'Sisay Tesfaye, PLC', 0),
-	(17,N'Organization', N'Ethiopian Revenues and Customs Authority', 0),
-	(18,N'Organization', N'Best Paint Industry', 0),
-	(19,N'Organization', N'Best Plastic Industry', 0),
-	(20,N'Organization', N'Commercial Bank of Ethiopia', 0),
-	(21,N'Organization', N'Awash Bank', 0),
-	(22,N'Organization', N'NIB', 0),
-	(23,N'Organization', N'Regus',0),
+	(13,N'Organization', N'Banan Information technologies, plc', 1, 'S'), -- suppliers
+	(14,N'Organization', N'Walia Steel Industry, plc', 1, ''),
+	(15,N'Organization', N'Yangfan Motors, PLC', 0, 'S'), -- suppliers
+	(16,N'Organization', N'Sisay Tesfaye, PLC', 0, 'O'),
+	(17,N'Organization', N'Ethiopian Revenues and Customs Authority', 0, 'T'), -- taxing
+	(18,N'Organization', N'Best Paint Industry', 1, 'CS'),
+	(19,N'Organization', N'Best Plastic Industry', 1, 'CS'),
+	(20,N'Organization', N'Commercial Bank of Ethiopia', 0, 'BC'), -- banking
+	(21,N'Organization', N'Awash Bank', 0, 'B'), -- banking
+	(22,N'Organization', N'NIB', 0, 'B'),
+	(23,N'Organization', N'Regus',0, 'S'),
 	
-	(24,N'Organization', N'Noc Jimma Ber Service Station',	0),
-	(25,N'Organization', N'Toyota, Ethiopia',	0),
-	(26,N'Organization', N'Executive Office',1),
-	(27,N'Organization', N'Production Department',0),
-	(28,N'Organization', N'Sales & Marketing Department',0),
-	(29,N'Organization', N'Finance Department',0),
-	(30,N'Organization', N'Human Resources Department',0),
-	(31,N'Organization', N'Materials & Purchasing Department',0);
+	(24,N'Organization', N'Noc Jimma Ber Service Station',	0, 'S'), -- suppliers
+	(25,N'Organization', N'Toyota, Ethiopia',	0, 'S'),
+	(26,N'Organization', N'Executive Office',1, 'R'),
+	(27,N'Organization', N'Production Department',0, 'R'),
+	(28,N'Organization', N'Sales & Marketing Department',0, 'R'),
+	(29,N'Organization', N'Finance Department',0, 'R'),
+	(30,N'Organization', N'Human Resources Department',0, 'R'),
+	(31,N'Organization', N'Materials & Purchasing Department',0, 'R');
+	UPDATE @Agents1 SET [Code] = [Code] + CAST([Index] AS NVARCHAR(50));
 	EXEC [api].[Agents__Save]
 		@Entities = @Agents1,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
+	INSERT INTO dbo.AgentRelations([AgentId], [AgentRelationDefinitionId])
+	SELECT A.[Id], ARD.[Id] 
+	FROM dbo.Agents A 
+	JOIN dbo.AgentRelationDefinitions ARD ON A.[Code] LIKE '%' + ARD.[Prefix] + '%'
+	
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
 		Print 'Agents: Inserting'
@@ -119,7 +135,10 @@ END
 --	END;
 
 	IF @DebugAgents = 1
+	BEGIN
 		SELECT * FROM [dbo].[Agents];
+		SELECT * FROM dbo.AgentRelations;
+	END
 
 SELECT 
 	@MohamadAkra = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Mohamad Akra'), 

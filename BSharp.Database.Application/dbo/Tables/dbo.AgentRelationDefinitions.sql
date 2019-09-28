@@ -1,5 +1,5 @@
-﻿CREATE TABLE [dbo].[AgentRelationTypes] ( -- managed by Banan IT
-	[Id]						INT PRIMARY KEY IDENTITY,
+﻿CREATE TABLE [dbo].[AgentRelationDefinitions] ( -- managed by Banan IT
+	[Id]						NVARCHAR (50) PRIMARY KEY,
 	[SingularLabel]				NVARCHAR (50)	NOT NULL, -- legal Label
 	[SingularLabel2]			NVARCHAR (50),
 	[SingularLabel3]			NVARCHAR (50),
@@ -13,9 +13,11 @@
 	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
 	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	CONSTRAINT [FK_AgentRelationTypes__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_AgentRelationTypes__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),
-)
+	CONSTRAINT [FK_AgentRelationDefinitions__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
+	CONSTRAINT [FK_AgentRelationDefinitions__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),
+);
+
+
 /* 
 Shareholders: 0
 	Shareholder					

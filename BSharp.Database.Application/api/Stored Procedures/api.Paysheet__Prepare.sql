@@ -1,49 +1,78 @@
 ﻿CREATE PROCEDURE [api].[Paysheet__Prepare]
+@EmployeesIncomeTaxPayable INT
 AS
 BEGIN
+-- Assuming payable accounts have been opened already
 	DECLARE	@Documents [dbo].DocumentList, @Lines [dbo].[DocumentLineList], @Entries [dbo].[DocumentLineEntryList];
-	DECLARE @SalariesAccrualsTaxable INT, @SalariesAccrualsNonTaxable INT, @EmployeesIncomeTaxPayable INT;
-	WITH EmployeesAccruals AS (
-		SELECT ROW_NUMBER() OVER (ORDER BY [AgentId], [ResourceId], [AccountId]) AS [Index],
-			ROW_NUMBER() OVER (PARTITION BY [AgentId] ORDER BY [ResourceId], [AccountId]) AS [EntryNumber],
-		[AccountId], -SUM([Direction] * [Value]) AS ValueBalance, SUM([Direction] * [Time]) AS TimeBalance, [ResourceId], [AgentId]
-		FROM dbo.DocumentLineEntries
-		WHERE [AccountId] IN (@SalariesAccrualsTaxable, @SalariesAccrualsNonTaxable)
-		GROUP BY [AccountId], [ResourceId], [AgentId]
+	DECLARE @SalariesAccrualsTaxableAccountDef NVARCHAR (50), @SalariesAccrualsNonTaxableAccountDef NVARCHAR (50), @EmployeesPayableAccountDef NVARCHAR (50);
+	WITH EmployeesAccruals([Index], [DocumentLineIndex], [EntryNumber], [AccountId], [AccruedValue], [Time]) AS (
+		SELECT
+			ROW_NUMBER() OVER (ORDER BY A.[CustodianActorId], A.[ResourceId]),
+			A.CustodianActorId,
+			ROW_NUMBER() OVER (PARTITION BY A.[CustodianActorId] ORDER BY A.[ResourceId]),
+			DLE.[AccountId],
+			-SUM([Direction] * [Value]),
+			-SUM([Direction] * [Time])
+		FROM dbo.DocumentLineEntries DLE
+		JOIN dbo.Accounts A ON DLE.AccountId = A.[Id]
+		WHERE A.[AccountDefinitionId] IN (@SalariesAccrualsTaxableAccountDef, @SalariesAccrualsNonTaxableAccountDef)
+		GROUP BY DLE.[AccountId], A.[CustodianActorId], A.[ResourceId]
 		HAVING SUM([Direction] * [Value]) <> 0
 	),
-	LineIndices AS (
-		SELECT ROW_NUMBER() OVER (ORDER BY [AgentId]) AS [DocumentLineIndex], [AgentId]
-		FROM EmployeesAccruals
-		GROUP BY [AgentId]
+	EmployeeTotalIncome([EmployeeId], [TotalIncome]) AS (
+		SELECT A.[CustodianActorId], SUM([AccruedValue])
+		FROM EmployeesAccruals EA
+		JOIN dbo.Accounts A ON EA.AccountId = A.Id
+		GROUP BY A.[CustodianActorId]
 	),
-	EmployeesTaxableIncomes AS (
-		SELECT [AgentId], SUM([ValueBalance]) AS TaxableAmount
-		FROM EmployeesAccruals
-		WHERE [AccountId] = @SalariesAccrualsTaxable
-		GROUP BY [AgentId]
+	EmployeeIncomeTaxes([Index], [DocumentLineIndex], [EntryNumber], [AccountId], [IncomeTax], [EmployeeId], [TaxableIncome]) AS (
+		SELECT
+			ROW_NUMBER() OVER (ORDER BY A.[CustodianActorId]) + (SELECT MAX([Index]) FROM EmployeesAccruals),
+			A.[CustodianActorId],
+			1,
+			@EmployeesIncomeTaxPayable,
+			[bll].[fn_EmployeeIncomeTax](A.[CustodianActorId], -SUM([AccruedValue])),
+			A.[CustodianActorId],
+			-SUM([AccruedValue])
+		FROM EmployeesAccruals EA
+		JOIN dbo.Accounts A ON EA.AccountId = A.[Id]
+		WHERE A.[AccountDefinitionId]  = @SalariesAccrualsTaxableAccountDef
+		GROUP BY A.[CustodianActorId]
+		HAVING -SUM([AccruedValue])<> 0
 	),
-	EmployeeIncomeTaxes AS (
-		SELECT [AgentId], [bll].[fn_EmployeeIncomeTax]([AgentId], [TaxableAmount]) AS [EmployeeIncomeTax]
-		FROM EmployeesTaxableIncomes
+	-- TODO: Deduct any ther taxes/deductions
+	-- TODO: Deduct loans
+	EmployeesPayable([Index], [DocumentLineIndex], [EntryNumber], [AccountId], [NetPayable]) AS (
+		SELECT
+			ROW_NUMBER() OVER (ORDER BY E.EmployeeId) + (SELECT MAX([Index]) FROM EmployeeIncomeTaxes),
+			E.[EmployeeId],
+			1,
+			A.[Id],
+			E.TotalIncome - ISNULL(EIT.IncomeTax,0)
+		FROM EmployeeTotalIncome E
+		JOIN dbo.Accounts A ON E.EmployeeId = A.CustodianActorId
+		LEFT JOIN EmployeeIncomeTaxes EIT ON E.EmployeeId = EIT.EmployeeId
+		WHERE
+			A.AccountDefinitionId = @EmployeesPayableAccountDef
+			AND E.TotalIncome <> ISNULL(EIT.IncomeTax,0)
 	)
-	INSERT INTO @Entries([Index], [DocumentLineIndex], [EntryNumber], [Direction],[AccountId], [Value], [ResourceId], [AgentId], [Time])
-	SELECT [Index], [DocumentLineIndex], [EntryNumber],
-		CAST(SIGN([ValueBalance]) AS SMALLINT) AS [Direction], [AccountId], CAST(ABS([ValueBalance]) AS MONEY) AS [ValueBalance], [ResourceId], E.[AgentId], CAST([TimeBalance] AS MONEY) AS [TimeBalance]
-	FROM EmployeesAccruals E 
-	JOIN LineIndices L ON E.AgentId = L.AgentId
+	-- We reverse the accrual effect
+	-- TODO: How to handle boundary cases when Payable willl be positive
+	INSERT INTO @Entries([Index],[DocumentLineIndex], [EntryNumber], [Direction],[AccountId], [Value], [Time])
+	SELECT				[Index],[DocumentLineIndex], [EntryNumber], SIGN([AccruedValue]), [AccountId], ABS([AccruedValue]), [Time]
+	FROM EmployeesAccruals
 	UNION
-	SELECT EA.[Index], L.[DocumentLineIndex], EA.[EntryNumber], -1 AS [Direction], @EmployeesIncomeTaxPayable, [EmployeeIncomeTax], NULL, NULL, 0
-	FROM EmployeeIncomeTaxes EIT 
-	JOIN LineIndices L ON EIT.AgentId = L.AgentId
-	JOIN (
-		SELECT [AgentId], (MAX([Index]) + 1) AS [Index], (MAX([EntryNumber]) + 1) AS [EntryNumber]
-		FROM EmployeesAccruals
-		GROUP BY [AgentId]
-	) EA ON EIT.AgentId = EA.[AgentId];
+	-- Add the income tax. TODO: Add related agent and related amount for simpler declaration
+	SELECT				[Index], [DocumentLineIndex], [EntryNumber], -1,		[AccountId], [IncomeTax], 0
+	FROM EmployeeIncomeTaxes
+	-- Add the payable
+	UNION
+	SELECT				[Index], [DocumentLineIndex], [EntryNumber], -1,		[AccountId], [NetPayable], 0
+	FROM EmployeesPayable
+	;
 	   
 	INSERT INTO @Lines ([Index], [DocumentIndex])
-	SELECT	[DocumentLineIndex], 0 AS [DocumentIndex]
+	SELECT	[DocumentLineIndex], 0
 	FROM @Entries
 	GROUP BY [DocumentLineIndex];
 

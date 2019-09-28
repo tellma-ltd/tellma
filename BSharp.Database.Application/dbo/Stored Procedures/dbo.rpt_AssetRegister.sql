@@ -17,7 +17,7 @@ BEGIN
 	FixedAssetAccounts AS (
 		SELECT [AccountId] FROM dbo.[AccountsDisclosures]
 		WHERE [IfrsDisclosureId] = N'StatementOfFinancialPositionAbstract'
-		AND [IfrsConceptId] IN
+		AND [Concept] IN
 			(SELECT [Id] FROM IfrsFixedAssetAccounts)
 	),
 	OpeningBalances AS (

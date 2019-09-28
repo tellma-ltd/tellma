@@ -24,6 +24,6 @@ GO;
 CREATE UNIQUE CLUSTERED INDEX [IX_Locations__LocationDefinitionId_Node]
 	ON [dbo].[Locations]([LocationDefinitionId], [Node]);
 GO
-CREATE UNIQUE INDEX [IX_Locations__ResourceDefinitionId_Code]
+CREATE UNIQUE INDEX [IX_Locations__LocationDefinitionId_Code]
 	ON [dbo].[Locations]([LocationDefinitionId], [Code]) WHERE [Code] IS NOT NULL;
 GO

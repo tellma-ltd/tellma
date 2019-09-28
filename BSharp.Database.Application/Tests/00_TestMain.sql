@@ -59,13 +59,13 @@ BEGIN TRY
 	BEGIN TRANSACTION
 		:r .\01_RolesPermissions.sql		
 		:r .\02_Workflows.sql
-		:r .\03_MeasurementUnits.sql
-		:r .\04_IfrsConcepts.sql
-		:r .\05_Agents.sql
-		:r .\06_ResponsibilityCenters.sql
-		:r .\07_Resources.sql
-		:r .\08_Accounts.sql
-		:r .\10_JournalVouchers.sql
+		--:r .\03_MeasurementUnits.sql
+		--:r .\04_IfrsConcepts.sql
+		--:r .\05_Agents.sql
+	--	:r .\06_ResponsibilityCenters.sql
+		--:r .\07_Resources.sql
+		:r .\08_GLAccounts.sql
+		--:r .\10_JournalVouchers.sql
 		--:r .\71_Operations.sql
 		--:r .\72_ProductCategories.sql
 		--:r .\73_Places.sql

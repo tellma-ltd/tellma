@@ -58,25 +58,13 @@ BEGIN
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
-		N'Error_TheAccount0IsInactive',
+		N'Error_TheAccount0IsDeprecated',
 		A.[Name]
 	FROM @Ids FE
 	JOIN dbo.[DocumentLines] DL ON FE.[Id] = DL.[DocumentId]
 	JOIN dbo.[DocumentLineEntries] DLE ON DL.[Id] = DLE.[DocumentLineId]
 	JOIN dbo.[Accounts] A ON A.[Id] = DLE.[AccountId]
-	WHERE (A.[IsActive] = 0);
-
-	-- No inactive Resource
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
-		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
-		N'Error_TheResource0IsInactive',
-		R.[Name]
-	FROM @Ids FE
-	JOIN dbo.[DocumentLines] DL ON FE.[Id] = DL.[DocumentId]
-	JOIN dbo.[DocumentLineEntries] DLE ON DL.[Id] = DLE.[DocumentLineId]
-	JOIN dbo.[Resources] R ON R.[Id] = DLE.[ResourceId]
-	WHERE (R.[IsActive] = 0);
+	WHERE (A.[IsDeprecated] = 0);
 
 	-- Not allowed to cause negative inventory balance
 	WITH IfrsAssetAccounts AS (
@@ -86,13 +74,11 @@ BEGIN
 		) = 1
 	),
 	AssetAccounts AS (
-		SELECT [Id] FROM dbo.Accounts A
-		WHERE A.[IfrsAccountClassificationId] IN (
-			SELECT [Id] FROM IfrsAssetAccounts
-		)
+		SELECT [Id] FROM dbo.[Accounts] A
+		WHERE A.[AccountDefinitionId] IN (N'finished-goods', N'raw-materials', N'inventories')
 	),
 	CurrentDocs AS (
-		SELECT MAX(FE.[Index]) AS [Index], DLE.AccountId, DLE.ResourceId, 
+		SELECT MAX(FE.[Index]) AS [Index], DLE.AccountId,
 			SUM(DLE.[Direction] * DLE.[Mass]) AS [Mass], 
 			SUM(DLE.[Direction] * DLE.[Volume]) AS [Volume], 
 			SUM(DLE.[Direction] * DLE.[Count]) AS [Count], 
@@ -101,42 +87,39 @@ BEGIN
 		JOIN dbo.[DocumentLines] DL ON FE.[Id] = DL.[DocumentId]
 		JOIN dbo.[DocumentLineEntries] DLE ON DL.[Id] = DLE.[DocumentLineId]
 		WHERE DLE.AccountId IN (SELECT [Id] FROM AssetAccounts)
-		GROUP BY DLE.AccountId, DLE.ResourceId
+		GROUP BY DLE.AccountId
 		HAVING SUM(DLE.[Direction] * DLE.[Mass]) < 0
 		OR SUM(DLE.[Direction] * DLE.[Volume]) < 0
 		OR SUM(DLE.[Direction] * DLE.[Count]) < 0
 		OR SUM(DLE.[Direction] * DLE.[Area]) < 0
 	),
 	PostedDocs AS (
-		SELECT DLE.AccountId, DLE.ResourceId,
+		SELECT DLE.AccountId,
 			SUM(DLE.[Direction] * DLE.[Mass]) AS [Mass], 
 			SUM(DLE.[Direction] * DLE.[Volume]) AS [Volume], 
 			SUM(DLE.[Direction] * DLE.[Count]) AS [Count], 
 			SUM(DLE.[Direction] * DLE.[Area]) AS [Area]
-		FROM dbo.Documents D
-		JOIN dbo.[DocumentLines] DL ON D.[Id] = DL.[DocumentId]
-		JOIN dbo.[DocumentLineEntries] DLE ON DL.[Id] = DLE.[DocumentLineId]
-		JOIN CurrentDocs C ON DLE.AccountId = C.AccountId AND DLE.ResourceId = C.ResourceId
-		WHERE D.[State] = N'Posted'
-		GROUP BY DLE.AccountId, DLE.ResourceId
+		FROM dbo.DocumentLineEntriesDetailsView DLE
+		JOIN CurrentDocs C ON DLE.AccountId = C.AccountId 
+		GROUP BY DLE.AccountId
 	),
 	OffendingEntries AS (
-		SELECT C.[Index], C.AccountId, C.ResourceId, (C.[Mass] + P.[Mass]) AS [Mass]
+		SELECT C.[Index], C.AccountId, (C.[Mass] + P.[Mass]) AS [Mass]
 		FROM CurrentDocs C
-		JOIN PostedDocs P ON C.AccountId = P.AccountId AND C.ResourceId = P.ResourceId
+		JOIN PostedDocs P ON C.AccountId = P.AccountId
 		WHERE (C.[Mass] + P.[Mass]) < 0
 		OR (C.[Volume] + P.[Volume]) < 0
 		OR (C.[Count] + P.[Count]) < 0
 		OR (C.[Area] + P.[Area]) < 0
 	)
-	-- TODO: to be rewritten for each unit of measure
+	-- TODO: to be rewritten for each unit of measure. Also localize!
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT
 		'[' + ISNULL(CAST([Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheResource0Account1Shortage2',
 		R.[Name], A.[Name], [Mass] -- 
 	FROM OffendingEntries D
-	JOIN dbo.Resources R ON D.ResourceId = R.Id
-	JOIN dbo.Accounts A ON D.AccountId = A.Id
+	JOIN dbo.[Accounts] A ON D.AccountId = A.Id
+	JOIN dbo.Resources R ON A.ResourceId = R.Id
 END
 	SELECT TOP (@Top) * FROM @ValidationErrors;

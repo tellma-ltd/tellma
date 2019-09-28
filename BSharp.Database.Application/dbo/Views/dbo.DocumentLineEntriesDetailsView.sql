@@ -19,14 +19,7 @@ AS
 		L.[LineDefinitionId],
 		E.[Direction],
 		E.[AccountId],
-		A.[AccountClassificationId],
-		A.[IfrsAccountClassificationId],
-		E.[IfrsEntryClassificationId],
-		E.[AgentId],
-		E.[ResponsibilityCenterId],
-		E.[ResourceId],
 		E.[ResourcePickId],
-		E.[LocationId],
 		E.[BatchCode],
 		E.[DueDate],
 		E.[MonetaryValue], -- normalization is already done in the Value and stored in the entry
@@ -37,13 +30,13 @@ AS
 		E.[Time],
 		E.[Count], -- we can normalize every measure, but just showing a proof of concept
 		E.[Value],
-		L.[Memo],
-		L.[ExternalReference],
-		L.[AdditionalReference],
-		L.[RelatedResourceId],
-		L.[RelatedAgentId],
-		L.[RelatedQuantity],
-		L.[RelatedMonetaryAmount],
+		E.[Memo],
+		E.[ExternalReference],
+		E.[AdditionalReference],
+		E.[RelatedResourceId],
+		E.[RelatedAgentId],
+		E.[RelatedQuantity],
+		E.[RelatedMonetaryAmount],
 
 		E.[CreatedAt],
 		E.[CreatedById],
@@ -54,7 +47,6 @@ AS
 		JOIN [dbo].[DocumentLines] L ON E.[DocumentLineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
-		JOIN [dbo].[Accounts] A ON E.[AccountId] = A.[Id]
 	WHERE
 		D.[State] = N'Posted';
 GO;

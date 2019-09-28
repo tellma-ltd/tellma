@@ -14,66 +14,20 @@ UPDATE E
 SET
 	E.IfrsEntryClassificationId = 
 		CASE
-			WHEN A.[IfrsEntryClassificationId] IS NOT NULL THEN A.[IfrsEntryClassificationId]
+			WHEN AD.[IfrsEntryClassificationId] IS NOT NULL THEN AD.[IfrsEntryClassificationId]
 			ELSE E.IfrsEntryClassificationId
 		END
 FROM @FilledEntries E
-JOIN dbo.Accounts A ON E.AccountId = A.Id
-WHERE (A.[IfrsEntryClassificationId] IS NOT NULL)
-
-UPDATE E
-SET E.AgentId = A.AccountId
-FROM @FilledEntries E
-JOIN dbo.AccountsAgents A ON E.AccountId = A.AccountId
-WHERE E.AgentId IS NULL 
-AND A.AccountId IN (
-	SELECT [AccountId] 
-	FROM dbo.AccountsAgents T
-	GROUP BY [AccountId]
-	HAVING COUNT(*) = 1
-);
-
-UPDATE E
-SET E.ResourceId = A.ResourceId
-FROM @FilledEntries E
-JOIN dbo.AccountsResources A ON E.AccountId = A.AccountId
-WHERE E.ResourceId IS NULL 
-AND A.AccountId IN (
-	SELECT [AccountId] 
-	FROM dbo.AccountsResources T
-	GROUP BY [AccountId]
-	HAVING COUNT(*) = 1
-);
-
-UPDATE E
-SET E.ResponsibilityCenterId = A.ResponsibilityCenterId
-FROM @FilledEntries E
-JOIN dbo.AccountsResponsibilityCenters A ON E.AccountId = A.AccountId
-WHERE E.ResponsibilityCenterId IS NULL 
-AND A.AccountId IN (
-	SELECT [AccountId] 
-	FROM dbo.AccountsResponsibilityCenters T
-	GROUP BY [AccountId]
-	HAVING COUNT(*) = 1
-);
-
-UPDATE E
-SET E.LocationId = A.LocationId
-FROM @FilledEntries E
-JOIN dbo.AccountsLocations A ON E.AccountId = A.AccountId
-WHERE E.LocationId IS NULL 
-AND A.AccountId IN (
-	SELECT [AccountId] 
-	FROM dbo.AccountsLocations T
-	GROUP BY [AccountId]
-	HAVING COUNT(*) = 1
-);
+JOIN dbo.[Accounts] A ON E.AccountId = A.Id
+JOIN dbo.AccountDefinitions AD ON A.AccountDefinitionId = AD.[Id]
+WHERE (AD.[IfrsEntryClassificationId] IS NOT NULL)
 
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
 SET E.[Value] = E.[MonetaryValue]
 FROM @FilledEntries E
-JOIN dbo.Resources R ON E.ResourceId = R.Id
+JOIN dbo.Accounts A ON E.AccountId = A.Id
+JOIN dbo.Resources R ON A.ResourceId = R.Id
 JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
 WHERE

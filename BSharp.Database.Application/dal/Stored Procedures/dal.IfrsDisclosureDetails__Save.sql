@@ -7,10 +7,15 @@ SET NOCOUNT ON;
 
 	MERGE INTO [dbo].[IfrsDisclosureDetails] AS t
 	USING (
-		SELECT [IfrsDisclosureId], [ValidSince], [Value]
+		SELECT [IfrsDisclosureId], [Concept], [ValidSince], [Value]
 		FROM @Entities 
 	) AS s 
-	ON (t.[IfrsDisclosureId] = s.[IfrsDisclosureId] AND t.[ValidSince] = s.[ValidSince])
+	ON (
+		t.[IfrsDisclosureId] = s.[IfrsDisclosureId]
+		AND t.[Concept] = s.[Concept]
+		AND t.[ValidSince] = s.[ValidSince] 
+		AND t.[Value] <> s.[Value]
+	)
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
@@ -18,6 +23,6 @@ SET NOCOUNT ON;
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([IfrsDisclosureId], [ValidSince], [Value])
-		VALUES (s.[IfrsDisclosureId], s.[ValidSince], s.[Value])
+		INSERT ([IfrsDisclosureId], [Concept], [ValidSince], [Value])
+		VALUES (s.[IfrsDisclosureId], s.[Concept], s.[ValidSince], s.[Value])
 	OPTION (RECOMPILE);

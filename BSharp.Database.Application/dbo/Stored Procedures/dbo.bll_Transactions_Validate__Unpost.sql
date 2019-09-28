@@ -29,8 +29,8 @@ SET NOCOUNT ON;
 		A.[Name]
 	FROM @Entities FE
 	JOIN dbo.[DocumentLineEntries] E ON FE.[Id] = E.[DocumentLineId]
-	JOIN dbo.[Accounts] A ON E.[AccountId] = A.[Id]
-	WHERE (A.IsActive = 0);
+	JOIN dbo.[GLAccounts] A ON E.[AccountId] = A.[Id]
+	WHERE (A.[IsDeprecated] = 0);
 
 	-- No inactive custody
 	-- No inactive resource

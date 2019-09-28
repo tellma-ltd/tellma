@@ -19,7 +19,7 @@ AS
 			SUM([Count]) AS [Count],
 			SUM([Value]) As [Value]
 	FROM dbo.[fi_Journal](NULL, @AsOfDate) J
-	WHERE [IfrsAccountClassificationId] IN (SELECT Id FROM IfrsInventoryAccounts)
+	WHERE [AccountDefinitionId] IN (SELECT Id FROM IfrsInventoryAccounts)
 	GROUP BY
 			[AccountId],
 			[ResourceId],

@@ -15,6 +15,6 @@ BEGIN
 		J.[DocumentLineId] -- for navigation
 	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
-	WHERE J.[IfrsAccountClassificationId] = N'CurrentWithholdingTaxPayable'
+	WHERE J.[AccountDefinitionId] = N'CurrentWithholdingTaxPayable'
 	AND J.Direction = -1;
 END;

@@ -17,9 +17,9 @@ BEGIN
 	--	WHERE IfrsAccountId IN
 	--		(SELECT [Id] FROM IfrsFinishedGoodsAccounts)
 	--),
-	WITH UnitRatios AS (
+	WITH UnitConversionRates([Id], [ConversionRate]) AS (
 		SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)
-		/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)) As [Ratio]
+		/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)) As [ConversionRate]
 		FROM dbo.MeasurementUnits
 		WHERE UnitType = N'Mass'
 		UNION
@@ -28,9 +28,9 @@ BEGIN
 		FROM dbo.MeasurementUnits
 		WHERE UnitType = N'Count'
 	),
-	Actual AS (
+	Actual([ResourceLookup1Id], [ResponsibleActorId], [Mass], [Count]) AS (
 		SELECT 
-			R.ResourceLookup1Id, J.[ResponsibilityCenterId],
+			R.[ResourceLookup1Id], J.[ResponsibleActorId],
 			SUM(J.Direction * J.[Mass]) AS [Mass],
 			SUM(J.Direction * J.[Count]) AS [Count]
 		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId) J
@@ -38,10 +38,10 @@ BEGIN
 		LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
 		WHERE J.[IfrsEntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		-- TODO: we need a way to separate finished goods from the rest
-		AND RC.[ResourceDefinitionId] = N'FinishedGoods'
-		GROUP BY J.[ResponsibilityCenterId], R.ResourceLookup1Id
+		AND RC.[ResourceDefinitionId] = N'finished-goods'
+		GROUP BY J.[ResponsibleActorId], R.ResourceLookup1Id
 	),
-	PlannedDetails AS (
+	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (
 		SELECT 
 		ResourceLookup1Id,
 		SUM([Mass]) * (
@@ -63,15 +63,15 @@ BEGIN
 		FROM dbo.Plans
 		WHERE (ToDate >= @fromDate AND FromDate <= @ToDate)
 		AND Activity = N'Production'
-		GROUP BY ResourceLookup1Id, [MassUnitId], [CountUnitId], FromDate, ToDate
+		GROUP BY ResourceLookup1Id, [MassUnitId], [CountUnitId], [FromDate], [ToDate]
 	),
-	Planned	AS (
+	Planned([ResourceLookup1Id], [Mass], [Count])	AS (
 		SELECT ResourceLookup1Id, 
-		SUM([Mass] * ISNULL(MR.[Ratio], 0)) AS Mass, 
-		SUM([Count] * ISNULL(CR.[Ratio], 0)) AS [Count]
+		SUM([Mass] * ISNULL(MR.[ConversionRate], 0)) AS [Mass], 
+		SUM([Count] * ISNULL(CR.[ConversionRate], 0)) AS [Count]
 		FROM PlannedDetails P
-		LEFT JOIN UnitRatios MR ON P.MassUnitId = MR.Id
-		LEFT JOIN UnitRatios CR ON P.CountUnitId = CR.Id
+		LEFT JOIN UnitConversionRates MR ON P.MassUnitId = MR.Id
+		LEFT JOIN UnitConversionRates CR ON P.CountUnitId = CR.Id
 		GROUP BY ResourceLookup1Id
 	)
 	SELECT RL.Id, RL.SortKey, RL.[Name],

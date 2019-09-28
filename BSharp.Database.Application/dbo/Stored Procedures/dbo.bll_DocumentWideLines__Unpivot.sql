@@ -10,7 +10,7 @@ AS
 	SELECT 
 		[Id], [DocumentIndex] --[DocumentId], [LineDefinitionId] , [TemplateLineId], [ScalingFactor]
 	FROM @WideLines;
-
+	/*
 	INSERT INTO @Entries(
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	--[DocumentLineId],
@@ -84,6 +84,7 @@ AS
 
 		SET @EntryNumber = @EntryNumber	 + 1;
 	END
+	*/
 	
 	-- TODO: find a way to dill the dependent parameters
 	--UPDATE E

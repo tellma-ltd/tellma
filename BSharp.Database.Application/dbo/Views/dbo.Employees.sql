@@ -6,6 +6,6 @@ WHERE [AgentType] = N'Individual'
 AND [Id] IN (
 	SELECT [AgentId]
 	FROM dbo.[AgentRelations]
-	WHERE [AgentRelationTypeId] = N'employee'
+	WHERE [AgentRelationDefinitionId] = N'employee'
 	AND [IsActive] = 1
 );

@@ -10,7 +10,7 @@ BEGIN
 		J.[MonetaryValue] As [Tax Withheld]
 	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
-	WHERE J.[IfrsAccountClassificationId] = N'CurrentEmployeeIncomeTaxPayable'
+	WHERE J.[AccountDefinitionId] = N'CurrentEmployeeIncomeTaxPayable'
 	AND J.Direction = -1;
 END;
 GO;

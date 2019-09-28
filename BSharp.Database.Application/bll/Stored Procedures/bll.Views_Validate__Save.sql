@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[bll_Views_Validate__Save]
+﻿CREATE PROCEDURE [bll].[Views_Validate__Save]
 	@Views [dbo].[ViewList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,
 	@Top INT = 10

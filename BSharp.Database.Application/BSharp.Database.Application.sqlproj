@@ -112,7 +112,6 @@
     <Build Include="dbo\Stored Procedures\dbo.api_ResponsibilityCenters__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Agents__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_ResponsibilityCenters__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_ResponsibilityCenters_Validate__Save.sql" />
@@ -173,22 +172,13 @@
     <Build Include="dbo\User Defined Types\dbo.RoleList.sql" />
     <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Roles__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.ViewList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Views__Activate.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Views_Validate__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Views__Activate.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Views__Save.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLineEntries.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineEntryList.sql" />
     <Build Include="dbo\Tables\dbo.RoleMemberships.sql" />
-    <Build Include="dbo\Tables\dbo.Accounts.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_RawMaterials.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_RM_FastMovement.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_MerchandiseInTransit.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_FinishedGoods_ResourceBased.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_WSI_FinishedGoods_AccountBased.sql" />
+    <Build Include="dbo\Tables\dbo.GLAccounts.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ConsumablesServices.sql" />
     <Build Include="dbo\Tables\dbo.AgentRelations.sql" />
     <Build Include="dbo\Tables\dbo.TemplateLines.sql" />
@@ -200,7 +190,6 @@
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_SalesSummary.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_AssetRegister.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_BankAccountBalances.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.rpt_BankBalances.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__EmploymentIncomeTax.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__VAT_PurchasesSummary.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ERCA__WitholdingTaxOnPayment.sql" />
@@ -217,7 +206,6 @@
     <Build Include="dbo\Views\dbo.DocumentLineEntriesDetailsView.sql" />
     <Build Include="dbo\Views\dbo.AccountsBalancesView.sql" />
     <Build Include="dbo\Tables\dbo.ResourcePicks.sql" />
-    <Build Include="dbo\Views\dbo.TransactionsEntriesSummaryView.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_DocumentWideLines__Unpivot.sql" />
     <Build Include="dbo\Tables\dbo.DocumentStatesHistory.sql" />
@@ -248,7 +236,7 @@
     <Build Include="dal\Stored Procedures\dal.MeasurementUnits__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Save.sql" />
-    <Build Include="dbo\Tables\dbo.AgentRelationTypes.sql" />
+    <Build Include="dbo\Tables\dbo.AgentRelationDefinitions.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Save.sql" />
@@ -289,7 +277,7 @@
     <Build Include="rpt\Stored Procedures\rpt.sp_ResourcesPicks.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexedImageIdList.sql" />
     <Build Include="dal\Stored Procedures\dal.Roles__Save.sql" />
-    <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.GLAccounts__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Activate.sql" />
     <Build Include="dbo\Tables\dbo.IfrsStatements.sql" />
     <Build Include="dbo\Tables\dbo.AccountsDisclosures.sql" />
@@ -340,7 +328,6 @@
     <Build Include="bll\Stored Procedures\bll.ResourceClassifications_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.ResourceClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceClassifications__Activate.sql" />
-    <Build Include="dbo\Tables\dbo.AccountClassifications.sql" />
     <Build Include="dbo\Tables\dbo.ResourceDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.Currencies.sql" />
     <Build Include="dbo\Tables\dbo.ResourceProviders.sql" />
@@ -383,6 +370,26 @@
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Save.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Select.sql" />
+    <Build Include="dbo\Tables\dbo.AccountDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.Accounts.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.GLAccounts__TrialBalance.sql" />
+    <Build Include="rpt\Functions\rpt.fi_JournalSummary.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.FinishedGoods__TrialBalance.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.RawMaterials__TrialBalance.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.MerchandiseInTransit__TrialBalance.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.RawMaterials__TopByCountOut.sql" />
+    <Build Include="api\Stored Procedures\api.GLAccounts__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.GLAccountList.sql" />
+    <Build Include="bll\Stored Procedures\bll.GLAccounts_Validate__Save.sql" />
+    <Build Include="api\Stored Procedures\api.Roles__Activate.sql" />
+    <Build Include="rpt\Functions\rpt.GLAccounts.sql" />
+    <Build Include="dal\Stored Procedures\dal.Views__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.Views__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.Agents__Activate.sql" />
+    <Build Include="bll\Stored Procedures\bll.Views_Validate__Save.sql" />
+    <Build Include="api\Stored Procedures\api.GLAccounts__Deprecate.sql" />
+    <Build Include="bll\Stored Procedures\bll.GLAccounts_Validate__Deprecate.sql" />
+    <Build Include="dal\Stored Procedures\dal.GLAccounts__Deprecate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
@@ -395,7 +402,7 @@
     <None Include="Dev.publish.xml" />
     <None Include="Tests\01_RolesPermissions.sql" />
     <None Include="Tests\02_Workflows.sql" />
-    <None Include="Tests\08_Accounts.sql" />
+    <None Include="Tests\08_GLAccounts.sql" />
     <None Include="Tests\06_ResponsibilityCenters.sql" />
     <None Include="Tests\12_Purchasing.sql" />
     <None Include="Tests\14_Sales.sql" />

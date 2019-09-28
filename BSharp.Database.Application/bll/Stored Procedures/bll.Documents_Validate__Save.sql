@@ -25,8 +25,10 @@ SET NOCOUNT ON;
 		N'Error_TheAmount0DoesNotMatchTheValue1',
 		[MonetaryValue],
 		[Value]
-	FROM @Entries
-	WHERE ([ResourceId] = dbo.fn_FunctionalCurrency())
+	FROM @Entries E
+	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+	JOIN dbo.Resources R ON A.ResourceId = R.Id
+	WHERE (R.[CurrencyId] = dbo.fn_FunctionalCurrency())
 	AND ([Value] <> [MonetaryValue] )
 
 	-- (FE Check, DB constraint)  Cannot save with a date that lies in the archived period

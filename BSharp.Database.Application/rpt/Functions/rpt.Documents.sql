@@ -36,8 +36,8 @@ RETURN
 		LEFT JOIN dbo.Agents AG ON DA.AssigneeId = AG.Id
 		LEFT JOIN dbo.DocumentLines DL ON D.[Id] = DL.[DocumentId]
 		LEFT JOIN dbo.DocumentLineEntries DLE ON DL.[Id] = DLE.[DocumentLineId]
-		JOIN dbo.Accounts A ON DLE.AccountId = A.[Id]
-		LEFT JOIN dbo.Resources R ON DLE.[ResourceId] = R.[Id]
+		JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
+		LEFT JOIN dbo.Resources R ON A.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.Currencies C ON R.[CurrencyId] = C.[Id]
 		LEFT JOIN dbo.MeasurementUnits MUM ON R.[MassUnitId] = MUM.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @Ids)

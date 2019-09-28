@@ -55,7 +55,7 @@ END
 
 IF @DebugIfrsConcepts = 1
 	SELECT
-		IDD.IfrsDisclosureId,  IDD.[Value], IDD.ValidSince,
+		IDD.[Concept],  IDD.[Value], IDD.ValidSince,
 		LUC.[Email] AS CreatedBy, IDD.CreatedAt, LUM.[Email] AS ModifiedBy, IDD.ModifiedAt
 	FROM [dbo].[IfrsDisclosureDetails] IDD
 	JOIN dbo.[Users] LUC ON IDD.CreatedById = LUC.Id

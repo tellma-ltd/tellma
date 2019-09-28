@@ -30,6 +30,12 @@
 	-- The data below could be supplier dependent. Specifically, in the case of employee, it is employee dependent.
 	-- However, we must standardize on the unit for tracking. So, while we might be buying oil in Kg and Pounds, in our store
 	-- we should keep it in one standard unit
+	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] FOREIGN KEY ([CountUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[UnitCount]						DECIMAL,		-- if not null, it specifies the conversion rate Count/Primary Unit
+	[CountVariance]					DECIMAL (5,2)		DEFAULT 0,
+	-- For CountUnit <> NULL, if HaDistinctPicks, we show the picks grid.
+	[HasDistinctPicks]			BIT					DEFAULT 0,
+
 	[MassUnitId]					INT					CONSTRAINT [FK_Resources__MassUnitId] FOREIGN KEY ([MassUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[UnitMass]						DECIMAL,		-- if not null, it specifies the conversion rate Mass/Primary Unit
 	[MassVariance]					DECIMAL (5,2)		DEFAULT 0,
@@ -50,14 +56,12 @@
 	[UnitTime]						DECIMAL,		-- if not null, it specifies the conversion rate Time/Primary Unit
 	[TimeVariance]					DECIMAL (5,2)		DEFAULT 0,
 
-	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] FOREIGN KEY ([CountUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[UnitCount]						DECIMAL,		-- if not null, it specifies the conversion rate Count/Primary Unit
-	[CountVariance]					DECIMAL (5,2)		DEFAULT 0,
-
 	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Resources__CurrencyId] FOREIGN KEY ([CurrencyId]) REFERENCES [dbo].[Currencies] ([Id]),
 	[UnitMonetaryValue]				DECIMAL,		-- if not null, it specifies the conversion rate Monetary Value/Primary Unit
 	[UnitValue]						DECIMAL,
 	[ValueVariance]					DECIMAL (5,2)		DEFAULT 0,
+
+
 	
  -- functional currency, common stock, basic, allowance, overtime/types, 
 	[SystemCode]					NVARCHAR (255),

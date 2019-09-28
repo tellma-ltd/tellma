@@ -21,8 +21,8 @@ SELECT @fromDate = '2017.01.01', @toDate = '2017.01.31'
 --SELECT count(*) FROM dbo.Documents;-- SELECT * FROM dbo.DocumentLines; SELECT * FROM dbo.DocumentLineEntries;
 
 SELECT
-	[Id], [AccountClassificationId], [Name], [Code]
-FROM dbo.Accounts;
+	[Id], [AccountType, [Name], [Code]
+FROM dbo.[GLAccounts];
 INSERT INTO @D11Ids([Id]) SELECT [Id] FROM dbo.Documents;
 --SELECT * FROM rpt.Documents(@D11Ids) ORDER BY [SortKey], [EntryNumber];
 WITH Docs AS (
@@ -66,7 +66,7 @@ WITH Docs AS (
 		LEFT JOIN dbo.Agents AG ON DA.AssigneeId = AG.Id
 		LEFT JOIN dbo.DocumentLines DL ON D.[Id] = DL.[DocumentId]
 		LEFT JOIN dbo.DocumentLineEntries DLE ON DL.[Id] = DLE.[DocumentLineId]
-		JOIN dbo.Accounts A ON DLE.AccountId = A.[Id]
+		JOIN dbo.[GLAccounts] A ON DLE.AccountId = A.[Id]
 		LEFT JOIN dbo.ResponsibilityCenters RC ON DLE.[ResponsibilityCenterId] = RC.[Id]
 		LEFT JOIN dbo.Agents AGC ON DLE.[AgentId] = AGC.[Id]
 		LEFT JOIN dbo.Resources R ON DLE.[ResourceId] = R.[Id]

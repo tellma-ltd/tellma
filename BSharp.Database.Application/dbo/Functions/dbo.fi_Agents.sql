@@ -8,6 +8,6 @@ RETURN
 	WHERE [Id] IN (
 		SELECT [AgentId]
 		FROM dbo.[AgentRelations]
-		WHERE (@AgentRelationType IS NULL OR [AgentRelationTypeId] = @AgentRelationType)
+		WHERE (@AgentRelationType IS NULL OR [AgentRelationDefinitionId] = @AgentRelationType)
 		AND (@IsActive IS NULL OR [IsActive] = @IsActive)
 	);

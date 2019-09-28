@@ -1,5 +1,6 @@
 ﻿CREATE FUNCTION [dbo].[fi_Journal] (-- SELECT * FROM [dbo].[fi_Journal]('01.01.2015','01.01.2020')
-	@fromDate Date = '2000.01.01', 
+	@fromDate Date = '2000.01.01',
+	--@param int = 0,
 	@toDate Date = '2100.01.01'
 ) RETURNS TABLE
 AS
@@ -20,12 +21,12 @@ RETURN
 		V.[LineDefinitionId],
 		V.[Direction],
 		V.[AccountId],
-		V.[IfrsAccountClassificationId],
-		V.[AgentId],
-		V.[IfrsEntryClassificationId],
-		V.[ResponsibilityCenterId],
-		V.[ResourceId],
-		--R.[UnitId],
+		A.[AccountDefinitionId],
+		A.[IfrsEntryClassificationId],
+		A.[CustodianActorId],
+		A.[ResponsibleActorId],
+		A.[LocationId],
+		A.[ResourceId],
 		V.[ResourcePickId],
 		V.[BatchCode],
 		--V.[Quantity],
@@ -57,7 +58,8 @@ RETURN
 		V.[RelatedQuantity],
 		V.[RelatedMonetaryAmount]
 	FROM dbo.[DocumentLineEntriesDetailsView] V
-	JOIN dbo.Resources R ON V.ResourceId = R.Id
+	JOIN dbo.Accounts A ON V.AccountId = A.Id
+	LEFT JOIN dbo.Resources R ON A.ResourceId = R.Id
 	--LEFT JOIN dbo.MeasurementUnits MU ON R.MassUnitId = MU.Id
 	--LEFT JOIN dbo.MeasurementUnits VU ON R.VolumeUnitId = VU.Id
 	--LEFT JOIN dbo.MeasurementUnits CU ON R.CountUnitId = CU.Id
@@ -65,6 +67,12 @@ RETURN
 	WHERE V.[Frequency]		= N'OneTime'
 	AND (@fromDate IS NULL OR [DocumentDate] >= @fromDate)
 	AND (@toDate IS NULL OR [DocumentDate] < @toDate)
+	--AND [DocumentDate] <
+	--	CASE 
+	--		WHEN @Param = 0 THEN @toDate
+	--		WHEN @Param = 1 THEN DATEADD(DAY, 7, @fromDate)
+	--		WHEN @Param = 2 THEN DATEADD(MONTH, 1, @fromDate)
+	--	END
 /* TODO: Uncomment when stabilized.
 	UNION ALL
 	SELECT
