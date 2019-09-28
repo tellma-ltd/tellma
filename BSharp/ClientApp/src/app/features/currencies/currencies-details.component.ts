@@ -86,6 +86,6 @@ export class CurrenciesDetailsComponent extends DetailsBaseComponent {
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get isNew(): boolean {
-    return (this.details.isPopupMode) || this.route.snapshot.paramMap.get('id') === 'new';
+    return (this.details.isPopupMode) || this.route.snapshot.paramMap.get('id') === 'new' || this.idString === 'new';
   }
 }

@@ -12,9 +12,6 @@ export class SelectorComponent implements ControlValueAccessor {
   // us to change the bahvior of all inputs in the application since they all use this control
 
   @Input()
-  isOptional = false;
-
-  @Input()
   choices: { name: string, value: any }[] = [];
 
   @HostBinding('class.w-100')

@@ -23,6 +23,7 @@ SET NOCOUNT ON;
 				t.[Name]			= s.[Name],
 				t.[Name2]			= s.[Name2],
 				t.[Name3]			= s.[Name3],
+				t.[Code]			= s.[Code],
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN

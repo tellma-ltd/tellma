@@ -5,6 +5,10 @@
     <input class="form-control b-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
       ngbDropdownAnchor autocomplete="off" />
     &nbsp;
+    <button class="btn btn-light btn-sm text-primary b-white-button p-0 pl-1 pr-1" *ngIf="showEditSelected" type="button" [style.margin-left]="editSelectedLeftMargin"  [style.margin-right]="editSelectedRightMargin"
+      title="{{ 'Edit' | translate }}" (click)="onEditFromFocus()" [disabled]="isDisabled || disableEditSelected">
+      <fa-icon icon="external-link-alt"></fa-icon>
+    </button>
     <button class="btn btn-light btn-sm text-primary b-white-button p-0 pl-1 pr-1" *ngIf="showMagnifier" type="button"
       title="{{ 'Search' | translate }}" (click)="openSearchModal()" [disabled]="isDisabled">
       <fa-icon icon="search"></fa-icon>
@@ -41,14 +45,13 @@
           {{ 'Create' | translate }}...
         </button>
       </div>
-
     </ng-container>
   </div>
 </div>
 
 <ng-template #detailsWrapperTemplate let-modal>
   <ng-container
-    *ngTemplateOutlet="detailsTemplate;context: { update: onUpdate, modal: modal, initialText: initialText, definitionId: definitionId }">
+    *ngTemplateOutlet="detailsTemplate;context: { update: onUpdate, modal: modal, initialText: initialText, idString: idString, definitionId: definitionId }">
   </ng-container>
 </ng-template>
 

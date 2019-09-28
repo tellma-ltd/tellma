@@ -50,10 +50,6 @@ namespace BSharp.Entities
 
         // For Query
 
-        [ForeignKey(nameof(ViewId))]
-        [AlwaysAccessible]
-        public View View { get; set; }
-
         [Display(Name = "Permission_Role")]
         [ForeignKey(nameof(RoleId))]
         [AlwaysAccessible]

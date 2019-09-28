@@ -105,7 +105,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
 
-
             Shared.Set("Lookup_Red", responseDto);
         }
 

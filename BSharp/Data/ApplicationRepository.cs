@@ -211,21 +211,6 @@ namespace BSharp.Data
         /// </summary>
         private static Func<Type, SqlSource> GetSources(TenantInfo info, IStringLocalizer localizer)
         {
-            var lang1 = info.PrimaryLanguageId;
-            var lang2 = info.SecondaryLanguageId;
-            var lang3 = info.TernaryLanguageId;
-
-            var loc1 = lang1 == null ? null : localizer.WithCulture(new CultureInfo(lang1));
-            var loc2 = lang2 == null ? null : localizer.WithCulture(new CultureInfo(lang2));
-            var loc3 = lang3 == null ? null : localizer.WithCulture(new CultureInfo(lang3));
-
-            // TODO Do something about SQL injection risk
-            string localize1(string s) => loc1 == null ? "NULL" : $"N'{loc1[s]?.ToString().Replace("'", "''")}'";
-            string localize2(string s) => loc2 == null ? "NULL" : $"N'{loc2[s]?.ToString().Replace("'", "''")}'";
-            string localize3(string s) => loc3 == null ? "NULL" : $"N'{loc3[s]?.ToString().Replace("'", "''")}'";
-
-            string localize(string s) => $"{localize1(s)},  {localize2(s)},  {localize3(s)}";
-
             return (t) =>
             {
                 switch (t.Name)
@@ -292,55 +277,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                         return new SqlSource("[dbo].[Accounts]");
 
                     #endregion
-
-                    case nameof(View):
-                        var builtInValuesCollection = Views.BUILT_IN.Select(e => $"('{e.Id}', {localize(e.Name)})");
-                        var builtInValuesString = builtInValuesCollection.Aggregate((s1, s2) => $@"{s1},
-{s2}");
-                        var viewParameters = new List<SqlParameter>();
-                        return new SqlSource($@"(SELECT
- V.[Id], 
- V.Name AS [Name], 
- V.Name2 AS [Name2], 
- V.Name3 AS [Name3], 
- V.[Id] AS [Code], 
- CASE WHEN V.[Id] = 'all' THEN CAST(1 AS BIT) ELSE IsNULL(T.[IsActive], CAST(1 AS BIT)) END AS [IsActive]
-FROM 
-  (
-  VALUES
-    {builtInValuesString}
-  ) 
-AS V ([Id], [Name], [Name2], [Name3])
-LEFT JOIN [dbo].[Views] AS T ON V.Id = T.Id)", viewParameters);
-
-                    case nameof(ViewAction):
-
-                        // This takes the original list and transforms it into a friendly format, adding the very common "Read", "Update" and "Delete" permissions if they are needed
-                        int i = 1;
-                        var builtInValueActionsCollections = Views.BUILT_IN.SelectMany(x =>
-                             x.Actions.Select(y => new { Id = i++, ViewId = x.Id, y.Action, SupportsCriteria = y.Criteria, SupportsMask = false })
-                            .Concat(Enumerable.Repeat(new { Id = i++, ViewId = x.Id, Action = Constants.Delete, SupportsCriteria = true, SupportsMask = false }, x.Delete ? 1 : 0))
-                            .Concat(Enumerable.Repeat(new { Id = i++, ViewId = x.Id, Action = Constants.Update, SupportsCriteria = true, SupportsMask = true }, x.Update ? 1 : 0))
-                            .Concat(Enumerable.Repeat(new { Id = i++, ViewId = x.Id, Action = Constants.Read, SupportsCriteria = true, SupportsMask = true }, x.Read ? 1 : 0))
-                        )
-                        .Select(e => $"({e.Id}, '{e.ViewId}', '{e.Action}', {(e.SupportsCriteria ? "1" : "0")}, {(e.SupportsMask ? "1" : "0")})");
-
-                        var builtInValueActionsString = builtInValueActionsCollections.Aggregate((s1, s2) => $@"{s1},
-{s2}");
-
-                        return new SqlSource($@"(SELECT
- [V].[Id], 
- [V].[ViewId] AS [ViewId], 
- [V].[Action] AS [Action], 
- CAST(V.[SupportsCriteria] AS BIT) AS [SupportsCriteria], 
- CAST(V.[SupportsMask] AS BIT) AS [SupportsMask]
-FROM 
-  (
-  VALUES
-    {builtInValueActionsString}
-  ) 
-AS [V] ([Id], [ViewId], [Action], [SupportsCriteria], [SupportsMask])
-LEFT JOIN [dbo].[Views] AS [T] ON V.Id = T.Id)");
 
                 }
 

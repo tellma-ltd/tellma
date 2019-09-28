@@ -215,8 +215,10 @@ namespace BSharp.Controllers
                         {
                             TitlePlural = "Raw Materials",
                             TitlePlural2 = "مواد خام",
+                            TitlePlural3 = "原料",
                             TitleSingular = "Raw Material",
                             TitleSingular2 = "مادة خام",
+                            TitleSingular3 = "原料",
                             MainMenuIcon = "clipboard",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 203m,
@@ -226,13 +228,7 @@ namespace BSharp.Controllers
                             ResourceLookup1_Visibility = Visibility.Visible,
                             ResourceLookup1_DefinitionId = "thicknesses",
 
-                            //ResourceLookup2_Label = "Color",
-                            //ResourceLookup2_Label2 = "اللون",
-                            //ResourceLookup2_Visibility = Visibility.Visible,
-                            //ResourceLookup2_DefinitionId = "colors",
-
                             MassUnit_Visibility = Visibility.Visible,
-                            // MassUnit_DefaultValue = 81, // kg
                             VolumeUnit_Visibility = Visibility.Visible,
                             AreaUnit_Visibility = Visibility.Visible,
                             LengthUnit_Visibility = Visibility.Visible,
@@ -240,7 +236,6 @@ namespace BSharp.Controllers
                             CountUnit_Visibility = Visibility.Visible,
                             Memo_Visibility = Visibility.Visible,
                             Memo_DefaultValue = "My default memo",
-                           // CustomsReference_Visibility = Visibility.Visible
                         },
                         ["finished-goods"] = new ResourceDefinitionForClient
                         {
@@ -274,8 +269,10 @@ namespace BSharp.Controllers
                         {
                             TitleSingular = "Color",
                             TitleSingular2 = "لون",
+                            TitleSingular3 = "颜色",
                             TitlePlural = "Colors",
                             TitlePlural2 = "ألوان",
+                            TitlePlural3 = "颜色",
                             MainMenuIcon = "list",
                             MainMenuSection = "Administration",
                             MainMenuSortKey = 202m
@@ -284,8 +281,10 @@ namespace BSharp.Controllers
                         {
                             TitleSingular = "Thickness",
                             TitleSingular2 = "سماكة",
+                            TitleSingular3 = "厚度",
                             TitlePlural = "Thicknesses",
                             TitlePlural2 = "سماكات",
+                            TitlePlural3 = "厚度",
                             MainMenuIcon = "list",
                             MainMenuSection = "Administration",
                             MainMenuSortKey = 101m

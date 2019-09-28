@@ -5,7 +5,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgbDropdown, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PlacementArray } from '@ng-bootstrap/ng-bootstrap/util/positioning';
 import { fromEvent, of, Subject, Subscription } from 'rxjs';
-import { catchError, debounceTime, map, switchMap, tap, exhaustMap } from 'rxjs/operators';
+import { catchError, debounceTime, map, switchMap, tap, exhaustMap, filter } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse } from '~/app/data/dto/get-response';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -87,6 +87,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private _errorMessage: string;
   private _initialText: string;
   private _definitionId: string;
+  // private _cacheMode = false;
+  private _idString = 'new';
   private api = this.apiService.crudFactory('', null); // for intellisense
 
   @Input()
@@ -106,6 +108,14 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.input.nativeElement.focus();
   }
 
+  get chosenItemDefinition(): string {
+    if (this.workspace.current[this.collection] && this.workspace.current[this.collection][this.chosenItem]) {
+      return this.workspace.current[this.collection][this.chosenItem][this.definitionProperty];
+    }
+
+    return null;
+  }
+
   ngOnInit() {
 
     // If there is 0 or 1 definitionId, use the specific API, otherwise use the generic one with a filter
@@ -118,7 +128,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     ).subscribe());
 
     // adds a definition filter if we have more than a single definitionId
-    const filter: () => string = () => {
+    const queryFilter: () => string = () => {
       if (this.definitionIds.length > 1) {
 
         const definitionProperty = this.definitionProperty || 'DefinitionId';
@@ -137,9 +147,21 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       }
     };
 
+    // // this.apiEndpoint(this.definitionId)
+
+    // // Here we do cache mode
+    // this.subscriptions.add(fromEvent(this.input.nativeElement, 'input').pipe(
+    //   filter(_ => this._cacheMode),
+    //   map((e: any) => e.target.value as string),
+    //   tap(term => {
+    //     //
+    //   })
+    // ).subscribe());
+
     // use some RxJS magic to listen to user input and call the backend
     // in order to show the results in a dropdown
     this.subscriptions.add(fromEvent(this.input.nativeElement, 'input').pipe(
+      //   filter(_ => !this._cacheMode),
       map((e: any) => e.target.value as string),
       tap(term => {
 
@@ -164,12 +186,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
           return of(null);
         } else {
           this.status = SearchStatus.showSpinner;
-          return this.api.get({
+          return this.api.get({ // TODO don't always use the API
             search: term,
             top: this.SEARCH_PAGE_SIZE,
             skip: 0,
             expand: this.expand,
-            filter: filter(),
+            filter: queryFilter(),
             select: this.select
           }).pipe(
             tap(() => this.status = SearchStatus.showResults),
@@ -185,21 +207,25 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
       // Populate the dropdown with the results
       if (!!results) {
         this._searchResults = addToWorkspace(results, this.workspace);
+        // if (results.TotalCount > 500) {
+        //   // Next call will retrieve the entire table and search it in memory
+        //   this._cacheMode = true;
+        // }
       }
 
       // Auto select the first result
       this._highlightedIndex = 0; // auto select the first item
     }));
 
-    // Listen to changes in the application state and update the UI
+    // Listen to changes in the application language and update the UI
     this.subscriptions.add(this.translate.onLangChange.subscribe(() => {
       this.updateUI(this.chosenItem);
     }));
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // the combination of these two properties define
-    const screenDefProperties = [changes.definitions, changes.defini];
+    // the combination of these properties define a new details picker
+    const screenDefProperties = [changes.definitions, changes.collection];
 
     const anyChanges = screenDefProperties.some(prop => !!prop);
     const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
@@ -493,10 +519,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   //   return this.searchResults ? this.searchResults.length : 0;
   // }
 
-  // get showEditSelected(): boolean {
-  //   return false;
-  // }
-
   // get highlightEditSelected(): boolean {
   //   return this.indexEditSelected === this.highlightedIndex;
   // }
@@ -520,20 +542,41 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   get canCreateNewPermissions(): boolean {
-    return !!this.definitionIds && (this.definitionIds.length !== 1 ||
-      (this.canCreatePermissions(this.definitionIds[0])));
+    let definitionId = null;
+    if (!!this.definitionIds && this.definitionIds.length === 1) {
+      definitionId = this.definitionIds[0];
+    }
+
+    return this.canCreatePermissions(definitionId);
   }
 
   get canCreateNew(): boolean {
     return this.canCreateNewPermissions;
   }
 
+  get canEdit(): boolean {
+    return this.canEditPermissions;
+  }
+
   get createNewTooltip(): string {
     return this.canCreateNewPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
+  get canEditPermissions(): boolean {
+    return !!this.definitionIds && (this.definitionIds.length !== 1 ||
+      (this.canUpdatePermissions(this.definitionIds[0])));
+  }
+
   get showMagnifier(): boolean {
     return !!this.masterTemplate;
+  }
+
+  get showEditSelected(): boolean {
+    return !!this.detailsTemplate && !!this.chosenItem;
+  }
+
+  get disableEditSelected(): boolean {
+    return !this.canUpdatePermissions(this.chosenItemDefinition);
   }
 
   // The following methods handle displaying and interacting with master and details template
@@ -555,13 +598,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     // otherwise Angular complains that the value has changed after it has been checked
     this.onTouched();
 
-    // if we don't use timeout it doesn't work for some reason
-    setTimeout(() => {
-      this.openCreateModal();
-    }, 1);
-  }
-
-  onCreateFromExternal = () => {
+    // Open the modal
     this.openCreateModal();
   }
 
@@ -572,6 +609,14 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
     // The value is already captured in onBlur() which is triggered before onCreateFromFocus()
     this.openCreateModal();
+  }
+
+  onEditFromFocus = () => {
+    if (!this.canEdit) {
+      return;
+    }
+
+    this.openEditModalInner();
   }
 
   private get definitionIdsSingleOrDefault() {
@@ -632,10 +677,27 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private openCreateModalInner = (definitionId?: string) => {
     // Launch the details modal
     this._definitionId = definitionId;
+    this._idString = 'new';
+
     this.modalService.open(this.detailsWrapperTemplate, { windowClass: 'b-details-modal' })
 
       // this guarantees that the input will be focused again when the modal closes
       .result.then(this.onFocusInput, this.onFocusInput);
+  }
+
+  private openEditModalInner = () => {
+    if (!!this.collection && !!this.workspace.current[this.collection] && !!this.workspace.current[this.collection][this.chosenItem]) {
+      this._idString = this.chosenItem.toString();
+      if (!!this.definitionProperty) {
+        this._definitionId = this.chosenItemDefinition;
+      }
+      if (!!this._idString) {
+        this.modalService.open(this.detailsWrapperTemplate, { windowClass: 'b-details-modal' })
+
+          // this guarantees that the input will be focused again when the modal closes
+          .result.then(this.onFocusInput, this.onFocusInput);
+      }
+    }
   }
 
   onFocusInput = () => {
@@ -655,6 +717,11 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this.workspace.current.canCreate(viewId);
   }
 
+  public canUpdatePermissions = (definitionId: string): boolean => {
+    const viewId = this.apiEndpoint(definitionId);
+    return this.workspace.current.canUpdate(viewId, null);
+  }
+
   public canCreateFromOptions = (definitionId: string): boolean => {
     return this.canCreatePermissions(definitionId);
   }
@@ -666,4 +733,17 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   public optionName(definitionId: string) {
     return this.entityDescriptor(definitionId).titlePlural;
   }
+
+  get idString(): string {
+    return this._idString;
+  }
+
+  get editSelectedLeftMargin(): string {
+    return this.workspace.ws.isRtl ? null : '-24px';
+  }
+
+  get editSelectedRightMargin(): string {
+    return this.workspace.ws.isRtl ? '-24px' : null;
+  }
+
 }

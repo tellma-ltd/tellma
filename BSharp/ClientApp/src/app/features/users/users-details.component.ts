@@ -83,6 +83,6 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
     !this.ws.Agent[model.Id].IsActive ? 'Error_CannotModifyInactiveItemPleaseActivate' : null
 
   public get isNew(): boolean {
-    return (this.details.isPopupMode) || this.route.snapshot.paramMap.get('id') === 'new';
+    return this.route.snapshot.paramMap.get('id') === 'new' || (this.details.isPopupMode && this.idString === 'new');
   }
 }

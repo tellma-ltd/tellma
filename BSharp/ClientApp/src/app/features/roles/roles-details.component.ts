@@ -2,12 +2,21 @@ import { Component, Input } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Role, RoleForSave } from '~/app/data/entities/role';
-import { Permission, Permission_Level as Permission_Action } from '~/app/data/entities/permission';
+import { Permission } from '~/app/data/entities/permission';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { View } from '~/app/data/entities/view';
+import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
+import { VIEWS_BUILT_IN, ACTIONS, Action } from '~/app/data/views';
+import { metadata_Lookup } from '~/app/data/entities/lookup';
+import { metadata_Resource } from '~/app/data/entities/resource';
+import { metadata_ResourceClassification } from '~/app/data/entities/resource-classification';
+
+interface ConcreteViewInfo {
+  name: string;
+  actions: { [action: string]: { supportsCriteria: boolean, supportsMask: boolean } };
+}
 
 @Component({
   selector: 'b-roles-details',
@@ -25,9 +34,14 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   public showIsPublic = true;
 
   private _permissionActionChoices: { [viewId: string]: { name: string, value: any }[] } = {};
+  private _viewsDb: { [viewId: string]: ConcreteViewInfo } = null;
+  private _currentLang: string;
+  private _currentDefinition: DefinitionsForClient;
+  private _currentViewsDb: { [viewId: string]: ConcreteViewInfo } = null;
+  private _viewsForSelector: { name: any, value: string }[] = null;
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Permissions/View/Actions,Members/Agent';
+  public expand = 'Permissions,Members/Agent';
 
   create = () => {
     const result = new RoleForSave();
@@ -81,10 +95,11 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
     // Returns the permission actions only permitted by the specified view
     if (!this._permissionActionChoices[item.ViewId]) {
-      const view = this.ws.get('View', item.ViewId) as View;
-      if (!!view && !!view.Actions) {
+      // const view = this.ws.get('View', item.ViewId) as View;
+      const view = this.viewsDb[item.ViewId];
+      if (!!view && !!view.actions) {
         this._permissionActionChoices[item.ViewId] =
-        view.Actions.map(e => ({ name: Permission_Action[e.Action], value: e.Action })).concat([{ value: 'All', name: 'View_All' }]);
+          Object.keys(view.actions).map(e => ({ name: ACTIONS[e], value: e }));
       } else {
         this._permissionActionChoices[item.ViewId] = [];
       }
@@ -102,32 +117,30 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
       return 'View_All';
     }
 
-    return Permission_Action[value];
+    return ACTIONS[value];
   }
 
-  public disableCriteria(viewId: string, action: string) {
-    // TODO cache this
-    if (!viewId || !action) {
+  public disableCriteria(item: Permission): boolean {
+    if (!item || !item.ViewId || !item.Action) {
       return true;
     }
-    const view = this.ws.get('View', viewId) as View;
-    if (!!view && !!view.Actions) {
-      const viewAction = view.Actions.find(e => e.Action === action);
-      return !(viewAction && viewAction.SupportsCriteria);
+    const view = this.viewsDb[item.ViewId];
+    if (!!view && !!view.actions) {
+      const viewAction = view.actions[item.Action];
+      return !(viewAction && viewAction.supportsCriteria);
     } else {
       return true;
     }
   }
 
-  public disableMask(viewId: string, action: string) {
-    // TODO cache this
-    if (!viewId || !action) {
+  public disableMask(item: Permission): boolean {
+    if (!item || !item.ViewId || !item.Action) {
       return true;
     }
-    const view = this.ws.get('View', viewId) as View;
-    if (!!view && !!view.Actions) {
-      const viewAction = view.Actions.find(e => e.Action === action);
-      return !(viewAction && viewAction.SupportsMask);
+    const view = this.viewsDb[item.ViewId];
+    if (!!view && !!view.actions) {
+      const viewAction = view.actions[item.Action];
+      return !(viewAction && viewAction.supportsMask);
     } else {
       return true;
     }
@@ -138,15 +151,15 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     const choices = this.permissionActionChoices(item);
     if (choices.length === 1) {
       item.Action = choices[0].value;
-    } else if (choices.every(e => e.value !== item.Action)) {
+    } else if (!!item.Action && choices.every(e => e.value !== item.Action)) {
       item.Action = null;
     }
 
-    if (this.disableMask(item.ViewId, item.Action)) {
+    if (this.disableMask(item)) {
       item.Mask = null;
     }
 
-    if (this.disableCriteria(item.ViewId, item.Action)) {
+    if (this.disableCriteria(item)) {
       item.Criteria = null;
     }
   }
@@ -203,8 +216,120 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     return !!model && !!model.Members && model.Members.some(e => !!e.serverErrors);
   }
 
-  viewFormatter: (id: number | string) => string = (id: number | string) =>
-    !!this.ws.get('View', id) && !!this.ws.get('View', id).ResourceName ?
-      (this.translate.instant(this.ws.get('View', id).ResourceName)) :
-      this.ws.getMultilingualValue('View', id, 'Name')
+  // viewFormatter: (id: number | string) => string = (id: number | string) =>
+  //   !!this.ws.get('View', id) && !!this.ws.get('View', id).ResourceName ?
+  //     (this.translate.instant(this.ws.get('View', id).ResourceName)) :
+  //     this.ws.getMultilingualValue('View', id, 'Name')
+
+  get viewsDb(): { [viewId: string]: ConcreteViewInfo } {
+
+    if (this._currentLang !== this.translate.currentLang || this._currentDefinition !== this.ws.definitions) {
+      this._currentLang = this.translate.currentLang;
+      this._currentDefinition = this.ws.definitions;
+
+      this._viewsDb = {};
+      for (const viewId of Object.keys(VIEWS_BUILT_IN)) {
+        const view = VIEWS_BUILT_IN[viewId];
+        const concreteView: ConcreteViewInfo = {
+          name: this.translate.instant(view.name),
+          actions: {}
+        };
+
+        concreteView.actions.All = { supportsCriteria: false, supportsMask: false };
+
+        if (view.read) {
+          concreteView.actions.Read = { supportsCriteria: true, supportsMask: true };
+        }
+
+        if (view.update) {
+          concreteView.actions.Update = { supportsCriteria: true, supportsMask: true };
+        }
+
+        if (view.delete) {
+          concreteView.actions.Delete = { supportsCriteria: true, supportsMask: false };
+        }
+
+        for (const action of view.actions) {
+          concreteView.actions[action.action] = { supportsCriteria: action.criteria, supportsMask: false };
+        }
+
+        this._viewsDb[viewId] = concreteView;
+      }
+
+      const lookups = this.ws.definitions.Lookups;
+      for (const definitionId of Object.keys(lookups)) {
+        const entityDesc = metadata_Lookup(this.ws, this.translate, definitionId);
+        if (!!entityDesc) {
+          this._viewsDb[entityDesc.apiEndpoint] = {
+            name: entityDesc.titlePlural,
+            actions: {
+              All: { supportsCriteria: false, supportsMask: false },
+              Read: { supportsCriteria: true, supportsMask: true },
+              Update: { supportsCriteria: true, supportsMask: true },
+              Delete: { supportsCriteria: true, supportsMask: false },
+              IsActive: { supportsCriteria: true, supportsMask: false },
+            }
+          };
+        } else {
+          console.error(`Could not find lookup definitionId '${definitionId}'`);
+        }
+      }
+
+      const resources = this.ws.definitions.Resources;
+      for (const definitionId of Object.keys(resources)) {
+        const entityDesc1 = metadata_Resource(this.ws, this.translate, definitionId);
+        if (!!entityDesc1) {
+          this._viewsDb[entityDesc1.apiEndpoint] = {
+            name: entityDesc1.titlePlural,
+            actions: {
+              All: { supportsCriteria: false, supportsMask: false },
+              Read: { supportsCriteria: true, supportsMask: true },
+              Update: { supportsCriteria: true, supportsMask: true },
+              Delete: { supportsCriteria: true, supportsMask: false },
+              IsActive: { supportsCriteria: true, supportsMask: false },
+            }
+          };
+        } else {
+          console.error(`Could not find resource definitionId '${definitionId}'`);
+        }
+
+        const entityDesc2 = metadata_ResourceClassification(this.ws, this.translate, definitionId);
+        if (!!entityDesc2) {
+          this._viewsDb[entityDesc2.apiEndpoint] = {
+            name: entityDesc2.titlePlural,
+            actions: {
+              All: { supportsCriteria: false, supportsMask: false },
+              Read: { supportsCriteria: true, supportsMask: true },
+              Update: { supportsCriteria: true, supportsMask: true },
+              Delete: { supportsCriteria: true, supportsMask: false },
+              IsActive: { supportsCriteria: true, supportsMask: false },
+            }
+          };
+        } else {
+          console.error(`Could not find resource definitionId '${definitionId}'`);
+        }
+      }
+    }
+
+    return this._viewsDb;
+  }
+
+  get permissionViewChoices(): { name: string, value: any }[] {
+
+    if (this._currentViewsDb !== this.viewsDb) {
+      const db = this.viewsDb;
+      this._currentViewsDb = db;
+
+      this._viewsForSelector = Object.keys(db).map(e => ({ value: e, name: db[e].name }));
+
+      // Sort alphabetically
+      this._viewsForSelector.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+    }
+
+    return this._viewsForSelector;
+  }
+
+  permissionViewLookup(viewId: string): string {
+    return this.viewsDb[viewId].name;
+  }
 }

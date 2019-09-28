@@ -128,7 +128,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!!definitions) {
 
       titleFunc = titleFunc || (e => e);
-      for (const definitionId of Object.keys(definitions).filter(e => this.canView(e))) {
+      for (const definitionId of Object.keys(definitions).filter(e => this.canView(`${url}/${e}`))) {
 
         // get the definition
         const definition = definitions[definitionId];

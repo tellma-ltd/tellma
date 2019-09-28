@@ -68,15 +68,15 @@
         ws.getMultilingualValue('ResourceClassification', model?.ParentId, 'Name') }}</b-view-link>
     </b-restricted>
     <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ParentId" [definitionIds]="[definitionId]"
-      collection="ResourceClassification" [masterTemplate]="resourceClassificationsMaster"
+      collection="ResourceClassification" [masterTemplate]="resourceClassificationsMaster" definitionProperty="ResourceDefinitionId"
       [detailsTemplate]="resourceClassificationsDetail">
     </b-details-picker>
 
     <!-- The Resource Classifications Details Modal -->
     <ng-template #resourceClassificationsDetail let-modal="modal" let-update="update" let-initialText="initialText"
-      let-definitionId="definitionId">
+      let-definitionId="definitionId" let-idString="idString">
       <div class="modal-body">
-        <b-resource-classifications-details mode="popup" idString="new" [initialText]="initialText"
+        <b-resource-classifications-details mode="popup" [initialText]="initialText" [idString]="idString"
           [definitionId]="definitionId" (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
         </b-resource-classifications-details>
       </div>

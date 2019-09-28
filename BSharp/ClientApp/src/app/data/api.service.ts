@@ -18,7 +18,6 @@ import { SaveArguments } from './dto/save-arguments';
 import { appconfig } from './appconfig';
 import { Agent } from './entities/agent';
 import { Role } from './entities/role';
-import { View } from './entities/view';
 import { Settings } from './entities/settings';
 import { SettingsForClient } from './dto/settings-for-client';
 import { DataWithVersion } from './dto/data-with-version';
@@ -34,6 +33,7 @@ import { DefinitionsForClient } from './dto/definitions-for-client';
 import { Currency } from './entities/currency';
 import { Lookup } from './entities/lookup';
 import { Resource } from './entities/resource';
+import { User } from './entities/user';
 
 @Injectable({
   providedIn: 'root'
@@ -63,13 +63,6 @@ export class ApiService {
     return {
       activate: this.activateFactory<Role>('roles', cancellationToken$),
       deactivate: this.deactivateFactory<Role>('roles', cancellationToken$)
-    };
-  }
-
-  public viewsApi(cancellationToken$: Observable<void>) {
-    return {
-      activate: this.activateFactory<View>('views', cancellationToken$),
-      deactivate: this.deactivateFactory<View>('views', cancellationToken$)
     };
   }
 
@@ -110,8 +103,8 @@ export class ApiService {
 
   public usersApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<View>('users', cancellationToken$),
-      deactivate: this.deactivateFactory<View>('users', cancellationToken$),
+      activate: this.activateFactory<User>('users', cancellationToken$),
+      deactivate: this.deactivateFactory<User>('users', cancellationToken$),
       getForClient: () => {
         const url = appconfig.apiAddress + `api/users/client`;
         const obs$ = this.http.get<DataWithVersion<UserSettingsForClient>>(url).pipe(
