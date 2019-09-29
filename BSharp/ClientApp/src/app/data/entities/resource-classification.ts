@@ -62,7 +62,7 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
         Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: trx.instant('Code') },
-        IsLeaf: { control: 'boolean', label: trx.instant('ResourceClassification_IsLeaf') },
+        IsLeaf: { control: 'boolean', label: trx.instant('ResourceClassification_IsLeaf'), format: (b) => !!b ? '✔️' : '❌' },
 
         // tree stuff
         Parent: {

@@ -1,6 +1,6 @@
 <b-master collection="AccountClassification" [mode]="mode" [enableTreeView]="true" [masterCrumb]="'AccountClassifications' | translate"
     [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-    selectDefault="Code,IsDeprecated" selectForTiles="Code" [multiselectActions]="[
+    selectDefault="Code" selectForTiles="Code" [multiselectActions]="[
           { template: activate, action: onActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
           { template: deprecate, action: onDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
           ]" [includeInactiveLabel]="'IncludeDeprecated' | translate" [filterDefinition]="{

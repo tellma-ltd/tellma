@@ -62,7 +62,7 @@
     </b-form-group>
 
     <!-- Parent -->
-    <b-form-group class="b-form-group" [label]="'Parent' | translate" [serverErrors]="model?.serverErrors?.ParentId"
+    <b-form-group class="b-form-group" [label]="'TreeParent' | translate" [serverErrors]="model?.serverErrors?.ParentId"
         *ngIf="!isEdit">
         <b-view-link link="../../account-classifications" [itemId]="model?.ParentId">
             <b-auto-cell collection="AccountClassification" [entity]="model" path="Parent"></b-auto-cell>
