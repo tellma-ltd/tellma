@@ -40,7 +40,7 @@ BEGIN
 	GOTO Err_Label;
 END;
 
-SELECT * FROM rpt.[AccountClassifications]();
+SELECT * FROM [map].[AccountClassifications]();
 
 INSERT INTO dbo.AccountDefinitions
 ([Id],							[TitlePlural],				[TitleSingular]) VALUES

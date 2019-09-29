@@ -372,7 +372,6 @@
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Select.sql" />
     <Build Include="dbo\Tables\dbo.AccountDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
-    <Build Include="rpt\Stored Procedures\rpt.AccountClassifications__TrialBalance.sql" />
     <Build Include="rpt\Functions\rpt.fi_JournalSummary.sql" />
     <Build Include="rpt\Stored Procedures\rpt.FinishedGoods__TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.RawMaterials__TrialBalance.sql" />
@@ -382,7 +381,6 @@
     <Build Include="dbo\User Defined Types\dbo.AccountClassificationList.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Save.sql" />
     <Build Include="api\Stored Procedures\api.Roles__Activate.sql" />
-    <Build Include="rpt\Functions\rpt.AccountClassifications.sql" />
     <Build Include="dal\Stored Procedures\dal.Views__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Views__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Agents__Activate.sql" />
@@ -391,6 +389,8 @@
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Deprecate.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Deprecate.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
+    <Build Include="rpt\Stored Procedures\rpt.AccountClassifications__TrialBalance.sql" />
+    <Build Include="Mapping\AccountClassifications.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

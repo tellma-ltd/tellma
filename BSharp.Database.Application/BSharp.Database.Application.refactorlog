@@ -736,4 +736,10 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[AccountClassifications__TrialBalance]" />
   </Operation>
+  <Operation Name="Move Schema" Key="9685662e-ac90-488c-b4a5-1f1b0487bb1d" ChangeDateTime="09/29/2019 11:01:29">
+    <Property Name="ElementName" Value="[rpt].[AccountClassifications]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="NewSchema" Value="map" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

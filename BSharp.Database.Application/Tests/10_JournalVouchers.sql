@@ -22,7 +22,7 @@ SELECT @fromDate = '2017.01.01', @toDate = '2017.01.31'
 
 SELECT
 	*
-FROM rpt.[AccountClassifications]();
+FROM [map].[AccountClassifications]();
 INSERT INTO @D11Ids([Id]) SELECT [Id] FROM dbo.Documents;
 --SELECT * FROM rpt.Documents(@D11Ids) ORDER BY [SortKey], [EntryNumber];
 WITH Docs AS (
