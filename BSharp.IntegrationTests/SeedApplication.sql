@@ -22,6 +22,7 @@ DELETE FROM [dbo].[ResourceClassifications];
 DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[ResourceDefinitions];
+DELETE FROM [dbo].[AccountClassifications];
 
 -- Populate
 

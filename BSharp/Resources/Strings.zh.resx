@@ -67,6 +67,15 @@
   <data name="AccessDeniedMessage" xml:space="preserve">
     <value>您没有使用这些资源。</value>
   </data>
+  <data name="AccountClassification" xml:space="preserve">
+    <value>帐户分类</value>
+  </data>
+  <data name="AccountClassification_IsDeprecated" xml:space="preserve">
+    <value>已弃用</value>
+  </data>
+  <data name="AccountClassifications" xml:space="preserve">
+    <value>帐户分类</value>
+  </data>
   <data name="ActionDidNotPassValidation" xml:space="preserve">
     <value>该行动没有通过验证，详见高亮行</value>
   </data>
@@ -469,8 +478,11 @@
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>中学语文不能是相同的主要语言。</value>
   </data>
-  <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
-    <value>在{0}“{1}”在一个或多个文档使用</value>
+  <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
+    <value>{0}'{1}'用于一个或多个帐户</value>
+  </data>
+  <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
+    <value>帐户“ {1}”中使用了帐户分类“ {0}”</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>该代码“{0}”不存在。</value>
@@ -771,6 +783,9 @@
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>激活/停用</value>
+  </data>
+  <data name="Permission_IsDeprecated" xml:space="preserve">
+    <value>激活/弃用</value>
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>面具</value>

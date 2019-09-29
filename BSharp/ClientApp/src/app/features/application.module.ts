@@ -42,6 +42,10 @@ import { ResourcesImportComponent } from './resources/resources-import.component
 import { ResourcesDetailsComponent } from './resources/resources-details.component';
 import { MeasurementUnitsPickerComponent } from './measurement-units/measurement-units-picker.component';
 import { LookupsPickerComponent } from './lookups/lookups-picker.component';
+import { AccountClassificationsMasterComponent } from './account-classifications/account-classifications-master.component';
+import { AccountClassificationsDetailsComponent } from './account-classifications/account-classifications-details.component';
+import { AccountClassificationsImportComponent } from './account-classifications/account-classifications-import.component';
+import { AccountClassificationsPickerComponent } from './account-classifications/account-classifications-picker.component';
 
 const routes: Routes = [
   {
@@ -198,6 +202,23 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Account Classifications
+      {
+        path: 'account-classifications',
+        component: AccountClassificationsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'account-classifications/import',
+        component: AccountClassificationsImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'account-classifications/:id',
+        component: AccountClassificationsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -251,7 +272,11 @@ const routes: Routes = [
     ResourcesDetailsComponent,
     ResourcesImportComponent,
     MeasurementUnitsPickerComponent,
-    LookupsPickerComponent
+    LookupsPickerComponent,
+    AccountClassificationsMasterComponent,
+    AccountClassificationsDetailsComponent,
+    AccountClassificationsImportComponent,
+    AccountClassificationsPickerComponent
   ],
   imports: [
     SharedModule,

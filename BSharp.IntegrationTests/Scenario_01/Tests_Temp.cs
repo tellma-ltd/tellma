@@ -122,25 +122,25 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(10, responseData.Result.Count()); // First 
         }
 
-        [Fact(DisplayName = "06 Accounts")]
-        public async Task Test06()
-        {
-            await GrantPermissionToSecurityAdministrator("accounts", Constants.Update, "Id gt -1");
+        //[Fact(DisplayName = "06 Accounts")]
+        //public async Task Test06()
+        //{
+        //    await GrantPermissionToSecurityAdministrator("accounts", Constants.Update, "Id gt -1");
 
-            var response = await Client.GetAsync("/api/accounts?search=Bla");
+        //    var response = await Client.GetAsync("/api/accounts?search=Bla");
 
-            // Call the API
-            Output.WriteLine(await response.Content.ReadAsStringAsync());
+        //    // Call the API
+        //    Output.WriteLine(await response.Content.ReadAsStringAsync());
 
-            // Assert the result is 200 OK
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //    // Assert the result is 200 OK
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm the result is well formed
-            var responseData = await response.Content.ReadAsAsync<GetResponse<Account>>();
+        //    // Confirm the result is well formed
+        //    var responseData = await response.Content.ReadAsAsync<GetResponse<Account>>();
 
-            // Assert the result makes sense
-            Assert.Equal(nameof(Account), responseData.CollectionName);
-            Assert.Empty(responseData.Result); 
-        }
+        //    // Assert the result makes sense
+        //    Assert.Equal(nameof(Account), responseData.CollectionName);
+        //    Assert.Empty(responseData.Result); 
+        //}
     }
 }

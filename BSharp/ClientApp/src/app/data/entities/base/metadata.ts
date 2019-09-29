@@ -14,6 +14,7 @@ import {
     metadata_VoucherBooklet, metadata_ResourcePick, metadata_ResponsibilityCenter,
     metadata_IfrsAccountClassification, metadata_IfrsEntryClassification, metadata_Account
 } from '../_temp';
+import { metadata_AccountClassification } from '../account-classification';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -25,6 +26,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     Lookup: metadata_Lookup,
     Currency: metadata_Currency,
     Resource: metadata_Resource,
+    AccountClassification: metadata_AccountClassification,
 
     // Temp
     VoucherBooklet: metadata_VoucherBooklet,

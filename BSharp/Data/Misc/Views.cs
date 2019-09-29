@@ -89,6 +89,17 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "account-classifications",
+                        Name = "AccountClassifications",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("IsDeprecated")
+                        }
+                    },
+                    new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
                         Actions = new ActionInfo[] 

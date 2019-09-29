@@ -43,7 +43,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Query the API for the Id that was just returned from the Save
             var response = await Client.GetAsync($"/api/roles/{1}?expand=Permissions,Members/Agent");
-            Output.WriteLine(await response.Content.ReadAsStringAsync());
+            // Output.WriteLine(await response.Content.ReadAsStringAsync());
             var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Role>>();
             var role = getByIdResponse.Result;
 
@@ -56,7 +56,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             var dtosForSave = new List<Role> { role };
             var postResponse = await Client.PostAsJsonAsync($"/api/roles?expand=Permissions,Members/Agent", dtosForSave);
-            //Output.WriteLine(await postResponse.Content.ReadAsStringAsync());
+            Output.WriteLine(await postResponse.Content.ReadAsStringAsync());
         }
     }
 }

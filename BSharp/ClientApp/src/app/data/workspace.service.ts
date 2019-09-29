@@ -17,6 +17,8 @@ import { DefinitionsForClient } from './dto/definitions-for-client';
 import { Lookup } from './entities/lookup';
 import { Currency } from './entities/currency';
 import { Resource } from './entities/resource';
+import { AccountClassification } from './entities/account-classification';
+import { Action } from './views';
 
 export enum MasterStatus {
 
@@ -161,6 +163,7 @@ export class TenantWorkspace {
   Lookup: EntityWorkspace<Lookup>;
   Currency: EntityWorkspace<Currency>;
   Resource: EntityWorkspace<Resource>;
+  AccountClassification: EntityWorkspace<AccountClassification>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -179,6 +182,7 @@ export class TenantWorkspace {
     this.Lookup = new EntityWorkspace<Lookup>();
     this.Currency = new EntityWorkspace<Currency>();
     this.Resource = new EntityWorkspace<Resource>();
+    this.AccountClassification = new EntityWorkspace<AccountClassification>();
 
     this.notifyStateChanged();
   }
@@ -302,7 +306,7 @@ export class TenantWorkspace {
     return this.canDo(viewId, 'Update', createdById);
   }
 
-  public canDo(viewId: string, action: 'Read' | 'Update' | 'Delete' | 'IsActive' | 'ResendInvitationEmail', createdById: string | number) {
+  public canDo(viewId: string, action: Action, createdById: string | number) {
 
     if (!viewId) {
       return false;
