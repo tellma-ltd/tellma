@@ -22,7 +22,7 @@ RETURN
 		V.[Direction],
 		V.[AccountId],
 		A.[AccountDefinitionId],
-		A.[IfrsEntryClassificationId],
+		V.[IfrsEntryClassificationId],
 		A.[CustodianActorId],
 		A.[ResponsibleActorId],
 		A.[LocationId],

@@ -11,7 +11,7 @@ BEGIN
 	WITH 
 	ExchangeVarianceAccounts AS 
 	(
-		SELECT [Id] FROM dbo.[GLAccounts]
+		SELECT [Id] FROM dbo.[AccountClassifications]
 	),
 	ExchangeVarianceEntries AS (
 		SELECT ROW_NUMBER() OVER (ORDER BY [AccountId]) AS [Index],

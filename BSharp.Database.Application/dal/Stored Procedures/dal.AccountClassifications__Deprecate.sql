@@ -1,11 +1,11 @@
-﻿CREATE PROCEDURE [dal].[GLAccounts__Deprecate]
+﻿CREATE PROCEDURE [dal].[AccountClassifications__Deprecate]
 	@Ids [dbo].[IdList] READONLY,
 	@IsDeprecated BIT
 AS
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	MERGE INTO [dbo].[GLAccounts] AS t
+	MERGE INTO [dbo].[AccountClassifications] AS t
 	USING (
 		SELECT [Id]
 		FROM @Ids

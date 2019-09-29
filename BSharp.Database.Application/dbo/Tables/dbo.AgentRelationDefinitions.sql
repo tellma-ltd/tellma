@@ -19,6 +19,8 @@
 
 
 /* 
+Shareholder, Investment, Customer, Supplier, Employee, ResponsibilityCenter, Other Debtor, Other Creditor
+Two levels might be a good idea. We may want to separate the customer categories into: Bookshop customers, students, etc.
 Shareholders: 0
 	Shareholder					
 	Non Voting					

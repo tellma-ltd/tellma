@@ -32,7 +32,7 @@ BEGIN
 				@ToDate, 
 				NULL, -- @MassUnitId,
 				NULL -- @CountUnitId
-			) JS
+			)
 		GROUP BY GLAccountId, AccountId -- rows
 	)
 	SELECT JS.*, A.[Code], A.[Name], A.[Name2], A.[Name3], A.[PartyReference]

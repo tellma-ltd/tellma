@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [bll].[GLAccounts_Validate__Save]
-	@Entities [GLAccountList] READONLY,
+﻿CREATE PROCEDURE [bll].[AccountClassifications_Validate__Save]
+	@Entities [AccountClassificationList] READONLY,
 	@Top INT = 10
 AS
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
@@ -11,7 +11,7 @@ AS
 		N'Error_TheCode0IsUsed',
 		FE.Code AS Argument0
 	FROM @Entities FE 
-	JOIN [dbo].[GLAccounts] BE ON FE.Code = BE.Code
+	JOIN [dbo].[AccountClassifications] BE ON FE.Code = BE.Code
 	WHERE FE.Id <> BE.Id;
 
 	-- Code must not be duplicated in the uploaded list

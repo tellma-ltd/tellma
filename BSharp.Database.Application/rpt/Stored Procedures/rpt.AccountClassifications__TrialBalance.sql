@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [rpt].[GLAccounts__TrialBalance]
+﻿CREATE PROCEDURE [rpt].[AccountClassifications__TrialBalance]
 	@fromDate Date = '01.01.2019',
 	@ToDate Date = '01.01.2020'
 AS
@@ -17,5 +17,5 @@ AS
 	)
 	SELECT JS.*, GLA.[Code], GLA.[Name], GLA.[Name2], GLA.[Name3]
 	FROM JournalSummary JS
-	JOIN dbo.GLAccounts GLA ON JS.GLAccountId = GLA.Id
+	JOIN dbo.[AccountClassifications] GLA ON JS.GLAccountId = GLA.Id
 GO;

@@ -13,7 +13,7 @@ RETURN
 		SELECT [Id] FROM dbo.[Accounts]
 		WHERE [AccountDefinitionId] = @AccountDefinitionId
 		OR [GLAccountId] IN (
-			SELECT [Id] FROM dbo.GLAccounts
+			SELECT [Id] FROM dbo.[AccountClassifications]
 			WHERE [Code] LIKE @GLAccountsCode + '%'
 		)
 	),
@@ -32,7 +32,7 @@ RETURN
 	),
 	Movements AS (
 		SELECT
-			AccountId,
+			AccountId, IfrsEntryClassificationId,
 			SUM(CASE WHEN [Direction] > 0 THEN [Mass] ELSE 0 END) AS MassIn,
 			SUM(CASE WHEN [Direction] < 0 THEN [Mass] ELSE 0 END) AS MassOut,
 			SUM(CASE WHEN [Direction] > 0 THEN [Count] ELSE 0 END) AS CountIn,
@@ -43,11 +43,11 @@ RETURN
 			SUM(CASE WHEN [Direction] < 0 THEN [Value] ELSE 0 END) AS [Credit]
 		FROM [dbo].[fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId)
 		WHERE AccountId IN (SELECT Id FROM ReportAccounts)
-		GROUP BY AccountId
+		GROUP BY AccountId, IfrsEntryClassificationId
 	),
 	Register AS (
 		SELECT
-			COALESCE( OpeningBalances.AccountId, Movements.AccountId) AS AccountId,
+			COALESCE(OpeningBalances.AccountId, Movements.AccountId) AS AccountId, IfrsEntryClassificationId,
 			ISNULL(OpeningBalances.[Count],0) AS OpeningCount, ISNULL(OpeningBalances.[Mass],0) AS OpeningMass, ISNULL(OpeningBalances.[Opening],0) AS Opening,
 			ISNULL(Movements.[CountIn],0) AS CountIn, ISNULL(Movements.[CountOut],0) AS CountOut,
 			ISNULL(Movements.[MassIn],0) AS MassIn, ISNULL(Movements.[MassOut],0) AS MassOut,
@@ -59,10 +59,10 @@ RETURN
 		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
 	)
 	SELECT
-		FGR.AccountId, A.GLAccountId, A.ResourceId, A.CustodianActorId, A.IfrsEntryClassificationId,
-		FGR.OpeningCount, FGR.CountIn, FGR.CountOut, FGR.EndingCount,
-		FGR.OpeningMass, FGR.MassIn, FGR.MassOut, FGR.EndingMass,
-		FGR.[Opening], FGR.[Debit], FGR.[Credit], FGR.[Closing]
-	FROM Register FGR
-	JOIN dbo.Accounts A ON FGR.AccountId = A.Id
+		AccountId, R.IfrsEntryClassificationId, A.GLAccountId, A.ResourceId, A.CustodianActorId, A.ResponsibleActorId, A.LocationId, A.SubAccountId,
+		OpeningCount, CountIn, CountOut, EndingCount,
+		OpeningMass, MassIn, MassOut, EndingMass,
+		[Opening], [Debit], [Credit], [Closing]
+	FROM Register R
+	JOIN dbo.Accounts A ON R.[AccountId] = A.[Id]
 ;

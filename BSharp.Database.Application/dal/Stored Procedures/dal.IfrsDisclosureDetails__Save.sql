@@ -14,12 +14,11 @@ SET NOCOUNT ON;
 		t.[IfrsDisclosureId] = s.[IfrsDisclosureId]
 		AND t.[Concept] = s.[Concept]
 		AND t.[ValidSince] = s.[ValidSince] 
-		AND t.[Value] <> s.[Value]
+		AND t.[Value] = s.[Value]
 	)
 	WHEN MATCHED 
 	THEN
 		UPDATE SET
-			t.[Value]			= s.[Value],
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN

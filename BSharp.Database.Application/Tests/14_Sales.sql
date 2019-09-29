@@ -66,7 +66,7 @@ BEGIN -- Inserting
 	FROM CompactLines CL
 	JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
 	JOIN dbo.MeasurementUnits MUM ON R.MassUnitId = MUM.Id
-	JOIN dbo.[GLAccounts] A ON CL.[AccountId] = A.[Id]
+	JOIN dbo.[AccountClassifications] A ON CL.[AccountId] = A.[Id]
 	JOIN dbo.IfrsEntryClassifications IEC ON CL.IfrsEntryClassificationId = IEC.Id
 	WHERE CL.[Quantity] <> 0 --OR CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
 	OR CL.[Value] <> 0;

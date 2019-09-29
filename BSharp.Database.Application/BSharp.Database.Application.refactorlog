@@ -659,4 +659,81 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[IfrsDisclosureId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="3bfcd67a-c848-42ff-bc42-d2999250d7a1" ChangeDateTime="09/29/2019 10:27:13">
+    <Property Name="ElementName" Value="[dbo].[AccountClassifications]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypes]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a3375129-ced7-41ab-b870-436e495581b5" ChangeDateTime="09/29/2019 10:48:42">
+    <Property Name="ElementName" Value="[dbo].[GLAccounts]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="932691df-ba68-4190-afff-80a4d2d63f5f" ChangeDateTime="09/29/2019 10:49:36">
+    <Property Name="ElementName" Value="[api].[GLAccounts__Deprecate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications__Deprecate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="51ed9af1-dc7e-4396-8fbc-1c54ef9b2863" ChangeDateTime="09/29/2019 10:49:59">
+    <Property Name="ElementName" Value="[api].[GLAccounts__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8e515c58-d9bd-47ef-954b-f3c481018f1c" ChangeDateTime="09/29/2019 10:50:26">
+    <Property Name="ElementName" Value="[bll].[GLAccounts_Validate__Deprecate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications_Validate__Deprecate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5aaa1232-c6cd-4c21-bea4-344ce224d474" ChangeDateTime="09/29/2019 10:51:05">
+    <Property Name="ElementName" Value="[bll].[GLAccounts_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications_Validate__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7483433c-1a51-4373-acc3-40854cf4cd2f" ChangeDateTime="09/29/2019 10:51:30">
+    <Property Name="ElementName" Value="[dal].[GLAccounts__Deprecate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications__Deprecate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e0f07d6a-51cc-45e5-bad5-250c99968575" ChangeDateTime="09/29/2019 10:51:57">
+    <Property Name="ElementName" Value="[dal].[GLAccounts__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2ce28c63-18fd-4931-b813-6b9e3e7a4abe" ChangeDateTime="09/29/2019 10:52:20">
+    <Property Name="ElementName" Value="[dbo].[GLAccountList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassificationList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="86c7be57-5bd4-4179-b553-3a6f9065ca64" ChangeDateTime="09/29/2019 10:52:43">
+    <Property Name="ElementName" Value="[rpt].[GLAccounts]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="97296c24-91c6-41ca-bb7b-c78eed260aee" ChangeDateTime="09/29/2019 10:53:34">
+    <Property Name="ElementName" Value="[rpt].[GLAccounts__TrialBalance]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassifications__TrialBalance]" />
+  </Operation>
 </Operations>

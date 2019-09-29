@@ -10,7 +10,7 @@ BEGIN
 		WHERE RTRIM(Value) <> ''
 	),
 	GLAccountList([Id]) AS (
-		SELECT [Id] FROM dbo.GLAccounts GLA
+		SELECT [Id] FROM dbo.[AccountClassifications] GLA
 		JOIN GLAccountCodes GLC ON GLA.[Code] LIKE [GLC].[Code] + '%'
 	),
 	ERCA__VAT_Accounts(AccountId) AS (

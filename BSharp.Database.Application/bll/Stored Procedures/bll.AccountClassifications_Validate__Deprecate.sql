@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[GLAccounts_Validate__Deprecate]
+﻿CREATE PROCEDURE [bll].[AccountClassifications_Validate__Deprecate]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@IsDeprecated BIT,
 	@Top INT = 10

@@ -19,7 +19,7 @@
 	Documents, -- screen shows Lines, LineEntries, Signatures, StatesHistory(?)
 */
 BEGIN -- reset Identities
-	DBCC CHECKIDENT ('[dbo].[Accounts]', RESEED, 0) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[AccountClassifications]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Agents]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[DocumentLines]', RESEED, 0) WITH NO_INFOMSGS;
@@ -64,12 +64,12 @@ BEGIN TRY
 		--:r .\05_Agents.sql
 	--	:r .\06_ResponsibilityCenters.sql
 		--:r .\07_Resources.sql
-		:r .\08_GLAccounts.sql
+		:r .\08_AccountClassifications.sql
 		--:r .\10_JournalVouchers.sql
 		--:r .\71_Operations.sql
 		--:r .\72_ProductCategories.sql
 		--:r .\73_Places.sql
-		
+
 	--	select * from entries;
 	--SELECT @fromDate = '2017.01.01', @toDate = '2024.03.01'
 	--SELECT * from dbo.[fi_Journal](@fromDate, @toDate);

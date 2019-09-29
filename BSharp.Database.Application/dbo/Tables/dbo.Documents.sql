@@ -3,7 +3,7 @@
 --	Its scope is
 
 -- Kimbirly suggestion: [Id]: PRIMARY KEY NONCLUSTERED, ([DocumentDate], [Id]): Clustered index
-	[Id]									INT PRIMARY KEY IDENTITY,
+	[Id]									INT				PRIMARY KEY IDENTITY,
 	-- Common to all document types
 	[DocumentDefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DocumentDefinitionId] FOREIGN KEY ([DocumentDefinitionId]) REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
 	[SerialNumber]							INT				NOT NULL,	-- auto generated, copied to paper if needed.
