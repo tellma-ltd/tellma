@@ -21,17 +21,6 @@ DECLARE @fuelHR INT, @fuelSalesAdminAG INT, @fuelProduction INT, @fuelSalesDistA
 DECLARE @VATInput INT, @VATOutput INT, @SalariesAdmin INT, @SalariesAccrualsTaxable INT, @OvertimeAdmin INT,
 		@SalariesAccrualsNonTaxable INT, @EmployeesPayable INT, @EmployeesIncomeTaxPayable INT;
 
-		INSERT INTO dbo.AccountDefinitions
-([Id],							[TitlePlural],				[TitleSingular]) VALUES
-(N'gl-accounts',				N'GL Accounts',				N'GL Account'),
-(N'customers-accounts',			N'Customers Accounts',		N'Customer Account'),
-(N'employees-accounts',			N'Employees Accounts',		N'Employee Account'),
-(N'suppliers-accounts',			N'Suppliers Accounts',		N'Supplier Account'),
-(N'inventories-accounts',		N'Inventories Accounts',	N'Inventory Account'),
-(N'fixed-assets-accounts',		N'Fixed Assets Accounts',	N'Fixed Asset Account'),
-(N'banks-accounts',				N'Banks Accounts',			N'Bank Account'),
-(N'cash-on-accounts',			N'Cash On Hand Accounts',	N'Cash On Hand Account');
-
 INSERT INTO @AccountClassifications([Index], [Name], [Code]) VALUES
 (0, N'Assets', N'1'),
 (1, N'Current Assets', N'11'),
