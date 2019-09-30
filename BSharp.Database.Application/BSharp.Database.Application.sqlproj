@@ -425,6 +425,7 @@
     <None Include="Tests\07_Resources_EmployeeBenefits.sql" />
     <None Include="Tests\13_HRCycle.sql" />
     <None Include="Provisioning\99_SampleData.sql" />
+    <None Include="Provisioning\01_AccountTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

@@ -39,10 +39,11 @@ EXEC [dal].[Settings__Save]
 	@SettingsVersion = @SettingsVersion,
 	@FunctionalCurrency = @FunctionalCurrency;
 
-:r .\01_IfrsConcepts.sql
-:r .\011_IfrsDisclosures.sql
-:r .\012_IfrsEntryClassifications.sql
-:r .\013_IfrsAccountClassifications.sql
+--:r .\01_IfrsConcepts.sql
+--:r .\011_IfrsDisclosures.sql
+--:r .\012_IfrsEntryClassifications.sql
+--:r .\013_IfrsAccountClassifications.sql
+:r .\01_AccountTypes.sql
 :r .\02_MeasurementUnits.sql
 --:r .\02_Accounts.sql
 --EXEC [dbo].[adm_Accounts_Notes__Update];

@@ -31,45 +31,7 @@ DECLARE @VATInput INT, @VATOutput INT, @SalariesAdmin INT, @SalariesAccrualsTaxa
 (N'fixed-assets-accounts',		N'Fixed Assets Accounts',	N'Fixed Asset Account'),
 (N'banks-accounts',				N'Banks Accounts',			N'Bank Account'),
 (N'cash-on-accounts',			N'Cash On Hand Accounts',	N'Cash On Hand Account');
-;
-INSERT INTO dbo.AccountTypes
-([Id],										[Name],										[Node],			[IsAssignable], [IsActive]) VALUES
-(N'Assets',									N'Assets',									N'/1/',			0,				1),
-(N'NoncurrentAssets',						N'Non-current assets',						N'/1/1/',		0,				1),
-(N'PropertyPlantAndEquipment',				N'Property, plant and equipment',			N'/1/1/1/',		1,				1),
-(N'InvestmentProperty',						N'Investment property',						N'/1/1/2/',		1,				0),
-(N'Goodwill',								N'Goodwill',								N'/1/1/3/',		1,				0),
-(N'IntangibleAssetsOtherThanGoodwill',		N'Intangible assets other than goodwill',	N'/1/1/4/',		1,				0),
-(N'InvestmentAccountedForUsingEquityMethod', N'Investments accounted for using equity method',N'/1/1/5/',1,				0),
-(N'InvestmentsInSubsidiariesJointVenturesAndAssociates', N'Investments in subsidiaries, joint ventures and associates', N'/1/1/6/',1,0),
-( N'NoncurrentBiologicalAssets',			N'Non-current biological assets',			N'/1/1/7/',		1,				0),
-(N'NoncurrentReceivables',					N'Trade and other non-current receivables',	N'/1/1/8/',		1,				0),
-(N'NoncurrentInventories',					N'Non-current inventories',					N'/1/1/9/',		1,				0),
-(N'DeferredTaxAssets',						N'Deferred tax assets',						N'/1/1/10/',	1,				0),
-(N'CurrentTaxAssetsNoncurrent',				N'Current tax assets, non-current',			N'/1/1/11/',	1,				0),
-(N'OtherNoncurrentFinancialAssets',			N'Other non-current financial assets',		N'/1/1/12/',	1,				0),
-(N'OtherNoncurrentNonfinancialAssets',		N'Other non-current non-financial assets',	N'/1/1/13/',	1,				0),
-(N'CurrentAssets',							N'Current assets',							N'/1/2/',		1,				1),
-(N'Inventories',							N'Current inventories',						N'/1/2/1/',		1,				1),
-(N'TradeAndOtherCurrentReceivables',		N'Trade and other current receivables',		N'/1/2/2/',		1,				1),
 
-
-(N'CashAndCashEquivalents',					N'Cash and cash equivalents',				N'/1/2/7/',		1,				1),
-(N'EquityAndLiabilities',					N'Cash and cash equivalents',				N'/2/',			1,				1),
-(N'Equity',									N'Equity',									N'/2/1/',		1,				1),
-(N'Liabilities',							N'Liabilities',								N'/2/2/',		1,				1),
-(N'NonCurrentLiabilities',					N'Non-current liabilities',					N'/2/2/1/',		1,				0),
-(N'CurrentLiabilities',						N'Current liabilities',						N'/2/2/2/',		1,				1),
-(N'CurrentProvisions',						N'Current provisions',						N'/2/2/2/1/',	1,				0),
-(N'TradeAndOtherCurrentPayables',			N'Trade and other current payables',		N'/2/2/2/2/',	1,				1),
-(N'ProfitLoss',								N'Profit (loss)',							N'/3/',			0,				1),
-(N'GrossProfit',							N'Gross profit',							N'/3/1/',		0,				1),
-(N'Revenue',								N'Revenue',									N'/3/1/1/',		1,				1),
-(N'CostOfSales',							N'Cost of sales',							N'/3/1/2/',		1,				1),
-(N'OtherIncome',							N'Other income',							N'/3/2/',		1,				1),
-(N'DistributionCosts',						N'Distribution costs',						N'/3/3/',		1,				1),
-(N'AdministrativeExpense',					N'Administrative expenses',					N'/3/4/',		1,				1);
-select * from AccountTypes;
 INSERT INTO @AccountClassifications([Index], [Name], [Code]) VALUES
 (0, N'Assets', N'1'),
 (1, N'Current Assets', N'11'),
