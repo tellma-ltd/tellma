@@ -115,8 +115,8 @@
             {{ 'Data' | translate }}
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" *ngIf="showExport"
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body" *ngIf="showExport">
+              <button type="button" class="dropdown-item btn-light"
                 (click)="exportErrorMessage = null; modalService.open(exportModal);" [disabled]="!canExport">
                 {{ 'Export' | translate }}
               </button>
@@ -125,6 +125,18 @@
               <button type="button" class="dropdown-item btn-light" (click)="onImport()" [disabled]="!canImport"
                 *ngIf="showImport">
                 {{ 'Import' | translate }}
+              </button>
+            </div>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="expandNextLevelTooltip" container="body" *ngIf="showExpandNextLevel" >
+              <button type="button" class="dropdown-item btn-light" (click)="onExpandNextLevel()"
+                [disabled]="!canExpandNextLevel">
+                {{ 'AutoExpandLevel0' | translate: { level: level+1 } }}
+              </button>
+            </div>
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="collapseAllTooltip" container="body" *ngIf="showCollapseAll" >
+              <button type="button" class="dropdown-item btn-light" (click)="onCollapseAll()"
+                [disabled]="!canCollapseAll">
+                {{ 'CollapseAll' | translate }}
               </button>
             </div>
           </div>

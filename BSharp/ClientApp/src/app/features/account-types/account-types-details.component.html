@@ -39,11 +39,6 @@
     <div>{{ model?.Name3 }}</div>
   </b-form-group>
 
-  <!-- Id -->
-  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Id">
-    <div>{{ model?.Id }}</div>
-  </b-form-group>
-
   <!-- Is Assignable -->
   <b-form-group class="b-form-group" [label]="'AccountType_IsAssignable' | translate">
     <b-auto-cell collection="AccountType" [entity]="model" path="IsAssignable"></b-auto-cell>
@@ -52,6 +47,11 @@
   <!-- Is Active -->
   <b-form-group class="b-form-group" [label]="'IsActive' | translate">
     <b-auto-cell collection="AccountType" [entity]="model" path="IsActive"></b-auto-cell>
+  </b-form-group>
+  
+  <!-- Id -->
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Id">
+    <div>{{ model?.Id }}</div>
   </b-form-group>
 </ng-template>
 
