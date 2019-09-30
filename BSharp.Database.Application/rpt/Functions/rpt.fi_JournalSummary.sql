@@ -1,6 +1,5 @@
 ﻿CREATE FUNCTION [rpt].[fi_JournalSummary] (
-	@AccountDefinitionId NVARCHAR(50) = NULL,
-	@GLAccountsCode NVARCHAR(50) = NULL,
+	@AccountTypeList NVARCHAR(50) = NULL,
 	@FromDate Date = '01.01.2019',
 	@ToDate Date = '01.01.2020',
 	@MassUnitId INT = NULL,
@@ -9,13 +8,15 @@
 RETURNS TABLE AS
 RETURN
 	WITH
+	ReportAccountTypes AS (
+		SELECT AT1.[Id] FROM dbo.AccountTypes AT1
+		JOIN dbo.AccountTypes AT2 ON AT1.[Node].IsDescendantOf(AT2.[Node]) = 1 
+		WHERE AT2.[Id] = @AccountTypeList
+	),
 	ReportAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts]
-		WHERE [AccountDefinitionId] = @AccountDefinitionId
-		OR [GLAccountId] IN (
-			SELECT [Id] FROM dbo.[AccountClassifications]
-			WHERE [Code] LIKE @GLAccountsCode + '%'
-		)
+		WHERE @AccountTypeList IS NULL 
+		OR [AccountTypeId] IN (SELECT [Id] FROM ReportAccountTypes)
 	),
 	OpeningBalances AS (
 		SELECT
@@ -59,7 +60,7 @@ RETURN
 		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
 	)
 	SELECT
-		AccountId, R.IfrsEntryClassificationId, A.GLAccountId, A.ResourceId, A.CustodianActorId, A.ResponsibleActorId, A.LocationId, A.SubAccountId,
+		AccountId, R.IfrsEntryClassificationId, A.[AccountClassificationId], A.ResourceId, A.CustodianActorId, A.ResponsibleActorId, A.LocationId, A.SubAccountId,
 		OpeningCount, CountIn, CountOut, EndingCount,
 		OpeningMass, MassIn, MassOut, EndingMass,
 		[Opening], [Debit], [Credit], [Closing]

@@ -11,8 +11,7 @@ BEGIN
 			SUM(OpeningCount) AS OpeningCount, SUM(CountIn) AS CountIn, SUM(CountOut) AS CountOut, SUM(EndingCount) AS EndingCount,
 			SUM(OpeningMass) AS OpeningMass, SUM(MassIn) AS MassIn, SUM(MassOut) AS MassOut, SUM(EndingMass) AS EndingMass
 		FROM rpt.fi_JournalSummary(
-			N'raw-materials', -- @AccountDefinitionId
-			N'1501', -- @GLAccountsCode, must define manually
+			N'RawMaterials', -- @AccountTypeList
 			@FromDate,
 			@ToDate, 
 			@MassUnitId,

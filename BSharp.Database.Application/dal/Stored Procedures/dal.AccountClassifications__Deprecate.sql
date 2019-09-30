@@ -21,7 +21,7 @@ AS
 	USING (
 		SELECT [Id]
 		FROM dbo.Accounts
-		WHERE GLAccountId IN (SELECT [Id] FROM @Ids)
+		WHERE [AccountClassificationId] IN (SELECT [Id] FROM @Ids)
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED AND (t.[IsDeprecated] <> @IsDeprecated)
 	THEN

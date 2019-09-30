@@ -43,7 +43,6 @@ SET NOCOUNT ON;
 	Children ([Id], [ParentId], [Num]) AS (
 		SELECT EC.[Id], EP.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY EP.[Id] ORDER BY EP.[Id], EC.[Code])   
 		FROM dbo.[AccountClassifications] EC
-		--LEFT JOIN dbo.GLAccounts EP ON EC.[Node].GetAncestor(1) = EP.[Node]
 		JOIN DirectParents DP ON EC.Code = DP.ChildCode
 		LEFT JOIN dbo.[AccountClassifications] EP ON EP.Code = DP.ParentCode
 	),

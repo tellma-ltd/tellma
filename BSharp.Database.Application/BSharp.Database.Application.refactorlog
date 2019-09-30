@@ -742,4 +742,25 @@
     <Property Name="NewSchema" Value="map" />
     <Property Name="IsNewSchemaExternal" Value="False" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="69fea17d-1bf8-46a0-bedf-c7aed9c0f269" ChangeDateTime="09/29/2019 11:13:30">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[GLAccountId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountClassificationId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cbaff13f-f9f5-40f9-9b0c-c421f5b7f70c" ChangeDateTime="09/29/2019 11:38:54">
+    <Property Name="ElementName" Value="[dbo].[rpt_ERCA__VAT_SalesSummary]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[rpt_ERCA__VAT_SalesDeclaration]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d11060ca-e56d-4a10-b69e-30a15abec54a" ChangeDateTime="09/29/2019 11:41:30">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions].[GLAccountId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeId]" />
+  </Operation>
 </Operations>

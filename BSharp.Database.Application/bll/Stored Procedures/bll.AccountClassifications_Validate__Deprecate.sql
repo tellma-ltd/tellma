@@ -20,7 +20,7 @@ SET NOCOUNT ON;
 		JOIN dbo.DocumentLines DL ON DLE.[DocumentLineId] = DL.[Id]
 		JOIN dbo.Documents D ON DL.[DocumentId] = D.[Id]
 		JOIN dbo.Accounts A ON DLE.AccountId = A.Id
-		JOIN @Ids I ON I.[Id] = A.[GLAccountId]
+		JOIN @Ids I ON I.[Id] = A.[AccountClassificationId]
 		LEFT JOIN dbo.Resources R ON R.[Id] = A.[ResourceId]
 		LEFT JOIN dbo.Agents AG ON AG.[Id] = A.[CustodianActorId]
 		LEFT JOIN dbo.Locations L ON L.[Id] = A.[LocationId]
@@ -35,7 +35,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
 	SELECT
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheGLAccountHasBalance0InResource1Agent2Location3ResponsibilityCenter4',
+		N'Error_TheAccountClassificationHasBalance0InResource1Agent2Location3ResponsibilityCenter4',
 		[Value] AS Argument0, [Resource] AS [Argument1], [Agent] AS [Argument2], [Location] AS [Argument3], [ResponsibilityCenter] AS [Argument4]
 	FROM ActiveAccounts
 

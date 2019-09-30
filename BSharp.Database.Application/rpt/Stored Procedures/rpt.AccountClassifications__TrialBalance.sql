@@ -4,18 +4,17 @@
 AS
 	WITH JournalSummary
 	AS (
-		SELECT GLAccountId,  SUM([Opening]) AS [Opening], SUM([Debit]) AS [Debit], SUM([Credit]) AS [Credit], SUM([Closing]) AS Closing
+		SELECT [AccountClassificationId],  SUM([Opening]) AS [Opening], SUM([Debit]) AS [Debit], SUM([Credit]) AS [Credit], SUM([Closing]) AS Closing
 		FROM rpt.fi_JournalSummary(
-			NULL, -- @AccountDefinitionId
-			N'', -- @GLAccountsCode
+			NULL, -- @AccountTypeList
 			@fromDate,
 			@ToDate, 
 			NULL, --@MassUnitId
 			NULL -- @CountUnitId
 		)
-		GROUP BY GLAccountId
+		GROUP BY [AccountClassificationId]
 	)
 	SELECT JS.*, GLA.[Code], GLA.[Name], GLA.[Name2], GLA.[Name3]
 	FROM JournalSummary JS
-	JOIN dbo.[AccountClassifications] GLA ON JS.GLAccountId = GLA.Id
+	JOIN dbo.[AccountClassifications] GLA ON JS.[AccountClassificationId] = GLA.Id
 GO;

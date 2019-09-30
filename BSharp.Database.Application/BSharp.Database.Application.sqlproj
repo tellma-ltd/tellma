@@ -361,12 +361,8 @@
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
     <Build Include="api\Stored Procedures\api.Paysheet__Prepare.sql" />
     <Build Include="api\Stored Procedures\api.ExchangeVariances__Prepare.sql" />
-    <Build Include="dbo\Tables\dbo.AccountsAgents.sql" />
-    <Build Include="dbo\Tables\dbo.AccountsResources.sql" />
-    <Build Include="dbo\Tables\dbo.AccountsResponsibilityCenters.sql" />
     <Build Include="dbo\Tables\dbo.Locations.sql" />
     <Build Include="dbo\Tables\dbo.LocationDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.AccountsLocations.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Save.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Select.sql" />
@@ -391,6 +387,7 @@
     <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
     <Build Include="rpt\Stored Procedures\rpt.AccountClassifications__TrialBalance.sql" />
     <Build Include="Mapping\AccountClassifications.sql" />
+    <Build Include="Mapping\map.AccountTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
@@ -421,6 +418,7 @@
     <None Include="Tests\07_Resources_ProductionSupplies.sql" />
     <None Include="Tests\07_Resources_EmployeeBenefits.sql" />
     <None Include="Tests\13_HRCycle.sql" />
+    <None Include="Provisioning\99_SampleData.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

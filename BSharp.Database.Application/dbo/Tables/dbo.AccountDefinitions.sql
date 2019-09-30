@@ -9,9 +9,9 @@
 	[TitlePlural]							NVARCHAR (255) NOT NULL,
 	[TitlePlural2]							NVARCHAR (255),
 	[TitlePlural3]							NVARCHAR (255),
-	-- If defined, then any	account with the said definition would be mapped to this GL Account.
+	-- If defined, then any	account with the said definition would be mapped to this Account type.
 	-- if null, then the account needs to be mapped manually.
-	[GLAccountId]							NVARCHAR (50),
+	[AccountTypeId]							NVARCHAR (50),
 	-- If defined and leaf, then any entry using an account with the said definition would have this IfrsEntryClassification
 	-- If defined and parent, then in the entry IfrsEntryClassification will be limited to the leaf children
 	-- If null, then IfrsEntryClassification field will be hidden

@@ -4,12 +4,10 @@
 ) RETURNS TABLE
 AS
 RETURN
--- This is used just as an example. All reports will actually be 
--- read from the TransactionViews fact table or the wrapping fi_Journal()
+-- TODO: rewrite to use JournalSummary instead
 WITH IfrsInventoryAccounts AS (
-	SELECT Id FROM dbo.[AccountDefinitions]
+	SELECT Id FROM dbo.[AccountTypes]
 	WHERE [Id] IN (N'TradeMerchandise', N'RawMaterials', N'FinishedGoods')
-	-- TODO: Add OR GLAccountId IN GLAccountsCodeList
 )
 	SELECT
 		J.[DocumentLineId],
