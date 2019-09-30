@@ -1,0 +1,11 @@
+<b-details-picker collection="AccountType" [masterTemplate]="accountTypesMaster" [filter]="filter">
+</b-details-picker>
+
+<!-- The Resource Types Master Modal -->
+<ng-template #accountTypesMaster let-modal="modal" let-update="update" let-create="create">
+    <div class="modal-body">
+        <b-account-types-master mode="popup" (cancel)="modal.close(false);"
+            (choose)="modal.close(true); update($event); " (create)="modal.close(false); create()">
+        </b-account-types-master>
+    </div>
+</ng-template>

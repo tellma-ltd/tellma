@@ -393,6 +393,7 @@
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__DeleteWithDescendants.sql" />
     <Build Include="Mapping\map.AccountTypes.sql" />
+    <Build Include="dal\Stored Procedures\dal.AccountTypes__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

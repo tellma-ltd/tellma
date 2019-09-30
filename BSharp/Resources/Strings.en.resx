@@ -76,6 +76,15 @@
   <data name="AccountClassifications" xml:space="preserve">
     <value>Account Classifications</value>
   </data>
+  <data name="AccountType" xml:space="preserve">
+    <value>Account Type</value>
+  </data>
+  <data name="AccountType_IsAssignable" xml:space="preserve">
+    <value>Is Assignable</value>
+  </data>
+  <data name="AccountTypes" xml:space="preserve">
+    <value>Account Types</value>
+  </data>
   <data name="ActionDidNotPassValidation" xml:space="preserve">
     <value>The action did not pass validation, see the highlighted rows for details</value>
   </data>

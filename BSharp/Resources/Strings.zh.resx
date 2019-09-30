@@ -76,6 +76,15 @@
   <data name="AccountClassifications" xml:space="preserve">
     <value>帐户分类</value>
   </data>
+  <data name="AccountType" xml:space="preserve">
+    <value>帐户类型</value>
+  </data>
+  <data name="AccountType_IsAssignable" xml:space="preserve">
+    <value>可分配</value>
+  </data>
+  <data name="AccountTypes" xml:space="preserve">
+    <value>账户类型</value>
+  </data>
   <data name="ActionDidNotPassValidation" xml:space="preserve">
     <value>该行动没有通过验证，详见高亮行</value>
   </data>

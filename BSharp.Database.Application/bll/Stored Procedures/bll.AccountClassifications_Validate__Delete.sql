@@ -12,7 +12,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](AC.[Name], AC.[Name2], AC.[Name3]) AS AccountClassificationName,
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS AccountName
     FROM [dbo].[AccountClassifications] AC
-	JOIN [dbo].[Accounts] A ON A.GLAccountId = AC.Id
+	JOIN [dbo].[Accounts] A ON A.AccountClassificationId = AC.Id
 	JOIN @Ids FE ON FE.[Id] = AC.[Id];
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

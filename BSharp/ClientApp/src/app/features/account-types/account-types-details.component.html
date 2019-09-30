@@ -1,0 +1,61 @@
+<b-details collection="AccountType" [expand]="expand" [mode]="mode" [showCreateButton]="false" [showEditButton]="false" [showDeleteButton]="false"
+  [masterCrumb]="'AccountTypes' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
+  [documentTemplate]="document" [actions]="[
+            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+           ]">
+
+</b-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+  <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
+</ng-template>
+
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model">
+
+  <!-- Header Name -->
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Name">
+    <h2 class="font-weight-normal">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+  </b-form-group>
+
+  <!-- Name -->
+  <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+    [serverErrors]="model?.serverErrors?.Name">
+    <div>{{ model?.Name }}</div>
+  </b-form-group>
+
+  <!-- Name2 -->
+  <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
+    [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
+    <div>{{ model?.Name2 }}</div>
+  </b-form-group>
+
+  <!-- Name3 -->
+  <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
+    [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
+    <div>{{ model?.Name3 }}</div>
+  </b-form-group>
+
+  <!-- Id -->
+  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Id">
+    <div>{{ model?.Id }}</div>
+  </b-form-group>
+
+  <!-- Is Assignable -->
+  <b-form-group class="b-form-group" [label]="'AccountType_IsAssignable' | translate">
+    <b-auto-cell collection="AccountType" [entity]="model" path="IsAssignable"></b-auto-cell>
+  </b-form-group>
+
+  <!-- Is Active -->
+  <b-form-group class="b-form-group" [label]="'IsActive' | translate">
+    <b-auto-cell collection="AccountType" [entity]="model" path="IsActive"></b-auto-cell>
+  </b-form-group>
+</ng-template>
+
+
+<!-- Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

@@ -1,14 +1,14 @@
-import { Component, Input, HostBinding, ViewChild } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Component, OnInit, Input, HostBinding, ViewChild } from '@angular/core';
 import { DetailsPickerComponent } from '~/app/shared/details-picker/details-picker.component';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'b-account-classifications-picker',
-  templateUrl: './account-classifications-picker.component.html',
+  selector: 'b-account-types-picker',
+  templateUrl: './account-types-picker.component.html',
   styles: [],
-  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: AccountClassificationsPickerComponent }]
+  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: AccountTypesPickerComponent }]
 })
-export class AccountClassificationsPickerComponent implements ControlValueAccessor {
+export class AccountTypesPickerComponent implements ControlValueAccessor {
 
   @Input()
   filter: string;

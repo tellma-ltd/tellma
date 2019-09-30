@@ -35,6 +35,7 @@ import { Lookup } from './entities/lookup';
 import { Resource } from './entities/resource';
 import { User } from './entities/user';
 import { AccountClassification } from './entities/account-classification';
+import { AccountType } from './entities/account-type';
 
 @Injectable({
   providedIn: 'root'
@@ -106,6 +107,13 @@ export class ApiService {
     return {
       activate: this.activateFactory<AccountClassification>('account-classifications', cancellationToken$),
       deactivate: this.deactivateFactory<AccountClassification>('account-classifications', cancellationToken$)
+    };
+  }
+
+  public accountTypesApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<AccountType>('account-types', cancellationToken$),
+      deactivate: this.deactivateFactory<AccountType>('account-types', cancellationToken$)
     };
   }
 

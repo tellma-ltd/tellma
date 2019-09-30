@@ -5,22 +5,16 @@ import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
-import { DefinitionsForClient } from '../dto/definitions-for-client';
 
-export class ResourceClassificationForSave extends EntityForSave {
+export class AccountType extends EntityForSave {
   Name: string;
   Name2: string;
   Name3: string;
-  Code: string;
-  ParentId: number;
-  IsLeaf: boolean;
-}
-
-export class ResourceClassification extends ResourceClassificationForSave {
-  ResourceDefinitionId: string;
+  ParentId: string;
   Level: number;
   ChildCount: number;
   ActiveChildCount: number;
+  IsAssignable: boolean;
   IsActive: boolean;
   CreatedAt: string;
   CreatedById: number | string;
@@ -31,42 +25,37 @@ export class ResourceClassification extends ResourceClassificationForSave {
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _currentLang: string;
 let _settings: SettingsForClient;
-let _definitions: DefinitionsForClient;
-let _cache: { [defId: string]: EntityDescriptor } = {};
+let _cache: EntityDescriptor = null;
 
-export function metadata_ResourceClassification(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
+export function metadata_AccountType(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (trx.currentLang !== _currentLang || ws.settings !== _settings || ws.definitions !== _definitions) {
+  if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
     _currentLang = trx.currentLang;
     _settings = ws.settings;
-    _definitions = ws.definitions;
 
     // clear the cache
-    _cache = {};
+    _cache = null;
   }
 
-  definitionId = definitionId || '_'; // undefined
-  if (!_cache[definitionId]) {
+  if (!_cache) {
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     const entityDesc: EntityDescriptor = {
-      titleSingular: '???',
-      titlePlural: '???',
+      titleSingular: trx.instant('AccountType'),
+      titlePlural: trx.instant('AccountTypes'),
       select: _select,
-      apiEndpoint: 'resource-classifications/' + (definitionId || ''),
+      apiEndpoint: 'account-types',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
-        Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { control: 'text', label: trx.instant('Id') },
         Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
         Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
-        Code: { control: 'text', label: trx.instant('Code') },
-        IsLeaf: { control: 'boolean', label: trx.instant('ResourceClassification_IsLeaf') },
 
         // tree stuff
         Parent: {
-          control: 'navigation', label: trx.instant('TreeParent'), type: 'ResourceClassification',
+          control: 'navigation', label: trx.instant('TreeParent'), type: 'AccountType',
           foreignKeyName: 'ParentId'
         },
         ChildCount: {
@@ -82,6 +71,7 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
           alignment: 'right'
         },
 
+        IsAssignable: { control: 'boolean', label: trx.instant('AccountType_IsAssignable'), format: (b) => !!b ? '✔️' : '❌' },
         IsActive: { control: 'boolean', label: trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
@@ -98,23 +88,8 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
       delete entityDesc.properties.Name3;
     }
 
-    const definition = _definitions.Resources[definitionId];
-    if (!definition) {
-        // Programmer mistake
-        console.error(`defintionId '${definitionId}' doesn't exist`);
-    } else {
-      // Singular will be called "Classification" for short
-      entityDesc.titleSingular = trx.instant('Classification') || '???';
-
-      // Plural will be something like "Raw Materials - Classifications"
-      const resourceTitlePlural = ws.getMultilingualValueImmediate(definition, 'TitlePlural');
-      if (!!resourceTitlePlural) {
-        entityDesc.titlePlural = `${resourceTitlePlural} - ${trx.instant('Classifications')}`;
-      }
-    }
-
-    _cache[definitionId] = entityDesc;
+    _cache = entityDesc;
   }
 
-  return _cache[definitionId];
+  return _cache;
 }

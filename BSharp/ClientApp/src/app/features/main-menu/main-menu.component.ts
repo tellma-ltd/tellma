@@ -57,6 +57,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
           label: 'AccountClassifications', icon: 'list', link: '../account-classifications',
           viewId: 'account-classifications', sortKey: 100
         },
+        { label: 'AccountTypes', icon: 'sitemap', link: '../account-types', viewId: 'account-types', sortKey: 200 },
       ]
     },
     Administration: {

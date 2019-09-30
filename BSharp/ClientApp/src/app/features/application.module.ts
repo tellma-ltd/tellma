@@ -32,7 +32,7 @@ import { LookupsImportComponent } from './lookups/lookups-import.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
-  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck
+  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck, faSitemap
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -46,6 +46,9 @@ import { AccountClassificationsMasterComponent } from './account-classifications
 import { AccountClassificationsDetailsComponent } from './account-classifications/account-classifications-details.component';
 import { AccountClassificationsImportComponent } from './account-classifications/account-classifications-import.component';
 import { AccountClassificationsPickerComponent } from './account-classifications/account-classifications-picker.component';
+import { AccountTypesMasterComponent } from './account-types/account-types-master.component';
+import { AccountTypesDetailsComponent } from './account-types/account-types-details.component';
+import { AccountTypesPickerComponent } from './account-types/account-types-picker.component';
 
 const routes: Routes = [
   {
@@ -219,6 +222,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Account Types
+      {
+        path: 'account-types',
+        component: AccountTypesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'account-types/:id',
+        component: AccountTypesDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -276,7 +291,10 @@ const routes: Routes = [
     AccountClassificationsMasterComponent,
     AccountClassificationsDetailsComponent,
     AccountClassificationsImportComponent,
-    AccountClassificationsPickerComponent
+    AccountClassificationsPickerComponent,
+    AccountTypesMasterComponent,
+    AccountTypesDetailsComponent,
+    AccountTypesPickerComponent
   ],
   imports: [
     SharedModule,
@@ -288,7 +306,7 @@ export class ApplicationModule {
     // Icons to be used in the web app
     library.addIcons(
       // Main menu icons
-      faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
+      faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd, faSitemap,
       faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck
     );
   }

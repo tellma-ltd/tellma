@@ -251,6 +251,9 @@ namespace BSharp.Data
                     case nameof(AccountClassification):
                         return new SqlSource("[map].[AccountClassifications]()");
 
+                    case nameof(AccountType):
+                        return new SqlSource("[map].[AccountTypes]()");
+
                     #region _Temp
 
                     case nameof(ResponsibilityCenter):
@@ -2496,6 +2499,37 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                 {
                     throw new ForeignKeyViolationException();
                 }
+            }
+        }
+
+        #endregion
+
+        #region AccountTypes
+
+        public async Task AccountTypes__Activate(List<string> ids, bool isActive)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                var isActiveParam = new SqlParameter("@IsActive", isActive);
+
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[StringList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(AccountTypes__Activate)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
             }
         }
 

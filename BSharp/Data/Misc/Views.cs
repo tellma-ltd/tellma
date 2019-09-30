@@ -19,7 +19,7 @@
                     new ViewInfo {
                         Id = "all",
                         Name = "View_All",
-                        Actions = new ActionInfo[] 
+                        Actions = new ActionInfo[]
                         {
                             Li("Read", false)
                         }
@@ -30,7 +30,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = new ActionInfo[] 
+                        Actions = new ActionInfo[]
                         {
                             Li("IsActive")
                         }
@@ -41,7 +41,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = new ActionInfo[] 
+                        Actions = new ActionInfo[]
                         {
                             Li("IsActive")
                         }
@@ -63,7 +63,7 @@
                         Read = true,
                         Update = true,
                         Delete = true,
-                        Actions = new ActionInfo[] 
+                        Actions = new ActionInfo[]
                         {
                             Li("ResendInvitationEmail")
                         }
@@ -72,7 +72,7 @@
                         Id = "ifrs-notes",
                         Name = "IfrsNotes",
                         Read = true,
-                        Actions = new ActionInfo[] 
+                        Actions = new ActionInfo[]
                         {
                             Li("IsActive")
                         }
@@ -100,9 +100,18 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "account-types",
+                        Name = "AccountTypes",
+                        Actions = new ActionInfo[]
+                        {
+                            Li("Read", false),
+                            Li("IsActive", false)
+                        }
+                    },
+                    new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
-                        Actions = new ActionInfo[] 
+                        Actions = new ActionInfo[]
                         {
                             Li("Read", false),
                             Li("Update", false)

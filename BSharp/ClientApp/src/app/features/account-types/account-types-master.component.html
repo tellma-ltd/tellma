@@ -1,44 +1,36 @@
-<b-master collection="Currency" [mode]="mode" [masterCrumb]="'Currencies' | translate"
+<b-master collection="AccountType" [mode]="mode" [masterCrumb]="'AccountTypes' | translate" [showCreateButton]="false" [showImportButton]="false" [showDeleteButton]="false"
   [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="E,IsActive" selectForTiles="Name,Name2,Name3,Description,Description2,Description3"
+  selectDefault="IsAssignable,IsActive" selectForTiles="Name,Name2,Name3" [enableTreeView]="true"
   [multiselectActions]="[
             { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
-            'CreatedBy' : [
-              { template: createdByMe, expression: 'CreatedById eq me'}
-            ]
-          }">
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate">
 </b-master>
 
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
   <div class="d-flex justify-content-between">
-    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Currency', id, 'Name') }}</span>
+    <span class="d-block text-truncate">{{ ws.getMultilingualValue('AccountType', id, 'Name') }}</span>
   </div>
   <div class="d-flex justify-content-between mt-1 small">
-    <span class="d-block text-truncate">{{ ws.getMultilingualValue('Currency', id, 'Description') }}</span>
+    <b-auto-cell collection="AccountType" [entity]="c[id]" path="Id"></b-auto-cell>
   </div>
 </ng-template>
 
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-  {{ 'Currency' | translate }}
+  {{ 'AccountType' | translate }}
 </ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell collection="Currency" [entity]="c[id]"></b-auto-cell>
+    <b-auto-cell collection="AccountType" [entity]="c[id]"></b-auto-cell>
   </span>
 </ng-template>
 
 <!-- Multiselect Actions -->
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
-
-
-<!-- Filter Options -->
-<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
