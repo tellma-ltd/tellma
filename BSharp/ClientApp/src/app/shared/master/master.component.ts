@@ -23,6 +23,8 @@ import {
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { metadata, EntityDescriptor, entityDescriptorImpl } from '~/app/data/entities/base/metadata';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { handleFreshUserSettings } from '~/app/data/tenant-resolver.guard';
+import { StorageService } from '~/app/data/storage.service';
 
 enum SearchView {
   tiles = 'tiles',
@@ -159,7 +161,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private router: Router, private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal) {
+    private route: ActivatedRoute, private translate: TranslateService, public modalService: NgbModal, private storage: StorageService) {
   }
 
   ngOnInit() {
@@ -281,6 +283,13 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
 
+    // level (This is not part of the screen URL)
+    const level = this.levelFromUserSettings || 1;
+    if (level !== this.state.level) {
+      this.state.level = level;
+      hasChanged = true;
+    }
+
     // display mode: has a precise default value
     if (this.state.displayMode !== displayMode) {
       this.state.displayMode = displayMode;
@@ -316,8 +325,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     if (anyChanges && notFirstChange) {
 
-        this.ngOnDestroy();
-        this.ngOnInit();
+      this.ngOnDestroy();
+      this.ngOnInit();
     }
   }
 
@@ -370,7 +379,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // compute the filter
     let filter = this.filter();
     if (isTree && !this.searchOrFilter) {
-      filter = 'Node childof null';
+      filter = `Level le ${s.level}`;
     }
 
     if (!s.inactive) {
@@ -626,13 +635,32 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
     settings.CustomSettings[this.selectKey] = select;
     this.api.usersApi(this.notifyDestruct$).saveForClient(this.selectKey, select)
-      .pipe(
-        tap(x => {
-          this.workspace.current.userSettings = x.Data;
-          this.workspace.current.userSettingsVersion = x.Version;
-          this.workspace.notifyStateChanged();
-        })
-      )
+      .pipe(tap(x => handleFreshUserSettings(x, this.workspace.ws.tenantId, this.workspace.current, this.storage)))
+      .subscribe();
+  }
+
+  private get levelKey(): string {
+    return `${this.collection + (!!this.definition ? '/' + this.definition : '')}/level`;
+  }
+
+  private get levelFromUserSettings(): number {
+    const settings = this.workspace.current.userSettings;
+    settings.CustomSettings = settings.CustomSettings || {};
+    return parseInt(settings.CustomSettings[this.levelKey], null);
+  }
+
+  private saveLevel(level: number) {
+
+    const levelString = !!level ? level + '' : null;
+
+    // Save the new value with the server, to be used again afterwards
+    const settings = this.workspace.current.userSettings;
+    if (!settings.CustomSettings) {
+      settings.CustomSettings = {};
+    }
+    settings.CustomSettings[this.levelKey] = levelString;
+    this.api.usersApi(this.notifyDestruct$).saveForClient(this.levelKey, levelString)
+      .pipe(tap(x => handleFreshUserSettings(x, this.workspace.ws.tenantId, this.workspace.current, this.storage)))
       .subscribe();
   }
 
@@ -1538,4 +1566,46 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return node.hasChildren;
   }
 
+
+  public get canExpandNextLevel(): boolean {
+    return true; // TODO
+  }
+
+  public get showExpandNextLevel(): boolean {
+    return this.isTreeMode && !this.searchOrFilter;
+  }
+
+  public get expandNextLevelTooltip(): string {
+    //  return this.canCreatePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    return null; // TODO
+  }
+
+  public onExpandNextLevel(): void {
+    this.state.level++;
+    this.fetch();
+    this.saveLevel(this.state.level);
+  }
+
+  public get canCollapseAll(): boolean {
+    return true;
+  }
+
+  public get showCollapseAll(): boolean {
+    return this.showExpandNextLevel;
+  }
+
+  public get collapseAllTooltip(): string {
+    // return this.canCollapseAll ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    return null; // TODO
+  }
+
+  public onCollapseAll(): void {
+    this.state.level = 1;
+    this.fetch();
+    this.saveLevel(null);
+  }
+
+  public get level(): number {
+    return this.state.level;
+  }
 }
