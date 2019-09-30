@@ -67,6 +67,15 @@
   <data name="AccessDeniedMessage" xml:space="preserve">
     <value>You do not have access to this resource.</value>
   </data>
+  <data name="AccountClassification" xml:space="preserve">
+    <value>Account Classification</value>
+  </data>
+  <data name="AccountClassification_IsDeprecated" xml:space="preserve">
+    <value>Is Deprecated</value>
+  </data>
+  <data name="AccountClassifications" xml:space="preserve">
+    <value>Account Classifications</value>
+  </data>
   <data name="ActionDidNotPassValidation" xml:space="preserve">
     <value>The action did not pass validation, see the highlighted rows for details</value>
   </data>
@@ -469,8 +478,11 @@
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Secondary language cannot be the same as the primary language.</value>
   </data>
-  <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
-    <value>The {0} '{1}' is used in one or more documents</value>
+  <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
+    <value>The {0} '{1}' is used in one or more accounts</value>
+  </data>
+  <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
+    <value>The account classification '{0}' is used in account '{1}'</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>The code '{0}' does not exist.</value>
@@ -771,6 +783,9 @@
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>Activate/Deactivate</value>
+  </data>
+  <data name="Permission_IsDeprecated" xml:space="preserve">
+    <value>Activate/Deprecate</value>
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>Mask</value>

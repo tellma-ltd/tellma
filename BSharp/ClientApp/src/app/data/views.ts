@@ -11,7 +11,7 @@ export interface ActionInfo {
     criteria: boolean;
 }
 
-export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' | 'ResendInvitationEmail' | 'All';
+export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' | 'IsDeprecated' | 'ResendInvitationEmail' | 'All';
 
 function li(name: Action, criteria = true) {
     return { action: name, criteria };
@@ -23,6 +23,7 @@ export const ACTIONS: { [action: string]: string } = {
     'Update': 'Permission_Update',
     'Delete': 'Permission_Delete',
     'IsActive': 'Permission_IsActive',
+    'IsDeprecated': 'Permission_IsDeprecated',
     'ResendInvitationEmail': 'ResendInvitationEmail',
     'All': 'View_All',
 };
@@ -87,6 +88,15 @@ export const VIEWS_BUILT_IN: { [viewId: string]: ViewInfo } = {
         delete: true,
         actions: [
             li('IsActive')
+        ]
+    },
+    'account-classifications': {
+        name: 'AccountClassifications',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [
+            li('IsDeprecated')
         ]
     },
 

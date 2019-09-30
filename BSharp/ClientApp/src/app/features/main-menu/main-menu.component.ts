@@ -53,6 +53,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       items: [
         // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
         { label: 'Currencies', icon: 'euro-sign', link: '../currencies', viewId: 'currencies', sortKey: 300 },
+        {
+          label: 'AccountClassifications', icon: 'list', link: '../account-classifications',
+          viewId: 'account-classifications', sortKey: 100
+        },
       ]
     },
     Administration: {
@@ -108,7 +112,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
       this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resource-classifications',
-      e => !!e ? e + ' - ' + this.translate.instant('Classifications') : e);
+        e => !!e ? e + ' - ' + this.translate.instant('Classifications') : e);
 
 
       this._mainMenu = Object.keys(menu).map(e => ({

@@ -387,6 +387,11 @@
     <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
     <Build Include="rpt\Stored Procedures\rpt.AccountClassifications__TrialBalance.sql" />
     <Build Include="Mapping\AccountClassifications.sql" />
+    <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.AccountClassifications__Delete.sql" />
+    <Build Include="Mapping\AccountClassifications__AsQuery.sql" />
+    <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__DeleteWithDescendants.sql" />
+    <Build Include="dal\Stored Procedures\dal.AccountClassifications__DeleteWithDescendants.sql" />
     <Build Include="Mapping\map.AccountTypes.sql" />
   </ItemGroup>
   <ItemGroup>

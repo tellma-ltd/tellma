@@ -67,6 +67,15 @@
   <data name="AccessDeniedMessage" xml:space="preserve">
     <value>ليس لديك حق الوصول إلى هذا المورد.</value>
   </data>
+  <data name="AccountClassification" xml:space="preserve">
+    <value>تصنيف حساب</value>
+  </data>
+  <data name="AccountClassification_IsDeprecated" xml:space="preserve">
+    <value>مؤرشف</value>
+  </data>
+  <data name="AccountClassifications" xml:space="preserve">
+    <value>تصنيفات حسابات</value>
+  </data>
   <data name="ActionDidNotPassValidation" xml:space="preserve">
     <value>الأمر المنفذ لم يستوف شروط الصحة، راجع الأسطر المؤشر عليها لمزيد من التفاصيل</value>
   </data>
@@ -469,8 +478,11 @@
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية هي نفسها اللغة الرئيسية</value>
   </data>
-  <data name="Error_The01IsUsedInOneOrMoreDocuments" xml:space="preserve">
-    <value>ال{0} ({1}) مستخدمة في بعض المستندات</value>
+  <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
+    <value>ال{0} ({1}) مستخدمة في بعض الحسابات</value>
+  </data>
+  <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
+    <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1})</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>الكود ({0}) غير موجود</value>
@@ -771,6 +783,9 @@
   </data>
   <data name="Permission_IsActive" xml:space="preserve">
     <value>تنشيط - إيقاف النشاط</value>
+  </data>
+  <data name="Permission_IsDeprecated" xml:space="preserve">
+    <value>تنشيط - أرشفة</value>
   </data>
   <data name="Permission_Mask" xml:space="preserve">
     <value>حجاب</value>
