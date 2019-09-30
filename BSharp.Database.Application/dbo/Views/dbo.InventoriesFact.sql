@@ -18,7 +18,7 @@ WITH IfrsInventoryAccounts AS (
 		J.[Direction],
 		J.[AccountId],
 		J.[AccountDefinitionId],
-		J.[ResponsibleActorId],
+		J.[ResponsibilityCenterId],
 		J.[ResourceId],
 		J.[Mass],
 		J.[Volume],

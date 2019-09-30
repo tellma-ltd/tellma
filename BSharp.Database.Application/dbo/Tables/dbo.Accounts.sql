@@ -16,10 +16,8 @@
 	-- has authorized it. If responsibility changes frequently, we use roles. 
 	-- However, if responsibility center can be external to account, we may have to move these
 	-- to a separate table...
-	[ResponsibleActorId]			INT, -- e.g., Ashenafi
-	[ResponsibleRoleId]				INT, -- e.g., Marketing Dept Manager
-	[CustodianActorId]				INT, -- Alex
-	[CustodianRoleId]				INT, -- Raw Materials Warehouse Keeper
+	[ResponsibilityCenterId]		INT, -- e.g., Marketing
+	[CustodianId]					INT, -- Alex
 	[ResourceId]					INT					CONSTRAINT [FK_Accounts__ResourceId] FOREIGN KEY ([ResourceId])	REFERENCES [dbo].[Resources] ([Id]),
 	[LocationId]					INT					CONSTRAINT [FK_Accounts__LocationId] FOREIGN KEY ([LocationId])	REFERENCES [dbo].[Locations] ([Id]),
 	[IsDeprecated]					BIT					NOT NULL DEFAULT 0,

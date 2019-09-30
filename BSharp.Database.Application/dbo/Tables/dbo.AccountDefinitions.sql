@@ -20,11 +20,10 @@
 	-- When required, it is also used for summary report and to define the account statement parameters (will disappear from report)
 	-- If required in Account, the field will be read/only in the statement parameters header.
 	-- If required in Account Entries, the field will be editable in the statement parameters header
-	[ResponsibleVisibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([ResponsibleVisibility] IN (N'None', N'RequiredInAccounts', N'RequiredInEntries', N'OptionalInEntries')),
-	[ResponsibleLabel]						NVARCHAR (50),
-	[ResponsibleLabel2]						NVARCHAR (50),
-	[ResponsibleLabel3]						NVARCHAR (50),
-	[ResponsibleRelationDefinitionList]		NVARCHAR (255),
+	[ResponsibilityCenterVisibility]		NVARCHAR (50) DEFAULT N'None' CHECK ([ResponsibilityCenterVisibility] IN (N'None', N'RequiredInAccounts', N'RequiredInEntries', N'OptionalInEntries')),
+	[ResponsibilityCenterLabel]				NVARCHAR (50),
+	[ResponsibilityCenterLabel2]			NVARCHAR (50),
+	[ResponsibilityCenterLabel3]			NVARCHAR (50),
 	[CustodianVisibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([CustodianVisibility] IN (N'None', N'RequiredInAccounts', N'RequiredInEntries', N'OptionalInEntries')),
 	[CustodianLabel]						NVARCHAR (50),
 	[CustodianLabel2]						NVARCHAR (50),

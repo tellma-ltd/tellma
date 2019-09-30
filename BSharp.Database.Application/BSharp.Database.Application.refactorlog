@@ -763,4 +763,53 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[AccountTypeId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="76bd3ac6-7524-4db4-aa71-b5c2e619c90e" ChangeDateTime="09/30/2019 14:24:15">
+    <Property Name="ElementName" Value="[dal].[Accounts__Activate]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Accounts__Deprecate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f7f3cba4-db93-41a7-9266-43a4102985b0" ChangeDateTime="09/30/2019 16:01:27">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[CustodianActorId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CustodianId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c3a0d079-6fcb-47dc-8a59-b3d8ff0850fb" ChangeDateTime="09/30/2019 16:04:40">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[ResponsibleActorId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityCenterId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bbcacae9-941c-48b3-91a8-d25067318551" ChangeDateTime="09/30/2019 16:07:03">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions].[ResponsibleVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityCenterVisibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1647bf35-8b01-494e-89e0-49024c617fab" ChangeDateTime="09/30/2019 16:07:30">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions].[ResponsibleLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityCenterLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="174bdb6c-f2f9-46f8-9f05-3fdf7b6f91bf" ChangeDateTime="09/30/2019 16:07:44">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions].[ResponsibleLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityCenterLabel2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f5a7a52d-07ec-4a19-8ddf-e6cc7dea7658" ChangeDateTime="09/30/2019 16:07:53">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions].[ResponsibleLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityCenterLabel3]" />
+  </Operation>
 </Operations>

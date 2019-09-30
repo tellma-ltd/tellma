@@ -7,37 +7,37 @@ BEGIN
 	DECLARE @SalariesAccrualsTaxableAccountDef NVARCHAR (50), @SalariesAccrualsNonTaxableAccountDef NVARCHAR (50), @EmployeesPayableAccountDef NVARCHAR (50);
 	WITH EmployeesAccruals([Index], [DocumentLineIndex], [EntryNumber], [AccountId], [AccruedValue], [Time]) AS (
 		SELECT
-			ROW_NUMBER() OVER (ORDER BY A.[CustodianActorId], A.[ResourceId]),
-			A.CustodianActorId,
-			ROW_NUMBER() OVER (PARTITION BY A.[CustodianActorId] ORDER BY A.[ResourceId]),
+			ROW_NUMBER() OVER (ORDER BY A.[CustodianId], A.[ResourceId]),
+			A.[CustodianId],
+			ROW_NUMBER() OVER (PARTITION BY A.[CustodianId] ORDER BY A.[ResourceId]),
 			DLE.[AccountId],
 			-SUM([Direction] * [Value]),
 			-SUM([Direction] * [Time])
 		FROM dbo.DocumentLineEntries DLE
 		JOIN dbo.Accounts A ON DLE.AccountId = A.[Id]
 		WHERE A.[AccountDefinitionId] IN (@SalariesAccrualsTaxableAccountDef, @SalariesAccrualsNonTaxableAccountDef)
-		GROUP BY DLE.[AccountId], A.[CustodianActorId], A.[ResourceId]
+		GROUP BY DLE.[AccountId], A.[CustodianId], A.[ResourceId]
 		HAVING SUM([Direction] * [Value]) <> 0
 	),
 	EmployeeTotalIncome([EmployeeId], [TotalIncome]) AS (
-		SELECT A.[CustodianActorId], SUM([AccruedValue])
+		SELECT A.[CustodianId], SUM([AccruedValue])
 		FROM EmployeesAccruals EA
 		JOIN dbo.Accounts A ON EA.AccountId = A.Id
-		GROUP BY A.[CustodianActorId]
+		GROUP BY A.[CustodianId]
 	),
 	EmployeeIncomeTaxes([Index], [DocumentLineIndex], [EntryNumber], [AccountId], [IncomeTax], [EmployeeId], [TaxableIncome]) AS (
 		SELECT
-			ROW_NUMBER() OVER (ORDER BY A.[CustodianActorId]) + (SELECT MAX([Index]) FROM EmployeesAccruals),
-			A.[CustodianActorId],
+			ROW_NUMBER() OVER (ORDER BY A.[CustodianId]) + (SELECT MAX([Index]) FROM EmployeesAccruals),
+			A.[CustodianId],
 			1,
 			@EmployeesIncomeTaxPayable,
-			[bll].[fn_EmployeeIncomeTax](A.[CustodianActorId], -SUM([AccruedValue])),
-			A.[CustodianActorId],
+			[bll].[fn_EmployeeIncomeTax](A.[CustodianId], -SUM([AccruedValue])),
+			A.[CustodianId],
 			-SUM([AccruedValue])
 		FROM EmployeesAccruals EA
 		JOIN dbo.Accounts A ON EA.AccountId = A.[Id]
 		WHERE A.[AccountDefinitionId]  = @SalariesAccrualsTaxableAccountDef
-		GROUP BY A.[CustodianActorId]
+		GROUP BY A.[CustodianId]
 		HAVING -SUM([AccruedValue])<> 0
 	),
 	-- TODO: Deduct any ther taxes/deductions
@@ -50,7 +50,7 @@ BEGIN
 			A.[Id],
 			E.TotalIncome - ISNULL(EIT.IncomeTax,0)
 		FROM EmployeeTotalIncome E
-		JOIN dbo.Accounts A ON E.EmployeeId = A.CustodianActorId
+		JOIN dbo.Accounts A ON E.EmployeeId = A.[CustodianId]
 		LEFT JOIN EmployeeIncomeTaxes EIT ON E.EmployeeId = EIT.EmployeeId
 		WHERE
 			A.AccountDefinitionId = @EmployeesPayableAccountDef

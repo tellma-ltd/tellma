@@ -9,10 +9,8 @@
 	[Code]							NVARCHAR (255),
 	[PartyReference]				NVARCHAR (255),
 	[SubAccountId]					INT				NOT NULL DEFAULT 0,
-	[ResponsibleActorId]			INT, -- e.g., Ashenafi
-	[ResponsibleRoleId]				INT, -- e.g., Marketing Dept Manager
-	[CustodianActorId]				INT, -- Alex
-	[CustodianRoleId]				INT, -- Raw Materials Warehouse Keeper
+	[ResponsibilityCenterId]		INT, -- e.g., Ashenafi
+	[CustodianId]					INT, -- Alex
 	[ResourceId]					INT,
 	[LocationId]					INT	
 );

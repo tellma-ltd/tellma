@@ -30,7 +30,7 @@ BEGIN
 	),
 	Actual([ResourceLookup1Id], [ResponsibleActorId], [Mass], [Count]) AS (
 		SELECT 
-			R.[ResourceLookup1Id], J.[ResponsibleActorId],
+			R.[ResourceLookup1Id], J.[ResponsibilityCenterId],
 			SUM(J.Direction * J.[Mass]) AS [Mass],
 			SUM(J.Direction * J.[Count]) AS [Count]
 		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId) J
@@ -39,7 +39,7 @@ BEGIN
 		WHERE J.[IfrsEntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		-- TODO: we need a way to separate finished goods from the rest
 		AND RC.[ResourceDefinitionId] = N'finished-goods'
-		GROUP BY J.[ResponsibleActorId], R.ResourceLookup1Id
+		GROUP BY J.[ResponsibilityCenterId], R.ResourceLookup1Id
 	),
 	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (
 		SELECT 

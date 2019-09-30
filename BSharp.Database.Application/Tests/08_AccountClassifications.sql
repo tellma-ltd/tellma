@@ -54,7 +54,7 @@ SELECT @Equity_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'3';
 SELECT @Revenue_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'4';
 SELECT @Expenses_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'5';
 
-SELECT * FROM [map].[AccountClassifications]();
+--SELECT * FROM [map].[AccountClassifications]();
 
 INSERT INTO @Accounts([Index], [AccountTypeId], [AccountClassificationId], [Name], [Code]) VALUES
 (0,N'BalancesWithBanks', @BankAndCash_AC, N'CBE - USD', N'1101'),
@@ -85,37 +85,49 @@ INSERT INTO @Accounts([Index],
 (23,N'AdministrativeExpense',		@Expenses_AC,				N'Salaries - Admin',				N'5202'),
 (24,N'AdministrativeExpense',		@Expenses_AC,				N'Overtime - Admin',				N'5203');
 
+
+EXEC [api].[Accounts__Save] --  N'cash-and-cash-equivalents',
+	@DefinitionId = N'gl-accounts',
+	@Entities = @Accounts,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'Inserting Accounts'
+	GOTO Err_Label;
+END;
+
 SELECT * FROM dbo.Accounts;
 
-SELECT @CBEUSD = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'1101';
-SELECT @CBEETB = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'1102';
-SELECT @CBELC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'1201';
-SELECT @ESL = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'1209';
-SELECT @PPEWarehouse = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'1210';
-SELECT @PPEVehicles = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'1301'; 
-SELECT @VimeksAccount = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'2101';
-SELECT @CapitalMA = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'3101';
-SELECT @CapitalAA = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'3102';
+SELECT @CBEUSD = [Id] FROM dbo.[Accounts] WHERE Code = N'1101';
+SELECT @CBEETB = [Id] FROM dbo.[Accounts] WHERE Code = N'1102';
+SELECT @CBELC = [Id] FROM dbo.[Accounts] WHERE Code = N'1201';
+SELECT @ESL = [Id] FROM dbo.[Accounts] WHERE Code = N'1209';
+SELECT @PPEWarehouse = [Id] FROM dbo.[Accounts] WHERE Code = N'1210';
+SELECT @PPEVehicles = [Id] FROM dbo.[Accounts] WHERE Code = N'1301'; 
+SELECT @VimeksAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2101';
+SELECT @CapitalMA = [Id] FROM dbo.[Accounts] WHERE Code = N'3101';
+SELECT @CapitalAA = [Id] FROM dbo.[Accounts] WHERE Code = N'3102';
 
-SELECT @NocJimmaAccount = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'2102';
-SELECT @ToyotaAccount = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'2103';
-SELECT @RegusAccount = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'2104';
-SELECT @PrepaidRental = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'1501';
-SELECT @VATInput = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'1401';
-SELECT @VATOutput = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'2401';
+SELECT @NocJimmaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2102';
+SELECT @ToyotaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2103';
+SELECT @RegusAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2104';
+SELECT @PrepaidRental = [Id] FROM dbo.[Accounts] WHERE Code = N'1501';
+SELECT @VATInput = [Id] FROM dbo.[Accounts] WHERE Code = N'1401';
+SELECT @VATOutput = [Id] FROM dbo.[Accounts] WHERE Code = N'2401';
 
-SELECT @SalariesAccrualsTaxable = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'2501';
-SELECT @SalariesAccrualsNonTaxable = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'2502';
-SELECT @EmployeesPayable = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'2503';
-SELECT @EmployeesIncomeTaxPayable = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'2504'
+SELECT @SalariesAccrualsTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2501';
+SELECT @SalariesAccrualsNonTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2502';
+SELECT @EmployeesPayable = [Id] FROM dbo.[Accounts] WHERE Code = N'2503';
+SELECT @EmployeesIncomeTaxPayable = [Id] FROM dbo.[Accounts] WHERE Code = N'2504'
 
-SELECT @fuelHR = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'5101';
-SELECT @fuelSalesAdminAG = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'5102';
-SELECT @fuelProduction = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'5103';
-SELECT @fuelSalesDistAG = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'5201';
+SELECT @fuelHR = [Id] FROM dbo.[Accounts] WHERE Code = N'5101';
+SELECT @fuelSalesAdminAG = [Id] FROM dbo.[Accounts] WHERE Code = N'5102';
+SELECT @fuelProduction = [Id] FROM dbo.[Accounts] WHERE Code = N'5103';
+SELECT @fuelSalesDistAG = [Id] FROM dbo.[Accounts] WHERE Code = N'5201';
 
-SELECT @SalariesAdmin = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'5202';
-SELECT @OvertimeAdmin = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'5203';
+SELECT @SalariesAdmin = [Id] FROM dbo.[Accounts] WHERE Code = N'5202';
+SELECT @OvertimeAdmin = [Id] FROM dbo.[Accounts] WHERE Code = N'5203';
 
 
 --INSERT INTO dbo.AccountDefinitions
