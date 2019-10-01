@@ -62,8 +62,8 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public bool? IsDeprecated { get; set; }
 
-        //[AlwaysAccessible]
-        //public bool? IsActive { get; set; }
+        [AlwaysAccessible]
+        public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }

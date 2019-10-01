@@ -15,6 +15,7 @@ export class LookupForSave extends EntityForSave {
 }
 
 export class Lookup extends LookupForSave {
+    LookupDefinitionId: string;
     SortKey: number;
     IsActive: boolean;
     CreatedAt: string;
@@ -43,11 +44,13 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
     if (!_cache[definitionId]) {
         const entityDesc: EntityDescriptor = {
             titleSingular: ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitleSingular'),
-            titlePlural:  ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitlePlural'),
+            titlePlural: ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitlePlural'),
             select: _select,
             apiEndpoint: 'lookups/' + (definitionId || ''),
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+            definitionFunc: (e: Lookup) => e.LookupDefinitionId,
+            selectForDefinition: 'LookupDefinitionId',
             properties: {
                 Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
@@ -69,6 +72,16 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
 
         if (!ws.settings.TernaryLanguageId) {
             delete entityDesc.properties.Name3;
+        }
+
+        const definition = _definitions.Lookups[definitionId];
+        if (!definition) {
+            if (definitionId !== '<generic>') {
+                // Programmer mistake
+                console.error(`defintionId '${definitionId}' doesn't exist`);
+            }
+        } else {
+            // Definition specific adjustments
         }
 
         _cache[definitionId] = entityDesc;

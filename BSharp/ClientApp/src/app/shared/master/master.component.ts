@@ -583,7 +583,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // (1) append the current entity type default properties (usually 'Name', 'Name2' and 'Name3')
     baseEntityDescriptor.select.forEach(e => resultPaths[e] = true);
 
-    // (2) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
+    // (2) append the definitoinId if any, it must always be loaded
+    if (!!baseEntityDescriptor.selectForDefinition) {
+      resultPaths[baseEntityDescriptor.selectForDefinition] = true;
+    }
+
+    // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
     select.split(',').forEach(path => {
 
       const steps = path.split('/').map(e => e.trim());
@@ -599,7 +604,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
 
-    // (3) in tree mode we add tree stuff and ensure that Parent has the same selects as the children
+    // (4) in tree mode we add tree stuff and ensure that Parent has the same selects as the children
     if (this.isTreeMode) {
       // tree stuff
       ['Level', 'ChildCount', 'ActiveChildCount', 'IsActive'].forEach(e => resultPaths[e] = true);

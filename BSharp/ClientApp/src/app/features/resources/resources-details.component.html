@@ -72,7 +72,7 @@
         </b-restricted>
         <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ResourceClassificationId" [definitionIds]="[definitionId]"
             collection="ResourceClassification" [masterTemplate]="resourceClassificationsMaster"
-            definitionProperty="ResourceDefinitionId" [detailsTemplate]="resourceClassificationsDetail">
+            [detailsTemplate]="resourceClassificationsDetail">
         </b-details-picker>
 
         <!-- The Resource Classifications Details Modal -->

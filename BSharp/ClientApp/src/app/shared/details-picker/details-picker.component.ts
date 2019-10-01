@@ -41,9 +41,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   collection: string;
 
   @Input()
-  definitionProperty: string;
-
-  @Input()
   definitionIds: string[] = [];
 
   @Input()
@@ -109,11 +106,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   get chosenItemDefinition(): string {
-    if (this.workspace.current[this.collection] && this.workspace.current[this.collection][this.chosenItem]) {
-      return this.workspace.current[this.collection][this.chosenItem][this.definitionProperty];
-    }
+    const func = this.entityDescriptor('<generic>').definitionFunc;
+    return !!func ? func(this.workspace.current[this.collection][this.chosenItem]) : null;
+  }
 
-    return null;
+  get definitionProperty(): string {
+    return this.entityDescriptor('<generic>').selectForDefinition;
   }
 
   ngOnInit() {
@@ -131,7 +129,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     const queryFilter: () => string = () => {
       if (this.definitionIds.length > 1) {
 
-        const definitionProperty = this.definitionProperty || 'DefinitionId';
+        const definitionProperty = this.definitionProperty || 'DefinitionId'; // to make sure mistakes go down with a bang
         const definitionfilter = this.definitionIds
           .map(e => `${definitionProperty} eq '${e.replace('\'', '\'\'')}'`)
           .reduce((e1, e2) => `${e1} or ${e2}`);

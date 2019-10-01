@@ -30,6 +30,7 @@ export class ResourceForSave extends EntityWithKey {
 }
 
 export class Resource extends ResourceForSave {
+    ResourceDefinitionId: string;
     IsActive: boolean;
     CreatedAt: string;
     CreatedById: number | string;
@@ -59,11 +60,13 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
     if (!_cache[definitionId]) {
         const entityDesc: EntityDescriptor = {
             titleSingular: ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular') || '???',
-            titlePlural:  ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || '???',
+            titlePlural: ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || '???',
             select: _select,
             apiEndpoint: 'resources/' + (definitionId || ''),
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
+            definitionFunc: (e: Resource) => e.ResourceDefinitionId,
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
+            selectForDefinition: 'ResourceDefinitionId',
             properties: {
                 Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
@@ -118,11 +121,13 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
         // Adjust according to definitions
         const definition = _definitions.Resources[definitionId];
         if (!definition) {
-            // Programmer mistake
-            console.error(`defintionId '${definitionId}' doesn't exist`);
+            if (definitionId !== '<generic>') {
+                // Programmer mistake
+                console.error(`defintionId '${definitionId}' doesn't exist`);
+            }
         } else {
             entityDesc.titleSingular = ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular') || '???';
-            entityDesc.titlePlural =  ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || '???';
+            entityDesc.titlePlural = ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || '???';
 
 
             for (const propName of ['Memo', 'CustomsReference']) {
