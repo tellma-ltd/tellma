@@ -397,6 +397,8 @@
     <Build Include="api\Stored Procedures\api.Accounts__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Save.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceTypes.sql" />
+    <Build Include="dal\Stored Procedures\dal.ResourceTypes__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
@@ -429,6 +431,7 @@
     <None Include="Tests\13_HRCycle.sql" />
     <None Include="Provisioning\99_SampleData.sql" />
     <None Include="Provisioning\01_AccountTypes.sql" />
+    <None Include="Provisioning\01_ResourceTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

@@ -9,7 +9,7 @@
 	[Name3]							NVARCHAR (255),
 	[Code]							NVARCHAR (50),
 	[PartyReference]				NVARCHAR (50), -- how it is referred to by the other party
-	[SubAccountId]					INT					NOT NULL DEFAULT 0,
+	--[SubAccountId]					INT					NOT NULL DEFAULT 0,
 	-- TODO: must move this to Entries since the concept of account balance does not make sense when including it
 --	[IfrsEntryClassificationId]		NVARCHAR (255)		CONSTRAINT [FK_Accounts__IfrsEntryClassificationId] FOREIGN KEY ([IfrsEntryClassificationId]) REFERENCES [dbo].[IfrsEntryClassifications] ([Id]),
 	-- To transfer a document from requested to authorized, we need an evidence that the responsible actor

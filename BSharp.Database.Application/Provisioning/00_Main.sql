@@ -44,6 +44,7 @@ EXEC [dal].[Settings__Save]
 --:r .\012_IfrsEntryClassifications.sql
 --:r .\013_IfrsAccountClassifications.sql
 :r .\01_AccountTypes.sql
+:r .\01_ResourceTypes.sql
 :r .\02_MeasurementUnits.sql
 --:r .\02_Accounts.sql
 --EXEC [dbo].[adm_Accounts_Notes__Update];

@@ -1,22 +1,6 @@
 ﻿CREATE TABLE [dbo].[Resources] (
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
-	--[ResourceType]					NVARCHAR (255) NOT NULL CONSTRAINT [CK_Resources__ResourceType] CHECK (
-	--									[ResourceType] IN (
-	--										N'property-plant-and-equipment',
-	--										N'investment-property',
-	--										N'intangible-assets',
-	--										N'financial-assets',
-	--										N'investments',
-	--										N'biological-assets',
-	--										N'inventories',
-	--										N'cash-and-cash-equivalents',
-	--										N'trade-and-other-receivables'
-	--										--Lease services
-	--										--Employee Job
-	--										--general services
-	--									)
-	--								),
-	-- The resource definition defines the specs. Managed by User
+	[ResourceTypeId]				NVARCHAR (255)		NOT NULL CONSTRAINT [FK_Resources__ResourceTypeId] FOREIGN KEY ([ResourceTypeId]) REFERENCES [dbo].[ResourceTypes] ([Id]),
 	[ResourceDefinitionId]			NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Resources__ResourceDefinitionId] FOREIGN KEY ([ResourceDefinitionId]) REFERENCES [dbo].[ResourceDefinitions] ([Id]),	
 	[ResourceClassificationId]		INT					CONSTRAINT [FK_Resources__ResourceClassificationId] FOREIGN KEY ([ResourceClassificationId]) REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[Name]							NVARCHAR (255)		NOT NULL CONSTRAINT [CX_Resources__Name] UNIQUE,
@@ -24,7 +8,6 @@
 	[Name3]							NVARCHAR (255),
 	[IsActive]						BIT					NOT NULL DEFAULT 1,
 	[Code]							NVARCHAR (255),
-
 	-- By UnitMass, UnitVolume, etc.. We mean Std Mass per pick, standard volume per pick, etc..
 	-- The variance is used to alert the user in case he entered a number larger than the variance
 	-- The data below could be supplier dependent. Specifically, in the case of employee, it is employee dependent.
@@ -60,11 +43,8 @@
 	[UnitMonetaryValue]				DECIMAL,		-- if not null, it specifies the conversion rate Monetary Value/Primary Unit
 	[UnitValue]						DECIMAL,
 	[ValueVariance]					DECIMAL (5,2)		DEFAULT 0,
-
-
 	
  -- functional currency, common stock, basic, allowance, overtime/types, 
-	[SystemCode]					NVARCHAR (255),
 	[Memo]							NVARCHAR (2048), -- description
 	[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
 	[PreferredSupplierId]			INT,-- FK, Table Agents, specially for purchasing
@@ -96,7 +76,4 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__Name3]
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__Code]
   ON [dbo].[Resources]([Code]) WHERE [Code] IS NOT NULL;
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__SystemCode]
-  ON [dbo].[Resources]([SystemCode]) WHERE [SystemCode] IS NOT NULL;
 GO

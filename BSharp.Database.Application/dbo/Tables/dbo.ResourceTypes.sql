@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[AccountTypes] ( -- inspired by IfrsConcepts. However, its main purpose is to facilitate smart posting
+﻿CREATE TABLE [dbo].[ResourceTypes] ( -- inspired by IfrsConcepts. However, its main purpose is to facilitate smart posting
 	[Id]					NVARCHAR (255)		PRIMARY KEY NONCLUSTERED,
 	[IsAssignable]			BIT					NOT NULL DEFAULT 1,
 	[Name]					NVARCHAR (255)		NOT NULL,
@@ -11,6 +11,6 @@
 	[ParentNode]			AS [Node].GetAncestor(1),
 );
 GO
-CREATE UNIQUE CLUSTERED INDEX [IX_AccountTypes__Node]
-	ON [dbo].[AccountTypes]([Node]);
+CREATE UNIQUE CLUSTERED INDEX [IX_ResourceTypes__Node]
+	ON [dbo].[ResourceTypes]([Node]);
 GO

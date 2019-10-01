@@ -13,7 +13,7 @@ BEGIN
 	LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
 	Left JOIN dbo.IfrsAccountClassifications IAC ON RC.[ResourceDefinitionId] = IAC.Id
 	LEFT JOIN dbo.Agents A ON J.[RelatedAgentId] = A.Id
-	WHERE J.[AccountDefinitionId] = N'CurrentValueAddedTaxPayables'
+	WHERE J.[AccountTypeId] = N'CurrentValueAddedTaxPayables'
 	AND J.Direction = -1
 END
 GO;

@@ -3,22 +3,23 @@
 	@toDate Date = '01.01.2020'
 AS
 /*
+TODO: Rewrite using JournalSummary
 Since a resource is actually a "type" of foxid asset, then if we have 100 computers, they will appear in this
 report AS ONE LINE.
 If we want each computer to appear on a separate line, we need to replace Resource with Instance.
 */
 BEGIN
-	WITH IfrsFixedAssetAccounts	AS (
-		SELECT Id FROM dbo.[IfrsAccountClassifications]
+	WITH FixedAssetAccountTypes	AS (
+		SELECT Id FROM dbo.[AccountTypes]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[IfrsAccountClassifications] WHERE Id = N'PropertyPlandAndEquipment')
+			(SELECT [Node] FROM dbo.[AccountTypes] WHERE Id = N'PropertyPlandAndEquipment')
 		) = 1
 	),
 	FixedAssetAccounts AS (
-		SELECT [AccountId] FROM dbo.[AccountsDisclosures]
-		WHERE [IfrsDisclosureId] = N'StatementOfFinancialPositionAbstract'
-		AND [Concept] IN
-			(SELECT [Id] FROM IfrsFixedAssetAccounts)
+		SELECT Id
+		FROM Accounts
+		WHERE [AccountTypeId] IN
+			(SELECT [Id] FROM FixedAssetAccountTypes)
 	),
 	OpeningBalances AS (
 		SELECT
