@@ -61,7 +61,7 @@
   </b-form-group>
 
   <!-- Parent -->
-  <b-form-group class="b-form-group" [label]="'Parent' | translate" [serverErrors]="model?.serverErrors?.ParentId">
+  <b-form-group class="b-form-group" [label]="'TreeParent' | translate" [serverErrors]="model?.serverErrors?.ParentId">
     <b-restricted [metadata]="model?.EntityMetadata?.Parent">
       <b-view-link *ngIf="!isEdit" [link]="'../../../resource-classifications/' + definitionId"
         [itemId]="model?.ParentId">{{

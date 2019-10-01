@@ -19,53 +19,6 @@ namespace BSharp.Controllers
         }
     }
 
-
-    [Route("api/accounts")]
-    [ApplicationApi]
-    public class AccountsController : FactGetByIdControllerBase<Account, int>
-    {
-        private readonly ApplicationRepository _repo;
-
-        private string VIEW => "accounts";
-
-        public AccountsController(
-            ILogger<ResponsibilityCentersController> logger,
-            IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
-        {
-            _repo = repo;
-        }
-
-        protected override IRepository GetRepository()
-        {
-            return _repo;
-        }
-
-        protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
-        {
-            return Task.FromResult(TempUtil.UserPermissions(VIEW));
-        }
-
-        protected override Query<Account> Search(Query<Account> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
-        {
-            string search = args.Search;
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.Replace("'", "''"); // escape quotes by repeating them
-
-                var name = nameof(Account.Name);
-                var name2 = nameof(Account.Name2);
-                var name3 = nameof(Account.Name3);
-                var code = nameof(Account.Code);
-
-                query = query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
-            }
-
-            return query;
-        }
-    }
-
-
     [Route("api/ifrs-entry-classifications")]
     [ApplicationApi]
     public class IfrsEntryClassificationsController : FactGetByIdControllerBase<IfrsEntryClassification, string>

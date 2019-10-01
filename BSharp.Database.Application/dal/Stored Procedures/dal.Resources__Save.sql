@@ -21,6 +21,7 @@ SET NOCOUNT ON;
 				[Name2], 
 				[Name3], 
 				[Code], 
+				[ResourceTypeId], 
 				[ResourceClassificationId], 
 				--[UnitMonetaryValue], 
 				[CurrencyId], 
@@ -53,6 +54,7 @@ SET NOCOUNT ON;
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
 				t.[Code]					= s.[Code],
+				t.[ResourceTypeId]			= s.[ResourceTypeId],     
 				t.[ResourceClassificationId]= s.[ResourceClassificationId],     
 				--t.[UnitMonetaryValue]		= s.[UnitMonetaryValue],
 				t.[CurrencyId]				= s.[CurrencyId],
@@ -77,7 +79,7 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ResourceDefinitionId], [Name], [Name2], [Name3], [Code], [ResourceClassificationId], 
+			INSERT ([ResourceDefinitionId], [Name], [Name2], [Name3], [Code], [ResourceTypeId],  [ResourceClassificationId], 
 				--[UnitMonetaryValue], 
 				[CurrencyId], 
 				--[UnitMass], 
@@ -97,7 +99,7 @@ SET NOCOUNT ON;
 				[CustomsReference] ,
 				--[PreferredSupplierId],
 				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id])
-			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[ResourceClassificationId],
+			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[ResourceTypeId], s.[ResourceClassificationId],
 				--s.[UnitMonetaryValue],
 				s.[CurrencyId],
 				--s.[UnitMass],

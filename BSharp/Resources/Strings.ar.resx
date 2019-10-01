@@ -67,6 +67,33 @@
   <data name="AccessDeniedMessage" xml:space="preserve">
     <value>ليس لديك حق الوصول إلى هذا المورد.</value>
   </data>
+  <data name="Account" xml:space="preserve">
+    <value>حساب</value>
+  </data>
+  <data name="Account_Classification" xml:space="preserve">
+    <value>التصنيف</value>
+  </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>الذمة</value>
+  </data>
+  <data name="Account_IsDeprecated" xml:space="preserve">
+    <value>مؤرشف</value>
+  </data>
+  <data name="Account_Location" xml:space="preserve">
+    <value>الموقع</value>
+  </data>
+  <data name="Account_PartyReference" xml:space="preserve">
+    <value>الرقم الخارجي</value>
+  </data>
+  <data name="Account_Resource" xml:space="preserve">
+    <value>المورد</value>
+  </data>
+  <data name="Account_ResponsibilityCenter" xml:space="preserve">
+    <value>مركز التكلفة</value>
+  </data>
+  <data name="Account_Type" xml:space="preserve">
+    <value>النوع</value>
+  </data>
   <data name="AccountClassification" xml:space="preserve">
     <value>تصنيف حساب</value>
   </data>
@@ -75,6 +102,9 @@
   </data>
   <data name="AccountClassifications" xml:space="preserve">
     <value>تصنيفات حسابات</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>حسابات</value>
   </data>
   <data name="AccountType" xml:space="preserve">
     <value>نوع حساب</value>
@@ -486,6 +516,12 @@
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>اللغة الثانوية هي نفسها اللغة الرئيسية</value>
+  </data>
+  <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
+    <value>اللغة الثالثة هي نفسها اللغة الرئيسية</value>
+  </data>
+  <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
+    <value>اللغة الثالثة هي نفسها اللغة الثانية</value>
   </data>
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>ال{0} ({1}) مستخدمة في بعض الحسابات</value>
@@ -931,6 +967,9 @@
   <data name="Resource_TimeUnit" xml:space="preserve">
     <value>وحدة قياس الزمن</value>
   </data>
+  <data name="Resource_Type" xml:space="preserve">
+    <value>النوع</value>
+  </data>
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>وحدة قياس الحجم</value>
   </data>
@@ -990,12 +1029,6 @@
   </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>اللغة الثالثة</value>
-  </data>
-  <data name="Settings_TernaryLanguage" xml:space="preserve">
-    <value>اللغة الثالثة</value>
-  </data>
-  <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
-    <value>رمز اللغة الثالثة</value>
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>رمز اللغة الثالثة</value>

@@ -12,6 +12,7 @@ export class ResourceForSave extends EntityWithKey {
     Name2: string;
     Name3: string;
     Code: string;
+    ResourceTypeId: string;
     ResourceClassificationId: number;
     CurrencyId: number;
     MassUnitId: number;
@@ -69,6 +70,8 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                 Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
                 Code: { control: 'text', label: trx.instant('Code') },
+                ResourceTypeId: { control: 'text', label: trx.instant('Resource_Type') },
+                ResourceType: { control: 'navigation', label: trx.instant('Resource_Classification'), type: 'ResourceType', definition: definitionId, foreignKeyName: 'ResourceTypeId' },
                 ResourceClassificationId: { control: 'number', label: trx.instant('Resource_Classification'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 ResourceClassification: { control: 'navigation', label: trx.instant('Resource_Classification'), type: 'ResourceClassification', definition: definitionId, foreignKeyName: 'ResourceClassificationId' },
                 CurrencyId: { control: 'text', label: `${trx.instant('Resource_Currency')} (${trx.instant('Id')})` },

@@ -80,27 +80,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Empty(responseData.Result); // First 
         }
 
-        [Fact(DisplayName = "04 IFRS Account Classifications")]
-        public async Task Test04()
-        {
-            await GrantPermissionToSecurityAdministrator("ifrs-account-classifications", Constants.Update, "Id ne 'bla'");
-
-            var response = await Client.GetAsync("/api/ifrs-account-classifications?search=e&top=10");
-
-            // Call the API
-            Output.WriteLine(await response.Content.ReadAsStringAsync());
-
-            // Assert the result is 200 OK
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            // Confirm the result is well formed
-            var responseData = await response.Content.ReadAsAsync<GetResponse<IfrsAccountClassification>>();
-
-            // Assert the result makes sense
-            Assert.Equal(nameof(IfrsAccountClassification), responseData.CollectionName);
-            Assert.Equal(10, responseData.Result.Count()); // First 
-        }
-
         [Fact(DisplayName = "05 IFRS Entry Classifications")]
         public async Task Test05()
         {
@@ -119,28 +98,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Assert the result makes sense
             Assert.Equal(nameof(IfrsEntryClassification), responseData.CollectionName);
-            Assert.Equal(10, responseData.Result.Count()); // First 
+            Assert.Equal(0, responseData.Result.Count()); // First 
         }
-
-        //[Fact(DisplayName = "06 Accounts")]
-        //public async Task Test06()
-        //{
-        //    await GrantPermissionToSecurityAdministrator("accounts", Constants.Update, "Id gt -1");
-
-        //    var response = await Client.GetAsync("/api/accounts?search=Bla");
-
-        //    // Call the API
-        //    Output.WriteLine(await response.Content.ReadAsStringAsync());
-
-        //    // Assert the result is 200 OK
-        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-        //    // Confirm the result is well formed
-        //    var responseData = await response.Content.ReadAsAsync<GetResponse<Account>>();
-
-        //    // Assert the result makes sense
-        //    Assert.Equal(nameof(Account), responseData.CollectionName);
-        //    Assert.Empty(responseData.Result); 
-        //}
     }
 }

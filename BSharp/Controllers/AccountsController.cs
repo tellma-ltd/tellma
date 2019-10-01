@@ -3,7 +3,6 @@ using BSharp.Controllers.Utilities;
 using BSharp.Data;
 using BSharp.Data.Queries;
 using BSharp.Entities;
-using BSharp.Services.MultiTenancy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
@@ -20,9 +19,9 @@ namespace BSharp.Controllers
     // Specific API, works with a certain definitionId, and allows read-write
     [Route("api/" + BASE_ADDRESS + "{definitionId}")]
     [ApplicationApi]
-    public class ResourcesController : CrudControllerBase<ResourceForSave, Resource, int>
+    public class AccountsController : CrudControllerBase<AccountForSave, Account, int>
     {
-        public const string BASE_ADDRESS = "resources/";
+        public const string BASE_ADDRESS = "accounts/";
 
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
@@ -31,15 +30,15 @@ namespace BSharp.Controllers
         private readonly IModelMetadataProvider _modelMetadataProvider;
 
         private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ??
-            throw new BadRequestException("URI must be of the form 'api/" + BASE_ADDRESS + "{definitionId}'");
+            throw new BadRequestException($"URI must be of the form 'api/" + BASE_ADDRESS + "{definitionId}'");
 
-        private ResourceDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources?
+        private AccountDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Accounts?
             .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
 
         private string ViewId => $"{BASE_ADDRESS}{DefinitionId}";
 
-        public ResourcesController(
-            ILogger<ResourcesController> logger,
+        public AccountsController(
+            ILogger<AccountsController> logger,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo,
             IDefinitionsCache definitionsCache,
@@ -53,7 +52,7 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<Resource>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<Account>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -61,12 +60,12 @@ namespace BSharp.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
-                    isActive: true)
+                    isDeprecated: false)
             , _logger);
         }
 
         [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<Resource>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        public async Task<ActionResult<EntitiesResponse<Account>>> Deprecate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
         {
             bool returnEntities = args.ReturnEntities ?? false;
 
@@ -74,23 +73,23 @@ namespace BSharp.Controllers
                 Activate(ids: ids,
                     returnEntities: returnEntities,
                     expand: args.Expand,
-                    isActive: false)
+                    isDeprecated: true)
             , _logger);
         }
 
-        private async Task<ActionResult<EntitiesResponse<Resource>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        private async Task<ActionResult<EntitiesResponse<Account>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isDeprecated)
         {
             // Parse parameters
             var expandExp = ExpandExpression.Parse(expand);
             var idsArray = ids.ToArray();
 
             // Check user permissions
-            await CheckActionPermissions("IsActive", idsArray);
+            await CheckActionPermissions("IsDeprecated", idsArray);
 
             // Execute and return
             using (var trx = ControllerUtilities.CreateTransaction())
             {
-                await _repo.Resources__Activate(ids, isActive);
+                await _repo.Accounts__Deprecate(ids, isDeprecated);
 
                 if (returnEntities)
                 {
@@ -114,46 +113,31 @@ namespace BSharp.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Resource.ResourceDefinitionId)} eq '{DefinitionId}'";
-            return new FilteredRepository<Resource>(_repo, filter);
+            string filter = $"{nameof(Account.AccountDefinitionId)} eq '{DefinitionId}'";
+            return new FilteredRepository<Account>(_repo, filter);
         }
 
-        protected override Query<Resource> Search(Query<Resource> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Account> Search(Query<Account> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return ResourceControllerUtil.SearchImpl(query, args, filteredPermissions);
+            return AccountControllerUtil.SearchImpl(query, args, filteredPermissions);
         }
 
-        protected override async Task SaveValidateAsync(List<ResourceForSave> entities)
+        protected override async Task SaveValidateAsync(List<AccountForSave> entities)
         {
             var definition = Definition();
 
             // Set default values
-            SetDefaultValue(entities, e => e.MassUnitId, definition.MassUnit_DefaultValue);
-            SetDefaultValue(entities, e => e.VolumeUnitId, definition.VolumeUnit_DefaultValue);
-            SetDefaultValue(entities, e => e.AreaUnitId, definition.AreaUnit_DefaultValue);
-            SetDefaultValue(entities, e => e.LengthUnitId, definition.LengthUnit_DefaultValue);
-            SetDefaultValue(entities, e => e.TimeUnitId, definition.TimeUnit_DefaultValue);
-            SetDefaultValue(entities, e => e.CountUnitId, definition.CountUnit_DefaultValue);
-            SetDefaultValue(entities, e => e.Memo, definition.Memo_DefaultValue);
-            SetDefaultValue(entities, e => e.CustomsReference, definition.CustomsReference_DefaultValue);
-            SetDefaultValue(entities, e => e.ResourceLookup1Id, definition.ResourceLookup1_DefaultValue);
-            SetDefaultValue(entities, e => e.ResourceLookup2Id, definition.ResourceLookup2_DefaultValue);
-            SetDefaultValue(entities, e => e.ResourceLookup3Id, definition.ResourceLookup3_DefaultValue);
-            SetDefaultValue(entities, e => e.ResourceLookup4Id, definition.ResourceLookup4_DefaultValue);
+            SetDefaultValue(entities, e => e.ResourceId, definition.Resource_DefaultValue);
+            SetDefaultValue(entities, e => e.CustodianId, definition.Custodian_DefaultValue);
+            SetDefaultValue(entities, e => e.ResponsibilityCenterId, definition.ResponsibilityCenter_DefaultValue);
+            SetDefaultValue(entities, e => e.LocationId, definition.Location_DefaultValue);
 
             // Validate required stuff
-            ValidateIfRequired(entities, e => e.MassUnitId, definition.MassUnit_Visibility);
-            ValidateIfRequired(entities, e => e.VolumeUnitId, definition.VolumeUnit_Visibility);
-            ValidateIfRequired(entities, e => e.AreaUnitId, definition.AreaUnit_Visibility);
-            ValidateIfRequired(entities, e => e.LengthUnitId, definition.LengthUnit_Visibility);
-            ValidateIfRequired(entities, e => e.TimeUnitId, definition.TimeUnit_Visibility);
-            ValidateIfRequired(entities, e => e.CountUnitId, definition.CountUnit_Visibility);
-            ValidateIfRequired(entities, e => e.Memo, definition.Memo_Visibility);
-            ValidateIfRequired(entities, e => e.CustomsReference, definition.CustomsReference_Visibility);
-            ValidateIfRequired(entities, e => e.ResourceLookup1Id, definition.ResourceLookup1_Visibility);
-            ValidateIfRequired(entities, e => e.ResourceLookup2Id, definition.ResourceLookup2_Visibility);
-            ValidateIfRequired(entities, e => e.ResourceLookup3Id, definition.ResourceLookup3_Visibility);
-            ValidateIfRequired(entities, e => e.ResourceLookup4Id, definition.ResourceLookup4_Visibility);
+            ValidateIfRequired(entities, e => e.PartyReference, definition.PartyReference_Visibility);
+            ValidateIfRequired(entities, e => e.ResourceId, definition.Resource_Visibility);
+            ValidateIfRequired(entities, e => e.CustodianId, definition.Custodian_Visibility);
+            ValidateIfRequired(entities, e => e.ResponsibilityCenterId, definition.ResponsibilityCenter_Visibility);
+            ValidateIfRequired(entities, e => e.LocationId, definition.Location_Visibility);
 
             // No need to invoke SQL if the model state is full of errors
             if (ModelState.HasReachedMaxErrors)
@@ -164,18 +148,18 @@ namespace BSharp.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Resources_Validate__Save(DefinitionId, entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.Accounts_Validate__Save(DefinitionId, entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        private void SetDefaultValue<TKey>(List<ResourceForSave> entities, Expression<Func<ResourceForSave, TKey>> selector, TKey defaultValue)
+        private void SetDefaultValue<TKey>(List<AccountForSave> entities, Expression<Func<AccountForSave, TKey>> selector, TKey defaultValue)
         {
             if (defaultValue != null)
             {
-                Func<ResourceForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
-                Action<ResourceForSave, TKey> setPropValue = ControllerUtilities.GetAssigner(selector).Compile();
+                Func<AccountForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
+                Action<AccountForSave, TKey> setPropValue = ControllerUtilities.GetAssigner(selector).Compile();
 
                 entities.ForEach(entity =>
                 {
@@ -187,11 +171,11 @@ namespace BSharp.Controllers
             }
         }
 
-        private void ValidateIfRequired<TKey>(List<ResourceForSave> entities, Expression<Func<ResourceForSave, TKey>> selector, byte visibility)
+        private void ValidateIfRequired<TKey>(List<AccountForSave> entities, Expression<Func<AccountForSave, TKey>> selector, string visibility)
         {
-            if (visibility == Visibility.Required && !ModelState.HasReachedMaxErrors)
+            if (visibility == "RequiredInAccount" && !ModelState.HasReachedMaxErrors)
             {
-                Func<ResourceForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
+                Func<AccountForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
 
                 foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
                 {
@@ -199,7 +183,7 @@ namespace BSharp.Controllers
                     {
                         string propName = (selector.Body as MemberExpression).Member.Name; // The name of the property we're validating
                         string path = $"[{index}].{propName}";
-                        string propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(ResourceForSave), propName)? .DisplayName;
+                        string propDisplayName = _modelMetadataProvider.GetMetadataForProperty(typeof(AccountForSave), propName)? .DisplayName;
                         string errorMsg = _localizer[nameof(RequiredAttribute), propDisplayName];
 
                         ModelState.AddModelError(path, errorMsg);
@@ -214,16 +198,16 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override async Task<List<int>> SaveExecuteAsync(List<ResourceForSave> entities, ExpandExpression expand, bool returnIds)
+        protected override async Task<List<int>> SaveExecuteAsync(List<AccountForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.Resources__Save(DefinitionId, entities, returnIds: returnIds);
+            return await _repo.Accounts__Save(DefinitionId, entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Resources_Validate__Delete(DefinitionId, ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Accounts_Validate__Delete(DefinitionId, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -233,7 +217,7 @@ namespace BSharp.Controllers
         {
             try
             {
-                await _repo.Resources__Delete(ids);
+                await _repo.Accounts__Delete(ids);
             }
             catch (ForeignKeyViolationException)
             {
@@ -246,22 +230,22 @@ namespace BSharp.Controllers
             }
         }
 
-        protected override Query<Resource> GetAsQuery(List<ResourceForSave> entities)
+        protected override Query<Account> GetAsQuery(List<AccountForSave> entities)
         {
-            return _repo.Resources__AsQuery(DefinitionId, entities);
+            return _repo.Accounts__AsQuery(DefinitionId, entities);
         }
     }
 
-    // Generic API, allows reading all resources
+    // Generic API, allows reading all Accounts
 
-    [Route("api/resources")]
+    [Route("api/accounts")]
     [ApplicationApi]
-    public class ResourcesGenericController : FactWithIdControllerBase<Resource, int>
+    public class AccountsGenericController : FactWithIdControllerBase<Account, int>
     {
         private readonly ApplicationRepository _repo;
 
-        public ResourcesGenericController(
-            ILogger<ResourcesController> logger,
+        public AccountsGenericController(
+            ILogger<AccountsController> logger,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo) : base(logger, localizer)
         {
@@ -275,8 +259,8 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            // Get all permissions pertaining to resources
-            string prefix = ResourcesController.BASE_ADDRESS;
+            // Get all permissions pertaining to Accounts
+            string prefix = AccountsController.BASE_ADDRESS;
             var permissions = await _repo.GenericUserPermissions(action, prefix);
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
@@ -284,7 +268,7 @@ namespace BSharp.Controllers
             foreach (var permission in permissions.Where(e => e.ViewId != "all"))
             {
                 string definitionId = permission.ViewId.Remove(0, prefix.Length).Replace("'", "''");
-                string definitionPredicate = $"{nameof(Resource.ResourceDefinitionId)} eq '{definitionId}'";
+                string definitionPredicate = $"{nameof(Account.AccountDefinitionId)} eq '{definitionId}'";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
                     permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
@@ -299,30 +283,31 @@ namespace BSharp.Controllers
             return permissions;
         }
 
-        protected override Query<Resource> Search(Query<Resource> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        protected override Query<Account> Search(Query<Account> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            return ResourceControllerUtil.SearchImpl(query, args, filteredPermissions);
+            return AccountControllerUtil.SearchImpl(query, args, filteredPermissions);
         }
     }
 
-    internal class ResourceControllerUtil
+    internal class AccountControllerUtil
     {
         /// <summary>
         /// This is needed in both the generic and specific controllers, so we move it out here
         /// </summary>
-        public static Query<Resource> SearchImpl(Query<Resource> query, GetArguments args, IEnumerable<AbstractPermission> _)
+        public static Query<Account> SearchImpl(Query<Account> query, GetArguments args, IEnumerable<AbstractPermission> _)
         {
             string search = args.Search;
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.Replace("'", "''"); // escape quotes by repeating them
 
-                var name = nameof(Resource.Name);
-                var name2 = nameof(Resource.Name2);
-                var name3 = nameof(Resource.Name3);
-                var code = nameof(Resource.Code);
+                var name = nameof(Account.Name);
+                var name2 = nameof(Account.Name2);
+                var name3 = nameof(Account.Name3);
+                var code = nameof(Account.Code);
+                var partyRef = nameof(Account.PartyReference);
 
-                query = query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'");
+                query = query.Filter($"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}' or {partyRef} {Ops.contains} '{search}'");
             }
 
             return query;
