@@ -392,13 +392,14 @@
     <Build Include="Mapping\AccountClassifications__AsQuery.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__DeleteWithDescendants.sql" />
-    <Build Include="Mapping\map.AccountTypes.sql" />
+    <Build Include="Mapping\AccountTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountTypes__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Save.sql" />
     <Build Include="dbo\Tables\dbo.ResourceTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceTypes__Activate.sql" />
+    <Build Include="Mapping\ResourceTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
