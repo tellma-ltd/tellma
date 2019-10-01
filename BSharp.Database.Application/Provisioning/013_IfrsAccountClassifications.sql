@@ -6,7 +6,6 @@
 	[IsActive]		BIT
 );
 INSERT INTO @IfrsAccountClassifications([IfrsType], [IsActive], [Node], [Id], [Label]) VALUES
-
 (N'Regulatory', 1, N'/1/', N'Assets', N'Assets')
 ,(N'Regulatory', 1, N'/1/1/', N'NoncurrentAssets', N'Non-current assets')
 ,(N'Regulatory', 1, N'/1/1/1/', N'PropertyPlantAndEquipment', N'Property, plant and equipment')

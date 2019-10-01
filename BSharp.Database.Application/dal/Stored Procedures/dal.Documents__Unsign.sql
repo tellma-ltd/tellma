@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[dal_Documents__Unsign]
+﻿CREATE PROCEDURE [dal].[Documents__Unsign]
 	@Documents [dbo].[IdList] READONLY
 AS
 BEGIN

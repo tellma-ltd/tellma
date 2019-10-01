@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[dal_Views__Save]
+﻿CREATE PROCEDURE [dal].[Views__Save]
 	@Views [dbo].[ViewList] READONLY, 
 	@Permissions [dbo].[PermissionList] READONLY,
 	@ReturnIds BIT = 0

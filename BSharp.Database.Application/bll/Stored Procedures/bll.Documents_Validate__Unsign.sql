@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[bll_Documents_Validate__Unsign]
+﻿CREATE PROCEDURE [bll].[Documents_Validate__Unsign]
 	@Entities [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS

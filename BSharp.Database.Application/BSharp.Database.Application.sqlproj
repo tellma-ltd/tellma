@@ -159,9 +159,7 @@
     <Build Include="dbo\Functions\dbo.fn_User__Language.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Unpost.sql" />
     <Build Include="dbo\Tables\dbo.DocumentSignatures.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Documents__Unsign.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Documents__Unsign.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Documents_Validate__Unsign.sql" />
     <Build Include="dbo\Functions\dbo.fi_MyWorkspace.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignmentsHistory.sql" />
     <Build Include="dbo\Tables\dbo.Notifications.sql" />
@@ -173,8 +171,6 @@
     <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Roles__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.ViewList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Views__Save.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLineEntries.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineEntryList.sql" />
     <Build Include="dbo\Tables\dbo.RoleMemberships.sql" />
@@ -404,6 +400,11 @@
     <Build Include="Mapping\Accounts.sql" />
     <Build Include="Mapping\Accounts__AsQuery.sql" />
     <Build Include="Mapping\ResourceTypes.sql" />
+    <Build Include="api\Stored Procedures\api.Views__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Unsign.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Unsign.sql" />
+    <Build Include="dal\Stored Procedures\dal.Views__Save.sql" />
+    <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

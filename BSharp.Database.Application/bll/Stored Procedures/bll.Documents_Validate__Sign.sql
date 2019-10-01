@@ -67,15 +67,15 @@ BEGIN
 	WHERE (A.[IsDeprecated] = 0);
 
 	-- Not allowed to cause negative inventory balance
-	WITH IfrsAssetAccounts AS (
-		SELECT Id FROM dbo.[IfrsAccountClassifications]
+	WITH InventoriesAccountTypes AS (
+		SELECT Id FROM dbo.AccountTypes
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[IfrsAccountClassifications] WHERE Id = N'Assets')
+			(SELECT [Node] FROM dbo.AccountTypes WHERE Id = N'Assets')
 		) = 1
 	),
 	AssetAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts] A
-		WHERE A.[AccountDefinitionId] IN (N'finished-goods', N'raw-materials', N'inventories')
+		WHERE A.[AccountTypeId] IN (SELECT [Id] FROM InventoriesAccountTypes)
 	),
 	CurrentDocs AS (
 		SELECT MAX(FE.[Index]) AS [Index], DLE.AccountId,

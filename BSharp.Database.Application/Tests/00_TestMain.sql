@@ -26,7 +26,6 @@ BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[DocumentLineEntries]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[MeasurementUnits]', RESEED, 100) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Permissions]', RESEED, 0) WITH NO_INFOMSGS;
-	--DBCC CHECKIDENT ('[dbo].[ProductCategories]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ResourceClassifications]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ResourcePicks]', RESEED, 1) WITH NO_INFOMSGS;
@@ -59,11 +58,11 @@ BEGIN TRY
 	BEGIN TRANSACTION
 		:r .\01_RolesPermissions.sql		
 		:r .\02_Workflows.sql
-		--:r .\03_MeasurementUnits.sql
+		:r .\03_MeasurementUnits.sql
 		--:r .\04_IfrsConcepts.sql
-		--:r .\05_Agents.sql
+		:r .\05_Agents.sql
 	--	:r .\06_ResponsibilityCenters.sql
-		--:r .\07_Resources.sql
+		:r .\07_Resources.sql
 		:r .\08_AccountClassifications.sql
 		--:r .\10_JournalVouchers.sql
 		--:r .\71_Operations.sql

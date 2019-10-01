@@ -1,10 +1,10 @@
 ﻿CREATE PROCEDURE [dbo].[rpt_NegativeInventories]
 	@AsOfDate Date = '01.01.2020'
 AS
-	WITH IfrsInventoryAccounts AS (
-		SELECT Id FROM dbo.[IfrsAccountClassifications]
+	WITH InventoryAccountTypes AS (
+		SELECT Id FROM dbo.[AccountTypes]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[IfrsAccountClassifications] WHERE Id = N'Inventories')
+			(SELECT [Node] FROM dbo.[AccountTypes] WHERE Id = N'Inventories')
 		) = 1
 	)
 	SELECT
@@ -19,7 +19,7 @@ AS
 			SUM([Count]) AS [Count],
 			SUM([Value]) As [Value]
 	FROM dbo.[fi_Journal](NULL, @AsOfDate) J
-	WHERE [AccountDefinitionId] IN (SELECT Id FROM IfrsInventoryAccounts)
+	WHERE [AccountTypeId] IN (SELECT Id FROM InventoryAccountTypes)
 	GROUP BY
 			[AccountId],
 			[ResourceId],

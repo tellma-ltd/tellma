@@ -15,13 +15,13 @@ SET NOCOUNT ON;
 
 	-- Validate, checking available signatures for transaction type
 	INSERT INTO @ValidationErrors
-	EXEC [dbo].[bll_Documents_Validate__Unsign]
+	EXEC [bll].[Documents_Validate__Unsign]
 		@Entities = @Documents;;
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dbo].[dal_Documents__Unsign] @Documents = @Documents;
+	EXEC [dal].[Documents__Unsign] @Documents = @Documents;
 	
 	-- get the documents whose state will change
 	DECLARE @TransitionedIds [dbo].[IdWithStateList];

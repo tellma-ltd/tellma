@@ -48,14 +48,8 @@
 	[Memo]							NVARCHAR (2048), -- description
 	[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
 	[PreferredSupplierId]			INT,-- FK, Table Agents, specially for purchasing
---	Useful for smart posting, we may need a list of compatible accounts ResourceId, AccountId.
--- If no compatible list, we get all accounts compatible with IFRS. They come at the top
--- Must have in the tree at least one account per warehouse.
-	[ExpenseAccountId]				INT,
-	[RevenueAccountId]				INT, -- additional accounts to be decided when we reach smart posting
 	-- The following properties are user-defined, used for reporting
 	-- Examples for Steel finished goods are: Thickness and width. For cars: make and model.
-	[ProductCategoryId]				INT,
 	[ResourceLookup1Id]				INT					CONSTRAINT [FK_Resources__ResourceLookup1Id] FOREIGN KEY ([ResourceLookup1Id]) REFERENCES [dbo].[Lookups] ([Id]),
 	[ResourceLookup2Id]				INT,			-- UDL 
 	[ResourceLookup3Id]				INT,			-- UDL 
@@ -64,8 +58,6 @@
 	[CreatedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	[ModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[ModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	-- repeat for all lookups
-	CONSTRAINT [FK_Resources__ProductCategoryId] FOREIGN KEY ([ProductCategoryId]) REFERENCES [dbo].[ResourceClassifications] ([Id]),
 );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__Name2]

@@ -5,19 +5,13 @@
 	@CountUnitId INT
 AS
 BEGIN
-	-- Code commented since we are using ResourceType to distinguish
-	--WITH IfrsFinishedGoodsAccounts	AS (
-	--	SELECT Id FROM dbo.[IfrsAccounts]
-	--	WHERE [Node].IsDescendantOf(
-	--		(SELECT [Node] FROM dbo.IfrsAccounts WHERE Id = N'FinishedGoods')
-	--	) = 1
-	--),
-	--FinishedGoodsAccounts AS (
-	--	SELECT Id FROM dbo.[Accounts]
-	--	WHERE IfrsAccountId IN
-	--		(SELECT [Id] FROM IfrsFinishedGoodsAccounts)
-	--),
-	WITH UnitConversionRates([Id], [ConversionRate]) AS (
+	WITH FinishedGoodsResourceTypes AS (
+		SELECT Id FROM dbo.[ResourceTypes]
+		WHERE [Node].IsDescendantOf(
+			(SELECT [Node] FROM dbo.[ResourceTypes] WHERE Id = N'Inventories')
+		) = 1
+	),
+	UnitConversionRates([Id], [ConversionRate]) AS (
 		SELECT [Id], [UnitAmount] * (SELECT [BaseAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)
 		/ ([BaseAmount] * (SELECT [UnitAmount] FROM  dbo.MeasurementUnits WHERE [Id] = @MassUnitId)) As [ConversionRate]
 		FROM dbo.MeasurementUnits
@@ -38,7 +32,7 @@ BEGIN
 		LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
 		WHERE J.[IfrsEntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		-- TODO: we need a way to separate finished goods from the rest
-		AND RC.[ResourceDefinitionId] = N'finished-goods'
+		AND R.ResourceTypeId IN (SELECT [Id] FROM FinishedGoodsResourceTypes)
 		GROUP BY J.[ResponsibilityCenterId], R.ResourceLookup1Id
 	),
 	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (

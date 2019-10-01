@@ -14,38 +14,18 @@ BEGIN -- Cleanup & Declarations
 	DECLARE @R1IndexedIds dbo.IndexedIdList, @R2IndexedIds dbo.IndexedIdList, @R3IndexedIds dbo.IndexedIdList;
 
 END
-	INSERT INTO dbo.ResourceDefinitions ([SortKey],
-		[Id],								[Name],									[IfrsResourceClassificationId]) VALUES
-	(1,N'property-plant-and-equipment',		N'Property, plant and equipment',		N'PropertyPlantAndEquipment'),
-	(2,N'motor-vehicles',					N'Motor vehicles',						N'MotorVehicles'), --
-	(3,N'computer-equipment',				N'Computer equipment',					N'ComputerEquipment'), --
-	(4,N'investment-property',				N'Investment property',					N'InvestmentProperty'),
-	(5,N'intangible-assets',				N'Intangible assets other than goodwill',N'IntangibleAssets'),
-	(6,N'financial-assets',					N'Financial assets',					N'FinancialAssets'),
-	(7,N'received-checks',					N'Checks (received)',					N'FinancialAssets'), --
-	(8,N'investments',						N'Investments',							N'Investments'),	
-	(9,N'biological-assets',				N'Biological assets',					N'BiologicalAssets'),
-	(10,N'inventories',						N'Inventories',							N'Inventories'),
-	(11,N'raw-materials',					N'Raw Materials',						N'RawMaterials'),
-	(12,N'production-supplies',				N'Production Supplies',					N'ProductionSupplies'),
-	(13,N'unfinished-goods',				N'Work in progress',					N'WorkInProgress'),
-	(14,N'steel-products',					N'Steel products',						N'FinishedGoods'),
-	(15,N'plastic-products',				N'Plastic products',					N'FinishedGoods'),
-	(16,N'vehicles',						N'Vehicles',							N'FinishedGoods'),
-	(17,N'spare-parts',						N'Spare parts',							N'SpareParts'),
-	(18,N'cash-and-cash-equivalents',		N'Cash and cash equivalents',			N'CashAndCashEquivalents'),
-	(19,N'financial-liabilities',			N'Financial liabilities',				N'FinancialLiabilities'),
-	(20,N'issued-checks',					N'Checks (issued)',						N'FinancialLiabilities'),
-	(21,N'issued-letters-of-credit',		N'Letters of credit (issued)',			N'FinancialLiabilities'),
-	(21,N'employee-benefits',				N'Employee benefits',					N'EmployeeBenefitsExpense')
+	INSERT INTO dbo.ResourceDefinitions (
+		[Id],								[TitlePlural],							[TitleSingular]) VALUES
+	(N'general-resources',					N'General items',						N'General item'),
+	--(N'sdks',								N'SDKs',								N'SDK'),
+	--(N'steel-products',						N'Steel Products',						N'Steel product'), --
+	--(N'steel-rolls',						N'Steel Rolls',							N'Steel roll'), --
+	--(N'received-checks',					N'Checks (received)',					N'Check received'), --
+	--(N'strips',								N'Strips',								N'Strip'),	
+	--(N'plastic-products',					N'Plastic products',					N'Plastic product'),
+	--(N'issued-checks',						N'Checks (issued)',						N'Check (Issued)'),
+	--(N'issued-letters-of-credit',			N'Letters of credit (issued)',			N'LC (Issued)')
 	;
-
-	UPDATE RC_Child -- Fix Parent Id
-	SET RC_Child.ParentId = RC_Parent.Id
-	FROM dbo.ResourceClassifications RC_Child
-	JOIN dbo.ResourceClassifications RC_Parent 
-	ON RC_Child.[ParentNode] = RC_Parent.[Node]
-	AND RC_Child.[ResourceDefinitionId] = RC_Parent.[ResourceDefinitionId];
 BEGIN -- Inserting
 
 	:r .\07_Resources_PropertyPlantAndEquipment.sql

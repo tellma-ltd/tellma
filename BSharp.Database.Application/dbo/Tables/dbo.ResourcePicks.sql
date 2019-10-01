@@ -28,10 +28,10 @@
 	-- Examples of the following properties are given for SKD
 	-- However, they could also work for company vehicles, using Year, Make, and Model for Lookups
 	[ResourcePickLookup1Id]	INT,			-- External Color
-	[PickLookup2Id]			INT,			-- Internal Color
-	[PickLookup3Id]			INT,			-- Leather type
-	[PickLookup4Id]			INT,			-- Tire type
-	[PickLookup5Id]			INT,			-- Audio system
+	[ResourcePickLookup2Id]		INT,			-- Internal Color
+	[ResourcePickLookup3Id]		INT,			-- Leather type
+	[ResourcePickLookup4Id]		INT,			-- Tire type
+	[ResourcePickLookup5Id]		INT,			-- Audio system
 	-- ...
 --
 	[IsActive]					BIT					NOT NULL DEFAULT 1,

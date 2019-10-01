@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[api_Views__Save]
+﻿CREATE PROCEDURE [api].[Views__Save]
 	@Views [dbo].[ViewList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY, 
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT,
@@ -22,7 +22,7 @@ BEGIN
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dbo].[dal_Views__Save]
+	EXEC [dal].[Views__Save]
 		@Views = @Views,
 		@Permissions = @Permissions;
 END;
