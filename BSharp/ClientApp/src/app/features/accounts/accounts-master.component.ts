@@ -7,22 +7,22 @@ import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-
+import { AccountDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 @Component({
-  selector: 'b-resources-master',
-  templateUrl: './resources-master.component.html',
+  selector: 'b-accounts-master',
+  templateUrl: './accounts-master.component.html',
   styles: []
 })
-export class ResourcesMasterComponent extends MasterBaseComponent implements OnInit {
+export class AccountsMasterComponent extends MasterBaseComponent implements OnInit {
 
-  private resourcesApi = this.api.resourcesApi('', this.notifyDestruct$); // for intellisense
+  private accountsApi = this.api.accountsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
 
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
       this._definitionId = t;
-      this.resourcesApi = this.api.resourcesApi(t, this.notifyDestruct$);
+      this.accountsApi = this.api.accountsApi(t, this.notifyDestruct$);
     }
   }
 
@@ -46,7 +46,7 @@ export class ResourcesMasterComponent extends MasterBaseComponent implements OnI
 
         const definitionId = params.get('definitionId');
 
-        if (!definitionId || !this.workspace.current.definitions.Resources[definitionId]) {
+        if (!this.definition(definitionId)) {
           this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
         }
 
@@ -57,20 +57,24 @@ export class ResourcesMasterComponent extends MasterBaseComponent implements OnI
     });
   }
 
-  get viewId(): string {
-    return `resources/${this.definitionId}`;
+  public definition(definitionId: string): AccountDefinitionForClient {
+    return this.workspace.current.definitions.Accounts[definitionId];
   }
 
   public get c() {
-    return this.workspace.current.Resource;
+    return this.workspace.current.Account;
   }
 
   public get ws() {
     return this.workspace.current;
   }
 
+  get viewId(): string {
+    return `accounts/${this.definitionId}`;
+  }
+
   public onActivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.resourcesApi.activate(ids, { returnEntities: true }).pipe(
+    const obs$ = this.accountsApi.activate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -78,8 +82,8 @@ export class ResourcesMasterComponent extends MasterBaseComponent implements OnI
     return obs$;
   }
 
-  public onDeactivate = (ids: (number | string)[]): Observable<any> => {
-    const obs$ = this.resourcesApi.deactivate(ids, { returnEntities: true }).pipe(
+  public onDeprecate = (ids: (number | string)[]): Observable<any> => {
+    const obs$ = this.accountsApi.deactivate(ids, { returnEntities: true }).pipe(
       tap(res => addToWorkspace(res, this.workspace))
     );
 
@@ -87,14 +91,13 @@ export class ResourcesMasterComponent extends MasterBaseComponent implements OnI
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.viewId, 'IsActive', null);
+  public canActivateDeprecateItem = (_: (number | string)[]) => this.ws.canDo(this.viewId, 'IsDeprecated', null);
 
-  public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
+  public activateDeprecateTooltip = (ids: (number | string)[]) => this.canActivateDeprecateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.Resources[definitionId];
+    const definition = this.definition(this.definitionId);
     if (!definition) {
       return '???';
     }
@@ -103,8 +106,7 @@ export class ResourcesMasterComponent extends MasterBaseComponent implements OnI
   }
 
   public get summary(): string {
-    const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.Resources[definitionId];
+    const definition = this.definition(this.definitionId);
     if (!definition) {
       return '???';
     }

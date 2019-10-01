@@ -49,6 +49,12 @@ import { AccountClassificationsPickerComponent } from './account-classifications
 import { AccountTypesMasterComponent } from './account-types/account-types-master.component';
 import { AccountTypesDetailsComponent } from './account-types/account-types-details.component';
 import { AccountTypesPickerComponent } from './account-types/account-types-picker.component';
+import { AccountsMasterComponent } from './accounts/accounts-master.component';
+import { AccountsDetailsComponent } from './accounts/accounts-details.component';
+import { AccountsImportComponent } from './accounts/accounts-import.component';
+import { AccountsPickerComponent } from './accounts/accounts-picker.component';
+import { AgentsPickerComponent } from './agents/agents-picker.component';
+import { ResourcesPickerComponent } from './resources/resources-picker.component';
 
 const routes: Routes = [
   {
@@ -234,6 +240,23 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Accounts
+      {
+        path: 'accounts/:definitionId',
+        component: AccountsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'accounts/:definitionId/import',
+        component: AccountsImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'accounts/:definitionId/:id',
+        component: AccountsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -294,7 +317,13 @@ const routes: Routes = [
     AccountClassificationsPickerComponent,
     AccountTypesMasterComponent,
     AccountTypesDetailsComponent,
-    AccountTypesPickerComponent
+    AccountTypesPickerComponent,
+    AccountsMasterComponent,
+    AccountsDetailsComponent,
+    AccountsImportComponent,
+    AccountsPickerComponent,
+    AgentsPickerComponent,
+    ResourcesPickerComponent
   ],
   imports: [
     SharedModule,

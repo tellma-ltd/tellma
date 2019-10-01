@@ -1,0 +1,43 @@
+<b-master collection="Account" [definition]="definitionId" [mode]="mode"
+  [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="Code,IsDeprecated" inactiveFilter="IsDeprecated eq false" selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
+              { template: activate, action: onActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
+              { template: deprecate, action: onDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedById eq me'}
+            ]
+          }">
+</b-master>
+
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+  <div class="d-flex justify-content-between">
+    <b-auto-cell collection="Account" [definition]="definitionId" path="" [entity]="c[id]"></b-auto-cell>
+  </div>
+  <div class="d-flex justify-content-between mt-1 small">
+    <b-auto-cell collection="Account" [definition]="definitionId" path="Code" [entity]="c[id]"></b-auto-cell>
+  </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ summary }}
+  </ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+  <span class="text-truncate">
+    <b-auto-cell collection="Account" [definition]="definitionId" [entity]="c[id]"></b-auto-cell>
+  </span>
+</ng-template>
+
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deprecate> {{ 'Deprecate' | translate }} </ng-template>
+
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>

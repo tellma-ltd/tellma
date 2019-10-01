@@ -20,6 +20,7 @@ import { Resource } from './entities/resource';
 import { AccountClassification } from './entities/account-classification';
 import { Action } from './views';
 import { AccountType } from './entities/account-type';
+import { Account } from './entities/account';
 
 export enum MasterStatus {
 
@@ -166,6 +167,7 @@ export class TenantWorkspace {
   Resource: EntityWorkspace<Resource>;
   AccountClassification: EntityWorkspace<AccountClassification>;
   AccountType: EntityWorkspace<AccountType>;
+  Account: EntityWorkspace<Account>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -186,6 +188,7 @@ export class TenantWorkspace {
     this.Resource = new EntityWorkspace<Resource>();
     this.AccountClassification = new EntityWorkspace<AccountClassification>();
     this.AccountType = new EntityWorkspace<AccountType>();
+    this.Account = new EntityWorkspace<Account>();
 
     this.notifyStateChanged();
   }

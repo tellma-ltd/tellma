@@ -1,0 +1,21 @@
+<b-details-picker [masterTemplate]="master" [detailsTemplate]="details" collection="Agent" [filter]="filter">
+</b-details-picker>
+
+<!-- The Agent Details Modal -->
+<ng-template #details let-modal="modal" let-update="update" let-initialText="initialText"
+let-idString="idString">
+<div class="modal-body">
+    <b-agents-details mode="popup" [idString]="idString" [initialText]="initialText"
+        (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
+    </b-agents-details>
+</div>
+</ng-template>
+
+<!-- The Agent Master Modal -->
+<ng-template #master let-modal="modal" let-update="update" let-create="create">
+<div class="modal-body">
+    <b-agents-master mode="popup" (cancel)="modal.close(false);"
+        (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
+    </b-agents-master>
+</div>
+</ng-template>

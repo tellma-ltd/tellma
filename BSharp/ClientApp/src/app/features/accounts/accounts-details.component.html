@@ -1,0 +1,117 @@
+<b-details collection="Account" [definition]="definitionId" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
+    [actions]="[
+            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
+            { template: deactivate, action: onDeprecate, showAction: showDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
+           ]">
+
+</b-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
+</ng-template>
+
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit">
+
+    <!-- Header Name -->
+    <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Name">
+        <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+
+        <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
+            [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'"
+            required>
+        </b-text-editor>
+
+        <b-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
+            [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
+        </b-text-editor>
+
+        <b-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
+            [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
+        </b-text-editor>
+    </b-form-group>
+
+    <!-- Name -->
+    <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+        [serverErrors]="model?.serverErrors?.Name">
+        <div *ngIf="!isEdit">{{ model?.Name }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+        </b-text-editor>
+    </b-form-group>
+
+    <!-- Name2 -->
+    <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
+        [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
+        <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+    </b-form-group>
+
+    <!-- Name3 -->
+    <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
+        [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
+        <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+    </b-form-group>
+
+    <!-- Code -->
+    <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
+        <div *ngIf="!isEdit">{{ model?.Code }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+    </b-form-group>
+
+    <!-- Classification -->
+    <b-form-group class="b-form-group" [label]="p.AccountClassification?.label" [serverErrors]="model?.serverErrors?.AccountClassificationId">
+        <b-view-link *ngIf="!isEdit" link="../../../account-classifications" [itemId]="model?.AccountClassificationId">
+            <b-auto-cell collection="AccountClassification" path="AccountClassification" [entity]="model">
+            </b-auto-cell>
+        </b-view-link>
+        <b-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ResourceClassificationId">
+        </b-account-classifications-picker>
+    </b-form-group>
+
+    <!-- Custodian -->
+    <b-form-group class="b-form-group" [label]="p.Custodian?.label" *ngIf="!!p.Custodian"
+        [serverErrors]="model?.serverErrors?.CustodianId">
+        <b-view-link *ngIf="!isEdit" link="../../agents" [itemId]="model?.CustodianId">
+            <b-auto-cell collection="Account" [definition]="definitionId" path="Custodian" [entity]="model">
+            </b-auto-cell>
+        </b-view-link>
+
+        <b-agents-picker *ngIf="isEdit" [(ngModel)]="model.CustodianId" [required]="isRequired(d.Custodian_Visibility)">
+        </b-agents-picker>
+    </b-form-group>
+
+    <!-- Resource -->
+    <b-form-group class="b-form-group" [label]="p.Resource?.label" *ngIf="!!p.Resource"
+        [serverErrors]="model?.serverErrors?.ResourceId">
+        <b-view-link *ngIf="!isEdit" [link]="'../../resources/' + ws.Resource[model?.ResourceId]?.ResourceDefinitionId" [itemId]="model?.ResourceId">
+            <b-auto-cell collection="Account" [definition]="definitionId" path="Resource" [entity]="model">
+            </b-auto-cell>
+        </b-view-link>
+
+        <b-resources-picker *ngIf="isEdit" [(ngModel)]="model.CustodianId" [required]="isRequired(d.Resource_Visibility)">
+        </b-resources-picker>
+    </b-form-group>
+
+    <!-- Party Reference -->
+    <b-form-group class="b-form-group" [label]="p.PartyReference?.label" *ngIf="!!p.PartyReference"
+        [serverErrors]="model?.serverErrors?.PartyReference">
+        <div *ngIf="!isEdit">{{ model?.PartyReference }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.PartyReference" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="isRequired(d.PartyReference_Visibility)">
+        </b-text-editor>
+    </b-form-group>
+
+    <!-- Is Deprecated -->
+    <b-form-group class="b-form-group" [label]="'Account_IsDeprecated' | translate" *ngIf="!isEdit">
+        <b-auto-cell collection="Account" [definition]="definitionId" [entity]="model" path="IsDeprecated">
+        </b-auto-cell>
+    </b-form-group>
+</ng-template>
+
+<!-- Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

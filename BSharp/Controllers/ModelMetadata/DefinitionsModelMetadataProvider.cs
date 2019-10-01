@@ -65,6 +65,46 @@ namespace BSharp.Controllers
             // Call the base implementation
             var propsDetails = base.CreatePropertyDetails(key);
 
+            // Customize the label of Account properties
+            if (key.ModelType.IsSameOrSubClassOf<AccountForSave>())
+            {
+                foreach (var propDetails in propsDetails)
+                {
+                    var defaultName = propDetails.ModelAttributes.PropertyAttributes
+                        .OfType<DisplayAttribute>().FirstOrDefault()?.Name ?? propDetails.Key.Name;
+
+                    DisplayMetadata displayMetadata;
+
+                    switch(propDetails.Key.Name)
+                    {
+                        // All dynamically labelled properties
+                        case nameof(Account.ResponsibilityCenter):
+                        case nameof(Account.ResponsibilityCenterId):
+                            displayMetadata = LocalizeAccountProperty(e => e.ResponsibilityCenter_Visibility, e => e.ResponsibilityCenter_Label, e => e.ResponsibilityCenter_Label2, e => e.ResponsibilityCenter_Label3, defaultName);
+                            break;
+
+                        case nameof(Account.Custodian):
+                        case nameof(Account.CustodianId):
+                            displayMetadata = LocalizeAccountProperty(e => e.Custodian_Visibility, e => e.Custodian_Label, e => e.Custodian_Label2, e => e.Custodian_Label3, defaultName);
+                            break;
+
+                        case nameof(Account.Resource):
+                        case nameof(Account.ResourceId):
+                            displayMetadata = LocalizeAccountProperty(e => e.Resource_Visibility, e => e.Resource_Label, e => e.Resource_Label2, e => e.Resource_Label3, defaultName);
+                            break;
+
+                        case nameof(Account.Location):
+                        case nameof(Account.LocationId):
+                            displayMetadata = LocalizeAccountProperty(e => e.Location_Visibility, e => e.Location_Label, e => e.Location_Label2, e => e.Location_Label3, defaultName);
+                            break;
+
+                        case nameof(Account.PartyReference):
+                            displayMetadata = LocalizeAccountProperty(e => e.PartyReference_Visibility, e => e.PartyReference_Label, e => e.PartyReference_Label2, e => e.PartyReference_Label3, defaultName);
+                            break;
+                    }
+                }
+            }
+
             // Customize the label of Resource properties
             if (key.ModelType.IsSameOrSubClassOf<ResourceForSave>())
             {
@@ -223,9 +263,55 @@ namespace BSharp.Controllers
                         var tenantId = _tenantIdAccessor.GetTenantId();
                         var definition = _definitionsCache.GetDefinitionsIfCached(tenantId)?.Data?.Resources?.GetValueOrDefault(definitionId);
 
-                        if(definition != null)
+                        if (definition != null)
                         {
                             if (visibiilityFunc(definition) >= Visibility.Visible)
+                            {
+                                result = _tenantInfoAccessor.GetCurrentInfo().Localize(
+                                    s1Func(definition),
+                                    s2Func(definition),
+                                    s3Func(definition)) ?? result;
+                            }
+                            else
+                            {
+                                result = Constants.HIDDEN_FIELD;
+                            }
+                        }
+                    }
+
+                    return result;
+                }
+            };
+        }
+
+
+        DisplayMetadata LocalizeAccountProperty(
+            Func<AccountDefinitionForClient, string> visibiilityFunc,
+            Func<AccountDefinitionForClient, string> s1Func,
+            Func<AccountDefinitionForClient, string> s2Func,
+            Func<AccountDefinitionForClient, string> s3Func,
+            string defaultDisplayName)
+        {
+            return new DisplayMetadata
+            {
+                // Return a dynamic display name from the definitions, and fall back to
+                // the default if non are available. Be as forgiving as possible
+                DisplayName = () =>
+                {
+
+                    string result = _localizer[defaultDisplayName];
+                    var routeData = _httpContextAccessor.HttpContext.GetRouteData();
+                    var definitionId = routeData.Values["definitionId"]?.ToString();
+
+                    if (!string.IsNullOrWhiteSpace(definitionId))
+                    {
+                        var tenantId = _tenantIdAccessor.GetTenantId();
+                        var definition = _definitionsCache.GetDefinitionsIfCached(tenantId)?.Data?.Accounts?.GetValueOrDefault(definitionId);
+
+                        if (definition != null)
+                        {
+                            var vis = visibiilityFunc(definition);
+                            if (vis == AccountVisibility.RequiredInAccounts || vis == AccountVisibility.RequiredInEntries || vis == AccountVisibility.OptionalInEntries)
                             {
                                 result = _tenantInfoAccessor.GetCurrentInfo().Localize(
                                     s1Func(definition),

@@ -76,7 +76,7 @@ CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
       result.Name3 = this.initialText;
     }
 
-    const defs = this.ws.definitions.Resources[this.definitionId];
+    const defs = this.d;
 
     result.MassUnitId = defs.MassUnit_DefaultValue;
     result.VolumeUnitId = defs.VolumeUnit_DefaultValue;
@@ -103,23 +103,19 @@ CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
   }
 
   public get resourceLookup1Definition() {
-    return (metadata_Resource(this.ws, this.translate, this.definitionId)
-    .properties.ResourceLookup1 as NavigationPropDescriptor).definition;
+    return (this.p.ResourceLookup1 as NavigationPropDescriptor).definition;
   }
 
   public get resourceLookup2Definition() {
-    return (metadata_Resource(this.ws, this.translate, this.definitionId)
-    .properties.ResourceLookup2 as NavigationPropDescriptor).definition;
+    return (this.p.ResourceLookup2 as NavigationPropDescriptor).definition;
   }
 
   public get resourceLookup3Definition() {
-    return (metadata_Resource(this.ws, this.translate, this.definitionId)
-    .properties.ResourceLookup3 as NavigationPropDescriptor).definition;
+    return (this.p.ResourceLookup3 as NavigationPropDescriptor).definition;
   }
 
   public get resourceLookup4Definition() {
-    return (metadata_Resource(this.ws, this.translate, this.definitionId)
-    .properties.ResourceLookup4 as NavigationPropDescriptor).definition;
+    return (this.p.ResourceLookup4 as NavigationPropDescriptor).definition;
   }
 
   public get d(): ResourceDefinitionForClient {

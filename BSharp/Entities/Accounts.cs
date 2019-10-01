@@ -110,7 +110,5 @@ namespace BSharp.Entities
         [Display(Name = "Account_Location")]
         [ForeignKey(nameof(LocationId))]
         public Location Location { get; set; }
-
     }
-
 }

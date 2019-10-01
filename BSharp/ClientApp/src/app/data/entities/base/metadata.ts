@@ -12,12 +12,13 @@ import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
 import {
     metadata_VoucherBooklet, metadata_ResourcePick, metadata_ResponsibilityCenter,
-    metadata_IfrsAccountClassification, metadata_IfrsEntryClassification, metadata_Account
+    metadata_IfrsAccountClassification, metadata_IfrsEntryClassification
 } from '../_temp';
 import { metadata_AccountClassification } from '../account-classification';
 import { metadata_AccountType } from '../account-type';
+import { metadata_Account } from '../account';
 
-export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, subtype: string) => EntityDescriptor } = {
+export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, definitionId: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
     User: metadata_User,
     Agent: metadata_Agent,
@@ -29,6 +30,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     Resource: metadata_Resource,
     AccountClassification: metadata_AccountClassification,
     AccountType: metadata_AccountType,
+    Account: metadata_Account,
 
     // Temp
     VoucherBooklet: metadata_VoucherBooklet,
@@ -36,7 +38,6 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     ResponsibilityCenter: metadata_ResponsibilityCenter,
     IfrsAccountClassification: metadata_IfrsAccountClassification,
     IfrsEntryClassification: metadata_IfrsEntryClassification,
-    Account: metadata_Account,
 };
 
 export interface EntityDescriptor {
@@ -159,9 +160,14 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
     control: 'navigation';
 
     /**
-     * Determines the subtype of the entities that reside in these properties (e.g. Inventory vs. Resource)
+     * Determines the definitionId of the entities that reside in these properties (e.g. Inventory vs. Resource)
      */
     definition?: string;
+
+    /**
+     * Determines the list of possible definition Ids
+     */
+    definitions?: string[];
 
     /**
      * The name of the foreign key property

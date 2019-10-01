@@ -77,12 +77,14 @@ namespace BSharp.Controllers.Dto
         public string Resource_Label3 { get; set; }
         public string Resource_Visibility { get; set; }
         public int? Resource_DefaultValue { get; set; }
+        public string Resource_DefinitionList { get; set; }
 
         public string Location_Label { get; set; }
         public string Location_Label2 { get; set; }
         public string Location_Label3 { get; set; }
         public string Location_Visibility { get; set; }
         public int? Location_DefaultValue { get; set; }
+        public string Location_DefinitionList { get; set; }
 
         public string PartyReference_Label { get; set; }
         public string PartyReference_Label2 { get; set; }
@@ -190,5 +192,13 @@ namespace BSharp.Controllers.Dto
         public const byte Hidden = 0;
         public const byte Visible = 1;
         public const byte Required = 2;
+    }
+
+    public static class AccountVisibility
+    {
+        public const string None = nameof(None);
+        public const string RequiredInAccounts = nameof(RequiredInAccounts);
+        public const string RequiredInEntries = nameof(RequiredInEntries);
+        public const string OptionalInEntries = nameof(OptionalInEntries);
     }
 }

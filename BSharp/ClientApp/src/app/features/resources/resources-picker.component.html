@@ -1,0 +1,22 @@
+<b-details-picker [masterTemplate]="master" [detailsTemplate]="details" [filter]="filter"
+    [definitionIds]="definitionIds" definitionProperty="ResourceDefinitionId" collection="Resource">
+</b-details-picker>
+
+<!-- The Resource Details Modal -->
+<ng-template #details let-modal="modal" let-update="update" let-initialText="initialText"
+    let-definitionId="definitionId" let-idString="idString">
+    <div class="modal-body">
+        <b-resources-details mode="popup" [idString]="idString" [initialText]="initialText"
+            [definitionId]="definitionId" (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
+        </b-resources-details>
+    </div>
+</ng-template>
+
+<!-- The Resource Master Modal -->
+<ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId">
+    <div class="modal-body">
+        <b-resources-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId"
+            (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
+        </b-resources-master>
+    </div>
+</ng-template>
