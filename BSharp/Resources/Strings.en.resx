@@ -67,6 +67,33 @@
   <data name="AccessDeniedMessage" xml:space="preserve">
     <value>You do not have access to this resource.</value>
   </data>
+  <data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Account_Classification" xml:space="preserve">
+    <value>Classification</value>
+  </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>Custodian</value>
+  </data>
+  <data name="Account_IsDeprecated" xml:space="preserve">
+    <value>Is Deprecated</value>
+  </data>
+  <data name="Account_Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Account_PartyReference" xml:space="preserve">
+    <value>Party Reference</value>
+  </data>
+  <data name="Account_Resource" xml:space="preserve">
+    <value>Resource</value>
+  </data>
+  <data name="Account_ResponsibilityCenter" xml:space="preserve">
+    <value>Responsibility Center</value>
+  </data>
+  <data name="Account_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
   <data name="AccountClassification" xml:space="preserve">
     <value>Account Classification</value>
   </data>
@@ -75,6 +102,9 @@
   </data>
   <data name="AccountClassifications" xml:space="preserve">
     <value>Account Classifications</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>Accounts</value>
   </data>
   <data name="AccountType" xml:space="preserve">
     <value>Account Type</value>
@@ -486,6 +516,12 @@
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>Secondary language cannot be the same as the primary language.</value>
+  </data>
+  <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
+    <value>Ternary language cannot be the same as the primary language.</value>
+  </data>
+  <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
+    <value>Ternary language cannot be the same as the secondary language.</value>
   </data>
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>The {0} '{1}' is used in one or more accounts</value>
@@ -931,6 +967,9 @@
   <data name="Resource_TimeUnit" xml:space="preserve">
     <value>Time Unit</value>
   </data>
+  <data name="Resource_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>Volume Unit</value>
   </data>
@@ -990,12 +1029,6 @@
   </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>Ternary Language</value>
-  </data>
-  <data name="Settings_TernaryLanguage" xml:space="preserve">
-    <value>Ternary Language</value>
-  </data>
-  <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
-    <value>Ternary Language Symbol</value>
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>Ternary Language Symbol</value>

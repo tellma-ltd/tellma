@@ -13,9 +13,9 @@ using Xunit.Abstractions;
 
 namespace BSharp.IntegrationTests.Scenario_01
 {
-    public class Tests_AccountTypes : Scenario_01
+    public class Tests_06_AccountTypes : Scenario_01
     {
-        public Tests_AccountTypes(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_06_AccountTypes(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 

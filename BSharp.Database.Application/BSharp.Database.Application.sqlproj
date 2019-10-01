@@ -399,6 +399,10 @@
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Save.sql" />
     <Build Include="dbo\Tables\dbo.ResourceTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceTypes__Activate.sql" />
+    <Build Include="dal\Stored Procedures\dal.Accounts__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Delete.sql" />
+    <Build Include="Mapping\Accounts.sql" />
+    <Build Include="Mapping\Accounts__AsQuery.sql" />
     <Build Include="Mapping\ResourceTypes.sql" />
   </ItemGroup>
   <ItemGroup>

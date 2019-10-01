@@ -5,6 +5,7 @@
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
 	[Code]							NVARCHAR (255),
+	[ResourceTypeId]				NVARCHAR (255)		NOT NULL,
 	[ResourceClassificationId]		INT,
 	--[UnitMonetaryValue]				DECIMAL,
 	[CurrencyId]					NCHAR (3),

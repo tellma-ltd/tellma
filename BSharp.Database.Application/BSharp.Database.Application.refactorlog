@@ -812,4 +812,10 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ResponsibilityCenterLabel3]" />
   </Operation>
+  <Operation Name="Move Schema" Key="480b0cff-7e12-4f97-940f-0cd4e6f4b6d6" ChangeDateTime="10/01/2019 11:04:01">
+    <Property Name="ElementName" Value="[dbo].[Accounts__AsQuery]" />
+    <Property Name="ElementType" Value="SqlMultiStatementTableValuedFunction" />
+    <Property Name="NewSchema" Value="map" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
 </Operations>

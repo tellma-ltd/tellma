@@ -22,6 +22,10 @@ namespace BSharp.Controllers.Dto
         /// </summary>
         public Dictionary<string, ResourceDefinitionForClient> Resources { get; set; }
 
+        /// <summary>
+        /// Mapping from resource definition Id to resource definition
+        /// </summary>
+        public Dictionary<string, AccountDefinitionForClient> Accounts { get; set; }
 
         /// <summary>
         /// Mapping from lookup definition Id to lookup definition
@@ -52,6 +56,38 @@ namespace BSharp.Controllers.Dto
     public class LineTypeForClient // related entity for document definition
     {
         // TODO
+    }
+
+    public class AccountDefinitionForClient : DefinitionForClient
+    {
+        public string ResponsibilityCenter_Label { get; set; }
+        public string ResponsibilityCenter_Label2 { get; set; }
+        public string ResponsibilityCenter_Label3 { get; set; }
+        public string ResponsibilityCenter_Visibility { get; set; }
+        public int? ResponsibilityCenter_DefaultValue { get; set; }
+
+        public string Custodian_Label { get; set; }
+        public string Custodian_Label2 { get; set; }
+        public string Custodian_Label3 { get; set; }
+        public string Custodian_Visibility { get; set; }
+        public int? Custodian_DefaultValue { get; set; }
+
+        public string Resource_Label { get; set; }
+        public string Resource_Label2 { get; set; }
+        public string Resource_Label3 { get; set; }
+        public string Resource_Visibility { get; set; }
+        public int? Resource_DefaultValue { get; set; }
+
+        public string Location_Label { get; set; }
+        public string Location_Label2 { get; set; }
+        public string Location_Label3 { get; set; }
+        public string Location_Visibility { get; set; }
+        public int? Location_DefaultValue { get; set; }
+
+        public string PartyReference_Label { get; set; }
+        public string PartyReference_Label2 { get; set; }
+        public string PartyReference_Label3 { get; set; }
+        public string PartyReference_Visibility { get; set; }
     }
 
     public class ResourceDefinitionForClient : DefinitionForClient

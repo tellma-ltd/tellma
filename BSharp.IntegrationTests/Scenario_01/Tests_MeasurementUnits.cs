@@ -13,9 +13,9 @@ using Xunit.Abstractions;
 
 namespace BSharp.IntegrationTests.Scenario_01
 {
-    public class Tests_MeasurementUnits : Scenario_01
+    public class Tests_05_MeasurementUnits : Scenario_01
     {
-        public Tests_MeasurementUnits(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_05_MeasurementUnits(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 

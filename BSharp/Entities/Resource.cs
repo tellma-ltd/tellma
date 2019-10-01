@@ -28,6 +28,10 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
+        [Display(Name = "Resource_Type")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        public string ResourceTypeId { get; set; }
+
         [Display(Name = "Resource_Classification")]
         public int? ResourceClassificationId { get; set; }
 
@@ -103,6 +107,9 @@ namespace BSharp.Entities
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
+        [Display(Name = "Resource_Type")]
+        [ForeignKey(nameof(ResourceTypeId))]
+        public AccountType ResourceType { get; set; }
 
         [Display(Name = "Resource_Classification")]
         [ForeignKey(nameof(ResourceClassificationId))]

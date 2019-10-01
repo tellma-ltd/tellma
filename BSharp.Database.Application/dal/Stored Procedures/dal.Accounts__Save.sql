@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Accounts__Save]
-	@DefinitionId NVARCHAR (255),
+	@DefinitionId NVARCHAR (50),
 	@Entities [dbo].[AccountList] READONLY,
 	@ReturnIds BIT = 0
 AS

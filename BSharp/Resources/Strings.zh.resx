@@ -67,6 +67,33 @@
   <data name="AccessDeniedMessage" xml:space="preserve">
     <value>您没有使用这些资源。</value>
   </data>
+  <data name="Account" xml:space="preserve">
+    <value>帐户</value>
+  </data>
+  <data name="Account_Classification" xml:space="preserve">
+    <value>分类</value>
+  </data>
+  <data name="Account_Custodian" xml:space="preserve">
+    <value>保管人</value>
+  </data>
+  <data name="Account_IsDeprecated" xml:space="preserve">
+    <value>已弃用</value>
+  </data>
+  <data name="Account_Location" xml:space="preserve">
+    <value>位置</value>
+  </data>
+  <data name="Account_PartyReference" xml:space="preserve">
+    <value>党的文献</value>
+  </data>
+  <data name="Account_Resource" xml:space="preserve">
+    <value>资源</value>
+  </data>
+  <data name="Account_ResponsibilityCenter" xml:space="preserve">
+    <value>责任中心</value>
+  </data>
+  <data name="Account_Type" xml:space="preserve">
+    <value>类型</value>
+  </data>
   <data name="AccountClassification" xml:space="preserve">
     <value>帐户分类</value>
   </data>
@@ -75,6 +102,9 @@
   </data>
   <data name="AccountClassifications" xml:space="preserve">
     <value>帐户分类</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>帐号</value>
   </data>
   <data name="AccountType" xml:space="preserve">
     <value>帐户类型</value>
@@ -486,6 +516,12 @@
   </data>
   <data name="Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
     <value>中学语文不能是相同的主要语言。</value>
+  </data>
+  <data name="Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage" xml:space="preserve">
+    <value>三元语言不能与主要语言相同。</value>
+  </data>
+  <data name="Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage" xml:space="preserve">
+    <value>三元语言不能与第二语言相同。</value>
   </data>
   <data name="Error_The01IsUsedInOneOrMoreAccounts" xml:space="preserve">
     <value>{0}'{1}'用于一个或多个帐户</value>
@@ -931,6 +967,9 @@
   <data name="Resource_TimeUnit" xml:space="preserve">
     <value>时间单位</value>
   </data>
+  <data name="Resource_Type" xml:space="preserve">
+    <value>类型</value>
+  </data>
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>体积单位</value>
   </data>
@@ -990,12 +1029,6 @@
   </data>
   <data name="Settings_TernaryLanguage" xml:space="preserve">
     <value>三元语言</value>
-  </data>
-  <data name="Settings_TernaryLanguage" xml:space="preserve">
-    <value>三元语言</value>
-  </data>
-  <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
-    <value>三元语言符号</value>
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>三元语言符号</value>

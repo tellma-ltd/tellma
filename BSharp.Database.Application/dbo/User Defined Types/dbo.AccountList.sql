@@ -8,7 +8,6 @@
 	[Name3]							NVARCHAR (255),
 	[Code]							NVARCHAR (255),
 	[PartyReference]				NVARCHAR (255),
-	[SubAccountId]					INT				NOT NULL DEFAULT 0,
 	[ResponsibilityCenterId]		INT, -- e.g., Ashenafi
 	[CustodianId]					INT, -- Alex
 	[ResourceId]					INT,

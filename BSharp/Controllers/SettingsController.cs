@@ -220,18 +220,21 @@ namespace BSharp.Controllers
 
         private void ValidateAndPreprocessSettings(SettingsForSave entity)
         {
-            if (string.IsNullOrWhiteSpace(entity.SecondaryLanguageId))
-            {
-                entity.SecondaryLanguageSymbol = null;
-            }
-            else
+            if (!string.IsNullOrWhiteSpace(entity.SecondaryLanguageId) || !string.IsNullOrWhiteSpace(entity.TernaryLanguageId))
             {
                 if (string.IsNullOrWhiteSpace(entity.PrimaryLanguageSymbol))
                 {
                     ModelState.AddModelError(nameof(entity.PrimaryLanguageSymbol),
                         _localizer[nameof(RequiredAttribute), _localizer["Settings_PrimaryLanguageSymbol"]]);
                 }
+            }
 
+            if (string.IsNullOrWhiteSpace(entity.SecondaryLanguageId))
+            {
+                entity.SecondaryLanguageSymbol = null;
+            }
+            else
+            {
                 if (string.IsNullOrWhiteSpace(entity.SecondaryLanguageSymbol))
                 {
                     ModelState.AddModelError(nameof(entity.SecondaryLanguageSymbol),
@@ -240,9 +243,33 @@ namespace BSharp.Controllers
 
                 if (entity.SecondaryLanguageId == entity.PrimaryLanguageId)
                 {
-
                     ModelState.AddModelError(nameof(entity.SecondaryLanguageId),
                         _localizer["Error_SecondaryLanguageCannotBeTheSameAsPrimaryLanguage"]);
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(entity.TernaryLanguageId))
+            {
+                entity.TernaryLanguageSymbol = null;
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(entity.TernaryLanguageSymbol))
+                {
+                    ModelState.AddModelError(nameof(entity.TernaryLanguageSymbol),
+                        _localizer[nameof(RequiredAttribute), _localizer["Settings_TernaryLanguageSymbol"]]);
+                }
+
+                if (entity.TernaryLanguageId == entity.PrimaryLanguageId)
+                {
+                    ModelState.AddModelError(nameof(entity.TernaryLanguageId),
+                        _localizer["Error_TernaryLanguageCannotBeTheSameAsPrimaryLanguage"]);
+                }
+
+                if (entity.TernaryLanguageId == entity.SecondaryLanguageId)
+                {
+                    ModelState.AddModelError(nameof(entity.TernaryLanguageId),
+                        _localizer["Error_TernaryLanguageCannotBeTheSameAsSecondaryLanguage"]);
                 }
             }
 

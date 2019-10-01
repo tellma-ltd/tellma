@@ -13,20 +13,20 @@ using Xunit.Abstractions;
 
 namespace BSharp.IntegrationTests.Scenario_01
 {
-    public class Tests_09_Resources : Scenario_01
+    public class Tests_12_Accounts : Scenario_01
     {
-        public Tests_09_Resources(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
+        public Tests_12_Accounts(Scenario_01_WebApplicationFactory factory, ITestOutputHelper output) : base(factory, output)
         {
         }
 
-        public readonly string _baseAddress = "resources";
-        public readonly string _definitionId = "raw-materials";
+        public readonly string _baseAddress = "accounts";
+        public readonly string _definitionId = "gl-accounts";
 
         public string ViewId => $"{_baseAddress}/{_definitionId}"; // For permissions
-        public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic resources
-        public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific resource definition
+        public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic accounts
+        public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific account definition
 
-        [Fact(DisplayName = "01 Getting a specific type of resource before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "01 Getting a specific type of account before granting permissions returns a 403 Forbidden response")]
         public async Task Test01()
         {
             var response = await Client.GetAsync(Url);
@@ -39,7 +39,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
 
 
-        [Fact(DisplayName = "02 Getting all resources before granting permissions returns a 403 Forbidden response")]
+        [Fact(DisplayName = "02 Getting all accounts before granting permissions returns a 403 Forbidden response")]
         public async Task Test02()
         {
             var response = await Client.GetAsync(GenericlUrl);
@@ -51,7 +51,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
-        [Fact(DisplayName = "03 Getting resources of a specific type before creating any returns a 200 OK empty collection")]
+        [Fact(DisplayName = "03 Getting accounts of a specific type before creating any returns a 200 OK empty collection")]
         public async Task Test03()
         {
             await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id gt -1");
@@ -64,16 +64,16 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetResponse<Resource>>();
+            var responseData = await response.Content.ReadAsAsync<GetResponse<Account>>();
 
             // Assert the result makes sense
-            Assert.Equal("Resource", responseData.CollectionName);
+            Assert.Equal("Account", responseData.CollectionName);
 
             Assert.Equal(0, responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 
-        [Fact(DisplayName = "04 Getting all resources before creating any returns a 200 OK empty collection")]
+        [Fact(DisplayName = "04 Getting all accounts before creating any returns a 200 OK empty collection")]
         public async Task Test04()
         {
             // Call the API
@@ -84,16 +84,16 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm the result is a well formed response
-            var responseData = await response.Content.ReadAsAsync<GetResponse<Resource>>();
+            var responseData = await response.Content.ReadAsAsync<GetResponse<Account>>();
 
             // Assert the result makes sense
-            Assert.Equal("Resource", responseData.CollectionName);
+            Assert.Equal("Account", responseData.CollectionName);
 
             Assert.Equal(0, responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
 
-        [Fact(DisplayName = "05 Getting a non-existent specific resource id returns a 404 Not Found")]
+        [Fact(DisplayName = "05 Getting a non-existent specific account id returns a 404 Not Found")]
         public async Task Test05()
         {
             int nonExistentId = 5000;
@@ -103,85 +103,97 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "06 Saving a single well-formed ResourceForSave returns a 200 OK result")]
+        [Fact(DisplayName = "06 Saving a single well-formed AccountForSave returns a 200 OK result")]
         public async Task Test06()
         {
             // Prepare a well formed entity
-            var dtoForSave = new ResourceForSave
+            var dtoForSave = new AccountForSave
             {
-                Name = "HR 1000x0.8",
-                Name2 = "HR 1000x0.8",
-                Code = "HR 1000x0.8",
-                MassUnitId = Shared.Get<MeasurementUnit>("MeasurementUnit_kg").Id,
-                Memo = "This is a memo",
-                ResourceTypeId = "Inventories"
+                Name = "Accounts Payable",
+                Name2 = "مستحقات",
+                Code = "Payables",
+                AccountTypeId = "TradeAndOtherCurrentPayables",
+                AccountClassificationId = null,
+                PartyReference = "3205959",
+                ResponsibilityCenterId = null,
+                ResourceId = Shared.Get<Resource>("Resource_HR1000x0.8").Id,
+                CustodianId = Shared.Get<Agent>("Agent_JohnWick").Id,
+                LocationId = null
             };
 
             // Save it
-            var dtosForSave = new List<ResourceForSave> { dtoForSave };
+            var dtosForSave = new List<AccountForSave> { dtoForSave };
             var response = await Client.PostAsJsonAsync(Url, dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Assert that the response is well-formed singleton of Resource
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Resource>>();
+            // Assert that the response is well-formed singleton of Account
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Account>>();
             Assert.Single(responseData.Result);
 
             // Assert that the result matches the saved entity
-            Assert.Equal("Resource", responseData.CollectionName);
+            Assert.Equal("Account", responseData.CollectionName);
 
             // Retreve the entity from the entities
             var responseDto = responseData.Result.SingleOrDefault();
 
             Assert.NotNull(responseDto?.Id);
-            Assert.Equal(_definitionId, responseDto.ResourceDefinitionId);
+            Assert.Equal(_definitionId, responseDto.AccountDefinitionId);
             Assert.Equal(dtoForSave.Name, responseDto.Name);
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
+            Assert.Equal(dtoForSave.Name3, responseDto.Name3);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
-            Assert.Equal(dtoForSave.MassUnitId, responseDto.MassUnitId);
-            Assert.Equal(dtoForSave.Memo, responseDto.Memo);
-
-            Shared.Set("Resource_HR1000x0.8", responseDto);
+            Assert.Equal(dtoForSave.PartyReference, responseDto.PartyReference);
+            Assert.Equal(dtoForSave.ResourceId, responseDto.ResourceId);
+            Assert.Equal(dtoForSave.CustodianId, responseDto.CustodianId);
+            Assert.Equal(dtoForSave.ResponsibilityCenterId, responseDto.ResponsibilityCenterId);
+            Assert.Equal(dtoForSave.LocationId, responseDto.LocationId);
+            Shared.Set("Account_Payables", responseDto);
         }
 
-        [Fact(DisplayName = "07 Getting the Id of the specific ResourceForSave just saved returns a 200 OK result")]
+        [Fact(DisplayName = "07 Getting the Id of the specific AccountForSave just saved returns a 200 OK result")]
         public async Task Test07()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = Shared.Get<Resource>("Resource_HR1000x0.8");
+            var entity = Shared.Get<Account>("Account_Payables");
             var id = entity.Id;
             var response = await Client.GetAsync($"{Url}/{id}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of resource
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Resource>>();
-            Assert.Equal("Resource", getByIdResponse.CollectionName);
+            // Confirm that the response is a well formed GetByIdResponse of account
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Account>>();
+            Assert.Equal("Account", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
-            Assert.Equal(_definitionId, responseDto.ResourceDefinitionId);
+            Assert.Equal(_definitionId, responseDto.AccountDefinitionId);
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Equal(entity.Name2, responseDto.Name2);
+            Assert.Equal(entity.Name3, responseDto.Name3);
             Assert.Equal(entity.Code, responseDto.Code);
-            Assert.Equal(entity.MassUnitId, responseDto.MassUnitId);
-            Assert.Equal(entity.Memo, responseDto.Memo);
+            Assert.Equal(entity.PartyReference, responseDto.PartyReference);
+            Assert.Equal(entity.ResourceId, responseDto.ResourceId);
+            Assert.Equal(entity.CustodianId, responseDto.CustodianId);
+            Assert.Equal(entity.ResponsibilityCenterId, responseDto.ResponsibilityCenterId);
+            Assert.Equal(entity.LocationId, responseDto.LocationId);
         }
 
-        [Fact(DisplayName = "08 Saving a ResourceForSave with an existing code returns a 422 Unprocessable Entity")]
+        [Fact(DisplayName = "08 Saving a AccountForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test08()
         {
             // Prepare a unit with the same code 'kg' as one that has been saved already
-            var list = new List<ResourceForSave> {
-                new ResourceForSave
+            var list = new List<AccountForSave> {
+                new AccountForSave
                 {
                     Name = "Another Name",
                     Name2 = "Another Name",
-                    Code = "HR 1000x0.8",
-                    ResourceTypeId = "Inventories"
+                    Code = "Payables",
+                AccountTypeId = "TradeAndOtherCurrentPayables",
+                AccountClassificationId = null,
                 }
             };
 
@@ -204,25 +216,26 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Contains("already used", message.ToLower());
         }
 
-        [Fact(DisplayName = "09 Saving a ResourceForSave trims string fields with trailing or leading spaces")]
+        [Fact(DisplayName = "09 Saving a AccountForSave trims string fields with trailing or leading spaces")]
         public async Task Test09()
         {
             // Prepare a DTO for save, that contains leading and 
             // trailing spaces in some string properties
-            var dtoForSave = new ResourceForSave
+            var dtoForSave = new AccountForSave
             {
-                Name = "  HR 1000x0.9", // Leading space
-                Name2 = "HR 1000x0.9",
-                Code = "0HR 1000x0.9  ", // Trailing space
-                ResourceTypeId = "Inventories"
+                Name = "  Accounts Receivable", // Leading space
+                Name2 = "مطلوبات",
+                Code = "Receivables  ", // Trailing space
+                AccountClassificationId = null,
+                AccountTypeId = "TradeAndOtherCurrentReceivables",
             };
 
             // Call the API
-            var response = await Client.PostAsJsonAsync(Url, new List<ResourceForSave> { dtoForSave });
+            var response = await Client.PostAsJsonAsync(Url, new List<AccountForSave> { dtoForSave });
             Output.WriteLine(await response.Content.ReadAsStringAsync());
 
             // Confirm that the response is well-formed
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Resource>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Account>>();
             var responseDto = responseData.Result.FirstOrDefault();
 
             // Confirm the entity was saved
@@ -233,16 +246,16 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Code?.Trim(), responseDto.Code);
 
             // share the entity, for the subsequent delete test
-            Shared.Set("Resource_HR1000x0.9", responseDto);
+            Shared.Set("Account_Receivables", responseDto);
         }
 
-        [Fact(DisplayName = "10 Deleting an existing resource Id returns a 200 OK")]
+        [Fact(DisplayName = "10 Deleting an existing account Id returns a 200 OK")]
         public async Task Test10()
         {
             await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
 
             // Get the Id
-            var entity = Shared.Get<Resource>("Resource_HR1000x0.9");
+            var entity = Shared.Get<Account>("Account_Receivables");
             var id = entity.Id;
 
             // Query the delete API
@@ -259,7 +272,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test11()
         {
             // Get the Id
-            var entity = Shared.Get<Resource>("Resource_HR1000x0.9");
+            var entity = Shared.Get<Account>("Account_Receivables");
             var id = entity.Id;
 
             // Verify that the id was deleted by calling get        
@@ -270,13 +283,13 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "12 Deactivating an active resource returns a 200 OK inactive entity")]
+        [Fact(DisplayName = "12 Deactivating an active account returns a 200 OK inactive entity")]
         public async Task Test12()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
+            await GrantPermissionToSecurityAdministrator(ViewId, "IsDeprecated", null);
 
             // Get the Id
-            var entity = Shared.Get<Resource>("Resource_HR1000x0.8");
+            var entity = Shared.Get<Account>("Account_Payables");
             var id = entity.Id;
 
             // Call the API
@@ -287,19 +300,19 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Resource>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Account>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was deactivated
-            Assert.False(responseDto.IsActive, "The resource was not deactivated");
+            Assert.True(responseDto.IsDeprecated, "The account was not deprecated");
         }
 
-        [Fact(DisplayName = "13 Activating an inactive resource returns a 200 OK active entity")]
+        [Fact(DisplayName = "13 Activating an inactive account returns a 200 OK active entity")]
         public async Task Test13()
         {
             // Get the Id
-            var entity = Shared.Get<Resource>("Resource_HR1000x0.8");
+            var entity = Shared.Get<Account>("Account_Payables");
             var id = entity.Id;
 
             // Call the API
@@ -310,19 +323,19 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Resource>>();
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Account>>();
             Assert.Single(responseData.Result);
             var responseDto = responseData.Result.Single();
 
             // Confirm that the entity was activated
-            Assert.True(responseDto.IsActive, "The resource was not activated");
+            Assert.False(responseDto.IsDeprecated, "The account was not activated");
         }
 
         [Fact(DisplayName = "14 Using Select argument works as expected")]
         public async Task Test14()
         {
             // Get the Id
-            var entity = Shared.Get<Resource>("Resource_HR1000x0.8");
+            var entity = Shared.Get<Account>("Account_Payables");
             var id = entity.Id;
 
             var response = await Client.GetAsync($"{Url}/{id}?select=Name");
@@ -330,9 +343,9 @@ namespace BSharp.IntegrationTests.Scenario_01
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            // Confirm that the response is a well formed GetByIdResponse of resource
-            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Resource>>();
-            Assert.Equal("Resource", getByIdResponse.CollectionName);
+            // Confirm that the response is a well formed GetByIdResponse of account
+            var getByIdResponse = await response.Content.ReadAsAsync<GetByIdResponse<Account>>();
+            Assert.Equal("Account", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);

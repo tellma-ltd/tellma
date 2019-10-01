@@ -7,7 +7,7 @@ BEGIN
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	MERGE INTO [dbo].[AccountClassifications] AS t
+	MERGE INTO [dbo].[Accounts] AS t
 	USING (
 		SELECT [Id]
 		FROM @Ids
@@ -16,6 +16,6 @@ BEGIN
 	THEN
 		UPDATE SET 
 			t.[IsDeprecated]	= @IsDeprecated,
-			t.[ModifiedAt]	= @Now,
-			t.[ModifiedById]= @UserId;
+			t.[ModifiedAt]		= @Now,
+			t.[ModifiedById]	= @UserId;
 END;

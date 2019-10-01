@@ -130,7 +130,7 @@
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="expandNextLevelTooltip" container="body" *ngIf="showExpandNextLevel" >
               <button type="button" class="dropdown-item btn-light" (click)="onExpandNextLevel()"
                 [disabled]="!canExpandNextLevel">
-                {{ 'AutoExpandLevel0' | translate: { level: level+1 } }}
+                {{ 'ExpandLevel0' | translate: { level: level+1 } }}
               </button>
             </div>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="collapseAllTooltip" container="body" *ngIf="showCollapseAll" >

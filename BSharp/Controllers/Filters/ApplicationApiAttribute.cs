@@ -201,16 +201,6 @@ namespace BSharp.Controllers
 
                     Resources = new Dictionary<string, ResourceDefinitionForClient>
                     {
-                        //["computer-equipment"] = new ResourceDefinitionForClient
-                        //{
-                        //    TitleSingular = "Computer Equipment",
-                        //    TitleSingular2 = "معدات حاسوب",
-                        //    TitlePlural = "Computer Equipment",
-                        //    TitlePlural2 = "معدات حاسوب",
-                        //    MainMenuIcon = "list",
-                        //    MainMenuSection = "Financials",
-                        //    MainMenuSortKey = 202m
-                        //},
                         ["raw-materials"] = new ResourceDefinitionForClient
                         {
                             TitlePlural = "Raw Materials",
@@ -261,6 +251,27 @@ namespace BSharp.Controllers
                         //{
                         //    // TODO: implement mock
                         //}
+                    },
+
+                    Accounts = new Dictionary<string, AccountDefinitionForClient>
+                    {
+                        ["gl-accounts"] = new AccountDefinitionForClient
+                        {
+                            TitleSingular = "G/L Account",
+                            TitleSingular2 = "حساب عام",
+                            TitleSingular3 = "基本账户",
+                            TitlePlural = "G/L Accounts",
+                            TitlePlural2 = "حسابات عامة",
+                            TitlePlural3 = "基本账户",
+                            MainMenuIcon = "coins",
+                            MainMenuSection = "Financials",
+                            MainMenuSortKey = 206m,
+                            Custodian_Label = "My Custodian",
+                            Location_Label = "My Location",
+                            Resource_Label = "My Resource",
+                            PartyReference_Label = "My Party Reference",
+                            ResponsibilityCenter_Label = "My Responsibility Center",
+                        }
                     },
 
                     Lookups = new Dictionary<string, LookupDefinitionForClient>
