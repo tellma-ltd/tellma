@@ -110,6 +110,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // add custom screens from definitions
       this.addDefinitions(menu, this.workspace.current.definitions.Lookups, 'lookups');
+      this.addDefinitions(menu, this.workspace.current.definitions.Accounts, 'accounts');
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
       this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resource-classifications',
