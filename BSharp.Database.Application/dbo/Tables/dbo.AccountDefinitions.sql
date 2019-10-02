@@ -9,11 +9,10 @@
 	[TitlePlural]							NVARCHAR (255) NOT NULL,
 	[TitlePlural2]							NVARCHAR (255),
 	[TitlePlural3]							NVARCHAR (255),
-	-- TODO: move to table AccountTypes?
-	-- If defined and leaf, then any entry using an account with the said definition would have this IfrsEntryClassification
-	-- If defined and parent, then in the entry IfrsEntryClassification will be limited to the leaf children
-	-- If null, then IfrsEntryClassification field will be hidden
-	[IfrsEntryClassificationId]				NVARCHAR (255),
+	-- If defined and leaf, then any entry using an account with the said definition would have this EntryTypeId
+	-- If defined and parent, then in the entry EntryTypeId will be limited to the leaf children
+	-- If null, then EntryTypeId field will be hidden
+	[EntryTypeId]							NVARCHAR (255),
 	[PartyReferenceVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([PartyReferenceVisibility] IN (N'None', N'RequiredInAccounts', N'OptionalInAccounts')),
 	[PartyReferenceLabel]					NVARCHAR (50),
 	-- When optional, it is used only for detailed reports such as account statement.

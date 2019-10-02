@@ -14,18 +14,7 @@ BEGIN -- Cleanup & Declarations
 	DECLARE @R1IndexedIds dbo.IndexedIdList, @R2IndexedIds dbo.IndexedIdList, @R3IndexedIds dbo.IndexedIdList;
 
 END
-	INSERT INTO dbo.ResourceDefinitions (
-		[Id],								[TitlePlural],							[TitleSingular]) VALUES
-	(N'general-resources',					N'General items',						N'General item'),
-	--(N'sdks',								N'SDKs',								N'SDK'),
-	--(N'steel-products',						N'Steel Products',						N'Steel product'), --
-	--(N'steel-rolls',						N'Steel Rolls',							N'Steel roll'), --
-	--(N'received-checks',					N'Checks (received)',					N'Check received'), --
-	--(N'strips',								N'Strips',								N'Strip'),	
-	--(N'plastic-products',					N'Plastic products',					N'Plastic product'),
-	--(N'issued-checks',						N'Checks (issued)',						N'Check (Issued)'),
-	--(N'issued-letters-of-credit',			N'Letters of credit (issued)',			N'LC (Issued)')
-	;
+
 BEGIN -- Inserting
 
 	:r .\07_Resources_PropertyPlantAndEquipment.sql
@@ -53,6 +42,15 @@ BEGIN -- Inserting
 		EXEC rpt.[sp_ResourcesPicks] @R2Ids;
 	END
 
+		--(N'general-resources',				N'General items',				N'General item',	NULL),
+	--(N'sdks',							N'SDKs',						N'SDK',				N'FinishedGoods')
+	--(N'steel-products',				N'Steel Products',				N'Steel product'), --
+	--(N'steel-rolls',					N'Steel Rolls',					N'Steel roll'), --
+	--(N'received-checks',				N'Checks (received)',			N'Check received'), --
+	--(N'strips',						N'Strips',						N'Strip'),	
+	--(N'plastic-products',				N'Plastic products',			N'Plastic product'),
+	--(N'issued-checks',				N'Checks (issued)',				N'Check (Issued)'),
+	--(N'issued-letters-of-credit',		N'Letters of credit (issued)',	N'LC (Issued)')
 	--(6, N'general-goods',		N'Teddy bear',			NULL,		NULL,			@pcsUnit),
 
 

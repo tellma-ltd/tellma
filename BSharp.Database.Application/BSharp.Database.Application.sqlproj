@@ -84,6 +84,11 @@
     <Folder Include="rpt\Stored Procedures" />
     <Folder Include="bll\Functions" />
     <Folder Include="Mapping" />
+    <Folder Include="Provisioning\01_AccountsEntries" />
+    <Folder Include="Provisioning\00_Setup" />
+    <Folder Include="Provisioning\02_ResourcesUnits" />
+    <Folder Include="Tests\01_Resources" />
+    <Folder Include="Tests\00_Lookups" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -123,10 +128,10 @@
     <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Functions\dbo.fe_Responsibility__FirstSibling.sql" />
-    <Build Include="dbo\Tables\dbo.IfrsAccountsIfrsNotes.sql" />
+    <Build Include="dbo\Tables\dbo.AccountTypesEntryTypes.sql" />
     <Build Include="dbo\User Defined Types\dbo.VType.sql" />
     <None Include="Tests\00_TestMain.sql" />
-    <None Include="Tests\04_IfrsConcepts.sql" />
+    <None Include="Tests\04_IfrsDisclosures.sql" />
     <None Include="Tests\03_MeasurementUnits.sql" />
     <None Include="Tests\71_Operations.sql" />
     <None Include="Tests\07_Resources.sql" />
@@ -139,10 +144,8 @@
     <None Include="Tests\60_SalesCycle.sql" />
     <None Include="Tests\21_Financing.sql" />
     <None Include="Tests\TestingToBeCleaned.sql" />
-    <None Include="Provisioning\013_IfrsAccountClassifications.sql" />
-    <None Include="Provisioning\04_AccountsNotes.sql" />
-    <None Include="Provisioning\02_MeasurementUnits.sql" />
-    <None Include="Provisioning\012_IfrsEntryClassifications.sql" />
+    <None Include="Provisioning\93_IfrsAccountClassifications.sql" />
+    <None Include="Provisioning\92_IfrsEntryClassifications.sql" />
     <PostDeploy Include="Provisioning\00_Main.sql" />
     <None Include="Provisioning\05_LineTypeSpecifications.sql" />
     <None Include="Provisioning\06_DocumentDefinitions.sql" />
@@ -314,7 +317,6 @@
     <Build Include="Mapping\Agents__AsQuery.sql" />
     <Build Include="Mapping\Roles.sql" />
     <Build Include="Mapping\Roles__AsQuery.sql" />
-    <Build Include="dbo\Tables\dbo.ResourceClassificationsDelete.sql" />
     <Build Include="Mapping\ResourceClassifications.sql" />
     <Build Include="Mapping\ResourceClassifications__AsQuery.sql" />
     <Build Include="bll\Stored Procedures\bll.ResourceClassifications_Validate__Save.sql" />
@@ -405,14 +407,28 @@
     <Build Include="dal\Stored Procedures\dal.Documents__Unsign.sql" />
     <Build Include="dal\Stored Procedures\dal.Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.EntryTypes.sql" />
+    <None Include="Provisioning\01_AccountsEntries\a_AccountDefinitions.sql" />
+    <None Include="Provisioning\01_AccountsEntries\b_AccountTypes.sql" />
+    <None Include="Provisioning\01_AccountsEntries\c_EntryTypes.sql" />
+    <None Include="Provisioning\01_AccountsEntries\d_AccountTypesEntryTypes.sql" />
+    <None Include="Provisioning\01_AccountsEntries\x_AccountClassifications.sql" />
+    <Build Include="Mapping\map.EntryTypes.sql" />
+    <Build Include="dal\Stored Procedures\dal.EntryTypes__Activate.sql" />
+    <None Include="Provisioning\02_ResourcesUnits\a_Currencies.sql" />
+    <None Include="Provisioning\02_ResourcesUnits\b_MeasurementUnits.sql" />
+    <None Include="Provisioning\02_ResourcesUnits\c_ResourceTypes.sql" />
+    <None Include="Tests\01_Resources\b_FinishedGoods_sdks.sql" />
+    <Build Include="dbo\Functions\dbo.fn_Lookup.sql" />
+    <Build Include="dbo\Functions\dbo.fn_UnitName__Id.sql" />
+    <Build Include="dbo\Functions\dbo.fn_ResourceName__Id.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
     <None Include="Tests\12_ManualMisc.sql" />
-    <None Include="Provisioning\07_AccountSpecifications.sql" />
     <None Include="BSharp.publish.xml" />
-    <None Include="Provisioning\01_IfrsConcepts.sql" />
-    <None Include="Provisioning\011_IfrsDisclosures.sql" />
+    <None Include="Provisioning\90_IfrsConcepts.sql" />
+    <None Include="Provisioning\91_IfrsDisclosures.sql" />
     <None Include="Tests\72_ProductCategories.sql" />
     <None Include="Dev.publish.xml" />
     <None Include="Tests\01_RolesPermissions.sql" />
@@ -426,8 +442,6 @@
     <None Include="Tests\07_Resources_Cash.sql" />
     <None Include="Tests\07_Resources_ReceivedChecks.sql" />
     <None Include="Tests\07_Resources_RawMaterials.sql" />
-    <None Include="Tests\07_Resources_Vehicles.sql" />
-    <None Include="Tests\07_Resources_PropertyPlantAndEquipment.sql" />
     <None Include="Tests\07_Resources_SteelProducts.sql" />
     <None Include="Tests\07_Resources_FinancialLiabilities.sql" />
     <None Include="Tests\07_Resources_FinancialAssets.sql" />
@@ -436,8 +450,13 @@
     <None Include="Tests\07_Resources_EmployeeBenefits.sql" />
     <None Include="Tests\13_HRCycle.sql" />
     <None Include="Provisioning\99_SampleData.sql" />
-    <None Include="Provisioning\01_AccountTypes.sql" />
-    <None Include="Provisioning\01_ResourceTypes.sql" />
+    <None Include="Provisioning\00_Setup\a_AdminSetup.sql" />
+    <None Include="Provisioning\00_Setup\b_Settings.sql" />
+    <None Include="Tests\01_Resources\a1_PPE_motor-vehicles.sql" />
+    <None Include="Tests\00_Lookups\a_body-colors.sql" />
+    <None Include="Tests\00_Lookups\b_vehicle-makes.sql" />
+    <None Include="Tests\00_Lookups\c_steel-thicknesses.sql" />
+    <None Include="Tests\01_Resources\a2_PPE_general-fixed-assets.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

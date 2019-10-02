@@ -877,4 +877,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ResourceTypeId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="99e4e698-2b6b-47c0-8689-898800800ec5" ChangeDateTime="10/02/2019 11:50:26">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions].[IfrsEntryClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5fccb8bf-86f3-4b78-a28f-d71ce026f854" ChangeDateTime="10/02/2019 12:07:54">
+    <Property Name="ElementName" Value="[dbo].[IfrsAccountClassificationsEntryClassifications].[IfrsEntryClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[IfrsAccountClassificationsEntryClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4dff0eed-961d-4680-98e4-4bc639f1a2a2" ChangeDateTime="10/02/2019 12:08:16">
+    <Property Name="ElementName" Value="[dbo].[IfrsAccountClassificationsEntryClassifications].[IfrsAccountClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[IfrsAccountClassificationsEntryClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5e889ec4-bdaf-4989-8ef3-b48de301e57a" ChangeDateTime="10/02/2019 12:09:27">
+    <Property Name="ElementName" Value="[dbo].[IfrsAccountClassificationsEntryClassifications]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountTypesEntryTypes]" />
+  </Operation>
 </Operations>

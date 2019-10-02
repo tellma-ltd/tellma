@@ -1,12 +1,12 @@
 ﻿CREATE PROCEDURE [bll].[Resources__Fill]
 	@DefinitionId NVARCHAR (255),
-	@Resources [dbo].[ResourceList] READONLY
+	@Entities [dbo].[ResourceList] READONLY
 AS
 SET NOCOUNT ON;
 DECLARE @FilledResources [dbo].[ResourceList];
 
 INSERT INTO @FilledResources
-SELECT * FROM @Resources;
+SELECT * FROM @Entities;
 
 --UPDATE @FilledResources
 --SET

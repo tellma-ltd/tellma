@@ -25,16 +25,14 @@
 	-- For issued LC, we need a supplementary table generating the swift codes.
 -- Case of Received Payments
 	[IssuingBankId]				INT,
--- Dynamic properties, defined by specs.
-	[InstanceString1]			NVARCHAR (255),
-	[InstanceString2]			NVARCHAR (255),
+	[ResourcePickString1]	NVARCHAR (255),
+	[ResourcePickString2]	NVARCHAR (255),
 	-- Examples of the following properties are given for SKD
 	-- However, they could also work for company vehicles, using Year, Make, and Model for Lookups
-	[InstanceLookup1Id]			INT,			-- External Color
-	[InstanceLookup2Id]			INT,			-- Internal Color
-	[InstanceLookup3Id]			INT,			-- Leather type
-	[InstanceLookup4Id]			INT,			-- Tire type
-	[InstanceLookup5Id]			INT				-- Audio system
-	-- ...
+	[ResourcePickLookup1Id]	INT,			-- External Color
+	[ResourcePickLookup2Id]	INT,			-- Internal Color
+	[ResourcePickLookup3Id]	INT,			-- Leather type
+	[ResourcePickLookup4Id]	INT,			-- Tire type
+	[ResourcePickLookup5Id]	INT			-- Audio system
 );
 GO;
