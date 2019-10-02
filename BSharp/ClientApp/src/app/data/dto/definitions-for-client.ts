@@ -34,7 +34,7 @@ export interface LineDefinitionForClient extends DefinitionForClient {
 export type AccountVisibility = 'None' | 'RequiredInAccounts' | 'RequiredInEntries' | 'OptionalInEntries';
 export type Visibility = 0 | 1 | 2;
 
-export interface AccountDefinitionForClient extends DefinitionsForClient {
+export interface AccountDefinitionForClient extends DefinitionForClient {
     ResponsibilityCenter_Label: string;
     ResponsibilityCenter_Label2: string;
     ResponsibilityCenter_Label3: string;

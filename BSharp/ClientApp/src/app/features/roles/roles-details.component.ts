@@ -12,6 +12,7 @@ import { VIEWS_BUILT_IN, ACTIONS, Action } from '~/app/data/views';
 import { metadata_Lookup } from '~/app/data/entities/lookup';
 import { metadata_Resource } from '~/app/data/entities/resource';
 import { metadata_ResourceClassification } from '~/app/data/entities/resource-classification';
+import { metadata_Account } from '~/app/data/entities/account';
 
 interface ConcreteViewInfo {
   name: string;
@@ -272,6 +273,25 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
           };
         } else {
           console.error(`Could not find lookup definitionId '${definitionId}'`);
+        }
+      }
+
+      const accounts = this.ws.definitions.Accounts;
+      for (const definitionId of Object.keys(accounts)) {
+        const entityDesc = metadata_Account(this.ws, this.translate, definitionId);
+        if (!!entityDesc) {
+          this._viewsDb[entityDesc.apiEndpoint] = {
+            name: entityDesc.titlePlural,
+            actions: {
+              All: { supportsCriteria: false, supportsMask: false },
+              Read: { supportsCriteria: true, supportsMask: true },
+              Update: { supportsCriteria: true, supportsMask: true },
+              Delete: { supportsCriteria: true, supportsMask: false },
+              IsDeprecated: { supportsCriteria: true, supportsMask: false },
+            }
+          };
+        } else {
+          console.error(`Could not find account definitionId '${definitionId}'`);
         }
       }
 

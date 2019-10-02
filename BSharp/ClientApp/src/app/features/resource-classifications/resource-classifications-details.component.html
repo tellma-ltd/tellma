@@ -68,7 +68,7 @@
         ws.getMultilingualValue('ResourceClassification', model?.ParentId, 'Name') }}</b-view-link>
     </b-restricted>
     <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ParentId" [definitionIds]="[definitionId]"
-      collection="ResourceClassification" [masterTemplate]="resourceClassificationsMaster" definitionProperty="ResourceDefinitionId"
+      collection="ResourceClassification" [masterTemplate]="resourceClassificationsMaster"
       [detailsTemplate]="resourceClassificationsDetail">
     </b-details-picker>
 

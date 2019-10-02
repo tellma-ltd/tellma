@@ -71,7 +71,9 @@ export function metadata_AccountType(ws: TenantWorkspace, trx: TranslateService,
           alignment: 'right'
         },
 
-        IsAssignable: { control: 'boolean', label: trx.instant('AccountType_IsAssignable'), format: (b) => !!b ? '✔️' : '❌' },
+        IsAssignable: { control: 'boolean', label: trx.instant('AccountType_IsAssignable'),
+        // format: (b) => !!b ? '✓' : '✗' },
+        format: (b) => !!b ? '✔️' : '❌' },
         IsActive: { control: 'boolean', label: trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

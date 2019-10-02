@@ -68,6 +68,16 @@ export interface EntityDescriptor {
     apiEndpoint: string;
 
     /**
+     * The select atoms that will make the definitionFunc succeed
+     */
+    selectForDefinition?: string;
+
+    /**
+     * The property on this entity that carries the definitionId
+     */
+    definitionFunc?: (e: EntityWithKey) => string;
+
+    /**
      * A function that returns a display string representing the entity
      */
     format: (item: EntityWithKey) => string;

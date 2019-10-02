@@ -35,7 +35,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent implements On
     return this._definitionId;
   }
 
-  public expand = `ResponsibilityCenter,Custodian,Resource,Location`;
+  public expand = `ResponsibilityCenter,Custodian,Resource,Location,AccountType,AccountClassification`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -121,7 +121,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent implements On
   }
 
   public showActivate = (model: Account) => !!model && model.IsDeprecated;
-  public showDeprecate = (model: Account) => !!model && model.IsDeprecated;
+  public showDeprecate = (model: Account) => !!model && !model.IsDeprecated;
 
   public canActivateDeprecateItem = (model: Account) => this.ws.canDo(this.viewId, 'IsDeprecated', model.Id);
 
