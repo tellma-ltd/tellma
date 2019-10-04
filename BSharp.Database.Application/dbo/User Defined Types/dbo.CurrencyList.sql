@@ -5,7 +5,7 @@
 	[Name]			NVARCHAR (255)		NOT NULL,
 	[Name2]			NVARCHAR (255),
 	[Name3]			NVARCHAR (255),
-	[Description]	NVARCHAR (255)		NOT NULL,
+	[Description]	NVARCHAR (255),
 	[Description2]	NVARCHAR (255),
 	[Description3]	NVARCHAR (255),
 	[E]				TINYINT

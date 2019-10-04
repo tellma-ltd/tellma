@@ -56,14 +56,31 @@ END
 
 BEGIN TRY
 	BEGIN TRANSACTION
-		:r .\01_RolesPermissions.sql		
-		:r .\02_Workflows.sql
-		:r .\03_MeasurementUnits.sql
-		--:r .\04_IfrsConcepts.sql
-		:r .\05_Agents.sql
+		:r .\00_Lookups\a_body-colors.sql		
+		:r .\00_Lookups\b_vehicle-makes.sql		
+		:r .\00_Lookups\c_steel-thicknesses.sql		
+		select * from lookups;
+		:r .\01_Resources\a1_PPE_motor-vehicles.sql
+		SELECT R.Id, R.ResourceTypeId, R.ResourceDefinitionId, R.[Name] AS [Resource], R.[CurrencyId], ML.[Name] As LengthUnit,
+			LK1.[Name] AS ResourceLookup1
+		FROM dbo.Resources R
+		JOIN dbo.ResourceDefinitions RD ON R.ResourceDefinitionId = RD.[Id]
+		LEFT JOIN dbo.MeasurementUnits ML ON R.LengthUnitId = ML.Id
+		LEFT JOIN dbo.Lookups LK1 ON R.ResourceLookup1Id = LK1.Id
+		LEFT JOIN dbo.Lookups LK2 ON R.ResourceLookup2Id = LK2.Id
+		WHERE (RD.[Lookup1DefinitionId] IS NULL OR LK1.LookupDefinitionId = RD.[Lookup1DefinitionId])
+		AND (RD.[Lookup2DefinitionId] IS NULL OR LK2.LookupDefinitionId = RD.[Lookup2DefinitionId])
+		
+		
+		;
+		--:r .\01_RolesPermissions.sql		
+		--:r .\02_Workflows.sql
+		--:r .\03_MeasurementUnits.sql
+		--:r .\04_IfrsDisclosures.sql
+		--:r .\05_Agents.sql
 	--	:r .\06_ResponsibilityCenters.sql
-		:r .\07_Resources.sql
-		:r .\08_AccountClassifications.sql
+		--:r .\07_Resources.sql
+		--:r .\08_AccountClassifications.sql
 		--:r .\10_JournalVouchers.sql
 		--:r .\71_Operations.sql
 		--:r .\72_ProductCategories.sql

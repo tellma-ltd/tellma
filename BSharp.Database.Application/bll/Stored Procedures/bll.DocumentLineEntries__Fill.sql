@@ -14,13 +14,13 @@ UPDATE E
 SET
 	E.IfrsEntryClassificationId = 
 		CASE
-			WHEN AD.[IfrsEntryClassificationId] IS NOT NULL THEN AD.[IfrsEntryClassificationId]
+			WHEN AD.[EntryTypeId] IS NOT NULL THEN AD.[EntryTypeId]
 			ELSE E.IfrsEntryClassificationId
 		END
 FROM @FilledEntries E
 JOIN dbo.[Accounts] A ON E.AccountId = A.Id
 JOIN dbo.AccountDefinitions AD ON A.AccountDefinitionId = AD.[Id]
-WHERE (AD.[IfrsEntryClassificationId] IS NOT NULL)
+WHERE (AD.[EntryTypeId] IS NOT NULL)
 
 -- for financial amounts in functional currency, the value is known
 UPDATE E 

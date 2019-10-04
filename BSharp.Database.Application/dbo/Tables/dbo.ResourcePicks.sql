@@ -28,18 +28,18 @@
 	-- Examples of the following properties are given for SKD
 	-- However, they could also work for company vehicles, using Year, Make, and Model for Lookups
 	[ResourcePickLookup1Id]	INT,			-- External Color
-	[ResourcePickLookup2Id]		INT,			-- Internal Color
-	[ResourcePickLookup3Id]		INT,			-- Leather type
-	[ResourcePickLookup4Id]		INT,			-- Tire type
-	[ResourcePickLookup5Id]		INT,			-- Audio system
+	[ResourcePickLookup2Id]	INT,			-- Internal Color
+	[ResourcePickLookup3Id]	INT,			-- Leather type
+	[ResourcePickLookup4Id]	INT,			-- Tire type
+	[ResourcePickLookup5Id]	INT,			-- Audio system
 	-- ...
 --
-	[IsActive]					BIT					NOT NULL DEFAULT 1,
+	[IsActive]				BIT					NOT NULL DEFAULT 1,
 
-	[SortKey]					DECIMAL (9,4),
-	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ResourceInstances__CreatedById]	FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
-	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) 	CONSTRAINT [FK_ResourceInstances__ModifiedById]	FOREIGN KEY ([ModifiedById])REFERENCES [dbo].[Users] ([Id])
+	[SortKey]				DECIMAL (9,4),
+	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_ResourceInstances__CreatedById]	FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
+	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[ModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) 	CONSTRAINT [FK_ResourceInstances__ModifiedById]	FOREIGN KEY ([ModifiedById])REFERENCES [dbo].[Users] ([Id])
 );
 GO;

@@ -19,15 +19,15 @@ INSERT INTO @ResourceTypes
 (N'Ships',									N'Ships',										N'/1/1/3/1/',	1,				0),
 (N'Aircraft',								N'Aircraft',									N'/1/1/3/2/',	1,				0),
 (N'MotorVehicles',							N'Motor vehicles',								N'/1/1/3/3/',	1,				1),
-(N'FixturesAndFittings',					N'Fixtures and fittings',						N'/1/1/4/',	1,				1),
-(N'OfficeEquipment',						N'Office equipment',							N'/1/1/5/',	1,				1),
-(N'ComputerEquipment',						N'Computer equipment',							N'/1/1/6/',	1,				1),
-(N'CommunicationAndNetworkEquipment',		N'Communication and network equipment',			N'/1/1/7/',	1,				1),
-(N'NetworkInfrastructure',					N'Network infrastructure',						N'/1/1/8/',	1,				1),
-(N'BearerPlants',							N'Bearer plants',								N'/1/1/9/',	1,				0),
+(N'FixturesAndFittings',					N'Fixtures and fittings',						N'/1/1/4/',		1,				1),
+(N'OfficeEquipment',						N'Office equipment',							N'/1/1/5/',		1,				1),
+(N'ComputerEquipment',						N'Computer equipment',							N'/1/1/6/',		1,				1),
+(N'CommunicationAndNetworkEquipment',		N'Communication and network equipment',			N'/1/1/7/',		1,				1),
+(N'NetworkInfrastructure',					N'Network infrastructure',						N'/1/1/8/',		1,				1),
+(N'BearerPlants',							N'Bearer plants',								N'/1/1/9/',		1,				0),
 (N'TangibleExplorationAndEvaluationAssets', N'Tangible exploration and evaluation assets',	N'/1/1/10/',	1,				0),
 (N'MiningAssets',							N'Mining assets',								N'/1/1/11/',	1,				0),
-(N'MiningProperty',							N'Mining property',								N'/1/1/11/1/',1,				0),
+(N'MiningProperty',							N'Mining property',								N'/1/1/11/1/',	1,				0),
 (N'OilAndGasAssets',						N'Oil and gas assets',							N'/1/1/12/',	1,				0),
 (N'PowerGeneratingAssets',					N'Power generating assets',						N'/1/1/13/',	1,				1),
 (N'LeaseholdImprovements',					N'Leasehold improvements',						N'/1/1/14/',	1,				1),
@@ -81,8 +81,8 @@ INSERT INTO @ResourceTypes
 
 (N'OtherNonfinancialLiabilities',			N'Other non-financial liabilities',				N'/2/3/',		1,				0),
 -- TODO: The following may actually fit under financial liabilities
-(N'InsuranceContractsIssuedThatAreLiabilities',	N'Insurance contracts issued that are liabilities',	N'/2/4/',		1,				0),
-(N'ReinsuranceContractsHeldThatAreLiabilities',	N'Reinsurance contracts held that are liabilities',	N'/2/5/',		1,				0),
+(N'InsuranceContractsIssuedThatAreLiabilities',	N'Insurance contracts issued that are liabilities',	N'/2/4/',1,				0),
+(N'ReinsuranceContractsHeldThatAreLiabilities',	N'Reinsurance contracts held that are liabilities',	N'/2/5/',1,				0),
 
 (N'ExpenseByNature',						N'Expenses, by nature',							N'/3/',			0,				1),
 (N'ServicesExpense',						N'Services',									N'/3/1/',		1,				1),
@@ -106,8 +106,6 @@ INSERT INTO @ResourceTypes
 																							N'/3/2/2/',		1,				1),																							
 (N'OtherExpenseByNature',					N'Other',										N'/3/3/',		1,				1)					
 																							;
-
-
 MERGE [dbo].[ResourceTypes] AS t
 USING (
 		SELECT [Id], [IsAssignable], [Name], [Name2], [Name3], [IsActive], [Node]

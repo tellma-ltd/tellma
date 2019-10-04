@@ -1,4 +1,7 @@
-﻿DECLARE
+﻿	INSERT INTO dbo.ResourceDefinitions (
+	[Id],		[TitlePlural],	[TitleSingular],[ResourceTypeId], [Lookup1Visibility], [Lookup1Lable], [Lookup1DefinitionId]) VALUES
+	(N'sdks',	N'SDKs',		N'SDK',			N'FinishedGoods');
+DECLARE
 @R6 [dbo].ResourceList, @RP6 [dbo].ResourcePickList;
 -- vehicles for sales. When using one for internal purposes, it is converted to motor vehicle
 	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'vehicles'
