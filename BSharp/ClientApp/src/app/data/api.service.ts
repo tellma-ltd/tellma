@@ -37,6 +37,7 @@ import { User } from './entities/user';
 import { AccountClassification } from './entities/account-classification';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
+import { GetChildrenArguments } from './dto/get-children-arguments';
 
 @Injectable({
   providedIn: 'root'
@@ -354,10 +355,50 @@ export class ApiService {
           paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
         }
 
+        if (!!args.select) {
+          paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+        }
+
         const params: string = paramsArray.join('&');
         const url = appconfig.apiAddress + `api/${endpoint}/${id}?${params}`;
 
         const obs$ = this.http.get<GetByIdResponse<TEntity>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      getChildrenOf: (args: GetChildrenArguments) => {
+        args = args || {};
+        const paramsArray: string[] = [];
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${encodeURIComponent(args.expand)}`);
+        }
+
+        if (!!args.select) {
+          paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+        }
+
+        if (!!args.filter) {
+          paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
+        }
+
+        if (!!args.ids) {
+          args.ids.forEach(id => {
+            paramsArray.push(`ids=${encodeURIComponent(id)}`);
+          });
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/${endpoint}/children-of?${params}`;
+
+        const obs$ = this.http.get<EntitiesResponse<TEntity>>(url).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);

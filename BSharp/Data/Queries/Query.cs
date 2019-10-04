@@ -29,6 +29,7 @@ namespace BSharp.Data.Queries
         private ExpandExpression _expand;
         private OrderByExpression _orderby;
         private IEnumerable<object> _ids;
+        private IEnumerable<object> _parentIds;
         private string _composableSql;
         private string _preparatorySql;
         private SqlParameter[] _parameters;
@@ -60,6 +61,7 @@ namespace BSharp.Data.Queries
                 _expand = _expand,
                 _orderby = _orderby,
                 _ids = _ids == null ? null : new List<object>(_ids),
+                _parentIds = _parentIds == null ? null : new List<object>(_parentIds),
                 _composableSql = _composableSql,
                 _preparatorySql = _preparatorySql,
                 _parameters = _parameters?.ToArray(),
@@ -136,17 +138,49 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Restricts the <see cref="Query{T}"/> to loading the entities with the specified list of Ids
         /// </summary>
-        /// <typeparam name="TKey">The type of the ids (usually either string or int)</typeparam>
+        /// <typeparam name="TKey">The type of the ids (either string or int)</typeparam>
         public Query<T> FilterByIds<TKey>(params TKey[] ids)
         {
             if (!IsEntityWithKey())
             {
                 // Developer mistake
-                throw new InvalidOperationException($"Type {typeof(T).Name} does not inherit from {typeof(EntityWithKey).Name}, yet 'FilterByIds' has been invoked on an Query<{typeof(T).Name}>");
+                throw new InvalidOperationException($"Type {typeof(T).Name} does not inherit from {typeof(EntityWithKey).Name}, yet '{nameof(FilterByIds)}' has been invoked on a Query<{typeof(T).Name}>");
             }
 
             var clone = Clone();
             clone._ids = ids.Cast<object>();
+            return clone;
+        }
+
+        /// <summary>
+        /// Restricts the <see cref="Query{T}"/> to loading the children of the entities with the specified list of Ids,
+        /// and the root nodes, this is only available on tree types (containing a property ParentId)
+        /// </summary>
+        /// <typeparam name="TKey">The type of the parent ids (either string or int)</typeparam>
+        public Query<T> FilterByParentIds<TKey>(List<TKey> parentIds)
+        {
+            if (!IsEntityWithKey())
+            {
+                // Developer mistake
+                throw new InvalidOperationException($"Type {typeof(T).Name} does not inherit from {typeof(EntityWithKey).Name}, yet '{nameof(FilterByParentIds)}' has been invoked on a Query<{typeof(T).Name}>");
+            }
+
+            if (!typeof(T).HasProperty("ParentId"))
+            {
+                // Developer mistake
+                throw new InvalidOperationException($"Type {typeof(T).Name} does not have a ParentId property, yet '{nameof(FilterByParentIds)}' has been invoked on a Query<{typeof(T).Name}>");
+            }
+
+            var t1 = typeof(T).GetProperty("ParentId").PropertyType;
+            var t2 = typeof(T).GetProperty("Id").PropertyType;
+            if ((Nullable.GetUnderlyingType(t1) ?? t1) != (Nullable.GetUnderlyingType(t2) ?? t2))
+            {
+                // Developer mistake
+                throw new InvalidOperationException($"Type {typeof(T).Name} has an Id and ParentId properties with mismatching types");
+            }
+
+            var clone = Clone();
+            clone._parentIds = parentIds.Cast<object>();
             return clone;
         }
 
@@ -233,7 +267,8 @@ namespace BSharp.Data.Queries
                 KeyType = typeof(T).GetProperty("Id")?.PropertyType, // NULL if there is no key
                 Select = selectExp,
                 Filter = filterExp,
-                Ids = _ids == null ? null : string.Join(",", _ids),
+                Ids = _ids,
+                ParentIds = _parentIds,
                 Skip = _skip,
                 Top = _top
             };
@@ -498,7 +533,8 @@ namespace BSharp.Data.Queries
             var root = segments[new string[0]];
             root.Filter = filterExp;
             root.OrderBy = orderbyExp;
-            root.Ids = _ids == null ? null : string.Join(",", _ids);
+            root.Ids = _ids;
+            root.ParentIds = _parentIds;
             root.Skip = _skip;
             root.Top = _top;
 
@@ -618,7 +654,8 @@ namespace BSharp.Data.Queries
                 ResultType = typeof(T),
                 KeyType = typeof(TKey),
                 Filter = filterExp,
-                Ids = _ids == null ? null : string.Join(",", _ids),
+                Ids = _ids,
+                ParentIds = _parentIds,
                 OrderBy = orderByExp,
                 Skip = _skip,
                 Top = _top

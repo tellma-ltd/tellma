@@ -13,7 +13,7 @@ namespace BSharp.Controllers
 {
     [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
-    public class AccountTypesController : FactGetByIdControllerBase<AccountType, string>
+    public class AccountTypesController : FactTreeControllerBase<AccountType, string>
     {
         public const string BASE_ADDRESS = "account-types";
 

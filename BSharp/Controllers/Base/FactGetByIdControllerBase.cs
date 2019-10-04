@@ -6,6 +6,7 @@ using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -98,7 +99,8 @@ namespace BSharp.Controllers
             };
         }
 
-        protected async Task<EntitiesResponse<TEntity>> GetByIdListAsync(TKey[] ids, ExpandExpression expand = null)
+        // TODO: Delete
+        protected async Task<EntitiesResponse<TEntity>> GetByIdListAsyncOld(TKey[] ids, ExpandExpression expand = null)
         {
             // Prepare a query of the result, and clone it
             var repo = GetRepository();
@@ -122,14 +124,14 @@ namespace BSharp.Controllers
 
             // Sort the entities according to the original Ids, as a good practice
             TEntity[] sortedResult = new TEntity[ids.Length];
-            Dictionary<TKey, TEntity> affectedEntitiesDic = result.ToDictionary(e => e.Id);
+            Dictionary<TKey, TEntity> resultDic = result.ToDictionary(e => e.Id);
             for (int i = 0; i < ids.Length; i++)
             {
                 var id = ids[i];
                 TEntity entity = null;
-                if (affectedEntitiesDic.ContainsKey(id))
+                if (resultDic.ContainsKey(id))
                 {
-                    entity = affectedEntitiesDic[id];
+                    entity = resultDic[id];
                 }
 
                 sortedResult[i] = entity;
@@ -139,6 +141,70 @@ namespace BSharp.Controllers
             return new EntitiesResponse<TEntity>
             {
                 Result = sortedResult,
+                RelatedEntities = relatedEntities,
+                CollectionName = GetCollectionName(typeof(TEntity))
+            };
+        }
+
+        protected async Task<EntitiesResponse<TEntity>> GetByIdListAsync(TKey[] ids, ExpandExpression expand = null, SelectExpression select = null)
+        {
+            var result = await GetByCustomQuery(q => q.FilterByIds(ids), expand, select);
+
+            // Sort the entities according to the original Ids, as a good practice
+            TEntity[] sortedResult = new TEntity[ids.Length];
+            Dictionary<TKey, TEntity> resultDic = result.Result.ToDictionary(e => e.Id);
+            for (int i = 0; i < ids.Length; i++)
+            {
+                var id = ids[i];
+                TEntity entity = null;
+                if (resultDic.ContainsKey(id))
+                {
+                    entity = resultDic[id];
+                }
+
+                sortedResult[i] = entity;
+            }
+
+            result.Result = sortedResult;
+
+            // Return the sorted result
+            return result;
+        }
+
+        /// <summary>
+        /// Returns an entities response based on custom filtering function applied to the query, as well as
+        /// optional select and expand arguments, checking the user permissions along the way
+        /// </summary>
+        /// <param name="filterFunc">Allows you to apply any filteration you like to the query,</param>
+        /// <param name="expand">Optional expand argument</param>
+        /// <param name="select">Optional select argument</param>
+        protected async Task<EntitiesResponse<TEntity>> GetByCustomQuery(Func<Query<TEntity>, Query<TEntity>> filterFunc, ExpandExpression expand, SelectExpression select, OrderByExpression orderby = null)
+        {
+            // Prepare a query of the result, and clone it
+            var repo = GetRepository();
+            var query = repo.Query<TEntity>();
+
+            // Apply custom filter function
+            query = filterFunc(query);
+
+            // Expand the result as specified in the OData agruments and load into memory
+            var expandedQuery = query.Expand(expand);
+            expandedQuery = expandedQuery.Select(select);
+            expandedQuery = expandedQuery.OrderBy(orderby ?? OrderByExpression.Parse("Id")); // Required
+            var result = await expandedQuery.ToListAsync(); // this is potentially unordered, should that be a concern?
+
+            // Apply the permissions on the result
+            var permissions = await UserPermissions(Constants.Read);
+            var defaultMask = GetDefaultMask();
+            await ApplyReadPermissionsMask(result, query, permissions, defaultMask);
+
+            // Flatten and Trim
+            var relatedEntities = FlattenAndTrim(result, expand);
+
+            // Prepare the result in a response object
+            return new EntitiesResponse<TEntity>
+            {
+                Result = result,
                 RelatedEntities = relatedEntities,
                 CollectionName = GetCollectionName(typeof(TEntity))
             };

@@ -3,7 +3,7 @@
   selectDefault="Code,IsDeprecated" inactiveFilter="IsDeprecated eq false" selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
               { template: activate, action: onActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
               { template: deprecate, action: onDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
-          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+          ]" [includeInactiveLabel]="'IncludeDeprecated' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ]

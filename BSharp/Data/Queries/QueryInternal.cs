@@ -1,6 +1,8 @@
 ﻿using BSharp.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace BSharp.Data.Queries
@@ -60,7 +62,9 @@ namespace BSharp.Data.Queries
 
         public OrderByExpression OrderBy { get; set; }
 
-        public string Ids { get; set; }
+        public IEnumerable<object> Ids { get; set; }
+
+        public IEnumerable<object> ParentIds { get; set; }
 
         public int? Skip { get; set; }
 
@@ -89,7 +93,7 @@ namespace BSharp.Data.Queries
 
             // (2) Prepare the SELECT clause
             SqlSelectClause selectClause = PrepareSelect(joinTree);
-            var selectSql = selectClause.ToSql();
+            var selectSql = selectClause.ToSql(IsAncestorExpand);
 
             // (3) Prepare the inner join with the principal query (if any)
             string principalQuerySql = PreparePrincipalQuery(sources, ps, currentUserId, currentUserTimeZone);
@@ -166,7 +170,7 @@ namespace BSharp.Data.Queries
 
             // (2) Prepare the SELECT clause
             SqlSelectClause selectClause = PrepareSelectAsPrincipal(joinTree, pathToCollectionProperty, isAncestorExpand);
-            var selectSql = selectClause.ToSql();
+            var selectSql = selectClause.ToSql(IsAncestorExpand);
 
             // (3) Prepare the inner join with the principal query (if any)
             string principalQuerySql = PreparePrincipalQuery(sources, ps, currentUserId, currentUserTimeZone);
@@ -445,44 +449,89 @@ namespace BSharp.Data.Queries
             {
                 string whereFilter = null;
                 string whereInIds = null;
+                string whereInParentIds = null;
 
                 if (Filter != null)
                 {
                     whereFilter = QueryTools.FilterToSql(Filter, sources, ps, joinTree, currentUserId, currentUserTimeZone);
                 }
 
-                if (Ids != null)
+                if (Ids != null && Ids.Count() >= 1)
                 {
-                    // TODO Use a simple comparison when there is one Id and a TVP when there are multiple
+                    if (Ids.Count() == 1)
+                    {
+                        string paramName = ps.AddParameter(Ids.Single());
+                        whereInIds = $"[P].[Id] = @{paramName}";
+                    }
+                    else
+                    {
+                        var isIntKey = (Nullable.GetUnderlyingType(KeyType) ?? KeyType) == typeof(int);
+                        var isStringKey = KeyType == typeof(string);
 
-                    string paramName = ps.AddParameter(Ids);
-                    var isIntKey = (Nullable.GetUnderlyingType(KeyType) ?? KeyType) == typeof(int);
-                    string value = isIntKey ? "CONVERT(INT, VALUE)" : "VALUE";
-                    whereInIds = $"[P].[Id] IN (SELECT {value} AS Id FROM STRING_SPLIT(@{paramName}, ','))";
-                }
+                        DataTable idsTable = RepositoryUtilities.DataTable(Ids.Select(id => new { Id = id }));
+                        var idsTvp = new SqlParameter("@Ids", idsTable)
+                        {
+                            TypeName = isIntKey ? "[dbo].[IdList]" : isStringKey ? "[dbo].[StringList]" : throw new InvalidOperationException("Only string and Integer Ids are supported"),
+                            SqlDbType = SqlDbType.Structured
+                        };
 
-                // The final WHERE clause
-                string whereSql;
-                if (whereFilter != null && whereInIds != null)
-                {
-                    whereSql = $"({whereFilter}) AND ({whereInIds})";
-                }
-                else if (whereFilter != null)
-                {
-                    whereSql = whereFilter;
-                }
-                else if (whereInIds != null)
-                {
-                    whereSql = whereInIds;
-                }
-                else
-                {
-                    whereSql = "";
+                        ps.AddParameter(idsTvp);
+                        whereInIds = $"[P].[Id] IN (SELECT Id FROM @Ids)";
+                    }
                 }
 
-                if (!string.IsNullOrEmpty(whereSql))
+                if (ParentIds != null)
                 {
-                    whereSql = "WHERE " + whereSql;
+                    if (!ParentIds.Any())
+                    {
+                        whereInParentIds = $"[P].[ParentId] IS NULL";
+                    }
+                    else if (ParentIds.Count() == 1)
+                    {
+                        string paramName = ps.AddParameter(ParentIds.Single());
+                        whereInParentIds = $"[P].[ParentId] = @{paramName} OR [P].[ParentId] IS NULL";
+                    }
+                    else
+                    {
+                        var isIntKey = (Nullable.GetUnderlyingType(KeyType) ?? KeyType) == typeof(int);
+                        var isStringKey = KeyType == typeof(string);
+
+                        // Prepare the data table
+                        DataTable parentIdsTable = new DataTable();
+                        string propName = "Id";
+                        var column = new DataColumn(propName, KeyType);
+                        if (isStringKey)
+                        {
+                            column.MaxLength = 450; // Just for performance
+                        }
+                        parentIdsTable.Columns.Add(column);
+                        foreach(var id in ParentIds.Where(e => e != null))
+                        {
+                            DataRow row = parentIdsTable.NewRow();
+                            row[propName] = id;
+                            parentIdsTable.Rows.Add(row);
+                        }
+
+                        // Prepare the TVP
+                        var parentIdsTvp = new SqlParameter("@ParentIds", parentIdsTable)
+                        {
+                            TypeName = isIntKey ? "[dbo].[IdList]" : isStringKey ? "[dbo].[StringList]" : throw new InvalidOperationException("Only string and Integer ParentIds are supported"),
+                            SqlDbType = SqlDbType.Structured
+                        };
+
+                        ps.AddParameter(parentIdsTvp);
+                        whereInParentIds = $"[P].[ParentId] IN (SELECT Id FROM @ParentIds) OR [P].[ParentId] IS NULL";
+                    }
+                }
+
+                // The final WHERE clause (if any)
+                string whereSql = "";
+
+                var clauses = new List<string> { whereFilter, whereInIds, whereInParentIds }.Where(e => e != null);
+                if (clauses.Any())
+                {
+                    whereSql = clauses.Aggregate((c1, c2) => $"{c1}) AND ({c2}");
+                    whereSql = $"WHERE ({whereSql})";
                 }
 
                 _cachedWhere = whereSql;

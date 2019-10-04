@@ -362,7 +362,6 @@ export class MasterDetailsStore {
   expand: string;
   inactive = false;
   select: string = null;
-  level: number;
   builtInFilter = '';
   builtInFilterSelections: {
     [groupName: string]: {

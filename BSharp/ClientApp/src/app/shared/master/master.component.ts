@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finalize } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { GetResponse } from '~/app/data/dto/get-response';
+import { GetResponse, EntitiesResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_format } from '~/app/data/dto/template-arguments';
 import { addToWorkspace, downloadBlob } from '~/app/data/util';
 import {
@@ -139,6 +139,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   private searchChanged$ = new Subject<string>();
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
+  private notifySaveSettingsOnServer$ = new Subject<{ key: string, value: string }>();
   private _formatChoices: { name: string, value: any }[];
   private _selectOld = 'null';
   private _tableColumnPaths: string[] = [];
@@ -148,6 +149,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   private _computeOrderByLang: string = null;
   private _reverseOrderByCache: { [path: string]: string } = {}; // need to be erased on screen startup
   private _editingColumns = false;
+  private _currentStringIds: string = null;
+  private _parentIdsFromUserSettings: (string | number)[] = [];
 
   public searchView: SearchView;
   public checked = {};
@@ -168,7 +171,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     // Use some RxJS magic to refresh the data as the user changes the parameters
     const searchBoxSignals = this.searchChanged$.pipe(
-      debounceTime(300),
+      debounceTime(175),
       distinctUntilChanged(),
       tap(() => this.state.skip = 0),
       tap(() => this.exportSkip = 0),
@@ -181,6 +184,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this._subscriptions = new Subscription();
     this._subscriptions.add(allSignals.pipe(
       switchMap(() => this.doFetch())
+    ).subscribe());
+
+    this._subscriptions.add(this.notifySaveSettingsOnServer$.pipe(
+      switchMap(args => this.doSaveSettingsOnServer(args.key, args.value))
     ).subscribe());
 
     this._subscriptions.add(this.workspace.stateChanged$.subscribe({
@@ -204,6 +211,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this._computeOrderByLang = null;
     this._reverseOrderByCache = {}; // need to be erased on screen startup
     this._editingColumns = false;
+    this._currentStringIds = null;
+    this._parentIdsFromUserSettings = null;
 
     // use the default
     this.searchView = (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
@@ -283,12 +292,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
 
-    // level (This is not part of the screen URL)
-    const level = this.levelFromUserSettings || 1;
-    if (level !== this.state.level) {
-      this.state.level = level;
-      hasChanged = true;
-    }
+    // // level (This is not part of the screen URL)
+    // const level = this.levelFromUserSettings || 1;
+    // if (level !== this.state.level) {
+    //   this.state.level = level;
+    //   hasChanged = true;
+    // }
 
     // display mode: has a precise default value
     if (this.state.displayMode !== displayMode) {
@@ -367,48 +376,63 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this.actionValidationErrors = {}; // clear validation errors
     s.masterStatus = MasterStatus.loading;
 
-    // compute the parameters
-    const isTree = this.isTreeMode;
-
-    const top = (isTree && !this.searchOrFilter) ? 2500 : DEFAULT_PAGE_SIZE;
-    const skip = (isTree && !this.searchOrFilter) ? 0 : s.skip;
-    const orderby = isTree ? 'Node' : s.orderby;
-    const search = s.search;
-    const select = this.computeSelect();
-
-    // compute the filter
-    let filter = this.filter();
-    if (isTree && !this.searchOrFilter) {
-      filter = `Level le ${s.level}`;
-    }
-
-    if (!s.inactive) {
-      const activeOnlyFilter = isTree ? `${this.inactiveFilter} or ActiveChildCount gt 0` : this.inactiveFilter;
-      if (!!filter) {
-        filter = `(${filter}) and (${activeOnlyFilter})`;
-      } else {
-        filter = activeOnlyFilter;
-      }
-    }
-
     // This will show the spinner
     this.cdr.markForCheck();
 
-    // Retrieve the entities
-    return this.crud.get({
-      top,
-      skip,
-      orderby,
-      search,
-      select,
-      filter,
-    }).pipe(
-      tap((response: GetResponse) => {
+    const isTree = this.isTreeMode;
+    const isSearchOrFilter = this.searchOrFilter;
+
+    // compute the parameters
+    const select = this.computeSelect();
+    let obs$: Observable<EntitiesResponse>;
+
+    if (isTree && !isSearchOrFilter) {
+      const filter = s.inactive ? null : `(${this.inactiveFilter}) or ActiveChildCount gt 0`;
+      const parentIds: (string | number)[] = this.parentIdsFromUserSettings;
+
+      obs$ = this.crud.getChildrenOf({
+        ids: parentIds,
+        select,
+        filter,
+      });
+
+    } else {
+      const top = DEFAULT_PAGE_SIZE;
+      const skip = s.skip;
+      const orderby = isTree ? 'Node' : s.orderby;
+      const search = s.search;
+
+      // compute the filter
+      let filter = this.filter();
+      if (!s.inactive) {
+        if (!!filter) {
+          filter = `(${filter}) and (${this.inactiveFilter})`;
+        } else {
+          filter = this.inactiveFilter;
+        }
+      }
+
+      // Retrieve the entities
+      obs$ = this.crud.get({
+        top,
+        skip,
+        orderby,
+        search,
+        select,
+        filter,
+      }).pipe(
+        tap((response: GetResponse) => {
+          s.top = response.Top;
+          s.skip = response.Skip;
+          s.total = response.TotalCount;
+        }),
+      );
+    }
+
+    return obs$.pipe(
+      tap((response: EntitiesResponse) => {
         s = this.state; // get the source
         s.masterStatus = MasterStatus.loaded;
-        s.top = response.Top;
-        s.skip = response.Skip;
-        s.total = response.TotalCount;
         s.bag = response.Bag;
         s.collectionName = response.CollectionName;
 
@@ -440,9 +464,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     const parentId = parentNode.id;
-    const isString = !!this.collection ?
-      metadata[this.collection](this.workspace.current, this.translate, null).properties.Id.control === 'text' :
-      isNaN(parentId as any); // TODO make this more robust
 
     // capture the state object and clear the details object
     let s = this.state;
@@ -451,26 +472,19 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // show rotator next to the expanded item
     parentNode.status = MasterStatus.loading;
 
-    const parentIdString = isString ? `'${parentId}'` : parentId; // enclose in quotes if string
-    let filter = `Node childof ${parentIdString}`;
-    if (!s.inactive) {
-      const activeOnlyFilter = `${this.inactiveFilter} or ActiveChildCount gt 0`;
-      filter = `(${filter}) and (${activeOnlyFilter})`;
-    }
-
+    const filter = s.inactive ? null : `(${this.inactiveFilter}) or ActiveChildCount gt 0`;
     const select = this.computeSelect();
+    const parentIds: (string | number)[] = [parentId];
 
     // This will show the spinner
     this.cdr.markForCheck();
 
     // Retrieve the entities
     const crud = this.api.crudFactory(this.apiEndpoint, parentNode.notifyCancel$);
-    crud.get({
-      top: 2500,
-      orderby: 'Node',
+    crud.getChildrenOf({
       filter,
-      select
-      // expand: this.expand
+      select,
+      ids: parentIds
     }).pipe(
       tap((response: GetResponse) => {
         s = this.state; // get the source
@@ -566,8 +580,13 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   get apiEndpoint(): string {
-    const meta = this.entityDescriptor;
-    return !!meta ? meta.apiEndpoint : null;
+    const desc = this.entityDescriptor;
+    return !!desc ? desc.apiEndpoint : null;
+  }
+
+  get titleSingular(): string {
+    const desc = this.entityDescriptor;
+    return !!desc ? desc.titleSingular : null;
   }
 
   private computeSelect(): string {
@@ -612,7 +631,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       // select from parents what you select from children
       const selectWithParents = Object.keys(resultPaths)
         .map(atom => atom.trim())
-        .filter(atom => !!atom && !atom.startsWith('Parent'))
+        .filter(atom => !!atom && !atom.startsWith('Parent/'))
         .map(atom => `Parent/${atom}`);
 
       selectWithParents.forEach(e => resultPaths[e] = true);
@@ -626,48 +645,92 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private get selectFromUserSettings(): string {
-    const settings = this.workspace.current.userSettings;
-    settings.CustomSettings = settings.CustomSettings || {};
-    return settings.CustomSettings[this.selectKey];
+    return this.customSettings[this.selectKey];
   }
 
-  private saveSelect(select: string) {
+  private saveSelectToUserSettings(select: string) {
+    this.saveToUserSettings(this.selectKey, select);
+  }
 
-    // Save the new value with the server, to be used again afterwards
+  private get parentIdsKey(): string {
+    return `${this.collection + (!!this.definition ? '/' + this.definition : '')}/parent_ids`;
+  }
+
+  private get parentIdsFromUserSettings(): (string | number)[] {
+    const stringIds = this.storage.getItem(this.parentIdsKey);
+    if (stringIds !== this._currentStringIds) {
+      this._currentStringIds = stringIds;
+      let result = [];
+      if (!!stringIds) {
+        try {
+          result = JSON.parse(stringIds);
+        } catch { }
+      }
+
+      this._parentIdsFromUserSettings = result;
+    }
+
+    return this._parentIdsFromUserSettings;
+  }
+
+  private saveParentIdsToUserSettings(ids: (string | number)[]) {
+    const stringIds = JSON.stringify(ids);
+    this.storage.setItem(this.parentIdsKey, stringIds);
+  }
+
+  private get customSettings() {
+    const settings = this.workspace.current.userSettings;
+    settings.CustomSettings = settings.CustomSettings || {};
+    return settings.CustomSettings;
+  }
+
+  private saveToUserSettings(key: string, value: string) {
     const settings = this.workspace.current.userSettings;
     if (!settings.CustomSettings) {
       settings.CustomSettings = {};
     }
-    settings.CustomSettings[this.selectKey] = select;
-    this.api.usersApi(this.notifyDestruct$).saveForClient(this.selectKey, select)
-      .pipe(tap(x => handleFreshUserSettings(x, this.workspace.ws.tenantId, this.workspace.current, this.storage)))
-      .subscribe();
-  }
 
-  private get levelKey(): string {
-    return `${this.collection + (!!this.definition ? '/' + this.definition : '')}/level`;
-  }
-
-  private get levelFromUserSettings(): number {
-    const settings = this.workspace.current.userSettings;
-    settings.CustomSettings = settings.CustomSettings || {};
-    return parseInt(settings.CustomSettings[this.levelKey], null);
-  }
-
-  private saveLevel(level: number) {
-
-    const levelString = !!level ? level + '' : null;
-
-    // Save the new value with the server, to be used again afterwards
-    const settings = this.workspace.current.userSettings;
-    if (!settings.CustomSettings) {
-      settings.CustomSettings = {};
+    if (!!value) {
+      settings.CustomSettings[key] = value;
+    } else if (settings.CustomSettings[key]) {
+      delete settings.CustomSettings[key];
     }
-    settings.CustomSettings[this.levelKey] = levelString;
-    this.api.usersApi(this.notifyDestruct$).saveForClient(this.levelKey, levelString)
-      .pipe(tap(x => handleFreshUserSettings(x, this.workspace.ws.tenantId, this.workspace.current, this.storage)))
-      .subscribe();
+
+    // switch map ensures that only the last save is persisted in the workspace
+    this.notifySaveSettingsOnServer$.next({ key, value });
   }
+
+  private doSaveSettingsOnServer(key: string, value: string): Observable<any> {
+    return this.api.usersApi(this.notifyDestruct$).saveForClient(key, value)
+      .pipe(
+        tap(x => handleFreshUserSettings(x, this.workspace.ws.tenantId, this.workspace.current, this.storage))
+      );
+  }
+
+  // private get levelKey(): string {
+  //   return `${this.collection + (!!this.definition ? '/' + this.definition : '')}/level`;
+  // }
+
+  // private get levelFromUserSettings(): number {
+  //   const settings = this.workspace.current.userSettings;
+  //   settings.CustomSettings = settings.CustomSettings || {};
+  //   return parseInt(settings.CustomSettings[this.levelKey], null);
+  // }
+
+  // private saveLevel(level: number) {
+
+  //   const levelString = !!level ? level + '' : null;
+
+  //   // Save the new value with the server, to be used again afterwards
+  //   const settings = this.workspace.current.userSettings;
+  //   if (!settings.CustomSettings) {
+  //     settings.CustomSettings = {};
+  //   }
+  //   settings.CustomSettings[this.levelKey] = levelString;
+  //   this.api.usersApi(this.notifyDestruct$).saveForClient(this.levelKey, levelString)
+  //     .pipe(tap(x => handleFreshUserSettings(x, this.workspace.ws.tenantId, this.workspace.current, this.storage)))
+  //     .subscribe();
+  // }
 
   ////////////// UI Bindings below
 
@@ -867,7 +930,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   get showDataDropdown(): boolean {
-    return this.showImport || this.showExport;
+    return this.showImport || this.showExport || this.showCollapseAll;
   }
 
   get isScreenMode(): boolean {
@@ -1486,7 +1549,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       this.fetch();
       this.urlStateChange();
-      this.saveSelect(v);
+      this.saveSelectToUserSettings(v);
     }
   }
 
@@ -1499,7 +1562,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       this.state.select = paths.join(',');
 
       this.urlStateChange();
-      this.saveSelect(this.state.select);
+      this.saveSelectToUserSettings(this.state.select);
     }
   }
 
@@ -1520,7 +1583,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this.state.select = paths.filter((_: string, i: number) => index !== i).join(',');
 
     this.urlStateChange();
-    this.saveSelect(this.state.select);
+    this.saveSelectToUserSettings(this.state.select);
   }
 
   public entity(id: string | number) {
@@ -1544,6 +1607,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       node.status !== MasterStatus.loading && !this.searchOrFilter) {
       this.fetchNodeChildren(node);
     }
+
+    // Calculate the nodes that are both visible and expanded
+    const expandedIds = this.state.treeNodes.filter(n => n.isExpanded && this.showTreeNode(n)).map(n => n.id);
+    this.saveParentIdsToUserSettings(expandedIds);
   }
 
   public paddingLeft(node: NodeInfo): string {
@@ -1571,46 +1638,43 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return node.hasChildren;
   }
 
+  // public get canExpandNextLevel(): boolean {
+  //   return true; // TODO
+  // }
 
-  public get canExpandNextLevel(): boolean {
-    return true; // TODO
-  }
+  // public get showExpandNextLevel(): boolean {
+  //   return this.isTreeMode && !this.searchOrFilter;
+  // }
 
-  public get showExpandNextLevel(): boolean {
-    return this.isTreeMode && !this.searchOrFilter;
-  }
-
-  public get expandNextLevelTooltip(): string {
-    //  return this.canCreatePermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
-    return null; // TODO
-  }
-
-  public onExpandNextLevel(): void {
-    this.state.level++;
-    this.fetch();
-    this.saveLevel(this.state.level);
-  }
+  // public onExpandNextLevel(): void {
+  //   this.state.level++;
+  //   this.fetch();
+  //   this.saveLevel(this.state.level);
+  // }
 
   public get canCollapseAll(): boolean {
     return true;
   }
 
   public get showCollapseAll(): boolean {
-    return this.showExpandNextLevel;
-  }
-
-  public get collapseAllTooltip(): string {
-    // return this.canCollapseAll ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
-    return null; // TODO
+    return this.isTreeMode && !this.searchOrFilter;
   }
 
   public onCollapseAll(): void {
-    this.state.level = 1;
-    this.fetch();
-    this.saveLevel(null);
+    const someNodesAreExpanded = this.treeNodes.some(e => e.isExpanded);
+    if (someNodesAreExpanded) {
+      this.treeNodes.forEach(e => e.isExpanded = false);
+    }
+
+    this.saveParentIdsToUserSettings([]);
+
+    // if (this.state.level !== 1) {
+    //   this.state.level = 1;
+    //   this.saveLevel(null);
+    // }
   }
 
-  public get level(): number {
-    return this.state.level;
-  }
+  // public get level(): number {
+  //   return this.state.level;
+  // }
 }
