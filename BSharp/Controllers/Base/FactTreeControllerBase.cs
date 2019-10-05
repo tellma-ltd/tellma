@@ -50,9 +50,9 @@ namespace BSharp.Controllers
             var select = SelectExpression.Parse(args.Select);
             var filter = FilterExpression.Parse(args.Filter);
             var orderby = OrderByExpression.Parse("Node");
-            var ids = args.Ids ?? new List<TKey>();
+            var ids = args.I ?? new List<TKey>();
 
-            return await GetByCustomQuery(q => q.FilterByParentIds(ids).Filter(filter), expand, select, orderby);
+            return await GetByCustomQuery(q => q.FilterByParentIds(ids, includeRoots: args.Roots).Filter(filter), expand, select, orderby);
         }
     }
 }

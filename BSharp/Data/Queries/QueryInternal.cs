@@ -66,6 +66,8 @@ namespace BSharp.Data.Queries
 
         public IEnumerable<object> ParentIds { get; set; }
 
+        public bool IncludeRoots { get; set; }
+
         public int? Skip { get; set; }
 
         public int? Top { get; set; }
@@ -484,12 +486,19 @@ namespace BSharp.Data.Queries
                 {
                     if (!ParentIds.Any())
                     {
-                        whereInParentIds = $"[P].[ParentId] IS NULL";
+                        if (IncludeRoots)
+                        {
+                            whereInParentIds = $"[P].[ParentId] IS NULL";
+                        }
                     }
                     else if (ParentIds.Count() == 1)
                     {
                         string paramName = ps.AddParameter(ParentIds.Single());
-                        whereInParentIds = $"[P].[ParentId] = @{paramName} OR [P].[ParentId] IS NULL";
+                        whereInParentIds = $"[P].[ParentId] = @{paramName}";
+                        if (IncludeRoots)
+                        {
+                            whereInParentIds += " OR [P].[ParentId] IS NULL";
+                        }
                     }
                     else
                     {
@@ -505,7 +514,7 @@ namespace BSharp.Data.Queries
                             column.MaxLength = 450; // Just for performance
                         }
                         parentIdsTable.Columns.Add(column);
-                        foreach(var id in ParentIds.Where(e => e != null))
+                        foreach (var id in ParentIds.Where(e => e != null))
                         {
                             DataRow row = parentIdsTable.NewRow();
                             row[propName] = id;
@@ -520,7 +529,11 @@ namespace BSharp.Data.Queries
                         };
 
                         ps.AddParameter(parentIdsTvp);
-                        whereInParentIds = $"[P].[ParentId] IN (SELECT Id FROM @ParentIds) OR [P].[ParentId] IS NULL";
+                        whereInParentIds = $"[P].[ParentId] IN (SELECT Id FROM @ParentIds)";
+                        if (IncludeRoots)
+                        {
+                            whereInParentIds += " OR [P].[ParentId] IS NULL";
+                        }
                     }
                 }
 

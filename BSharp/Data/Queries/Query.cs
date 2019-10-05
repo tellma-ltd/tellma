@@ -30,6 +30,7 @@ namespace BSharp.Data.Queries
         private OrderByExpression _orderby;
         private IEnumerable<object> _ids;
         private IEnumerable<object> _parentIds;
+        private bool _includeRoots;
         private string _composableSql;
         private string _preparatorySql;
         private SqlParameter[] _parameters;
@@ -62,6 +63,7 @@ namespace BSharp.Data.Queries
                 _orderby = _orderby,
                 _ids = _ids == null ? null : new List<object>(_ids),
                 _parentIds = _parentIds == null ? null : new List<object>(_parentIds),
+                _includeRoots = _includeRoots,
                 _composableSql = _composableSql,
                 _preparatorySql = _preparatorySql,
                 _parameters = _parameters?.ToArray(),
@@ -154,10 +156,10 @@ namespace BSharp.Data.Queries
 
         /// <summary>
         /// Restricts the <see cref="Query{T}"/> to loading the children of the entities with the specified list of Ids,
-        /// and the root nodes, this is only available on tree types (containing a property ParentId)
+        /// and the root nodes if includeRoots is set to true, this is only available on tree types (containing a property ParentId)
         /// </summary>
         /// <typeparam name="TKey">The type of the parent ids (either string or int)</typeparam>
-        public Query<T> FilterByParentIds<TKey>(List<TKey> parentIds)
+        public Query<T> FilterByParentIds<TKey>(List<TKey> parentIds, bool includeRoots)
         {
             if (!IsEntityWithKey())
             {
@@ -181,6 +183,7 @@ namespace BSharp.Data.Queries
 
             var clone = Clone();
             clone._parentIds = parentIds.Cast<object>();
+            clone._includeRoots = includeRoots;
             return clone;
         }
 
@@ -269,6 +272,7 @@ namespace BSharp.Data.Queries
                 Filter = filterExp,
                 Ids = _ids,
                 ParentIds = _parentIds,
+                IncludeRoots = _includeRoots,
                 Skip = _skip,
                 Top = _top
             };
@@ -535,6 +539,7 @@ namespace BSharp.Data.Queries
             root.OrderBy = orderbyExp;
             root.Ids = _ids;
             root.ParentIds = _parentIds;
+            root.IncludeRoots = _includeRoots;
             root.Skip = _skip;
             root.Top = _top;
 
@@ -656,6 +661,7 @@ namespace BSharp.Data.Queries
                 Filter = filterExp,
                 Ids = _ids,
                 ParentIds = _parentIds,
+                IncludeRoots = _includeRoots,
                 OrderBy = orderByExp,
                 Skip = _skip,
                 Top = _top

@@ -391,9 +391,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       const parentIds: (string | number)[] = this.parentIdsFromUserSettings;
 
       obs$ = this.crud.getChildrenOf({
-        ids: parentIds,
+        i: parentIds,
         select,
         filter,
+        roots: true
       });
 
     } else {
@@ -484,7 +485,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     crud.getChildrenOf({
       filter,
       select,
-      ids: parentIds
+      i: parentIds,
+      roots: false
     }).pipe(
       tap((response: GetResponse) => {
         s = this.state; // get the source

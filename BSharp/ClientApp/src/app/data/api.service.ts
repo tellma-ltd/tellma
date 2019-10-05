@@ -389,9 +389,11 @@ export class ApiService {
           paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
         }
 
-        if (!!args.ids) {
-          args.ids.forEach(id => {
-            paramsArray.push(`ids=${encodeURIComponent(id)}`);
+        paramsArray.push(`roots=${!!args.roots}`);
+
+        if (!!args.i) {
+          args.i.forEach(id => {
+            paramsArray.push(`i=${encodeURIComponent(id)}`);
           });
         }
 
