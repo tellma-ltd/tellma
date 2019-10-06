@@ -257,6 +257,9 @@ namespace BSharp.Data
                     case nameof(Account):
                         return new SqlSource("[map].[Accounts]()");
 
+                    case nameof(LookupDefinition):
+                        return new SqlSource("[map].[LookupDefinition]()");
+
                     #region _Temp
 
                     case nameof(ResponsibilityCenter):
@@ -624,8 +627,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var isActiveParam = new SqlParameter("@IsActive", isActive);
-
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -869,8 +870,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var isActiveParam = new SqlParameter("@IsActive", isActive);
-
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -1362,8 +1361,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var isActiveParam = new SqlParameter("@IsActive", isActive);
-
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -1491,8 +1488,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var isActiveParam = new SqlParameter("@IsActive", isActive);
-
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -1850,8 +1845,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var isActiveParam = new SqlParameter("@IsActive", isActive);
-
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -2004,8 +1997,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var isActiveParam = new SqlParameter("@IsActive", isActive);
-
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -2190,8 +2181,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var isActiveParam = new SqlParameter("@IsActive", isActive);
-
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -2372,8 +2361,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var isActiveParam = new SqlParameter("@IsActive", isDeprecated);
-
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -2515,8 +2502,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var isActiveParam = new SqlParameter("@IsActive", isActive);
-
                 DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
                 var idsTvp = new SqlParameter("@Ids", idsTable)
                 {
@@ -2725,5 +2710,155 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
         #endregion
 
+        #region LookupDefinitions
+
+        public Query<Currency> LookupDefinitions__AsQuery(List<CurrencyForSave> entities)
+        {
+            // This method returns the provided entities as a Query that can be selected, filtered etc...
+            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(Currency)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // Query
+            var query = Query<Currency>();
+            return query.FromSql($"[map].[{nameof(LookupDefinitions__AsQuery)}] (@Entities)", null, entitiesTvp);
+        }
+
+        public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__Save(List<CurrencyForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Currency)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(LookupDefinitions_Validate__Save)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task LookupDefinitions__Save(List<CurrencyForSave> entities)
+        {
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Currency)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__Save)}]";
+
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task LookupDefinitions__UpdateState(List<string> ids, string state)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[StringList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@State", state);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__UpdateState)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> LookupDefinitions_Validate__Delete(List<string> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedStringList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(LookupDefinitions_Validate__Delete)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task LookupDefinitions__Delete(IEnumerable<string> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[StringList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(LookupDefinitions__Delete)}]";
+
+                // Execute
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+                {
+                    throw new ForeignKeyViolationException();
+                }
+            }
+        }
+
+        #endregion
     }
 }

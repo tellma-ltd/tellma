@@ -703,6 +703,15 @@
   <data name="LoginAlreadyAssociated" xml:space="preserve">
     <value>مسجل الدخول الخارجي هذا مرتبط بمستخدم حالي.</value>
   </data>
+  <data name="MainMenuIcon" xml:space="preserve">
+    <value>الأيقونة</value>
+  </data>
+  <data name="MainMenuSection" xml:space="preserve">
+    <value>القسم من القائمة الرئيسية</value>
+  </data>
+  <data name="MainMenuSortKey" xml:space="preserve">
+    <value>الترتيب في القائمة الرئيسية</value>
+  </data>
   <data name="MeasurementUnit" xml:space="preserve">
     <value>وحدة قياس</value>
   </data>
@@ -861,6 +870,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>يرجى التأكيد</value>
+  </data>
+  <data name="PluralName" xml:space="preserve">
+    <value>اسم الجمع</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>سياسة الخصوصية</value>
@@ -1105,6 +1117,9 @@
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>تم إزالة مسجل الدخول الخارجي.</value>
   </data>
+  <data name="TitleSingular" xml:space="preserve">
+    <value>الاسم المفرد</value>
+  </data>
   <data name="TreeParent" xml:space="preserve">
     <value>الأصل</value>
   </data>
@@ -1122,6 +1137,9 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>تم تعطيل التوثيق مزدوج العوامل، لإعادة تشغيله ثقم بضبط تطبيق (authenticator)</value>
+  </data>
+  <data name="UpdateState" xml:space="preserve">
+    <value>تعديل الحالة</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>مستخدم</value>

@@ -422,6 +422,14 @@
     <Build Include="dbo\Functions\dbo.fn_Lookup.sql" />
     <Build Include="dbo\Functions\dbo.fn_UnitName__Id.sql" />
     <Build Include="dbo\Functions\dbo.fn_ResourceName__Id.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LookupDefinitionList.sql" />
+    <Build Include="bll\Stored Procedures\bll.LookupDefinitions_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.LookupDefinitions__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.LookupDefinitions_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.LookupDefinitions__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.LookupDefinitions__UpdateState.sql" />
+    <Build Include="Mapping\LookupDefinitions.sql" />
+    <Build Include="Mapping\LookupDefinitions__AsQuery.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
