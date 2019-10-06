@@ -30,6 +30,7 @@ namespace BSharp.Controllers
             _logger = logger;
         }
 
+        // Children-of is replicated in CrudTreeControllerBase, please keep them in sync
         [HttpGet("children-of")]
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args)
         {
