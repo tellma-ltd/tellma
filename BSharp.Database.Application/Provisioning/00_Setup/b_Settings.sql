@@ -3,4 +3,4 @@
 	@PrimaryLanguageId = @PrimaryLanguageId,
 	@DefinitionsVersion = @DefinitionsVersion,
 	@SettingsVersion = @SettingsVersion,
-	@FunctionalCurrency = @FunctionalCurrency;
+	@FunctionalCurrencyId = @FunctionalCurrencyId;

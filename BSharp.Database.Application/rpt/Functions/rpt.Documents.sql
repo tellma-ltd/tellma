@@ -20,7 +20,7 @@ RETURN
 			DL.[SortKey],
 			DL.[LineDefinitionId],
 			DLE.[Direction],
-			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[IfrsEntryClassificationId], 
+			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryTypeId], 
 			R.[Name] AS [Resource],
 			DLE.[ResourcePickId],
 			CAST(DLE.[Value] AS MONEY) AS [Value],
@@ -38,7 +38,7 @@ RETURN
 		LEFT JOIN dbo.DocumentLineEntries DLE ON DL.[Id] = DLE.[DocumentLineId]
 		JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
 		LEFT JOIN dbo.Resources R ON A.[ResourceId] = R.[Id]
-		LEFT JOIN dbo.Currencies C ON R.[CurrencyId] = C.[Id]
+		LEFT JOIN dbo.Currencies C ON R.[MonetaryValueCurrencyId] = C.[Id]
 		LEFT JOIN dbo.MeasurementUnits MUM ON R.[MassUnitId] = MUM.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @Ids)
 	)
@@ -53,7 +53,7 @@ RETURN
 		(CASE WHEN [SortKey] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
 		CAST([SortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineDefinitionId],
-		[EntryNumber], [Account], [IfrsEntryClassificationId],[Resource], [ResourcePickId],
+		[EntryNumber], [Account], [EntryTypeId],[Resource], [ResourcePickId],
 		[Direction], [Value], [MonetaryValue], [Currency], [Mass], [MassUnit]
 	FROM Docs;
 GO

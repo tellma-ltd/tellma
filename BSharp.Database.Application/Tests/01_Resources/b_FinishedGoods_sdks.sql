@@ -1,5 +1,5 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-	[Id],		[TitlePlural],	[TitleSingular],[ResourceTypeId], [Lookup1Visibility], [Lookup1Lable], [Lookup1DefinitionId]) VALUES
+	[Id],		[TitlePlural],	[TitleSingular],[ResourceTypeParentList], [Lookup1Visibility], [Lookup1Lable], [Lookup1DefinitionId]) VALUES
 	(N'sdks',	N'SDKs',		N'SDK',			N'FinishedGoods');
 DECLARE
 @R6 [dbo].ResourceList, @RP6 [dbo].ResourcePickList;
@@ -36,5 +36,5 @@ DECLARE
 	END;
 	DECLARE @TC INT = (SELECT [Id] FROM dbo.Resources WHERE [Name] = N'Toyota Camry 2018' AND [ResourceDefinitionId] = N'vehicles');
 	INSERT INTO dbo.ResourcePicks
-	([ResourceId], [ProductionDate], [Code], [Name])
+	([ResourceId], [AvailableSince], [Code], [Name])
 	SELECT	@TC, [ProductionDate], [Code], [Name] FROM @RP6;

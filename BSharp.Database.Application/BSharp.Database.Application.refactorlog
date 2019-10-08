@@ -905,4 +905,361 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[AccountTypesEntryTypes]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="10ff9a28-f60c-49a1-b756-3b8910f74efe" ChangeDateTime="10/04/2019 10:59:15">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[ResourceTypeId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceTypeList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e4fbaac0-a5c3-429e-9b9a-30e50276f39f" ChangeDateTime="10/04/2019 11:00:03">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[ResourceTypeList]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceTypeParentList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4d15c9ba-65f6-4b75-847a-51e438d1cdae" ChangeDateTime="10/05/2019 07:56:16">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineEntries].[IfrsEntryClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5f1dfe6c-8b42-4d99-8991-50067daa88ee" ChangeDateTime="10/06/2019 00:00:55">
+    <Property Name="ElementName" Value="[dbo].[ResourcePacks].[Quantity]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePacks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ChildCount" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2674b3a1-45f2-4954-8c77-44b34c7db45e" ChangeDateTime="10/06/2019 00:29:11">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ResourcePickString1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Text1]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d20e661e-6fc8-4fae-aa3d-018d7bcf1aa1" ChangeDateTime="10/06/2019 00:29:31">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ResourcePickString2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Text2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="83d614b3-ccce-46d7-8d92-cda67d20e4a2" ChangeDateTime="10/06/2019 00:29:53">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ResourcePickDate1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Date1]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="96b7c1a3-0919-40e0-8ccc-39026588f655" ChangeDateTime="10/06/2019 00:30:50">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ResourcePickDate2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Date2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f60edb6b-4849-4cbb-a11f-68f4e6cd0603" ChangeDateTime="10/06/2019 00:31:56">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ResourcePickLookup1Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Lookup1Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4ebdcffd-631e-4f97-a52a-f726b5a50288" ChangeDateTime="10/06/2019 00:32:32">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ResourcePickLookup2Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Lookup2Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="961ef0b3-53e5-49e2-939b-5ba6d4c56da4" ChangeDateTime="10/06/2019 00:35:46">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ResourcePickLookup3Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Lookup3Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="23286c33-07a9-46df-a4a7-d1a8cbba4b63" ChangeDateTime="10/06/2019 00:36:05">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ResourcePickLookup4Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Lookup4Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="85ccf5b5-b37e-4039-ad77-027bc8649c03" ChangeDateTime="10/06/2019 00:36:23">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ResourcePickLookup5Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Lookup5Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0e834a85-fe77-446b-b4b6-22e8b0a0860b" ChangeDateTime="10/06/2019 00:53:43">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ResourceLookup1Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Lookup1Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8666927b-a4b3-47f0-a2c3-087ca1b7c0c2" ChangeDateTime="10/06/2019 00:54:02">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ResourceLookup2Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Lookup2Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9110d1ed-2271-4e74-90f1-830c237b640a" ChangeDateTime="10/06/2019 00:55:08">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ResourceLookup3Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Lookup3Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d66ff68c-6554-41dc-9cb7-ec36e135f523" ChangeDateTime="10/06/2019 00:55:33">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ResourceLookup4Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Lookup4Id]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="80e0b9a5-e9c7-4910-b8a3-89f604e2da6e" ChangeDateTime="10/06/2019 01:17:12">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitMass]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitMassMean]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="47059090-9aab-4869-be80-ee9d1db86331" ChangeDateTime="10/06/2019 01:17:29">
+    <Property Name="ElementName" Value="[dbo].[Resources].[MassVariance]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitMassVariance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cf8455fc-9885-44df-8bcb-2c982a302339" ChangeDateTime="10/06/2019 01:17:54">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitVolume]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitVolumeMean]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="15de7f25-e51d-428b-a316-481be0faf35c" ChangeDateTime="10/06/2019 01:18:13">
+    <Property Name="ElementName" Value="[dbo].[Resources].[VolumeVariance]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitVolumeVariance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="10858ef6-d593-4b06-9bd7-cf6372b79e33" ChangeDateTime="10/06/2019 03:54:09">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitArea]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitAreaMean]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="92562369-d19e-4a9b-8c72-34c662e6b506" ChangeDateTime="10/06/2019 03:54:29">
+    <Property Name="ElementName" Value="[dbo].[Resources].[AreaVariance]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitAreaVariance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="017d5747-b0f7-4e58-9844-2c52b6fa2b06" ChangeDateTime="10/06/2019 03:56:12">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitLength]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitLengthMean]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1f13dbce-84ef-4188-9a1c-c29588ff1354" ChangeDateTime="10/06/2019 03:56:34">
+    <Property Name="ElementName" Value="[dbo].[Resources].[LengthVariance]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitLengthVariance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="01767016-dd63-4885-bd35-6b83f030f5be" ChangeDateTime="10/06/2019 04:07:18">
+    <Property Name="ElementName" Value="[dbo].[Resources].[CurrencyId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CurrencyUnitId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c0a54b9a-0f30-43f5-8d71-1dc5bdf8d95e" ChangeDateTime="10/06/2019 04:08:17">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitMonetaryValue]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitCurrencyMean]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a7504766-1ebf-4cab-8e60-ac9371a102b2" ChangeDateTime="10/06/2019 04:12:58">
+    <Property Name="ElementName" Value="[dbo].[Resources].[CurrencyUnitId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PriceCurrencyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7aade141-799c-4611-b129-07eedbebac10" ChangeDateTime="10/06/2019 04:14:23">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitCurrencyMean]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitPriceMean]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b3737cf9-4c85-401c-96f0-e9d0e2e68f63" ChangeDateTime="10/06/2019 04:15:20">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitCurrencyVariance]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitPriceVariance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2dbf5bd9-f510-4e0a-97a7-9a955d73aaaa" ChangeDateTime="10/06/2019 05:13:54">
+    <Property Name="ElementName" Value="[dbo].[Settings].[FunctionalCurrency]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Settings]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[FunctionalCurrencyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e8b2f34d-17c2-47ae-8bbd-231eb047d5b9" ChangeDateTime="10/06/2019 05:14:22">
+    <Property Name="ElementName" Value="[dbo].[fn_FunctionalCurrency]" />
+    <Property Name="ElementType" Value="SqlScalarFunction" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fn_FunctionalCurrencyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7a4a0313-f7ca-4446-b589-e1c77fb889ba" ChangeDateTime="10/06/2019 06:31:48">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitTime]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitTimeMean]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="97bb838d-776d-4d06-8d9a-d9ff01cd1293" ChangeDateTime="10/06/2019 06:32:11">
+    <Property Name="ElementName" Value="[dbo].[Resources].[TimeVariance]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitTimeVariance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="88d747b5-0400-4714-b292-28d4bf7de0bc" ChangeDateTime="10/06/2019 06:59:31">
+    <Property Name="ElementName" Value="[dbo].[Resources].[Memo]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Description]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="45f0ae41-045d-4365-8a22-e0ee77a68fc2" ChangeDateTime="10/06/2019 07:19:38">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[MonetaryValue]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Price]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="73c3a12c-cc1b-485c-9ac4-01a93fe44e98" ChangeDateTime="10/06/2019 07:24:27">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ProductionDate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AvailableFrom]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e0bad226-9214-4444-aa58-c744f0f30611" ChangeDateTime="10/06/2019 07:24:46">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[ExpiryDate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AvailableTo]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fdb17d94-4fd9-4ae4-9270-bd151dda8815" ChangeDateTime="10/06/2019 08:54:24">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[AvailableTo]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AvailableTill]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8b8e6490-f509-4a9e-9a04-b6700ac8c2f5" ChangeDateTime="10/06/2019 08:54:44">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[AvailableFrom]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AvailableSince]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d804a53e-3d2b-4b2d-a9fe-f7f724f502ea" ChangeDateTime="10/06/2019 18:02:33">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineEntries].[MonetaryValue]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Price]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7207df5b-8427-4de1-82fd-511997863b9a" ChangeDateTime="10/06/2019 18:51:57">
+    <Property Name="ElementName" Value="[dbo].[Resources].[PriceCurrencyId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ValueCurrencyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="797d624d-d4cf-4c7c-bbbd-019df084b991" ChangeDateTime="10/06/2019 18:53:26">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitPriceMean]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitValueMean]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1ff36b1a-2fe0-4494-b211-694ebdcecc26" ChangeDateTime="10/06/2019 18:54:06">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitPriceVariance]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitValueVariance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a5cb33eb-b62a-46ba-95e3-f28b44376110" ChangeDateTime="10/06/2019 18:57:21">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[Price]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Value]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="13c7ca6a-b93f-4d33-9938-dbbb5d44f475" ChangeDateTime="10/08/2019 03:54:15">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ValueCurrencyId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MValueCurrencyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2f269844-db8e-4c59-8852-16387915eb34" ChangeDateTime="10/08/2019 04:10:03">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitValueMean]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitMonetaryValueMean]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e07df738-7eb1-4ffb-a8c1-a529032e8336" ChangeDateTime="10/08/2019 04:10:25">
+    <Property Name="ElementName" Value="[dbo].[Resources].[MValueCurrencyId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MonetaryValueCurrencyId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1ba606c6-0338-48f3-ac8d-ca26f1bb8092" ChangeDateTime="10/08/2019 04:10:45">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitValueVariance]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UnitMonetaryValueVariance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="dc425e56-2fb6-451c-b68d-c6f4550fb27a" ChangeDateTime="10/08/2019 04:11:48">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks].[Value]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MonetaryValue]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="da842624-1871-490f-89a9-29a069a148fa" ChangeDateTime="10/08/2019 04:12:42">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineEntries].[Price]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[MonetaryValue]" />
+  </Operation>
 </Operations>

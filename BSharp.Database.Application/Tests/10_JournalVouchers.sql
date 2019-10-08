@@ -43,7 +43,7 @@ WITH Docs AS (
 			DL.[SortKey] AS [LineSortKey],
 			DL.[LineDefinitionId],
 			DLE.[Direction],
-			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[IfrsEntryClassificationId],
+			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryTypeId],
 			RC.[Name] AS [ResponsibilityCenter],
 			[AGC].[Name ] AS [Agent],
 			R.[Name] + ISNULL(N': ' + RP.[Name], N'') AS [Resource],
@@ -66,12 +66,12 @@ WITH Docs AS (
 		LEFT JOIN dbo.Agents AG ON DA.AssigneeId = AG.Id
 		LEFT JOIN dbo.DocumentLines DL ON D.[Id] = DL.[DocumentId]
 		LEFT JOIN dbo.DocumentLineEntries DLE ON DL.[Id] = DLE.[DocumentLineId]
-		JOIN dbo.[AccountClassifications] A ON DLE.AccountId = A.[Id]
+		LEFT JOIN dbo.[AccountClassifications] A ON DLE.AccountId = A.[Id]
 		LEFT JOIN dbo.ResponsibilityCenters RC ON DLE.[ResponsibilityCenterId] = RC.[Id]
 		LEFT JOIN dbo.Agents AGC ON DLE.[AgentId] = AGC.[Id]
 		LEFT JOIN dbo.Resources R ON DLE.[ResourceId] = R.[Id]
 		LEFT JOIN dbo.ResourcePicks RP ON DLE.[ResourcePickId] = RP.[Id]
-		LEFT JOIN dbo.Currencies C ON R.[CurrencyId] = C.[Id]
+		LEFT JOIN dbo.Currencies C ON R.[MonetaryValueCurrencyId] = C.[Id]
 		LEFT JOIN dbo.MeasurementUnits MUM ON R.[MassUnitId] = MUM.[Id]
 		LEFT JOIN dbo.MeasurementUnits MUL ON R.[LengthUnitId] = MUL.[Id]
 		LEFT JOIN dbo.MeasurementUnits MUT ON R.[TimeUnitId] = MUT.[Id]
@@ -91,7 +91,7 @@ WITH Docs AS (
 		--CAST([LineSortKey] AS TINYINT) AS [LineSortKey],
 		--[LineId], [LineTypeId],
 		--[EntryNumber], 
-		[Account], [IfrsEntryClassificationId],[ResponsibilityCenter], [Agent], [Resource], 
+		[Account], [EntryTypeId],[ResponsibilityCenter], [Agent], [Resource], 
 		[Direction], [Value], [MonetaryValue], [Currency]
 		, [Mass], [MassUnit], [Length], [LengthUnit], [Time], [TimeUnit], [Count], [CountUnit]
 	FROM Docs

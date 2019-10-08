@@ -1,13 +1,15 @@
-﻿	-- We look at the specialized Excel files in the General Services department, and we add Resource definitions accordingly
+﻿	-- We look at the specialized Excel files in the IT department, and we define add Resource definitions accordingly
 	INSERT INTO dbo.ResourceDefinitions (
-		[Id],			[TitlePlural],		[TitleSingular],	[ResourceTypeParentList], [Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
-	(N'motor-vehicles',	N'Motor Vehicles',	N'Motor Vehicle',	N'MotorVehicles', N'Required',			N'Make',		N'vehicle-makes');
+		[Id],			[TitlePlural],		[TitleSingular],	[ResourceTypeParentList]) VALUES
+	(N'fixed-assets',	N'Fixed Assets',	N'Fixed Assets',	N'PropertyPlantAndEquipment');
 	
-	DECLARE @MotorVehicles dbo.ResourceList, @MotorVehiclesPickList dbo.ResourcePickList;
-	INSERT INTO @MotorVehicles ([Index],
-	[ResourceTypeId],		[Name],						[CurrencyId],	[LengthUnitId],				[ResourceLookup1Id]) VALUES
-	(0, N'MotorVehicles',	N'Toyota Prius 2018',		N'USD',			dbo.fn_UnitName__Id(N'Km'),	dbo.fn_Lookup(N'vehicle-makes', N'Toyota')),--1
-	(1, N'MotorVehicles',	N'Mercedes Minivan 2019',	N'USD',			dbo.fn_UnitName__Id(N'Km'),	dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'));
+	DECLARE @FixedAssets dbo.ResourceList, @FixedAssetsPickList dbo.ResourcePickList;
+	INSERT INTO @FixedAssets ([Index],
+	[ResourceTypeId],							[Name],						[CurrencyId],	[LengthUnitId],				[ResourceLookup1Id]) VALUES
+	(0, N'ComputerEquipment',				N'Desktops',	N'USD',			dbo.fn_UnitName__Id(N'Km'),	dbo.fn_Lookup(N'vehicle-makes', N'Toyota')),--1
+	(0, N'CommunicationAndNetworkEquipment',N'Printers',	N'USD',			dbo.fn_UnitName__Id(N'Km'),	dbo.fn_Lookup(N'vehicle-makes', N'Toyota')),--1
+	(0, N'NetworkInfrastructure',			N'Mobiles',		N'USD',			dbo.fn_UnitName__Id(N'Km'),	dbo.fn_Lookup(N'vehicle-makes', N'Toyota')),--1
+	(1, N'Land',				N'Land',		N'USD',			dbo.fn_UnitName__Id(N'Km'),	dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'));
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'motor-vehicles',

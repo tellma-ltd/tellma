@@ -19,7 +19,7 @@ AS
 		L.[LineDefinitionId],
 		E.[Direction],
 		E.[AccountId],
-		E.[IfrsEntryClassificationId],
+		E.[EntryTypeId],
 		E.[ResourcePickId],
 		E.[BatchCode],
 		E.[DueDate],

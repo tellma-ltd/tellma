@@ -48,8 +48,8 @@ BEGIN -- reset Identities
 	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = '$(DeployEmail)';-- N'support@banan-it.com';
 	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
 
-	DECLARE @FunctionalCurrency NCHAR(3);
-	SELECT @FunctionalCurrency = [FunctionalCurrency] FROM dbo.Settings;
+	DECLARE @FunctionalCurrencyId NCHAR(3);
+	SELECT @FunctionalCurrencyId = [FunctionalCurrencyId] FROM dbo.Settings;
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 END
@@ -61,17 +61,23 @@ BEGIN TRY
 		:r .\00_Lookups\c_steel-thicknesses.sql		
 		select * from lookups;
 		:r .\01_Resources\a1_PPE_motor-vehicles.sql
-		SELECT R.Id, R.ResourceTypeId, R.ResourceDefinitionId, R.[Name] AS [Resource], R.[CurrencyId], ML.[Name] As LengthUnit,
+		:r .\01_Resources\a2_ITEquipment.sql
+		:r .\01_Resources\a3_ITEquipment.sql
+		SELECT R.Id, R.ResourceTypeId, R.ResourceDefinitionId, R.[Name] AS [Resource], R.[MonetaryValueCurrencyId], ML.[Name] As LengthUnit,
 			LK1.[Name] AS ResourceLookup1
 		FROM dbo.Resources R
 		JOIN dbo.ResourceDefinitions RD ON R.ResourceDefinitionId = RD.[Id]
 		LEFT JOIN dbo.MeasurementUnits ML ON R.LengthUnitId = ML.Id
-		LEFT JOIN dbo.Lookups LK1 ON R.ResourceLookup1Id = LK1.Id
-		LEFT JOIN dbo.Lookups LK2 ON R.ResourceLookup2Id = LK2.Id
+		LEFT JOIN dbo.Lookups LK1 ON R.[Lookup1Id] = LK1.Id
+		LEFT JOIN dbo.Lookups LK2 ON R.[Lookup2Id] = LK2.Id
 		WHERE (RD.[Lookup1DefinitionId] IS NULL OR LK1.LookupDefinitionId = RD.[Lookup1DefinitionId])
 		AND (RD.[Lookup2DefinitionId] IS NULL OR LK2.LookupDefinitionId = RD.[Lookup2DefinitionId])
 		
-		
+		SELECT RP.Id, RP.[Name], RP.[AvailableSince], RP.[MonetaryValue], RP.[Length] AS [StandardUsage], ML.[Name] AS UsageUnit, RP.[Text1] As PlateNumber
+		FROM dbo.ResourcePicks RP
+		JOIN dbo.Resources R ON R.[Id] = RP.[ResourceId]
+		LEFT JOIN dbo.MeasurementUnits ML ON R.LengthUnitId = ML.Id
+
 		;
 		--:r .\01_RolesPermissions.sql		
 		--:r .\02_Workflows.sql

@@ -105,7 +105,7 @@
     <Build Include="dbo\Tables\dbo.DocumentDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.MeasurementUnits.sql" />
     <Build Include="dbo\Tables\dbo.ResponsibilityCenters.sql" />
-    <Build Include="dbo\Functions\dbo.fn_FunctionalCurrency.sql" />
+    <Build Include="dbo\Functions\dbo.fn_FunctionalCurrencyId.sql" />
     <Build Include="dbo\Functions\dbo.fi_Journal.sql" />
     <Build Include="dbo\Stored Procedures\dbo.adm_Accounts_Notes__Update.sql" />
     <Build Include="dbo\User Defined Types\dbo.ValidationErrorList.sql" />
@@ -422,6 +422,9 @@
     <Build Include="dbo\Functions\dbo.fn_Lookup.sql" />
     <Build Include="dbo\Functions\dbo.fn_UnitName__Id.sql" />
     <Build Include="dbo\Functions\dbo.fn_ResourceName__Id.sql" />
+    <Build Include="dal\Stored Procedures\dal.ResourcePicks__Save.sql" />
+    <None Include="Tests\01_Resources\a2_PPE_it-equipment.sql" />
+    <Build Include="dbo\Tables\dbo.ResourcePacks.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />
@@ -445,7 +448,6 @@
     <None Include="Tests\07_Resources_SteelProducts.sql" />
     <None Include="Tests\07_Resources_FinancialLiabilities.sql" />
     <None Include="Tests\07_Resources_FinancialAssets.sql" />
-    <None Include="Tests\07_Resources_ComputerEquipment.sql" />
     <None Include="Tests\07_Resources_ProductionSupplies.sql" />
     <None Include="Tests\07_Resources_EmployeeBenefits.sql" />
     <None Include="Tests\13_HRCycle.sql" />
@@ -456,7 +458,8 @@
     <None Include="Tests\00_Lookups\a_body-colors.sql" />
     <None Include="Tests\00_Lookups\b_vehicle-makes.sql" />
     <None Include="Tests\00_Lookups\c_steel-thicknesses.sql" />
-    <None Include="Tests\01_Resources\a2_PPE_general-fixed-assets.sql" />
+    <None Include="Tests\01_Resources\a4_PPE_general-fixed-assets.sql" />
+    <None Include="Tests\01_Resources\a3_PPE_machineries.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

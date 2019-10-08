@@ -1,10 +1,10 @@
-﻿CREATE FUNCTION [dbo].[fn_FunctionalCurrency]()
+﻿CREATE FUNCTION [dbo].[fn_FunctionalCurrencyId]()
 RETURNS NCHAR (3)
 AS
 BEGIN
 	DECLARE @Result  NCHAR (3);
 
-	SELECT @Result = FunctionalCurrency
+	SELECT @Result = [FunctionalCurrencyId]
 	FROM dbo.Settings
 	
 	RETURN @Result;

@@ -6,18 +6,20 @@
 	[EntryNumber]			INT					NOT NULL DEFAULT 1,
 	[Direction]				SMALLINT			NOT NULL CHECK ([Direction] IN (-1, 1)),
 	[AccountId]				INT					NOT NULL,
-	[IfrsEntryClassificationId]					NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
+	[EntryTypeId]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
 	[ResourcePickId]		INT,
 	[Memo]					NVARCHAR (255),
 	[BatchCode]				NVARCHAR (50),
 	[DueDate]				DATE,
-	[MonetaryValue]			MONEY				NOT NULL DEFAULT 0, -- Amount in foreign Currency 
-	[Mass]					DECIMAL				NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
-	[Volume]				DECIMAL				NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
+
 	[Area]					DECIMAL				NOT NULL DEFAULT 0, -- Area Unit, possibly for lands
-	[Length]				DECIMAL				NOT NULL DEFAULT 0, 
-	[Time]					DECIMAL				NOT NULL DEFAULT 0, -- ServiceTimeUnit
 	[Count]					DECIMAL				NOT NULL DEFAULT 0, -- CountUnit
+	[Length]				DECIMAL				NOT NULL DEFAULT 0, 
+	[Mass]					DECIMAL				NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
+	[MonetaryValue]			MONEY				NOT NULL DEFAULT 0, -- Amount in foreign Currency 
+	[Time]					DECIMAL				NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[Volume]				DECIMAL				NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
+
 	[Value]					VTYPE				NOT NULL DEFAULT 0 ,-- equivalent in functional currency
 	[ExternalReference]			NVARCHAR (255),
 -- The following are sort of dynamic properties that capture information for reporting purposes

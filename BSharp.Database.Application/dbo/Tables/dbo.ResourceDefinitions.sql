@@ -7,7 +7,9 @@
 	[TitlePlural]						NVARCHAR (255),
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
-	[ResourceTypeId]					NVARCHAR (255)			CONSTRAINT [FK_ResourceDefinitions__ResourceTypeId] FOREIGN KEY ([ResourceTypeId]) REFERENCES dbo.ResourceTypes([Id]),
+	-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
+	-- TODO: This design is not normalized. To normalize, move it to a separate table ResourceDefinitionResourceTypes([ResourceDefinitionId], [ResourceTypeParentId])
+	[ResourceTypeParentList]			NVARCHAR (1024), --			CONSTRAINT [FK_ResourceDefinitions__ResourceTypeId] FOREIGN KEY ([ResourceTypeList]) REFERENCES dbo.ResourceTypes([Id]),
 	-- One method to auto generate codes/names
 	[CodeRegEx]							NVARCHAR (255), -- Null means manually defined
 	[NameRegEx]							NVARCHAR (255), -- Null means manually defined

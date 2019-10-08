@@ -33,7 +33,7 @@ RETURN
 	),
 	Movements AS (
 		SELECT
-			AccountId, IfrsEntryClassificationId,
+			AccountId, [EntryTypeId],
 			SUM(CASE WHEN [Direction] > 0 THEN [Mass] ELSE 0 END) AS MassIn,
 			SUM(CASE WHEN [Direction] < 0 THEN [Mass] ELSE 0 END) AS MassOut,
 			SUM(CASE WHEN [Direction] > 0 THEN [Count] ELSE 0 END) AS CountIn,
@@ -44,11 +44,11 @@ RETURN
 			SUM(CASE WHEN [Direction] < 0 THEN [Value] ELSE 0 END) AS [Credit]
 		FROM [dbo].[fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId)
 		WHERE AccountId IN (SELECT Id FROM ReportAccounts)
-		GROUP BY AccountId, IfrsEntryClassificationId
+		GROUP BY AccountId, [EntryTypeId]
 	),
 	Register AS (
 		SELECT
-			COALESCE(OpeningBalances.AccountId, Movements.AccountId) AS AccountId, IfrsEntryClassificationId,
+			COALESCE(OpeningBalances.AccountId, Movements.AccountId) AS AccountId, [EntryTypeId],
 			ISNULL(OpeningBalances.[Count],0) AS OpeningCount, ISNULL(OpeningBalances.[Mass],0) AS OpeningMass, ISNULL(OpeningBalances.[Opening],0) AS Opening,
 			ISNULL(Movements.[CountIn],0) AS CountIn, ISNULL(Movements.[CountOut],0) AS CountOut,
 			ISNULL(Movements.[MassIn],0) AS MassIn, ISNULL(Movements.[MassOut],0) AS MassOut,
@@ -60,7 +60,7 @@ RETURN
 		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
 	)
 	SELECT
-		AccountId, R.IfrsEntryClassificationId, A.[AccountClassificationId], A.ResourceId, A.[CustodianId], A.[ResponsibilityCenterId], A.LocationId, A.PartyReference,
+		AccountId, R.[EntryTypeId], A.[AccountClassificationId], A.ResourceId, A.[CustodianId], A.[ResponsibilityCenterId], A.LocationId, A.PartyReference,
 		OpeningCount, CountIn, CountOut, EndingCount,
 		OpeningMass, MassIn, MassOut, EndingMass,
 		[Opening], [Debit], [Credit], [Closing]

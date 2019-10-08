@@ -101,7 +101,7 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
+			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [EntryTypeId],
 				--[AgentId], [ResponsibilityCenterId], [ResourceId], 
 				[ResourcePickId], [BatchCode], [DueDate],
 				[MonetaryValue], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value],
@@ -115,7 +115,7 @@ BEGIN
 		UPDATE SET
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
-			t.[IfrsEntryClassificationId]= s.[IfrsEntryClassificationId],
+			t.[EntryTypeId]				= s.[EntryTypeId],
 
 			t.[ResourcePickId]			= s.[ResourcePickId],
 			t.[BatchCode]				= s.[BatchCode],
@@ -131,17 +131,17 @@ BEGIN
 			t.[ExternalReference]		= s.[ExternalReference],
 			t.[AdditionalReference]		= s.[AdditionalReference],
 			t.[RelatedResourceId]		= s.[RelatedResourceId],
-			t.[RelatedAgentId]		= s.[RelatedAgentId],
+			t.[RelatedAgentId]			= s.[RelatedAgentId],
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
+		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [EntryTypeId],
 				--[AgentId], [ResponsibilityCenterId], [ResourceId], 
 				[ResourcePickId], [BatchCode],
 				[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value],
 				[Memo], [ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId], [RelatedMonetaryAmount]
 				)
-		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IfrsEntryClassificationId],
+		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[EntryTypeId],
 				--s.[AgentId], s.[ResponsibilityCenterId], s.[ResourceId], 
 				s.[ResourcePickId], s.[BatchCode],
 				s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value],

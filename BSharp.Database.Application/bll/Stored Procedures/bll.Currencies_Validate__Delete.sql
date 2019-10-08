@@ -13,7 +13,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinitionTitleSingular,
 		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS ResourceName
     FROM [dbo].[Currencies] C
-	JOIN [dbo].[Resources] R ON R.CurrencyId = C.Id
+	JOIN [dbo].[Resources] R ON R.[MonetaryValueCurrencyId] = C.Id
 	JOIN dbo.ResourceDefinitions RD ON R.ResourceDefinitionId = RD.Id
 	JOIN @Ids FE ON FE.[Id] = C.[Id];
 

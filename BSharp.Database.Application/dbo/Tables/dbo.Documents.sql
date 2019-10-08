@@ -3,7 +3,7 @@
 --	Its scope is
 
 -- Kimbirly suggestion: [Id]: PRIMARY KEY NONCLUSTERED, ([DocumentDate], [Id]): Clustered index
-	[Id]									INT				PRIMARY KEY IDENTITY,
+	[Id]									INT				CONSTRAINT [PK_Documents] PRIMARY KEY IDENTITY,
 	-- Common to all document types
 	[DocumentDefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DocumentDefinitionId] FOREIGN KEY ([DocumentDefinitionId]) REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
 	[SerialNumber]							INT				NOT NULL,	-- auto generated, copied to paper if needed.
@@ -56,7 +56,9 @@
 					END
 	) PERSISTED,
 	-- Request specific: purchase requisition, payment requesition, production request, maintenance request
+	[Request]								NVARCHAR (1024),
 	[NeededBy]								DATE, -- here or in lines (?)
+	[Response]								NVARCHAR (1024),
 	-- Offer expiry date can be put on the generated template (expires in two weeks from above date)
 	[CreatedAt]								DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]							INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Documents__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),

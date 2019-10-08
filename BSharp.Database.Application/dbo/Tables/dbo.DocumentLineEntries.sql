@@ -13,7 +13,7 @@
 	-- Entry Classification is used to tag entries in a manner that does not affect the account balance
 	-- However, consider the case of acc depreciation. We want to map to a different GL. In that case, we set some account definition
 	-- to enforce a certain entry classification 
-	[IfrsEntryClassificationId]	NVARCHAR(255),
+	[EntryTypeId]				NVARCHAR(255)	CONSTRAINT [FK_DocumentLineEntries__EntryTypes]	FOREIGN KEY ([EntryTypeId]) REFERENCES [dbo].[EntryTypes] ([Id]),
 -- Analysis of accounts including: cash, non current assets, equity, and expenses. Can be updated after posting
 	-- Note that the responsibility center might define the Ifrs Note
 -- Agent is defined as follows: (like custodian, not authorizer)
@@ -51,18 +51,22 @@
 -- for debiting VAT purchase account, related resource is the good/service purchased
 -- for crediting VAT Sales account, related resource is the good/service sold
 -- for crediting VAT purchase, debiting VAT sales, or liability account: related resource is N/A
+-- for revenues and cost of sales related to a contract/job, related resourceis the contract/job.
 	[RelatedResourceId]			INT, -- Good, Service, Labor, Machine usage
 	[RelatedAgentId]			INT,
 	[RelatedQuantity]			MONEY ,		-- used in Tax accounts, to store the quantiy of taxable item
 	[RelatedMonetaryAmount]		MONEY 			NOT NULL DEFAULT 0, -- e.g., amount subject to tax
+	[Time1]						TIME (0),	-- from time
+	[Time2]						TIME (0),	-- to time
 -- Tracking additive measures, the data type is to be decided by AA
-	[MonetaryValue]				MONEY			NOT NULL DEFAULT 0, -- Amount in foreign Currency 
-	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
-	[Volume]					DECIMAL (18,2)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
-	[Area]						DECIMAL (18,2)	NOT NULL DEFAULT 0, -- Area Unit, possibly for lands
-	[Length]					DECIMAL (18,2)	NOT NULL DEFAULT 0, -- Length Unit, possibly for cables or pipes
+	[Area]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
+	[Count]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
+	[Length]					DECIMAL (18,2)	NOT NULL DEFAULT 0,
+	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
+	[MonetaryValue]				MONEY			NOT NULL DEFAULT 0,
 	[Time]						DECIMAL (18,2)	NOT NULL DEFAULT 0, -- ServiceTimeUnit
-	[Count]						DECIMAL (18,2)	NOT NULL DEFAULT 0, -- CountUnit
+	[Volume]					DECIMAL (18,2)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
+
 	[Value]						VTYPE			NOT NULL DEFAULT 0, -- equivalent in functional currency
 
 	--[SortKey]					DECIMAL (9,4),
@@ -77,5 +81,5 @@ CREATE INDEX [IX_DocumentLineEntries__DocumentId] ON [dbo].[DocumentLineEntries]
 GO
 CREATE INDEX [IX_DocumentLineEntries__AccountId] ON [dbo].[DocumentLineEntries]([AccountId]);
 GO
-CREATE INDEX [IX_DocumentLineEntries__IfrsEntryClassificationId] ON [dbo].[DocumentLineEntries]([IfrsEntryClassificationId]);
+CREATE INDEX [IX_DocumentLineEntries__IfrsEntryClassificationId] ON [dbo].[DocumentLineEntries]([EntryTypeId]);
 GO

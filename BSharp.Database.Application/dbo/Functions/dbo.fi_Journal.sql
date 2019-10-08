@@ -23,7 +23,7 @@ RETURN
 		V.[AccountId],
 		A.[AccountDefinitionId],
 		A.[AccountTypeId],
-		V.[IfrsEntryClassificationId],
+		V.[EntryTypeId],
 		A.[CustodianId],
 		A.[ResponsibilityCenterId],
 		A.[LocationId],
@@ -34,7 +34,7 @@ RETURN
 -- because too many joins with table Measurement units affects performance, I will only add the 
 -- normalized quantities when needed
 		V.[MonetaryValue],
-		R.[CurrencyId],
+		R.[MonetaryValueCurrencyId],
 		-- When financial instruments 
 		V.[Mass],
 		R.[MassUnitId],

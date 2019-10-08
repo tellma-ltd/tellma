@@ -28,7 +28,7 @@ SET NOCOUNT ON;
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
 	JOIN dbo.Resources R ON A.ResourceId = R.Id
-	WHERE (R.[CurrencyId] = dbo.fn_FunctionalCurrency())
+	WHERE (R.[MonetaryValueCurrencyId] = dbo.[fn_FunctionalCurrencyId]())
 	AND ([Value] <> [MonetaryValue] )
 
 	-- (FE Check, DB constraint)  Cannot save with a date that lies in the archived period

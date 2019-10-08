@@ -2,7 +2,7 @@
 	DECLARE @DeployEmail NVARCHAR(255)				= '$(DeployEmail)';-- N'support@banan-it.com';
 	DECLARE @ShortCompanyName NVARCHAR(255)			= '$(ShortCompanyName)'; --N'ACME International';
 	DECLARE @PrimaryLanguageId NVARCHAR(255)		= '$(PrimaryLanguageId)'; --N'en';
-	DECLARE @FunctionalCurrency NCHAR(3)			= '$(FunctionalCurrency)'; --N'ETB'
+	DECLARE @FunctionalCurrencyId NCHAR(3)			= '$(FunctionalCurrency)'; --N'ETB'
 	DECLARE @DefinitionsVersion UNIQUEIDENTIFIER	= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER		= NEWID();
 	DECLARE @ChartOfAccounts NVARCHAR(255)			= NULL; --'$(CHartOfAccounts)';
