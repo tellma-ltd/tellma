@@ -22,11 +22,9 @@ namespace BSharp.Controllers.Utilities
 {
     public static class ControllerUtilities
     {
-        public const string ALL = "all";
-
         /// <summary>
         /// Calls the provided function and handles the special exceptions by turning them into <see cref="ActionResult"/>s.
-        /// Action implementations can then throw these exceptions when there is an error, making the implementatio neasier
+        /// Action implementations can then throw these exceptions when there is an error, making the implementation easier
         /// </summary>
         public static async Task<ActionResult<T>> InvokeActionImpl<T>(Func<Task<ActionResult<T>>> func, ILogger logger)
         {
@@ -50,6 +48,10 @@ namespace BSharp.Controllers.Utilities
             {
                 return new NotFoundObjectResult(ex.Ids);
             }
+            catch (MethodNotAllowedException)
+            {
+                return new StatusCodeResult(405);
+            }
             catch (UnprocessableEntityException ex)
             {
                 return new UnprocessableEntityObjectResult(ex.ModelState);
@@ -65,6 +67,10 @@ namespace BSharp.Controllers.Utilities
             }
         }
 
+        /// <summary>
+        /// Calls the provided function and handles the special exceptions by turning them into <see cref="ActionResult"/>s.
+        /// Action implementations can then throw these exceptions when there is an error, making the implementation easier
+        /// </summary>
         public static async Task<ActionResult> InvokeActionImpl(Func<Task<ActionResult>> func, ILogger logger)
         {
             try
@@ -86,6 +92,10 @@ namespace BSharp.Controllers.Utilities
             catch (NotFoundException<string> ex)
             {
                 return new NotFoundObjectResult(ex.Ids);
+            }
+            catch (MethodNotAllowedException)
+            {
+                return new StatusCodeResult(405);
             }
             catch (UnprocessableEntityException ex)
             {

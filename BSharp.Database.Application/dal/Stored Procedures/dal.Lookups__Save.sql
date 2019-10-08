@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Lookups__Save]
-	@DefinitionId NVARCHAR(255),
+	@DefinitionId NVARCHAR(50),
 	@Entities [LookupList] READONLY,
 	@ReturnIds BIT = 0
 AS

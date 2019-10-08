@@ -1,4 +1,6 @@
-﻿using BSharp.Controllers.Utilities;
+﻿using BSharp.Controllers.Dto;
+using BSharp.Controllers.Utilities;
+using BSharp.Data.Queries;
 using BSharp.Entities;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +29,32 @@ namespace BSharp.Controllers
             _logger = logger;
         }
 
+        // Children-of is replicated in FactTreeControllerBase, please keep them in sync
+        [HttpGet("children-of")]
+        public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> GetChildrenOf([FromQuery] GetChildrenArguments<TKey> args)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                var result = await GetChildrenOfAsync(args);
+                return Ok(result);
+            }, _logger);
+        }
+
+        /// <summary>
+        /// Returns a single entity as per the ID and specifications in the get request
+        /// </summary>
+        protected virtual async Task<EntitiesResponse<TEntity>> GetChildrenOfAsync(GetChildrenArguments<TKey> args)
+        {
+            // Parse the parameters
+            var expand = ExpandExpression.Parse(args.Expand);
+            var select = SelectExpression.Parse(args.Select);
+            var filter = FilterExpression.Parse(args.Filter);
+            var orderby = OrderByExpression.Parse("Node");
+            var ids = args.I ?? new List<TKey>();
+
+            return await GetByCustomQuery(q => q.FilterByParentIds(ids, args.Roots).Filter(filter), expand, select, orderby);
+        }
+
         [HttpDelete("with-descendants")]
         public virtual async Task<ActionResult> DeleteWithDescendants([FromBody] List<TKey> ids)
         {
@@ -38,8 +66,7 @@ namespace BSharp.Controllers
         }
 
         /// <summary>
-        /// Assumes that the view does not allow 'Create' permission level, if it does
-        /// need to override it
+        /// Deletes the current node and all the nodes descending from it
         /// </summary>
         protected virtual async Task DeleteWithDescendantsImplAsync(List<TKey> ids)
         {

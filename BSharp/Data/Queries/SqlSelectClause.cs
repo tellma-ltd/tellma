@@ -23,9 +23,10 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Constructs and returns the SQL SELECT clause string corresponding to this <see cref="SqlSelectClause"/>
         /// </summary>
-        public string ToSql()
+        public string ToSql(bool isAncestorExpand)
         {
-            return "SELECT " + string.Join(", ", _columns.Select(e => $"[{e.Symbol}].[{e.PropName}]"));
+            string distinct = isAncestorExpand ? "DISTINCT " : "";
+            return $"SELECT {distinct}" + string.Join(", ", _columns.Select(e => $"[{e.Symbol}].[{e.PropName}]"));
         }
 
         /// <summary>

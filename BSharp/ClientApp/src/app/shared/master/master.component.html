@@ -107,6 +107,16 @@
           </button>
         </div>
 
+        <!-- Collapse All -->
+        <!-- <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="collapseAllTooltip" container="body"
+          *ngIf="showCollapseAll">
+          <button type="button" class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCollapseAll()"
+            [disabled]="!canCollapseAll">
+            <fa-icon icon="minus-square"></fa-icon>
+            <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'CollapseAll' | translate }}</span>
+          </button>
+        </div> -->
+
         <!-- Data dropdown -->
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement"
           *ngIf="showDataDropdown">
@@ -115,7 +125,8 @@
             {{ 'Data' | translate }}
           </button>
           <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body" *ngIf="showExport">
+            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body"
+              *ngIf="showExport">
               <button type="button" class="dropdown-item btn-light"
                 (click)="exportErrorMessage = null; modalService.open(exportModal);" [disabled]="!canExport">
                 {{ 'Export' | translate }}
@@ -127,18 +138,14 @@
                 {{ 'Import' | translate }}
               </button>
             </div>
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="expandNextLevelTooltip" container="body" *ngIf="showExpandNextLevel" >
-              <button type="button" class="dropdown-item btn-light" (click)="onExpandNextLevel()"
-                [disabled]="!canExpandNextLevel">
-                {{ 'ExpandLevel0' | translate: { level: level+1 } }}
-              </button>
-            </div>
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="collapseAllTooltip" container="body" *ngIf="showCollapseAll" >
-              <button type="button" class="dropdown-item btn-light" (click)="onCollapseAll()"
-                [disabled]="!canCollapseAll">
-                {{ 'CollapseAll' | translate }}
-              </button>
-            </div>
+            <!-- <button type="button" class="dropdown-item btn-light" (click)="onExpandNextLevel()"
+              [disabled]="!canExpandNextLevel" *ngIf="showExpandNextLevel">
+              {{ 'ExpandLevel0' | translate: { level: level+1 } }}
+            </button> -->
+            <button type="button" class="dropdown-item btn-light" (click)="onCollapseAll()" [disabled]="!canCollapseAll"
+              *ngIf="showCollapseAll">
+              {{ 'CollapseAll' | translate }}
+            </button>
           </div>
         </div>
       </div>
@@ -247,9 +254,7 @@
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
         </button>
       </div>
-
     </div>
-
   </div>
 
   <!-- The search results -->
@@ -319,18 +324,43 @@
               <th class="b-multiselect-th px-0" *ngIf="isScreenMode">
               </th>
 
-              <!-- Description -->
+              <!-- Descrpition (Flat mode) -->
+              <!-- <ng-container *ngIf="isFlatMode"> -->
               <th class="b-pointer" [style.width]="colWidth('(Description)')"
                 [class.dropdown-toggle]="isOrderedBy('(Description)')" (click)="onOrderBy('(Description)')">
-                <ng-content
-                  *ngTemplateOutlet="(tableSummaryHeaderTemplate || tableSummaryHeaderTemplateDefault);context: { id: id }">
+                <ng-content *ngTemplateOutlet="tableSummaryHeaderTemplateDefault">
                 </ng-content>
 
                 <ng-template #tableSummaryHeaderTemplateDefault let-modal>
-                  {{ 'Description' | translate }}
+                  {{ titleSingular }}
                 </ng-template>
-
               </th>
+              <!-- </ng-container> -->
+
+              <!-- Descrpition (Tree mode) -->
+              <!-- <ng-container *ngIf="isTreeMode">
+                <th class="px-0">
+                  <div class="d-flex">
+                    <button class="border-0 px-2"
+                      style="background-color: transparent; margin-left: 0.4rem; margin-right: 0.4rem"
+                      (click)="onCollapseAll()" *ngIf="showCollapseAll" title="{{ 'CollapseAll' | translate }}">
+                      <fa-icon icon="minus-square"></fa-icon>
+                    </button>
+                    <div class="b-pointer flex-grow-1 bg-light" style="margin: -0.3rem 0; padding: 0.3rem 0"
+                      (click)="onOrderBy('(Description)')">
+                      <ng-content
+                        *ngTemplateOutlet="(tableSummaryHeaderTemplate || tableSummaryHeaderTemplateDefault);context: { id: id }">
+                      </ng-content>
+                      <ng-template #tableSummaryHeaderTemplateDefault let-modal>
+                        {{ 'Description' | translate }}
+                      </ng-template>
+                    </div>
+                  </div>
+                </th>
+              </ng-container> -->
+
+
+
 
               <!-- Custom feature columns -->
               <th class="b-pointer" *ngFor="let colPath of tableColumnPaths; let i = index"
@@ -340,12 +370,6 @@
 
                 <b-auto-label [collection]="collection" [path]="colPath" [definition]="definition">
                 </b-auto-label>
-                <!-- &nbsp;
-                  <button *ngIf="editingColumns" class="btn btn-light btn-sm b-white-button b-toolbar-button" style="margin:-20px 0"
-                  type="button" (click)="onDeleteColumn(i)">
-                  <fa-icon class="text-danger" icon="trash"></fa-icon>
-                </button> -->
-                <!-- </div> -->
               </th>
 
               <!-- Cog -->
@@ -353,7 +377,7 @@
                 <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
                   title="{{ editingColumns ? 'Done' : 'EditColumns' | translate }}"
                   (click)="modalService.open(editColumns)">
-                  <fa-icon [icon]="editingColumns ? 'save' : 'pen'"></fa-icon>
+                  <fa-icon icon="pen"></fa-icon>
                 </button>
               </th>
             </tr>
@@ -409,7 +433,7 @@
                       (click)="onExpand(node)">
                       <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)"></fa-icon>
                     </button>
-                    <!-- Expand button -->
+                    <!-- The node button -->
                     <div class="b-pointer flex-grow-1" style="margin: -0.3rem 0; padding: 0.3rem 0"
                       (click)="onSelect(node.id)" [class.font-weight-bold]="node.highlight">
                       <ng-content *ngTemplateOutlet="tableSummaryColumnTemplate;context: { id: node.id }">
@@ -424,7 +448,6 @@
                 </ng-content>
 
                 <td>
-
                 </td>
 
               </tr>

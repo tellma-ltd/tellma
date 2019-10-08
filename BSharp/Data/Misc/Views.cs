@@ -109,6 +109,17 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "lookup-definitions",
+                        Name = "LookupDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("UpdateState")
+                        }
+                    },
+                    new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
                         Actions = new ActionInfo[]

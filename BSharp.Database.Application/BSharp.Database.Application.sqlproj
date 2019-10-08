@@ -425,6 +425,14 @@
     <Build Include="dal\Stored Procedures\dal.ResourcePicks__Save.sql" />
     <None Include="Tests\01_Resources\a2_PPE_it-equipment.sql" />
     <Build Include="dbo\Tables\dbo.ResourcePacks.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LookupDefinitionList.sql" />
+    <Build Include="bll\Stored Procedures\bll.LookupDefinitions_Validate__Save.sql" />
+    <Build Include="dal\Stored Procedures\dal.LookupDefinitions__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.LookupDefinitions_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.LookupDefinitions__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.LookupDefinitions__UpdateState.sql" />
+    <Build Include="Mapping\LookupDefinitions.sql" />
+    <Build Include="Mapping\LookupDefinitions__AsQuery.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\11_Financing.sql" />

@@ -703,6 +703,15 @@
   <data name="LoginAlreadyAssociated" xml:space="preserve">
     <value>A user with this login already exists.</value>
   </data>
+  <data name="MainMenuIcon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="MainMenuSection" xml:space="preserve">
+    <value>Menu Section</value>
+  </data>
+  <data name="MainMenuSortKey" xml:space="preserve">
+    <value>Menu Sort Key</value>
+  </data>
   <data name="MeasurementUnit" xml:space="preserve">
     <value>Measurement Unit</value>
   </data>
@@ -861,6 +870,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>Please Confirm</value>
+  </data>
+  <data name="PluralName" xml:space="preserve">
+    <value>Plural Name</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>Privacy Policy</value>
@@ -1105,6 +1117,9 @@
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>The external sign-in was removed.</value>
   </data>
+  <data name="TitleSingular" xml:space="preserve">
+    <value>Singular Name</value>
+  </data>
   <data name="TreeParent" xml:space="preserve">
     <value>Parent</value>
   </data>
@@ -1122,6 +1137,9 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>2FA has been disabled. You can re-enable 2FA by setting up an authenticator app</value>
+  </data>
+  <data name="UpdateState" xml:space="preserve">
+    <value>Update State</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>User</value>

@@ -703,6 +703,15 @@
   <data name="LoginAlreadyAssociated" xml:space="preserve">
     <value>用该用户名已经存在。</value>
   </data>
+  <data name="MainMenuIcon" xml:space="preserve">
+    <value>图标</value>
+  </data>
+  <data name="MainMenuSection" xml:space="preserve">
+    <value>菜单部分</value>
+  </data>
+  <data name="MainMenuSortKey" xml:space="preserve">
+    <value>菜单排序关键字</value>
+  </data>
   <data name="MeasurementUnit" xml:space="preserve">
     <value>计量单位</value>
   </data>
@@ -861,6 +870,9 @@
   </data>
   <data name="PleaseConfirm" xml:space="preserve">
     <value>请确认</value>
+  </data>
+  <data name="PluralName" xml:space="preserve">
+    <value>复数名称</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>隐私政策</value>
@@ -1105,6 +1117,9 @@
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>外部登录已被删除。</value>
   </data>
+  <data name="TitleSingular" xml:space="preserve">
+    <value>奇异名称</value>
+  </data>
   <data name="TreeParent" xml:space="preserve">
     <value>亲</value>
   </data>
@@ -1122,6 +1137,9 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>2FA已被禁用。通过建立一个认证程序，你可以重新启用2FA</value>
+  </data>
+  <data name="UpdateState" xml:space="preserve">
+    <value>更新状态</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>用户</value>

@@ -6,7 +6,6 @@ import { CompaniesComponent } from './features/companies/companies.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { WorkspaceService } from './data/workspace.service';
 import { RootHttpInterceptor } from './data/root-http-interceptor';
 import { StorageService } from './data/storage.service';
@@ -30,10 +29,12 @@ import { AuthGuard } from './data/auth.guard';
 import { GlobalResolverGuard } from './data/global-resolver.guard';
 import { SignInCallbackGuard } from './data/sign-in-callback.guard';
 import { BaseAddressGuard } from './data/base-address.guard';
+import { CustomTranslationsLoader } from './data/custom-translations-loader';
+import { ProgressOverlayService } from './data/progress-overlay.service';
 
 // AoT requires an exported function for factories
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http);
+export function HttpLoaderFactory(http: HttpClient, progress: ProgressOverlayService) {
+  return new CustomTranslationsLoader(http, progress);
 }
 
 export function LoadApplicationModule() {
@@ -143,7 +144,7 @@ export const routes: Routes = [
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
+        deps: [HttpClient, ProgressOverlayService]
       }
     }),
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
