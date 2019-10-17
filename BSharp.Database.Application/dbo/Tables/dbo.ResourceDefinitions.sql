@@ -36,7 +36,7 @@
 	[Lookup4Visibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([Lookup4Visibility] IN (N'None', N'Required', N'Optional')),
 	[Lookup4DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup4DefinitionId] FOREIGN KEY (Lookup4DefinitionId) REFERENCES dbo.LookupDefinitions([Id]),
 	[Lookup4Label]						NVARCHAR (50),
-	-- Resource Pick property
+
 	[ProductionDateVisibility]			NVARCHAR (50) DEFAULT N'None' CHECK ([ProductionDateVisibility] IN (N'None', N'Required', N'Optional')),
 	[ProductionDateLabel]				NVARCHAR (50),
 	[ProductionDateLabel2]				NVARCHAR (50),
@@ -45,7 +45,7 @@
 	[ExpiryDateLabel]					NVARCHAR (50),
 	[ExpiryDateLabel2]					NVARCHAR (50),
 	[ExpiryDateLabel3]					NVARCHAR (50),
-	-- more properties from Resource Picks to come..
+	-- more properties from Resource Instances to come..
 
 	[State]							NVARCHAR (50)				DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
 	[MainMenuIcon]					NVARCHAR (50),

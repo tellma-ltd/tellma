@@ -22,7 +22,7 @@ RETURN
 			DLE.[Direction],
 			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryTypeId], 
 			R.[Name] AS [Resource],
-			DLE.[ResourcePickId],
+			--DLE.[ResourceInstanceId],
 			CAST(DLE.[Value] AS MONEY) AS [Value],
 			-- TODO: Add other unittypes
 			CAST(DLE.[MonetaryValue] AS MONEY) AS [MonetaryValue],
@@ -53,7 +53,7 @@ RETURN
 		(CASE WHEN [SortKey] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
 		CAST([SortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineDefinitionId],
-		[EntryNumber], [Account], [EntryTypeId],[Resource], [ResourcePickId],
+		[EntryNumber], [Account], [EntryTypeId],[Resource], --[ResourceInstanceId],
 		[Direction], [Value], [MonetaryValue], [Currency], [Mass], [MassUnit]
 	FROM Docs;
 GO

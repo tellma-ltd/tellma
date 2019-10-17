@@ -18,7 +18,6 @@ SET NOCOUNT ON;
 	EXEC [bll].[Resources_Validate__Save]
 		@DefinitionId = @DefinitionId,
 		@Entities = @FilledResources;
-	--	@Picks = @Picks;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -33,6 +32,5 @@ SET NOCOUNT ON;
 	EXEC [dal].[Resources__Save]
 		@DefinitionId = @DefinitionId,
 		@Entities = @FilledResources,
-	--	@Picks = @Picks,
 		@ReturnIds = @ReturnIds;
 END;

@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[ResourcePickList] AS TABLE
+﻿CREATE TYPE [dbo].[ResourceInstanceList] AS TABLE
 (
 	[Index]						INT					PRIMARY KEY,
 	[Id]						INT					NOT NULL DEFAULT 0,
@@ -9,13 +9,13 @@
 --	Tag #, Coil #, Check #, LC #
 	[Code]						NVARCHAR (255)		NOT NULL,
 
-	[Area]						DECIMAL,
-	[Count]						DECIMAL,
-	[Length]					DECIMAL,
-	[Mass]						DECIMAL,
-	[MonetaryValue]				DECIMAL,
-	[Time]						DECIMAL,
-	[Volume]					DECIMAL,
+	--[Area]						DECIMAL,
+	--[Count]						DECIMAL,
+	--[Length]					DECIMAL,
+	--[Mass]						DECIMAL,
+	--[MonetaryValue]				DECIMAL,
+	--[Time]						DECIMAL,
+	--[Volume]					DECIMAL,
 	[Description]				NVARCHAR (2048), -- full details
 	[Description2]				NVARCHAR (2048),
 	[Description3]				NVARCHAR (2048),

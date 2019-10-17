@@ -1,4 +1,11 @@
-﻿/* Use Cases
+﻿	INSERT INTO dbo.AgentRelationDefinitions([Id], [SingularLabel], [PluralLabel], [Prefix]) VALUES
+	(N'owners', N'Owner', N'Owners', N'O'),
+	(N'responsibility-centers', N'Responsibility Center', N'Responsibility Centers', N'R'),
+	(N'tax-offices', N'Tax Office', N'Tax Offices', N'T'),
+	(N'creditors', N'Creditor', N'Creditors', N'B'),
+	(N'depositors', N'Debtor', N'Debtors', N'B')
+	;
+/* Use Cases
 Missing
 	- Inserting
 	- Updating
@@ -6,6 +13,15 @@ Missing
 	- Activating
 	- Deactivating
 */
+/*
+	@ExecutiveOffice = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Executive Office'),
+	@Production = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Production Department'),
+	@SalesAndMarketing = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Sales & Marketing Department'),
+	@Finance = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Finance Department'),
+	@HR = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Human Resources Department'),
+	@MaterialsAndPurchasing = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Materials & Purchasing Department');
+*/
+
 DECLARE @ExecutiveOfficeOps INT, @HROps INT, @MaterialsOps INT,
 		@ProductionOps INT, @ProductionExpansion INT, @ProductionExisting INT,
 		@SalesOpsAG INT, @SalesOpsBole INT,

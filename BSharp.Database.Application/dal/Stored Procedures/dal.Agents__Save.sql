@@ -17,7 +17,7 @@ SET NOCOUNT ON;
 		USING (
 			SELECT [Index], [Id], 
 				[Name], [Name2], [Name3], [Code], [AgentType], [IsRelated], 
-				--[TaxIdentificationNumber],
+				[TaxIdentificationNumber],
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
 				[PreferredLanguage]
@@ -37,7 +37,7 @@ SET NOCOUNT ON;
 				t.[AgentType]				= s.[AgentType], 
 
 				t.[IsRelated]				= s.[IsRelated],
-				--t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
+				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
 				--t.[IsLocal]					= s.[IsLocal],
 				--t.[Citizenship]				= s.[Citizenship],
 				--t.[Facebook]				= s.[Facebook],
@@ -79,7 +79,7 @@ SET NOCOUNT ON;
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[Name], [Name2], [Name3], [Code], [AgentType], [IsRelated], 
-				--[TaxIdentificationNumber],
+				[TaxIdentificationNumber],
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
 				[PreferredLanguage]
@@ -90,7 +90,7 @@ SET NOCOUNT ON;
 				)
 			VALUES (
 				s.[Name], s.[Name2], s.[Name3], s.[Code], s.[AgentType], s.[IsRelated], 
-				--s.[TaxIdentificationNumber],
+				s.[TaxIdentificationNumber],
 				--s.[IsLocal], s.[Citizenship], s.[Facebook], s.[Instagram], s.[Twitter],
 				--s.[PreferredContactChannel1], s.[PreferredContactAddress1], s.[PreferredContactChannel2], s.[PreferredContactAddress2],
 				s.[PreferredLanguage]

@@ -1,7 +1,7 @@
 ﻿BEGIN -- Cleanup & Declarations
-	DECLARE @Agents1 [dbo].[AgentList], @Agents2 [dbo].[AgentList];
+	DECLARE @Agents [dbo].[AgentList];
 
-	DECLARE @MohamadAkra int, @AhmadAkra int, @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakTegene int,
+	DECLARE @MohamadAkra int, @AhmadAkra int, @BadegeKebede int, @TizitaNigussie int, @Ashenafi int, @YisakFikadu int,
 			@ZewdineshHora int, @TigistNegash int, @RomanZenebe int, @Mestawet int, @AyelechHora int, @YigezuLegesse int,
 			@MesfinWolde int;
 	DECLARE @BananIT int, @WaliaSteel int, @Lifan int, @Sesay int, @ERCA int, @Paint int, @Plastic int, @CBE int, @AWB int,
@@ -10,7 +10,7 @@
 			@MaterialsAndPurchasing int;
 END
 BEGIN -- Insert individuals and organizations
-	--INSERT INTO @Agents1([Index],
+	--INSERT INTO @Agents([Index],
 	--	[AgentType],		[Name],		[IsRelated],[TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate]) VALUES
 	--(0,N'Individual',	N'Mohamad Akra',	0,		NULL,						NULL,				N'Dr.',		1,	'1966.02.19'),
 	--(1,N'Individual',	N'Ahmad Akra',		0,		NULL,						NULL,				N'Mr.',		1,	'1992.09.21'),
@@ -46,35 +46,26 @@ BEGIN -- Insert individuals and organizations
 	--(28,N'Organization', N'Finance Department',0,	NULL,						NULL,				NULL,		9,	NULL),
 	--(29,N'Organization', N'Human Resources Department',0,NULL,					NULL,				NULL,		9,	NULL),
 	--(30,N'Organization', N'Materials & Purchasing Department',0,NULL,			NULL,				NULL,		9,	NULL);
-	INSERT INTO dbo.AgentRelationDefinitions([Id], [SingularLabel], [PluralLabel], [Prefix]) VALUES
-	(N'customers', N'Customer', N'Customers', N'C'),
-	(N'suppliers', N'Supplier', N'Suppliers', N'P'),
-	(N'employees', N'Employee', N'Employees', N'E'),
-	(N'owners', N'Owner', N'Owners', N'O'),
-	(N'responsibility-centers', N'Responsibility Center', N'Responsibility Centers', N'R'),
-	(N'tax-offices', N'Tax Office', N'Tax Offices', N'T'),
-	(N'creditors', N'Creditor', N'Creditors', N'B'),
-	(N'depositors', N'Debtor', N'Debtors', N'B')
-	;
 
-	INSERT INTO @Agents1([Index],
-	[AgentType],		[Name],		[IsRelated], [Code]) VALUES
+
+	INSERT INTO @Agents([Index],
+	[AgentType],		[Name],				[IsRelated], [Code]) VALUES
 	(0,N'Individual',	N'Mohamad Akra',	0,		''), -- shareholders
 	(1,N'Individual',	N'Ahmad Akra',		0,		''),
 	(2,N'Individual',	N'Badege Kebede',	1,		'E'), -- employees
 	(3,N'Individual',	N'Tizita Nigussie',	0,		'E'),
 	(4,N'Individual',	N'Ashenafi Fantahun',0,		'E'),
-	(5,N'Individual',	N'Yisak Tegene',	0, 'E'),
-	(6,N'Individual',	N'Zewdinesh Hora',	0, 'E'),
-	(7,N'Individual',	N'Tigist Negash',	0, 'E'),
-	(8,N'Individual',	N'Roman Zenebe',	0, 'E'),
+	(5,N'Individual',	N'Yisak Fikadu',	0,		'E'),
+	(6,N'Individual',	N'Zewdinesh Hora',	0,		'E'),
+	(7,N'Individual',	N'Tigist Negash',	0,		'E'),
+	(8,N'Individual',	N'Roman Zenebe',	0,		'E'),
 	(9,N'Individual',	N'Mestawet G/Egziyabhare',	0, 'E'),
-	(10,N'Individual',	N'Ayelech Hora',	0, 'E'),
-	(11,N'Individual',	N'Yigezu Legesse',	0, 'E'),
-	(12,N'Individual',	N'Mesfin Wolde',	0, 'E'),
+	(10,N'Individual',	N'Ayelech Hora',	0,		'E'),
+	(11,N'Individual',	N'Yigezu Legesse',	0,		'E'),
+	(12,N'Individual',	N'Mesfin Wolde',	0,		'E'),
 
 	(13,N'Organization', N'Banan Information technologies, plc', 1, 'S'), -- suppliers
-	(14,N'Organization', N'Walia Steel Industry, plc', 1, ''),
+	(14,N'Organization', N'Walia Steel Industry, plc',	1, ''),
 	(15,N'Organization', N'Yangfan Motors, PLC', 0, 'S'), -- suppliers
 	(16,N'Organization', N'Sisay Tesfaye, PLC', 0, 'O'),
 	(17,N'Organization', N'Ethiopian Revenues and Customs Authority', 0, 'T'), -- taxing
@@ -82,9 +73,12 @@ BEGIN -- Insert individuals and organizations
 	(19,N'Organization', N'Best Plastic Industry', 1, 'CS'),
 	(20,N'Organization', N'Commercial Bank of Ethiopia', 0, 'BC'), -- banking
 	(21,N'Organization', N'Awash Bank', 0, 'B'), -- banking
-	(22,N'Organization', N'NIB', 0, 'B'),
-	(23,N'Organization', N'Regus',0, 'S'),
-	
+	(22,N'Organization', N'NIB', 0, 'B');
+	INSERT INTO @Agents([Index],
+	[AgentType],		[Name],		[IsRelated], [Code], [TaxIdentificationNumber]) VALUES
+	(23,N'Organization', N'Regus',0, 'S', N'4544287');
+	INSERT INTO @Agents([Index],
+	[AgentType],		[Name],		[IsRelated], [Code]) VALUES	
 	(24,N'Organization', N'Noc Jimma Ber Service Station',	0, 'S'), -- suppliers
 	(25,N'Organization', N'Toyota, Ethiopia',	0, 'S'),
 	(26,N'Organization', N'Executive Office',1, 'R'),
@@ -93,52 +87,19 @@ BEGIN -- Insert individuals and organizations
 	(29,N'Organization', N'Finance Department',0, 'R'),
 	(30,N'Organization', N'Human Resources Department',0, 'R'),
 	(31,N'Organization', N'Materials & Purchasing Department',0, 'R');
-	UPDATE @Agents1 SET [Code] = [Code] + CAST([Index] AS NVARCHAR(50));
+	UPDATE @Agents SET [Code] = [Code] + CAST([Index] AS NVARCHAR(50));
 	EXEC [api].[Agents__Save]
-		@Entities = @Agents1,
+		@Entities = @Agents,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-	INSERT INTO dbo.AgentRelations([AgentId], [AgentRelationDefinitionId])
-	SELECT A.[Id], ARD.[Id] 
-	FROM dbo.Agents A 
-	JOIN dbo.AgentRelationDefinitions ARD ON A.[Code] LIKE '%' + ARD.[Prefix] + '%'
-	
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
 		Print 'Agents: Inserting'
 		GOTO Err_Label;
 	END;
 END
-
--- Inserting
---INSERT INTO @Agents2 ([Index],
---	[Id], [AgentType], [Name], [Code], [IsRelated], [TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate])
---SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
---	[Id], [AgentType], [Name], [Code], [IsRelated], [TaxIdentificationNumber], [RegisteredAddress], [Title], [Gender], [BirthDate]
---FROM [dbo].[Agents]
---WHERE [Name] Like N'%Akra' OR [Name] Like N'Y%';
-
----- Updating MA TIN
---	UPDATE @Agents2
---	SET 
---		[TaxIdentificationNumber] = N'0059603732'
---	WHERE [Name] = N'Ahmad Akra';
-
---	EXEC [api].[Agents__Save]
---		@Entities = @Agents2,
---		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
-
---	IF @ValidationErrorsJson IS NOT NULL 
---	BEGIN
---		Print 'Agents: Updating'
---		GOTO Err_Label;
---	END;
-
-	IF @DebugAgents = 1
-	BEGIN
-		SELECT * FROM [dbo].[Agents];
-		SELECT * FROM dbo.AgentRelations;
-	END
+	--IF @DebugAgents = 1
+	--	SELECT * FROM [dbo].[Agents];
 
 SELECT 
 	@MohamadAkra = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Mohamad Akra'), 
@@ -146,7 +107,7 @@ SELECT
 	@BadegeKebede = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Badege Kebede'), 
 	@TizitaNigussie = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Tizita Nigussie'), 
 	@Ashenafi = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Ashenafi Fantahun'), 
-	@YisakTegene = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Yisak Tegene'), 
+	@YisakFikadu = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Yisak Fikadu'), 
 	@ZewdineshHora = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Zewdinesh Hora'), 
 	@TigistNegash = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Tigist Negash'), 
 	@RomanZenebe = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Roman Zenebe'), 
@@ -200,13 +161,4 @@ BEGIN -- Users
 	(N'info@banan-it.com', N'Banan IT', NULL)
 END
 
---		SELECT @MohamadAkra AS MA, @AhmadAkra AS AA, @TigistNegash AS TN, @TizitaNigussie As Tiz;
-DECLARE @AgentSettingSave [dbo].SettingList, @AgentSettingResultJson nvarchar(max)
-
-INSERT INTO @AgentSettingSave
-([Field],[Value]) Values(N'TaxAuthority', @ERCA);
-
-EXEC [dbo].[api_Settings__Save]
-		@Settings = @AgentSettingSave,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 */

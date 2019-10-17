@@ -11,5 +11,6 @@
 	[ResponsibilityCenterId]		INT, -- e.g., Ashenafi
 	[CustodianId]					INT, -- Alex
 	[ResourceId]					INT,
+--	[ResourceInstanceId]			INT,
 	[LocationId]					INT	
 );

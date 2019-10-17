@@ -1,11 +1,11 @@
 ﻿CREATE PROCEDURE [rpt].[sp_TrialBalance] 
 /* 
-SELECT * FROM [rpt].[sp_TrialBalance] ( @fromDate = '01.01.2015', @toDate = '01.01.2020', @ByResource = 1, @ByIfrsEntryClassification = 1, @PrintQuery = 1)
+SELECT * FROM [rpt].[sp_TrialBalance] ( @fromDate = '01.01.2015', @toDate = '01.01.2020', @ByResource = 1, @ByEntryType = 1, @PrintQuery = 1)
 */	
 	@fromDate Date = '01.01.2000', 
 	@toDate Date = '01.01.2020',
 	@ByResource bit = 1,
-	@ByIfrsEntryClassification bit = 1,
+	@ByEntryType bit = 1,
 	@PrintQuery bit = 0
 AS
 BEGIN
@@ -19,9 +19,9 @@ BEGIN
 		SET @Query = @Query + N'
 			R.[Name] As Resource,
 			--T.[Amount], MU.[Name] As UOM,'
-	IF (@ByIfrsEntryClassification = 1)
+	IF (@ByEntryType = 1)
 		SET @Query = @Query + N'
-			T.IfrsEntryClassificationId As IfrsNote,'
+			T.EntryTypeId As IfrsNote,'
 	SET @Query = @Query + N'
 			[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],
 			(CASE WHEN T.[Value] > 0 THEN T.[Value] ELSE 0 END) As Debit,
@@ -30,9 +30,9 @@ BEGIN
 		(
 			SELECT AccountId, '
 	IF (@ByResource = 1) SET @Query = @Query + N'ResourceId, '
-	IF (@ByIfrsEntryClassification = 1) SET @Query = @Query + N'IfrsEntryClassificationId, '
+	IF (@ByEntryType = 1) SET @Query = @Query + N'EntryTypeId, '
 	SET @Query = @Query + N'
-			CAST(SUM([Direction] * [MonetaryValue]) AS money) AS [MoneyAmount],
+			CAST(SUM([Direction] * [MonetaryValue]) AS money) AS [MonetaryValue],
 			CAST(SUM([Direction] * [Mass]) AS money) AS [Mass],
 			CAST(SUM([Direction] * [Volume]) AS money) AS [Volume],	
 			CAST(SUM([Direction] * [Area]) AS money) AS [Area],
@@ -43,7 +43,7 @@ BEGIN
 			FROM [dbo].[fi_Journal](@fromDate, @toDate)
 			GROUP BY AccountId'
 	IF (@ByResource = 1) SET @Query = @Query + N', ResourceId'
-	IF (@ByIfrsEntryClassification = 1) SET @Query = @Query + N', IfrsEntryClassificationId'
+	IF (@ByEntryType = 1) SET @Query = @Query + N', EntryTypeId'
 	SET @Query = @Query + N'		
 			HAVING
 				SUM([Direction] * [MonetaryValue]) <> 0 OR

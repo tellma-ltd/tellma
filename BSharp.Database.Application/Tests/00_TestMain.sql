@@ -19,16 +19,18 @@
 	Documents, -- screen shows Lines, LineEntries, Signatures, StatesHistory(?)
 */
 BEGIN -- reset Identities
+	DBCC CHECKIDENT ('[dbo].[Accounts]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[AccountClassifications]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Agents]', RESEED, 1) WITH NO_INFOMSGS;
+	--DBCC CHECKIDENT ('[dbo].[AgentRelations]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[DocumentLines]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[DocumentLineEntries]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[MeasurementUnits]', RESEED, 100) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[Locations]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Permissions]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ResourceClassifications]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 1) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[ResourcePicks]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ResponsibilityCenters]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Roles]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[RoleMemberships]', RESEED, 1) WITH NO_INFOMSGS;
@@ -37,9 +39,9 @@ BEGIN -- reset Identities
 
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
 	DECLARE @ValidationErrorsJson nvarchar(max);
-	DECLARE @DebugIfrsConcepts bit = 0, @DebugMeasurementUnits bit = 0;
-	DECLARE @DebugProductCategories bit = 0, @DebugOperations bit = 0, @DebugResources bit = 0;
-	DECLARE @DebugAgents bit = 0, @DebugPlaces bit = 0;
+	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugLocations bit = 0, @DebugAccounts INT =0;
+	DECLARE @DebugDocuments BIT = 1, @DebugReports BIT = 1;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
 	EXEC sp_set_session_context 'Debug', 1;
@@ -50,40 +52,53 @@ BEGIN -- reset Identities
 
 	DECLARE @FunctionalCurrencyId NCHAR(3);
 	SELECT @FunctionalCurrencyId = [FunctionalCurrencyId] FROM dbo.Settings;
+	EXEC sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;--, @read_only = 1;
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 END
 
 BEGIN TRY
 	BEGIN TRANSACTION
-		:r .\00_Lookups\a_body-colors.sql		
-		:r .\00_Lookups\b_vehicle-makes.sql		
-		:r .\00_Lookups\c_steel-thicknesses.sql		
-		select * from lookups;
-		:r .\01_Resources\a1_PPE_motor-vehicles.sql
-		:r .\01_Resources\a2_ITEquipment.sql
-		:r .\01_Resources\a3_ITEquipment.sql
-		SELECT R.Id, R.ResourceTypeId, R.ResourceDefinitionId, R.[Name] AS [Resource], R.[MonetaryValueCurrencyId], ML.[Name] As LengthUnit,
-			LK1.[Name] AS ResourceLookup1
-		FROM dbo.Resources R
-		JOIN dbo.ResourceDefinitions RD ON R.ResourceDefinitionId = RD.[Id]
-		LEFT JOIN dbo.MeasurementUnits ML ON R.LengthUnitId = ML.Id
-		LEFT JOIN dbo.Lookups LK1 ON R.[Lookup1Id] = LK1.Id
-		LEFT JOIN dbo.Lookups LK2 ON R.[Lookup2Id] = LK2.Id
-		WHERE (RD.[Lookup1DefinitionId] IS NULL OR LK1.LookupDefinitionId = RD.[Lookup1DefinitionId])
-		AND (RD.[Lookup2DefinitionId] IS NULL OR LK2.LookupDefinitionId = RD.[Lookup2DefinitionId])
-		
-		SELECT RP.Id, RP.[Name], RP.[AvailableSince], RP.[MonetaryValue], RP.[Length] AS [StandardUsage], ML.[Name] AS UsageUnit, RP.[Text1] As PlateNumber
-		FROM dbo.ResourcePicks RP
-		JOIN dbo.Resources R ON R.[Id] = RP.[ResourceId]
-		LEFT JOIN dbo.MeasurementUnits ML ON R.LengthUnitId = ML.Id
+		:r .\00_Security\01_RolesPermissions.sql		
+		:r .\00_Security\02_Workflows.sql
 
+		:r .\01_Lookups\a_body-colors.sql
+		:r .\01_Lookups\b_vehicle-makes.sql
+		:r .\01_Lookups\c_steel-thicknesses.sql
+		:r .\01_Lookups\d_it-equipment-manufacturers.sql
+		:r .\01_Lookups\e_operating-systems.sql
+		--select * from lookups;
+
+		:r .\02_Resources\a1_PPE_motor-vehicles.sql
+		:r .\02_Resources\a2_PPE_it-equipment.sql
+		:r .\02_Resources\a3_PPE_machineries.sql
+		:r .\02_Resources\a4_PPE_general-fixed-assets.sql
+		:r .\02_Resources\b_Inventories_-raw-materials.sql
+		--:r .\02_Resources\d1_FG_vehicles.sql
+		:r .\02_Resources\d2_FG_steel-products.sql
+		:r .\02_Resources\e1_CCE_cash-assets.sql
+		--:r .\02_Resources\e2_CCE_received-checks.sql
+		:r .\02_Resources\h_PL_employee-benefits.sql
+
+		:r .\03_Agents\01_Agents.sql
+		:r .\03_Agents\02_Suppliers.sql
+		:r .\03_Agents\03_Customers.sql
+		:r .\03_Agents\04_Employees.sql
+
+		:r .\05_Accounts\00_AccountClassifications.sql
+		:r .\05_Accounts\01_gl-accounts.sql
+		:r .\05_Accounts\02_tax-accounts.sql
+
+		IF @DebugAccounts = 1
+			SELECT * FROM map.Accounts();
+
+		:r .\06_Entries\00_manual-vouchers.sql
+		:r .\06_Entries\01_manual-vouchers.sql
 		;
-		--:r .\01_RolesPermissions.sql		
-		--:r .\02_Workflows.sql
+		
+
 		--:r .\03_MeasurementUnits.sql
 		--:r .\04_IfrsDisclosures.sql
-		--:r .\05_Agents.sql
 	--	:r .\06_ResponsibilityCenters.sql
 		--:r .\07_Resources.sql
 		--:r .\08_AccountClassifications.sql

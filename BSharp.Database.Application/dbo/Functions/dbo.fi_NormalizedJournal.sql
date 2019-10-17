@@ -33,7 +33,6 @@ RETURN
 		J.[EntryTypeId],
 		J.[ResponsibilityCenterId],
 		J.[ResourceId],
-		J.[ResourcePickId],
 		J.[BatchCode],
 		J.[MonetaryValue],
 		J.[MonetaryValueCurrencyId],
@@ -52,6 +51,6 @@ RETURN
 		J.[RelatedQuantity],
 		J.[RelatedMonetaryAmount]
 	FROM dbo.fi_Journal(@fromDate, @toDate) J
-	JOIN dbo.Resources R ON J.ResourceId = R.Id
+	LEFT JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN UnitRatios MR ON R.MassUnitId = MR.Id
 	LEFT JOIN UnitRatios CR ON R.CountUnitId = CR.Id

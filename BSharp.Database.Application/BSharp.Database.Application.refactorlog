@@ -1262,4 +1262,88 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[MonetaryValue]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="f515be4b-1c76-4ef1-9e9f-8591518a72c0" ChangeDateTime="10/08/2019 16:44:01">
+    <Property Name="ElementName" Value="[dal].[ResourcePicks__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceInstances__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e299e161-00c7-4e9a-95fa-30374a431e3b" ChangeDateTime="10/08/2019 16:44:28">
+    <Property Name="ElementName" Value="[dbo].[ResourcePickList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceInstanceList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6cebd678-180e-4fd8-9681-1dd53528a3c3" ChangeDateTime="10/08/2019 16:44:56">
+    <Property Name="ElementName" Value="[dbo].[ResourcePicks]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceInstances]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e0a49053-8257-4f42-90d1-63185e1de758" ChangeDateTime="10/08/2019 16:45:23">
+    <Property Name="ElementName" Value="[rpt].[sp_ResourcesPicks]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[sp_ResourcesInstances]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1fca0633-b959-4258-b25f-0b7b3119374d" ChangeDateTime="10/08/2019 16:46:40">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineEntries].[ResourcePickId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceInstanceId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a8759da2-f2e2-4ccd-aa3a-f782ab7eb342" ChangeDateTime="10/09/2019 20:00:34">
+    <Property Name="ElementName" Value="[dbo].[Resources].[Date1]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AvailableSince]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b66d2057-7611-44c3-b84f-56b7d402517f" ChangeDateTime="10/09/2019 20:01:08">
+    <Property Name="ElementName" Value="[dbo].[Resources].[Date2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AvailableTill]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fd417d71-b1c1-431d-9165-ac71f6491374" ChangeDateTime="10/09/2019 21:40:11">
+    <Property Name="ElementName" Value="[rpt].[AccountClassifications__TrialBalance]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LegacyAccounts__TrialBalance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fffeb631-49f0-461f-aaef-3656043f9ffd" ChangeDateTime="10/09/2019 21:52:08">
+    <Property Name="ElementName" Value="[rpt].[LegacyAccounts__TrialBalance]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountClassificationsGLAccounts__TrialBalance]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3d400716-4777-40d3-bf62-0d512b269352" ChangeDateTime="10/09/2019 22:27:06">
+    <Property Name="ElementName" Value="[rpt].[sp_ResourcesInstances]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[sp_Resources]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f3f8526f-33db-48f3-9609-4c2d72c7b7a8" ChangeDateTime="10/09/2019 23:24:44">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ReceivableAccountId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AssetAccountId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="25873629-1d66-4ea0-8efc-dcd21395e935" ChangeDateTime="10/10/2019 10:25:59">
+    <Property Name="ElementName" Value="[dbo].[Resources].[GloballyUniqueReference]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[UniqueReference1]" />
+  </Operation>
 </Operations>

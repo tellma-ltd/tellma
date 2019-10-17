@@ -20,7 +20,7 @@ AS
 		E.[Direction],
 		E.[AccountId],
 		E.[EntryTypeId],
-		E.[ResourcePickId],
+	--	E.[ResourceInstanceId],
 		E.[BatchCode],
 		E.[DueDate],
 		E.[MonetaryValue], -- normalization is already done in the Value and stored in the entry

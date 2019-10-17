@@ -102,10 +102,9 @@ BEGIN
 	USING (
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [EntryTypeId],
-				--[AgentId], [ResponsibilityCenterId], [ResourceId], 
-				[ResourcePickId], [BatchCode], [DueDate],
-				[MonetaryValue], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value],
-				E.[Memo], E.[ExternalReference], E.[AdditionalReference], E.[RelatedResourceId], E.[RelatedAgentId], E.[RelatedMonetaryAmount]
+			[BatchCode], [DueDate],
+			[MonetaryValue], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value],
+			E.[Memo], E.[ExternalReference], E.[AdditionalReference], E.[RelatedResourceId], E.[RelatedAgentId], E.[RelatedMonetaryAmount]
 				
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
@@ -113,19 +112,18 @@ BEGIN
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET
+			t.[SortKey]					= s.[Index],
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
-
-			t.[ResourcePickId]			= s.[ResourcePickId],
 			t.[BatchCode]				= s.[BatchCode],
-			t.[MonetaryValue]			= s.[MonetaryValue],
-			t.[Mass]					= s.[Mass],
-			t.[Volume]					= s.[Volume],
 			t.[Area]					= s.[Area],
-			t.[Length]					= s.[Length],
-			t.[Time]					= s.[Time],
 			t.[Count]					= s.[Count],
+			t.[Length]					= s.[Length],
+			t.[Mass]					= s.[Mass],
+			t.[MonetaryValue]			= s.[MonetaryValue],
+			t.[Time]					= s.[Time],
+			t.[Volume]					= s.[Volume],
 			t.[Value]					= s.[Value],
 			t.[Memo]					= s.[Memo],
 			t.[ExternalReference]		= s.[ExternalReference],
@@ -135,15 +133,11 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([DocumentLineId], [EntryNumber], [Direction], [AccountId], [EntryTypeId],
-				--[AgentId], [ResponsibilityCenterId], [ResourceId], 
-				[ResourcePickId], [BatchCode],
+		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], [EntryTypeId], [BatchCode],
 				[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value],
 				[Memo], [ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId], [RelatedMonetaryAmount]
 				)
-		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[EntryTypeId],
-				--s.[AgentId], s.[ResponsibilityCenterId], s.[ResourceId], 
-				s.[ResourcePickId], s.[BatchCode],
+		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Index], s.[Direction], s.[AccountId], s.[EntryTypeId], s.[BatchCode],
 				s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value],
 				s.[Memo], s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMonetaryAmount]
 				)

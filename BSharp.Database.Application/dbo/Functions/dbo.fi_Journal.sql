@@ -23,12 +23,13 @@ RETURN
 		V.[AccountId],
 		A.[AccountDefinitionId],
 		A.[AccountTypeId],
+		A.[AccountClassificationId],
 		V.[EntryTypeId],
 		A.[CustodianId],
 		A.[ResponsibilityCenterId],
 		A.[LocationId],
 		A.[ResourceId],
-		V.[ResourcePickId],
+		--V.[ResourceInstanceId],
 		V.[BatchCode],
 		--V.[Quantity],
 -- because too many joins with table Measurement units affects performance, I will only add the 
@@ -67,7 +68,7 @@ RETURN
 	--LEFT JOIN dbo.Resources RR ON V.RelatedResourceId = RR.Id
 	WHERE V.[Frequency]		= N'OneTime'
 	AND (@fromDate IS NULL OR [DocumentDate] >= @fromDate)
-	AND (@toDate IS NULL OR [DocumentDate] < @toDate)
+	AND (@toDate IS NULL OR [DocumentDate] < DATEADD(DAY, 1, @toDate))
 	--AND [DocumentDate] <
 	--	CASE 
 	--		WHEN @Param = 0 THEN @toDate

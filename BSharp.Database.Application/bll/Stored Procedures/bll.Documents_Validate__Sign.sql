@@ -64,7 +64,7 @@ BEGIN
 	JOIN dbo.[DocumentLines] DL ON FE.[Id] = DL.[DocumentId]
 	JOIN dbo.[DocumentLineEntries] DLE ON DL.[Id] = DLE.[DocumentLineId]
 	JOIN dbo.[Accounts] A ON A.[Id] = DLE.[AccountId]
-	WHERE (A.[IsDeprecated] = 0);
+	WHERE (A.[IsDeprecated] = 1);
 
 	-- Not allowed to cause negative inventory balance
 	WITH InventoriesAccountTypes AS (

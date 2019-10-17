@@ -24,7 +24,7 @@ DECLARE @AdminUserId INT, @RoleId INT, @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSE
 --:r .\02_Accounts.sql
 --EXEC [dbo].[adm_Accounts_Notes__Update];
 --:r .\04_AccountsNotes.sql
---:r .\06_DocumentDefinitions.sql
+:r .\06_DocumentDefinitions.sql
 --:r .\05_LineTypeSpecifications.sql
 --:r .\07_AccountSpecifications.sql
 

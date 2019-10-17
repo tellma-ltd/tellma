@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [api].[Accounts__Save]
 	@DefinitionId NVARCHAR (255),
 	@Entities [dbo].[AccountList] READONLY,
-	--@Picks [dbo].[AccountPickList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -34,6 +33,5 @@ SET NOCOUNT ON;
 	EXEC [dal].[Accounts__Save]
 		@DefinitionId = @DefinitionId,
 		@Entities = @FilledAccounts,
-	--	@Picks = @Picks,
 		@ReturnIds = @ReturnIds;
 END;

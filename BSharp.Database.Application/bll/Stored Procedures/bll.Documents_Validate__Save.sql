@@ -48,35 +48,48 @@ SET NOCOUNT ON;
 	FROM @Documents FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	WHERE (BE.[State] <> N'Draft')
-/* TODO: Revisit after the design is stable
-	-- Note Id is missing when required
-	-- TODO: Add the condition that Ifrs Entry Classification is enforced
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT
-		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].IfrsEntryClassificationId' + CAST([EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheIfrsEntryClassificationIsRequired'
-	FROM @Entries E
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE (E.[IfrsEntryClassificationId] IS NULL)
-	AND A.[IfrsClassificationId] IN (
-		SELECT [IfrsAccountClassificationId] FROM dbo.[IfrsAccountClassificationsEntryClassifications]
-	);
 
-	-- Invalid Note Id
+	-- TODO: For the cases below, add the condition that Ifrs Entry Classification is enforced
+
+	-- Entry Type Id is missing when required
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].IfrsEntryClassificationId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheIfrsEntryClassificationIdIsIncompatibleWithAccountClassification0',
-		A.[IfrsClassificationId]
+		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
+			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+		N'Error_TheAccountType0RequiresAnEntryType', A.AccountTypeId
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	LEFT JOIN dbo.[IfrsAccountClassificationsEntryClassifications] AN ON A.[IfrsClassificationId] = AN.[IfrsAccountClassificationId] AND E.Direction = AN.Direction AND E.IfrsEntryClassificationId = AN.[IfrsEntryClassificationId]
-	WHERE (E.[IfrsEntryClassificationId] IS NOT NULL)
-	AND (AN.[IfrsEntryClassificationId] IS NULL);
+	WHERE (E.[EntryTypeId] IS NULL)
+	AND A.AccountTypeId IN (
+		SELECT [AccountTypeId] FROM dbo.[AccountTypesEntryTypes]
+	);
 
-	-- No expired Ifrs Account
+	-- Invalid Entry Type Id
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
+			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+		N'Error_IncompatibleAccountType0AndEntryType1',
+		A.AccountTypeId, E.EntryTypeId
+	FROM @Entries E
+	JOIN dbo.Accounts A ON E.AccountId = A.Id
+	LEFT JOIN dbo.[AccountTypesEntryTypes] AE ON (A.AccountTypeId = AE.[AccountTypeId]) AND (E.EntryTypeId = AE.EntryTypeId)
+	WHERE (E.EntryTypeId IS NOT NULL AND AE.EntryTypeId IS NULL);
+
+	-- RelatedAgent is required for selected account definition, 
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
+			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+		N'Error_TheRelatedAgentIsNotSpecified'
+	FROM @Entries E
+	JOIN dbo.[Accounts] A On E.AccountId = A.Id
+	JOIN dbo.[AccountDefinitions] AD ON A.[AccountDefinitionId] = AD.Id
+	WHERE (E.[RelatedAgentId] IS NULL)
+	AND (AD.[RelatedAgentVisibility] = N'RequiredInEntries');
+
+	/* TODO: Revisit after the design is stable
+	-- No inactive Account Type
 	-- No expired Ifrs Note
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
@@ -116,17 +129,7 @@ SET NOCOUNT ON;
 	AND (E.[Direction] = 1 AND IA.[DebitAdditionalReferenceSetting] = N'Required' OR
 		E.[Direction] = -1 AND IA.[CreditAdditionalReferenceSetting] = N'Required');
 
-	-- RelatedAgent is required for selected account and direction, 
-	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].RelatedAgentId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheRelatedAgentIsNotSpecified'
-	FROM @Entries E
-	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	JOIN dbo.[IfrsAccountClassifications] IA ON A.[IfrsClassificationId] = IA.Id
-	WHERE (E.[RelatedAgentId] IS NULL)
-	AND (IA.[RelatedAgentAccountSetting] = N'Required');
+
 	
 	-- RelatedResource is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])

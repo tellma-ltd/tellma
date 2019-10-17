@@ -40,6 +40,17 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	);
 
+-- Account classification must be a leaf
+    INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	SELECT
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].AccountClassificationId',
+		N'Error_TheAccountClassification0IsNotLeaf',
+		FE.AccountClassificationId
+	FROM @Entities FE 
+	JOIN [dbo].[AccountClassifications] BE ON FE.AccountClassificationId = BE.Id
+	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[AccountClassifications]);
+
+
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
  --   SELECT
 	--	'[' + CAST([Index] AS NVARCHAR (255)) + ']',

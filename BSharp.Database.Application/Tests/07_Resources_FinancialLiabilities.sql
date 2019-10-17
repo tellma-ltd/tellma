@@ -1,4 +1,4 @@
-﻿	DECLARE @R7 [dbo].ResourceList,  @RP7 [dbo].ResourcePickList;
+﻿	DECLARE @R7 [dbo].ResourceList,  @RP7 [dbo].ResourceInstanceList;
 
 	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'financial-liabilities
 								[Name],									[IsLeaf],	[Node]) VALUES
@@ -20,7 +20,7 @@
 	EXEC [api].[Resources__Save] -- N'financial-liabilities'
 		@DefinitionId = N'financial-liabilities',
 		@Resources = @R7,
-	--	@Picks = @RP7,
+	--	@Instances = @RP7,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN

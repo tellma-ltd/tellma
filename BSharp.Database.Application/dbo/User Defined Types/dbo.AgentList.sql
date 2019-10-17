@@ -8,7 +8,7 @@
 --	Common
 	[AgentType]					NVARCHAR (30)		NOT NULL,  -- -- 'Individual', 'System' (software), 'Organization' (Dept, Team)
 	[IsRelated]					BIT					NOT NULL DEFAULT 0,
-	--[TaxIdentificationNumber]	NVARCHAR (30),  -- China has the maximum, 18 characters
+	[TaxIdentificationNumber]	NVARCHAR (30),  -- China has the maximum, 18 characters
 	--[IsLocal]					BIT,
 	--[Citizenship]				NCHAR(2),		-- ISO 3166-1 Alpha-2 code
 	--[Facebook]					NVARCHAR (50),				

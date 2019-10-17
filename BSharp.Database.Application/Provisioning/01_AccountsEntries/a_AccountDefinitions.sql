@@ -65,7 +65,7 @@ INSERT INTO @AccountDefinitions
 -- employee-accounts work for cash on hand accounts as well.
 (N'employees-accounts',	N'Employee Account',N'Employees Accounts',	N'RequiredInAccounts', N'Employee',		N'employees',						N'RequiredInAccounts', N'Currency',		N'currencies'),
 (N'suppliers-accounts',	N'Supplier Account',N'Suppliers Accounts',	N'RequiredInAccounts', N'Supplier',		N'suppliers',						N'RequiredInAccounts', N'Currency',		N'currencies');
--- TODO: we will have an issue identifying several accounts with same currency and location.
+
 INSERT INTO @AccountDefinitions
 ([Id],				[TitleSingular],	[TitlePlural],	[PartyReferenceVisibility],[PartyReferenceLabel],[CustodianVisibility], [CustodianLabel], [CustodianRelationDefinitionList], [ResourceVisibility], [ResourceLabel], [ResourceDefinitionList]) VALUES
 (N'banks-accounts',	N'Banks Accounts',	N'Bank Account',N'OptionalInAccounts',		N'Account Number',	N'RequiredInAccounts', N'Bank',			N'banks',							N'RequiredInAccounts', N'Currency',		N'currencies');

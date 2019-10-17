@@ -1,36 +1,29 @@
 ﻿CREATE TABLE [dbo].[AgentRelations] (
-	[AgentId]					INT					NOT NULL,
-	-- for every customer, supplier, and employee account types: sales, purchase and employment
-	[AgentRelationDefinitionId]	NVARCHAR(50)		NOT NULL,
+	[Id]						INT					CONSTRAINT [PK_AgentRelations] PRIMARY KEY IDENTITY,
+	[AgentRelationDefinitionId]	NVARCHAR(50)		NOT NULL CONSTRAINT [FK_AgentRelations__AgentRelationDefinitionId] FOREIGN KEY ([AgentRelationDefinitionId]) REFERENCES [dbo].[AgentRelationDefinitions] ([Id]),
+	[AgentId]					INT					NOT NULL CONSTRAINT [FK_AgentRelations__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]) ON DELETE CASCADE,
 	[StartDate]					DATE				DEFAULT (CONVERT (date, SYSDATETIME())),
---	employee-accounts
-	[JobTitle]					NVARCHAR (50), -- FK to table Jobs
-	[BasicSalary]				MONEY,			-- As of now, typically part of direct labor expenses
-	[TransporationAllowance]	MONEY,			-- As of now, typically part of overhead expenses.
-	[OvertimeRate]				MONEY,			-- probably better moved to a template table
-	[PerDiemRate]				MONEY,			-- probably better moved to a template table
---	supplier-accounts
-	[SupplierRating]			INT,			-- user defined list
-	[PaymentTerms]				NVARCHAR (255),
-	-- extra details PO, LC, etc...
-
---	customer-accounts
+	[Code]						NVARCHAR (50), -- 
+	[IsActive]					BIT					NOT NULL DEFAULT 1,
+--	customers
 	[CustomerRating]			INT,			-- user defined list
 	[ShippingAddress]			NVARCHAR (255), -- default, the full list is in a separate table
 	[BillingAddress]			NVARCHAR (255),
-
 	[CreditLine]				MONEY				DEFAULT 0,
-
-	[IsActive]					BIT					NOT NULL DEFAULT 1,
-	[Code]						NVARCHAR (50), -- 
+--	employees
+	[JobTitle]					NVARCHAR (50), -- FK to table Jobs
+	[BasicSalary]				MONEY,			-- As of now, typically part of direct labor expenses
+	[TransportationAllowance]	MONEY,			-- As of now, typically part of overhead expenses.
+	[OvertimeRate]				MONEY,			-- probably better moved to a template table
+	[PerDiemRate]				MONEY,			-- probably better moved to a template table
+--	suppliers
+	[SupplierRating]			INT,			-- user defined list
+	[PaymentTerms]				NVARCHAR (255),
+	
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AgentRelations__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	CONSTRAINT [PK_AgentRelations] PRIMARY KEY ([AgentId], [AgentRelationDefinitionId]),
-	CONSTRAINT [FK_AgentRelations__AgentRelationDefinitionId] FOREIGN KEY ([AgentRelationDefinitionId]) REFERENCES [dbo].[AgentRelationDefinitions] ([Id]) ON DELETE CASCADE,
-	CONSTRAINT [FK_AgentRelations__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_AgentRelations__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AgentRelations__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 /*
 	Agent Relation type		UDL (can only have ONE default account per (agent, relation type)
 		N'investor'			-- Default
@@ -49,3 +42,6 @@
 		)),
 	*/
 );
+GO
+CREATE UNIQUE INDEX [IX_AgentRelations__AgentRelationDefinitionId_AgentId] ON dbo.AgentRelations([AgentRelationDefinitionId], [AgentId]);
+GO

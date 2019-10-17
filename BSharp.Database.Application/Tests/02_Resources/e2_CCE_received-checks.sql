@@ -1,4 +1,4 @@
-﻿DECLARE @R2 [dbo].ResourceList, @RP2 [dbo].ResourcePickList;
+﻿DECLARE @R2 [dbo].ResourceList, @RP2 [dbo].ResourceInstanceList;
 
 INSERT INTO @R2 ([Index],
 		[Name],						[Code],		[CurrencyId]) VALUES
@@ -10,7 +10,7 @@ INSERT INTO @R2 ([Index],
 	EXEC [api].[Resources__Save] -- N'received-checks'
 	@DefinitionId =  N'received-checks',
 	@Resources = @R2,
---	@Picks = @RP2,
+--	@Instances = @RP2,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN

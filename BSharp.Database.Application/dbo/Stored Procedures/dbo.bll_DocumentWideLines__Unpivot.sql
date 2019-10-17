@@ -15,7 +15,7 @@ AS
 	[DocumentLineIndex], [DocumentIndex], [Id],
 	--[DocumentLineId],
 	[EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],
-	[ResourceId], [ResourcePickId], [BatchCode], [DueDate],
+	[ResourceId], [ResourceInstanceId], [BatchCode], [DueDate],
 	[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count], [Value])
 	SELECT
 	[DocumentLineIndex], [DocumentIndex], [Id],
