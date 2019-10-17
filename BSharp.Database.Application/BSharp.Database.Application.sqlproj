@@ -94,6 +94,7 @@
     <Folder Include="Tests\04_Locations" />
     <Folder Include="Tests\00_Security" />
     <Folder Include="Tests\07_Entries_Smart" />
+    <Folder Include="Tests\06_Entries_Manual" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -449,9 +450,9 @@
     <None Include="Tests\00_Security\01_RolesPermissions.sql" />
     <None Include="Tests\00_Security\02_Workflows.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
-    <Build Include="Tests\00_manual-vouchers.sql" />
-    <Build Include="10_cash-purchases.sql" />
     <Build Include="Tests\10_cash-purchases.sql" />
+    <Build Include="Tests\06_Entries_Manual\00_manual-vouchers.sql" />
+    <Build Include="Tests\06_Entries_Manual\10_cash-purchases.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
