@@ -1,18 +1,19 @@
-﻿CREATE PROCEDURE [bll].[Documents_Validate__Unsign]
+﻿CREATE PROCEDURE [bll].[DocumentLines_Validate__Unsign]
 	@Entities [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	-- Cannot unsign unless in draft mode
+	-- Cannot unsign the lines unless the document is in draft mode
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentIsIn0State',
 		BE.[State]
 	FROM @Entities FE
-	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
+	JOIN [dbo].[DocumentLines] DL ON FE.[Id] = DL.[Id]
+	JOIN [dbo].[Documents] BE ON DL.[DocumentId] = BE.[Id]
 	WHERE (BE.[State] <> N'Draft');
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

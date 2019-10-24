@@ -10,6 +10,7 @@ BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @FilledEntries [dbo].[DocumentLineEntryList]
 	
+	-- TODO: Introduce @FilledLines as well.
 	INSERT INTO @FilledEntries
 	EXEC bll.DocumentLineEntries__Fill
 		@Documents = @Documents,

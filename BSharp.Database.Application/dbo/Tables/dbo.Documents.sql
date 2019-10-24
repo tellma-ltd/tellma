@@ -8,7 +8,7 @@
 	[DocumentDefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DocumentDefinitionId] FOREIGN KEY ([DocumentDefinitionId]) REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
 	[SerialNumber]							INT				NOT NULL,	-- auto generated, copied to paper if needed.
 	[DocumentDate]							DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()) CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())),
-	[State]									NVARCHAR (30)	NOT NULL DEFAULT N'Draft' CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Posted')),
+	[State]									NVARCHAR (30)	NOT NULL DEFAULT N'Draft' CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Draft', N'Void', N'Posted')),
 	
 	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
 	-- When evidence type = source document

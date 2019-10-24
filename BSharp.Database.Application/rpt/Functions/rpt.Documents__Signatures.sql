@@ -2,7 +2,7 @@
 	@Ids dbo.[IdList] READONLY
 ) RETURNS TABLE AS
 RETURN
-SELECT 	
+SELECT DISTINCT
 		D.[Id],
 		DT.Prefix + 
 		REPLICATE(N'0', DT.[NumericalLength] - 1 - FLOOR(LOG10(D.SerialNumber))) +
@@ -15,8 +15,9 @@ SELECT
 		A3.[Name] AS [Revoked By],
 		DS.[RevokedAt] AS [Revoked At]
 	FROM dbo.Documents D
+	JOIN dbo.DocumentLines DL ON D.[Id] = DL.[DocumentId]
 	JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
-	JOIN dbo.DocumentSignatures DS ON D.[Id] = DS.DocumentId
+	JOIN dbo.[DocumentLineSignatures] DS ON DL.[Id] = DS.DocumentLineId
 	JOIN dbo.Agents AG ON DS.AgentId = AG.Id
 	JOIN dbo.Roles RL ON DS.RoleId = RL.[Id]
 	JOIN dbo.Agents A2 ON DS.[CreatedById] = A2.[Id]

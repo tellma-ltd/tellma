@@ -22,7 +22,6 @@ RETURN
 			DLE.[Direction],
 			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryTypeId], 
 			R.[Name] AS [Resource],
-			--DLE.[ResourceInstanceId],
 			CAST(DLE.[Value] AS MONEY) AS [Value],
 			-- TODO: Add other unittypes
 			CAST(DLE.[MonetaryValue] AS MONEY) AS [MonetaryValue],

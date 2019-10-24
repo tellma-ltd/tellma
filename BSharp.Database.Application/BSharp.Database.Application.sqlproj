@@ -93,8 +93,7 @@
     <Folder Include="Tests\05_Accounts" />
     <Folder Include="Tests\04_Locations" />
     <Folder Include="Tests\00_Security" />
-    <Folder Include="Tests\07_Entries_Smart" />
-    <Folder Include="Tests\06_Entries_Manual" />
+    <Folder Include="Tests\06_Entries" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -164,8 +163,7 @@
     <Build Include="dbo\User Defined Types\dbo.AccountList.sql" />
     <Build Include="dbo\Functions\dbo.fn_User__Language.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Unpost.sql" />
-    <Build Include="dbo\Tables\dbo.DocumentSignatures.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Documents__Unsign.sql" />
+    <Build Include="dbo\Tables\dbo.DocumentLineSignatures.sql" />
     <Build Include="dbo\Functions\dbo.fi_MyWorkspace.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignmentsHistory.sql" />
     <Build Include="dbo\Tables\dbo.Notifications.sql" />
@@ -241,31 +239,30 @@
     <Build Include="api\Stored Procedures\api.Documents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Save.sql" />
-    <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents__Sign.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents_Ready__Select.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
+    <Build Include="api\Stored Procedures\api.DocumentLines__Sign.sql" />
+    <Build Include="dal\Stored Procedures\dal.DocumentLines__Sign.sql" />
+    <Build Include="bll\Stored Procedures\bll.DocumentLines_Ready__Select.sql" />
+    <Build Include="dal\Stored Procedures\dal.DocumentLines_State__Update.sql" />
     <Build Include="dbo\Functions\dbo.fi_NormalizedJournal.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.IfrsDisclosureDetails_Validate__Save.sql" />
-    <Build Include="dbo\User Defined Types\dbo.DocumentRoleList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.DocumentLineRoleList.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Assign.sql" />
     <Build Include="dal\Stored Procedures\dal.Action_View__Permissions.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Assign.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Assign.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Sign.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents_State_Role__MissingSignatures.sql" />
+    <Build Include="bll\Stored Procedures\bll.DocumentLines_Validate__Sign.sql" />
     <Build Include="Security\rpt.sql" />
     <Build Include="rpt\Functions\rpt.MeasurementUnits__Select.sql" />
     <Build Include="rpt\Stored Procedures\rpt.sp_TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.sp_Ifrs.sql" />
     <Build Include="rpt\Functions\rpt.Account__Statement.sql" />
     <Build Include="rpt\Functions\rpt.Documents.sql" />
-    <Build Include="rpt\Functions\rpt.Document__Signatures.sql" />
-    <Build Include="bll\Functions\bll.fn_Document_Criteria__Satisfied.sql" />
-    <Build Include="rpt\Functions\rpt.Documents_ToState_Roles__Missing.sql" />
-    <Build Include="rpt\Functions\rpt.Documents_ToState_Roles__MissingConditional.sql" />
-    <Build Include="rpt\Functions\rpt.DocumentsWithNoDefinedWorkflows.sql" />
+    <Build Include="rpt\Functions\rpt.Documents__Signatures.sql" />
+    <Build Include="bll\Functions\bll.fn_DocumentLine_Criteria__Satisfied.sql" />
+    <Build Include="rpt\Functions\rpt.DocumentLines_ToState_Roles__Missing.sql" />
+    <Build Include="rpt\Functions\rpt.DocumentLines_ToState_Roles__MissingConditional.sql" />
+    <Build Include="rpt\Functions\rpt.DocumentLinesWithNoDefinedWorkflows.sql" />
     <Build Include="rpt\Functions\rpt.Resources.sql" />
     <Build Include="dal\Stored Procedures\dal.Resources__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Resources__Delete.sql" />
@@ -403,8 +400,8 @@
     <Build Include="Mapping\Accounts__AsQuery.sql" />
     <Build Include="Mapping\ResourceTypes.sql" />
     <Build Include="api\Stored Procedures\api.Views__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Unsign.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents__Unsign.sql" />
+    <Build Include="bll\Stored Procedures\bll.DocumentLines_Validate__Unsign.sql" />
+    <Build Include="dal\Stored Procedures\dal.DocumentLines__Unsign.sql" />
     <Build Include="dal\Stored Procedures\dal.Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.EntryTypes.sql" />
@@ -450,9 +447,8 @@
     <None Include="Tests\00_Security\01_RolesPermissions.sql" />
     <None Include="Tests\00_Security\02_Workflows.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
-    <Build Include="Tests\10_cash-purchases.sql" />
-    <Build Include="Tests\06_Entries_Manual\00_manual-vouchers.sql" />
-    <Build Include="Tests\06_Entries_Manual\10_cash-purchases.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Post.sql" />
+    <Build Include="api\Stored Procedures\api.DocumentLines__Unsign.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -485,6 +481,8 @@
     <None Include="Tests\03_Agents\04_Employees.sql" />
     <None Include="Tests\05_Accounts\01_gl-accounts.sql" />
     <None Include="Tests\05_Accounts\02_tax-accounts.sql" />
+    <None Include="Tests\06_Entries\00_manual-vouchers.sql" />
+    <None Include="Tests\06_Entries\01_cash-purchases.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

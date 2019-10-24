@@ -1,30 +1,10 @@
-﻿CREATE PROCEDURE [bll].[Documents_Validate__Sign]
+﻿CREATE PROCEDURE [bll].[Documents_Validate__Post]
 	@Ids [dbo].[IndexedIdList] READONLY,
-	@AgentId INT,
-	--@Lines DocumentLineList = NULL,
-	--@Entries DocumentLineEntryList = NULL,
-	@ToState NVARCHAR(30),
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
---	Verify that @AgentId = @UserId or all transition to @ToState are IsPaperless = 0
-	IF @AgentId <> @UserId
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT
-			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-			N'Error_PaperlessTransitionCannotImpersonateSignatory0', 
-			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
-		FROM @Ids 
-		WHERE [Id] IN (
-			SELECT D.[Id] 
-			FROM dbo.Documents D
-			JOIN dbo.Workflows W ON W.DocumentTypeId = D.[DocumentDefinitionId]
-			WHERE W.ToState = @ToState AND [IsPaperless] = 1
-		);
 
-IF @ToState = N'Posted'
-BEGIN
 	-- Not allowed to cause negative fixed asset life
 	-- Conservation of mass
 	-- conservation of volume
@@ -121,5 +101,5 @@ BEGIN
 	FROM OffendingEntries D
 	JOIN dbo.[Accounts] A ON D.AccountId = A.Id
 	JOIN dbo.Resources R ON A.ResourceId = R.Id
-END
+
 	SELECT TOP (@Top) * FROM @ValidationErrors;

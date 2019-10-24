@@ -93,7 +93,7 @@ BEGIN TRY
 			SELECT * FROM map.Accounts();
 
 		:r .\06_Entries\00_manual-vouchers.sql
-		:r .\06_Entries\01_manual-vouchers.sql
+		:r .\06_Entries\01_cash-purchases.sql
 		;
 		
 

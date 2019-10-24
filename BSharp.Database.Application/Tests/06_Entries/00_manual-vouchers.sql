@@ -97,7 +97,7 @@ BEGIN -- Inserting
 	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Draft';
 
 --	IF (1=0)
-	EXEC [api].[Documents__Sign]
+	EXEC [api].[DocumentLines__Sign]
 		@DocsIndexedIds = @DocsIndexedIds,
 		@ToState = N'Posted',
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

@@ -3,6 +3,8 @@
 	[Id]					INT					PRIMARY KEY IDENTITY,
 	[DocumentId]			INT					NOT NULL CONSTRAINT [FK_DocumentLines__DocumentId]	FOREIGN KEY ([DocumentId])	REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
 	[LineDefinitionId]		NVARCHAR (50)		NOT NULL CONSTRAINT [FK_DocumentLines__LineDefinitionId]	FOREIGN KEY ([LineDefinitionId])	REFERENCES [dbo].[LineDefinitions] ([Id]),
+	[State]					NVARCHAR (30)		NOT NULL DEFAULT N'Requested' CONSTRAINT [CK_DocumentLines__State] CHECK ([State] IN (N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid')),
+
 	[TemplateLineId]		INT, -- depending on the line type, the user may/may not be allowed to edit
 	[ScalingFactor]			FLOAT, -- Qty sold for Price list, Qty produced for BOM
 	[AgentId]				INT, -- useful for storing the conversion agent in conversion transactions

@@ -41,10 +41,11 @@ SET NOCOUNT ON;
 	WHERE [DocumentDate] < (SELECT TOP 1 ArchiveDate FROM dbo.Settings) 
 	
 	-- (FE Check, DB IU trigger) Cannot save a document not in draft state
+	-- TODO: if it is not allowed to change a line once (Requested), report error
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].DocumentState',
-		N'Error_CannotOnlySaveADocumentInDraftState'
+		N'Error_CanOnlySaveADocumentInDraftState'
 	FROM @Documents FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	WHERE (BE.[State] <> N'Draft')

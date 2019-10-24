@@ -2,16 +2,6 @@
 -- table managed by Banan
 -- Note that, in steel production: CTS, HSP, and SM are considered 3 different document types.
 	[Id]						NVARCHAR (50) PRIMARY KEY, -- Kebab case
--- The choice of booleans should form a connected tree. For example, in Cut to Size, and
--- assuming that the B# document is not a source document, the true values are: 
--- (starting) (Draft), IsPosted, IsDeclined.
--- The list of possible states can be also deduced from the workflow (ToState).
-/*
-	[IsRequestedOrVoid]			BIT				DEFAULT (1),
-	[IsAuthorizedOrRejected]	BIT				DEFAULT (1),
-	[IsCompletedOrFailed]		BIT				DEFAULT (1),
-	[IsPostedOrInvalid]			BIT				DEFAULT (1),
-*/
 	[IsSourceDocument]			BIT				DEFAULT 1, -- <=> IsVoucherReferenceRequired
 	-- EvidenceType = Authentication <=> Document is paperless. Workflow and Account signatures are required
 	-- EvidenceType = SourceDocument <=> There is a external booklet from which we are copying. In that case, Include voucher booklet and reference. Only workflow required

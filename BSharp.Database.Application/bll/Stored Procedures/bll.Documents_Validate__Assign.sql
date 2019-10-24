@@ -14,6 +14,6 @@ SET NOCOUNT ON;
 	FROM @Entities FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	JOIN [dbo].[DocumentDefinitions] DT ON BE.[DocumentDefinitionId] = DT.Id
-	WHERE (BE.[State] IN (N'Void', N'Rejected', N'Failed', N'Invalid') OR BE.[State] = DT.[FinalState]);
+	WHERE (BE.[State] IN (N'Void', N'Posted'));
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;
