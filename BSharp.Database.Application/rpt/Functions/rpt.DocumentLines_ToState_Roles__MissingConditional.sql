@@ -6,11 +6,19 @@
 ) RETURNS TABLE AS
 RETURN
 	SELECT T.Id AS DocumentLineId, T.RoleId FROM (
-		SELECT DL.[Id], DL.DocumentId, WS.[RoleId]
+		SELECT DL.[Id], DL.[DocumentId], WS.[RoleId]
 		FROM dbo.DocumentLines DL
 		JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[LineDefinitionId]
 		JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.WorkflowId
-		WHERE W.[ToState] = @ToState
+		-- Workflows are defined for positive states. Hence when moving to negative state we need to use ABS value
+		WHERE W.[ToState] = CASE
+			WHEN @ToState = N'Rejected'	THEN N'Authorized'
+			WHEN @ToState = N'Failed'	THEN N'Completed'
+			WHEN @ToState = N'Invalid'	THEN N'Reviewed'
+			ELSE @ToState
+		END
+		-- IF FromState is negative we need to unsign the line first
+		AND W.[FromState] = DL.[State]
 		AND WS.Criteria IS NOT NULL
 		AND bll.[fn_DocumentLine_Criteria__Satisfied](DL.[Id], WS.Criteria) = 1 -- signatures
 		AND DL.[Id] IN (SELECT [Id] FROM @DocLinesIds)

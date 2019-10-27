@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[bll_Transactions_Validate__Unpost]
+-- TODO: replace with bll.DocumentLines_Validate__Unsign
 	@Entities [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
@@ -18,7 +19,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	WHERE (BE.[DocumentDate] < @ArchiveDate)
 
-	-- Cannot unpost if not the user who posted
+	-- Cannot unsign if not the user who signed
 
 	-- No inactive account
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

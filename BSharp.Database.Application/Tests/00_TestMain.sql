@@ -40,8 +40,8 @@ BEGIN -- reset Identities
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
 	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugLocations bit = 0, @DebugAccounts INT =0;
-	DECLARE @DebugDocuments BIT = 1, @DebugReports BIT = 1;
+	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugLocations bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugDocuments bit = 1, @DebugReports bit = 1;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
 	EXEC sp_set_session_context 'Debug', 1;
@@ -93,7 +93,7 @@ BEGIN TRY
 			SELECT * FROM map.Accounts();
 
 		:r .\06_Entries\00_manual-vouchers.sql
-		:r .\06_Entries\01_cash-purchases.sql
+		--:r .\06_Entries\01_cash-purchases.sql
 		;
 		
 

@@ -54,7 +54,7 @@ INSERT @LineTypes ([Id]) VALUES
 	(N'LeaseInReceiptWithoutInvoice'),		-- [supplier], [currency], lease starts, ppe, qty, {lease ends}, unit price, {total price}	
 	(N'LeaseInInvoiceWithoutReceipt'),		-- [supplier], [currency], [invoice], [machine], lease starts, ppe, qty, {lease ends}, unit price, {total price}, percent VAT, {VAT}, {line total}
 
-	-- Leaves, overtimes, and penalties must be posted during the payroll period [period starts] - [period ends] (= start + month - 1)
+	-- Leaves, overtimes, and penalties must be filed during the payroll period [period starts] - [period ends] (= start + month - 1)
 	(N'LaborOvertime'),						-- [employee], date/time starts, overtime hours, {overtime type lk}, {equiv. hours}
 	(N'LaborUnpaidAbsences'),				-- employee, date start, absence days, absence type lk, description
 	(N'LaborPenalty'),						-- employee, penalty, reason lk, description

@@ -40,15 +40,15 @@ SET NOCOUNT ON;
 	FROM @Documents
 	WHERE [DocumentDate] < (SELECT TOP 1 ArchiveDate FROM dbo.Settings) 
 	
-	-- (FE Check, DB IU trigger) Cannot save a document not in draft state
+	-- (FE Check, DB IU trigger) Cannot save a document not in ACTIVE state
 	-- TODO: if it is not allowed to change a line once (Requested), report error
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].DocumentState',
-		N'Error_CanOnlySaveADocumentInDraftState'
+		N'Error_CanOnlySaveADocumentInActiveState'
 	FROM @Documents FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
-	WHERE (BE.[State] <> N'Draft')
+	WHERE (BE.[State] <> N'Active')
 
 	-- TODO: For the cases below, add the condition that Ifrs Entry Classification is enforced
 

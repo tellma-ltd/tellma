@@ -48,5 +48,6 @@ AS
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
 	WHERE
-		D.[State] = N'Posted';
+		D.[State] = N'Posted'
+		AND L.[State] = N'Reviewed';
 GO;

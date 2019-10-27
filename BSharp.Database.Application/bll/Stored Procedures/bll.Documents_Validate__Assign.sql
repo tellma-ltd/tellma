@@ -5,7 +5,7 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	-- Cannot assign while in final state
+	-- Can only assign while in (Active) state
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -14,6 +14,6 @@ SET NOCOUNT ON;
 	FROM @Entities FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	JOIN [dbo].[DocumentDefinitions] DT ON BE.[DocumentDefinitionId] = DT.Id
-	WHERE (BE.[State] IN (N'Void', N'Posted'));
+	WHERE (BE.[State] <> N'Active');
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

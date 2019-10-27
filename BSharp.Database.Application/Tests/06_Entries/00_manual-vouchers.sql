@@ -77,7 +77,6 @@ BEGIN -- Inserting
 	(13,13,4,1,+1,@VATInput,		NULL,								2250,		N'C-25301',			N'BP188954', @Regus, 15000),
 	(14,14,4,1,+1,@PrepaidRental,	NULL,								15000,		N'C-25301',			NULL, NULL, NULL),
 	(15,15,4,1,-1,@RegusAccount,	NULL, 								17250,		N'C-25301',			NULL, NULL, NULL);
-
 	; 
 
 	EXEC [api].[Documents__Save]
@@ -91,22 +90,34 @@ BEGIN -- Inserting
 		GOTO Err_Label;
 	END;
 
-	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
-	INSERT INTO @DocsIndexedIds([Index], [Id])
+	DECLARE @DocLinesIndexedIds dbo.[IndexedIdList];
+	INSERT INTO @DocLinesIndexedIds([Index], [Id])
 	-- TODO: fill index using ROWNUMBER
-	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Draft';
+	SELECT [Id], [Id] FROM dbo.DocumentLines WHERE [State] = N'Draft';
 
 --	IF (1=0)
 	EXEC [api].[DocumentLines__Sign]
-		@DocsIndexedIds = @DocsIndexedIds,
-		@ToState = N'Posted',
+		@Ids = @DocLinesIndexedIds,
+		@ToState = N'Reviewed',
+		@AgentId = @UserId,
+		@RoleId = @Accountant, -- we allow selecting the role manually, 
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Documents Signing'
+		Print 'Document Lines Signing'
 		GOTO Err_Label;
 	END;
+
+	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
+	INSERT INTO @DocsIndexedIds([Index], [Id])
+	-- TODO: fill index using ROWNUMBER
+	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
+
+	EXEC [api].[Documents__File]
+		@DocsIndexedIds = @DocsIndexedIds,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
 	IF @DebugDocuments = 1
 	BEGIN
 			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents;
@@ -181,10 +192,10 @@ END
 
 --BEGIN -- signing
 --	DECLARE @DocsToSign [dbo].[IndexedIdList]
---	INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Draft';
+--	INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Active';
 
---	EXEC [api].[Documents__Sign]
---		@DocsIndexedIds = @DocsToSign, @ToState = N'Posted', @ReasonDetails = N'seems ok',
+--	EXEC [api].[DocumentLines__Sign]
+--		@DocsIndexedIds = @DocsToSign, @ToState = N'Reviewed', @ReasonDetails = N'seems ok',
 --		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 --	INSERT INTO @D13Ids([Id]) SELECT [Id] FROM dbo.Documents;

@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Assign]
 	@Documents [dbo].[IdList] READONLY,
 	@AssigneeId INT,
-	@Comment NVARCHAR(1024)
+	@Comment NVARCHAR(1024) = NULL
 AS
 BEGIN
 	IF @AssigneeId IS NULL

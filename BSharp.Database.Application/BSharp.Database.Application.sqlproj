@@ -447,8 +447,15 @@
     <None Include="Tests\00_Security\01_RolesPermissions.sql" />
     <None Include="Tests\00_Security\02_Workflows.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Post.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__File.sql" />
     <Build Include="api\Stored Procedures\api.DocumentLines__Unsign.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__File.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Activate.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Void.sql" />
+    <Build Include="bll\Stored Procedures\bll.DocumentLines__RelevantIndexIds.sql" />
+    <Build Include="dbo\Functions\dbo.fn_State__StateId.sql" />
+    <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
