@@ -1,14 +1,14 @@
 ﻿CREATE PROCEDURE [dbo].[api_DocumentLines__Unsign]
-	@Documents [dbo].[IndexedIdList] READONLY,
+	@IndexedIds [dbo].[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 	-- if all documents are already unsigned, return
 	IF NOT EXISTS(
 		SELECT * FROM [dbo].[DocumentLineSignatures]
-		WHERE [DocumentLineId] IN (SELECT [Id] FROM @Documents)
+		WHERE [DocumentLineId] IN (SELECT [Id] FROM @IndexedIds)
 		AND [RevokedById] IS NULL
 	)
 		RETURN;
@@ -16,14 +16,15 @@ SET NOCOUNT ON;
 	-- Validate, checking available signatures for transaction type
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[DocumentLines_Validate__Unsign]
-		@Entities = @Documents;;
+		@Ids = @IndexedIds;;
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dal].[DocumentLines__Unsign] @Documents = @Documents;
+	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
+	EXEC [dal].[DocumentLines__Unsign] @Ids = @Ids;
 	
-	-- get the documents whose state will change
+	-- get the documentlines whose state will change
 	DECLARE @TransitionedIds [dbo].[IdWithStateList];
 	/*
 	INSERT INTO @TransitionedIds([Id])

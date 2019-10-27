@@ -19,6 +19,7 @@ BEGIN
 			DL.[Id] As [LineId],
 			DL.[SortKey] AS [LineSortKey],
 			DL.[LineDefinitionId],
+			DL.[State] AS [LineState],
 			DLE.SortKey,
 			DLE.[Direction],
 			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryTypeId],
@@ -56,7 +57,8 @@ BEGIN
 		[EntryNumber] AS [E/N], 
 		[Account], [EntryTypeId],-- [Direction], 
 		FORMAT([Direction] * [Value], '##,#.00;-;-', 'en-us') AS Debit,
-		FORMAT(-[Direction] * [Value], '##,#.00;-;-', 'en-us') AS Credit
+		FORMAT(-[Direction] * [Value], '##,#.00;-;-', 'en-us') AS Credit,
+		[LineState]
 	FROM Docs
 	LEFT JOIN DocsFirst ON Docs.Id = DocsFirst.DocumentId
 	ORDER BY [DocumentSortKey], [LineSortKey];

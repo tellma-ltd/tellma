@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[DocumentLines_Validate__Unsign]
-	@Entities [dbo].[IndexedIdList] READONLY,
+	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -11,7 +11,7 @@ SET NOCOUNT ON;
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentIsIn0State',
 		BE.[State]
-	FROM @Entities FE
+	FROM @Ids FE
 	JOIN [dbo].[DocumentLines] DL ON FE.[Id] = DL.[Id]
 	JOIN [dbo].[Documents] BE ON DL.[DocumentId] = BE.[Id]
 	WHERE (BE.[State] <> N'Active');

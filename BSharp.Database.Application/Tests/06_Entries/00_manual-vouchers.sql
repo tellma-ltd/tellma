@@ -67,7 +67,7 @@ BEGIN -- Inserting
 	(6, 6, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),--
 	(7, 7, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, NULL),--
 	(8, 8, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),
-	(9, 9, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'PE441325', @Lifan, 600000),
+	(9, 9, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, 600000),
 	(10,10,2,1,-1,@ToyotaAccount,	NULL,								1380000,	NULL,				NULL, NULL, NULL),
 
 	(11,11,3,1,+1,@PPEVehicles,		N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',
@@ -97,10 +97,11 @@ BEGIN -- Inserting
 
 --	IF (1=0)
 	EXEC [api].[DocumentLines__Sign]
-		@Ids = @DocLinesIndexedIds,
+		@IndexedIds = @DocLinesIndexedIds,
 		@ToState = N'Reviewed',
 		@AgentId = @UserId,
-		@RoleId = @Accountant, -- we allow selecting the role manually, 
+		@RoleId = @Accountant, -- we allow selecting the role manually,
+		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @ValidationErrorsJson IS NOT NULL 
@@ -108,14 +109,14 @@ BEGIN -- Inserting
 		Print 'Document Lines Signing'
 		GOTO Err_Label;
 	END;
-
+	select * from DocumentLineSignatures;
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	-- TODO: fill index using ROWNUMBER
 	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
 
 	EXEC [api].[Documents__File]
-		@DocsIndexedIds = @DocsIndexedIds,
+		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @DebugDocuments = 1
@@ -140,8 +141,8 @@ BEGIN
 		A.[Name] As [Supplier], 
 		A.TaxIdentificationNumber As TIN, 
 		J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
-		SUM(J.[Value]) AS VAT,
-		SUM(J.[RelatedMonetaryAmount]) AS [Taxable Amount],
+		FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
+		FORMAT(SUM(J.[RelatedMonetaryAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date]
 	FROM [dbo].[fi_Journal]('2018.01.01','2019.01.01') J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id

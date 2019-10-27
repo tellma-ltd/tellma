@@ -1479,4 +1479,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Documents_Validate__File]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="19be1836-f673-4724-b9c0-996d50868ba5" ChangeDateTime="10/27/2019 11:53:22">
+    <Property Name="ElementName" Value="[bll].[ReadyDocumentLines]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[fi_ReadyDocumentLines]" />
+  </Operation>
 </Operations>

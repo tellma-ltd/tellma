@@ -456,6 +456,7 @@
     <Build Include="bll\Stored Procedures\bll.DocumentLines__RelevantIndexIds.sql" />
     <Build Include="dbo\Functions\dbo.fn_State__StateId.sql" />
     <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
+    <Build Include="bll\Functions\bll.fi_ReadyDocumentLines.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

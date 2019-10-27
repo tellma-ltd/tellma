@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[DocumentLines__Unsign]
-	@DocumentLines [dbo].[IdList] READONLY
+	@Ids [dbo].[IdList] READONLY
 AS
 BEGIN
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
@@ -9,7 +9,7 @@ BEGIN
 	DELETE FROM dbo.[DocumentLineSignatures]
 	WHERE [Id] IN (
 		SELECT Max(Id) FROM dbo.[DocumentLineSignatures]
-		WHERE DocumentLineId IN (SELECT [Id] FROM @DocumentLines)
+		WHERE DocumentLineId IN (SELECT [Id] FROM @Ids)
 	)
 	AND [AgentId] = @UserId;
 

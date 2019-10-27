@@ -1,12 +1,12 @@
 ﻿CREATE PROCEDURE [api].[Documents__Assign] 
-	@Documents [dbo].[IndexedIdList] READONLY,
+	@IndexedIds [dbo].[IndexedIdList] READONLY,
 	@AssigneeId INT,
 	@Comment NVARCHAR(1024),
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
 SET NOCOUNT ON;
-	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 
 	IF @AssigneeId IS NULL
 		RAISERROR(N'Assignee is required', 16, 1)
@@ -14,14 +14,14 @@ SET NOCOUNT ON;
 	-- if all documents are already assigned to the assignee, return
 	IF NOT EXISTS(
 		SELECT * FROM [dbo].[DocumentAssignments]
-		WHERE [DocumentId] IN (SELECT [Id] FROM @Documents)
+		WHERE [DocumentId] IN (SELECT [Id] FROM @IndexedIds)
 		AND AssigneeId <> @AssigneeId
 	)
 		RETURN;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Assign]
-		@Entities = @Documents;
+		@Ids = @IndexedIds;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -32,7 +32,8 @@ SET NOCOUNT ON;
 			
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
-
+		
+	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 	EXEC [dal].[Documents__Assign]
-		@Documents = @Documents, @AssigneeId = @AssigneeId, @Comment = @Comment;
+		@Ids = @Ids, @AssigneeId = @AssigneeId, @Comment = @Comment;
 END;

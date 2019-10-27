@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[DocumentLines_Validate__Sign]
-	@Entities dbo.[IndexedIdList] READONLY,
+	@Ids dbo.[IndexedIdList] READONLY,
 	@AgentId INT,
 	@RoleId INT,
 	@ToState NVARCHAR(30),
@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_DocumentLineCannotBeSignedOnBehalOfAgent0',
 			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
-		FROM @Entities 
+		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT DL.[Id] 
 			FROM dbo.DocumentLines DL
@@ -38,7 +38,7 @@ SET NOCOUNT ON;
 			N'Error_User0LacksPermissionToSignDocumentLineOnBehalOfAgent1',
 			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @UserId),
 			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
-		FROM @Entities 
+		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT DL.[Id] 
 			FROM dbo.DocumentLines DL
@@ -51,13 +51,24 @@ SET NOCOUNT ON;
 			)
 		);
 	END
+	-- verify that the line definition has a workflow transition from its current state to @ToState
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	SELECT
+		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
+		N'Error_NoDirectTransitionFromState0ToState1',
+		DL.[State],
+		@ToState
+	FROM @Ids FE
+	JOIN dbo.DocumentLines DL ON FE.[Id] = DL.[Id]
+	LEFT JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[LineDefinitionId] AND W.[FromState] = DL.[State]
+	WHERE W.ToState <> @ToState
 
 	-- cannot sign lines unless the document is active. Document can be active, posted/filed	,
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_DocumentLineDoesNotBelongToActiveDocument'
-	FROM @Entities FE
+	FROM @Ids FE
 	JOIN dbo.DocumentLines DL ON FE.[Id] = DL.[Id]
 	JOIN dbo.Documents D ON DL.[DocumentId] = D.[Id]
 	WHERE D.[State] <> 'Active'
@@ -68,7 +79,7 @@ SET NOCOUNT ON;
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheAccount0IsDeprecated',
 		A.[Name]
-	FROM @Entities FE
+	FROM @Ids FE
 	JOIN dbo.[DocumentLineEntries] DLE ON FE.[Id] = DLE.[DocumentLineId]
 	JOIN dbo.[Accounts] A ON A.[Id] = DLE.[AccountId]
 	WHERE (A.[IsDeprecated] = 1);
@@ -90,7 +101,7 @@ SET NOCOUNT ON;
 			SUM(DLE.[Direction] * DLE.[Volume]) AS [Volume], 
 			SUM(DLE.[Direction] * DLE.[Count]) AS [Count], 
 			SUM(DLE.[Direction] * DLE.[Area]) AS [Area]
-		FROM @Entities FE
+		FROM @Ids FE
 		JOIN dbo.[DocumentLineEntries] DLE ON FE.[Id] = DLE.[DocumentLineId]
 		WHERE DLE.AccountId IN (SELECT [Id] FROM AssetAccounts)
 		GROUP BY DLE.AccountId

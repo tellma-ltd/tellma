@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[DocumentLines__Sign]
-	@Ids dbo.[IndexedIdList] READONLY,
+	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ToState NVARCHAR(30),
 	@ReasonId INT = NULL,
 	@ReasonDetails	NVARCHAR(1024) = NULL,
@@ -32,6 +32,8 @@ BEGIN
 -- Accounts are affected by lines in state (Reviewed) where the document is (Posted)
 */
 SET NOCOUNT ON;
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
+
 	IF @RoleID NOT IN (SELECT RoleId FROM dbo.RoleMemberships WHERE AgentId = @AgentId)
 	BEGIN
 		
@@ -40,10 +42,9 @@ SET NOCOUNT ON;
 	END
 	
 	-- Validate that the agent is not violating any business logic attempting to move the relevant lines to State @ToState
-	DECLARE @ValidationErrors dbo.[ValidationErrorList];
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[DocumentLines_Validate__Sign]
-		@Entities = @Ids,
+		@Ids = @IndexedIds,
 		@AgentId = @AgentId,
 		@RoleId = @RoleId,
 		@ToState = @ToState;
@@ -58,12 +59,19 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
+	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 	EXEC [dal].[DocumentLines__Sign]
-		@Entities = @Ids,
+		@Ids = @Ids,
 		@ToState = @ToState,
 		@ReasonId = @ReasonId,
 		@ReasonDetails = @ReasonDetails,
 		@AgentId = @AgentId,
 		@RoleID = @RoleID,
 		@SignedAt = @SignedAt
+
+	-- Determine which of the selected Lines are reacdy for state change
+	DECLARE @ReadyIds dbo.IdList;
+	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_ReadyDocumentLines](@Ids, @ToState);
+
+	EXEC dal.DocumentLines_State__Update @Ids = @ReadyIds, @ToState = @ToState;
 END;

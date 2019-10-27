@@ -1,12 +1,12 @@
 ﻿CREATE PROCEDURE [api].[Documents__File]
-	@Ids dbo.[IndexedIdList] READONLY,
+	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 	SET NOCOUNT ON;
-	DECLARE @ValidationErrors dbo.[ValidationErrorList];
+	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__File]
-		@Ids = @Ids;
+		@Ids = @IndexedIds;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -18,12 +18,13 @@ AS
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
+	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 	EXEC [dal].[Documents_State__Update]
 		@Ids = @Ids,
 		@ToState = N'Filed'
 		;
 
 	EXEC [dal].[Documents__Assign]
-		@Documents = @Ids,
+		@Ids = @Ids,
 		@AssigneeId = NULL
 		;
