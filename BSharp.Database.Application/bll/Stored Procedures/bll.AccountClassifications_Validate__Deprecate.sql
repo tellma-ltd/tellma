@@ -25,7 +25,7 @@ SET NOCOUNT ON;
 		LEFT JOIN dbo.Agents AG ON AG.[Id] = A.[CustodianId]
 		LEFT JOIN dbo.Locations L ON L.[Id] = A.[LocationId]
 		LEFT JOIN dbo.Agents RC ON RC.[Id] = A.[ResponsibilityCenterId]
-		WHERE D.[State] = N'Posted'
+		WHERE D.[State] = N'Filed'
 		GROUP BY I.[Index], DLE.AccountId, R.[Name], AG.[Name], L.[Name], RC.[Name]
 		HAVING
 			SUM(DLE.[Direction] * DLE.[Value]) <> 0

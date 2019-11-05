@@ -1,18 +1,18 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Assign]
-	@Documents [dbo].[IdList] READONLY,
+	@Ids [dbo].[IdList] READONLY,
 	@AssigneeId INT,
-	@Comment NVARCHAR(1024)
+	@Comment NVARCHAR(1024) = NULL
 AS
 BEGIN
 	IF @AssigneeId IS NULL
 		DELETE FROM dbo.DocumentAssignments
-		WHERE DocumentId IN (SELECT [Id] FROM @Documents);
+		WHERE DocumentId IN (SELECT [Id] FROM @Ids);
 	ELSE BEGIN
 		MERGE INTO [dbo].[DocumentAssignments] AS t
 		USING (
 			SELECT
 				[Id]
-			FROM @Documents 
+			FROM @Ids 
 		) AS s ON (t.[DocumentId] = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
@@ -25,6 +25,6 @@ BEGIN
 		INSERT dbo.DocumentAssignmentsHistory([DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById])
 		SELECT [DocumentId], [AssigneeId], [Comment], [CreatedAt], [CreatedById]
 		FROM dbo.DocumentAssignments
-		WHERE DocumentId IN (SELECT [Id] FROM @Documents);
+		WHERE DocumentId IN (SELECT [Id] FROM @Ids);
 	END
 END;

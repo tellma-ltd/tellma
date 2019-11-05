@@ -10,25 +10,25 @@
 	-- If edit mode is flexible, edits are allowed after reaching the state, and all signatories before the edit are alerted
 
 	[DirectionIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[DirectionIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Posted',
+	[DirectionIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
 	[DirectionExpression]			NVARCHAR (255),
 	[DirectionEntryNumber]			NVARCHAR (255),
 	[Direction]						SMALLINT,
 
 	[AccountIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[AccountIsEditableTill]			NVARCHAR (255)	NOT NULL DEFAULT N'Posted',
+	[AccountIsEditableTill]			NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
 	[AccountIdIfrsFilter]			NVARCHAR (255),
 	[AccountIdExpression]			NVARCHAR (255),
 	[AccountIdEntryNumber]			INT,
 
 	[IfrsEntryClassificationIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[IfrsEntryClassificationIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Posted',
+	[IfrsEntryClassificationIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
 	[IfrsEntryClassificationIdExpression]			NVARCHAR (255),
 	[IfrsEntryClassificationIdEntryNumber]			INT,
 	[IfrsEntryClassificationId]					NVARCHAR (255),
 
 	[ResourceIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[ResourceIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Posted',
+	[ResourceIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
 	[ResourceIdExpression]			NVARCHAR (255),
 	[ResourceIdEntryNumber]			INT,
 	[ResourceId]					INT,

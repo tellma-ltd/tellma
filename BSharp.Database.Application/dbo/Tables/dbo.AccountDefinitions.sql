@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[AccountDefinitions] (
-	[Id]									NVARCHAR (50) PRIMARY KEY,
+	[Id]									NVARCHAR (50) CONSTRAINT [PK_AccountDefinitions] PRIMARY KEY,
 	[Description]							NVARCHAR (255),
 	[Description2]							NVARCHAR (255),
 	[Description3]							NVARCHAR (255),

@@ -18,6 +18,7 @@ RETURN (
 		[ResponsibilityCenterId],
 		[CustodianId],
 		[ResourceId],
+	--	[ResourceInstanceId],
 		[LocationId],
 		@DefinitionId AS [AccountDefinitionId],
 		CAST(0 AS BIT) AS [IsDeprecated],

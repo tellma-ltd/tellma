@@ -10,9 +10,11 @@ EXEC dal.Currencies__Save
 
 DECLARE @ActiveCurrencies StringList;
 INSERT INTO @ActiveCurrencies VALUES 
-(@FunctionalCurrency),
+(@FunctionalCurrencyId),
 (N'USD');
 
 EXEC dal.Currencies__Activate
 	@Ids = @ActiveCurrencies,
 	@IsActive = 1;
+
+EXEC master.sys.sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;

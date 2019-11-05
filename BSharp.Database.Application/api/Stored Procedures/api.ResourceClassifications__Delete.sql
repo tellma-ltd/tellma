@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [api].[ResourceClassifications__Delete]
-	@Ids [IndexedIdList] READONLY,
+	@IndexedIds [IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[ResourceClassifications_Validate__Delete]
-		@Ids = @Ids;
+		@Ids = @IndexedIds;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -20,6 +20,8 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
+	DECLARE @Ids dbo.IdList;
+	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 	EXEC [dal].[ResourceClassifications__Delete]
 		@Ids = @Ids;
 END;

@@ -54,7 +54,7 @@ INSERT @LineTypes ([Id]) VALUES
 	(N'LeaseInReceiptWithoutInvoice'),		-- [supplier], [currency], lease starts, ppe, qty, {lease ends}, unit price, {total price}	
 	(N'LeaseInInvoiceWithoutReceipt'),		-- [supplier], [currency], [invoice], [machine], lease starts, ppe, qty, {lease ends}, unit price, {total price}, percent VAT, {VAT}, {line total}
 
-	-- Leaves, overtimes, and penalties must be posted during the payroll period [period starts] - [period ends] (= start + month - 1)
+	-- Leaves, overtimes, and penalties must be filed during the payroll period [period starts] - [period ends] (= start + month - 1)
 	(N'LaborOvertime'),						-- [employee], date/time starts, overtime hours, {overtime type lk}, {equiv. hours}
 	(N'LaborUnpaidAbsences'),				-- employee, date start, absence days, absence type lk, description
 	(N'LaborPenalty'),						-- employee, penalty, reason lk, description
@@ -98,10 +98,6 @@ DECLARE @WideLineTypesSpecifications TABLE (
 	[ResourceIdEntryNumber1]		INT,
 	[ResourceId1]					INT,
 
-	[InstanceIdIsVisible1]			BIT				NOT NULL DEFAULT 0,
-	[InstanceIdExpression1]			NVARCHAR (255),
-	[InstanceIdEntryNumber1]		INT,
-	
 	[BatchCodeIsVisible1]			BIT				NOT NULL DEFAULT 0,
 	[BatchCodeExpression1]			NVARCHAR (255),
 	[BatchCodeEntryNumber1]			INT,
@@ -188,10 +184,6 @@ DECLARE @WideLineTypesSpecifications TABLE (
 	[ResourceIdExpression2]			NVARCHAR (255),
 	[ResourceIdEntryNumber2]		INT,
 	[ResourceId2]					INT,
-
-	[InstanceIdIsVisible2]			BIT				NOT NULL DEFAULT 0,
-	[InstanceIdExpression2]			NVARCHAR (255),
-	[InstanceIdEntryNumber2]		INT,
 	
 	[BatchCodeIsVisible2]			BIT				NOT NULL DEFAULT 0,
 	[BatchCodeExpression2]			NVARCHAR (255),
@@ -317,7 +309,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
-	[InstanceIdIsVisible1], [InstanceIdExpression1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
 	[CountIsVisible1], [CountExpression1], [Count1],
@@ -332,7 +323,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	1, N'Specified', -- IfrsNote
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'SpecifiedNew', -- Check details
-	0, N'!Instance.Amount', 1, -- Quantity
 	0, N'!Instance.Amount', 1, -- Money Quantity
 	0, N'Constant', 1, -- ONE Check
 	0, N'!Instance.Amount', 1, -- Value
@@ -555,7 +545,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	[AccountIdIsVisible2], [AccountIdExpression2], [AccountIdFilter2],
 	[IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationId2],
 	[ResourceIdIsVisible2], [ResourceIdExpression2], [ResourceId2],
-	[InstanceIdIsVisible2], [InstanceIdExpression2],
 	[QuantityIsVisible2], [QuantityExpression2], [QuantityEntryNumber2],
 	[MoneyAmountIsVisible2], [MoneyAmountExpression2], [MoneyAmountEntryNumber2],
 	[CountIsVisible2], [CountExpression2], [Count2],
@@ -580,7 +569,6 @@ VALUES (
 	1, N'Specified', N'CashOnHand', -- Source
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
-	1, N'SpecifiedExisting',
 	0, N'!Instance.Amount', 2,
 	0, N'!Instance.Amount', 2,
 	0, N'Constant', 1,
@@ -595,7 +583,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	[AccountIdIsVisible1], [AccountIdExpression1], [AccountIdFilter1],
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
-	[InstanceIdIsVisible1], [InstanceIdExpression1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
 	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
 	[CountIsVisible1], [CountExpression1], [Count1],
@@ -620,7 +607,6 @@ INSERT INTO @WideLineTypesSpecifications (
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'SpecifiedNew',
-	0, N'!Instance.Amount', 1, -- Quantity
 	0, N'!Instance.Amount', 1, -- Money Amount
 	0, N'Constant', 1, -- Count
 	0, N'!Instance.Amount', 1, -- Value

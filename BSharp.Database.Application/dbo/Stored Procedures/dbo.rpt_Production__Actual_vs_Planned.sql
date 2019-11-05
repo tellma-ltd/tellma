@@ -24,16 +24,16 @@ BEGIN
 	),
 	Actual([ResourceLookup1Id], [ResponsibleActorId], [Mass], [Count]) AS (
 		SELECT 
-			R.[ResourceLookup1Id], J.[ResponsibilityCenterId],
+			R.[Lookup1Id], J.[ResponsibilityCenterId],
 			SUM(J.Direction * J.[Mass]) AS [Mass],
 			SUM(J.Direction * J.[Count]) AS [Count]
 		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
-		WHERE J.[IfrsEntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
+		WHERE J.[EntryTypeId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		-- TODO: we need a way to separate finished goods from the rest
 		AND R.ResourceTypeId IN (SELECT [Id] FROM FinishedGoodsResourceTypes)
-		GROUP BY J.[ResponsibilityCenterId], R.ResourceLookup1Id
+		GROUP BY J.[ResponsibilityCenterId], R.[Lookup1Id]
 	),
 	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (
 		SELECT 

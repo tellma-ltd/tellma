@@ -8,8 +8,8 @@
 	[Name3]							NVARCHAR (255),
 	[Code]							NVARCHAR (255),
 	[PartyReference]				NVARCHAR (255),
-	[ResponsibilityCenterId]		INT, -- e.g., Ashenafi
-	[CustodianId]					INT, -- Alex
 	[ResourceId]					INT,
-	[LocationId]					INT	
+	[CustodianId]					INT, -- Alex
+	[LocationId]					INT,
+	[ResponsibilityCenterId]		INT -- e.g., Ashenafi
 );

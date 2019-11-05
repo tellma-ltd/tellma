@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fn_User__Language]( -- TODO: What is this?
+﻿CREATE FUNCTION [dbo].[fn_User__Language](
 	@Culture NVARCHAR (255),
 	@NeutralCulture NVARCHAR (255)
 )

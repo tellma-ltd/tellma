@@ -38,7 +38,7 @@ BEGIN -- Inserting
 
 	WITH GritwiLines AS (
 		SELECT
-			SortKey, LineId, [LineDefinitionId], EntryNumber, Account, IfrsEntryClassificationId, [Resource], Direction, Quantity, [Unit], [Value]
+			SortKey, LineId, [LineDefinitionId], EntryNumber, Account, [EntryTypeId], [Resource], Direction, Quantity, [Unit], [Value]
 		FROM rpt.Documents(@D41Ids)
 		WHERE [LineDefinitionId] = N'GoodReceiptInTransitWithInvoice'
 	)
@@ -50,12 +50,12 @@ BEGIN -- Inserting
 	) L2 ON L2.LineId = L1.LineId;
 
 	WITH CompactLines AS (
-		SELECT [AccountId], [IfrsEntryClassificationId], [ResourceId],
+		SELECT [AccountId], [EntryTypeId], [ResourceId],
 			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
 			SUM([Direction] * [Mass]) AS [Mass],
 			SUM([Direction] * [Value]) AS [Value]
 		FROM DocumentLineEntries
-		GROUP BY [AccountId], [IfrsEntryClassificationId], [ResourceId]
+		GROUP BY [AccountId], [EntryTypeId], [ResourceId]
 	)
 	SELECT A.[Name] AS [Account], IEC.Label AS [Note], R.[Name] AS [Resource],
 	-- TODO: add other unit types, and currency
@@ -67,7 +67,7 @@ BEGIN -- Inserting
 	JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
 	JOIN dbo.MeasurementUnits MUM ON R.MassUnitId = MUM.Id
 	JOIN dbo.[AccountClassifications] A ON CL.[AccountId] = A.[Id]
-	JOIN dbo.IfrsEntryClassifications IEC ON CL.IfrsEntryClassificationId = IEC.Id
+	JOIN dbo.EntryTypes IEC ON CL.[EntryTypeId] = IEC.Id
 	WHERE CL.[Quantity] <> 0 --OR CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
 	OR CL.[Value] <> 0;
 
@@ -118,10 +118,10 @@ END
 
 BEGIN -- signing
 	DECLARE @DocsToSign [dbo].[IndexedIdList]
-	INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Draft';
+	INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Active';
 
-	EXEC [api].[Documents__Sign]
-		@DocsIndexedIds = @DocsToSign, @ToState = N'Posted', @ReasonDetails = N'seems ok',
+	EXEC [api].[DocumentLines__Sign]
+		@DocsIndexedIds = @DocsToSign, @ToState = N'Reviewed', @ReasonDetails = N'seems ok',
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	INSERT INTO @D43Ids([Id]) SELECT [Id] FROM dbo.Documents;

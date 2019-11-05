@@ -15,7 +15,7 @@ INSERT INTO [dbo].[UserSettings]([UserId],[Key],[Value]) VALUES
 (1, N'User/select', N'Email,State,LastAccess,Agent'),
 (6, N'MeasurementUnit/select', N'Name,Code,UnitType,UnitAmount,BaseAmount,IsActive');
 
-INSERT INTO dbo.Settings( ShortCompanyName,ShortCompanyName2, ShortCompanyName3, PrimaryLanguageId, PrimaryLanguageSymbol, SecondaryLanguageId, SecondaryLanguageSymbol, TernaryLanguageId, TernaryLanguageSymbol, DefinitionsVersion,	SettingsVersion,	FunctionalCurrency,	CreatedById, ModifiedById)
+INSERT INTO dbo.Settings( ShortCompanyName,ShortCompanyName2, ShortCompanyName3, PrimaryLanguageId, PrimaryLanguageSymbol, SecondaryLanguageId, SecondaryLanguageSymbol, TernaryLanguageId, TernaryLanguageSymbol, DefinitionsVersion,	SettingsVersion,	[FunctionalCurrencyId],	CreatedById, ModifiedById)
 VALUES( N'ACME International', N'أكمي العالمية', N'ACME国际', N'en', N'English', N'ar', N'العربية', N'zh', N'中文', N'80207F1A-3D1E-4074-B280-0F6316FB94BD', N'6726AEBE-1FC2-4098-9F19-A7253BF39E23', N'ETB', 1,	1)
 
 /*
@@ -39,7 +39,7 @@ SELECT
   FROM [BSharp.101].[dbo].[Resources]
 */
 INSERT INTO [dbo].[Resources](
-[Id], [ResourceDefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], [Code], [CountUnitId], [MassUnitId],[VolumeUnitId], [LengthUnitId], [TimeUnitId], [CurrencyId], [Memo], [CustomsReference], [ResourceLookup1Id],[ResourceLookup2Id], [CreatedById], [ModifiedById]) VALUES
+[Id], [ResourceDefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], [Code], [CountUnitId], [MassUnitId],[VolumeUnitId], [LengthUnitId], [TimeUnitId], [MonetaryValueCurrencyId], [Description], [CustomsReference], [Lookup1Id],[Lookup2Id], [CreatedById], [ModifiedById]) VALUES
 (2, N'raw-materials', NULL, N'HR 1000mx0.8mm', NULL, NULL, N'HR 1000x0.8', NULL, 81, NULL, NULL, NULL, NULL, N'ETB', N'My default memo', NULL, 16, NULL, 1, 1),
 (3, N'raw-materials', NULL, N'HR 1000mx0.9mm', NULL, NULL, N'HR 1000x0.9', NULL, 81, 83, 86, 72, 72, N'USD', N'This is a memo', N'398254', 17, 27, 1, 1),
 (5, N'finished-goods', 4, N'Bucket - Blue', N'دلو أزرق', N'斗-蓝色', N'01', NULL, NULL, NULL, NULL, NULL, NULL, N'ETB', NULL, NULL, 3, NULL, 1, 1),

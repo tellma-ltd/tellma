@@ -8,10 +8,12 @@ AS
 		SUM([Direction] * [Count]) AS [Count],
 		SUM([Direction] * [Time]) AS [Time],
 		SUM([Direction] * [Value]) AS [Value]
-	FROM dbo.[DocumentLineEntries]
-	JOIN dbo.[Documents] D ON [DocumentLineId] = D.[Id]
+	FROM dbo.[DocumentLineEntries] DLE
+	JOIN dbo.[DocumentLines] DL ON DLE.[DocumentLineId] = DL.[Id]
+	JOIN dbo.[Documents] D ON DL.[DocumentId] = D.[Id]
 	JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
-	WHERE D.[State] = N'Posted'
+	WHERE D.[State] = N'Filed'
+	AND DL.[State] = N'Reviewed'
 	GROUP BY
 		[AccountId]
 	HAVING

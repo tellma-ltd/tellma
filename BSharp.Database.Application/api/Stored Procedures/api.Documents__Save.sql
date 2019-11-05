@@ -10,18 +10,18 @@ BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @FilledEntries [dbo].[DocumentLineEntryList]
 	
+	-- TODO: Introduce @FilledLines as well.
 	INSERT INTO @FilledEntries
 	EXEC bll.DocumentLineEntries__Fill
 		@Documents = @Documents,
 		@Lines = @Lines,
 		@Entries = @Entries;
 
-	--SELECT * FROM @FilledEntries;
-	--INSERT INTO @ValidationErrors
-	--EXEC [bll].[Documents_Validate__Save]
-	--	@Documents = @Documents,
-	--	@Lines = @Lines,
-	--	@Entries = @FilledEntries;
+	INSERT INTO @ValidationErrors
+	EXEC [bll].[Documents_Validate__Save]
+		@Documents = @Documents,
+		@Lines = @Lines,
+		@Entries = @FilledEntries;
 
 	SELECT @ValidationErrorsJson = 
 	(

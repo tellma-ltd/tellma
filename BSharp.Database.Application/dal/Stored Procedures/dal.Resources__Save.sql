@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [dal].[Resources__Save]
 	@DefinitionId NVARCHAR (255),
 	@Entities [dbo].[ResourceList] READONLY,
-	--@Picks [dbo].[ResourcePickList] READONLY,
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
@@ -23,28 +22,47 @@ SET NOCOUNT ON;
 				[Code], 
 				[ResourceTypeId], 
 				[ResourceClassificationId], 
-				--[UnitMonetaryValue], 
-				[CurrencyId], 
-				--[UnitMass], 
-				[MassUnitId], 
-				--[UnitVolume], 
-				[VolumeUnitId],
 				--[UnitArea], 
-				[AreaUnitId], 
+				[AreaUnitId],
+				[CountUnitId],
 				--[UnitLength], 
 				[LengthUnitId], 
+				--[UnitMass], 
+				[MassUnitId],
+				--[UnitMonetaryValue], 
+				[MonetaryValueCurrencyId],
 				--[UnitTime], 
 				[TimeUnitId], 
-				--[UnitCount], 
-				[CountUnitId],
-				--[SystemCode], 
-				[Memo], 
-				[CustomsReference], 
-				--[PreferredSupplierId],
-				[ResourceLookup1Id], 
-				[ResourceLookup2Id], 
-				[ResourceLookup3Id], 
-				[ResourceLookup4Id]
+				--[UnitVolume], 
+				[VolumeUnitId],
+				[Description],
+				[AttachmentsFolderURL],		-- Comment
+
+				[CustomsReference], -- how it is referred to by Customs
+				--[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
+
+				[AvailableSince],			-- Comment
+				[AvailableTill],			-- Comment
+				[GloballyUniqueReference],	-- Comment
+	
+				[AssetAccountId],			-- Comment
+				[LiabilityAccountId],		-- Comment
+				[EquityAccountId],			-- Comment
+				[RevenueAccountId],			-- Comment
+				[ExpensesAccountId],		-- Comment
+
+				[Agent1Id],					-- Comment
+				[Agent2Id],					-- Comment
+				[Date1]	,					-- Comment
+				[Date2],					-- Comment
+
+				[Lookup1Id],
+				[Lookup2Id],
+				[Lookup3Id],
+				[Lookup4Id],
+				[Lookup5Id],				-- Comment
+				[Text1],					-- Comment
+				[Text2]						-- Comment
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -57,7 +75,7 @@ SET NOCOUNT ON;
 				t.[ResourceTypeId]			= s.[ResourceTypeId],     
 				t.[ResourceClassificationId]= s.[ResourceClassificationId],     
 				--t.[UnitMonetaryValue]		= s.[UnitMonetaryValue],
-				t.[CurrencyId]				= s.[CurrencyId],
+				t.[MonetaryValueCurrencyId]				= s.[MonetaryValueCurrencyId],
 				--t.[UnitMass]				= s.[UnitMass],
 				t.[MassUnitId]				= s.[MassUnitId],
 				--t.[UnitVolume]				= s.[UnitVolume],
@@ -66,22 +84,20 @@ SET NOCOUNT ON;
 				t.[AreaUnitId]				= s.[AreaUnitId],
 				--t.[UnitTime]				= s.[UnitTime],
 				t.[TimeUnitId]				= s.[TimeUnitId],
-				--t.[UnitCount]				= s.[UnitCount],
 				t.[CountUnitId]				= s.[CountUnitId],
-				--t.[SystemCode]				= s.[SystemCode],
-				t.[Memo]					= s.[Memo],      
+				t.[Description]					= s.[Description],      
 				t.[CustomsReference]		= s.[CustomsReference],
 				--t.[PreferredSupplierId]		= s.[PreferredSupplierId],
-				t.[ResourceLookup1Id]		= s.[ResourceLookup1Id],
-				t.[ResourceLookup2Id]		= s.[ResourceLookup2Id],
-				t.[ResourceLookup3Id]		= s.[ResourceLookup3Id],
-				t.[ResourceLookup4Id]		= s.[ResourceLookup4Id],
+				t.[Lookup1Id]				= s.[Lookup1Id],
+				t.[Lookup2Id]				= s.[Lookup2Id],
+				t.[Lookup3Id]				= s.[Lookup3Id],
+				t.[Lookup4Id]				= s.[Lookup4Id],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([ResourceDefinitionId], [Name], [Name2], [Name3], [Code], [ResourceTypeId],  [ResourceClassificationId], 
 				--[UnitMonetaryValue], 
-				[CurrencyId], 
+				[MonetaryValueCurrencyId], 
 				--[UnitMass], 
 				[MassUnitId], 
 				--[UnitVolume], 
@@ -92,16 +108,16 @@ SET NOCOUNT ON;
 				[LengthUnitId],
 				--[UnitTime],
 				[TimeUnitId],
-				--[UnitCount],
 				[CountUnitId],
-				--[SystemCode], 
-				[Memo], 
+				[Description], 
 				[CustomsReference] ,
 				--[PreferredSupplierId],
-				[ResourceLookup1Id], [ResourceLookup2Id], [ResourceLookup3Id], [ResourceLookup4Id])
+				[Lookup1Id], [Lookup2Id], [Lookup3Id], [Lookup4Id],
+				[AvailableSince], [Text1]
+				)
 			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[ResourceTypeId], s.[ResourceClassificationId],
 				--s.[UnitMonetaryValue],
-				s.[CurrencyId],
+				s.[MonetaryValueCurrencyId],
 				--s.[UnitMass],
 				s.[MassUnitId],
 				--s.[UnitVolume],
@@ -112,45 +128,15 @@ SET NOCOUNT ON;
 				s.[LengthUnitId],
 				--s.[UnitTime],
 				s.[TimeUnitId],
-				--s.[UnitCount],
 				s.[CountUnitId],
-				--s.[SystemCode],
-				s.[Memo],
+				s.[Description],
 				s.[CustomsReference],
 				--s.[PreferredSupplierId],
-				s.[ResourceLookup1Id], s.[ResourceLookup2Id], s.[ResourceLookup3Id], s.[ResourceLookup4Id])
+				s.[Lookup1Id], s.[Lookup2Id], s.[Lookup3Id], s.[Lookup4Id],
+				s.[AvailableSince], s.[Text1]
+				)
 			OUTPUT s.[Index], inserted.[Id]
-	) AS x
-	OPTION (RECOMPILE);
-
-	--WITH BE AS (
-	--	SELECT * FROM dbo.[ResourcePicks]
-	--	WHERE ResourceId IN (SELECT [Id] FROM @IndexedIds)
-	--)
-	--MERGE INTO BE AS t
-	--USING (
-	--	SELECT RI.[Id], II.[Id] As ResourceId, RI.[Code], RI.[ProductionDate],
-	--			[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count]
-	--	FROM @Picks RI
-	--	JOIN @IndexedIds II ON RI.[ResourceIndex] = II.[Index]
-	--) AS s
-	--ON (s.[Id] = t.[Id])
-	--WHEN MATCHED THEN
-	--	UPDATE SET
-	--		t.[Code]			= s.[Code],
-	--		t.[ProductionDate]	= s.[ProductionDate],
-	--		t.[MonetaryValue]	= s.[MonetaryValue],
-	--		t.[Mass]			= s.[Mass],
-	--		t.[Volume]			= s.[Volume],
-	--		t.[Area]			= s.[Area],
-	--		t.[Length]			= s.[Length],
-	--		t.[Time]			= s.[Time],
-	--		t.[Count]			= s.[Count]
-	--WHEN NOT MATCHED THEN
-	--	INSERT ([ResourceId], [ProductionDate], [Code], [MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count])
-	--	VALUES(s.[ResourceId], s.[ProductionDate], s.[Code], s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count])
-	--WHEN NOT MATCHED BY SOURCE THEN
-	--	DELETE;
+	) AS x;
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

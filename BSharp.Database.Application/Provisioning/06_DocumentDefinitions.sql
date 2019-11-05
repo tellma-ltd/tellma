@@ -27,7 +27,6 @@ WHEN NOT MATCHED BY TARGET THEN
 DECLARE @DocumentDefinitions TABLE (
 	[Id]						NVARCHAR (50)	PRIMARY KEY,
 	[IsSourceDocument]			BIT				DEFAULT (1), -- <=> IsVoucherReferenceRequired
-	--[FinalState]				NVARCHAR(30)	DEFAULT N'Posted',
 	[TitleSingular]					NVARCHAR (255),
 	[TitleSingular2]				NVARCHAR (255),
 	[TitleSingular3]				NVARCHAR (255),

@@ -12,10 +12,10 @@ SELECT * FROM @Entries;
 
 UPDATE E
 SET
-	E.IfrsEntryClassificationId = 
+	E.[EntryTypeId] = 
 		CASE
 			WHEN AD.[EntryTypeId] IS NOT NULL THEN AD.[EntryTypeId]
-			ELSE E.IfrsEntryClassificationId
+			ELSE E.[EntryTypeId]
 		END
 FROM @FilledEntries E
 JOIN dbo.[Accounts] A ON E.AccountId = A.Id
@@ -31,8 +31,8 @@ JOIN dbo.Resources R ON A.ResourceId = R.Id
 JOIN @Lines L ON E.DocumentLineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
 WHERE
-	R.CurrencyId IS NOT NULL
-	AND R.CurrencyId = @FunctionalCurrencyId
+	R.[MonetaryValueCurrencyId] IS NOT NULL
+	AND R.[MonetaryValueCurrencyId] = @FunctionalCurrencyId
 	AND (E.[Value] <> E.[MonetaryValue]);
 
 -- for financial amounts in 

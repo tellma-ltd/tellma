@@ -7,7 +7,9 @@
 	[TitlePlural]						NVARCHAR (255),
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
-	[ResourceTypeId]					NVARCHAR (255)			CONSTRAINT [FK_ResourceDefinitions__ResourceTypeId] FOREIGN KEY ([ResourceTypeId]) REFERENCES dbo.ResourceTypes([Id]),
+	-- If null, no restriction. Otherwise, it restricts the types to those stemming from one of the nodes in the parent list
+	-- TODO: This design is not normalized. To normalize, move it to a separate table ResourceDefinitionResourceTypes([ResourceDefinitionId], [ResourceTypeParentId])
+	[ResourceTypeParentList]			NVARCHAR (1024), --			CONSTRAINT [FK_ResourceDefinitions__ResourceTypeId] FOREIGN KEY ([ResourceTypeList]) REFERENCES dbo.ResourceTypes([Id]),
 	-- One method to auto generate codes/names
 	[CodeRegEx]							NVARCHAR (255), -- Null means manually defined
 	[NameRegEx]							NVARCHAR (255), -- Null means manually defined
@@ -34,7 +36,7 @@
 	[Lookup4Visibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([Lookup4Visibility] IN (N'None', N'Required', N'Optional')),
 	[Lookup4DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup4DefinitionId] FOREIGN KEY (Lookup4DefinitionId) REFERENCES dbo.LookupDefinitions([Id]),
 	[Lookup4Label]						NVARCHAR (50),
-	-- Resource Pick property
+
 	[ProductionDateVisibility]			NVARCHAR (50) DEFAULT N'None' CHECK ([ProductionDateVisibility] IN (N'None', N'Required', N'Optional')),
 	[ProductionDateLabel]				NVARCHAR (50),
 	[ProductionDateLabel2]				NVARCHAR (50),
@@ -43,7 +45,7 @@
 	[ExpiryDateLabel]					NVARCHAR (50),
 	[ExpiryDateLabel2]					NVARCHAR (50),
 	[ExpiryDateLabel3]					NVARCHAR (50),
-	-- more properties from Resource Picks to come..
+	-- more properties from Resource Instances to come..
 
 	[State]							NVARCHAR (50)				DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
 	[MainMenuIcon]					NVARCHAR (50),

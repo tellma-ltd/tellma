@@ -9,7 +9,7 @@ Missing
 */
 BEGIN -- Cleanup & Declarations
 	DECLARE @R9 [dbo].ResourceList, @R10 [dbo].ResourceList;
-	DECLARE @RP9 [dbo].ResourcePickList, @RP10 [dbo].ResourcePickList;
+	DECLARE @RP9 [dbo].ResourceInstanceList, @RP10 [dbo].ResourceInstanceList;
 	DECLARE @R1Ids dbo.[IdList], @R2Ids dbo.[IdList], @R3Ids dbo.[idList];
 	DECLARE @R1IndexedIds dbo.IndexedIdList, @R2IndexedIds dbo.IndexedIdList, @R3IndexedIds dbo.IndexedIdList;
 
@@ -39,7 +39,7 @@ BEGIN -- Inserting
 		RIGHT JOIN dbo.ResourceDefinitions RD ON RC.ResourceDefinitionId = RD.Id
 		ORDER BY RD.[SortKey], [ResourceDefinitionId], [Node];
 		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
-		EXEC rpt.[sp_ResourcesPicks] @R2Ids;
+		EXEC rpt.[sp_Resources] @R2Ids;
 	END
 
 		--(N'general-resources',				N'General items',				N'General item',	NULL),
@@ -67,7 +67,7 @@ BEGIN -- Inserting
 
 --	EXEC [api].[Resources__Save]
 --		@Resources = @R1,
---		@Picks = @RP1,
+--		@Instances = @RP1,
 --		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 --	IF @ValidationErrorsJson IS NOT NULL 
@@ -79,7 +79,7 @@ BEGIN -- Inserting
 --	BEGIN
 --		--SELECT * FROM dbo.Resources;
 --		INSERT INTO @R1Ids SELECT [Id] FROM dbo.Resources;
---		EXEC rpt.[sp_ResourcesPicks] @R1Ids;
+--		EXEC rpt.[sp_ResourcesInstances] @R1Ids;
 --	END
 END
 
@@ -95,7 +95,7 @@ END
 --	WHERE [Name] IN (N'Toyota Camry 2018')
 --	INSERT INTO @RP2 ( [ResourceIndex], [Id], [ResourceId],	[Code], [ProductionDate])
 --	SELECT				R2.[Index], RI.[Id], RI.[ResourceId],  RI.[Code], RI.[ProductionDate]
---	FROM [dbo].[ResourcePicks] RI
+--	FROM [dbo].[ResourceInstances] RI
 --	JOIN @R2 R2 ON RI.ResourceId = R2.[Id]
 --	WHERE ResourceId IN (SELECT [Id] FROM @R2);
 
@@ -107,7 +107,7 @@ END
 
 --	EXEC [api].[Resources__Save]
 --		@Resources = @R2,
---		@Picks = @RP2,
+--		@Instances = @RP2,
 --		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 --	IF @ValidationErrorsJson IS NOT NULL 
@@ -120,7 +120,7 @@ END
 --		--SELECT * FROM @R2;
 --		--SELECT * FROM @RP2;
 --		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
---		EXEC rpt.[sp_ResourcesPicks] @R2Ids;
+--		EXEC rpt.[sp_ResourcesInstances] @R2Ids;
 --	END
 --END
 
@@ -149,7 +149,7 @@ END
 --	IF @DebugResources = 1
 --	BEGIN
 --		INSERT INTO @R3Ids SELECT [Id] FROM dbo.Resources;
---		EXEC rpt.[sp_ResourcesPicks] @R3Ids;
+--		EXEC rpt.[sp_ResourcesInstances] @R3Ids;
 --	END
 --END 
 
@@ -164,8 +164,8 @@ SELECT
 	@ETB = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'ETB'), 
 	@USD = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'USD'),
 	@Camry2018 = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Toyota Camry 2018'),
-	--@Car1 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'101'),
-	--@Car2 = (SELECT [Id] FROM [dbo].[ResourcePicks] WHERE [Code] = N'102'),
+	--@Car1 = (SELECT [Id] FROM [dbo].[ResourceInstances] WHERE [Code] = N'101'),
+	--@Car2 = (SELECT [Id] FROM [dbo].[ResourceInstances] WHERE [Code] = N'102'),
 	--@Car1Svc = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'101D'),
 	--@GOff = (SELECT [Id] FROM [dbo].[Resources] WHERE [Code] = N'Goff'),
 	@Cotton = (SELECT [Id] FROM [dbo].[Resources] WHERE [Name] = N'Cotton'),

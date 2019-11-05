@@ -1,7 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Resources_Validate__Save]
 	@DefinitionId NVARCHAR (255),
 	@Entities [dbo].[ResourceList] READONLY,
-	--@Picks [dbo].[ResourcePickList] READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -30,7 +29,7 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.Code = BE.Code
+	JOIN [dbo].[Resources] BE ON FE.Code = BE.Code AND BE.ResourceDefinitionId = @DefinitionId
 	WHERE (FE.Id <> BE.Id);
 
 	-- Code must not be duplicated in the uploaded list
@@ -55,7 +54,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name] = BE.[Name]
+	JOIN [dbo].[Resources] BE ON FE.[Name] = BE.[Name] AND BE.ResourceDefinitionId = @DefinitionId
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name2 must not exist in the db
@@ -65,7 +64,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name2] = BE.[Name2]
+	JOIN [dbo].[Resources] BE ON FE.[Name2] = BE.[Name2] AND BE.ResourceDefinitionId = @DefinitionId
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name3 must not exist in the db
@@ -75,7 +74,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name3] = BE.[Name3]
+	JOIN [dbo].[Resources] BE ON FE.[Name3] = BE.[Name3] AND BE.ResourceDefinitionId = @DefinitionId
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name must be unique in the uploaded list

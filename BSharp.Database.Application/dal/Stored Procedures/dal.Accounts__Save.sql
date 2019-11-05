@@ -23,10 +23,10 @@ SET NOCOUNT ON;
 				[Name3], 
 				[Code], 
 				[PartyReference],
-				[ResponsibilityCenterId],
-				[CustodianId],
 				[ResourceId],
-				[LocationId]
+				[CustodianId],
+				[LocationId],
+				[ResponsibilityCenterId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -39,10 +39,10 @@ SET NOCOUNT ON;
 				t.[Name3]					= s.[Name3],
 				t.[Code]					= s.[Code],
 				t.[PartyReference]			= s.[PartyReference],
-				t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
-				t.[CustodianId]				= s.[CustodianId],
 				t.[ResourceId]				= s.[ResourceId],
+				t.[CustodianId]				= s.[CustodianId],
 				t.[LocationId]				= s.[LocationId],      
+				t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
@@ -52,20 +52,20 @@ SET NOCOUNT ON;
 				[Name], [Name2], [Name3], 
 				[Code], 
 				[PartyReference],
-				[ResponsibilityCenterId],
-				[CustodianId],
 				[ResourceId],
-				[LocationId])
+				[CustodianId],
+				[LocationId],
+				[ResponsibilityCenterId])
 			VALUES (@DefinitionId,
 				s.[AccountTypeId],
 				s.[AccountClassificationId], 
 				s.[Name], s.[Name2], s.[Name3], 
 				s.[Code], 
 				s.[PartyReference],
-				s.[ResponsibilityCenterId],
-				s.[CustodianId],
 				s.[ResourceId],
-				s.[LocationId])
+				s.[CustodianId],
+				s.[LocationId],
+				s.[ResponsibilityCenterId])
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 

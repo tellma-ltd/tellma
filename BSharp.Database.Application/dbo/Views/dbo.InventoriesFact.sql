@@ -25,17 +25,17 @@ WITH IfrsInventoryAccounts AS (
 		J.[Area],
 		J.[Length],
 		J.[Count],
-		J.[IfrsEntryClassificationId],
+		J.[EntryTypeId],
 		J.[VoucherNumericReference],
 		J.[Memo],
 		J.[RelatedResourceId],
 		J.[RelatedAgentId],
 		J.[RelatedMonetaryAmount],
 		R.[ResourceDefinitionId],
-		R.[ResourceLookup1Id],
-		R.[ResourceLookup2Id],
-		R.[ResourceLookup3Id],
-		R.[ResourceLookup4Id]
+		R.[Lookup1Id],
+		R.[Lookup2Id],
+		R.[Lookup3Id],
+		R.[Lookup4Id]
 	FROM dbo.[fi_NormalizedJournal](NULL, NULL, @MassUnitId, @CountUnitId) J
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id

@@ -19,8 +19,7 @@ AS
 		L.[LineDefinitionId],
 		E.[Direction],
 		E.[AccountId],
-		E.[IfrsEntryClassificationId],
-		E.[ResourcePickId],
+		E.[EntryTypeId],
 		E.[BatchCode],
 		E.[DueDate],
 		E.[MonetaryValue], -- normalization is already done in the Value and stored in the entry
@@ -49,5 +48,6 @@ AS
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
 	WHERE
-		D.[State] = N'Posted';
+		D.[State] = N'Filed'
+		AND L.[State] = N'Reviewed';
 GO;
