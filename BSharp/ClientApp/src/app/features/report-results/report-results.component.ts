@@ -1461,16 +1461,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       if (!!screenUrl) {
         const tenantId = this.workspace.ws.tenantId;
         const screenUrlSegments = screenUrl.split('/');
-
-        // // Prepare the filter
-        // const filter = this.state.filter;
-        // const params: Params = {
-        //   inactive: true
-        // };
-
-        // if (!!filter) {
-        //   params.filter = filter;
-        // }
+        
+        // Should we add the master parameters here?
 
         this.router.navigate(['app', tenantId + '', ...screenUrlSegments, id]);
       } else {
