@@ -47,13 +47,16 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, def
         _cache = {};
     }
 
-    definitionId = definitionId || '_'; // undefined
-    if (!_cache[definitionId]) {
+    const key = definitionId || '_'; // undefined
+    if (!_cache[key]) {
         const entityDesc: EntityDescriptor = {
+            collection: 'Account',
+            definitionId,
             titleSingular: ws.getMultilingualValueImmediate(ws.definitions.Accounts[definitionId], 'TitleSingular') || '???',
             titlePlural: ws.getMultilingualValueImmediate(ws.definitions.Accounts[definitionId], 'TitlePlural') || '???',
             select: _select,
             apiEndpoint: 'accounts/' + (definitionId || ''),
+            screenUrl: !!definitionId ? 'accounts/' + definitionId : null,
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             definitionFunc: (e: Account) => e.AccountDefinitionId,
@@ -136,8 +139,8 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, def
             }
         }
 
-        _cache[definitionId] = entityDesc;
+        _cache[key] = entityDesc;
     }
 
-    return _cache[definitionId];
+    return _cache[key];
 }

@@ -38,14 +38,16 @@ export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateServ
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     _cache = {
+      collection: 'MeasurementUnit',
       titleSingular: trx.instant('MeasurementUnit'),
       titlePlural:  trx.instant('MeasurementUnits'),
       select: _select,
       apiEndpoint: 'measurement-units',
+      screenUrl: 'measurement-units',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
-        Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
         Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
         Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
@@ -56,7 +58,7 @@ export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateServ
         UnitType: {
           control: 'choice',
           label: trx.instant('MU_UnitType'),
-          choices: ['Pure', 'Time', 'Distance', 'Count', 'Mass', 'Volume', 'MonetaryValue'],
+          choices: ['Pure', 'Time', 'Distance', 'Count', 'Mass', 'Volume'],
           format: (c: string) => {
             switch (c) {
               case 'Pure': return trx.instant('MU_Pure');
@@ -65,7 +67,6 @@ export function metadata_MeasurementUnit(ws: TenantWorkspace, trx: TranslateServ
               case 'Count': return trx.instant('MU_Count');
               case 'Mass': return trx.instant('MU_Mass');
               case 'Volume': return trx.instant('MU_Volume');
-              case 'MonetaryValue': return trx.instant('MU_MonetaryValue');
               default: return c;
             }
           }

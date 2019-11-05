@@ -35,10 +35,12 @@ export function metadata_Currency(ws: TenantWorkspace, trx: TranslateService, _:
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     _cache = {
+      collection: 'Currency',
       titleSingular: trx.instant('Currency'),
       titlePlural:  trx.instant('Currencies'),
       select: _select,
       apiEndpoint: 'currencies',
+      screenUrl: 'currencies',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {

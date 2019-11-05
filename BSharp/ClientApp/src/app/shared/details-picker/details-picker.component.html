@@ -5,11 +5,11 @@
     <input class="form-control b-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
       ngbDropdownAnchor autocomplete="off" />
     &nbsp;
-    <button class="btn btn-light btn-sm text-primary b-white-button p-0 pl-1 pr-1" *ngIf="showEditSelected" type="button" [style.margin-left]="editSelectedLeftMargin"  [style.margin-right]="editSelectedRightMargin"
+    <button class="btn btn-light btn-sm text-primary b-white-button p-0 px-1" *ngIf="showEditSelected" type="button" [style.margin-left]="editSelectedLeftMargin"  [style.margin-right]="editSelectedRightMargin"
       title="{{ 'Edit' | translate }}" (click)="onEditFromFocus()" [disabled]="isDisabled || disableEditSelected">
       <fa-icon icon="external-link-alt"></fa-icon>
     </button>
-    <button class="btn btn-light btn-sm text-primary b-white-button p-0 pl-1 pr-1" *ngIf="showMagnifier" type="button"
+    <button class="btn btn-light btn-sm text-primary b-white-button p-0 px-1" style="width:22.6px" *ngIf="showMagnifier" type="button"
       title="{{ 'Search' | translate }}" (click)="openSearchModal()" [disabled]="isDisabled">
       <fa-icon icon="search"></fa-icon>
     </button>

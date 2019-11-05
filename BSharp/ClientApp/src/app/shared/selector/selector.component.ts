@@ -18,7 +18,7 @@ export class SelectorComponent implements ControlValueAccessor {
   w100 = true;
 
   ///////////////// Implementation of ControlValueAccessor
-  @ViewChild('selector', { static : true })
+  @ViewChild('selector', { static: true })
   selector: ElementRef;
 
   public isDisabled = false;
@@ -27,7 +27,6 @@ export class SelectorComponent implements ControlValueAccessor {
   public onValidatorChange: () => void = () => { };
 
   writeValue(v: any): void {
-
     if (this.selector.nativeElement.value !== v) {
       this.selector.nativeElement.value = v; // Format
     }

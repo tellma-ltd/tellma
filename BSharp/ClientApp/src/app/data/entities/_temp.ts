@@ -113,10 +113,12 @@ export function metadata_VoucherBooklet(ws: TenantWorkspace, trx: TranslateServi
     _voucherBookletLang = trx.currentLang;
     _voucherBookletSettings = ws.settings;
     _voucherBookletCache = {
+      collection: 'VoucherBooklet',
       titleSingular: 'Voucher Type',
       titlePlural: 'Voucher Types',
       select: ['VoucherTypeId'],
       apiEndpoint: 'voucher-booklets',
+      screenUrl: 'voucher-booklets',
       orderby: ['VoucherTypeId'],
       format: (item: VoucherBookletForSave) => item.VoucherTypeId,
       properties: {
@@ -151,10 +153,12 @@ export function metadata_ResourcePick(ws: TenantWorkspace, trx: TranslateService
     _resourcePickLang = trx.currentLang;
     _resourcePickSettings = ws.settings;
     _resourcePickCache = {
+      collection: 'ResourcePick',
       titleSingular: 'Resource Pick',
       titlePlural: 'Resource Picks',
       select: ['Code'],
       apiEndpoint: 'resource-picks',
+      screenUrl: 'resource-picks',
       orderby: ['Code'],
       format: (item: ResourcePick) => item.Code,
       properties: {
@@ -195,16 +199,18 @@ let _responsibilityCenterLang: string;
 let _responsibilityCenterSettings: SettingsForClient;
 let _responsibilityCenterCache: EntityDescriptor;
 
-export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (trx.currentLang !== _responsibilityCenterLang || ws.settings !== _responsibilityCenterSettings) {
     _responsibilityCenterLang = trx.currentLang;
     _responsibilityCenterSettings = ws.settings;
     _responsibilityCenterCache = {
+      collection: 'ResponsibilityCenter',
       titleSingular: 'Responsibility Center',
       titlePlural: 'Responsibility Centers',
       select: _select,
       apiEndpoint: 'responsibility-centers',
+      screenUrl: 'responsibility-centers',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
@@ -231,13 +237,15 @@ export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: Translat
 }
 
 const _label = ['', '2', '3'].map(pf => 'Label' + pf);
-export function metadata_IfrsAccountClassification(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_IfrsAccountClassification(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   return {
+    collection: 'IfrsAccountClassification',
     titleSingular: 'IFRS Account Classification',
     titlePlural: 'IFRS Account Classifications',
     select: _label,
     apiEndpoint: 'ifrs-account-classifications',
+    screenUrl: 'ifrs-account-classifications',
     orderby: ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
     format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),
     properties: {
@@ -275,13 +283,15 @@ export function metadata_IfrsAccountClassification(ws: TenantWorkspace, trx: Tra
   };
 }
 
-export function metadata_IfrsEntryClassification(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_IfrsEntryClassification(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   return {
+    collection: 'IfrsEntryClassification',
     titleSingular: 'IFRS Entry Classification',
     titlePlural: 'IFRS Entry Classification',
     select: _label,
     apiEndpoint: 'ifrs-entry-classifications',
+    screenUrl: 'ifrs-entry-classifications',
     orderby: ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
     format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),
     properties: {

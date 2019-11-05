@@ -59,7 +59,7 @@ namespace BSharp.Data.Queries
         /// </summary>
         public AggregateQuery<T> Select(AggregateSelectExpression selects)
         {
-            var clone = this.Clone();
+            var clone = Clone();
             clone._select = selects;
             return clone;
         }
@@ -78,6 +78,7 @@ namespace BSharp.Data.Queries
             var clone = Clone();
             if (condition != null)
             {
+                clone._filterConditions = clone._filterConditions ?? new List<FilterExpression>();
                 clone._filterConditions.Add(condition);
             }
 

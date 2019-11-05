@@ -10,7 +10,7 @@ import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finaliz
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse, EntitiesResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_format } from '~/app/data/dto/template-arguments';
-import { addToWorkspace, downloadBlob } from '~/app/data/util';
+import { addToWorkspace, downloadBlob, isSpecified } from '~/app/data/util';
 import {
   MasterDetailsStore,
   MasterStatus,
@@ -216,7 +216,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     // use the default
     this.searchView = (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
-    let hasChanged = false;
 
     // default display mode
     let displayMode: MasterDisplayMode = this.enableTreeView ?
@@ -226,6 +225,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // taking a snapshot is enough as this is only required first time the screen loads
     // subsequent changes (while the component is alive) are set in the state before the url
     // is updated, to handle popup mode (where the URL params are not used)
+    let hasChanged = false;
     const params = this.route.snapshot.paramMap;
     if (this.isPopupMode) {
 
@@ -290,6 +290,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         this.state.skip = urlSkip;
         hasChanged = true;
       }
+
+      const urlInactive = params.get('inactive') === 'true';
+      if (urlInactive !== !!this.state.inactive) {
+        this.state.inactive = urlInactive;
+        hasChanged = true;
+      }
     }
 
     // // level (This is not part of the screen URL)
@@ -328,11 +334,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // manually here if this is not the first time these properties are set
     // to simulate a screen closing and opening again
     const screenDefProperties = [changes.collection, changes.definition];
-
-    const anyChanges = screenDefProperties.some(prop => !!prop);
-    const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
-
-    if (anyChanges && notFirstChange) {
+    const screenDefChanges = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+    if (screenDefChanges) {
 
       this.ngOnDestroy();
       this.ngOnInit();
@@ -568,6 +571,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       if (!!s.customFilter) {
         params.filter = s.customFilter;
+      }
+
+      if (isSpecified(s.inactive)) {
+        params.inactive = s.inactive;
       }
 
       this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
@@ -837,7 +844,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       // If the data is loaded, just count the data
       return Math.max(s.skip + s.masterIds.length, 0);
     } else {
-      // Otherwise dispaly the selected count while the data is loading
+      // Otherwise display the selected count while the data is loading
       return Math.min(s.skip + s.top, this.total);
     }
   }

@@ -258,7 +258,7 @@
   </div>
 
   <!-- The search results -->
-  <div class="row b-rest-of-screen bg-light">
+  <div class="row b-rest-of-screen">
     <div class="w-100">
 
       <!-- Tiles -->
@@ -303,7 +303,7 @@
 
       <!-- Table -->
       <div class="w-100 table-responsive" *ngIf="showTableView">
-        <table class="table table-hover table-sm bg-white border-bottom b-master-table text-nowrap"
+        <table class="table table-hover table-sm bg-white border-bottom b-master-table text-nowrap shadow-sm2"
           [class.table-striped]="isFlatMode">
           <thead>
             <tr [class.dropup]="desc" cdkDropList cdkDropListOrientation="horizontal"
@@ -372,7 +372,7 @@
                 </b-auto-label>
               </th>
 
-              <!-- Cog -->
+              <!-- Pen -->
               <th>
                 <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
                   title="{{ editingColumns ? 'Done' : 'EditColumns' | translate }}"
@@ -454,48 +454,48 @@
             </ng-container>
           </tbody>
         </table>
-      </div>
 
-      <!-- Template reused in both tree and flat tables -->
-      <ng-template #checkboxesColumn let-id="id">
+        <!-- Template reused in both tree and flat tables -->
+        <ng-template #checkboxesColumn let-id="id">
 
-        <!-- In screen mode, this column contains the multiselect checkboxes -->
-        <td *ngIf="isScreenMode">
-          <div class="ml-2 mr-2">
+          <!-- In screen mode, this column contains the multiselect checkboxes -->
+          <td *ngIf="isScreenMode">
+            <div class="ml-2 mr-2">
 
-            <!-- checkbox -->
-            <div class="custom-control custom-checkbox b-labelless-checkbox d-inline">
-              <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
-              <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
+              <!-- checkbox -->
+              <div class="custom-control custom-checkbox b-labelless-checkbox d-inline">
+                <input type="checkbox" class="custom-control-input" id="check{{id}}" [(ngModel)]="checked[id]">
+                <label class="custom-control-label b-pointer" for="check{{id}}">&zwnj;</label>
+              </div>
             </div>
-          </div>
-        </td>
+          </td>
 
-        <!-- In popup mode, this column is merely a clickable margin -->
-        <td class="b-pointer" (click)="onSelect(id)" *ngIf="!isScreenMode">
+          <!-- In popup mode, this column is merely a clickable margin -->
+          <td class="b-pointer" (click)="onSelect(id)" *ngIf="!isScreenMode">
 
-        </td>
-      </ng-template>
+          </td>
+        </ng-template>
 
-      <!-- Template reused in both tree and flat tables -->
-      <ng-template #errorsColumn let-id="id">
-        <td class="pl-0 pr-0" *ngIf="isScreenMode">
+        <!-- Template reused in both tree and flat tables -->
+        <ng-template #errorsColumn let-id="id">
+          <td class="pl-0 pr-0" *ngIf="isScreenMode">
 
-          <!-- Validation errors -->
-          <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">
-            <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}"
-              triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement"></fa-icon>
-          </div>
-        </td>
-      </ng-template>
+            <!-- Validation errors -->
+            <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">
+              <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}"
+                triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement"></fa-icon>
+            </div>
+          </td>
+        </ng-template>
 
-      <!-- Template reused in both tree and flat tables -->
-      <ng-template #selectColumns let-id="id">
-        <td class="b-pointer" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
-          <b-auto-cell [collection]="collection" [path]="colPath" [definition]="definition" [entity]="entity(id)">
-          </b-auto-cell>
-        </td>
-      </ng-template>
+        <!-- Template reused in both tree and flat tables -->
+        <ng-template #selectColumns let-id="id">
+          <td class="b-pointer" *ngFor="let colPath of tableColumnPaths" (click)="onSelect(id)">
+            <b-auto-cell [collection]="collection" [path]="colPath" [definition]="definition" [entity]="entity(id)">
+            </b-auto-cell>
+          </td>
+        </ng-template>
+      </div>
 
       <!-- Spinner -->
       <div class="w-100 p-2 d-flex justify-content-center" *ngIf="showSpinner">

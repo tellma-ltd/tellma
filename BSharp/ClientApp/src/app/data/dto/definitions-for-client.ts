@@ -1,32 +1,92 @@
 // tslint:disable:variable-name
 export class DefinitionsForClient {
-
     Documents: { [definitionId: string]: DocumentDefinitionForClient };
     Lines: { [definitionId: string]: LineDefinitionForClient };
     Resources: { [definitionId: string]: ResourceDefinitionForClient };
     Accounts: { [definitionId: string]: AccountDefinitionForClient };
     Lookups: { [definitionId: string]: LookupDefinitionForClient };
+    Reports: { [definitionId: string]: ReportDefinitionForClient };
 }
 
 export interface DefinitionForClient {
+    MainMenuSection: string;
+    MainMenuIcon: string;
+    MainMenuSortKey: number;
+}
+
+export interface MasterDetailsDefinitionForClient extends DefinitionForClient {
     TitleSingular: string;
     TitleSingular2: string;
     TitleSingular3: string;
     TitlePlural: string;
     TitlePlural2: string;
     TitlePlural3: string;
-    MainMenuSection: string;
-    MainMenuIcon: string;
-    MainMenuSortKey: number;
 }
 
-export interface DocumentDefinitionForClient extends DefinitionForClient {
+export interface ReportDefinitionForClient extends DefinitionForClient {
+    Title: string;
+    Title2?: string;
+    Title3?: string;
+    Type: ReportType; // summary or details
+    DefaultView: string;
+    Collection: string;
+    DefinitionId?: string;
+    Select: ReportSelectDefinition[];
+    Parameters?: ReportParameterDefinition[];
+    Filter?: string;
+    OrderBy?: string;
+    Rows: ReportDimensionDefinition[];
+    Columns: ReportDimensionDefinition[];
+    Measures: ReportMeasureDefinition[];
+    Top?: number;
+    ShowColumnsTotal: boolean;
+    ShowRowsTotal: boolean;
+}
+
+export interface ReportParameterDefinition {
+    Key: string; // e.g. 'FromDate'
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    IsRequired: boolean;
+}
+
+export interface ReportSelectDefinition {
+    Path: string;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+}
+
+export interface ReportMeasureDefinition {
+    Path: string;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    OrderDirection?: ReportOrderDirection;
+    Aggregation: Aggregation;
+}
+
+export interface ReportDimensionDefinition {
+    Path: string;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    OrderDirection?: ReportOrderDirection;
+    AutoExpand: boolean;
+}
+
+export type ReportOrderDirection = 'asc' | 'desc';
+export type ReportType = 'Summary' | 'Details';
+export type Aggregation = 'count' | 'dcount' | 'sum' | 'avg' | 'max' | 'min';
+
+export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
     // TODO
     IsSourceDocument: boolean;
     FinalState: string;
 }
 
-export interface LineDefinitionForClient extends DefinitionForClient {
+export interface LineDefinitionForClient extends MasterDetailsDefinitionForClient {
     // TODO
     Bla: string;
 }
@@ -34,7 +94,7 @@ export interface LineDefinitionForClient extends DefinitionForClient {
 export type AccountVisibility = 'None' | 'RequiredInAccounts' | 'RequiredInEntries' | 'OptionalInEntries';
 export type Visibility = 0 | 1 | 2;
 
-export interface AccountDefinitionForClient extends DefinitionForClient {
+export interface AccountDefinitionForClient extends MasterDetailsDefinitionForClient {
     ResponsibilityCenter_Label: string;
     ResponsibilityCenter_Label2: string;
     ResponsibilityCenter_Label3: string;
@@ -68,7 +128,7 @@ export interface AccountDefinitionForClient extends DefinitionForClient {
 
 }
 
-export interface ResourceDefinitionForClient extends DefinitionForClient {
+export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
     MassUnit_Label: string;
     MassUnit_Label2: string;
     MassUnit_Label3: string;
@@ -155,7 +215,7 @@ export interface ResourceDefinitionForClient extends DefinitionForClient {
     ResourceLookup4_DefinitionId: string;
 }
 
-export interface LookupDefinitionForClient extends DefinitionForClient {
+export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {
     Bla: string;
 }
 

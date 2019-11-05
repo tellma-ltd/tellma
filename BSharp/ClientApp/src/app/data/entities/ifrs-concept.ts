@@ -26,10 +26,12 @@ const _label = ['', '2', '3'].map(pf => 'Label' + pf);
 export function metadata_IfrsConceptInner(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     return {
+        collection: 'IfrsConcept',
         titleSingular: trx.instant('IfrsConcept'),
         titlePlural:  trx.instant('IfrsConcepts'),
         select: _label,
         apiEndpoint: '',
+        screenUrl: '',
         orderby: ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
         format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),
         properties: {

@@ -43,52 +43,67 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
 export interface EntityDescriptor {
 
     /**
-     * The plural name of the entity (e.g. Agents)
+     * The collection Id of this entity descriptor, (aka the table)
+     */
+    collection: string;
+
+    /**
+     * The definition Id of this entity descriptor
+     */
+    definitionId?: string;
+
+    /**
+     * The plural name of the entity (e.g. Agents).
      */
     titlePlural: string;
 
     /**
-     * The singular name of the entity (e.g. Agent)
+     * The singular name of the entity (e.g. Agent).
      */
     titleSingular: string;
 
     /**
-     * The Entity properties that need to be selected from the server for the format function to succeed
+     * The Entity properties that need to be selected from the server for the format function to succeed.
      */
     select: string[];
 
     /**
-     * When ordering by a nav property of this Entity type, this value specifies the OData 'orderby' value to use
+     * When ordering by a nav property of this Entity type, this value specifies the OData 'orderby' value to use.
      */
     orderby: string[];
 
     /**
-     * The server endpoint from which to retrieve Entities of this type, after the 'https://www.bsharp.online/api/' part
+     * The server endpoint from which to retrieve Entities of this type, after the 'https://www.bsharp.online/api/' part.
      */
     apiEndpoint: string;
 
     /**
-     * The select atoms that will make the definitionFunc succeed
+     * The url of the screen that displays this type after the 'https://www.bsharp.online/app/101/' part.
+     */
+    screenUrl: string;
+
+    /**
+     * The select atoms that will make the definitionFunc succeed.
      */
     selectForDefinition?: string;
 
     /**
-     * The property on this entity that carries the definitionId
+     * The property on this entity that carries the definitionId.
      */
     definitionFunc?: (e: EntityWithKey) => string;
 
     /**
-     * A function that returns a display string representing the entity
+     * A function that returns a display string representing the entity.
      */
     format: (item: EntityWithKey) => string;
 
     /**
-     * When applicable: returns all the values that the type parameter can take
+     * When applicable: returns all the values that the type parameter can take.
      */
     types?: () => string[];
 
     /**
-     * The properties of the class
+     * The properties of the class.
      */
     properties: { [prop: string]: PropDescriptor };
 }
@@ -122,6 +137,11 @@ export interface ChoicePropDescriptor extends PropDescriptorBase {
      * A function that formats any choice into a display object
      */
     format: (choice: string | number) => string;
+
+    /**
+     * Useful for components to cache the list of { name, value } for the selector
+     */
+    selector?: { value: string | number; name: string }[];
 }
 
 export interface StatePropDescriptor extends PropDescriptorBase {
@@ -137,6 +157,11 @@ export interface StatePropDescriptor extends PropDescriptorBase {
      */
     format: (choice: string | number) => string;
     color?: (choice: string | number) => string;
+
+    /**
+     * Useful for components to cache the list of { name, value } for the selector
+     */
+    selector?: { value: string | number; name: string }[];
 }
 
 export interface NumberPropDescriptor extends PropDescriptorBase {
@@ -228,4 +253,14 @@ export function entityDescriptorImpl(
     }
 
     return currentEntityDesc;
+}
+
+export function isText(propDesc: PropDescriptor): boolean {
+    return propDesc.control === 'text' ||
+        ((propDesc.control === 'state' || propDesc.control === 'choice') && (typeof propDesc.choices[0]) === 'string');
+}
+
+export function isNumeric(propDesc: PropDescriptor): boolean {
+    return propDesc.control === 'number' ||
+        ((propDesc.control === 'state' || propDesc.control === 'choice') && (typeof propDesc.choices[0]) === 'number');
 }

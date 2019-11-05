@@ -265,8 +265,23 @@
   <data name="Data" xml:space="preserve">
     <value>Data</value>
   </data>
+  <data name="DefaultAggregationMeasure" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
   <data name="DefaultError" xml:space="preserve">
     <value>An unknown failure has occurred.</value>
+  </data>
+  <data name="Definition_State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="Definition_State_Archived" xml:space="preserve">
+    <value>Archived</value>
+  </data>
+  <data name="Definition_State_Deployed" xml:space="preserve">
+    <value>Deployed</value>
+  </data>
+  <data name="Definition_State_Draft" xml:space="preserve">
+    <value>Draft</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>Description</value>
@@ -622,6 +637,9 @@
   <data name="GoTo0" xml:space="preserve">
     <value>Go to {0}</value>
   </data>
+  <data name="GrandTotal" xml:space="preserve">
+    <value>Grand Total</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>Home</value>
   </data>
@@ -711,6 +729,24 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>Menu Sort Key</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_avg" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_dcount" xml:space="preserve">
+    <value>Distinct Count</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_max" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_min" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_sum" xml:space="preserve">
+    <value>Sum</value>
   </data>
   <data name="MeasurementUnit" xml:space="preserve">
     <value>Measurement Unit</value>
@@ -858,6 +894,9 @@
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>Update</value>
+  </data>
+  <data name="Permission_UpdateState" xml:space="preserve">
+    <value>Update State</value>
   </data>
   <data name="Permission_View" xml:space="preserve">
     <value>View</value>
@@ -1120,6 +1159,9 @@
   <data name="TitleSingular" xml:space="preserve">
     <value>Singular Name</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
   <data name="TreeParent" xml:space="preserve">
     <value>Parent</value>
   </data>
@@ -1137,9 +1179,6 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>2FA has been disabled. You can re-enable 2FA by setting up an authenticator app</value>
-  </data>
-  <data name="UpdateState" xml:space="preserve">
-    <value>Update State</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>User</value>

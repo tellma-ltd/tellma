@@ -38,10 +38,12 @@ export function metadata_Role(ws: TenantWorkspace, trx: TranslateService, defini
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     _cache = {
+      collection: 'Role',
       titleSingular: trx.instant('Role'),
       titlePlural:  trx.instant('Roles'),
       select: _select,
       apiEndpoint: 'roles',
+      screenUrl: 'roles',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {

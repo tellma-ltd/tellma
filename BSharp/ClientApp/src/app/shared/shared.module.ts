@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 import {
   NgbCollapseModule,
   NgbDropdownModule,
@@ -39,7 +40,7 @@ import {
   faUpload,
   faFileDownload,
   faFilter,
-  faCalendarAlt,
+  faCalendar,
   faPen,
   faAsterisk,
   faCameraRetro,
@@ -50,22 +51,17 @@ import {
   faTasks,
   faMale,
   faBuilding,
+  faChartPie,
 
-  faListUl,
-  faMoneyCheck,
-  faMoneyCheckAlt,
-  faHandHoldingUsd,
-  faLandmark,
-  faFileContract,
-  faFileInvoiceDollar,
-  faMoneyBillWave,
-  faClipboard,
   faBars,
   faTable,
-  faList,
-  faCodeBranch,
   faExternalLinkAlt,
-  faMinusSquare
+  faMinusSquare,
+  faChartBar,
+  faChartArea,
+  faChartLine,
+  faInfoCircle,
+  faTachometerAlt
 
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
@@ -132,12 +128,14 @@ import { AutoLabelComponent } from './auto-label/auto-label.component';
     NgbPopoverModule,
     NgbDatepickerModule,
     NgbTabsetModule,
-    NgbTooltipModule
+    NgbTooltipModule,
+    NgxChartsModule
   ],
   exports: [
     // Modules
     CommonModule,
     HttpClientModule,
+    ScrollingModule,
     NgbDropdownModule,
     NgbModalModule,
     NgbCollapseModule,
@@ -147,6 +145,7 @@ import { AutoLabelComponent } from './auto-label/auto-label.component';
     TranslateModule,
     FormsModule,
     FontAwesomeModule,
+    NgxChartsModule,
 
     // Components & others
     SpinnerComponent,
@@ -184,9 +183,12 @@ export class SharedModule {
       faSignOutAlt, faCheck, faPlus, faAngleDoubleLeft,
       faAngleLeft, faAngleRight, faThLarge, faTable, faPen, faTrash,
       faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
-      faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendarAlt,
+      faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendar,
       faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
-      faTasks, faMale, faBuilding, faBars, faExternalLinkAlt, faMinusSquare
+      faTasks, faMale, faBuilding, faChartPie, faInfoCircle, faTachometerAlt,
+
+      faBars, faChartBar, faChartArea,
+      faChartLine, faExternalLinkAlt, faMinusSquare
     );
   }
 }

@@ -38,7 +38,14 @@ namespace BSharp.Data.Queries
         {
             // take all columns that are not aggregated, and group them together
             var nonAggregateSelects = _columns.Where(e => string.IsNullOrWhiteSpace(e.Aggregation));
-            return "GROUP BY " + string.Join(", ", nonAggregateSelects.Select(e => QueryTools.AtomSql(e.Symbol, e.PropName, e.Aggregation)));
+            if (nonAggregateSelects.Any())
+            {
+                return "GROUP BY " + string.Join(", ", nonAggregateSelects.Select(e => QueryTools.AtomSql(e.Symbol, e.PropName, e.Aggregation)));
+            }
+            else
+            {
+                return "";
+            }
         }
 
         /// <summary>

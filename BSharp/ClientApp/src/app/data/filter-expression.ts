@@ -1,5 +1,3 @@
-
-
 /**
  * The base class for all filter expressions
  */
@@ -29,7 +27,7 @@ export class FilterConjunction extends FilterExpressionBase {
     right: FilterExpression;
 
     public toString(): string {
-        return `(${this.left.toString()}) or (${this.right.toString()})`;
+        return `(${this.left.toString()}) and (${this.right.toString()})`;
     }
 }
 
@@ -50,17 +48,40 @@ export class FilterNegation extends FilterExpressionBase {
  */
 export class FilterAtom extends FilterExpressionBase {
     type: 'atom';
+    path: string[];
+    property: string;
+    op: string;
     value: string;
 
     public static parse(atom: string): FilterAtom {
-        return {
-            type: 'atom',
-            value: atom
-        };
+        const pieces = atom.split(' ').filter(e => !!e);
+        if (pieces.length < 3) {
+            throw new Error(`One of the atomic expressions (${atom}) does not have the valid form: 'Path op Value'`);
+        } else {
+            // get the path and the prop
+            const steps = pieces.shift().split('/').map(e => !e ? '' : e.trim());
+            const property = steps.pop();
+            const path = steps;
+
+            // get the op
+            const op = pieces.shift();
+
+            // get the value
+            const value = pieces.join(' ').trim();
+
+            return {
+                type: 'atom',
+                path,
+                property,
+                op,
+                value
+            };
+        }
     }
 
     public toString(): string {
-        return this.value;
+        const stringPath = this.path.concat([this.property]).join('/');
+        return `${stringPath} ${this.op} ${this.value}`;
     }
 }
 
@@ -109,10 +130,67 @@ export class FilterTools {
         }
     }
 
-    public static unpack(exp: FilterExpression): string {
-        return null;
+    public static placeholderAtoms(exp: FilterExpression): FilterAtom[] {
+        if (!exp) {
+            return [];
+        }
+
+        switch (exp.type) {
+            case 'conjunction':
+            case 'disjunction':
+                return FilterTools.placeholderAtoms(exp.left).concat(FilterTools.placeholderAtoms(exp.right));
+            case 'negation':
+                return FilterTools.placeholderAtoms(exp.inner);
+            case 'atom':
+                return !!exp.value && exp.value.startsWith('@') ? [exp] : [];
+        }
+
+        return [];
     }
 
+    /**
+     * Stringifies a FilterExpression into an odata like query string
+     * @param exp the FilterExpression to stringify
+     */
+    public static stringify(exp: FilterExpression): string {
+        if (!exp) {
+            return null;
+        }
+
+        switch (exp.type) {
+            case 'conjunction': {
+                // only use parentheses if the child is a disjunction
+                const leftRaw = FilterTools.stringify(exp.left);
+                const left = exp.left.type === 'disjunction' ? `(${leftRaw})` : leftRaw;
+                const rightRaw = FilterTools.stringify(exp.right);
+                const right = exp.right.type === 'disjunction' ? `(${rightRaw})` : rightRaw;
+
+                return `${left} and ${right}`;
+            }
+            case 'disjunction': {
+                // only use parentheses if the child is a conjunction
+                const leftRaw = FilterTools.stringify(exp.left);
+                const left = exp.left.type === 'conjunction' ? `(${leftRaw})` : leftRaw;
+                const rightRaw = FilterTools.stringify(exp.right);
+                const right = exp.right.type === 'conjunction' ? `(${rightRaw})` : rightRaw;
+
+                return `${left} or ${right}`;
+            }
+            case 'negation': {
+                const inner = FilterTools.stringify(exp.inner);
+                return `not(${inner})`;
+            }
+            case 'atom': {
+                const stringPath = exp.path.concat([exp.property]).join('/');
+                return `${stringPath} ${exp.op} ${exp.value}`;
+            }
+        }
+    }
+
+    /**
+     * Parses an Odata-like filter string into a FilterExpression tree
+     * @param filter the filter string to parse
+     */
     public static parse(filter: string): FilterExpression {
         if (!filter) {
             return null;
@@ -183,9 +261,9 @@ export class FilterTools {
             } else {
                 let matchingSymbol: string;
                 // tslint:disable:no-conditional-assignment
-                if (!insideQuotes && !(matchingSymbol = matchingOperator(index))) {
+                if (!insideQuotes && !!(matchingSymbol = matchingOperator(index))) {
                     if (acc.length > 0) {
-                        const token = acc.join().trim();
+                        const token = acc.join('').trim();
                         if (!!token) {
                             result.push(token);
                         }
@@ -207,7 +285,7 @@ export class FilterTools {
         }
 
         if (acc.length > 0) {
-            const token = acc.join().trim();
+            const token = acc.join('').trim();
             if (!!token) {
                 result.push(token);
             }
@@ -230,7 +308,7 @@ export class FilterTools {
 
                     output.push({ type: 'conjunction', left: output.pop(), right: output.pop() });
                     break;
-                case 'and':
+                case 'or':
                     if (output.length < 2) {
                         throw new Error(`Badly formatted filter parameter, a disjunction 'or' was missing one or both of its 2 operands`);
                     }

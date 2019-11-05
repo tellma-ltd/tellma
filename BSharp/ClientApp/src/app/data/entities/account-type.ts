@@ -41,10 +41,12 @@ export function metadata_AccountType(ws: TenantWorkspace, trx: TranslateService,
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     const entityDesc: EntityDescriptor = {
+      collection: 'AccountType',
       titleSingular: trx.instant('AccountType'),
       titlePlural: trx.instant('AccountTypes'),
       select: _select,
       apiEndpoint: 'account-types',
+      screenUrl: 'account-types',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
@@ -72,8 +74,8 @@ export function metadata_AccountType(ws: TenantWorkspace, trx: TranslateService,
         },
 
         IsAssignable: { control: 'boolean', label: trx.instant('AccountType_IsAssignable'),
-        // format: (b) => !!b ? '✓' : '✗' },
-        format: (b) => !!b ? '✔️' : '❌' },
+         format: (b) => !!b ? '✓' : '✗' },
+        // format: (b) => !!b ? '✔️' : '❌' },
         IsActive: { control: 'boolean', label: trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

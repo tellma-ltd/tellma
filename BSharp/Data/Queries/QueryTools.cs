@@ -349,7 +349,7 @@ namespace BSharp.Data.Queries
                     break;
 
                 case Aggregations.avg:
-                    sqlAggregation = "AVG({0})";
+                    sqlAggregation = "AVG(CAST({0} AS DECIMAL(18,8)))";
                     break;
 
                 case Aggregations.min:

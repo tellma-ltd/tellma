@@ -38,6 +38,8 @@ import { AccountClassification } from './entities/account-classification';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
 import { GetChildrenArguments } from './dto/get-children-arguments';
+import { GetAggregateArguments } from './dto/get-aggregate-arguments';
+import { GetAggregateResponse } from './dto/get-aggregate-response';
 
 @Injectable({
   providedIn: 'root'
@@ -363,6 +365,32 @@ export class ApiService {
         const url = appconfig.apiAddress + `api/${endpoint}/${id}?${params}`;
 
         const obs$ = this.http.get<GetByIdResponse<TEntity>>(url).pipe(
+          catchError(error => {
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+
+      getAggregate: (args: GetAggregateArguments) => {
+        args = args || {};
+        const paramsArray: string[] = [];
+
+        if (!!args.select) {
+          paramsArray.push(`select=${encodeURIComponent(args.select)}`);
+        }
+
+        if (!!args.filter) {
+          paramsArray.push(`filter=${encodeURIComponent(args.filter)}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/${endpoint}/aggregate?${params}`;
+
+        const obs$ = this.http.get<GetAggregateResponse>(url).pipe(
           catchError(error => {
             const friendlyError = this.friendly(error);
             return throwError(friendlyError);

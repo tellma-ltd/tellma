@@ -35,7 +35,7 @@ export function addSingleToWorkspace(response: GetByIdResponse, workspace: Works
   result[response.CollectionName] = [ response.Result ];
   mergeEntitiesInWorkspace(result, workspace);
 
-  // Noitfy everyone
+  // Notify everyone
   workspace.notifyStateChanged();
 
   // Return the ID of the result
@@ -174,4 +174,12 @@ export enum Key {
   ArrowUp = 'ArrowUp',
   ArrowRight = 'ArrowRight',
   ArrowDown = 'ArrowDown'
+}
+
+/**
+ * Useful in forms to determine if a required value is specified
+ * @param value the value that the
+ */
+export function isSpecified(value: any) {
+  return !!value || value === 0 || value === false;
 }

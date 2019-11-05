@@ -45,15 +45,18 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
     _cache = {};
   }
 
-  definitionId = definitionId || '_'; // undefined
-  if (!_cache[definitionId]) {
+  const key = definitionId || '_';
+  if (!_cache[key]) {
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     const entityDesc: EntityDescriptor = {
+      collection: 'MeasurementUnit',
+      definitionId,
       titleSingular: '???',
       titlePlural: '???',
       select: _select,
       apiEndpoint: 'resource-classifications/' + (definitionId || ''),
+      screenUrl: !!definitionId ? 'resource-classifications/' + definitionId : null,
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       definitionFunc: (e: ResourceClassification) => e.ResourceDefinitionId,
@@ -117,8 +120,8 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
       }
     }
 
-    _cache[definitionId] = entityDesc;
+    _cache[key] = entityDesc;
   }
 
-  return _cache[definitionId];
+  return _cache[key];
 }

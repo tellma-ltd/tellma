@@ -13,7 +13,7 @@ import { ResourceClassification } from './entities/resource-classification';
 import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 import { User } from './entities/user';
-import { DefinitionsForClient } from './dto/definitions-for-client';
+import { DefinitionsForClient, Aggregation, ReportDefinitionForClient } from './dto/definitions-for-client';
 import { Lookup } from './entities/lookup';
 import { Currency } from './entities/currency';
 import { Resource } from './entities/resource';
@@ -21,8 +21,68 @@ import { AccountClassification } from './entities/account-classification';
 import { Action } from './views';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
+import { PropDescriptor } from './entities/base/metadata';
+import { isSpecified } from './util';
+import { Entity } from './entities/base/entity';
 
 export enum MasterStatus {
+
+  /**
+   * The master data is currently being fetched from the server
+   */
+  loading = 1,
+
+  /**
+   * The last fetch of data from the server completed successfully
+   */
+  loaded = 2,
+
+  /**
+   * The last fetch of data from the server completed with an error
+   */
+  error = 3,
+}
+
+/**
+ * Flat or Tree
+ */
+export enum MasterDisplayMode {
+
+  /**
+   * shows a flat table in table view, and plain tiles in tiles view
+   */
+  flat = 'flat',
+
+  /**
+   * shows a tree table in table view, and a tiles tree in tiles view
+   */
+  tree = 'tree',
+}
+
+export enum DetailsStatus {
+
+  /**
+   * The details record is being fetched from the server
+   */
+  loading = 1,
+
+  /**
+   * The last fetch of the details record from the server completed successfully
+   */
+  loaded = 2,
+
+  /**
+   * The last fetch of details record from the server resulted in an error
+   */
+  error = 3,
+
+  /**
+   * The details record is set to be modified or is currently being modified
+   */
+  edit = 4,
+}
+
+export enum ReportStatus {
 
   // The master data is currently being fetched from the server
   loading = 1,
@@ -33,31 +93,6 @@ export enum MasterStatus {
   // The last fetch of data from the server completed with an error
   error = 3,
 }
-
-export enum MasterDisplayMode {
-
-  // shows a flat table in table view, and plain tiles in tiles view
-  flat = 'flat',
-
-  // shows a tree table in table view, and a tiles tree in tiles view
-  tree = 'tree',
-}
-
-export enum DetailsStatus {
-
-  // The details record is being fetched from the server
-  loading = 1,
-
-  // The last fetch of the details record from the server completed successfully
-  loaded = 2,
-
-  // The last fetch of details record from the server resulted in an error
-  error = 3,
-
-  // The details record is set to be modified or is currently being modified
-  edit = 4,
-}
-
 
 /**
  * different preservation modes when refrshing the tree
@@ -94,7 +129,6 @@ export class NodeInfo {
   status: MasterStatus;
   notifyCancel$: Subject<void>; // cancels calls on this node's children
 }
-
 
 // this method compares two nodes based on the paths from the root
 const nodeCompare = (n1: NodeInfo, n2: NodeInfo) => {
@@ -155,6 +189,7 @@ export class TenantWorkspace {
 
   // Keeps the state of every master-details pair in screen mode
   mdState: { [key: string]: MasterDetailsStore };
+  reportState: { [key: string]: ReportStore };
 
   MeasurementUnit: EntityWorkspace<MeasurementUnit>;
   Role: EntityWorkspace<Role>;
@@ -176,6 +211,7 @@ export class TenantWorkspace {
   public reset() {
 
     this.mdState = {};
+    this.reportState = {};
 
     this.MeasurementUnit = new EntityWorkspace<MeasurementUnit>();
     this.Role = new EntityWorkspace<Role>();
@@ -348,8 +384,155 @@ export class Workspace {
     this.tenants = {};
   }
 }
+export type SingleSeries = { name: ChartDimensionCell, value: number, extra?: any }[];
+export type MultiSeries = { name: ChartDimensionCell, series: SingleSeries }[];
+export interface ReportArguments { [key: string]: any; }
+export interface PivotTable {
 
-export const DEFAULT_PAGE_SIZE = 25;
+  /**
+   * The upper part of the pivot table featuring the column labels
+   */
+  columnHeaders: (DimensionCell | LabelCell)[][];
+
+  /**
+   * The bottom part of the pivot table feature the row labels and the measure values
+   */
+  rows: (DimensionCell | LabelCell | MeasureCell)[][];
+}
+
+export interface MeasureInfo {
+  key: string;
+  desc: PropDescriptor;
+  aggregation: Aggregation;
+  label: () => string;
+}
+
+export interface DimensionInfo {
+  key: string;
+  path: string;
+  collection: string;
+  autoExpand: boolean;
+  label: () => string;
+}
+
+export class DimensionCell {
+  type: 'dimension';
+  path: string;
+  value: any;
+  collection?: string;
+  isExpanded: boolean;
+  hasChildren: boolean;
+  level: number;
+  index: number;
+  parent: DimensionCell;
+  isTotal?: boolean;
+
+  // These change dynamically
+  rowSpan?: number;
+  colSpan?: number;
+  isVisible?: boolean;
+}
+
+export class ChartDimensionCell {
+
+  constructor(
+    public display: string,
+    public path: string,
+    public value: any,
+    public parent?: ChartDimensionCell) { }
+
+  toString() {
+    return this.display; // isSpecified(this.value) ? this.value : '';
+  }
+}
+
+export interface LabelCell {
+  type: 'label';
+  label: () => string;
+  level: number;
+  parent: DimensionCell;
+  isTotal?: boolean;
+
+  // Change dynamically
+  rowSpan?: number;
+  colSpan?: number;
+  isVisible?: boolean;
+}
+
+export interface MeasureCell {
+  type: 'measure';
+  values: any[];
+  counts: number[]; // for aggregating averages
+  parent: DimensionCell; // column
+  isTotal?: boolean;
+}
+
+export class ReportStore {
+  definition: ReportDefinitionForClient;
+  skip = 0;
+  total = 0;
+  reportStatus: ReportStatus;
+  errorMessage: string;
+  arguments: ReportArguments = {};
+  result: Entity[] = [];
+  filter: string; // the one used to retrieve the result
+
+  //////////// Pivot table
+
+  /**
+   * The the actual row dimensions that will be
+   * displayed, without the property dimensions.
+   */
+  realRows: DimensionInfo[];
+
+  /**
+   * The the actual column dimensions that will be
+   * displayed, without the property dimensions.
+   */
+  realColumns: DimensionInfo[];
+
+  /**
+   * realRows + realColumns unique over the key property
+   */
+  uniqueDimensions: DimensionInfo[];
+
+  /**
+   * precomputed and used by the charts
+   */
+  singleNumericMeasure: MeasureInfo;
+
+  /**
+   * Precalculated values for efficiently displaying
+   * the measures
+   */
+  measures: MeasureInfo[];
+  pivot: PivotTable;
+  currentResultForPivot: any;
+
+  //////////// Charts
+
+  /**
+   * For number card
+   */
+  point: string;
+  currentResultForPoint: any;
+
+  /**
+   * For single series charts (e.g. bar and pie charts)
+   */
+  single: SingleSeries;
+  currentResultForSingle: any;
+  currentLangForSingle: string;
+
+  /**
+   * For multi-series charts (e.g. line chart)
+   */
+  multi: MultiSeries;
+  currentResultForMulti: any;
+  currentLangForMulti: string;
+}
+
+export const DEFAULT_PAGE_SIZE = 15;
 
 export class MasterDetailsStore {
 
@@ -483,7 +666,6 @@ export class MasterDetailsStore {
   }
 
   public insert(ids: (number | string)[], entityWs: any) {
-
 
     // here we try to be intelligent on where to add the item
     if (this.isTreeMode) {
@@ -647,8 +829,10 @@ export class WorkspaceService {
   public globalSettings: GlobalSettingsForClient;
   public globalSettingsVersion: string;
 
-  // Notifies that something has changed in workspace
-  // Used by OnPush components to mark for check
+  /**
+   * Notifies that something has changed in workspace.
+   * Used by OnPush components to mark for check
+   */
   stateChanged$: Observable<void> = new Subject<void>();
 
   constructor() {

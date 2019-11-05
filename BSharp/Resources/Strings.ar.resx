@@ -265,8 +265,23 @@
   <data name="Data" xml:space="preserve">
     <value>البيانات</value>
   </data>
+  <data name="DefaultAggregationMeasure" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
   <data name="DefaultError" xml:space="preserve">
     <value>حدث خطأ غير معروف.</value>
+  </data>
+  <data name="Definition_State" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Definition_State_Archived" xml:space="preserve">
+    <value>مؤرشف</value>
+  </data>
+  <data name="Definition_State_Deployed" xml:space="preserve">
+    <value>مفعل</value>
+  </data>
+  <data name="Definition_State_Draft" xml:space="preserve">
+    <value>جديد</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>البيان</value>
@@ -622,6 +637,9 @@
   <data name="GoTo0" xml:space="preserve">
     <value>ذهاب إلى {0}</value>
   </data>
+  <data name="GrandTotal" xml:space="preserve">
+    <value>المجموع الكلي</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>الرئيسية</value>
   </data>
@@ -711,6 +729,24 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>الترتيب في القائمة الرئيسية</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_avg" xml:space="preserve">
+    <value>معدل</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_count" xml:space="preserve">
+    <value>عدد</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_dcount" xml:space="preserve">
+    <value>عدد متميز</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_max" xml:space="preserve">
+    <value>أقصى</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_min" xml:space="preserve">
+    <value>أدنى</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_sum" xml:space="preserve">
+    <value>مجموع</value>
   </data>
   <data name="MeasurementUnit" xml:space="preserve">
     <value>وحدة قياس</value>
@@ -858,6 +894,9 @@
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>تعديل</value>
+  </data>
+  <data name="Permission_UpdateState" xml:space="preserve">
+    <value>تعديل الحالة</value>
   </data>
   <data name="Permission_View" xml:space="preserve">
     <value>الواجهة</value>
@@ -1120,6 +1159,9 @@
   <data name="TitleSingular" xml:space="preserve">
     <value>الاسم المفرد</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>المجموع</value>
+  </data>
   <data name="TreeParent" xml:space="preserve">
     <value>الأصل</value>
   </data>
@@ -1137,9 +1179,6 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>تم تعطيل التوثيق مزدوج العوامل، لإعادة تشغيله ثقم بضبط تطبيق (authenticator)</value>
-  </data>
-  <data name="UpdateState" xml:space="preserve">
-    <value>تعديل الحالة</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>مستخدم</value>

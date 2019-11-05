@@ -45,10 +45,12 @@ export function metadata_AccountClassification(ws: TenantWorkspace, trx: Transla
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     const entityDesc: EntityDescriptor = {
+      collection: 'AccountClassification',
       titleSingular: trx.instant('AccountClassification'),
       titlePlural: trx.instant('AccountClassifications'),
       select: _select,
       apiEndpoint: 'account-classifications',
+      screenUrl: 'account-classifications',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {

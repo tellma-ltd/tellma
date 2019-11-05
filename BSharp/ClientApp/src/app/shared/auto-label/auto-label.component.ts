@@ -68,7 +68,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
       const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
 
       if (pathArray.length === 0) {
-        this._label = this.translate.instant('Description');
+        this._label = this.translate.instant('DisplayName');
 
       } else {
 

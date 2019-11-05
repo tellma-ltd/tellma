@@ -43,10 +43,13 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
 
     if (!_cache[definitionId]) {
         const entityDesc: EntityDescriptor = {
+            collection: 'Lookup',
+            definitionId,
             titleSingular: ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitleSingular'),
             titlePlural: ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitlePlural'),
             select: _select,
             apiEndpoint: 'lookups/' + (definitionId || ''),
+            screenUrl: !!definitionId ? 'lookups/' + definitionId : null,
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             definitionFunc: (e: Lookup) => e.LookupDefinitionId,

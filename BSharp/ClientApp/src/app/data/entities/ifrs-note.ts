@@ -32,7 +32,9 @@ export function metadata_IfrsNote(ws: TenantWorkspace, trx: TranslateService, de
     _currentLang = trx.currentLang;
     _settings = ws.settings;
     _cache = metadata_IfrsConceptInner(ws, trx, definitionId);
+    _cache.collection = 'IfrsNote';
     _cache.apiEndpoint = 'ifrs-notes';
+    _cache.screenUrl = 'ifrs-notes';
     _cache.properties.IsAggregate = { control: 'boolean', label: trx.instant('IfrsNotes_IsAggregate') };
     _cache.properties.ForDebit = { control: 'boolean', label: trx.instant('IfrsNotes_ForDebit') };
     _cache.properties.ForCredit = { control: 'boolean', label: trx.instant('IfrsNotes_ForCredit') };
