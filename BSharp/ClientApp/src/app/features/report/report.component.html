@@ -15,7 +15,7 @@
             <div class="w-100" *ngIf="showParameters">
                 <div class="row m-0 px-0 px-lg-1 py-1">
                     <b-form-group *ngFor="let p of parameters" class="b-form-group"
-                        [label]="p.label + (p.isRequired ? ' *' : '')" [ngSwitch]="p.desc.control">
+                        [label]="p.label() + (p.isRequired ? ' *' : '')" [ngSwitch]="p.desc.control">
                         <!-- Text -->
                         <b-text-editor *ngSwitchCase="'text'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                             [ngModelOptions]="{ updateOn: 'blur' }" (ngModelChange)="onArgumentChange()">

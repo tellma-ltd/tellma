@@ -27,8 +27,8 @@ export function metadata_IfrsConceptInner(ws: TenantWorkspace, trx: TranslateSer
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     return {
         collection: 'IfrsConcept',
-        titleSingular: trx.instant('IfrsConcept'),
-        titlePlural:  trx.instant('IfrsConcepts'),
+        titleSingular: () => trx.instant('IfrsConcept'),
+        titlePlural:  () => trx.instant('IfrsConcepts'),
         select: _label,
         apiEndpoint: '',
         screenUrl: '',
@@ -37,7 +37,7 @@ export function metadata_IfrsConceptInner(ws: TenantWorkspace, trx: TranslateSer
         properties: {
             IfrsType: {
                 control: 'choice',
-                label: trx.instant('IfrsConcepts_IfrsType'),
+                label: () => trx.instant('IfrsConcepts_IfrsType'),
                 choices: ['Amendment', 'Extension', 'Regulatory'],
                 format: (c: string) => {
                     switch (c) {
@@ -48,20 +48,20 @@ export function metadata_IfrsConceptInner(ws: TenantWorkspace, trx: TranslateSer
                     }
                 }
             },
-            Label: { control: 'text', label: trx.instant('IfrsConcepts_Label') + ws.primaryPostfix },
-            Label2: { control: 'text', label: trx.instant('IfrsConcepts_Label') + ws.secondaryPostfix },
-            Label3: { control: 'text', label: trx.instant('IfrsConcepts_Label') + ws.ternaryPostfix },
-            Id: { control: 'text', label: trx.instant('Code') },
-            Documentation: { control: 'text', label: trx.instant('IfrsConcepts_Documentation') + ws.primaryPostfix },
-            Documentation2: { control: 'text', label: trx.instant('IfrsConcepts_Documentation') + ws.secondaryPostfix },
-            Documentation3: { control: 'text', label: trx.instant('IfrsConcepts_Documentation') + ws.ternaryPostfix },
-            EffectiveDate: { control: 'date', label: trx.instant('IfrsConcepts_EffectiveDate') },
-            ExpiryDate: { control: 'date', label: trx.instant('IfrsConcepts_ExpiryDate') },
-            IsActive: { control: 'boolean', label: trx.instant('IsActive') },
-            CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
-            CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-            ModifiedAt: { control: 'datetime', label: trx.instant('ModifiedAt') },
-            ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+            Label: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.primaryPostfix },
+            Label2: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.secondaryPostfix },
+            Label3: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.ternaryPostfix },
+            Id: { control: 'text', label: () => trx.instant('Code') },
+            Documentation: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.primaryPostfix },
+            Documentation2: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.secondaryPostfix },
+            Documentation3: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.ternaryPostfix },
+            EffectiveDate: { control: 'date', label: () => trx.instant('IfrsConcepts_EffectiveDate') },
+            ExpiryDate: { control: 'date', label: () => trx.instant('IfrsConcepts_ExpiryDate') },
+            IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
+            CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+            CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
+            ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
+            ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
         }
     };
 }

@@ -308,7 +308,7 @@ export class TenantWorkspace {
     return null;
   }
 
-  getMultilingualValueImmediate(item: any, propName: string) {
+  getMultilingualValueImmediate(item: any, propName: string): string {
     if (!!propName) {
       const propName2 = propName + '2';
       const propName3 = propName + '3';
@@ -532,7 +532,7 @@ export class ReportStore {
   currentLangForMulti: string;
 }
 
-export const DEFAULT_PAGE_SIZE = 15;
+export const DEFAULT_PAGE_SIZE = 25;
 
 export class MasterDetailsStore {
 

@@ -595,7 +595,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   get titleSingular(): string {
     const desc = this.entityDescriptor;
-    return !!desc ? desc.titleSingular : null;
+    return !!desc ? desc.titleSingular() : null;
   }
 
   private computeSelect(): string {

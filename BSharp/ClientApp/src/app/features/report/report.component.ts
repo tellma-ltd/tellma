@@ -12,7 +12,7 @@ import { isSpecified } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 
-interface ParameterInfo { label: string; key: string; desc: PropDescriptor; isRequired: boolean; }
+interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor; isRequired: boolean; }
 
 @Component({
   selector: 'b-report',
@@ -183,6 +183,17 @@ export class ReportComponent implements OnInit, OnDestroy {
     this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
   }
 
+  // private updateUrlState(key: string, value: any, replaceUrl = true) {
+  //   const params = this.route.snapshot.params;
+  //   if (value === null || value === undefined) {
+  //     delete params[key];
+  //   } else {
+  //     params[key] = value;
+  //   }
+
+  //   this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl });
+  // }
+
   // UI Bindings
 
   get title(): string {
@@ -256,7 +267,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           const keyLower = p.Key.toLowerCase();
           const paramInfo = paramsFromFilterPlaceholders[keyLower];
           if (!!paramInfo) {
-            paramInfo.label = this.workspace.current.getMultilingualValueImmediate(p, 'Label') || paramInfo.label;
+            paramInfo.label = () => !!p.Label ? this.workspace.current.getMultilingualValueImmediate(p, 'Label') : paramInfo.label();
             paramInfo.isRequired = p.IsRequired;
             this._currentParameters.push(paramInfo);
             delete paramsFromFilterPlaceholders[keyLower];

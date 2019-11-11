@@ -29,15 +29,13 @@ export class ResourceClassification extends ResourceClassificationForSave {
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
-let _currentLang: string;
 let _settings: SettingsForClient;
 let _definitions: DefinitionsForClient;
 let _cache: { [defId: string]: EntityDescriptor } = {};
 
 export function metadata_ResourceClassification(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (trx.currentLang !== _currentLang || ws.settings !== _settings || ws.definitions !== _definitions) {
-    _currentLang = trx.currentLang;
+  if (ws.settings !== _settings || ws.definitions !== _definitions) {
     _settings = ws.settings;
     _definitions = ws.definitions;
 
@@ -47,13 +45,11 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
 
   const key = definitionId || '_';
   if (!_cache[key]) {
-    _currentLang = trx.currentLang;
-    _settings = ws.settings;
     const entityDesc: EntityDescriptor = {
       collection: 'MeasurementUnit',
       definitionId,
-      titleSingular: '???',
-      titlePlural: '???',
+      titleSingular: () => '???',
+      titlePlural: () => '???',
       select: _select,
       apiEndpoint: 'resource-classifications/' + (definitionId || ''),
       screenUrl: !!definitionId ? 'resource-classifications/' + definitionId : null,
@@ -62,36 +58,36 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
       definitionFunc: (e: ResourceClassification) => e.ResourceDefinitionId,
       selectForDefinition: 'ResourceDefinitionId',
       properties: {
-        Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
-        Code: { control: 'text', label: trx.instant('Code') },
-        IsLeaf: { control: 'boolean', label: trx.instant('ResourceClassification_IsLeaf') },
+        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Code: { control: 'text', label: () => trx.instant('Code') },
+        IsLeaf: { control: 'boolean', label: () => trx.instant('ResourceClassification_IsLeaf') },
 
         // tree stuff
         Parent: {
-          control: 'navigation', label: trx.instant('TreeParent'), type: 'ResourceClassification',
+          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'ResourceClassification',
           foreignKeyName: 'ParentId'
         },
         ChildCount: {
-          control: 'number', label: trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
+          control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },
         ActiveChildCount: {
-          control: 'number', label: trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
+          control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
           maxDecimalPlaces: 0, alignment: 'right'
         },
         Level: {
-          control: 'number', label: trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
+          control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },
 
-        IsActive: { control: 'boolean', label: trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
+        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
+        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
+        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
       }
     };
 
@@ -106,18 +102,18 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
     const definition = _definitions.Resources[definitionId];
     if (!definition) {
       if (definitionId !== '<generic>') {
-          // Programmer mistake
-          console.error(`defintionId '${definitionId}' doesn't exist`);
+        // Programmer mistake
+        console.error(`defintionId '${definitionId}' doesn't exist`);
       }
     } else {
       // Singular will be called "Classification" for short
-      entityDesc.titleSingular = trx.instant('Classification') || '???';
+      entityDesc.titleSingular = () => trx.instant('Classification') || '???';
 
       // Plural will be something like "Raw Materials - Classifications"
-      const resourceTitlePlural = ws.getMultilingualValueImmediate(definition, 'TitlePlural');
-      if (!!resourceTitlePlural) {
-        entityDesc.titlePlural = `${resourceTitlePlural} - ${trx.instant('Classifications')}`;
-      }
+      entityDesc.titlePlural = () => {
+        const resourceTitlePlural = ws.getMultilingualValueImmediate(definition, 'TitlePlural');
+        return !!resourceTitlePlural ? `${resourceTitlePlural} - ${trx.instant('Classifications')}` : '???';
+      };
     }
 
     _cache[key] = entityDesc;

@@ -88,6 +88,7 @@ import { ImageComponent } from './image/image.component';
 import { RestrictedComponent } from './restricted/restricted.component';
 import { AutoCellComponent } from './auto-cell/auto-cell.component';
 import { AutoLabelComponent } from './auto-label/auto-label.component';
+import { LabelPipe } from './label/label.pipe';
 
 @NgModule({
   declarations: [
@@ -112,7 +113,8 @@ import { AutoLabelComponent } from './auto-label/auto-label.component';
     ImageComponent,
     RestrictedComponent,
     AutoCellComponent,
-    AutoLabelComponent
+    AutoLabelComponent,
+    LabelPipe
   ],
   imports: [
     CommonModule,
@@ -169,7 +171,8 @@ import { AutoLabelComponent } from './auto-label/auto-label.component';
     ImageComponent,
     RestrictedComponent,
     AutoCellComponent,
-    AutoLabelComponent
+    AutoLabelComponent,
+    LabelPipe
   ],
   providers: [
     { provide: NgbDateAdapter, useClass: NgbDateStringAdapter },

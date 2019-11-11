@@ -228,9 +228,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     let s = this.state;
     s.reportStatus = ReportStatus.loading;
 
-    // This will show the spinner
-    this.cdr.markForCheck();
-
     // FILTER
     let filter: string;
     try {
@@ -242,8 +239,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       return of(null);
     }
 
-    let obs$: Observable<EntitiesResponse<Entity>>;
+    // This will show the spinner
+    this.cdr.markForCheck();
 
+    let obs$: Observable<EntitiesResponse<Entity>>;
     if (this.showDetails) {
       const top = this.definition.Top || DEFAULT_PAGE_SIZE;
       const skip = !!this.definition.Top ? 0 : s.skip;
@@ -257,14 +256,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         select,
         filter
       }).pipe(
-        tap((response: GetResponse) => this.state.total = response.TotalCount)
+        tap((response: GetResponse) => {
+          this.state.total = response.Result.length < top ?
+            response.Skip + response.Result.length : response.TotalCount;
+        })
       );
     } else {
       // SELECT
       const select = this.computeAggregateSelect();
       if (!select) {
         s.reportStatus = ReportStatus.error;
-        s.errorMessage = 'Drag items'; // TODO
+        s.errorMessage = 'Please add some dimensions or measures';
 
         return of(null);
       }
@@ -353,7 +355,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const label = () => !!measureDef.Label ? this.workspace.current.getMultilingualValueImmediate(measureDef, 'Label') :
         this.translate.instant('DefaultAggregationMeasure', {
           aggregation: this.translate.instant('MeasureDefinition_Aggregation_' + aggregation),
-          measure: desc.label // TODO: make it a function
+          measure: desc.label()
         });
 
       return { key, desc, aggregation, label };
@@ -410,10 +412,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           collection: targetCollection,
           autoExpand: dim.AutoExpand,
           label: () => !!dim.Label ? this.workspace.current.getMultilingualValueImmediate(dim, 'Label') :
-            propDesc.label // TODO: make it a function
+            propDesc.label()
         });
       } else {
-        // Find the shortest match, and add
+        // Find the shortest match, and add it to it
       }
     }
 
@@ -1461,7 +1463,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       if (!!screenUrl) {
         const tenantId = this.workspace.ws.tenantId;
         const screenUrlSegments = screenUrl.split('/');
-        
+
         // Should we add the master parameters here?
 
         this.router.navigate(['app', tenantId + '', ...screenUrlSegments, id]);

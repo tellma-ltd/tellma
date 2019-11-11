@@ -55,12 +55,12 @@ export interface EntityDescriptor {
     /**
      * The plural name of the entity (e.g. Agents).
      */
-    titlePlural: string;
+    titlePlural: () => string;
 
     /**
      * The singular name of the entity (e.g. Agent).
      */
-    titleSingular: string;
+    titleSingular: () => string;
 
     /**
      * The Entity properties that need to be selected from the server for the format function to succeed.
@@ -113,7 +113,7 @@ export interface PropDescriptorBase {
     /**
      * The label of this field, typically shown on table headers
      */
-    label: string;
+    label: () => string;
 
     /**
      * Whether the field value should be displayed as RTL

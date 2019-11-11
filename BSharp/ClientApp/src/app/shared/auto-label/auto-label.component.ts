@@ -97,7 +97,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
             throw new Error(`'${step}' is not a navigation property on '${currentCollection}', definition:'${currentDefinition}'`);
           }
 
-          labelArray.push(currentPropDesc.label);
+          labelArray.push(currentPropDesc.label());
         }
 
         this._label = labelArray.join(' / ');
