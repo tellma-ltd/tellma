@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { CurrencyForSave, metadata_Currency, Currency } from '~/app/data/entities/currency';
 import { ActivatedRoute } from '@angular/router';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
   selector: 'b-currencies-details',
@@ -16,7 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class CurrenciesDetailsComponent extends DetailsBaseComponent {
 
-  private _decimalPlacesChoices: { name: string, value: any }[];
+  private _decimalPlacesChoices: SelectorChoice[];
   private currenciesApi = this.api.currenciesApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
@@ -42,11 +43,11 @@ export class CurrenciesDetailsComponent extends DetailsBaseComponent {
     this.currenciesApi = this.api.currenciesApi(this.notifyDestruct$);
   }
 
-  get decimalPlacesChoices(): { name: string, value: any }[] {
+  get decimalPlacesChoices(): SelectorChoice[] {
 
     if (!this._decimalPlacesChoices) {
       const descriptor = metadata_Currency(this.ws, this.translate, null).properties.E as ChoicePropDescriptor;
-      this._decimalPlacesChoices = descriptor.choices.map(c => ({ name: descriptor.format(c), value: c }));
+      this._decimalPlacesChoices = descriptor.choices.map(c => ({ name: () => descriptor.format(c), value: c }));
     }
 
     return this._decimalPlacesChoices;

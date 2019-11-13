@@ -1,5 +1,5 @@
 import { NgModule, Component } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
@@ -133,7 +133,7 @@ export const routes: Routes = [
     ErrorComponent
   ],
   imports: [
-    BrowserModule,
+    NoopAnimationsModule,
     FontAwesomeModule,
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, enableTracing: false }),
     HttpClientModule,

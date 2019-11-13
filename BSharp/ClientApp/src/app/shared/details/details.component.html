@@ -161,7 +161,7 @@
   </div>
 
   <!-- Content Area -->
-  <div class="row bg-light" [class.b-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode"
+  <div class="row" [class.b-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode"
     [class.b-rest-of-screen]="isScreenMode">
     <div class="w-100" [class.b-main-document]="showSidebar">
 
@@ -172,7 +172,7 @@
             <ng-container *ngTemplateOutlet="documentHeaderTemplate;context: { model: activeModel, isEdit: isEdit }">
             </ng-container>
           </div>
-          <div class="row m-0 pl-1 pl-sm-3 pr-1 pr-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5">
+          <div class="row m-0 px-1 px-sm-3 pt-3 pt-sm-4 pb-3 pb-sm-5">
             <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, isEdit: isEdit }">
             </ng-container>
 

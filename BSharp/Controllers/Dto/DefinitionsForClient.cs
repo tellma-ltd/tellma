@@ -31,9 +31,21 @@ namespace BSharp.Controllers.Dto
         /// Mapping from lookup definition Id to lookup definition
         /// </summary>
         public Dictionary<string, LookupDefinitionForClient> Lookups { get; set; }
+
+        /// <summary>
+        /// Mapping from report definition Id to lookup definition
+        /// </summary>
+        public Dictionary<string, ReportDefinitionForClient> Reports { get; set; }
     }
 
     public abstract class DefinitionForClient
+    {
+        public string MainMenuSection { get; set; }
+        public string MainMenuIcon { get; set; }
+        public decimal MainMenuSortKey { get; set; }
+    }
+
+    public abstract class MasterDetailDefinitionForClient : DefinitionForClient
     {
         public string TitleSingular { get; set; }
         public string TitleSingular2 { get; set; }
@@ -41,12 +53,70 @@ namespace BSharp.Controllers.Dto
         public string TitlePlural { get; set; }
         public string TitlePlural2 { get; set; }
         public string TitlePlural3 { get; set; }
-        public string MainMenuSection { get; set; }
-        public string MainMenuIcon { get; set; }
-        public decimal MainMenuSortKey { get; set; }
     }
 
-    public class DocumentDefinitionForClient : DefinitionForClient
+    public class ReportDefinitionForClient : DefinitionForClient
+    {
+        public string Title { get; set; }
+        public string Title2 { get; set; }
+        public string Title3 { get; set; }
+        public string Description { get; set; }
+        public string Description2 { get; set; }
+        public string Description3 { get; set; }
+        public string Type { get; set; } // "Summary" or "Details"
+        public string DefaultView { get; set; }
+        public string Collection { get; set; }
+        public string DefinitionId { get; set; }
+        public List<ReportParameterDefinition> Parameters { get; set; }
+        public string Filter { get; set; } // On drill down for summary
+        public string OrderBy { get; set; } // On drill down for summary
+        public List<ReportSelectDefinition> Select { get; set; }
+        public List<ReportDimensionDefinition> Rows { get; set; }
+        public List<ReportDimensionDefinition> Columns { get; set; }
+        public List<ReportMeasureDefinition> Measures { get; set; }
+        public int Top { get; set; }
+        public bool ShowColumnsTotal { get; set; }
+        public bool ShowRowsTotal { get; set; }
+    }
+
+    public class ReportParameterDefinition
+    {
+        public string Key { get; set; }
+        public string Label { get; set; }
+        public string Label2 { get; set; }
+        public string Label3 { get; set; }
+        public bool IsRequired { get; set; }
+    }
+    
+    public class ReportSelectDefinition
+    {
+        public string Path { get; set; }
+        public string Label { get; set; }
+        public string Label2 { get; set; }
+        public string Label3 { get; set; }
+    }
+
+    public class ReportDimensionDefinition
+    {
+        public string Path { get; set; }
+        public string Label { get; set; }
+        public string Label2 { get; set; }
+        public string Label3 { get; set; }
+        public string OrderDirection { get; set; }
+        public bool AutoExpand { get; set; }
+    }
+
+    public class ReportMeasureDefinition
+    {
+        public string Path { get; set; }
+        public string Label { get; set; }
+        public string Label2 { get; set; }
+        public string Label3 { get; set; }
+        public string OrderDirection { get; set; }
+        public string Aggregation { get; set; }
+    }
+
+    public class DocumentDefinitionForClient : MasterDetailDefinitionForClient
     {
         // TODO
         public bool IsSourceDocument { get; internal set; }
@@ -58,7 +128,7 @@ namespace BSharp.Controllers.Dto
         // TODO
     }
 
-    public class AccountDefinitionForClient : DefinitionForClient
+    public class AccountDefinitionForClient : MasterDetailDefinitionForClient
     {
         public string ResponsibilityCenter_Label { get; set; }
         public string ResponsibilityCenter_Label2 { get; set; }
@@ -92,7 +162,7 @@ namespace BSharp.Controllers.Dto
         public string PartyReference_Visibility { get; set; }
     }
 
-    public class ResourceDefinitionForClient : DefinitionForClient
+    public class ResourceDefinitionForClient : MasterDetailDefinitionForClient
     {
         public string MassUnit_Label { get; set; }
         public string MassUnit_Label2 { get; set; }
@@ -182,7 +252,7 @@ namespace BSharp.Controllers.Dto
         public string ResourceLookup4_DefinitionId { get; set; }
     }
 
-    public class LookupDefinitionForClient : DefinitionForClient
+    public class LookupDefinitionForClient : MasterDetailDefinitionForClient
     {
 
     }
@@ -200,5 +270,18 @@ namespace BSharp.Controllers.Dto
         public const string RequiredInAccounts = nameof(RequiredInAccounts);
         public const string RequiredInEntries = nameof(RequiredInEntries);
         public const string OptionalInEntries = nameof(OptionalInEntries);
+    }
+
+    public static class ReportType
+    {
+        public const string Summary = nameof(Summary);
+        public const string Details = nameof(Details);
+    }
+
+    public static class ReportOrderDirection
+    {
+        public const string Asc = "asc";
+        public const string Desc = "desc";
+
     }
 }

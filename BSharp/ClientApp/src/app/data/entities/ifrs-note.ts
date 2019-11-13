@@ -22,40 +22,39 @@ export const IfrsConcept_IfrsType = {
   Regulatory: 'IfrsConcept_Regulatory'
 };
 
-let _currentLang: string;
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor;
 
 export function metadata_IfrsNote(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
-    _currentLang = trx.currentLang;
+  if (ws.settings !== _settings) {
     _settings = ws.settings;
     _cache = metadata_IfrsConceptInner(ws, trx, definitionId);
+    _cache.collection = 'IfrsNote';
     _cache.apiEndpoint = 'ifrs-notes';
-    _cache.properties.IsAggregate = { control: 'boolean', label: trx.instant('IfrsNotes_IsAggregate') };
-    _cache.properties.ForDebit = { control: 'boolean', label: trx.instant('IfrsNotes_ForDebit') };
-    _cache.properties.ForCredit = { control: 'boolean', label: trx.instant('IfrsNotes_ForCredit') };
+    _cache.screenUrl = 'ifrs-notes';
+    _cache.properties.IsAggregate = { control: 'boolean', label: () => trx.instant('IfrsNotes_IsAggregate') };
+    _cache.properties.ForDebit = { control: 'boolean', label: () => trx.instant('IfrsNotes_ForDebit') };
+    _cache.properties.ForCredit = { control: 'boolean', label: () => trx.instant('IfrsNotes_ForCredit') };
 
     // tree stuff
     _cache.properties.ChildCount = {
-      control: 'number', label: trx.instant('TreeChildCount'), minDecimalPlaces: 0,
+      control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0,
       maxDecimalPlaces: 0, alignment: 'right'
     };
     _cache.properties.ActiveChildCount = {
-      control: 'number', label: trx.instant('TreeActiveChildCount'),
+      control: 'number', label: () => trx.instant('TreeActiveChildCount'),
       minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
     };
     _cache.properties.Level = {
-      control: 'number', label: trx.instant('TreeLevel'),
+      control: 'number', label: () => trx.instant('TreeLevel'),
       minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
     };
     _cache.properties.Parent = {
-      control: 'navigation', label: trx.instant('TreeParent'),
+      control: 'navigation', label: () => trx.instant('TreeParent'),
       type: 'ProductCategory', foreignKeyName: 'ParentId'
     };
   }
 
   return _cache;
 }
-

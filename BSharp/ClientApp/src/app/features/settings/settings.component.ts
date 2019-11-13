@@ -13,6 +13,7 @@ import { handleFreshSettings } from '~/app/data/tenant-resolver.guard';
 import { StorageService } from '~/app/data/storage.service';
 import { GetEntityResponse } from '~/app/data/dto/get-entity-response';
 import { supportedCultures } from '~/app/data/supported-cultures';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
   selector: 'b-settings',
@@ -25,7 +26,7 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
   public _viewModelJson: string;
   public _editModel: Settings;
 
-  private _cultures: { name: string, value: any }[];
+  private _cultures: SelectorChoice[];
   private expand = '';
   private notifyFetch$: Subject<void>;
   private notifyDestruct$ = new Subject<void>();
@@ -272,11 +273,11 @@ export class SettingsComponent implements OnInit, OnDestroy, ICanDeactivate {
     return supportedCultures[culture];
   }
 
-  get cultures(): { name: string, value: any }[] {
+  get cultures(): SelectorChoice[] {
 
     if (!this._cultures) {
       this._cultures = Object.keys(supportedCultures)
-        .map(key => ({ name: supportedCultures[key], value: key }));
+        .map(key => ({ name: () => supportedCultures[key], value: key }));
     }
 
     return this._cultures;

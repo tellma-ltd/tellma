@@ -308,6 +308,225 @@ namespace BSharp.Controllers
                             MainMenuSection = "Administration",
                             MainMenuSortKey = 101m
                         }
+                    },
+
+                    Reports = new Dictionary<string, ReportDefinitionForClient>
+                    {
+                        ["my-amazing-report"] = new ReportDefinitionForClient
+                        {
+                            Title = "My Amazing Report",
+                            Title2 = "تقريري المذهل",
+                            Title3 = "我的惊人报告",
+                            MainMenuIcon = "chart-pie",
+                            MainMenuSection = "Financials",
+                            MainMenuSortKey = 202m,
+
+                            Type = ReportType.Summary,
+                            DefaultView = "bars_vertical",
+                            Collection = "MeasurementUnit",
+                            Filter = "UnitType eq @UnitType and (Name contains @Name or Name2 contains @Name or Name3 contains @Name)",
+                            Parameters = new List<ReportParameterDefinition>
+                            {
+                                new ReportParameterDefinition
+                                {
+                                    Key = "Name", // "FromDate"
+                                    Label = "Name Contains",
+                                    Label2 = "الإسم يحتوي",
+                                    Label3 = "我的密",
+                                    IsRequired = false
+                                },
+                            },
+                            Columns = new List<ReportDimensionDefinition>
+                            {
+                                new ReportDimensionDefinition
+                                {
+                                    Path = "ModifiedBy",
+                                    Label = "Modified By",
+                                    Label2 = "آخر تعديل",
+                                    Label3 = "我的密",
+                                    AutoExpand = true,
+                                },
+                                new ReportDimensionDefinition
+                                {
+                                    Path = "UnitType",
+                                    Label = "Unit Type",
+                                    Label2 = "نوع الوحدة",
+                                    Label3 = "我的密",
+                                    OrderDirection = "desc",
+                                    AutoExpand =true
+                                },
+                            },
+                            Rows = new List<ReportDimensionDefinition>
+                            {
+                                new ReportDimensionDefinition
+                                {
+                                    Path = "CreatedBy",
+                                    Label = "Created By",
+                                    Label2 = "إنشاء من قبل",
+                                    Label3 = "我的密",
+                                    AutoExpand = true,
+                                },
+                                new ReportDimensionDefinition
+                                {
+                                    Path = "Description3",
+                                    Label = "Unit Type",
+                                    Label2 = "نوع الوحدة",
+                                    Label3 = "我的密",
+                                    OrderDirection = "desc",
+                                    AutoExpand =true
+                                },
+                            },
+                            Measures = new List<ReportMeasureDefinition>
+                            {
+                                new ReportMeasureDefinition
+                                {
+                                    Path = "Id",
+                                    Aggregation = "count",
+                                    Label = "Count",
+                                    Label2 = "العدد",
+                                    Label3 = "我的密"
+                                },
+                                new ReportMeasureDefinition
+                                {
+                                    Path = "Id",
+                                    Aggregation = "avg",
+                                    Label = "Average",
+                                    Label2 = "المعدل",
+                                    Label3 = "我的密"
+                                }
+                            },
+                            ShowColumnsTotal = true,
+                            ShowRowsTotal = true,
+                        },
+                        ["my-incredible-report"] = new ReportDefinitionForClient
+                        {
+                            Title = "My Incredible Report",
+                            Title2 = "تقريري المذهل",
+                            Title3 = "我的惊人报告",
+                            MainMenuIcon = "chart-pie",
+                            MainMenuSection = "Financials",
+                            MainMenuSortKey = 202m,
+
+                            Type = ReportType.Summary,
+                            DefaultView = "bars_vertical",
+                            Collection = "Resource",
+                            DefinitionId = "finished-goods",
+                            //                    Filter = "Memo contains @Memo",
+                            Parameters = new List<ReportParameterDefinition>
+                            {
+                                new ReportParameterDefinition
+                                {
+                                    Key = "Memo", // "FromDate"
+                                    Label = "Memo Contains",
+                                    Label2 = "الملاحظات تحتوي",
+                                    Label3 = "我的密",
+                                    IsRequired = false
+                                }
+                            },
+                            Columns = new List<ReportDimensionDefinition>
+                            {
+
+                            },
+                            Rows = new List<ReportDimensionDefinition>
+                            {
+                                //new ReportDimensionDefinition
+                                //{
+                                //    Path = "ModifiedBy",
+                                //    Label = "Modified By",
+                                //    Label2 = "آخر تعديل",
+                                //    Label3 = "我的密",
+                                //    AutoExpand =false,
+                                //},
+                                //new ReportDimensionDefinition
+                                //{
+                                //    Path = "ResourceLookup1",
+                                //    //Label = "Modified By State",
+                                //    //Label2 = "آخر تعديل",
+                                //    //Label3 = "我的密",
+                                //    OrderDirection = "desc",
+                                //    AutoExpand = true,
+                                //},
+                                //new ReportDimensionDefinition
+                                //{
+                                //    Path = "ResourceClassification",
+                                //    //Label = "Unit Type",
+                                //    //Label2 = "نوع الوحدة",
+                                //    //Label3 = "我的密",
+                                //   //  OrderDirection = "desc",
+                                //    AutoExpand =true
+                                //},
+
+                            },
+                            Measures = new List<ReportMeasureDefinition>
+                            {
+                                new ReportMeasureDefinition
+                                {
+                                    Path = "Id",
+                                    Aggregation = "count",
+                                    Label = "Count",
+                                    Label2 = "العدد",
+                                    Label3 = "我的密"
+                                },
+                                new ReportMeasureDefinition
+                                {
+                                    Path = "Id",
+                                    Aggregation = "avg",
+                                    Label = "Average",
+                                    Label2 = "المعدل",
+                                    Label3 = "我的密"
+                                }
+                            },
+                            ShowColumnsTotal = false,
+                            ShowRowsTotal = true,
+                        },
+
+                        ["my-awesome-report"] = new ReportDefinitionForClient
+                        {
+                            Title = "My Awesome Report",
+                            Title2 = "تقريري العجيب",
+                            Title3 = "我的惊人报告",
+                            MainMenuIcon = "chart-pie",
+                            MainMenuSection = "Financials",
+                            MainMenuSortKey = 203m,
+                            // Top = 10,
+                            Type = ReportType.Details,
+                            Collection = "MeasurementUnit",
+                            Filter = "UnitType eq @UnitType",
+                            OrderBy = "BaseAmount desc",
+                            Parameters = new List<ReportParameterDefinition>
+                            {
+                            },
+                            Select = new List<ReportSelectDefinition>
+                            {
+                                new ReportSelectDefinition
+                                {
+                                    Path = ""
+                                },
+                                new ReportSelectDefinition
+                                {
+                                    Path = "Description"
+                                },
+                                new ReportSelectDefinition
+                                {
+                                    Path = "UnitType"
+                                },
+                                new ReportSelectDefinition
+                                {
+                                    Path = "CreatedBy"
+                                },
+                                new ReportSelectDefinition
+                                {
+                                    Path = "CreatedBy/State"
+                                },
+                                new ReportSelectDefinition
+                                {
+                                    Path = "BaseAmount",
+                                    Label = "My Base Amount",
+                                    Label2 = "مقداري الأساسي",
+                                    Label3 = "我的惊人报告"
+                                }
+                            }
+                        }
                     }
                 };
 
@@ -316,9 +535,9 @@ namespace BSharp.Controllers
                 return new DataWithVersion<DefinitionsForClient>
                 {
                     Data = result,
-                    Version = appRepo.GetTenantInfo().DefinitionsVersion + "y"
+                    Version = appRepo.GetTenantInfo().DefinitionsVersion
                 };
             }
         }
-    }
+    };
 }

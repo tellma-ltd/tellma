@@ -211,11 +211,8 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     // manually here if this is not the first time these properties are set
     // to simulate a screen closing and opening again
     const screenDefProperties = [changes.collection, changes.apiEndpoint, changes.idString];
-
-    const anyChanges = screenDefProperties.some(prop => !!prop);
-    const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
-
-    if (anyChanges && notFirstChange) {
+    const screenDefChanges = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+    if (screenDefChanges) {
       this.newScreen();
     }
   }

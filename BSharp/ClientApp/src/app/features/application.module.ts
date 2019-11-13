@@ -55,6 +55,8 @@ import { AccountsImportComponent } from './accounts/accounts-import.component';
 import { AccountsPickerComponent } from './accounts/accounts-picker.component';
 import { AgentsPickerComponent } from './agents/agents-picker.component';
 import { ResourcesPickerComponent } from './resources/resources-picker.component';
+import { ReportComponent } from './report/report.component';
+import { ReportResultsComponent } from './report-results/report-results.component';
 
 const routes: Routes = [
   {
@@ -257,6 +259,13 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Report
+      {
+        path: 'report/:definitionId',
+        component: ReportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+
       // Settings
       {
         path: 'settings',
@@ -323,7 +332,9 @@ const routes: Routes = [
     AccountsImportComponent,
     AccountsPickerComponent,
     AgentsPickerComponent,
-    ResourcesPickerComponent
+    ResourcesPickerComponent,
+    ReportComponent,
+    ReportResultsComponent
   ],
   imports: [
     SharedModule,

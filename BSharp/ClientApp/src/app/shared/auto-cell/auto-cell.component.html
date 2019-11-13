@@ -3,15 +3,15 @@
   <ng-container *ngSwitchCase="2" [ngSwitch]="control">
 
     <span *ngSwitchCase="'error'" class="text-danger"> Error </span>
-    <span *ngSwitchCase="'text'">{{ value }}</span>
-    <span *ngSwitchCase="'choice'"> {{ choiceValue }} </span>
-    <div *ngSwitchCase="'state'" [style.text-align]="alignment">
-      <span class="text-white px-2" [style.background-color]="stateColor"> {{ stateValue }} </span>
+    <span *ngSwitchCase="'text'">{{ displayValue }}</span>
+    <span *ngSwitchCase="'choice'">{{ displayValue }}</span>
+    <div class="d-inline" *ngSwitchCase="'state'" [style.text-align]="alignment">
+      <span class="text-white px-2" [style.background-color]="stateColor">{{ displayValue }}</span>
     </div>
-    <span *ngSwitchCase="'boolean'">{{ booleanValue }}</span>
-    <span *ngSwitchCase="'number'" class="d-block" [style.text-align]="alignment">{{ value | number:digitsInfo }}</span>
-    <span *ngSwitchCase="'date'">{{ value  | date:'yyyy-MM-dd' }}</span>
-    <span *ngSwitchCase="'datetime'">{{ value | date:'yyyy-MM-dd HH:mm' }}</span>
+    <span *ngSwitchCase="'boolean'">{{ displayValue }}</span>
+    <span *ngSwitchCase="'number'" class="d-block" [style.text-align]="alignment">{{ displayValue }}</span>
+    <span *ngSwitchCase="'date'">{{ displayValue }}</span>
+    <span *ngSwitchCase="'datetime'">{{ displayValue }}</span>
     <span *ngSwitchCase="'navigation'">{{ navigationValue }}</span>
     <span *ngSwitchDefault>{{ value }}</span>
 

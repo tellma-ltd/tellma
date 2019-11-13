@@ -1,0 +1,150 @@
+<div class="h-100 d-flex flex-column">
+    <div class="row border-bottom bg-white">
+
+        <!-- Breadcrumb -->
+        <div class="col-12 p-1">
+            <ul class="breadcrumb mb-0">
+                <li class="breadcrumb-item active">
+                    {{ title }}
+                </li>
+            </ul>
+        </div>
+
+        <!-- Parameters -->
+        <div class="mx-auto mb-3 w-100" style="max-width: 700px" *ngIf="showParametersSection">
+            <div class="w-100" *ngIf="showParameters">
+                <div class="row m-0 px-0 px-lg-1 py-1">
+                    <b-form-group *ngFor="let p of parameters" class="b-form-group"
+                        [label]="p.label() + (p.isRequired ? ' *' : '')" [ngSwitch]="p.desc.control">
+                        <!-- Text -->
+                        <b-text-editor *ngSwitchCase="'text'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                            [ngModelOptions]="{ updateOn: 'blur' }" (ngModelChange)="onArgumentChange()">
+                        </b-text-editor>
+
+                        <!-- Decimal -->
+                        <b-decimal-editor *ngSwitchCase="'number'" [(ngModel)]="arguments[p.key]"
+                            [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onArgumentChange()" [decimalPlaces]="p.desc.maxDecimalPlaces">
+                        </b-decimal-editor>
+
+                        <!-- Date -->
+                        <b-date-picker *ngSwitchCase="'date'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                            [ngModelOptions]="{ updateOn: 'blur' }" (ngModelChange)="onArgumentChange()">
+                        </b-date-picker>
+
+                        <!-- Date Time -->
+                        <ng-container *ngSwitchCase="'datetime'">
+                            <div class="text-danger font-weight-bold" *ngSwitchDefault>
+                                TODO: datetime control
+                            </div>
+                        </ng-container>
+
+                        <!-- Choice -->
+                        <b-selector *ngSwitchCase="'choice'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                            [choices]="choices(p.desc)" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onArgumentChange()">
+                        </b-selector>
+
+                        <!-- State -->
+                        <b-selector *ngSwitchCase="'state'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
+                            [choices]="choices(p.desc)" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onArgumentChange()">
+                        </b-selector>
+
+                        <!-- Boolean -->
+                        <div *ngSwitchCase="'boolean'" class="custom-control custom-checkbox b-labelless-checkbox">
+                            <input type="checkbox" class="custom-control-input" [(ngModel)]="arguments[p.key]"
+                                id="{{p.key}}" (ngModelChange)="onArgumentChange()">
+                            <label class="custom-control-label b-pointer" for="{{p.key}}">&zwnj;</label>
+                        </div>
+
+                        <!-- Navigation -->
+                        <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc.collection">
+                            <div class="text-danger font-weight-bold" *ngSwitchDefault>
+                                TODO: navigation controls
+                            </div>
+                        </ng-container>
+
+                        <div class="text-danger font-weight-bold" *ngSwitchDefault>
+                            No suitable control for '{{ p.desc.control }}'
+                        </div>
+                    </b-form-group>
+                </div>
+            </div>
+            <b-error-message *ngIf="showParametersErrorMessage">
+                {{ parametersErrorMessage }}
+            </b-error-message>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="col-12 p-1 d-flex justify-content-between b-toolbar">
+
+            <!-- Left Buttons -->
+            <div class="d-flex">
+
+                <!-- Refresh -->
+                <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onRefresh()"
+                    [disabled]="!areAllRequiredParamsSpecified">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                    <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
+                </button>
+
+                <!-- Data dropdown -->
+                <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+                    <button type="button"
+                        class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle"
+                        ngbDropdownToggle>
+                        {{ 'Data' | translate }}
+                    </button>
+                    <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
+                        <button type="button" class="dropdown-item btn-light" (click)="onExport()"
+                            [disabled]="!canExport">
+                            {{ 'Export' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Buttons -->
+            <div>
+                <!-- Report View Toggle -->
+                <div *ngIf="showReportViewToggle" class="btn-group btn-group-toggle b-toolbar-button">
+                    <label *ngFor="let view of views" class="btn btn-sm btn-light b-pointer"
+                        [class.active]="isActive(view.view)" title="{{ view.label | translate }}"
+                        (click)="onView(view.view)">
+                        <input type="radio" name="{{view.view}}">
+                        <fa-icon [icon]="view.icon"></fa-icon>
+                    </label>
+                </div>
+
+                <!-- Paging -->
+                <ng-container *ngIf="showPagingControls">
+                    <div class="d-inline small mr-2 ml-2">
+                        <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> -
+                            <span>{{ to | number }}</span>
+                        </span>
+                        <span class="b-vertical-align-middle"> / {{ total | number }}</span>
+                    </div>
+                    <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+                        title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                        <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+                    </button>
+                    <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+                        title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+                        <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                    </button>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="row b-rest-of-screen">
+        <b-report-results class="h-100 w-100" *ngIf="areAllRequiredParamsSpecified"
+            [definition]="definition" [arguments]="immutableArguments" [view]="view" [refresh]="refresh"
+            [stateKey]="stateKey" [skip]="skip"></b-report-results>
+        <div class="w-100 p-3 px-4" *ngIf="!areAllRequiredParamsSpecified">
+            <fa-icon icon="info-circle"></fa-icon>
+            &nbsp;
+            {{ 'FillRequiredFields' | translate }}
+        </div>
+    </div>
+</div>

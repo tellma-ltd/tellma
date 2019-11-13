@@ -63,7 +63,7 @@
     </b-form-group>
 
     <!-- Type -->
-    <b-form-group class="b-form-group" [label]="p.AccountType?.label"
+    <b-form-group class="b-form-group" [label]="p.AccountType | label"
         [serverErrors]="model?.serverErrors?.AccountTypeId">
         <b-view-link *ngIf="!isEdit" link="../../../account-types" [itemId]="model?.AccountTypeId">
             <b-auto-cell collection="Account" [definition]="definitionId" path="AccountType" [entity]="model">
@@ -74,7 +74,7 @@
     </b-form-group>
 
     <!-- Classification -->
-    <b-form-group class="b-form-group" [label]="p.AccountClassification?.label"
+    <b-form-group class="b-form-group" [label]="p.AccountClassification | label"
         [serverErrors]="model?.serverErrors?.AccountClassificationId">
         <b-view-link *ngIf="!isEdit" link="../../../account-classifications" [itemId]="model?.AccountClassificationId">
             <b-auto-cell collection="Account" [definition]="definitionId" path="AccountClassification" [entity]="model">
@@ -85,7 +85,7 @@
     </b-form-group>
 
     <!-- Custodian -->
-    <b-form-group class="b-form-group" [label]="p.Custodian?.label" *ngIf="!!p.Custodian"
+    <b-form-group class="b-form-group" [label]="p.Custodian | label" *ngIf="!!p.Custodian"
         [serverErrors]="model?.serverErrors?.CustodianId">
         <b-view-link *ngIf="!isEdit" link="../../../agents" [itemId]="model?.CustodianId">
             <b-auto-cell collection="Account" [definition]="definitionId" path="Custodian" [entity]="model">
@@ -97,7 +97,7 @@
     </b-form-group>
 
     <!-- Resource -->
-    <b-form-group class="b-form-group" [label]="p.Resource?.label" *ngIf="!!p.Resource"
+    <b-form-group class="b-form-group" [label]="p.Resource | label" *ngIf="!!p.Resource"
         [serverErrors]="model?.serverErrors?.ResourceId">
         <b-view-link *ngIf="!isEdit" [link]="'../../../resources/' + ws.Resource[model?.ResourceId]?.ResourceDefinitionId"
             [itemId]="model?.ResourceId">
@@ -111,7 +111,7 @@
     </b-form-group>
 
     <!-- Party Reference -->
-    <b-form-group class="b-form-group" [label]="p.PartyReference?.label" *ngIf="!!p.PartyReference"
+    <b-form-group class="b-form-group" [label]="p.PartyReference | label" *ngIf="!!p.PartyReference"
         [serverErrors]="model?.serverErrors?.PartyReference">
         <div *ngIf="!isEdit">{{ model?.PartyReference }}</div>
         <b-text-editor *ngIf="isEdit" [(ngModel)]="model.PartyReference" [ngModelOptions]="{ updateOn: 'blur' }"

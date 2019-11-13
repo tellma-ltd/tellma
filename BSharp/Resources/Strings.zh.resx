@@ -265,8 +265,23 @@
   <data name="Data" xml:space="preserve">
     <value>数据</value>
   </data>
+  <data name="DefaultAggregationMeasure" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
   <data name="DefaultError" xml:space="preserve">
     <value>发生未知故障。</value>
+  </data>
+  <data name="Definition_State" xml:space="preserve">
+    <value>州</value>
+  </data>
+  <data name="Definition_State_Archived" xml:space="preserve">
+    <value>存档</value>
+  </data>
+  <data name="Definition_State_Deployed" xml:space="preserve">
+    <value>部署</value>
+  </data>
+  <data name="Definition_State_Draft" xml:space="preserve">
+    <value>草案</value>
   </data>
   <data name="Description" xml:space="preserve">
     <value>描述</value>
@@ -622,6 +637,9 @@
   <data name="GoTo0" xml:space="preserve">
     <value>转到{0}</value>
   </data>
+  <data name="GrandTotal" xml:space="preserve">
+    <value>累计</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>家</value>
   </data>
@@ -711,6 +729,24 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>菜单排序关键字</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_avg" xml:space="preserve">
+    <value>平均</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_count" xml:space="preserve">
+    <value>计数</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_dcount" xml:space="preserve">
+    <value>重复计数</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_max" xml:space="preserve">
+    <value>最大值</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_min" xml:space="preserve">
+    <value>最低限度</value>
+  </data>
+  <data name="MeasureDefinition_Aggregation_sum" xml:space="preserve">
+    <value>和</value>
   </data>
   <data name="MeasurementUnit" xml:space="preserve">
     <value>计量单位</value>
@@ -858,6 +894,9 @@
   </data>
   <data name="Permission_Update" xml:space="preserve">
     <value>更新</value>
+  </data>
+  <data name="Permission_UpdateState" xml:space="preserve">
+    <value>更新状态</value>
   </data>
   <data name="Permission_View" xml:space="preserve">
     <value>视图</value>
@@ -1120,6 +1159,9 @@
   <data name="TitleSingular" xml:space="preserve">
     <value>奇异名称</value>
   </data>
+  <data name="Total" xml:space="preserve">
+    <value>总</value>
+  </data>
   <data name="TreeParent" xml:space="preserve">
     <value>亲</value>
   </data>
@@ -1137,9 +1179,6 @@
   </data>
   <data name="TwoFactorAuthenticatorHasBeenDisabled" xml:space="preserve">
     <value>2FA已被禁用。通过建立一个认证程序，你可以重新启用2FA</value>
-  </data>
-  <data name="UpdateState" xml:space="preserve">
-    <value>更新状态</value>
   </data>
   <data name="User" xml:space="preserve">
     <value>用户</value>

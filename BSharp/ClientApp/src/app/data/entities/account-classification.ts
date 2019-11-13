@@ -27,14 +27,12 @@ export class AccountClassification extends AccountClassificationForSave {
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
-let _currentLang: string;
 let _settings: SettingsForClient;
 let _cache: EntityDescriptor = null;
 
 export function metadata_AccountClassification(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (trx.currentLang !== _currentLang || ws.settings !== _settings) {
-    _currentLang = trx.currentLang;
+  if (ws.settings !== _settings) {
     _settings = ws.settings;
 
     // clear the cache
@@ -42,45 +40,46 @@ export function metadata_AccountClassification(ws: TenantWorkspace, trx: Transla
   }
 
   if (!_cache) {
-    _currentLang = trx.currentLang;
     _settings = ws.settings;
     const entityDesc: EntityDescriptor = {
-      titleSingular: trx.instant('AccountClassification'),
-      titlePlural: trx.instant('AccountClassifications'),
+      collection: 'AccountClassification',
+      titleSingular: () => trx.instant('AccountClassification'),
+      titlePlural: () => trx.instant('AccountClassifications'),
       select: _select,
       apiEndpoint: 'account-classifications',
+      screenUrl: 'account-classifications',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
-        Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
-        Code: { control: 'text', label: trx.instant('Code') },
+        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Code: { control: 'text', label: () => trx.instant('Code') },
 
         // tree stuff
         Parent: {
-          control: 'navigation', label: trx.instant('TreeParent'), type: 'AccountClassification',
+          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'AccountClassification',
           foreignKeyName: 'ParentId'
         },
         ChildCount: {
-          control: 'number', label: trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
+          control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },
         ActiveChildCount: {
-          control: 'number', label: trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
+          control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
           maxDecimalPlaces: 0, alignment: 'right'
         },
         Level: {
-          control: 'number', label: trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
+          control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
           alignment: 'right'
         },
 
-        IsDeprecated: { control: 'boolean', label: trx.instant('AccountClassification_IsDeprecated') },
-        CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        IsDeprecated: { control: 'boolean', label: () => trx.instant('AccountClassification_IsDeprecated') },
+        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
+        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
+        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
       }
     };
 

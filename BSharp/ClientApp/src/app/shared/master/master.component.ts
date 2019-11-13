@@ -10,7 +10,7 @@ import { catchError, debounceTime, distinctUntilChanged, switchMap, tap, finaliz
 import { ApiService } from '~/app/data/api.service';
 import { GetResponse, EntitiesResponse } from '~/app/data/dto/get-response';
 import { TemplateArguments_format } from '~/app/data/dto/template-arguments';
-import { addToWorkspace, downloadBlob } from '~/app/data/util';
+import { addToWorkspace, downloadBlob, isSpecified } from '~/app/data/util';
 import {
   MasterDetailsStore,
   MasterStatus,
@@ -25,6 +25,7 @@ import { metadata, EntityDescriptor, entityDescriptorImpl } from '~/app/data/ent
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { handleFreshUserSettings } from '~/app/data/tenant-resolver.guard';
 import { StorageService } from '~/app/data/storage.service';
+import { SelectorChoice } from '../selector/selector.component';
 
 enum SearchView {
   tiles = 'tiles',
@@ -140,7 +141,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
   private notifySaveSettingsOnServer$ = new Subject<{ key: string, value: string }>();
-  private _formatChoices: { name: string, value: any }[];
+  private _formatChoices: SelectorChoice[];
   private _selectOld = 'null';
   private _tableColumnPaths: string[] = [];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
@@ -216,7 +217,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
     // use the default
     this.searchView = (!!window && window.innerWidth >= 1050) ? SearchView.table : SearchView.tiles;
-    let hasChanged = false;
 
     // default display mode
     let displayMode: MasterDisplayMode = this.enableTreeView ?
@@ -226,6 +226,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // taking a snapshot is enough as this is only required first time the screen loads
     // subsequent changes (while the component is alive) are set in the state before the url
     // is updated, to handle popup mode (where the URL params are not used)
+    let hasChanged = false;
     const params = this.route.snapshot.paramMap;
     if (this.isPopupMode) {
 
@@ -290,6 +291,12 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         this.state.skip = urlSkip;
         hasChanged = true;
       }
+
+      const urlInactive = params.get('inactive') === 'true';
+      if (urlInactive !== !!this.state.inactive) {
+        this.state.inactive = urlInactive;
+        hasChanged = true;
+      }
     }
 
     // // level (This is not part of the screen URL)
@@ -328,11 +335,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // manually here if this is not the first time these properties are set
     // to simulate a screen closing and opening again
     const screenDefProperties = [changes.collection, changes.definition];
-
-    const anyChanges = screenDefProperties.some(prop => !!prop);
-    const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
-
-    if (anyChanges && notFirstChange) {
+    const screenDefChanges = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+    if (screenDefChanges) {
 
       this.ngOnDestroy();
       this.ngOnInit();
@@ -570,6 +574,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         params.filter = s.customFilter;
       }
 
+      if (isSpecified(s.inactive)) {
+        params.inactive = s.inactive;
+      }
+
       this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
     }
   }
@@ -588,7 +596,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   get titleSingular(): string {
     const desc = this.entityDescriptor;
-    return !!desc ? desc.titleSingular : null;
+    return !!desc ? desc.titleSingular() : null;
   }
 
   private computeSelect(): string {
@@ -837,7 +845,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
       // If the data is loaded, just count the data
       return Math.max(s.skip + s.masterIds.length, 0);
     } else {
-      // Otherwise dispaly the selected count while the data is loading
+      // Otherwise display the selected count while the data is loading
       return Math.min(s.skip + s.top, this.total);
     }
   }
@@ -1085,11 +1093,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return ((weight / totalWeight) * 100) + '%';
   }
 
-  get formatChoices(): { name: string, value: any }[] {
+  get formatChoices(): SelectorChoice[] {
 
     if (!this._formatChoices) {
       this._formatChoices = Object.keys(TemplateArguments_format)
-        .map(key => ({ name: TemplateArguments_format[key], value: key }));
+        .map(key => ({ name: () => this.translate.instant(TemplateArguments_format[key]), value: key }));
     }
 
     return this._formatChoices;

@@ -1,0 +1,219 @@
+<!-- Details (Flat Table) -->
+<div class="w-100 h-100 table-responsive" *ngIf="showResults && showDetails">
+    <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
+        <table class="table table-hover table-striped table-sm bg-white border-bottom b-master-table text-nowrap">
+            <!-- Column Header -->
+            <thead>
+                <tr>
+                    <th style="width:10px"></th>
+                    <th *ngFor="let col of select">
+                        <b-auto-label *ngIf="!col.Label" [collection]="collection" [path]="col.Path"
+                            [definition]="definition">
+                        </b-auto-label><span *ngIf="!!col.Label">{{ selectLabel(col) }}</span>
+                    </th>
+                </tr>
+            </thead>
+            <!-- Rows -->
+            <tbody>
+                <tr class="b-pointer" *cdkVirtualFor="let entity of entities" [class.b-highlight]="false">
+                    <td></td>
+                    <td *ngFor="let col of select" (click)="onFlatSelect(entity)">
+                        <b-auto-cell [collection]="collection" [path]="col.Path" [definition]="definition"
+                            [entity]="entity">
+                        </b-auto-cell>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </cdk-virtual-scroll-viewport>
+</div>
+
+<!-- Summary (Pivot and Charts) -->
+<ng-container *ngIf="showResults && showSummary" [ngSwitch]="view">
+
+    <!-- Card -->
+    <ng-container *ngSwitchCase="'card'" [ngSwitch]="supportsPoint">
+        <div class="h-100 d-flex justify-content-center py-4" *ngIf="supportsPoint;else notsupported">
+            <h1 class="display-3 b-report-measure mx-5" (click)="onPointSelect()"> {{ point }} </h1>
+        </div>
+    </ng-container>
+
+    <!-- Vertical Bar Chart -->
+    <ng-container *ngSwitchCase="'bars_vertical'">
+        <ng-container *ngIf="supportsMulti;else notsupported">
+            <ngx-charts-bar-vertical class="b-ltr" *ngIf="numberOfDimensions === 1" [animations]="animations"
+                [scheme]="colorScheme" [results]="single" [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis"
+                [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="xAxisLabel"
+                [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
+                (select)="onChartSelect($event.name)">
+            </ngx-charts-bar-vertical>
+
+            <ngx-charts-bar-vertical-2d class="b-ltr" *ngIf="numberOfDimensions === 2" [animations]="animations"
+                [scheme]="colorScheme" [results]="multi" [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis"
+                [legend]="false" [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
+                (select)="onChartSelect($event.name)">
+            </ngx-charts-bar-vertical-2d>
+        </ng-container>
+    </ng-container>
+
+    <!-- Line Chart -->
+    <ng-container *ngSwitchCase="'line'">
+        <ngx-charts-line-chart class="b-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
+            [scheme]="colorScheme" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
+            [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
+            [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
+            (select)="onChartSelect($event.name)">
+        </ngx-charts-line-chart>
+    </ng-container>
+
+    <!-- Pie Chart -->
+    <ng-container *ngSwitchCase="'pie'">
+        <ngx-charts-pie-chart class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+            [scheme]="colorScheme" [results]="single" [labelFormatting]="formatChartDimension" [labels]="true"
+            (select)="onChartSelect($event.name)">
+        </ngx-charts-pie-chart>
+    </ng-container>
+
+    <!-- Not supported message -->
+    <ng-template #notsupported>
+        <div class="w-100 p-3 px-4" *ngIf="!areAllRequiredParamsSpecified">
+            <fa-icon icon="info-circle"></fa-icon>
+            &nbsp;
+            {{ 'ChartTypeDoesNotSupportNDimensions' | translate: { count: numberOfDimensions } }}
+        </div>
+    </ng-template>
+
+    <!-- Pivot Table -->
+    <ng-container *ngSwitchCase="'pivot'">
+        <cdk-virtual-scroll-viewport class="h-100" itemSize="33">
+            <table class="table table-hover table-bordered border table-sm bg-white b-report-table text-nowrap">
+                <tbody>
+                    <!-- Top Section -->
+                    <ng-container *ngFor="let row of columnHeaders; index as r">
+                        <tr *ngIf="showHeaderRow(r)">
+
+                            <!-- Blank Cell -->
+                            <td *ngIf="r === 0 && !!colSpan" class="b-report-dimension" [colSpan]="colSpan"
+                                [rowSpan]="rowSpan">
+                                &zwnj;
+                            </td>
+
+                            <!-- Column Cells -->
+                            <ng-container *ngFor="let col of row; index as i; trackBy: trackByObject"
+                                [ngSwitch]="col.type">
+                                <td *ngIf="col.isVisible" class="b-report-dimension align-middle"
+                                    [class.font-weight-bold]="col.isTotal" [rowSpan]="col.rowSpan"
+                                    [colSpan]="col.colSpan">
+                                    <ng-container *ngSwitchCase="'dimension'">
+                                        <ng-container *ngIf="hasChildren(col)">
+                                            <button class="border-0 px-2 h-100 font-weight-normal"
+                                                style="background-color: transparent" (click)="onExpandColumn(col)">
+                                                <fa-icon icon="angle-right" [flip]="flipArrow(col)"
+                                                    [rotate]="rotateArrow(col)">
+                                                </fa-icon>
+                                            </button>&nbsp;</ng-container>
+                                        <b-auto-cell *ngIf="isDefined(col)" [collection]="collection"
+                                            [definition]="definitionId" [path]="col.path"
+                                            [finalValue]="finalValue(col.collection, col.value)" [useFinalValue]="true">
+                                        </b-auto-cell>
+                                        <span class="font-italic text-muted"
+                                            *ngIf="!isDefined(col)">{{ 'Undefined' | translate }}</span>
+                                    </ng-container>
+                                    <ng-container *ngSwitchCase="'label'">
+                                        {{ col.label() }}
+                                    </ng-container>
+                                </td>
+                            </ng-container>
+
+                        </tr>
+                    </ng-container>
+
+                    <!-- Measure Labels -->
+                    <tr *ngIf="showMeasureLabels">
+
+                        <!-- Blank Cell -->
+                        <td *ngIf="(!showHeaderRow(0) || columnHeaders.length === 0) && !!colSpan"
+                            class="b-report-dimension" [colSpan]="colSpan" [rowSpan]="1">
+                            &zwnj;
+                        </td>
+
+                        <!-- Measure Labels -->
+                        <ng-container *ngFor="let cell of rows[0]">
+                            <ng-container *ngIf="cell.type === 'measure' && isMeasureVisible(cell)">
+                                <td class="b-report-dimension" [class.font-weight-bold]="cell.isTotal"
+                                    *ngFor="let info of measures"> {{ info.label() }}
+                                </td>
+                            </ng-container>
+                        </ng-container>
+                    </tr>
+
+                    <!-- Bottom Section -->
+                    <tr *cdkVirtualFor="let row of rows; index as r; trackBy: trackByObject" style="height: 32px">
+                        <ng-container *ngFor="let cell of row" [ngSwitch]="cell.type">
+
+                            <!-- Row Cell -->
+                            <td class="b-report-dimension" *ngSwitchCase="'dimension'">
+                                <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
+                                    style="background-color: transparent" [style.margin-left]="paddingLeft(cell)"
+                                    [style.margin-right]="paddingRight(cell)"
+                                    [style.opacity]="!hasChildren(cell) ? 0 : 1" [disabled]="!hasChildren(cell)"
+                                    (click)="onExpandRow(cell)">
+                                    <fa-icon icon="angle-right" [flip]="flipArrow(cell)" [rotate]="rotateArrow(cell)">
+                                    </fa-icon>
+                                </button>&nbsp;<b-auto-cell *ngIf="isDefined(cell)" [collection]="collection"
+                                    [definition]="definitionId" [path]="cell.path"
+                                    [finalValue]="finalValue(cell.collection, cell.value)" [useFinalValue]="true">
+                                </b-auto-cell><span class="font-italic text-muted"
+                                    *ngIf="!isDefined(cell)">{{ 'Undefined' | translate }}</span>
+                            </td>
+
+                            <!-- Measure Cells -->
+                            <ng-container *ngSwitchCase="'measure'">
+                                <ng-container *ngIf="isMeasureVisible(cell)">
+                                    <td class="b-report-measure" [class.font-weight-bold]="cell.isTotal"
+                                        *ngFor="let info of measures; index as i" (click)="onMeasureClick(cell, r)">
+                                        <b-auto-cell [propDescriptor]="info.desc" [entity]="cell.values[i]">
+                                        </b-auto-cell>
+                                    </td>
+                                    <td *ngIf="measures.length === 0" class="b-report-measure"
+                                        (click)="onMeasureClick(cell, r)">
+
+                                    </td>
+                                </ng-container>
+                            </ng-container>
+
+                            <!-- Labels -->
+                            <ng-container *ngSwitchCase="'label'">
+                                <td class="b-report-dimension" [class.font-weight-bold]="cell.isTotal">
+                                    <button class="border-0 px-2 h-100 font-weight-normal" *ngIf="addRowExpanders"
+                                        style="background-color: transparent" style="opacity: 0" disabled>
+                                        <fa-icon icon="angle-right">
+                                        </fa-icon>
+                                    </button>&nbsp;{{ cell.label() }}
+                                </td>
+                            </ng-container>
+                        </ng-container>
+                    </tr>
+                </tbody>
+            </table>
+        </cdk-virtual-scroll-viewport>
+    </ng-container>
+</ng-container>
+
+<!-- Spinner -->
+<div class="w-100 p-2 d-flex justify-content-center mt-3" *ngIf="showSpinner">
+    <b-spinner [scale]="2"></b-spinner>
+</div>
+
+<!-- No items found -->
+<div class="w-100 pl-3 pr-3 mt-3" *ngIf="showNoItemsFound">
+    {{ 'NoItemsFound' | translate }}
+</div>
+
+<!-- Error message -->
+<div class="w-100 mt-3" *ngIf="showErrorMessage">
+    <b-error-message>
+        {{ errorMessage }}
+    </b-error-message>
+</div>

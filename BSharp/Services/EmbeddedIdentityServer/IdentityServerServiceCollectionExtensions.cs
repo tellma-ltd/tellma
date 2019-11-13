@@ -151,7 +151,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 opt.AllowAreas = true;
                 opt.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
                 opt.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
-
             });
 
             return services;

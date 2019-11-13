@@ -103,37 +103,37 @@ export class IfrsEntryClassification extends EntityWithKey {
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 
-let _voucherBookletLang: string;
 let _voucherBookletSettings: SettingsForClient;
 let _voucherBookletCache: EntityDescriptor;
 
 export function metadata_VoucherBooklet(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (trx.currentLang !== _voucherBookletLang || ws.settings !== _voucherBookletSettings) {
-    _voucherBookletLang = trx.currentLang;
+  if (ws.settings !== _voucherBookletSettings) {
     _voucherBookletSettings = ws.settings;
     _voucherBookletCache = {
-      titleSingular: 'Voucher Type',
-      titlePlural: 'Voucher Types',
+      collection: 'VoucherBooklet',
+      titleSingular: () =>  'Voucher Type',
+      titlePlural: () =>  'Voucher Types',
       select: ['VoucherTypeId'],
       apiEndpoint: 'voucher-booklets',
+      screenUrl: 'voucher-booklets',
       orderby: ['VoucherTypeId'],
       format: (item: VoucherBookletForSave) => item.VoucherTypeId,
       properties: {
-        Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
+        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
 
         // Temp
-        VoucherTypeId: { control: 'number', label: 'Voucher Type', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        StringPrefix: { control: 'text', label: 'String Prefix' },
-        NumericLength: { control: 'number', label: 'Numeric Length', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
-        RangeStarts: { control: 'number', label: 'Range Starts', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
-        RangeEnds: { control: 'number', label: 'Range Ends', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
+        VoucherTypeId: { control: 'number', label: () => 'Voucher Type', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        StringPrefix: { control: 'text', label: () => 'String Prefix' },
+        NumericLength: { control: 'number', label: () => 'Numeric Length', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
+        RangeStarts: { control: 'number', label: () => 'Range Starts', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
+        RangeEnds: { control: 'number', label: () => 'Range Ends', minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right' },
         // End Temp
 
-        IsActive: { control: 'boolean', label: trx.instant('IsActive') },
+        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
       }
     };
   }
@@ -141,48 +141,48 @@ export function metadata_VoucherBooklet(ws: TenantWorkspace, trx: TranslateServi
   return _voucherBookletCache;
 }
 
-let _resourcePickLang: string;
 let _resourcePickSettings: SettingsForClient;
 let _resourcePickCache: EntityDescriptor;
 
 export function metadata_ResourcePick(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (trx.currentLang !== _resourcePickLang || ws.settings !== _resourcePickSettings) {
-    _resourcePickLang = trx.currentLang;
+  if (ws.settings !== _resourcePickSettings) {
     _resourcePickSettings = ws.settings;
     _resourcePickCache = {
-      titleSingular: 'Resource Pick',
-      titlePlural: 'Resource Picks',
+      collection: 'ResourcePick',
+      titleSingular: () =>  'Resource Pick',
+      titlePlural: () =>  'Resource Picks',
       select: ['Code'],
       apiEndpoint: 'resource-picks',
+      screenUrl: 'resource-picks',
       orderby: ['Code'],
       format: (item: ResourcePick) => item.Code,
       properties: {
-        Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Code: { control: 'text', label: trx.instant('Code') },
+        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Code: { control: 'text', label: () => trx.instant('Code') },
 
         // Temp
-        ResourceId: { control: 'number', label: 'Resource', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Resource: { control: 'navigation', label: 'Resource', type: 'Resource', foreignKeyName: 'ResourceId' },
-        ProductionDate: { control: 'date', label: 'Production Date' },
-        ExpiryDate: { control: 'date', label: 'Expiry Date' },
-        MonetaryValue: { control: 'number', label: 'Monetary Value', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Mass: { control: 'number', label: 'Mass', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Volume: { control: 'number', label: 'Volume', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Area: { control: 'number', label: 'Area', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Length: { control: 'number', label: 'Length', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Time: { control: 'number', label: 'Time', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Count: { control: 'number', label: 'Count', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Beneficiary: { control: 'text', label: 'Beneficiary' },
-        IssuingBankAccountId: { control: 'number', label: 'Issuing Bank Account Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        IssuingBankId: { control: 'number', label: 'Issuing Bank Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        ResourceId: { control: 'number', label: () => 'Resource', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Resource: { control: 'navigation', label: () => 'Resource', type: 'Resource', foreignKeyName: 'ResourceId' },
+        ProductionDate: { control: 'date', label: () => 'Production Date' },
+        ExpiryDate: { control: 'date', label: () => 'Expiry Date' },
+        MonetaryValue: { control: 'number', label: () => 'Monetary Value', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        Mass: { control: 'number', label: () => 'Mass', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        Volume: { control: 'number', label: () => 'Volume', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        Area: { control: 'number', label: () => 'Area', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        Length: { control: 'number', label: () => 'Length', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        Time: { control: 'number', label: () => 'Time', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        Count: { control: 'number', label: () => 'Count', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        Beneficiary: { control: 'text', label: () => 'Beneficiary' },
+        IssuingBankAccountId: { control: 'number', label: () => 'Issuing Bank Account Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        IssuingBankId: { control: 'number', label: () => 'Issuing Bank Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         // End Temp
 
-        IsActive: { control: 'boolean', label: trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
+        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
+        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
+        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
       }
     };
   }
@@ -191,38 +191,38 @@ export function metadata_ResourcePick(ws: TenantWorkspace, trx: TranslateService
 }
 
 
-let _responsibilityCenterLang: string;
 let _responsibilityCenterSettings: SettingsForClient;
 let _responsibilityCenterCache: EntityDescriptor;
 
-export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (trx.currentLang !== _responsibilityCenterLang || ws.settings !== _responsibilityCenterSettings) {
-    _responsibilityCenterLang = trx.currentLang;
+  if (ws.settings !== _responsibilityCenterSettings) {
     _responsibilityCenterSettings = ws.settings;
     _responsibilityCenterCache = {
-      titleSingular: 'Responsibility Center',
-      titlePlural: 'Responsibility Centers',
+      collection: 'ResponsibilityCenter',
+      titleSingular: () =>  'Responsibility Center',
+      titlePlural: () =>  'Responsibility Centers',
       select: _select,
       apiEndpoint: 'responsibility-centers',
+      screenUrl: 'responsibility-centers',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
-        Id: { control: 'number', label: trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: trx.instant('Name') + ws.ternaryPostfix },
-        Code: { control: 'text', label: trx.instant('Code') },
-        ParentId: { control: 'number', label: 'Area Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
+        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
+        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
+        Code: { control: 'text', label: () => trx.instant('Code') },
+        ParentId: { control: 'number', label: () => 'Area Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Parent: {
-          control: 'navigation', label: trx.instant('TreeParent'), type: 'ResponsibilityCenter',
+          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'ResponsibilityCenter',
           foreignKeyName: 'ResponsibilityCenterId'
         },
-        IsActive: { control: 'boolean', label: trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
+        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
+        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
+        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
+        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
       }
     };
   }
@@ -231,86 +231,90 @@ export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: Translat
 }
 
 const _label = ['', '2', '3'].map(pf => 'Label' + pf);
-export function metadata_IfrsAccountClassification(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_IfrsAccountClassification(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   return {
-    titleSingular: 'IFRS Account Classification',
-    titlePlural: 'IFRS Account Classifications',
+    collection: 'IfrsAccountClassification',
+    titleSingular: () =>  'IFRS Account Classification',
+    titlePlural: () =>  'IFRS Account Classifications',
     select: _label,
     apiEndpoint: 'ifrs-account-classifications',
+    screenUrl: 'ifrs-account-classifications',
     orderby: ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
     format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),
     properties: {
-      Id: { control: 'text', label: trx.instant('Code') },
-      Label: { control: 'text', label: trx.instant('IfrsConcepts_Label') + ws.primaryPostfix },
-      Label2: { control: 'text', label: trx.instant('IfrsConcepts_Label') + ws.secondaryPostfix },
-      Label3: { control: 'text', label: trx.instant('IfrsConcepts_Label') + ws.ternaryPostfix },
-      Documentation: { control: 'text', label: trx.instant('IfrsConcepts_Documentation') + ws.primaryPostfix },
-      Documentation2: { control: 'text', label: trx.instant('IfrsConcepts_Documentation') + ws.secondaryPostfix },
-      Documentation3: { control: 'text', label: trx.instant('IfrsConcepts_Documentation') + ws.ternaryPostfix },
-      EffectiveDate: { control: 'date', label: trx.instant('IfrsConcepts_EffectiveDate') },
-      ExpiryDate: { control: 'date', label: trx.instant('IfrsConcepts_ExpiryDate') },
-      ForDebit: { control: 'boolean', label: trx.instant('IfrsNotes_ForDebit') },
-      ForCredit: { control: 'boolean', label: trx.instant('IfrsNotes_ForCredit') },
-      IsActive: { control: 'boolean', label: trx.instant('IsActive') },
+      Id: { control: 'text', label: () => trx.instant('Code') },
+      Label: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.primaryPostfix },
+      Label2: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.secondaryPostfix },
+      Label3: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.ternaryPostfix },
+      Documentation: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.primaryPostfix },
+      Documentation2: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.secondaryPostfix },
+      Documentation3: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.ternaryPostfix },
+      EffectiveDate: { control: 'date', label: () => trx.instant('IfrsConcepts_EffectiveDate') },
+      ExpiryDate: { control: 'date', label: () => trx.instant('IfrsConcepts_ExpiryDate') },
+      ForDebit: { control: 'boolean', label: () => trx.instant('IfrsNotes_ForDebit') },
+      ForCredit: { control: 'boolean', label: () => trx.instant('IfrsNotes_ForCredit') },
+      IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
 
       // tree stuff
       ChildCount: {
-        control: 'number', label: trx.instant('TreeChildCount'), minDecimalPlaces: 0,
+        control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0,
         maxDecimalPlaces: 0, alignment: 'right'
       },
       ActiveChildCount: {
-        control: 'number', label: trx.instant('TreeActiveChildCount'),
+        control: 'number', label: () => trx.instant('TreeActiveChildCount'),
         minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
       },
       Level: {
-        control: 'number', label: trx.instant('TreeLevel'),
+        control: 'number', label: () => trx.instant('TreeLevel'),
         minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
       },
       Parent: {
-        control: 'navigation', label: trx.instant('TreeParent'),
+        control: 'navigation', label: () => trx.instant('TreeParent'),
         type: 'IfrsAccountClassification', foreignKeyName: 'ParentId'
       },
     }
   };
 }
 
-export function metadata_IfrsEntryClassification(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
+export function metadata_IfrsEntryClassification(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   return {
-    titleSingular: 'IFRS Entry Classification',
-    titlePlural: 'IFRS Entry Classification',
+    collection: 'IfrsEntryClassification',
+    titleSingular: () =>  'IFRS Entry Classification',
+    titlePlural: () =>  'IFRS Entry Classification',
     select: _label,
     apiEndpoint: 'ifrs-entry-classifications',
+    screenUrl: 'ifrs-entry-classifications',
     orderby: ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
     format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),
     properties: {
-      Id: { control: 'text', label: trx.instant('Code') },
-      Label: { control: 'text', label: trx.instant('IfrsConcepts_Label') + ws.primaryPostfix },
-      Label2: { control: 'text', label: trx.instant('IfrsConcepts_Label') + ws.secondaryPostfix },
-      Label3: { control: 'text', label: trx.instant('IfrsConcepts_Label') + ws.ternaryPostfix },
-      Documentation: { control: 'text', label: trx.instant('IfrsConcepts_Documentation') + ws.primaryPostfix },
-      Documentation2: { control: 'text', label: trx.instant('IfrsConcepts_Documentation') + ws.secondaryPostfix },
-      Documentation3: { control: 'text', label: trx.instant('IfrsConcepts_Documentation') + ws.ternaryPostfix },
-      EffectiveDate: { control: 'date', label: trx.instant('IfrsConcepts_EffectiveDate') },
-      ExpiryDate: { control: 'date', label: trx.instant('IfrsConcepts_ExpiryDate') },
-      IsActive: { control: 'boolean', label: trx.instant('IsActive') },
+      Id: { control: 'text', label: () => trx.instant('Code') },
+      Label: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.primaryPostfix },
+      Label2: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.secondaryPostfix },
+      Label3: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.ternaryPostfix },
+      Documentation: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.primaryPostfix },
+      Documentation2: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.secondaryPostfix },
+      Documentation3: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.ternaryPostfix },
+      EffectiveDate: { control: 'date', label: () => trx.instant('IfrsConcepts_EffectiveDate') },
+      ExpiryDate: { control: 'date', label: () => trx.instant('IfrsConcepts_ExpiryDate') },
+      IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
 
       // tree stuff
       ChildCount: {
-        control: 'number', label: trx.instant('TreeChildCount'), minDecimalPlaces: 0,
+        control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0,
         maxDecimalPlaces: 0, alignment: 'right'
       },
       ActiveChildCount: {
-        control: 'number', label: trx.instant('TreeActiveChildCount'),
+        control: 'number', label: () => trx.instant('TreeActiveChildCount'),
         minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
       },
       Level: {
-        control: 'number', label: trx.instant('TreeLevel'),
+        control: 'number', label: () => trx.instant('TreeLevel'),
         minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
       },
       Parent: {
-        control: 'navigation', label: trx.instant('TreeParent'),
+        control: 'navigation', label: () => trx.instant('TreeParent'),
         type: 'IfrsAccountClassification', foreignKeyName: 'ParentId'
       },
     }

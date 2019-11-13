@@ -1,12 +1,11 @@
 import { Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, SimpleChanges, OnChanges } from '@angular/core';
-import {
-  metadata, BooleanPropDescriptor, ChoicePropDescriptor, StatePropDescriptor,
-  NumberPropDescriptor, EntityDescriptor, PropDescriptor
-} from '~/app/data/entities/base/metadata';
+import { metadata, StatePropDescriptor, NumberPropDescriptor, EntityDescriptor, PropDescriptor } from '~/app/data/entities/base/metadata';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { Entity } from '~/app/data/entities/base/entity';
+import { formatNumber, formatDate } from '@angular/common';
+import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 
 @Component({
   selector: 'b-auto-cell',
@@ -24,10 +23,19 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   definition: string;
 
   @Input()
+  path: string;
+
+  @Input()
   entity: Entity;
 
   @Input()
-  path: string;
+  finalValue: any; // when set, the input 'entity' is ignored
+
+  @Input()
+  useFinalValue = false; // IF true, the finalValue is expected to be the immediate value
+
+  @Input()
+  propDescriptor: PropDescriptor; // When set, it assumes (1) the path is not a nav property (2) ignores collection, definition and path
 
   _subscription: Subscription;
 
@@ -83,63 +91,75 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
     this._control = null;
 
     try {
-      if (!this.collection) {
-        throw new Error(`The collection is not specified`);
-      }
 
-      const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+      this._value = this.useFinalValue ? this.finalValue : this.entity;
 
-      this._entityDescriptor = this.metadataFactory(this.collection)(this.ws.current, this.translate, this.definition);
-      this._value = this.entity;
-
-      if (pathArray.length === 0) {
-        this._propDescriptor = null;
+      if (!!this.propDescriptor) {
+        this._propDescriptor = this.propDescriptor;
         this._metavalue = 2;
-        this._control = 'navigation';
+        this._control = this._propDescriptor.control;
 
       } else {
-        let currentCollection = this.collection;
-        let currentDefinition = this.definition;
+        if (!this.collection) {
+          throw new Error(`The collection is not specified`);
+        }
 
-        for (let i = 0; i < pathArray.length; i++) {
-          const step = pathArray[i];
+        const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
+        this._entityDescriptor = this.metadataFactory(this.collection)(this.ws.current, this.translate, this.definition);
 
-          this._propDescriptor = this._entityDescriptor.properties[step];
-          if (!this._propDescriptor) {
-            throw new Error(`'${step}' does not exist on '${currentCollection}', definition:'${currentDefinition}'`);
+        if (pathArray.length === 0) {
+          this._propDescriptor = null;
+          this._metavalue = 2;
+          this._control = 'navigation';
 
-          } else {
+        } else {
+          let currentCollection = this.collection;
+          let currentDefinition = this.definition;
 
-            // always set the control
-            this._control = this._propDescriptor.control;
+          for (let i = 0; i < pathArray.length; i++) {
+            const step = pathArray[i];
 
-            if (this._propDescriptor.control === 'navigation') {
+            this._propDescriptor = this._entityDescriptor.properties[step];
+            if (!this._propDescriptor) {
+              throw new Error(`'${step}' does not exist on '${currentCollection}', definition:'${currentDefinition}'`);
 
-              currentCollection = this._propDescriptor.collection || this._propDescriptor.type;
-              currentDefinition = this._propDescriptor.definition;
-              this._entityDescriptor = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentDefinition);
-
-              if (this._metavalue === 2 && !!this._value && this._value.EntityMetadata) {
-                this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
-
-                const fkValue = this._value[this._propDescriptor.foreignKeyName];
-                this._value = this.ws.current[currentCollection][fkValue];
-
-              } else {
-                this._metavalue = 0;
-              }
             } else {
-              // only allowed at the last step
-              if (i !== pathArray.length - 1) {
-                throw new Error(`'${step}' is not a navigation property on '${currentCollection}', definition:'${currentDefinition}'`);
-              }
 
-              // set the property and control at the end
-              if (this._metavalue === 2 && this._value && this._value.EntityMetadata) {
-                this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
-                this._value = this._value[step];
+              // always set the control
+              this._control = this._propDescriptor.control;
+
+              if (this._propDescriptor.control === 'navigation') {
+
+                currentCollection = this._propDescriptor.collection || this._propDescriptor.type;
+                currentDefinition = this._propDescriptor.definition;
+                this._entityDescriptor = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentDefinition);
+
+                if (!this.useFinalValue) {
+                  if (this._metavalue === 2 && !!this._value && this._value.EntityMetadata) {
+                    this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
+
+                    const fkValue = this._value[this._propDescriptor.foreignKeyName];
+                    this._value = this.ws.current[currentCollection][fkValue];
+
+                  } else {
+                    this._metavalue = 0;
+                  }
+                }
               } else {
-                this._metavalue = 0;
+                // only allowed at the last step
+                if (i !== pathArray.length - 1) {
+                  throw new Error(`'${step}' is not a navigation property on '${currentCollection}', definition:'${currentDefinition}'`);
+                }
+
+                if (!this.useFinalValue) {
+                  // set the property and control at the end
+                  if (this._metavalue === 2 && this._value && this._value.EntityMetadata) {
+                    this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
+                    this._value = this._value[step];
+                  } else {
+                    this._metavalue = 0;
+                  }
+                }
               }
             }
           }
@@ -167,47 +187,80 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
     return this._metavalue;
   }
 
-  get value(): any {
-    return this._value;
-  }
-
-  get choiceValue(): string {
-    const prop = this._propDescriptor as ChoicePropDescriptor;
-    const value = this.value;
-    return !!prop && !!prop.format ? prop.format(value) : null;
-  }
-
-  get stateValue(): string {
-    const prop = this._propDescriptor as StatePropDescriptor;
-    const value = this.value;
-    return !!prop && !!prop.format ? prop.format(value) : null;
+  get displayValue(): string {
+    return displayValue(this._value, this._propDescriptor, this.translate);
   }
 
   get stateColor(): string {
     const prop = this._propDescriptor as StatePropDescriptor;
-    const value = this.value;
+    const value = this._value;
     return (!!prop && !!prop.color ? prop.color(value) : null) || 'transparent';
-  }
-
-  get digitsInfo(): string {
-    const prop = this._propDescriptor as NumberPropDescriptor;
-    return `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
   }
 
   get alignment(): string {
     return (this._propDescriptor as NumberPropDescriptor).alignment;
   }
 
-  get booleanValue(): string {
-    const prop = this._propDescriptor as BooleanPropDescriptor;
-    const value = this.value as boolean;
-    return (!!prop && !!prop.format) ? prop.format(value) : this.translate.instant(value ? 'Yes' : 'No');
-  }
-
   get navigationValue(): any {
-    const entityDesc = this._entityDescriptor;
-    const value = this.value; // Should return the entity itself
-    return !!entityDesc.format ? entityDesc.format(value) : '(Format function missing)';
+    // "this._value" should return the entity itself
+    return displayEntity(this._value, this._entityDescriptor);
   }
+}
 
+/**
+ * Returns a string representation of the value based on the property descriptor.
+ * IMPORTANT: Does not support navigation property descriptors, use displayEntity instead
+ * @param value The value to represent as a string
+ * @param prop The property descriptor used to format the value as a string
+ */
+export function displayValue(value: any, prop: PropDescriptor, trx: TranslateService) {
+  switch (prop.control) {
+    case 'text': {
+      return value;
+    }
+    case 'number': {
+      if (value === undefined) {
+        return null;
+      }
+      const locale = 'en-GB';
+      const digitsInfo = `1.${prop.minDecimalPlaces}-${prop.maxDecimalPlaces}`;
+      return formatNumber(value, locale, digitsInfo);
+    }
+    case 'date': {
+      if (value === undefined) {
+        return null;
+      }
+      const format = 'yyyy-MM-dd';
+      const locale = 'en-GB';
+      return formatDate(value, format, locale);
+    }
+    case 'datetime': {
+      if (value === undefined) {
+        return null;
+      }
+      const format = 'yyyy-MM-dd HH:mm';
+      const locale = 'en-GB';
+      return formatDate(value, format, locale);
+    }
+    case 'boolean': {
+      return (!!prop && !!prop.format) ? prop.format(value) : trx.instant(value ? 'Yes' : 'No');
+    }
+    case 'choice':
+    case 'state': {
+      return !!prop && !!prop.format ? prop.format(value) : null;
+    }
+    case 'navigation':
+    default:
+      // Programmer error
+      throw new Error('calling "displayValue" on a navigation property, use "displayEntity" instead');
+  }
+}
+
+/**
+ * Returns a string representation of the entity based on the entity descriptor.
+ * @param entity The entity to represent as a string
+ * @param entityDesc The entity descriptor used to format the entity as a string
+ */
+export function displayEntity(entity: EntityWithKey, entityDesc: EntityDescriptor) {
+  return !!entityDesc.format ? entityDesc.format(entity) : '(Format function missing)';
 }

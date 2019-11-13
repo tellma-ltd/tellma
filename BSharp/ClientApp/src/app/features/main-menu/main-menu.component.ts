@@ -5,7 +5,7 @@ import { Key } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { timer } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
-import { DefinitionsForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { DefinitionsForClient, MasterDetailsDefinitionForClient, DefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
 
@@ -115,7 +115,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
       this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resource-classifications',
-        e => !!e ? e + ' - ' + this.translate.instant('Classifications') : e);
+        d => (this.workspace.current.getMultilingualValueImmediate(d, 'TitlePlural') ||
+          this.translate.instant('Untitled')) + ' - ' + this.translate.instant('Classifications'));
+
+      this.addDefinitions(menu, this.workspace.current.definitions.Reports, 'report',
+        d => this.workspace.current.getMultilingualValueImmediate(d, 'Title') || this.translate.instant('Untitled'));
 
 
       this._mainMenu = Object.keys(menu).map(e => ({
@@ -131,19 +135,18 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   private addDefinitions(
     menu: { [section: string]: MenuSectionInfo },
     definitions: { [defId: string]: DefinitionForClient },
-    url: string, titleFunc?: (title: string) => string) {
+    url: string, titleFunc?: (def: DefinitionForClient) => string) {
     if (!!definitions) {
 
-      titleFunc = titleFunc || (e => e);
+      titleFunc = titleFunc || (d => this.workspace.current.getMultilingualValueImmediate(d, 'TitlePlural')
+        || this.translate.instant('Untitled'));
       for (const definitionId of Object.keys(definitions).filter(e => this.canView(`${url}/${e}`))) {
 
         // get the definition
         const definition = definitions[definitionId];
 
-        // get the name
-        const label = titleFunc(this.workspace.current.isSecondaryLanguage ? definition.TitlePlural2 :
-          this.workspace.current.isTernaryLanguage ? definition.TitlePlural3 : definition.TitlePlural)
-          || this.translate.instant('Untitled');
+        // get the label
+        const label = titleFunc(definition);
 
         // add the menu section if missing
         if (!menu[definition.MainMenuSection]) {

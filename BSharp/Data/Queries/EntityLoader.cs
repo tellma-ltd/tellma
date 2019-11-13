@@ -127,10 +127,10 @@ namespace BSharp.Data.Queries
                                     dynamicProps.Add(new DynamicPropInfo(
                                         propType: propInfo.PropertyType,
                                         name: propName,
-                                        declaringType: propInfo.DeclaringType,
+                                        declaringType: entityDef.Type,
                                         path: entityDef.Path,
                                         property: propInfo.Name,
-                                        aggregation: null));
+                                        aggregation: aggregation));
                                 }
                             }
                             else
@@ -254,7 +254,6 @@ namespace BSharp.Data.Queries
 
                 // This collection will be returned at the end
                 var result = new List<Entity>();
-                bool isAggregateRootQuery = false;
 
                 try
                 {
@@ -289,11 +288,8 @@ namespace BSharp.Data.Queries
                                 // This is the root query, assign the result to the final list
                                 result = list;
 
-                                // Set a flag to indicate whether the root query is aggregate (useful later)
-                                isAggregateRootQuery = isAggregate;
-
                                 // Assign the dynamicProps list of property metadata to every DynamicEntity
-                                if (isAggregateRootQuery)
+                                if (isAggregate && !entityDef.IdExists)
                                 {
                                     result.ForEach(e => ((DynamicEntity)e).Properties = dynamicProps);
                                 }

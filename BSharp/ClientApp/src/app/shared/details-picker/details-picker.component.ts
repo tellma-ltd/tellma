@@ -224,11 +224,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   ngOnChanges(changes: SimpleChanges) {
     // the combination of these properties define a new details picker
     const screenDefProperties = [changes.definitions, changes.collection];
-
-    const anyChanges = screenDefProperties.some(prop => !!prop);
-    const notFirstChange = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
-
-    if (anyChanges && notFirstChange) {
+    const screenDefChanges = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
+    if (screenDefChanges) {
 
       this.ngOnDestroy();
       this.ngOnInit();

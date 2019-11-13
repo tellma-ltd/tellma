@@ -68,7 +68,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
       const pathArray = (this.path || '').split('/').map(e => e.trim()).filter(e => !!e);
 
       if (pathArray.length === 0) {
-        this._label = this.translate.instant('Description');
+        this._label = this.translate.instant('DisplayName');
 
       } else {
 
@@ -97,7 +97,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
             throw new Error(`'${step}' is not a navigation property on '${currentCollection}', definition:'${currentDefinition}'`);
           }
 
-          labelArray.push(currentPropDesc.label);
+          labelArray.push(currentPropDesc.label());
         }
 
         this._label = labelArray.join(' / ');

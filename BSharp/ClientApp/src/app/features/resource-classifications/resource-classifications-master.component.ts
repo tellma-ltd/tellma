@@ -93,6 +93,6 @@ export class ResourceClassificationsMasterComponent extends MasterBaseComponent 
 
   public get masterCrumb(): string {
     const entityDesc = metadata_ResourceClassification(this.ws, this.translate, this.definitionId);
-    return !!entityDesc ? entityDesc.titlePlural : '???';
+    return !!entityDesc ? entityDesc.titlePlural() : '???';
   }
 }
