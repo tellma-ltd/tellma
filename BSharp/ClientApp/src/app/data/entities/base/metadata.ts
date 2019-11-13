@@ -141,7 +141,7 @@ export interface ChoicePropDescriptor extends PropDescriptorBase {
     /**
      * Useful for components to cache the list of { name, value } for the selector
      */
-    selector?: { value: string | number; name: string }[];
+    selector?: { value: string | number; name: () => string }[];
 }
 
 export interface StatePropDescriptor extends PropDescriptorBase {
@@ -161,7 +161,7 @@ export interface StatePropDescriptor extends PropDescriptorBase {
     /**
      * Useful for components to cache the list of { name, value } for the selector
      */
-    selector?: { value: string | number; name: string }[];
+    selector?: { value: string | number; name: () => string }[];
 }
 
 export interface NumberPropDescriptor extends PropDescriptorBase {

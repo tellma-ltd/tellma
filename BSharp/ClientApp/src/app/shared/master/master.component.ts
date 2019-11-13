@@ -25,6 +25,7 @@ import { metadata, EntityDescriptor, entityDescriptorImpl } from '~/app/data/ent
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { handleFreshUserSettings } from '~/app/data/tenant-resolver.guard';
 import { StorageService } from '~/app/data/storage.service';
+import { SelectorChoice } from '../selector/selector.component';
 
 enum SearchView {
   tiles = 'tiles',
@@ -140,7 +141,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   private notifyFetch$ = new Subject();
   private notifyDestruct$ = new Subject<void>();
   private notifySaveSettingsOnServer$ = new Subject<{ key: string, value: string }>();
-  private _formatChoices: { name: string, value: any }[];
+  private _formatChoices: SelectorChoice[];
   private _selectOld = 'null';
   private _tableColumnPaths: string[] = [];
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
@@ -1092,11 +1093,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     return ((weight / totalWeight) * 100) + '%';
   }
 
-  get formatChoices(): { name: string, value: any }[] {
+  get formatChoices(): SelectorChoice[] {
 
     if (!this._formatChoices) {
       this._formatChoices = Object.keys(TemplateArguments_format)
-        .map(key => ({ name: TemplateArguments_format[key], value: key }));
+        .map(key => ({ name: () => this.translate.instant(TemplateArguments_format[key]), value: key }));
     }
 
     return this._formatChoices;

@@ -60,6 +60,9 @@ namespace BSharp.Controllers.Dto
         public string Title { get; set; }
         public string Title2 { get; set; }
         public string Title3 { get; set; }
+        public string Description { get; set; }
+        public string Description2 { get; set; }
+        public string Description3 { get; set; }
         public string Type { get; set; } // "Summary" or "Details"
         public string DefaultView { get; set; }
         public string Collection { get; set; }

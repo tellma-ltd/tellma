@@ -11,6 +11,7 @@ import { DefinitionsForClient, ReportDefinitionForClient } from '~/app/data/dto/
 import { isSpecified } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor; isRequired: boolean; }
 
@@ -288,8 +289,8 @@ export class ReportComponent implements OnInit, OnDestroy {
     return this._currentParameters;
   }
 
-  public choices(desc: ChoicePropDescriptor | StatePropDescriptor) {
-    desc.selector = desc.selector || desc.choices.map(c => ({ value: c, name: desc.format(c) }));
+  public choices(desc: ChoicePropDescriptor | StatePropDescriptor): SelectorChoice[] {
+    desc.selector = desc.selector || desc.choices.map(c => ({ value: c, name: () => desc.format(c) }));
     return desc.selector;
   }
 

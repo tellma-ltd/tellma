@@ -13,9 +13,10 @@ import { metadata_Lookup } from '~/app/data/entities/lookup';
 import { metadata_Resource } from '~/app/data/entities/resource';
 import { metadata_ResourceClassification } from '~/app/data/entities/resource-classification';
 import { metadata_Account } from '~/app/data/entities/account';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 interface ConcreteViewInfo {
-  name: string;
+  name: () => string;
   actions: { [action: string]: { supportsCriteria: boolean, supportsMask: boolean } };
 }
 
@@ -34,12 +35,12 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   @Input()
   public showIsPublic = true;
 
-  private _permissionActionChoices: { [viewId: string]: { name: string, value: any }[] } = {};
+  private _permissionActionChoices: { [viewId: string]: SelectorChoice[] } = {};
   private _viewsDb: { [viewId: string]: ConcreteViewInfo } = null;
   private _currentLang: string;
   private _currentDefinition: DefinitionsForClient;
   private _currentViewsDb: { [viewId: string]: ConcreteViewInfo } = null;
-  private _viewsForSelector: { name: any, value: string }[] = null;
+  private _viewsForSelector: SelectorChoice[] = null;
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Permissions,Members/Agent';
@@ -89,18 +90,17 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     this.rolesApi = this.api.rolesApi(this.notifyDestruct$);
   }
 
-  permissionActionChoices(item: Permission): { name: string, value: any }[] {
+  permissionActionChoices(item: Permission): SelectorChoice[] {
     if (!item.ViewId) {
       return [];
     }
 
     // Returns the permission actions only permitted by the specified view
     if (!this._permissionActionChoices[item.ViewId]) {
-      // const view = this.ws.get('View', item.ViewId) as View;
       const view = this.viewsDb[item.ViewId];
       if (!!view && !!view.actions) {
         this._permissionActionChoices[item.ViewId] =
-          Object.keys(view.actions).map(e => ({ name: ACTIONS[e], value: e }));
+          Object.keys(view.actions).map(e => ({ name: () => this.translate.instant(ACTIONS[e]), value: e }));
       } else {
         this._permissionActionChoices[item.ViewId] = [];
       }
@@ -232,7 +232,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
       for (const viewId of Object.keys(VIEWS_BUILT_IN)) {
         const view = VIEWS_BUILT_IN[viewId];
         const concreteView: ConcreteViewInfo = {
-          name: this.translate.instant(view.name),
+          name: () => this.translate.instant(view.name),
           actions: {}
         };
 
@@ -334,7 +334,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     return this._viewsDb;
   }
 
-  get permissionViewChoices(): { name: string, value: any }[] {
+  get permissionViewChoices(): SelectorChoice[] {
 
     if (this._currentViewsDb !== this.viewsDb) {
       const db = this.viewsDb;
@@ -343,13 +343,13 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
       this._viewsForSelector = Object.keys(db).map(e => ({ value: e, name: db[e].name }));
 
       // Sort alphabetically
-      this._viewsForSelector.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+      this._viewsForSelector.sort((a, b) => a.name() < b.name() ? -1 : a.name() > b.name() ? 1 : 0);
     }
 
     return this._viewsForSelector;
   }
 
   permissionViewLookup(viewId: string): string {
-    return this.viewsDb[viewId].name;
+    return this.viewsDb[viewId].name();
   }
 }

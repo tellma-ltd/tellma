@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ImportArguments_Mode } from '~/app/data/dto/import-arguments';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ImportResult } from '~/app/data/dto/import-result';
+import { SelectorChoice } from '../selector/selector.component';
 
 @Component({
   selector: 'b-import',
@@ -33,8 +34,8 @@ export class ImportComponent implements OnInit, OnDestroy {
   public importValidationErrors: string[] = [];
   public importResult: ImportResult;
 
-  private _modeChoices: { name: string, value: any }[];
-  private _formatChoices: { name: string, value: any }[];
+  private _modeChoices: SelectorChoice[];
+  private _formatChoices: SelectorChoice[];
   private notifyDestruct$ = new Subject<void>();
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Only for intellisense
 
@@ -130,21 +131,21 @@ export class ImportComponent implements OnInit, OnDestroy {
     return !!this.importResult;
   }
 
-  get formatChoices(): { name: string, value: any }[] {
+  get formatChoices(): SelectorChoice[] {
 
     if (!this._formatChoices) {
       this._formatChoices = Object.keys(TemplateArguments_format)
-        .map(key => ({ name: TemplateArguments_format[key], value: key }));
+        .map(key => ({ name: () => this.translate.instant(TemplateArguments_format[key]), value: key }));
     }
 
     return this._formatChoices;
   }
 
-  get modeChoices(): { name: string, value: any }[] {
+  get modeChoices(): SelectorChoice[] {
 
     if (!this._modeChoices) {
       this._modeChoices = Object.keys(ImportArguments_Mode)
-        .map(key => ({ name: ImportArguments_Mode[key], value: key }));
+        .map(key => ({ name: () => this.translate.instant(ImportArguments_Mode[key]), value: key }));
     }
 
     return this._modeChoices;

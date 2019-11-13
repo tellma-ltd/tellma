@@ -27,6 +27,9 @@ export interface ReportDefinitionForClient extends DefinitionForClient {
     Title: string;
     Title2?: string;
     Title3?: string;
+    Description?: string;
+    Description2?: string;
+    Description3?: string;
     Type: ReportType; // summary or details
     DefaultView: string;
     Collection: string;

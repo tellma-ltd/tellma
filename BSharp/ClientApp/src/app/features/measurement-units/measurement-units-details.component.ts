@@ -7,6 +7,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
   selector: 'b-measurement-units-details',
@@ -14,7 +15,7 @@ import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 })
 export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
 
-  private _unitTypeChoices: { name: string, value: any }[];
+  private _unitTypeChoices: SelectorChoice[];
   private measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';
@@ -39,11 +40,11 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
     this.measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$);
   }
 
-  get unitTypeChoices(): { name: string, value: any }[] {
+  get unitTypeChoices(): SelectorChoice[] {
 
     if (!this._unitTypeChoices) {
       const descriptor = metadata_MeasurementUnit(this.ws, this.translate, null).properties.UnitType as ChoicePropDescriptor;
-      this._unitTypeChoices = descriptor.choices.map(c => ({ name: descriptor.format(c), value: c }));
+      this._unitTypeChoices = descriptor.choices.map(c => ({ name: () => descriptor.format(c), value: c }));
     }
 
     return this._unitTypeChoices;

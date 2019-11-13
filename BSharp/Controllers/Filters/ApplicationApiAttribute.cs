@@ -334,30 +334,18 @@ namespace BSharp.Controllers
                                     Label2 = "الإسم يحتوي",
                                     Label3 = "我的密",
                                     IsRequired = false
-                                }
+                                },
                             },
                             Columns = new List<ReportDimensionDefinition>
                             {
- 
-                            },
-                            Rows = new List<ReportDimensionDefinition>
-                            {
-                                //new ReportDimensionDefinition
-                                //{
-                                //    Path = "ModifiedBy",
-                                //    Label = "Modified By",
-                                //    Label2 = "آخر تعديل",
-                                //    Label3 = "我的密",
-                                //    AutoExpand =false,
-                                //},
-                                //new ReportDimensionDefinition
-                                //{
-                                //    Path = "ModifiedBy",
-                                //    Label = "Modified By",
-                                //    Label2 = "آخر تعديل",
-                                //    Label3 = "我的密",
-                                //    AutoExpand = true,
-                                //},
+                                new ReportDimensionDefinition
+                                {
+                                    Path = "ModifiedBy",
+                                    Label = "Modified By",
+                                    Label2 = "آخر تعديل",
+                                    Label3 = "我的密",
+                                    AutoExpand = true,
+                                },
                                 new ReportDimensionDefinition
                                 {
                                     Path = "UnitType",
@@ -367,7 +355,26 @@ namespace BSharp.Controllers
                                     OrderDirection = "desc",
                                     AutoExpand =true
                                 },
-
+                            },
+                            Rows = new List<ReportDimensionDefinition>
+                            {
+                                new ReportDimensionDefinition
+                                {
+                                    Path = "CreatedBy",
+                                    Label = "Created By",
+                                    Label2 = "إنشاء من قبل",
+                                    Label3 = "我的密",
+                                    AutoExpand = true,
+                                },
+                                new ReportDimensionDefinition
+                                {
+                                    Path = "Description3",
+                                    Label = "Unit Type",
+                                    Label2 = "نوع الوحدة",
+                                    Label3 = "我的密",
+                                    OrderDirection = "desc",
+                                    AutoExpand =true
+                                },
                             },
                             Measures = new List<ReportMeasureDefinition>
                             {
@@ -388,7 +395,7 @@ namespace BSharp.Controllers
                                     Label3 = "我的密"
                                 }
                             },
-                            ShowColumnsTotal = false,
+                            ShowColumnsTotal = true,
                             ShowRowsTotal = true,
                         },
                         ["my-incredible-report"] = new ReportDefinitionForClient

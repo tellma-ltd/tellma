@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { supportedCultures } from '~/app/data/supported-cultures';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 @Component({
   selector: 'b-agents-details',
@@ -16,8 +17,8 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 })
 export class AgentsDetailsComponent extends DetailsBaseComponent {
 
-  private _languageChoices: { name: string, value: any }[];
-  private _agentTypeChoices: { name: string, value: any }[];
+  private _languageChoices: SelectorChoice[];
+  private _agentTypeChoices: SelectorChoice[];
   private agentsApi = this.api.agentsApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'User';
@@ -42,19 +43,19 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
     super();
   }
 
-  get languageChoices(): { name: string, value: any }[] {
+  get languageChoices(): SelectorChoice[] {
 
     if (!this._languageChoices) {
-      this._languageChoices = [{ name: this.ws.settings.PrimaryLanguageName, value: this.ws.settings.PrimaryLanguageId }];
+      this._languageChoices = [{ name: () => this.ws.settings.PrimaryLanguageName, value: this.ws.settings.PrimaryLanguageId }];
       if (!!this.ws.settings.SecondaryLanguageId) {
         this._languageChoices.push({
-          name: this.ws.settings.SecondaryLanguageName,
+          name: () => this.ws.settings.SecondaryLanguageName,
           value: this.ws.settings.SecondaryLanguageId
         });
       }
       if (!!this.ws.settings.TernaryLanguageId) {
         this._languageChoices.push({
-          name: this.ws.settings.TernaryLanguageName,
+          name: () => this.ws.settings.TernaryLanguageName,
           value: this.ws.settings.TernaryLanguageId
         });
       }
@@ -67,10 +68,10 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
     return supportedCultures[value];
   }
 
-  get agentTypeChoices(): { name: string, value: any }[] {
+  get agentTypeChoices(): SelectorChoice[] {
     if (!this._agentTypeChoices) {
       const descriptor = metadata_Agent(this.ws, this.translate, null).properties.AgentType as ChoicePropDescriptor;
-      this._agentTypeChoices = descriptor.choices.map(c => ({ name: descriptor.format(c), value: c }));
+      this._agentTypeChoices = descriptor.choices.map(c => ({ name: () => descriptor.format(c), value: c }));
     }
 
     return this._agentTypeChoices;

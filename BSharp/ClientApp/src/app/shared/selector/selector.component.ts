@@ -1,6 +1,18 @@
 import { Component, Input, ElementRef, ViewChild, HostBinding } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
+export interface SelectorChoice {
+  /**
+   * A function that returns the display string of the choice
+   */
+  name: () => string;
+
+  /**
+   * The value of the choice
+   */
+  value: any;
+}
+
 @Component({
   selector: 'b-selector',
   templateUrl: './selector.component.html',
@@ -12,7 +24,7 @@ export class SelectorComponent implements ControlValueAccessor {
   // us to change the bahvior of all inputs in the application since they all use this control
 
   @Input()
-  choices: { name: string, value: any }[] = [];
+  choices: SelectorChoice[] = [];
 
   @HostBinding('class.w-100')
   w100 = true;
@@ -44,7 +56,7 @@ export class SelectorComponent implements ControlValueAccessor {
     this.isDisabled = isDisabled;
   }
 
-  public trackByFn(_: number, item: { name: string, value: any }) {
+  public trackByFn(_: number, item: SelectorChoice) {
     // Might cause problems if we supply a new list with an item having the same value but a different name
     return item.value;
   }
