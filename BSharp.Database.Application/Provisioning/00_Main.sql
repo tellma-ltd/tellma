@@ -12,21 +12,14 @@ DECLARE @AdminUserId INT, @RoleId INT, @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSE
 
 :r .\00_Setup\a_AdminSetup.sql
 :r .\00_Setup\b_Settings.sql
-:r .\01_AccountsEntries\a_AccountDefinitions.sql
-:r .\01_AccountsEntries\b_AccountTypes.sql
+:r .\01_AccountsEntries\a_AccountTypes.sql
+--:r .\01_AccountsEntries\b_AccountTypes.sql
 :r .\01_AccountsEntries\c_EntryTypes.sql
 :r .\01_AccountsEntries\d_AccountTypesEntryTypes.sql
 :r .\01_AccountsEntries\x_AccountClassifications.sql
 :r .\02_ResourcesUnits\a_Currencies.sql
 :r .\02_ResourcesUnits\b_MeasurementUnits.sql
 :r .\02_ResourcesUnits\c_ResourceTypes.sql
-
---:r .\02_Accounts.sql
---EXEC [dbo].[adm_Accounts_Notes__Update];
---:r .\04_AccountsNotes.sql
-:r .\06_DocumentDefinitions.sql
---:r .\05_LineTypeSpecifications.sql
---:r .\07_AccountSpecifications.sql
-
---:r .\90_IfrsConcepts.sql
---:r .\91_IfrsDisclosures.sql
+:r .\03_DocumentsLines\a_LineDefinitions.sql
+--:r .\03_DocumentsLines\b_LineDefinitionEntries.sql
+:r .\03_DocumentsLines\b_DocumentDefinitions.sql

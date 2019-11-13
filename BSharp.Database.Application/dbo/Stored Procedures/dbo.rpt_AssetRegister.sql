@@ -9,17 +9,11 @@ report AS ONE LINE.
 If we want each computer to appear on a separate line, we need to replace Resource with Instance.
 */
 BEGIN
-	WITH FixedAssetAccountTypes	AS (
-		SELECT Id FROM dbo.[AccountTypes]
-		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[AccountTypes] WHERE Id = N'PropertyPlandAndEquipment')
-		) = 1
-	),
+	WITH
 	FixedAssetAccounts AS (
 		SELECT Id
 		FROM Accounts
-		WHERE [AccountTypeId] IN
-			(SELECT [Id] FROM FixedAssetAccountTypes)
+		WHERE [AccountTypeId] IN (N'PPE')
 	),
 	OpeningBalances AS (
 		SELECT

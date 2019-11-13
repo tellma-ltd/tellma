@@ -4,10 +4,9 @@
 	[DocumentIndex]			INT					NOT NULL DEFAULT 0,
 	[Id]					INT					NOT NULL DEFAULT 0,
 	[EntryNumber]			INT					NOT NULL DEFAULT 1,
-	[Direction]				SMALLINT			NOT NULL CHECK ([Direction] IN (-1, 1)),
-	[AccountId]				INT					NOT NULL,
+	[Direction]				SMALLINT,
+	[AccountId]				INT,
 	[EntryTypeId]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
-	[ResourceInstanceId]	INT,
 	[Memo]					NVARCHAR (255),
 	[BatchCode]				NVARCHAR (50),
 	[DueDate]				DATE,
@@ -32,5 +31,5 @@
 	[RelatedResourceId]		INT, -- Good, Service, Labor, Machine usage
 	[RelatedAgentId]		INT,
 	[RelatedQuantity]		MONEY,		-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedMonetaryAmount]	MONEY -- e.g., amount subject to tax
+	[RelatedMonetaryValue]	MONEY -- e.g., amount subject to tax
 );

@@ -20,7 +20,7 @@
 --	The good/service consumed for indirect expenses
 	--[ResourceInstanceId]		INT				CONSTRAINT [FK_DocumentLineEntries__ResourcePInstanceId] FOREIGN KEY ([ResourceInstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
-	[Memo]						NVARCHAR (255),
+	--[Memo]						NVARCHAR (255),
 	[BatchCode]					NVARCHAR (50),
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings
 	[ExternalReference]			NVARCHAR (255),
@@ -34,8 +34,9 @@
 -- for revenues and cost of sales related to a contract/job, related resourceis the contract/job.
 	[RelatedResourceId]			INT,		-- Good, Service, Labor, Machine usage
 	[RelatedAgentId]			INT,
+	[RelatedLocationId]			INT,
 	[RelatedQuantity]			MONEY,		-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedMonetaryAmount]		MONEY,		-- e.g., amount subject to tax
+	[RelatedMonetaryValue]		MONEY,		-- e.g., amount subject to tax
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0),	-- to time
 -- Tracking additive measures, the data type is to be decided by AA

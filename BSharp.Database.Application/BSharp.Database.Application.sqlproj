@@ -94,11 +94,12 @@
     <Folder Include="Tests\04_Locations" />
     <Folder Include="Tests\00_Security" />
     <Folder Include="Tests\06_Entries" />
+    <Folder Include="Provisioning\03_DocumentsLines" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
     <Build Include="dbo\Tables\dbo.Agents.sql" />
-    <Build Include="dbo\Tables\dbo.LineTypesSpecifications.sql" />
+    <Build Include="dbo\Tables\dbo.LineDefinitionEntries.sql" />
     <Build Include="dbo\Tables\dbo.Users.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignments.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLines.sql" />
@@ -149,8 +150,6 @@
     <None Include="Provisioning\93_IfrsAccountClassifications.sql" />
     <None Include="Provisioning\92_IfrsEntryClassifications.sql" />
     <PostDeploy Include="Provisioning\00_Main.sql" />
-    <None Include="Provisioning\05_LineTypeSpecifications.sql" />
-    <None Include="Provisioning\06_DocumentDefinitions.sql" />
     <Build Include="Security\bll.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitions.sql" />
     <Build Include="dbo\Functions\dbo.fe_EndDateTime__StartDateTime_Frequency_Duration.sql" />
@@ -362,7 +361,7 @@
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Save.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Select.sql" />
-    <Build Include="dbo\Tables\dbo.AccountDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.zOldAccountDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
     <Build Include="rpt\Functions\rpt.fi_JournalSummary.sql" />
     <Build Include="rpt\Stored Procedures\rpt.FinishedGoods__TrialBalance.sql" />
@@ -388,7 +387,6 @@
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__DeleteWithDescendants.sql" />
     <Build Include="Mapping\AccountTypes.sql" />
-    <Build Include="dal\Stored Procedures\dal.AccountTypes__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Save.sql" />
@@ -405,8 +403,8 @@
     <Build Include="dal\Stored Procedures\dal.Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.EntryTypes.sql" />
-    <None Include="Provisioning\01_AccountsEntries\a_AccountDefinitions.sql" />
-    <None Include="Provisioning\01_AccountsEntries\b_AccountTypes.sql" />
+    <None Include="Provisioning\01_AccountsEntries\a_AccountTypes.sql" />
+    <None Include="Provisioning\01_AccountsEntries\zOld_AccountTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\c_EntryTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\d_AccountTypesEntryTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\x_AccountClassifications.sql" />
@@ -439,7 +437,7 @@
     <None Include="Tests\02_Resources\e2_CCE_received-checks.sql" />
     <None Include="Tests\05_Accounts\00_AccountClassifications.sql" />
     <None Include="Tests\03_Agents\06_ResponsibilityCenters.sql" />
-    <Build Include="rpt\Functions\rpt.AccountClassificationsGLAccounts__TrialBalance.sql" />
+    <Build Include="rpt\Functions\rpt.Accounts__TrialBalance.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentRelationList.sql" />
     <Build Include="api\Stored Procedures\api.AgentRelations__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.AgentRelations_Validate__Save.sql" />
@@ -457,6 +455,9 @@
     <Build Include="dbo\Functions\dbo.fn_State__StateId.sql" />
     <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
     <Build Include="bll\Functions\bll.fi_ReadyDocumentLines.sql" />
+    <None Include="Provisioning\03_DocumentsLines\a_LineDefinitions.sql" />
+    <None Include="Provisioning\03_DocumentsLines\b_DELETE_LineDefinitionEntries.sql" />
+    <None Include="Provisioning\03_DocumentsLines\b_DocumentDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -490,7 +491,7 @@
     <None Include="Tests\05_Accounts\01_gl-accounts.sql" />
     <None Include="Tests\05_Accounts\02_tax-accounts.sql" />
     <None Include="Tests\06_Entries\00_manual-vouchers.sql" />
-    <None Include="Tests\06_Entries\01_cash-purchases.sql" />
+    <None Include="Tests\06_Entries\01_petty-cash-vouchers.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

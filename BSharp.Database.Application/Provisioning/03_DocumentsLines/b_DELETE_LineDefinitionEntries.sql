@@ -1,4 +1,5 @@
-﻿DECLARE @LineTypes TABLE(
+﻿/*
+DECLARE @LineTypes TABLE(
 	[id]				NVARCHAR (255) PRIMARY KEY
 );
 INSERT @LineTypes ([Id]) VALUES
@@ -75,6 +76,7 @@ INSERT @LineTypes ([Id]) VALUES
 	(N'LaborReceipt'),						-- [received from:RelatedAccountAccount], item, Qty, received in:[ToCustodianAccount:AgentAccount], Batch:RelatedResource, memo
 	(N'LaborIssue'),						-- [issued to:RelatedAccountAccount], item, Qty, issued from:[FromCustodianAccount:AgentAccount], Batch:RelatedResource, memo
 	(N'LaborConsumption');					-- [responsibility center], item, qty, [consumed by:AgentAccount]
+*/
 DECLARE @WideLineTypesSpecifications TABLE (
 	[LineDefinitionId]					NVARCHAR (255) PRIMARY KEY,
 
@@ -707,7 +709,7 @@ WHEN NOT MATCHED BY TARGET THEN
 INSERT ([Id], [DocumentCategory])
 VALUES(s.[Id], s.[DocumentCategory]);
 	
-MERGE [dbo].[LineTypesSpecifications] AS t
+MERGE [dbo].LineDefinitionEntries AS t
 USING (
 SELECT
 	[LineDefinitionId], 1 As [EntryNumber],
@@ -778,15 +780,15 @@ UPDATE SET
 	t.[DirectionEntryNumber] = s.[DirectionEntryNumber],
 	t.[Direction] = s.[Direction],
 	t.[AccountIdIsVisible] = s.[AccountIdIsVisible],
-	t.[AccountIdIfrsFilter] = s.[AccountIdIfrsFilter],
+	t.[AccountTypeList] = s.[AccountIdIfrsFilter],
 	t.[AccountIdExpression] = s.[AccountIdExpression],
 	t.[AccountIdEntryNumber] = s.[AccountIdEntryNumber],
-	t.[IfrsEntryClassificationIdIsVisible] = s.[IfrsEntryClassificationIdIsVisible],
-	t.[IfrsEntryClassificationIdExpression] = s.[IfrsEntryClassificationIdExpression],
-	t.[IfrsEntryClassificationIdEntryNumber] = s.[IfrsEntryClassificationIdEntryNumber],
-	t.[IfrsEntryClassificationId] = s.[IfrsEntryClassificationId],
+	t.[EntryTypeIdIsVisible] = s.[IfrsEntryClassificationIdIsVisible],
+	t.[EntryTypeIdExpression] = s.[IfrsEntryClassificationIdExpression],
+	t.[EntryTypeIdEntryNumber] = s.[IfrsEntryClassificationIdEntryNumber],
+	t.[EntryTypeId] = s.[IfrsEntryClassificationId],
 	t.[ResourceIdIsVisible] = s.[ResourceIdIsVisible],
-	t.[ResourceIdExpression] = s.[ResourceIdExpression],
+	t.[ResourceDefinitionList] = s.[ResourceIdExpression],
 	t.[ResourceIdEntryNumber] = s.[ResourceIdEntryNumber],
 	t.[ResourceId] = s.[ResourceId],
 	t.[InstanceIdIsVisible] = s.[InstanceIdIsVisible],
@@ -844,9 +846,9 @@ WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
 INSERT ([LineDefinitionId], [EntryNumber], [DirectionIsVisible], [DirectionExpression], [DirectionEntryNumber],
-	[Direction], [AccountIdIsVisible], [AccountIdIfrsFilter], [AccountIdExpression],
-	[AccountIdEntryNumber], [IfrsEntryClassificationIdIsVisible], [IfrsEntryClassificationIdExpression], [IfrsEntryClassificationIdEntryNumber],
-	[IfrsEntryClassificationId], [ResourceIdIsVisible], [ResourceIdExpression],
+	[Direction], [AccountIdIsVisible], [AccountTypeList], [AccountIdExpression],
+	[AccountIdEntryNumber], [EntryTypeIdIsVisible], [EntryTypeIdExpression], [EntryTypeIdEntryNumber],
+	[EntryTypeId], [ResourceIdIsVisible], [ResourceDefinitionList],
 	[ResourceIdEntryNumber], [ResourceId], [InstanceIdIsVisible], [InstanceIdExpression],
 	[InstanceIdEntryNumber], [BatchCodeIsVisible], [BatchCodeExpression], [BatchCodeEntryNumber],
 	[DueDateIsVisible], [DueDateExpression], [DueDateEntryNumber], [QuantityIsVisible],

@@ -221,13 +221,14 @@ INSERT INTO @EntryTypes([IsAssignable], [IsActive], [ForDebit], [ForCredit], [No
 
 ,(0, 1, 1, 1, '/10/',	N'ChangesInInventories', 'Increase (decrease) in inventories')
 ,(1, 1, 1, 0, '/10/1/', N'InventoryPurchaseExtension', 'Inventory purchase')
-,(1, 1, 1, 1, '/10/2/', N'InventoryProductionExtension', 'Inventory production')
+,(1, 1, 1, 1, '/10/2/', N'InventoryProductionExtension', 'Inventory production') -- for both input and output
 ,(1, 1, 0, 1, '/10/3/', N'InventorySalesExtension', 'Inventory sales')
-,(1, 1, 0, 1, '/10/4/', N'InventoryConsumptionExtension', 'Inventory consumption')
-,(1, 1, 0, 1, '/10/5/', N'InventoryLossExtension', 'Inventory loss')
-,(1, 1, 0, 1, '/10/6/', N'InventoryReclassifiedAsPropertyPlantAndEquipment', 'Inventory reclassified as property, plant and equipment')
-,(1, 1, 1, 0, '/10/7/', N'PropertyPlantAndEquipmentReclassifiedAsInventory', 'Fixed asset to inventory conversion')
+,(1, 1, 0, 1, '/10/4/', N'InventoryConsumptionExtension', 'Inventory consumption') -- Selling, Distribution, and General Admin
+,(1, 1, 0, 1, '/10/5/', N'InventoryLossExtension', 'Inventory loss') -- Oracle as: adjustment and physical inventory
+,(1, 1, 0, 1, '/10/6/', N'InventoryReclassifiedAsPropertyPlantAndEquipment', 'Inventory reclassified as property, plant and equipment') -- reclassification
+,(1, 1, 1, 0, '/10/7/', N'PropertyPlantAndEquipmentReclassifiedAsInventory', 'Fixed asset to inventory conversion') -- merge with previous
 ,(1, 1, 1, 1, '/10/9/', N'InternalInventoryTransferExtension', 'Inventory transfer')
+-- we also need to add customer return and supplier return
 
 MERGE [dbo].[EntryTypes] AS t
 USING (

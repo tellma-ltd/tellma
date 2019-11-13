@@ -1486,4 +1486,88 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[fi_ReadyDocumentLines]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ac018957-1760-494a-aa49-8f712861d0e0" ChangeDateTime="10/27/2019 19:58:25">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineEntries].[RelatedMonetaryAmount]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[RelatedMonetaryValue]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="07dbb7e0-f96b-468e-b95d-8094ac78cadb" ChangeDateTime="10/30/2019 02:17:39">
+    <Property Name="ElementName" Value="[dbo].[LineTypesSpecifications]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="LineDefinitionEntries" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="346c8f9e-bde3-4327-bcce-1d4c1825fc3a" ChangeDateTime="10/30/2019 02:20:34">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[IfrsEntryClassificationIdIsVisible]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeIdIsVisible]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1b1165ba-7fd9-4675-822d-c376aab4a0b3" ChangeDateTime="10/30/2019 02:21:02">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[IfrsEntryClassificationIdIsEditableTill]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeIdIsEditableTill]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="89e43b9c-5981-459b-a8f0-e02616fd091c" ChangeDateTime="10/30/2019 02:21:18">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[IfrsEntryClassificationIdExpression]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeIdExpression]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="63ad44f7-9123-4eb3-b081-2f6675f53ff1" ChangeDateTime="10/30/2019 02:21:50">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[IfrsEntryClassificationIdEntryNumber]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeIdEntryNumber]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0417c7a6-02d7-4956-9a6b-a67a97876c0e" ChangeDateTime="10/30/2019 02:22:12">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[IfrsEntryClassificationId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[EntryTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="619a5fd9-6ac9-4773-9bc6-954e4f1598d1" ChangeDateTime="10/30/2019 02:25:06">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[AccountIdIfrsFilter]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeFilter]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bf87c3d5-128a-4a43-9ba6-8b1e1e4162e5" ChangeDateTime="10/30/2019 02:38:05">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[AccountTypeFilter]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7d2e71f4-9a78-4bcf-8e08-2b6acfc24c42" ChangeDateTime="10/30/2019 02:39:06">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionEntries].[ResourceIdExpression]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceDefinitionList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c15af1b2-c4a2-4c5e-b769-a1fbfa370b83" ChangeDateTime="11/13/2019 10:12:18">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[CustodianId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AgentId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="891d82f8-fa57-41f0-ba13-e9b689fe639a" ChangeDateTime="11/13/2019 13:31:13">
+    <Property Name="ElementName" Value="[rpt].[AccountClassificationsGLAccounts__TrialBalance]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[rpt]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Accounts__TrialBalance]" />
+  </Operation>
 </Operations>

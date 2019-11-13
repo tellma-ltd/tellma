@@ -24,7 +24,7 @@ SET NOCOUNT ON;
 				[Code], 
 				[PartyReference],
 				[ResourceId],
-				[CustodianId],
+				[AgentId],
 				[LocationId],
 				[ResponsibilityCenterId]
 			FROM @Entities 
@@ -40,22 +40,18 @@ SET NOCOUNT ON;
 				t.[Code]					= s.[Code],
 				t.[PartyReference]			= s.[PartyReference],
 				t.[ResourceId]				= s.[ResourceId],
-				t.[CustodianId]				= s.[CustodianId],
-				t.[LocationId]				= s.[LocationId],      
-				t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
+				t.[AgentId]					= s.[AgentId],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([AccountDefinitionId],
+			INSERT (
 				[AccountTypeId],
 				[AccountClassificationId], 
 				[Name], [Name2], [Name3], 
 				[Code], 
 				[PartyReference],
 				[ResourceId],
-				[CustodianId],
-				[LocationId],
-				[ResponsibilityCenterId])
+				[AgentId])
 			VALUES (@DefinitionId,
 				s.[AccountTypeId],
 				s.[AccountClassificationId], 
@@ -63,9 +59,7 @@ SET NOCOUNT ON;
 				s.[Code], 
 				s.[PartyReference],
 				s.[ResourceId],
-				s.[CustodianId],
-				s.[LocationId],
-				s.[ResponsibilityCenterId])
+				s.[AgentId])
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
