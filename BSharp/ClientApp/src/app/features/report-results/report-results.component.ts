@@ -14,20 +14,16 @@ import { ApiService } from '~/app/data/api.service';
 import { FilterTools, FilterExpression } from '~/app/data/filter-expression';
 import { isSpecified, mergeEntitiesInWorkspace } from '~/app/data/util';
 import {
-  ReportDefinitionForClient, ReportDimensionDefinition, ReportOrderDirection, ReportMeasureDefinition, ReportSelectDefinition
+  ReportDefinitionForClient, ReportDimensionDefinition, ReportOrderDirection, ReportMeasureDefinition, ReportSelectDefinition, ChartType
 } from '~/app/data/dto/definitions-for-client';
 import { Router, Params } from '@angular/router';
 import { displayEntity, displayValue } from '~/app/shared/auto-cell/auto-cell.component';
 import { Entity } from '~/app/data/entities/base/entity';
 import { EntitiesResponse, GetResponse } from '~/app/data/dto/get-response';
-import { GetAggregateResponse } from '~/app/data/dto/get-aggregate-response';
 
 export enum ReportView {
   pivot = 'pivot',
-  card = 'card',
-  bars_vertical = 'bars_vertical',
-  line = 'line',
-  pie = 'pie'
+  chart = 'chart'
 }
 
 /**
@@ -58,7 +54,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   arguments: ReportArguments = {}; // immutable
 
   @Input()
-  view: ReportView = ReportView.pivot;
+  view: ReportView;
 
   @Input()
   skip: number; // For details report
@@ -132,9 +128,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
 
+    // Set to default
+    this.view = this.view || (!!this.definition.Chart && !!this.definition.DefaultsToChart ? ReportView.chart : ReportView.pivot);
+
     // Here we do the usual pattern of checking whether the state in the
-    // singleton service is still the same as that supplied by the url parameters
-    // in which case we do not have to fetch the data again
+    // singleton service is still the same as that supplied by the url
+    // parameters in which case we do not have to fetch the data again
     const s = this.state;
     const hasChanges = this.applyChanges();
     if (s.reportStatus !== ReportStatus.loaded || hasChanges) {
@@ -742,7 +741,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get showSummary(): boolean {
-    return !!this.definition && this.definition.Type === 'Summary';
+    return !!this.definition && this.definition.Type === 'Summary' && this.view === ReportView.pivot;
+  }
+
+  public get showChart(): boolean {
+    return !!this.definition && this.definition.Type === 'Summary' && this.view === ReportView.chart;
   }
 
   public get showResults(): boolean {
@@ -765,6 +768,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   public get errorMessage(): string {
     return this.state.errorMessage;
+  }
+
+  public get chart(): ChartType {
+    return !!this.definition ? this.definition.Chart : null;
   }
 
   //////// SUMMARY - PIVOT
@@ -1394,7 +1401,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get xAxisLabel() {
-    const index = this.view === ReportView.line ? 1 : 0;
+    const index = this.definition.Chart === 'Line' ? 1 : 0;
     const dimension = this.state.uniqueDimensions[index] || this.state.uniqueDimensions[0];
     return !!dimension ? dimension.label() : '';
   }

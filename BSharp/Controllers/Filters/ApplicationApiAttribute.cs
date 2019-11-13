@@ -322,7 +322,8 @@ namespace BSharp.Controllers
                             MainMenuSortKey = 202m,
 
                             Type = ReportType.Summary,
-                            DefaultView = "bars_vertical",
+                            Chart = "Line",
+                            DefaultsToChart = true,
                             Collection = "MeasurementUnit",
                             Filter = "UnitType eq @UnitType and (Name contains @Name or Name2 contains @Name or Name3 contains @Name)",
                             Parameters = new List<ReportParameterDefinition>
@@ -338,23 +339,23 @@ namespace BSharp.Controllers
                             },
                             Columns = new List<ReportDimensionDefinition>
                             {
-                                new ReportDimensionDefinition
-                                {
-                                    Path = "ModifiedBy",
-                                    Label = "Modified By",
-                                    Label2 = "آخر تعديل",
-                                    Label3 = "我的密",
-                                    AutoExpand = true,
-                                },
-                                new ReportDimensionDefinition
-                                {
-                                    Path = "UnitType",
-                                    Label = "Unit Type",
-                                    Label2 = "نوع الوحدة",
-                                    Label3 = "我的密",
-                                    OrderDirection = "desc",
-                                    AutoExpand =true
-                                },
+                                //new ReportDimensionDefinition
+                                //{
+                                //    Path = "ModifiedBy",
+                                //    Label = "Modified By",
+                                //    Label2 = "آخر تعديل",
+                                //    Label3 = "我的密",
+                                //    AutoExpand = true,
+                                //},
+                                //new ReportDimensionDefinition
+                                //{
+                                //    Path = "UnitType",
+                                //    Label = "Unit Type",
+                                //    Label2 = "نوع الوحدة",
+                                //    Label3 = "我的密",
+                                //    OrderDirection = "desc",
+                                //    AutoExpand =true
+                                //},
                             },
                             Rows = new List<ReportDimensionDefinition>
                             {
@@ -368,7 +369,7 @@ namespace BSharp.Controllers
                                 },
                                 new ReportDimensionDefinition
                                 {
-                                    Path = "Description3",
+                                    Path = "UnitType",
                                     Label = "Unit Type",
                                     Label2 = "نوع الوحدة",
                                     Label3 = "我的密",
@@ -393,7 +394,15 @@ namespace BSharp.Controllers
                                     Label = "Average",
                                     Label2 = "المعدل",
                                     Label3 = "我的密"
-                                }
+                                },
+                                //new ReportMeasureDefinition
+                                //{
+                                //    Path = "Name",
+                                //    Aggregation = "max",
+                                //    Label = "Max",
+                                //    Label2 = "الأقصى",
+                                //    Label3 = "我的密"
+                                //},
                             },
                             ShowColumnsTotal = true,
                             ShowRowsTotal = true,
@@ -408,7 +417,7 @@ namespace BSharp.Controllers
                             MainMenuSortKey = 202m,
 
                             Type = ReportType.Summary,
-                            DefaultView = "bars_vertical",
+                            Chart = "Card",
                             Collection = "Resource",
                             DefinitionId = "finished-goods",
                             //                    Filter = "Memo contains @Memo",
@@ -467,14 +476,14 @@ namespace BSharp.Controllers
                                     Label2 = "العدد",
                                     Label3 = "我的密"
                                 },
-                                new ReportMeasureDefinition
-                                {
-                                    Path = "Id",
-                                    Aggregation = "avg",
-                                    Label = "Average",
-                                    Label2 = "المعدل",
-                                    Label3 = "我的密"
-                                }
+                                //new ReportMeasureDefinition
+                                //{
+                                //    Path = "Id",
+                                //    Aggregation = "avg",
+                                //    Label = "Average",
+                                //    Label2 = "المعدل",
+                                //    Label3 = "我的密"
+                                //}
                             },
                             ShowColumnsTotal = false,
                             ShowRowsTotal = true,

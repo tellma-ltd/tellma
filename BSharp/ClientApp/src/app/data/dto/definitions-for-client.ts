@@ -31,7 +31,8 @@ export interface ReportDefinitionForClient extends DefinitionForClient {
     Description2?: string;
     Description3?: string;
     Type: ReportType; // summary or details
-    DefaultView: string;
+    Chart?: ChartType;
+    DefaultsToChart: boolean; // ?
     Collection: string;
     DefinitionId?: string;
     Select: ReportSelectDefinition[];
@@ -82,6 +83,7 @@ export interface ReportDimensionDefinition {
 export type ReportOrderDirection = 'asc' | 'desc';
 export type ReportType = 'Summary' | 'Details';
 export type Aggregation = 'count' | 'dcount' | 'sum' | 'avg' | 'max' | 'min';
+export type ChartType = 'Card' | 'BarsVertical' | 'BarsHorizontal' | 'Line' | 'Pie';
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
     // TODO

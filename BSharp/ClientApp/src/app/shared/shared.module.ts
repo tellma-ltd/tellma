@@ -188,9 +188,9 @@ export class SharedModule {
       faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
       faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendar,
       faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
-      faTasks, faMale, faBuilding, faChartPie, faInfoCircle, faTachometerAlt,
+      faTasks, faMale, faBuilding, faChartPie, faInfoCircle,
 
-      faBars, faChartBar, faChartArea,
+      faBars,
       faChartLine, faExternalLinkAlt, faMinusSquare
     );
   }

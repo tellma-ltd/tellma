@@ -1,91 +1,36 @@
-<!-- Details (Flat Table) -->
-<div class="w-100 h-100 table-responsive" *ngIf="showResults && showDetails">
-    <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
-        <table class="table table-hover table-striped table-sm bg-white border-bottom b-master-table text-nowrap">
-            <!-- Column Header -->
-            <thead>
-                <tr>
-                    <th style="width:10px"></th>
-                    <th *ngFor="let col of select">
-                        <b-auto-label *ngIf="!col.Label" [collection]="collection" [path]="col.Path"
-                            [definition]="definition">
-                        </b-auto-label><span *ngIf="!!col.Label">{{ selectLabel(col) }}</span>
-                    </th>
-                </tr>
-            </thead>
-            <!-- Rows -->
-            <tbody>
-                <tr class="b-pointer" *cdkVirtualFor="let entity of entities" [class.b-highlight]="false">
-                    <td></td>
-                    <td *ngFor="let col of select" (click)="onFlatSelect(entity)">
-                        <b-auto-cell [collection]="collection" [path]="col.Path" [definition]="definition"
-                            [entity]="entity">
-                        </b-auto-cell>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </cdk-virtual-scroll-viewport>
-</div>
-
-<!-- Summary (Pivot and Charts) -->
-<ng-container *ngIf="showResults && showSummary" [ngSwitch]="view">
-
-    <!-- Card -->
-    <ng-container *ngSwitchCase="'card'" [ngSwitch]="supportsPoint">
-        <div class="h-100 d-flex justify-content-center py-4" *ngIf="supportsPoint;else notsupported">
-            <h1 class="display-3 b-report-measure mx-5" (click)="onPointSelect()"> {{ point }} </h1>
-        </div>
-    </ng-container>
-
-    <!-- Vertical Bar Chart -->
-    <ng-container *ngSwitchCase="'bars_vertical'">
-        <ng-container *ngIf="supportsMulti;else notsupported">
-            <ngx-charts-bar-vertical class="b-ltr" *ngIf="numberOfDimensions === 1" [animations]="animations"
-                [scheme]="colorScheme" [results]="single" [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis"
-                [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="xAxisLabel"
-                [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
-                (select)="onChartSelect($event.name)">
-            </ngx-charts-bar-vertical>
-
-            <ngx-charts-bar-vertical-2d class="b-ltr" *ngIf="numberOfDimensions === 2" [animations]="animations"
-                [scheme]="colorScheme" [results]="multi" [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis"
-                [legend]="false" [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
-                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
-                (select)="onChartSelect($event.name)">
-            </ngx-charts-bar-vertical-2d>
-        </ng-container>
-    </ng-container>
-
-    <!-- Line Chart -->
-    <ng-container *ngSwitchCase="'line'">
-        <ngx-charts-line-chart class="b-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
-            [scheme]="colorScheme" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
-            [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
-            [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
-            (select)="onChartSelect($event.name)">
-        </ngx-charts-line-chart>
-    </ng-container>
-
-    <!-- Pie Chart -->
-    <ng-container *ngSwitchCase="'pie'">
-        <ngx-charts-pie-chart class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-            [scheme]="colorScheme" [results]="single" [labelFormatting]="formatChartDimension" [labels]="true"
-            (select)="onChartSelect($event.name)">
-        </ngx-charts-pie-chart>
-    </ng-container>
-
-    <!-- Not supported message -->
-    <ng-template #notsupported>
-        <div class="w-100 p-3 px-4" *ngIf="!areAllRequiredParamsSpecified">
-            <fa-icon icon="info-circle"></fa-icon>
-            &nbsp;
-            {{ 'ChartTypeDoesNotSupportNDimensions' | translate: { count: numberOfDimensions } }}
-        </div>
-    </ng-template>
+<ng-container *ngIf="showResults">
+    <!-- Details (Flat Table) -->
+    <div class="w-100 h-100 table-responsive" *ngIf="showDetails">
+        <cdk-virtual-scroll-viewport class="h-100" itemSize="31">
+            <table class="table table-hover table-striped table-sm bg-white border-bottom b-master-table text-nowrap">
+                <!-- Column Header -->
+                <thead>
+                    <tr>
+                        <th style="width:10px"></th>
+                        <th *ngFor="let col of select">
+                            <b-auto-label *ngIf="!col.Label" [collection]="collection" [path]="col.Path"
+                                [definition]="definition">
+                            </b-auto-label><span *ngIf="!!col.Label">{{ selectLabel(col) }}</span>
+                        </th>
+                    </tr>
+                </thead>
+                <!-- Rows -->
+                <tbody>
+                    <tr class="b-pointer" *cdkVirtualFor="let entity of entities" [class.b-highlight]="false">
+                        <td></td>
+                        <td *ngFor="let col of select" (click)="onFlatSelect(entity)">
+                            <b-auto-cell [collection]="collection" [path]="col.Path" [definition]="definition"
+                                [entity]="entity">
+                            </b-auto-cell>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </cdk-virtual-scroll-viewport>
+    </div><!-- End *ngIf="showDetails" -->
 
     <!-- Pivot Table -->
-    <ng-container *ngSwitchCase="'pivot'">
+    <ng-container *ngIf="showSummary">
         <cdk-virtual-scroll-viewport class="h-100" itemSize="33">
             <table class="table table-hover table-bordered border table-sm bg-white b-report-table text-nowrap">
                 <tbody>
@@ -198,8 +143,77 @@
                 </tbody>
             </table>
         </cdk-virtual-scroll-viewport>
-    </ng-container>
-</ng-container>
+    </ng-container><!-- End *ngIf="showSummary" -->
+
+    <!-- Charts -->
+    <ng-container *ngIf="showChart" [ngSwitch]="chart">
+
+        <!-- Card -->
+        <ng-container *ngSwitchCase="'Card'">
+            <div class="h-100 d-flex justify-content-center py-4" *ngIf="supportsPoint;else notsupported">
+                <h1 class="display-3 b-report-measure mx-5" (click)="onPointSelect()"> {{ point }} </h1>
+            </div>
+        </ng-container>
+
+        <!-- Vertical Bars Chart -->
+        <ng-container *ngSwitchCase="'BarsVertical'">
+            <ngx-charts-bar-vertical class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                [scheme]="colorScheme" [results]="single" [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis"
+                [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="xAxisLabel"
+                [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
+                (select)="onChartSelect($event.name)">
+            </ngx-charts-bar-vertical>
+        </ng-container>
+
+        <!-- Horizontal Bars Chart -->
+        <ng-container *ngSwitchCase="'BarsHorizontal'">
+            <ngx-charts-bar-horizontal class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                [scheme]="colorScheme" [results]="single" [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis"
+                [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="xAxisLabel"
+                [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
+                (select)="onChartSelect($event.name)">
+            </ngx-charts-bar-horizontal>
+        </ng-container>
+
+        <!-- Vertical Bars Chart 2D -->
+        <ng-container *ngSwitchCase="'BarsVertical2D'">
+            <ngx-charts-bar-vertical-2d class="b-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
+                [scheme]="colorScheme" [results]="multi" [roundEdges]="false" [xAxis]="showXAxis" [yAxis]="showYAxis"
+                [legend]="false" [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
+                (select)="onChartSelect($event.name)">
+            </ngx-charts-bar-vertical-2d>
+        </ng-container>
+
+        <!-- Line Chart -->
+        <ng-container *ngSwitchCase="'Line'">
+            <ngx-charts-line-chart class="b-ltr" *ngIf="supportsMulti;else notsupported" [animations]="animations"
+                [scheme]="colorScheme" [results]="multi" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false"
+                [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [xAxisTickFormatting]="formatChartDimension"
+                (select)="onChartSelect($event.name)">
+            </ngx-charts-line-chart>
+        </ng-container>
+
+        <!-- Pie Chart -->
+        <ng-container *ngSwitchCase="'Pie'">
+            <ngx-charts-pie-chart class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
+                [scheme]="colorScheme" [results]="single" [labelFormatting]="formatChartDimension" [labels]="true"
+                (select)="onChartSelect($event.name)">
+            </ngx-charts-pie-chart>
+        </ng-container>
+
+        <!-- Not supported message -->
+        <ng-template #notsupported>
+            <div class="w-100 p-3 px-4" *ngIf="!areAllRequiredParamsSpecified">
+                <fa-icon icon="info-circle"></fa-icon>
+                &nbsp;
+                {{ 'ChartTypeDoesNotSupportNDimensions' | translate: { count: numberOfDimensions } }}
+            </div>
+        </ng-template>
+    </ng-container><!-- End *ngIf="showChart" -->
+
+</ng-container><!-- End *ngIf="showResults" -->
 
 <!-- Spinner -->
 <div class="w-100 p-2 d-flex justify-content-center mt-3" *ngIf="showSpinner">

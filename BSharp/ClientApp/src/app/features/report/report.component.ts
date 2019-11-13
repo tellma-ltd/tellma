@@ -35,16 +35,13 @@ export class ReportComponent implements OnInit, OnDestroy {
   private _parametersErrorMessage: string;
   private _views: { view: ReportView, label: string, icon: string }[] = [
     { view: ReportView.pivot, label: 'Table', icon: 'table' },
-    { view: ReportView.card, label: 'Card', icon: 'tachometer-alt' },
-    { view: ReportView.bars_vertical, label: 'BarChart', icon: 'chart-bar' },
-    { view: ReportView.line, label: 'LineChart', icon: 'chart-area' },
-    { view: ReportView.pie, label: 'PieChart', icon: 'chart-pie' }
+    { view: ReportView.chart, label: 'Chart', icon: 'chart-pie' },
   ];
 
   private definitionId: string;
   private _skip = 0;
 
-  public view: ReportView = ReportView.pivot;
+  public view: ReportView;
   public arguments: ReportArguments = {};
   public immutableArguments: ReportArguments = {};
 
@@ -56,7 +53,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     // Pick up state from the URL
     this._subscriptions = new Subscription();
     this._subscriptions.add(this.route.paramMap.subscribe((params: ParamMap) => {
-
 
       // This triggers changes on the screen
       if (this.isScreenMode) {
@@ -119,6 +115,9 @@ export class ReportComponent implements OnInit, OnDestroy {
         this.immutableArguments = { ...this.arguments };
       }
     }));
+
+    // Set to default
+    this.view = this.view || (!!this.definition.Chart && !!this.definition.DefaultsToChart ? ReportView.chart : ReportView.pivot);
   }
 
   ngOnDestroy() {
@@ -151,9 +150,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   public get state(): ReportStore {
 
     if (!this.workspace.current.reportState[this.stateKey]) {
-      // this.workspace.current.reportState = {};
       this.workspace.current.reportState[this.stateKey] = new ReportStore();
-      // this.immutableArguments = {};
     }
 
     return this.workspace.current.reportState[this.stateKey];
@@ -183,17 +180,6 @@ export class ReportComponent implements OnInit, OnDestroy {
 
     this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
   }
-
-  // private updateUrlState(key: string, value: any, replaceUrl = true) {
-  //   const params = this.route.snapshot.params;
-  //   if (value === null || value === undefined) {
-  //     delete params[key];
-  //   } else {
-  //     params[key] = value;
-  //   }
-
-  //   this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl });
-  // }
 
   // UI Bindings
 
@@ -315,7 +301,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   public get showReportViewToggle(): boolean {
-    return !!this.definition && this.definition.Type === 'Summary';
+    return !!this.definition && this.definition.Type === 'Summary' && !!this.definition.Chart;
   }
 
   public get stateKey(): string {
