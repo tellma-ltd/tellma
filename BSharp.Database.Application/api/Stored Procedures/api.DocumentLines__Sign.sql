@@ -34,7 +34,7 @@ BEGIN
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 
-	IF @RoleID NOT IN (SELECT RoleId FROM dbo.RoleMemberships WHERE AgentId = @AgentId)
+	IF @RoleId NOT IN (SELECT RoleId FROM dbo.RoleMemberships WHERE AgentId = @AgentId)
 	BEGIN
 		
 		RAISERROR(N'Error_IncompatibleAgentRole', 16, 1);
@@ -66,7 +66,7 @@ SET NOCOUNT ON;
 		@ReasonId = @ReasonId,
 		@ReasonDetails = @ReasonDetails,
 		@AgentId = @AgentId,
-		@RoleID = @RoleID,
+		@RoleId = @RoleId,
 		@SignedAt = @SignedAt
 
 	-- Determine which of the selected Lines are reacdy for state change

@@ -1,5 +1,5 @@
-﻿CREATE TABLE [dbo].[AccountTypes] (
-	[Id]							NVARCHAR (50) CONSTRAINT [PK_AccountTypes] PRIMARY KEY,
+﻿CREATE TABLE [dbo].[OldAccountDefinitions] (
+	[Id]							NVARCHAR (50) CONSTRAINT [PK_AccountDefinitions] PRIMARY KEY,
 	[Description]					NVARCHAR (255),
 	[Description2]					NVARCHAR (255),
 	[Description3]					NVARCHAR (255),
@@ -10,12 +10,12 @@
 	[TitlePlural2]					NVARCHAR (255),
 	[TitlePlural3]					NVARCHAR (255),
 
-	[AgentRelationTypeList]	NVARCHAR (1024),
+	[AgentRelationDefinitionList]	NVARCHAR (1024),
 	[HasResource]					BIT				NOT NULL DEFAULT 0,
 	[ResourceTypeList]				NVARCHAR (1024),
 	[HasRelatedAgent]				BIT				NOT NULL DEFAULT 0,
 		
-	[EntryTypeId]					NVARCHAR (255) CONSTRAINT [FK_AccountTypes__EntryTypeId] REFERENCES dbo.EntryTypes([Id]),
+	[EntryTypeId]					NVARCHAR (255) CONSTRAINT [FK_AccountDefinitions__EntryTypeId] REFERENCES dbo.EntryTypes([Id]),
 
 	[DebitPartyNameLabel]			NVARCHAR (50), -- NULL means it is invisible
 	[DebitPartyNameLabel2]			NVARCHAR (50),

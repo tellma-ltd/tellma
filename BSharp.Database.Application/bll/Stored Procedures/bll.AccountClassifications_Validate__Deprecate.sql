@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 		JOIN dbo.Accounts A ON DLE.AccountId = A.Id
 		JOIN @Ids I ON I.[Id] = A.[AccountClassificationId]
 		LEFT JOIN dbo.Resources R ON R.[Id] = A.[ResourceId]
-		LEFT JOIN dbo.Agents AG ON AG.[Id] = A.[CustodianId]
+		LEFT JOIN dbo.Agents AG ON AG.[Id] = A.[AgentId]
 		LEFT JOIN dbo.Locations L ON L.[Id] = A.[LocationId]
 		LEFT JOIN dbo.Agents RC ON RC.[Id] = A.[ResponsibilityCenterId]
 		WHERE D.[State] = N'Filed'

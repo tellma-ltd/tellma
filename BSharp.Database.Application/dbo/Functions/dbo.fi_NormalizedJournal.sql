@@ -28,8 +28,8 @@ RETURN
 		J.[LineDefinitionId],
 		J.[Direction],
 		J.[AccountId],
-		J.[AccountDefinitionId],
-		J.[CustodianId],
+		J.[AccountTypeId],
+		J.[AgentId],
 		J.[EntryTypeId],
 		J.[ResponsibilityCenterId],
 		J.[ResourceId],
@@ -49,7 +49,7 @@ RETURN
 		J.[RelatedResourceId],
 		J.[RelatedAgentId],
 		J.[RelatedQuantity],
-		J.[RelatedMonetaryAmount]
+		J.[RelatedMonetaryValue]
 	FROM dbo.fi_Journal(@fromDate, @toDate) J
 	LEFT JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN UnitRatios MR ON R.MassUnitId = MR.Id

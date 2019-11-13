@@ -85,9 +85,9 @@ SET NOCOUNT ON;
 		N'Error_TheRelatedAgentIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	JOIN dbo.[AccountDefinitions] AD ON A.[AccountDefinitionId] = AD.Id
+	JOIN dbo.[AccountTypes] AD ON A.[AccountTypeId] = AD.Id
 	WHERE (E.[RelatedAgentId] IS NULL)
-	AND (AD.[RelatedAgentVisibility] = N'RequiredInEntries');
+	AND (AD.[HasRelatedAgent] = 1);
 
 	/* TODO: Revisit after the design is stable
 	-- No inactive Account Type

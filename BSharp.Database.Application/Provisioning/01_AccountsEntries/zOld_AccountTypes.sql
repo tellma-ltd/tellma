@@ -19,7 +19,7 @@ INSERT INTO @AccountTypes
 																						N'/1/1/5/',		1,				0),
 (N'InvestmentsInSubsidiariesJointVenturesAndAssociates', N'Investments in subsidiaries, joint ventures and associates',
 																						N'/1/1/6/',		1,				0),
-( N'NoncurrentBiologicalAssets',			N'Non-current biological assets',			N'/1/1/7/',		1,				0),
+(N'NoncurrentBiologicalAssets',				N'Non-current biological assets',			N'/1/1/7/',		1,				0),
 (N'NoncurrentReceivables',					N'Trade and other non-current receivables',	N'/1/1/8/',		1,				0),
 (N'NoncurrentInventories',					N'Non-current inventories',					N'/1/1/9/',		1,				0),
 (N'DeferredTaxAssets',						N'Deferred tax assets',						N'/1/1/10/',	1,				0),

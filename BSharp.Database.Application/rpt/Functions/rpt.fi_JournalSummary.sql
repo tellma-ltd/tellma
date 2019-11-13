@@ -1,5 +1,5 @@
 ﻿CREATE FUNCTION [rpt].[fi_JournalSummary] (
-	@AccountTypeList NVARCHAR(50) = NULL,
+	@AccountTypeList NVARCHAR(1024) = NULL,
 	@FromDate Date = '01.01.2019',
 	@ToDate Date = '01.01.2020',
 	@MassUnitId INT = NULL,
@@ -8,15 +8,10 @@
 RETURNS TABLE AS
 RETURN
 	WITH
-	ReportAccountTypes AS (
-		SELECT AT1.[Id] FROM dbo.AccountTypes AT1
-		JOIN dbo.AccountTypes AT2 ON AT1.[Node].IsDescendantOf(AT2.[Node]) = 1 
-		WHERE AT2.[Id] = @AccountTypeList
-	),
 	ReportAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts]
 		WHERE @AccountTypeList IS NULL 
-		OR [AccountTypeId] IN (SELECT [Id] FROM ReportAccountTypes)
+		OR [AccountTypeId] IN (SELECT [Id] FROM @AccountTypeList)
 	),
 	OpeningBalances AS (
 		SELECT
@@ -60,7 +55,7 @@ RETURN
 		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
 	)
 	SELECT
-		AccountId, R.[EntryTypeId], A.[AccountDefinitionId], A.[AccountClassificationId], A.ResourceId, A.[CustodianId], A.[ResponsibilityCenterId], A.LocationId, A.PartyReference,
+		AccountId, R.[EntryTypeId], A.[AccountTypeId], A.[AccountClassificationId], A.ResourceId, A.[AgentId], A.[ResponsibilityCenterId], A.PartyReference,
 		OpeningCount, CountIn, CountOut, EndingCount,
 		OpeningMass, MassIn, MassOut, EndingMass,
 		[Opening], [Debit], [Credit], [Closing]

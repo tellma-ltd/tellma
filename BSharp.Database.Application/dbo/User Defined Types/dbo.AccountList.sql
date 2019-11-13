@@ -9,7 +9,5 @@
 	[Code]							NVARCHAR (255),
 	[PartyReference]				NVARCHAR (255),
 	[ResourceId]					INT,
-	[CustodianId]					INT, -- Alex
-	[LocationId]					INT,
-	[ResponsibilityCenterId]		INT -- e.g., Ashenafi
+	[AgentId]					INT -- Alex
 );

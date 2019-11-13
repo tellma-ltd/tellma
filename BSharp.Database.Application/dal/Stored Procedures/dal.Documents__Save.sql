@@ -26,14 +26,13 @@ BEGIN
 				) As [SerialNumber]
 			FROM @Documents D
 		) AS s ON (t.Id = s.Id)
-		WHEN MATCHED
-		THEN
+		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DocumentDate]			= s.[DocumentDate],
 				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
 				t.[Memo]					= s.[Memo],
 				--t.[Frequency]				= s.[Frequency],
-				--t.[Repetitions]				= s.[Repetitions],
+				--t.[Repetitions]			= s.[Repetitions],
 
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -86,7 +85,7 @@ BEGIN
 			)
 			VALUES (s.[DocumentId], s.[LineDefinitionId], s.[Index], --s.[TemplateLineId], s.[ScalingFactor], 
 			s.[Memo]
-			--,s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMoneyAmount]
+			--,s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMonetaryValue]
 			)
 		WHEN NOT MATCHED BY SOURCE THEN
 			DELETE
@@ -104,7 +103,8 @@ BEGIN
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [EntryTypeId],
 			[BatchCode], [DueDate],
 			[MonetaryValue], E.[Mass], E.[Volume], E.[Area], E.[Length], E.[Time], E.[Count], E.[Value],
-			E.[Memo], E.[ExternalReference], E.[AdditionalReference], E.[RelatedResourceId], E.[RelatedAgentId], E.[RelatedMonetaryAmount]
+			--E.[Memo],
+			E.[ExternalReference], E.[AdditionalReference], E.[RelatedResourceId], E.[RelatedAgentId], E.[RelatedMonetaryValue]
 				
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
@@ -125,21 +125,25 @@ BEGIN
 			t.[Time]					= s.[Time],
 			t.[Volume]					= s.[Volume],
 			t.[Value]					= s.[Value],
-			t.[Memo]					= s.[Memo],
+			--t.[Memo]					= s.[Memo],
 			t.[ExternalReference]		= s.[ExternalReference],
 			t.[AdditionalReference]		= s.[AdditionalReference],
-			t.[RelatedResourceId]		= s.[RelatedResourceId],
 			t.[RelatedAgentId]			= s.[RelatedAgentId],
+			t.[RelatedMonetaryValue]	= s.[RelatedMonetaryValue],
+			t.[RelatedResourceId]		= s.[RelatedResourceId],
+	
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], [EntryTypeId], [BatchCode],
 				[MonetaryValue], [Mass], [Volume], [Area], [Length], [Time], [Count],  [Value],
-				[Memo], [ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId], [RelatedMonetaryAmount]
+				--[Memo], 
+				[ExternalReference], [AdditionalReference], [RelatedResourceId], [RelatedAgentId], [RelatedMonetaryValue]
 				)
 		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Index], s.[Direction], s.[AccountId], s.[EntryTypeId], s.[BatchCode],
 				s.[MonetaryValue], s.[Mass], s.[Volume], s.[Area], s.[Length], s.[Time], s.[Count], s.[Value],
-				s.[Memo], s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMonetaryAmount]
+				--s.[Memo], 
+				s.[ExternalReference], s.[AdditionalReference], s.[RelatedResourceId], s.[RelatedAgentId], s.[RelatedMonetaryValue]
 				)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;

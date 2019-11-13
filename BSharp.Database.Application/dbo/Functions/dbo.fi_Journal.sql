@@ -21,13 +21,11 @@ RETURN
 		V.[LineDefinitionId],
 		V.[Direction],
 		V.[AccountId],
-		A.[AccountDefinitionId],
 		A.[AccountTypeId],
 		A.[AccountClassificationId],
 		V.[EntryTypeId],
-		A.[CustodianId],
+		A.[AgentId],
 		A.[ResponsibilityCenterId],
-		A.[LocationId],
 		A.[ResourceId],
 		--V.[ResourceInstanceId],
 		V.[BatchCode],
@@ -58,7 +56,7 @@ RETURN
 		V.[RelatedResourceId],
 		V.[RelatedAgentId],
 		V.[RelatedQuantity],
-		V.[RelatedMonetaryAmount]
+		V.[RelatedMonetaryValue]
 	FROM dbo.[DocumentLineEntriesDetailsView] V
 	JOIN dbo.Accounts A ON V.AccountId = A.Id
 	LEFT JOIN dbo.Resources R ON A.ResourceId = R.Id

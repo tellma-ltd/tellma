@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[LineTypesSpecifications] (
+﻿CREATE TABLE [dbo].LineDefinitionEntries (
 	[LineDefinitionId]				NVARCHAR (50),
 	[EntryNumber]					INT,
 
@@ -12,30 +12,43 @@
 	[DirectionIsVisible]			BIT				NOT NULL DEFAULT 0,
 	[DirectionIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
 	[DirectionExpression]			NVARCHAR (255),
-	[DirectionEntryNumber]			NVARCHAR (255),
+	[DirectionEntryNumber]			INT,
 	[Direction]						SMALLINT,
 
 	[AccountIdIsVisible]			BIT				NOT NULL DEFAULT 0,
 	[AccountIsEditableTill]			NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
-	[AccountIdIfrsFilter]			NVARCHAR (255),
+	[AccountDefinitionList]			NVARCHAR (1024),
+	[AccountTypeList]				NVARCHAR (1024),
 	[AccountIdExpression]			NVARCHAR (255),
 	[AccountIdEntryNumber]			INT,
+	[AccountId]						INT,
 
-	[IfrsEntryClassificationIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[IfrsEntryClassificationIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
-	[IfrsEntryClassificationIdExpression]			NVARCHAR (255),
-	[IfrsEntryClassificationIdEntryNumber]			INT,
-	[IfrsEntryClassificationId]					NVARCHAR (255),
+	[EntryTypeIdIsVisible]			BIT				NOT NULL DEFAULT 0,
+	[EntryTypeIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
+	[EntryTypeIdExpression]			NVARCHAR (255),
+	[EntryTypeIdEntryNumber]		INT,
+	[EntryTypeId]					NVARCHAR (255),
 
 	[ResourceIdIsVisible]			BIT				NOT NULL DEFAULT 0,
 	[ResourceIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
-	[ResourceIdExpression]			NVARCHAR (255),
+	[ResourceDefinitionList]		NVARCHAR (1024),
+	[ResourceTypeList]				NVARCHAR (1024),
 	[ResourceIdEntryNumber]			INT,
 	[ResourceId]					INT,
 
-	[InstanceIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[InstanceIdExpression]			NVARCHAR (255),
-	[InstanceIdEntryNumber]			INT,
+	[LocationIdIsVisible]			BIT				NOT NULL DEFAULT 0,
+	[LocationIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
+	[LocationDefinitionList]		NVARCHAR (1024),
+	[LocationTypeList]				NVARCHAR (1024),
+	[LocationIdEntryNumber]			INT,
+	[LocationId]					INT,
+
+	[AgentIdIsVisible]				BIT				NOT NULL DEFAULT 0,
+	[AgentIdIsEditableTill]			NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
+	[AgentDefinitionList]			NVARCHAR (1024),
+	[AgentTypeList]					NVARCHAR (1024),
+	[AgentIdEntryNumber]			INT,
+	[AgentId]						INT,
 	
 	[BatchCodeIsVisible]			BIT				NOT NULL DEFAULT 0,
 	[BatchCodeExpression]			NVARCHAR (255),
@@ -104,6 +117,6 @@
 	[RelatedQuantity]				MONEY ,			-- used in Tax accounts, to store the quantiy of taxable item
 	[RelatedMoneyAmount]			MONEY 				NOT NULL DEFAULT 0, -- e.g., amount subject to tax
 
-    CONSTRAINT [PK_LineTypeSpecifications] PRIMARY KEY CLUSTERED ([LineDefinitionId], [EntryNumber]),
-	CONSTRAINT [FK_LineTypeSpecifications_LineTypes] FOREIGN KEY ([LineDefinitionId]) REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT [PK_LineDefinitionEntries] PRIMARY KEY CLUSTERED ([LineDefinitionId], [EntryNumber]),
+	CONSTRAINT [FK_LineDefinitionEntries_LineDefinitions] FOREIGN KEY ([LineDefinitionId]) REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
 );

@@ -63,7 +63,7 @@ BEGIN -- Inserting
 	(5, 5, 1,1,-1,@CBEUSD,			N'InternalCashTransferExtension',	1175000);
 
 	INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],		[EntryTypeId],						[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryAmount]) VALUES
+				[AccountId],		[EntryTypeId],						[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryValue]) VALUES
 	(6, 6, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),--
 	(7, 7, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, NULL),--
 	(8, 8, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),
@@ -109,7 +109,7 @@ BEGIN -- Inserting
 		Print 'Document Lines Signing'
 		GOTO Err_Label;
 	END;
-	select * from DocumentLineSignatures;
+
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	-- TODO: fill index using ROWNUMBER
@@ -119,7 +119,7 @@ BEGIN -- Inserting
 		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-	IF @DebugDocuments = 1
+	IF @DebugManualVouchers = 1
 	BEGIN
 			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents;
 			EXEC [rpt].[Docs__UI] @DIds;
@@ -132,7 +132,7 @@ BEGIN
 		Format(Debit, '##,#.00;-;-', 'en-us') AS Debit,
 		Format(Credit, '##,#.00;-;-', 'en-us') AS Credit,
 		Format(Closing , '##,#.00;(##,#.00);-', 'en-us') AS Closing
-	FROM [rpt].[AccountClassificationsGLAccounts__TrialBalance] ('2018.01.02','2019.01.01') JS
+	FROM [rpt].[Accounts__TrialBalance] ('2018.01.02','2019.01.01') JS
 	LEFT JOIN dbo.Accounts A ON JS.GLAccountId = A.Id
 	LEFT JOIN dbo.AccountClassifications AC ON JS.AccountClassificationId = AC.Id
 	ORDER BY AC.[Code], A.[Code]
@@ -142,7 +142,7 @@ BEGIN
 		A.TaxIdentificationNumber As TIN, 
 		J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
 		FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
-		FORMAT(SUM(J.[RelatedMonetaryAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
+		FORMAT(SUM(J.[RelatedMonetaryValue]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date]
 	FROM [dbo].[fi_Journal]('2018.01.01','2019.01.01') J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id

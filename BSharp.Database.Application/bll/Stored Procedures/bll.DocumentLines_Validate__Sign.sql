@@ -85,15 +85,10 @@ SET NOCOUNT ON;
 	WHERE (A.[IsDeprecated] = 1);
 
 	-- Not allowed to cause negative inventory balance
-	WITH InventoriesAccountTypes AS (
-		SELECT Id FROM dbo.AccountTypes
-		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.AccountTypes WHERE Id = N'Assets')
-		) = 1
-	),
-	AssetAccounts AS (
+	WITH
+	InventoryAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts] A
-		WHERE A.[AccountTypeId] IN (SELECT [Id] FROM InventoriesAccountTypes)
+		WHERE A.[AccountTypeId] = N'Inventory'
 	),
 	CurrentDocLines AS (
 		SELECT MAX(FE.[Index]) AS [Index], DLE.AccountId,
@@ -103,7 +98,7 @@ SET NOCOUNT ON;
 			SUM(DLE.[Direction] * DLE.[Area]) AS [Area]
 		FROM @Ids FE
 		JOIN dbo.[DocumentLineEntries] DLE ON FE.[Id] = DLE.[DocumentLineId]
-		WHERE DLE.AccountId IN (SELECT [Id] FROM AssetAccounts)
+		WHERE DLE.AccountId IN (SELECT [Id] FROM InventoryAccounts)
 		GROUP BY DLE.AccountId
 		HAVING SUM(DLE.[Direction] * DLE.[Mass]) < 0
 		OR SUM(DLE.[Direction] * DLE.[Volume]) < 0

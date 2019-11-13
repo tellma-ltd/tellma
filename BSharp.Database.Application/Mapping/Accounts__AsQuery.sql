@@ -16,7 +16,7 @@ RETURN (
 		[Code],
 		[PartyReference],
 		[ResponsibilityCenterId],
-		[CustodianId],
+		[AgentId],
 		[ResourceId],
 	--	[ResourceInstanceId],
 		[LocationId],

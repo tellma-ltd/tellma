@@ -30,13 +30,13 @@ AS
 		E.[Time],
 		E.[Count], -- we can normalize every measure, but just showing a proof of concept
 		E.[Value],
-		E.[Memo],
+		L.[Memo],
 		E.[ExternalReference],
 		E.[AdditionalReference],
 		E.[RelatedResourceId],
 		E.[RelatedAgentId],
 		E.[RelatedQuantity],
-		E.[RelatedMonetaryAmount],
+		E.[RelatedMonetaryValue],
 
 		E.[CreatedAt],
 		E.[CreatedById],

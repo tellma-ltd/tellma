@@ -22,6 +22,16 @@ JOIN dbo.[Accounts] A ON E.AccountId = A.Id
 JOIN dbo.AccountDefinitions AD ON A.AccountDefinitionId = AD.[Id]
 WHERE (AD.[EntryTypeId] IS NOT NULL)
 
+UPDATE E
+SET
+	E.[Direction] = COALESCE(E.[Direction], LDE.[Direction]),
+	E.[AccountId] = COALESCE(E.[AccountId], LDE.[AccountId])
+	-- TODO: fill with all the remaining defaults
+
+FROM @FilledEntries E
+JOIN @Lines L ON E.[DocumentLineIndex] = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.[LineDefinitionId] = LDE.[LineDefinitionId] AND E.[EntryNumber] = LDE.[EntryNumber]
+
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
 SET E.[Value] = E.[MonetaryValue]
@@ -35,7 +45,7 @@ WHERE
 	AND R.[MonetaryValueCurrencyId] = @FunctionalCurrencyId
 	AND (E.[Value] <> E.[MonetaryValue]);
 
--- for financial amounts in 
+-- for financial amounts in foreign currency, the value is manually entered or read from a web service
 --UPDATE E 
 --SET E.[Value] = dbo.[fn_CurrencyExchange](D.[DocumentDate], R.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue])
 --FROM @FilledEntries E

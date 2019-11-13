@@ -1,38 +1,12 @@
-﻿DECLARE @LineDefinitions TABLE (
-	[Id]						NVARCHAR (50)			PRIMARY KEY,
-	[TitleSingular]					NVARCHAR (255),
-	[TitleSingular2]				NVARCHAR (255),
-	[TitleSingular3]				NVARCHAR (255),
-	[TitlePlural]					NVARCHAR (255),
-	[TitlePlural2]					NVARCHAR (255),
-	[TitlePlural3]					NVARCHAR (255)
-);
-
-INSERT @LineDefinitions([Id]) VALUES
-(N'CashIssue'),
-(N'VATInvoiceWithGoodReceipt'),
-(N'VATInvoiceWithoutGoodReceipt'),
-(N'PaysheetLine'),
-(N'ManualLine');
-
-MERGE [dbo].[LineDefinitions] AS t
-USING @LineDefinitions AS s
-ON s.Id = t.Id
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Id], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3])
-    VALUES (s.[Id], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3]);
-
-DECLARE @DocumentDefinitions TABLE (
+﻿DECLARE @DocumentDefinitions TABLE (
 	[Id]						NVARCHAR (50)	PRIMARY KEY,
 	[IsSourceDocument]			BIT				DEFAULT (1), -- <=> IsVoucherReferenceRequired
-	[TitleSingular]					NVARCHAR (255),
-	[TitleSingular2]				NVARCHAR (255),
-	[TitleSingular3]				NVARCHAR (255),
-	[TitlePlural]					NVARCHAR (255),
-	[TitlePlural2]					NVARCHAR (255),
-	[TitlePlural3]					NVARCHAR (255),
+	[TitleSingular]				NVARCHAR (255),
+	[TitleSingular2]			NVARCHAR (255),
+	[TitleSingular3]			NVARCHAR (255),
+	[TitlePlural]				NVARCHAR (255),
+	[TitlePlural2]				NVARCHAR (255),
+	[TitlePlural3]				NVARCHAR (255),
 	-- UI Specs
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT (3), -- For presentation purposes
@@ -51,7 +25,11 @@ INSERT @DocumentDefinitions ([Id], [Prefix]) VALUES
 	-- production, maintenance
 	-- payroll, paysheet (w/loan deduction), loan issue, penalty, overtime, paid leave, unpaid leave
 	-- manual journal, depreciation,  
-	(N'manual-journals', N'JV'), -- (N'ManualLine'), 
+	(N'manual-journals', N'JV'),
+	(N'petty-cash-vouchers',N'PCV'),
+
+---------------------------------------------
+
 	(N'et-sales-witholding-tax-vouchers', N'WT'), -- (N'et-customers-tax-withholdings'), (N'receivable-credit'), (N'cash-issue')
 
 	(N'cash-payment-vouchers', N'CPV'), -- (N'cash-issue'), (N'manual-line')
@@ -104,6 +82,9 @@ DECLARE @DocumentDefinitionsLineDefinitions TABLE(
 
 INSERT @DocumentDefinitionsLineDefinitions ([DocumentDefinitionid], [LineDefinitionId], [IsVisibleByDefault]) VALUES
 	(N'manual-journals', N'ManualLine', 1),
+	(N'petty-cash-vouchers', N'PettyCashPayment', 1),
+
+---------------------------------------------------------------------
 	(N'purchasing-international', N'GoodReceiptInTransitWithInvoice', 1),
 
 	(N'et-sales-witholding-tax-vouchers', N'ET.CustomerTaxWithholding', 1),

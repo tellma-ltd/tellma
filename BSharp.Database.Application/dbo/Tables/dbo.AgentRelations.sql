@@ -26,19 +26,19 @@
 	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AgentRelations__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 /*
 	Agent Relation type		UDL (can only have ONE default account per (agent, relation type)
-		N'investor'			-- Default
-		N'investment'		-- Default, per investment contract
-		N'cash'				-- Default, per cash bag
+		N'investor'			-- 
+		N'investment'		-- 
+		N'custodian'
+		N'depositor'
 		N'bank'				-- Default, per bank account
 		N'customer'			-- Default, per Sales order, per lease out, ...
 		N'supplier'			-- Default, per Purchase Order, per LC, per lease in
 		N'employee'			-- Default, per Contract
-		N'debtor'			-- Default, per Loan
-		N'creditor'			-- Default, per borrowing
+		N'debtor'			-- used by financial institutes
+		N'creditor'			-- 
 		N'custodian'		-- Default, per storage location. Use the code to define the location structure
 							-- Includes warehouse/aisles/shelves/bins, factory/line/unit, farm/zone/..
-		N'employer'			-- Default, per contract
-							-- used for companies providing outsourcing services
+		N'employer'			-- used for individuals doing personal accounting
 		)),
 	*/
 );

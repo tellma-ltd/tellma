@@ -20,7 +20,7 @@ BEGIN
 		[ExternalReference] As [CheckRef],
 		[RelatedResourceId] As [OtherPartyCurrency],
 		[RelatedAgentId] As [OtherParty],
-		[RelatedMonetaryAmount] As [OtherPartyAmount]
+		[RelatedMonetaryValue] As [OtherPartyAmount]
 	FROM [dbo].[fi_Journal](@fromDate, @toDate)
 	WHERE [AccountId] = @AccountId;
 END;

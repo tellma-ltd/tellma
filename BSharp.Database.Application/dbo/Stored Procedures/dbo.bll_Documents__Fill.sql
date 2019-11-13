@@ -108,7 +108,7 @@ BEGIN -- Fill lines from specifications
 		L.Direction3 = LTS.Direction3,
 		L.Direction4 = LTS.Direction4
 	FROM @LinesLocal L
-	JOIN dbo.[LineTypesSpecifications] LTS ON L.LineType = LTS.LineType;
+	JOIN dbo.LineDefinitionEntries LTS ON L.LineType = LTS.LineType;
 
 	DECLARE @Sql NVARCHAR(4000), @ParmDefinition NVARCHAR (255), @AppendSql NVARCHAR(4000), @LineType NVARCHAR (255);
 	SELECT @LineType = MIN(LineType) FROM @DocumentLineTypes;
@@ -119,29 +119,29 @@ BEGIN -- Fill lines from specifications
 			INSERT INTO @LinesLocal SELECT * FROM @Lines;
 			UPDATE L
 			SET 
-			' +	ISNULL('L.OperationId1 = ' + (SELECT [OperationId1FillSql] FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.AccountId1 = ' +	(SELECT [AccountId1FillSql] FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.AgentId1 = ' +	(SELECT [AgentId1FillSql] FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.ResourceId1 = ' +	(SELECT ResourceId1FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.Amount1 = ' +	(SELECT Amount1FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.Value1 = ' +	(SELECT Value1FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.NoteId1 = ' +	(SELECT NoteId1FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.Reference1 = ' +	(SELECT Reference1FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.OperationId2 = ' +	(SELECT OperationId2FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.AccountId2 = ' +	(SELECT AccountId2FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.AgentId2 = ' +	(SELECT [AgentId2FillSql] FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.ResourceId2 = ' +	(SELECT ResourceId2FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.Amount2 = ' +	(SELECT Amount2FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.Value2 = ' +	(SELECT Value2FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.NoteId2 = ' +	(SELECT NoteId2FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
-			', '') + ISNULL('L.Reference2 = ' +	(SELECT Reference2FillSql FROM [LineTypesSpecifications] WHERE [Id] = @LineType) + ',
+			' +	ISNULL('L.OperationId1 = ' + (SELECT [OperationId1FillSql] FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.AccountId1 = ' +	(SELECT [AccountId1FillSql] FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.AgentId1 = ' +	(SELECT [AgentId1FillSql] FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.ResourceId1 = ' +	(SELECT ResourceId1FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.Amount1 = ' +	(SELECT Amount1FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.Value1 = ' +	(SELECT Value1FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.NoteId1 = ' +	(SELECT NoteId1FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.Reference1 = ' +	(SELECT Reference1FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.OperationId2 = ' +	(SELECT OperationId2FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.AccountId2 = ' +	(SELECT AccountId2FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.AgentId2 = ' +	(SELECT [AgentId2FillSql] FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.ResourceId2 = ' +	(SELECT ResourceId2FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.Amount2 = ' +	(SELECT Amount2FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.Value2 = ' +	(SELECT Value2FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.NoteId2 = ' +	(SELECT NoteId2FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
+			', '') + ISNULL('L.Reference2 = ' +	(SELECT Reference2FillSql FROM LineDefinitionEntries WHERE [Id] = @LineType) + ',
 			', '') + 'L.[Index] = L.[Index]
 			FROM @LinesLocal L
 			JOIN @TransactionsLocal D ON D.[Index] = L.[DocumentIndex]
 			JOIN @DocumentLineTypesLocal DLT ON D.[Index] = DLT.[DocumentIndex] AND L.[LineType] = DLT.[LineType];
 			SELECT * FROM @LinesLocal;
 		';
-		SELECT @AppendSql = AppendSql FROM dbo.[LineTypesSpecifications] WHERE [Id] = @LineType;
+		SELECT @AppendSql = AppendSql FROM dbo.LineDefinitionEntries WHERE [Id] = @LineType;
 
 		IF @DEBUG = 1
 		BEGIN
