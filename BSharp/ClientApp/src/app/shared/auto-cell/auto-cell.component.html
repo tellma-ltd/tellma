@@ -9,11 +9,11 @@
       <span class="text-white px-2" [style.background-color]="stateColor">{{ displayValue }}</span>
     </div>
     <span *ngSwitchCase="'boolean'">{{ displayValue }}</span>
-    <span *ngSwitchCase="'number'" class="d-block" [style.text-align]="alignment">{{ displayValue }}</span>
+    <span *ngSwitchCase="'number'" class="d-inline" [style.float]="alignment">{{ displayValue }}</span>
     <span *ngSwitchCase="'date'">{{ displayValue }}</span>
     <span *ngSwitchCase="'datetime'">{{ displayValue }}</span>
     <span *ngSwitchCase="'navigation'">{{ navigationValue }}</span>
-    <span *ngSwitchDefault>{{ value }}</span>
+    <span *ngSwitchDefault>{{ displayValue }}</span>
 
   </ng-container>
 

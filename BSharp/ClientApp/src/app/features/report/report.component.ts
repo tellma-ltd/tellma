@@ -1,17 +1,17 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ReportView } from '../report-results/report-results.component';
-import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE } from '~/app/data/workspace.service';
+import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE, TenantWorkspace } from '~/app/data/workspace.service';
 import {
-  ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl, EntityDescriptor, metadata
+  ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl, EntityDescriptor, metadata, getChoices
 } from '~/app/data/entities/base/metadata';
 import { TranslateService } from '@ngx-translate/core';
 import { FilterTools } from '~/app/data/filter-expression';
-import { SettingsForClient } from '~/app/data/dto/settings-for-client';
-import { DefinitionsForClient, ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { isSpecified } from '~/app/data/util';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { ReportDefinition } from '~/app/data/entities/report-definition';
 
 interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor; isRequired: boolean; }
 
@@ -25,26 +25,37 @@ export class ReportComponent implements OnInit, OnDestroy {
   @Input()
   mode: 'screen' | 'preview' = 'screen';
 
+  @Input()
+  previewDefinition: ReportDefinition; // Used in preview mode
+
+  @Input()
+  get showChart(): boolean {
+    return this._showChart;
+  }
+
+  set showChart(v: boolean) {
+    if (this._showChart !== v) {
+      this.view = !!v ? ReportView.chart : ReportView.pivot;
+      this._showChart = v;
+    }
+  }
+
+  private _parameterCount: number = null;
+  private _showChart: boolean;
   private _subscriptions: Subscription;
   private refresh$ = new Subject<void>();
   private _currentFilter: string;
-  private _currentLanguage: string;
-  private _currentSettings: SettingsForClient;
-  private _currentDefinitions: DefinitionsForClient;
+  private _currentDefinition: ReportDefinitionForClient;
   private _currentParameters: ParameterInfo[] = [];
   private _parametersErrorMessage: string;
   private _views: { view: ReportView, label: string, icon: string }[] = [
     { view: ReportView.pivot, label: 'Table', icon: 'table' },
-    { view: ReportView.card, label: 'Card', icon: 'tachometer-alt' },
-    { view: ReportView.bars_vertical, label: 'BarChart', icon: 'chart-bar' },
-    { view: ReportView.line, label: 'LineChart', icon: 'chart-area' },
-    { view: ReportView.pie, label: 'PieChart', icon: 'chart-pie' }
+    { view: ReportView.chart, label: 'Chart', icon: 'chart-pie' },
   ];
 
   private definitionId: string;
-  private _skip = 0;
 
-  public view: ReportView = ReportView.pivot;
+  public view: ReportView;
   public arguments: ReportArguments = {};
   public immutableArguments: ReportArguments = {};
 
@@ -56,7 +67,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     // Pick up state from the URL
     this._subscriptions = new Subscription();
     this._subscriptions.add(this.route.paramMap.subscribe((params: ParamMap) => {
-
 
       // This triggers changes on the screen
       if (this.isScreenMode) {
@@ -80,7 +90,7 @@ export class ReportComponent implements OnInit, OnDestroy {
         }
 
         if (this.definition.Type === 'Details') {
-          this._skip = +params.get('skip') || 0;
+          this.state.skip = +params.get('skip') || 0;
         }
 
         // Read the arguments from the URL
@@ -119,6 +129,9 @@ export class ReportComponent implements OnInit, OnDestroy {
         this.immutableArguments = { ...this.arguments };
       }
     }));
+
+    // Set to default
+    this.view = this.view || (!!this.definition.Chart && !!this.definition.DefaultsToChart ? ReportView.chart : ReportView.pivot);
   }
 
   ngOnDestroy() {
@@ -126,11 +139,15 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   get isScreenMode(): boolean {
-    return true;
+    return this.mode === 'screen';
+  }
+
+  get isPreviewMode(): boolean {
+    return this.mode === 'preview';
   }
 
   get definition(): ReportDefinitionForClient {
-    return this.workspace.current.definitions.Reports[this.definitionId];
+    return this.isScreenMode ? this.workspace.current.definitions.Reports[this.definitionId] : this.previewDefinition;
   }
 
   get entityDescriptor(): EntityDescriptor {
@@ -151,9 +168,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   public get state(): ReportStore {
 
     if (!this.workspace.current.reportState[this.stateKey]) {
-      // this.workspace.current.reportState = {};
       this.workspace.current.reportState[this.stateKey] = new ReportStore();
-      // this.immutableArguments = {};
     }
 
     return this.workspace.current.reportState[this.stateKey];
@@ -164,41 +179,33 @@ export class ReportComponent implements OnInit, OnDestroy {
     // This method is called whenever that part of the state has changed
     // Below we capture the new URL state, and then navigate to the new URL
 
-    const params: Params = {};
+    if (this.isScreenMode) {
+      const params: Params = {};
 
-    if (!!this.definition && this.definition.Type === 'Summary') {
-      params.view = this.view;
-    }
-
-    if (!!this.definition && this.definition.Type === 'Details' && !!this.skip) {
-      params.skip = this.skip;
-    }
-
-    this.parameters.forEach(p => {
-      const value = this.arguments[p.key];
-      if (isSpecified(value)) {
-        params[p.key] = value + '';
+      if (!!this.definition && this.definition.Type === 'Summary') {
+        params.view = this.view;
       }
-    });
 
-    this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+      if (!!this.definition && this.definition.Type === 'Details' && !!this.state.skip) {
+        params.skip = this.state.skip;
+      }
+
+      this.parameters.forEach(p => {
+        const value = this.arguments[p.key];
+        if (isSpecified(value)) {
+          params[p.key] = value + '';
+        }
+      });
+
+      this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl: true });
+    }
   }
-
-  // private updateUrlState(key: string, value: any, replaceUrl = true) {
-  //   const params = this.route.snapshot.params;
-  //   if (value === null || value === undefined) {
-  //     delete params[key];
-  //   } else {
-  //     params[key] = value;
-  //   }
-
-  //   this.router.navigate(['.', params], { relativeTo: this.route, replaceUrl });
-  // }
 
   // UI Bindings
 
   get title(): string {
-    return this.workspace.current.getMultilingualValueImmediate(this.definition, 'Title');
+    const title = this.workspace.current.getMultilingualValueImmediate(this.definition, 'Title');
+    return title; // this.isScreenMode ? title : `${title} (${this.translate.instant('Preview')})`;
   }
 
   get views() {
@@ -212,18 +219,13 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
 
     if (this.definition.Filter !== this._currentFilter ||
-      this.workspace.current.settings !== this._currentSettings ||
-      this.workspace.current.definitions !== this._currentDefinitions ||
-      this.translate.currentLang !== this._currentLanguage) {
+      this._currentDefinition !== this.definition) {
 
       try {
         this._parametersErrorMessage = null;
         this._currentParameters = [];
+        this._currentDefinition = this.definition;
         this._currentFilter = this.definition.Filter;
-        this._currentSettings = this.workspace.current.settings;
-        this._currentDefinitions = this.workspace.current.definitions;
-        this._currentLanguage = this.translate.currentLang;
-
         // (1) parse the filter to get the list of placeholder atoms
         const exp = FilterTools.parse(this.definition.Filter);
         const placeholderAtoms = FilterTools.placeholderAtoms(exp);
@@ -250,7 +252,7 @@ export class ReportComponent implements OnInit, OnDestroy {
             .find(e => e.control === 'navigation' && e.foreignKeyName === atom.property)
             || immediatePropDesc; // Else rely on the descriptor of the prop itself
           if (!propDesc) {
-            throw new Error(`Property '${atom.property}' does not exist on '${entityDesc.titlePlural}'`);
+            throw new Error(`Property '${atom.property}' does not exist on '${entityDesc.titlePlural()}'`);
           }
 
           paramsFromFilterPlaceholders[keyLower] = {
@@ -268,7 +270,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           const keyLower = p.Key.toLowerCase();
           const paramInfo = paramsFromFilterPlaceholders[keyLower];
           if (!!paramInfo) {
-            paramInfo.label = () => !!p.Label ? this.workspace.current.getMultilingualValueImmediate(p, 'Label') : paramInfo.label();
+            paramInfo.label = !!p.Label ? () => this.workspace.current.getMultilingualValueImmediate(p, 'Label') : paramInfo.label;
             paramInfo.isRequired = p.IsRequired;
             this._currentParameters.push(paramInfo);
             delete paramsFromFilterPlaceholders[keyLower];
@@ -284,14 +286,21 @@ export class ReportComponent implements OnInit, OnDestroy {
         console.error(ex.message);
         this._parametersErrorMessage = ex;
       }
+
+      // When the number of parameters changes it might change the size of
+      // the chart underneath it, so we trigger a recalculation of the size
+      if (this._currentParameters.length !== this._parameterCount && this._parameterCount !== null && this.isChart) {
+        window.dispatchEvent(new Event('resize')); // So the chart would resize
+      }
+
+      this._parameterCount = this._currentParameters.length;
     }
 
     return this._currentParameters;
   }
 
   public choices(desc: ChoicePropDescriptor | StatePropDescriptor): SelectorChoice[] {
-    desc.selector = desc.selector || desc.choices.map(c => ({ value: c, name: () => desc.format(c) }));
-    return desc.selector;
+    return getChoices(desc);
   }
 
   public get actionsDropdownPlacement() {
@@ -310,74 +319,20 @@ export class ReportComponent implements OnInit, OnDestroy {
     this.refresh$.next();
   }
 
-  public get showPagingControls(): boolean {
-    return !!this.definition && this.definition.Type === 'Details' && !this.definition.Top;
-  }
-
   public get showReportViewToggle(): boolean {
-    return !!this.definition && this.definition.Type === 'Summary';
+    return !!this.definition && this.definition.Type === 'Summary' && !!this.definition.Chart;
   }
 
   public get stateKey(): string {
-    return this.mode === 'screen' ? this.definitionId : '<preview>'; // TODO: In preview mode do not persist the state
-  }
-
-  public get skip(): number {
-    return this.showPagingControls ? this._skip : 0;
-  }
-
-  get from(): number {
-    return Math.min(this._skip + 1, this.total);
-  }
-
-  get to(): number {
-    return Math.min(this._skip + DEFAULT_PAGE_SIZE, this.total);
-  }
-
-  get total(): number {
-    return this.state.total;
-  }
-
-  onFirstPage() {
-    this._skip = 0;
-    this.urlStateChange();
-  }
-
-  get canFirstPage(): boolean {
-    return this.canPreviousPage;
-  }
-
-  onPreviousPage() {
-    this._skip = Math.max(this._skip - DEFAULT_PAGE_SIZE, 0);
-    this.urlStateChange();
-  }
-
-  get canPreviousPage(): boolean {
-    return this._skip > 0;
-  }
-
-  onNextPage() {
-    this._skip = this._skip + DEFAULT_PAGE_SIZE;
-    this.urlStateChange();
-  }
-
-  get canNextPage(): boolean {
-    return this.to < this.total;
-  }
-
-  public get flip() {
-
-    // this is to flip the UI icons in RTL
-    return this.workspace.ws.isRtl ? 'horizontal' : null;
+    return this.mode === 'screen' ? this.definitionId : '<preview>'; // In preview mode a local state is used anyways
   }
 
   public get isChart(): boolean {
-    return this.view !== 'pivot';
+    return this.view === ReportView.chart && !!this.definition && this.definition.Type === 'Summary';
   }
 
   public onArgumentChange() {
     this.immutableArguments = { ...this.arguments };
-    this._skip = 0;
     this.urlStateChange();
   }
 
@@ -415,5 +370,76 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   public get refresh(): Observable<void> {
     return this.refresh$;
+  }
+
+  public onSkipChange(skip: number) {
+    this.urlStateChange();
+  }
+
+
+  public get showPagingControls(): boolean {
+    return !!this.definition && this.definition.Type === 'Details' && !this.definition.Top;
+  }
+
+  public get skip(): number {
+    return this.showPagingControls ? this.state.skip : 0;
+  }
+
+  get from(): number {
+    return Math.min(this.state.skip + 1, this.total);
+  }
+
+  get to(): number {
+    const s = this.state;
+    return Math.min(s.skip + DEFAULT_PAGE_SIZE, s.total);
+  }
+
+  get total(): number {
+    return this.state.total;
+  }
+
+  onFirstPage() {
+    this.state.skip = 0;
+  }
+
+  get canFirstPage(): boolean {
+    return this.canPreviousPage;
+  }
+
+  onPreviousPage() {
+    const s = this.state;
+    s.skip = Math.max(s.skip - DEFAULT_PAGE_SIZE, 0);
+
+    this.onSkipChange(s.skip); // to update the URL state
+    this.refresh$.next();
+  }
+
+  get canPreviousPage(): boolean {
+    return this.state.skip > 0;
+  }
+
+  onNextPage() {
+    const s = this.state;
+    s.skip = s.skip + DEFAULT_PAGE_SIZE;
+
+    this.onSkipChange(s.skip); // to update the URL state
+    this.refresh$.next();
+  }
+
+  get canNextPage(): boolean {
+    return this.to < this.total;
+  }
+
+  public get flip() {
+
+    // this is to flip the UI icons in RTL
+    return this.workspace.ws.isRtl ? 'horizontal' : null;
+  }
+
+  public get overflow(): string {
+    // Charts lag a bit when you resize the screen causing the scroller to briefly appear
+    // But in reality they always occupy 100% hight and never exceed it
+    // We use this trick to avoid the brief appearance of the scroller
+    return this.isChart ? 'hidden' : 'auto';
   }
 }

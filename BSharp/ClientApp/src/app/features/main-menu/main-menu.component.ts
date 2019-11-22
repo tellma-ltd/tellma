@@ -68,6 +68,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         { label: 'Roles', icon: 'tasks', link: '../roles', viewId: 'roles', sortKey: 200 },
         { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units', sortKey: 300 },
         { label: 'Settings', icon: 'cog', link: '../settings', viewId: 'settings', sortKey: 400 },
+        { label: 'ReportDefinitions', icon: 'cog', link: '../report-definitions', viewId: 'report-definitions', sortKey: 500 },
       ]
     },
     Miscellaneous: { // TODO

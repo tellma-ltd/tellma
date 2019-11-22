@@ -120,6 +120,17 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "report-definitions",
+                        Name = "ReportDefinitions",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("UpdateState")
+                        }
+                    },
+                    new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
                         Actions = new ActionInfo[]

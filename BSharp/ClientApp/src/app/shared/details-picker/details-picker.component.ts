@@ -13,6 +13,7 @@ import { addToWorkspace, Key, addSingleToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata, EntityDescriptor } from '~/app/data/entities/base/metadata';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
+import { GENERIC } from '~/app/data/entities/base/constants';
 
 enum SearchStatus {
   showSpinner = 'showSpinner',
@@ -106,12 +107,12 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   get chosenItemDefinition(): string {
-    const func = this.entityDescriptor('<generic>').definitionFunc;
+    const func = this.entityDescriptor().definitionFunc;
     return !!func ? func(this.workspace.current[this.collection][this.chosenItem]) : null;
   }
 
   get definitionProperty(): string {
-    return this.entityDescriptor('<generic>').selectForDefinition;
+    return this.entityDescriptor().selectForDefinition;
   }
 
   ngOnInit() {
@@ -241,9 +242,10 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   ///////////////// Helper Functions
 
-  entityDescriptor(definition: string): EntityDescriptor {
+  entityDescriptor(definitionId?: string): EntityDescriptor {
+    definitionId = definitionId || GENERIC;
     const coll = this.collection;
-    return !!coll ? metadata[coll](this.workspace.current, this.translate, definition) : null;
+    return !!coll ? metadata[coll](this.workspace.current, this.translate, definitionId) : null;
   }
 
   apiEndpoint(definition: string): string {
@@ -627,7 +629,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
             this.openSearchModalInner(definitionId);
           },
           (_: any) => {
-
           }
         );
     } else {
@@ -646,7 +647,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.modalService.open(this.masterWrapperTemplate, { windowClass: 'b-master-modal' })
 
       // this guarantees that the input will be focused again when the modal closes
-      .result.then(this.onFocusInput, this.onFocusInput);
+      .result.then(this.onFocusInput, () => { console.log('yo'); });
   }
 
   private openCreateModal = () => {

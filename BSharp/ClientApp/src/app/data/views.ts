@@ -11,7 +11,7 @@ export interface ActionInfo {
     criteria: boolean;
 }
 
-export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' | 'IsDeprecated' | 'ResendInvitationEmail' | 'All';
+export type Action = 'Read' | 'Update' | 'Delete' | 'IsActive' | 'IsDeprecated' | 'ResendInvitationEmail' | 'UpdateState' | 'All';
 
 function li(name: Action, criteria = true) {
     return { action: name, criteria };
@@ -104,6 +104,15 @@ export const VIEWS_BUILT_IN: { [viewId: string]: ViewInfo } = {
         actions: [
             li('Read', false),
             li('IsActive', false)
+        ]
+    },
+    'report-definitions': {
+        name: 'ReportDefinitions',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [
+            li('UpdateState', false)
         ]
     },
 

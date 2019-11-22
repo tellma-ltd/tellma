@@ -6,6 +6,7 @@ import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
+import { GENERIC } from './base/constants';
 
 export class ResourceClassificationForSave extends EntityForSave {
   Name: string;
@@ -32,24 +33,32 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _definitions: DefinitionsForClient;
 let _cache: { [defId: string]: EntityDescriptor } = {};
+let _definitionIds: string[];
 
 export function metadata_ResourceClassification(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings || ws.definitions !== _definitions) {
     _settings = ws.settings;
     _definitions = ws.definitions;
+    _definitionIds = null;
 
     // clear the cache
     _cache = {};
   }
 
-  const key = definitionId || '_';
+  const key = definitionId || GENERIC;
   if (!_cache[key]) {
+
+    if (!_definitionIds) {
+        _definitionIds = Object.keys(ws.definitions.Resources);
+    }
+
     const entityDesc: EntityDescriptor = {
       collection: 'MeasurementUnit',
       definitionId,
-      titleSingular: () => '???',
-      titlePlural: () => '???',
+      definitionIds: _definitionIds,
+      titleSingular: () => trx.instant('ResourceClassification'),
+      titlePlural: () => trx.instant('ResourceClassifications'),
       select: _select,
       apiEndpoint: 'resource-classifications/' + (definitionId || ''),
       screenUrl: !!definitionId ? 'resource-classifications/' + definitionId : null,
@@ -101,7 +110,7 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
 
     const definition = _definitions.Resources[definitionId];
     if (!definition) {
-      if (definitionId !== '<generic>') {
+      if (definitionId !== GENERIC) {
         // Programmer mistake
         console.error(`defintionId '${definitionId}' doesn't exist`);
       }

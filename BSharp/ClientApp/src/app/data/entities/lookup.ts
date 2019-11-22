@@ -6,6 +6,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
+import { GENERIC } from './base/constants';
 
 export class LookupForSave extends EntityForSave {
     Name: string;
@@ -28,21 +29,30 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _definitions: DefinitionsForClient;
 let _cache: { [defId: string]: EntityDescriptor } = {};
+let _definitionIds: string[];
 
 export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings || ws.definitions !== _definitions) {
         _settings = ws.settings;
         _definitions = ws.definitions;
+        _definitionIds = null;
 
         // clear the cache
         _cache = {};
     }
 
+    definitionId = definitionId || GENERIC;
     if (!_cache[definitionId]) {
+
+        if (!_definitionIds) {
+            _definitionIds = Object.keys(ws.definitions.Lookups);
+        }
+
         const entityDesc: EntityDescriptor = {
             collection: 'Lookup',
             definitionId,
+            definitionIds: _definitionIds,
             titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitleSingular'),
             titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitlePlural'),
             select: _select,
@@ -58,7 +68,7 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
                 Code: { control: 'text', label: () => trx.instant('Code') },
-                SortKey: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
+                SortKey: { control: 'number', label: () => trx.instant('SortKey'), minDecimalPlaces: 2, maxDecimalPlaces: 2 },
                 IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
@@ -77,9 +87,12 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
 
         const definition = _definitions.Lookups[definitionId];
         if (!definition) {
-            if (definitionId !== '<generic>') {
+            if (definitionId !== GENERIC) {
                 // Programmer mistake
                 console.error(`defintionId '${definitionId}' doesn't exist`);
+            } else {
+                entityDesc.titleSingular = () => trx.instant('Lookup');
+                entityDesc.titlePlural = () => trx.instant('Lookups');
             }
         } else {
             // Definition specific adjustments

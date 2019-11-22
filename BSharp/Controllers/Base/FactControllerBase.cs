@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 
@@ -206,9 +207,6 @@ namespace BSharp.Controllers
                 throw new BadRequestException(msg);
             }
 
-            // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(result, null);
-
             // Finally return the result
             return new GetAggregateResponse
             {
@@ -216,7 +214,7 @@ namespace BSharp.Controllers
                 IsPartial = isPartial,
 
                 Result = result,
-                RelatedEntities = relatedEntities
+                RelatedEntities = new Dictionary<string, IEnumerable<Entity>>() // TODO: Add ancestors of tree dimensions
             };
         }
         
@@ -436,26 +434,16 @@ namespace BSharp.Controllers
             var resultHash = resultEntities.ToHashSet();
 
             // Method for efficiently retrieving the nav and nav collection properties of any entity
-            var cacheNavigationProperties = new Dictionary<Type, IEnumerable<IPropInfo>>();
-            IEnumerable<IPropInfo> NavProps(Entity entity)
+            var cacheNavigationProperties = new Dictionary<Type, IEnumerable<PropertyInfo>>();
+            IEnumerable<PropertyInfo> NavProps(Entity entity)
             {
-                if (!cacheNavigationProperties.TryGetValue(entity.GetType(), out IEnumerable<IPropInfo> properties))
+                if (!cacheNavigationProperties.TryGetValue(entity.GetType(), out IEnumerable<PropertyInfo> properties))
                 {
-                    if (entity is DynamicEntity dynamicEntity)
-                    {
-                        properties = cacheNavigationProperties[entity.GetType()] =
-                            dynamicEntity.Properties.Where(e =>
-                                e.PropertyType.IsEntity());
-                    }
-                    else
-                    {
-                        // Return all navigation properties that Entity or list types
-                        properties = cacheNavigationProperties[entity.GetType()] =
-                            entity.GetType().GetProperties().Where(e =>
-                                e.PropertyType.IsEntity() ||  /* nav property */
-                                e.PropertyType.IsList()) /* nav collection property */
-                            .Select(e => new PropInfo(e));
-                    }
+                    // Return all navigation properties that Entity or list types
+                    properties = cacheNavigationProperties[entity.GetType()] =
+                        entity.GetType().GetProperties().Where(e =>
+                            e.PropertyType.IsEntity() ||  /* nav property */
+                            e.PropertyType.IsList()); /* nav collection property */
                 }
 
                 return properties;

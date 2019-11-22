@@ -99,53 +99,6 @@ namespace BSharp.Controllers
             };
         }
 
-        // TODO: Delete
-        protected async Task<EntitiesResponse<TEntity>> GetByIdListAsyncOld(TKey[] ids, ExpandExpression expand = null)
-        {
-            // Prepare a query of the result, and clone it
-            var repo = GetRepository();
-            var query = repo.Query<TEntity>();
-
-            // Filter by Ids
-            query = query.FilterByIds(ids);
-
-            // Expand the result as specified in the OData agruments and load into memory
-            var expandedQuery = query.Expand(expand);
-            expandedQuery = expandedQuery.OrderBy(OrderByExpression.Parse("Id")); // Required
-            var result = await expandedQuery.ToListAsync(); // this is potentially unordered, should that be a concern?
-
-            // Apply the permissions on the result
-            var permissions = await UserPermissions(Constants.Read);
-            var defaultMask = GetDefaultMask();
-            await ApplyReadPermissionsMask(result, query, permissions, defaultMask);
-
-            // Flatten and Trim
-            var relatedEntities = FlattenAndTrim(result, expand);
-
-            // Sort the entities according to the original Ids, as a good practice
-            TEntity[] sortedResult = new TEntity[ids.Length];
-            Dictionary<TKey, TEntity> resultDic = result.ToDictionary(e => e.Id);
-            for (int i = 0; i < ids.Length; i++)
-            {
-                var id = ids[i];
-                TEntity entity = null;
-                if (resultDic.ContainsKey(id))
-                {
-                    entity = resultDic[id];
-                }
-
-                sortedResult[i] = entity;
-            }
-
-            // Prepare the result in a response object
-            return new EntitiesResponse<TEntity>
-            {
-                Result = sortedResult,
-                RelatedEntities = relatedEntities,
-                CollectionName = GetCollectionName(typeof(TEntity))
-            };
-        }
-
         protected async Task<EntitiesResponse<TEntity>> GetByIdListAsync(TKey[] ids, ExpandExpression expand = null, SelectExpression select = null)
         {
             var result = await GetByCustomQuery(q => q.FilterByIds(ids), expand, select);

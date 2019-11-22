@@ -16,12 +16,13 @@
     </button>
   </div>
 
-  <div class="row border-bottom bg-white">
+  <div class="row border-bottom" [class.bg-white]="isLight" [class.b-less-dark]="isDark" [class.b-dark-border]="isDark"
+    [class.b-text-whitish]="isDark">
 
     <!-- Breadcrumb -->
     <div class="col-6 p-1" *ngIf="isScreenMode">
       <ul class="breadcrumb mb-0">
-        <li class="breadcrumb-item active">
+        <li class="breadcrumb-item active" [class.b-text-whitish]="isDark">
           {{ masterCrumb }}
         </li>
       </ul>
@@ -37,16 +38,19 @@
 
         <!-- Filter -->
         <div ngbDropdown autoClose="outside" [placement]="filterDropdownPlacement">
-          <button class="btn btn-light btn-sm b-white-button d-flex b-no-arrow b-filter-button" ngbDropdownToggle
+          <button class="btn btn-sm d-flex b-no-arrow b-filter-button" ngbDropdownToggle
+            [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
             type="button" title="{{ 'Filter' | translate }}">
             <fa-icon icon="filter"></fa-icon>
             <div class="bg-danger b-indicator" *ngIf="isAnyFilterChecked"></div>
           </button>
 
-          <ul class="b-filter-dropdown-menu shadow" style="min-width: 250px" ngbDropdownMenu>
+          <ul class="b-filter-dropdown-menu shadow" style="min-width: 250px" ngbDropdownMenu
+            [class.b-less-dark]="isDark">
 
             <!-- Include Inactive -->
-            <li class="dropdown-item" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{
+            <li class="dropdown-item b-transparent-background" [class.b-text-whitish]="isDark"
+              [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{
                 includeInactiveLabel }} </span></li>
 
             <!-- Custom filter options -->
@@ -55,7 +59,8 @@
                 <hr />
               </li>
               <ng-container *ngFor="let e of filterTemplates(groupName)">
-                <li class="dropdown-item" [class.selected]="isFilterChecked(groupName, e.expression)"
+                <li class="dropdown-item b-transparent-background" [class.b-text-whitish]="isDark"
+                  [class.selected]="isFilterChecked(groupName, e.expression)"
                   (click)="onFilterCheck(groupName, e.expression)">
                   <div>
                     <ng-container *ngTemplateOutlet="e.template || defaultExpressionTemplate"></ng-container>
@@ -71,7 +76,8 @@
             <li>
               <hr />
             </li>
-            <li class="dropdown-item bg-white" style="cursor: default" [class.selected]="!!customFilter">
+            <li class="dropdown-item b-transparent-background" [class.bg-white]="isLight" [class.b-less-dark]="isDark"
+              style="cursor: default" [class.b-text-whitish]="isDark" [class.selected]="!!customFilter">
               <div>
                 <input class="form-control b-input w-100 border-0" style="font-size: inherit"
                   placeholder="{{ 'CustomFilter' | translate }}..." [(ngModel)]="customFilter"
@@ -83,9 +89,10 @@
             <li>
               <hr />
             </li>
-            <li class="dropdown-item d-flex justify-content-between" [class.disabled]="!isAnyFilterChecked"
-              (click)="onClearFilter()"><span class="d-block">{{ 'ClearFilter' | translate }}</span><span
-                class="text-danger">&#x2718;</span></li>
+            <li class="dropdown-item b-transparent-background d-flex justify-content-between"
+              [class.b-text-whitish]="isDark" [class.disabled]="!isAnyFilterChecked" (click)="onClearFilter()"><span
+                class="d-block">{{ 'ClearFilter' | translate }}</span><span [class.text-danger]="isLight"
+                [class.b-text-whitish]="isDark">&#x2718;</span></li>
           </ul>
         </div>
 
@@ -100,7 +107,8 @@
         <!-- Create -->
         <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip" container="body"
           *ngIf="showCreate">
-          <button type="button" class="btn btn-primary btn-sm b-toolbar-button" (click)="onCreate()"
+          <button type="button" class="btn btn-sm b-toolbar-button" [class.btn-primary]="isLight"
+            [class.b-text-whitish]="isDark" [class.font-weight-normal]="isDark" (click)="onCreate()"
             [disabled]="!canCreate">
             <fa-icon icon="plus"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
@@ -120,21 +128,22 @@
         <!-- Data dropdown -->
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement"
           *ngIf="showDataDropdown">
-          <button type="button"
-            class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle" ngbDropdownToggle>
+          <button type="button" class="btn btn-sm b-toolbar-button dropdown-toggle" ngbDropdownToggle
+            [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }">
             {{ 'Data' | translate }}
           </button>
-          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
+          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action" [class.b-less-dark]="isDark">
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="exportTooltip" container="body"
               *ngIf="showExport">
-              <button type="button" class="dropdown-item btn-light"
-                (click)="exportErrorMessage = null; modalService.open(exportModal);" [disabled]="!canExport">
+              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
+                [class.b-text-whitish]="isDark" (click)="exportErrorMessage = null; modalService.open(exportModal);"
+                [disabled]="!canExport">
                 {{ 'Export' | translate }}
               </button>
             </div>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="importTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" (click)="onImport()" [disabled]="!canImport"
-                *ngIf="showImport">
+              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
+                [class.b-text-whitish]="isDark" (click)="onImport()" [disabled]="!canImport" *ngIf="showImport">
                 {{ 'Import' | translate }}
               </button>
             </div>
@@ -142,7 +151,8 @@
               [disabled]="!canExpandNextLevel" *ngIf="showExpandNextLevel">
               {{ 'ExpandLevel0' | translate: { level: level+1 } }}
             </button> -->
-            <button type="button" class="dropdown-item btn-light" (click)="onCollapseAll()" [disabled]="!canCollapseAll"
+            <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
+              [class.b-text-whitish]="isDark" (click)="onCollapseAll()" [disabled]="!canCollapseAll"
               *ngIf="showCollapseAll">
               {{ 'CollapseAll' | translate }}
             </button>
@@ -154,8 +164,9 @@
       <div>
 
         <!-- Refresh -->
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-          title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+        <button class="btn btn-sm b-toolbar-button"
+          [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+          type="button" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
           <fa-icon icon="sync-alt"></fa-icon>
         </button>
 
@@ -166,12 +177,14 @@
             </span>
             <span class="b-vertical-align-middle"> / {{ total | number }}</span>
           </div>
-          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-            title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+          <button class="btn btn-sm b-toolbar-button"
+            [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+            type="button" title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
             <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
           </button>
-          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-            title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+          <button class="btn btn-sm b-toolbar-button"
+            [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+            type="button" title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
             <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
           </button>
         </ng-container>
@@ -194,13 +207,13 @@
 
         <!-- Tiles/Table Toggle -->
         <div class="btn-group btn-group-toggle b-toolbar-button">
-          <label class="btn btn-sm btn-light b-pointer" [class.active]="showTilesView" title="{{ 'Tiles' | translate }}"
-            (click)="onTilesView()">
+          <label class="btn btn-sm b-pointer" [class.btn-dark]="isDark" [class.btn-light]="isLight"
+            [class.active]="showTilesView" title="{{ 'Tiles' | translate }}" (click)="onTilesView()">
             <input type="radio" name="searchView">
             <fa-icon icon="th-large"></fa-icon>
           </label>
-          <label class="btn btn-sm btn-light b-pointer" [class.active]="showTableView" title="{{ 'Table' | translate }}"
-            (click)="onTableView()">
+          <label class="btn btn-sm b-pointer" [class.btn-dark]="isDark" [class.btn-light]="isLight"
+            [class.active]="showTableView" title="{{ 'Table' | translate }}" (click)="onTableView()">
             <input type="radio" name="searchView">
             <fa-icon icon="table" [flip]="flip"></fa-icon>
           </label>
@@ -217,30 +230,32 @@
 
         <!-- Actions -->
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
-          <button type="button" class="btn btn-primary btn-sm b-toolbar-button dropdown-toggle" ngbDropdownToggle>
+          <button type="button" class="btn btn-sm b-toolbar-button dropdown-toggle" [class.btn-primary]="isLight"
+            [class.b-text-whitish]="isDark" [class.font-weight-normal]="isDark" ngbDropdownToggle>
             {{ 'Actions' | translate }}
           </button>
-          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
+          <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action" [class.b-less-dark]="isDark">
             <ng-container *ngFor="let action of multiselectActions">
               <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
                 [ngbTooltip]="actionTooltip(action)" container="body">
-                <button type="button" class="dropdown-item btn-light" (click)="onAction(action)"
-                  [disabled]="!canAction(action)">
+                <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
+                  [class.b-text-whitish]="isDark" (click)="onAction(action)" [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
               </div>
             </ng-container>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
               *ngIf="showDelete">
-              <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)"
-                [disabled]="!canDelete">
+              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
+                [class.b-text-whitish]="isDark" (click)="modalService.open(deleteModal)" [disabled]="!canDelete">
                 {{ 'Delete' | translate }}
               </button>
             </div>
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
               *ngIf="showDeleteWithDescendants">
-              <button type="button" class="dropdown-item btn-light"
-                (click)="modalService.open(deleteWithDescendantsModal)" [disabled]="!canDelete">
+              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
+                [class.b-text-whitish]="isDark" (click)="modalService.open(deleteWithDescendantsModal)"
+                [disabled]="!canDelete">
                 {{ 'DeleteWithDescendants' | translate }}
               </button>
             </div>
@@ -248,8 +263,8 @@
         </div>
 
         <!-- Cancel -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" type="button"
-          (click)="onCancelMultiselect()">
+        <button class="btn btn-sm b-toolbar-button" [class.btn-primary]="isLight" [class.b-text-whitish]="isDark"
+          [class.font-weight-normal]="isDark" type="button" (click)="onCancelMultiselect()">
           <fa-icon icon="times"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
         </button>
@@ -258,7 +273,7 @@
   </div>
 
   <!-- The search results -->
-  <div class="row b-rest-of-screen">
+  <div class="row b-rest-of-screen" [class.b-much-less-dark]="isDark">
     <div class="w-100">
 
       <!-- Tiles -->
@@ -268,7 +283,8 @@
           <ng-container *ngIf="isFlatMode">
             <div class="b-tile-container p-0 p-sm-1" [class.b-popup-tile-container]="isPopupMode"
               *ngFor="let id of flatIds; trackBy: trackById">
-              <div class="p-2 bg-white b-tile" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
+              <div class="p-2 b-tile" [class.bg-white]="isLight" [class.b-less-dark]="isDark"
+                [class.b-dark-border]="isDark" [class.b-highlight]="isRecentlyViewed(id)" (click)="onSelect(id)">
                 <ng-container *ngTemplateOutlet="tileTemplate;context: { id : id }">
                 </ng-container>
               </div>
@@ -303,8 +319,8 @@
 
       <!-- Table -->
       <div class="w-100 table-responsive" *ngIf="showTableView">
-        <table class="table table-hover table-sm bg-white border-bottom b-master-table text-nowrap shadow-sm2"
-          [class.table-striped]="isFlatMode">
+        <table class="table table-hover table-sm border-bottom b-master-table text-nowrap" [class.bg-white]="isLight"
+          [class.table-dark]="isDark" [class.b-dark-border]="isDark" [class.table-striped]="isFlatMode">
           <thead>
             <tr [class.dropup]="desc" cdkDropList cdkDropListOrientation="horizontal"
               (cdkDropListDropped)="onDragLeave($event)">
@@ -324,8 +340,7 @@
               <th class="b-multiselect-th px-0" *ngIf="isScreenMode">
               </th>
 
-              <!-- Descrpition (Flat mode) -->
-              <!-- <ng-container *ngIf="isFlatMode"> -->
+              <!-- Descrpition  -->
               <th class="b-pointer" [style.width]="colWidth('(Description)')"
                 [class.dropdown-toggle]="isOrderedBy('(Description)')" (click)="onOrderBy('(Description)')">
                 <ng-content *ngTemplateOutlet="tableSummaryHeaderTemplateDefault">
@@ -335,49 +350,22 @@
                   {{ titleSingular }}
                 </ng-template>
               </th>
-              <!-- </ng-container> -->
-
-              <!-- Descrpition (Tree mode) -->
-              <!-- <ng-container *ngIf="isTreeMode">
-                <th class="px-0">
-                  <div class="d-flex">
-                    <button class="border-0 px-2"
-                      style="background-color: transparent; margin-left: 0.4rem; margin-right: 0.4rem"
-                      (click)="onCollapseAll()" *ngIf="showCollapseAll" title="{{ 'CollapseAll' | translate }}">
-                      <fa-icon icon="minus-square"></fa-icon>
-                    </button>
-                    <div class="b-pointer flex-grow-1 bg-light" style="margin: -0.3rem 0; padding: 0.3rem 0"
-                      (click)="onOrderBy('(Description)')">
-                      <ng-content
-                        *ngTemplateOutlet="(tableSummaryHeaderTemplate || tableSummaryHeaderTemplateDefault);context: { id: id }">
-                      </ng-content>
-                      <ng-template #tableSummaryHeaderTemplateDefault let-modal>
-                        {{ 'Description' | translate }}
-                      </ng-template>
-                    </div>
-                  </div>
-                </th>
-              </ng-container> -->
-
-
-
 
               <!-- Custom feature columns -->
               <th class="b-pointer" *ngFor="let colPath of tableColumnPaths; let i = index"
                 [style.width]="colWidth(colPath)" [class.dropdown-toggle]="isOrderedBy(colPath)"
                 (click)="onOrderBy(colPath)" cdkDrag>
-                <!-- <div class="d-flex align-items-center"> -->
-
                 <b-auto-label [collection]="collection" [path]="colPath" [definition]="definition">
                 </b-auto-label>
               </th>
 
-              <!-- Pen -->
+              <!-- Cog -->
               <th>
-                <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-                  title="{{ editingColumns ? 'Done' : 'EditColumns' | translate }}"
+                <button class="btn btn-sm b-toolbar-button"
+                  [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+                  type="button" title="{{ editingColumns ? 'Done' : 'EditColumns' | translate }}"
                   (click)="modalService.open(editColumns)">
-                  <fa-icon icon="pen"></fa-icon>
+                  <fa-icon icon="cog"></fa-icon>
                 </button>
               </th>
             </tr>

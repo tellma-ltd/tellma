@@ -57,6 +57,9 @@ import { AgentsPickerComponent } from './agents/agents-picker.component';
 import { ResourcesPickerComponent } from './resources/resources-picker.component';
 import { ReportComponent } from './report/report.component';
 import { ReportResultsComponent } from './report-results/report-results.component';
+import { ReportDefinitionsMasterComponent } from './report-definitions/report-definitions-master.component';
+import { ReportDefinitionsDetailsComponent } from './report-definitions/report-definitions-details.component';
+import { ReportDefinitionsImportComponent } from './report-definitions/report-definitions-import.component';
 
 const routes: Routes = [
   {
@@ -259,6 +262,23 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Report Definitions
+      {
+        path: 'report-definitions',
+        component: ReportDefinitionsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'report-definitions/import',
+        component: ReportDefinitionsImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'report-definitions/:id',
+        component: ReportDefinitionsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Report
       {
         path: 'report/:definitionId',
@@ -334,7 +354,10 @@ const routes: Routes = [
     AgentsPickerComponent,
     ResourcesPickerComponent,
     ReportComponent,
-    ReportResultsComponent
+    ReportResultsComponent,
+    ReportDefinitionsMasterComponent,
+    ReportDefinitionsDetailsComponent,
+    ReportDefinitionsImportComponent
   ],
   imports: [
     SharedModule,

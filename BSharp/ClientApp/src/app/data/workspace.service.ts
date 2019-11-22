@@ -13,7 +13,7 @@ import { ResourceClassification } from './entities/resource-classification';
 import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 import { User } from './entities/user';
-import { DefinitionsForClient, Aggregation, ReportDefinitionForClient } from './dto/definitions-for-client';
+import { DefinitionsForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
 import { Lookup } from './entities/lookup';
 import { Currency } from './entities/currency';
 import { Resource } from './entities/resource';
@@ -21,9 +21,9 @@ import { AccountClassification } from './entities/account-classification';
 import { Action } from './views';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
-import { PropDescriptor } from './entities/base/metadata';
-import { isSpecified } from './util';
+import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
+import { Aggregation, ReportDefinition } from './entities/report-definition';
 
 export enum MasterStatus {
 
@@ -203,6 +203,7 @@ export class TenantWorkspace {
   AccountClassification: EntityWorkspace<AccountClassification>;
   AccountType: EntityWorkspace<AccountType>;
   Account: EntityWorkspace<Account>;
+  ReportDefinition: EntityWorkspace<ReportDefinition>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -225,6 +226,7 @@ export class TenantWorkspace {
     this.AccountClassification = new EntityWorkspace<AccountClassification>();
     this.AccountType = new EntityWorkspace<AccountType>();
     this.Account = new EntityWorkspace<Account>();
+    this.ReportDefinition = new EntityWorkspace<ReportDefinition>();
 
     this.notifyStateChanged();
   }
@@ -410,7 +412,15 @@ export interface MeasureInfo {
 export interface DimensionInfo {
   key: string;
   path: string;
-  collection: string;
+  propDesc: PropDescriptor;
+
+  /**
+   * This is set in the case of navigation properties
+   */
+  entityDesc?: EntityDescriptor;
+  idKey?: string;
+  selectKeys?: { prop: string, path: string}[];
+
   autoExpand: boolean;
   label: () => string;
 }
@@ -419,7 +429,9 @@ export class DimensionCell {
   type: 'dimension';
   path: string;
   value: any;
-  collection?: string;
+  valueId: any;
+  propDesc: PropDescriptor;
+  entityDesc?: EntityDescriptor;
   isExpanded: boolean;
   hasChildren: boolean;
   level: number;
@@ -438,7 +450,9 @@ export class ChartDimensionCell {
   constructor(
     public display: string,
     public path: string,
-    public value: any,
+    public valueId: any,
+    public propDesc: PropDescriptor,
+    public entityDesc: EntityDescriptor,
     public parent?: ChartDimensionCell) { }
 
   toString() {
@@ -470,6 +484,7 @@ export interface MeasureCell {
 export class ReportStore {
   definition: ReportDefinitionForClient;
   skip = 0;
+  top = 0;
   total = 0;
   reportStatus: ReportStatus;
   errorMessage: string;
@@ -532,7 +547,7 @@ export class ReportStore {
   currentLangForMulti: string;
 }
 
-export const DEFAULT_PAGE_SIZE = 25;
+export const DEFAULT_PAGE_SIZE = 15;
 
 export class MasterDetailsStore {
 

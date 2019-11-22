@@ -124,6 +124,9 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>添加外部登录在</value>
   </data>
+  <data name="Administration" xml:space="preserve">
+    <value>管理</value>
+  </data>
   <data name="Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
@@ -613,6 +616,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>Facebook的</value>
   </data>
+  <data name="Financials" xml:space="preserve">
+    <value>金融</value>
+  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>忘记这个浏览器</value>
   </data>
@@ -642,6 +648,12 @@
   </data>
   <data name="Home" xml:space="preserve">
     <value>家</value>
+  </data>
+  <data name="Icon_ChartPie" xml:space="preserve">
+    <value>图表派</value>
+  </data>
+  <data name="Icon_Clipboard" xml:space="preserve">
+    <value>剪贴板</value>
   </data>
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>电子邮件 '{0}' 是无效的。</value>
@@ -712,6 +724,9 @@
   <data name="IsActive" xml:space="preserve">
     <value>活跃</value>
   </data>
+  <data name="Label" xml:space="preserve">
+    <value>标签</value>
+  </data>
   <data name="LockedOut" xml:space="preserve">
     <value>被锁在外面</value>
   </data>
@@ -721,6 +736,12 @@
   <data name="LoginAlreadyAssociated" xml:space="preserve">
     <value>用该用户名已经存在。</value>
   </data>
+  <data name="Lookup" xml:space="preserve">
+    <value>抬头</value>
+  </data>
+  <data name="Lookups" xml:space="preserve">
+    <value>查找</value>
+  </data>
   <data name="MainMenuIcon" xml:space="preserve">
     <value>图标</value>
   </data>
@@ -729,24 +750,6 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>菜单排序关键字</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_avg" xml:space="preserve">
-    <value>平均</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_count" xml:space="preserve">
-    <value>计数</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_dcount" xml:space="preserve">
-    <value>重复计数</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_max" xml:space="preserve">
-    <value>最大值</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_min" xml:space="preserve">
-    <value>最低限度</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_sum" xml:space="preserve">
-    <value>和</value>
   </data>
   <data name="MeasurementUnit" xml:space="preserve">
     <value>计量单位</value>
@@ -952,6 +955,162 @@
   <data name="Remove0SignInFromYourAccount" xml:space="preserve">
     <value>删除{0}从您的帐户登录</value>
   </data>
+  <data name="ReportDefinition" xml:space="preserve">
+    <value>报告定义</value>
+  </data>
+  <data name="ReportDefinition_Aggregation" xml:space="preserve">
+    <value>聚集功能</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
+    <value>平均</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
+    <value>计数</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
+    <value>最大值</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
+    <value>最低限度</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
+    <value>和</value>
+  </data>
+  <data name="ReportDefinition_AutoExpand" xml:space="preserve">
+    <value>自动扩展</value>
+  </data>
+  <data name="ReportDefinition_Chart" xml:space="preserve">
+    <value>图表</value>
+  </data>
+  <data name="ReportDefinition_Chart_Area" xml:space="preserve">
+    <value>面积图</value>
+  </data>
+  <data name="ReportDefinition_Chart_AreaNormalized" xml:space="preserve">
+    <value>归一化面积</value>
+  </data>
+  <data name="ReportDefinition_Chart_AreaStacked" xml:space="preserve">
+    <value>堆积面积</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsHorizontal" xml:space="preserve">
+    <value>水平条形图</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsHorizontalGrouped" xml:space="preserve">
+    <value>分组水平条形图</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsHorizontalNormalized" xml:space="preserve">
+    <value>标准化水平条形图</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsHorizontalStacked" xml:space="preserve">
+    <value>堆积水平条形图</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsVertical" xml:space="preserve">
+    <value>垂直条形图</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsVerticalGrouped" xml:space="preserve">
+    <value>分组垂直条形图</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsVerticalNormalized" xml:space="preserve">
+    <value>标准化垂直条形图</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsVerticalStacked" xml:space="preserve">
+    <value>堆积垂直条形图</value>
+  </data>
+  <data name="ReportDefinition_Chart_Card" xml:space="preserve">
+    <value>卡</value>
+  </data>
+  <data name="ReportDefinition_Chart_Doughnut" xml:space="preserve">
+    <value>圆环图</value>
+  </data>
+  <data name="ReportDefinition_Chart_Gauge" xml:space="preserve">
+    <value>规</value>
+  </data>
+  <data name="ReportDefinition_Chart_HeatMap" xml:space="preserve">
+    <value>热图</value>
+  </data>
+  <data name="ReportDefinition_Chart_Line" xml:space="preserve">
+    <value>折线图</value>
+  </data>
+  <data name="ReportDefinition_Chart_NumberCards" xml:space="preserve">
+    <value>号码牌</value>
+  </data>
+  <data name="ReportDefinition_Chart_Pie" xml:space="preserve">
+    <value>饼形图</value>
+  </data>
+  <data name="ReportDefinition_Chart_Radar" xml:space="preserve">
+    <value>雷达图</value>
+  </data>
+  <data name="ReportDefinition_Chart_TreeMap" xml:space="preserve">
+    <value>树图</value>
+  </data>
+  <data name="ReportDefinition_Collection" xml:space="preserve">
+    <value>采集</value>
+  </data>
+  <data name="ReportDefinition_Columns" xml:space="preserve">
+    <value>列</value>
+  </data>
+  <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
+    <value>默认到图表</value>
+  </data>
+  <data name="ReportDefinition_DefinitionId" xml:space="preserve">
+    <value>定义</value>
+  </data>
+  <data name="ReportDefinition_Filter" xml:space="preserve">
+    <value>过滤</value>
+  </data>
+  <data name="ReportDefinition_IsRequired" xml:space="preserve">
+    <value>是必须的</value>
+  </data>
+  <data name="ReportDefinition_Key" xml:space="preserve">
+    <value>键</value>
+  </data>
+  <data name="ReportDefinition_Measures" xml:space="preserve">
+    <value>措施</value>
+  </data>
+  <data name="ReportDefinition_OrderBy" xml:space="preserve">
+    <value>排序</value>
+  </data>
+  <data name="ReportDefinition_OrderDirection" xml:space="preserve">
+    <value>为了方向</value>
+  </data>
+  <data name="ReportDefinition_OrderDirection_asc" xml:space="preserve">
+    <value>上升</value>
+  </data>
+  <data name="ReportDefinition_OrderDirection_desc" xml:space="preserve">
+    <value>降序</value>
+  </data>
+  <data name="ReportDefinition_Parameters" xml:space="preserve">
+    <value>参数</value>
+  </data>
+  <data name="ReportDefinition_Path" xml:space="preserve">
+    <value>路径</value>
+  </data>
+  <data name="ReportDefinition_Rows" xml:space="preserve">
+    <value>行</value>
+  </data>
+  <data name="ReportDefinition_Select" xml:space="preserve">
+    <value>选择</value>
+  </data>
+  <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
+    <value>显示列总计</value>
+  </data>
+  <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
+    <value>展会共行</value>
+  </data>
+  <data name="ReportDefinition_Top" xml:space="preserve">
+    <value>最佳</value>
+  </data>
+  <data name="ReportDefinition_Type" xml:space="preserve">
+    <value>类型</value>
+  </data>
+  <data name="ReportDefinition_Type_Details" xml:space="preserve">
+    <value>细节</value>
+  </data>
+  <data name="ReportDefinition_Type_Summary" xml:space="preserve">
+    <value>摘要</value>
+  </data>
+  <data name="ReportDefinitions" xml:space="preserve">
+    <value>报告定义</value>
+  </data>
   <data name="RequiredAttribute" xml:space="preserve">
     <value>{0}字段是必需的。</value>
   </data>
@@ -981,6 +1140,9 @@
   </data>
   <data name="ResetYourPassword" xml:space="preserve">
     <value>重置您的密码</value>
+  </data>
+  <data name="Resource" xml:space="preserve">
+    <value>资源</value>
   </data>
   <data name="Resource_AreaUnit" xml:space="preserve">
     <value>面积单位</value>
@@ -1024,8 +1186,17 @@
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>体积单位</value>
   </data>
+  <data name="ResourceClassification" xml:space="preserve">
+    <value>资源分类</value>
+  </data>
   <data name="ResourceClassification_IsLeaf" xml:space="preserve">
     <value>为叶子</value>
+  </data>
+  <data name="ResourceClassifications" xml:space="preserve">
+    <value>资源分类</value>
+  </data>
+  <data name="Resources" xml:space="preserve">
+    <value>资源</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>角色</value>
@@ -1108,6 +1279,9 @@
   <data name="SignOutMessage0" xml:space="preserve">
     <value>你想退出的{0}？</value>
   </data>
+  <data name="SortKey" xml:space="preserve">
+    <value>排序关键字</value>
+  </data>
   <data name="SqlDatabase_DatabaseName" xml:space="preserve">
     <value>数据库名称</value>
   </data>
@@ -1155,6 +1329,9 @@
   </data>
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>外部登录已被删除。</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>标题</value>
   </data>
   <data name="TitleSingular" xml:space="preserve">
     <value>奇异名称</value>

@@ -10,17 +10,12 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// All supported aggregation functions
         /// </summary>
-        public static readonly string[] All = { count, dcount, sum, avg, max, min };
+        public static readonly string[] All = { count, sum, avg, max, min };
 
         /// <summary>
         /// Count
         /// </summary>
         public const string count = nameof(count);
-
-        /// <summary>
-        /// Distinct count
-        /// </summary>
-        public const string dcount = nameof(dcount);
 
         /// <summary>
         /// Sum
