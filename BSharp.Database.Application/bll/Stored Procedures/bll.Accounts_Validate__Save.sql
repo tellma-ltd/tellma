@@ -78,13 +78,4 @@ SET NOCOUNT ON;
 	--WHERE (SELECT [ResourceVisibility] FROM dbo.AccountDefinitions WHERE [Id] = @DefinitionId) = N'RequiredInAccounts'
 	--AND [ResourceId] IS NULL;
 
-	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
- --   SELECT
-	--	'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-	--	N'Error_TheLocation0WasNotFound', 
-	--	(SELECT dbo.fn_Localize([LocationLabel], [LocationLabel2], [LocationLabel3]) FROM dbo.AccountDefinitions WHERE [Id] = @DefinitionId)
- --   FROM @Entities FE
-	--WHERE (SELECT [LocationVisibility] FROM dbo.AccountDefinitions WHERE [Id] = @DefinitionId) = N'RequiredInAccounts'
-	--AND [LocationId] IS NULL;
-
 	SELECT TOP (@Top) * FROM @ValidationErrors;

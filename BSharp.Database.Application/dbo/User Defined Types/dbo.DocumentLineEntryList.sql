@@ -1,35 +1,28 @@
 ﻿CREATE TYPE [dbo].DocumentLineEntryList AS TABLE (
-	[Index]					INT					PRIMARY KEY,-- IDENTITY (0,1),
-	[DocumentLineIndex]		INT					NOT NULL DEFAULT 0 INDEX IX_DocumentEntryList_DocumentLineIndex ([DocumentLineIndex]),
-	[DocumentIndex]			INT					NOT NULL DEFAULT 0,
-	[Id]					INT					NOT NULL DEFAULT 0,
-	[EntryNumber]			INT					NOT NULL DEFAULT 1,
-	[Direction]				SMALLINT,
-	[AccountId]				INT,
-	[EntryTypeId]			NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
-	[Memo]					NVARCHAR (255),
-	[BatchCode]				NVARCHAR (50),
-	[DueDate]				DATE,
-
-	[Area]					DECIMAL				NOT NULL DEFAULT 0, -- Area Unit, possibly for lands
-	[Count]					DECIMAL				NOT NULL DEFAULT 0, -- CountUnit
-	[Length]				DECIMAL				NOT NULL DEFAULT 0, 
-	[Mass]					DECIMAL				NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
-	[MonetaryValue]			MONEY				NOT NULL DEFAULT 0, -- Amount in foreign Currency 
-	[Time]					DECIMAL				NOT NULL DEFAULT 0, -- ServiceTimeUnit
-	[Volume]				DECIMAL				NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
-
-	[Value]					VTYPE				NOT NULL DEFAULT 0 ,-- equivalent in functional currency
-	[ExternalReference]		NVARCHAR (255),
--- The following are sort of dynamic properties that capture information for reporting purposes
-	[AdditionalReference]	NVARCHAR (255),
--- for debiting asset accounts, related resource is the good/service acquired from supplier/customer/storage
--- for crediting asset accounts, related resource is the good/service delivered to supplier/customer/storage as resource
--- for debiting VAT purchase account, related resource is the good/service purchased
--- for crediting VAT Sales account, related resource is the good/service sold
--- for crediting VAT purchase, debiting VAT sales, or liability account: related resource is N/A
-	[RelatedResourceId]		INT, -- Good, Service, Labor, Machine usage
-	[RelatedAgentId]		INT,
-	[RelatedQuantity]		MONEY,		-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedMonetaryValue]	MONEY -- e.g., amount subject to tax
+	[Index]						INT					PRIMARY KEY,-- IDENTITY (0,1),
+	[DocumentLineIndex]			INT					NOT NULL DEFAULT 0 INDEX IX_DocumentEntryList_DocumentLineIndex ([DocumentLineIndex]),
+	[DocumentIndex]				INT					NOT NULL DEFAULT 0,
+	[Id]						INT					NOT NULL DEFAULT 0,
+	[EntryNumber]				INT					NOT NULL DEFAULT 1,
+	[Direction]					SMALLINT,
+	[AccountId]					INT,
+	[CurrencyId]				NCHAR (3),
+	[AgentRelationDefinitionId]	NVARCHAR (50),
+	[AgentId]					INT,
+	[ResourceId]				INT,
+	[EntryTypeId]				NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
+	[BatchCode]					NVARCHAR (50),
+	[DueDate]					DATE,
+	[MonetaryValue]				MONEY				NOT NULL DEFAULT 0, -- Amount in foreign Currency 
+	[Count]						DECIMAL				NOT NULL DEFAULT 0, -- CountUnit
+	[Mass]						DECIMAL				NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
+	[Time]						DECIMAL				NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[Volume]					DECIMAL				NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
+	[Value]						VTYPE				NOT NULL DEFAULT 0 ,-- equivalent in functional currency
+	[ExternalReference]			NVARCHAR (255),
+	[AdditionalReference]		NVARCHAR (255),
+	[RelatedAgentId]			INT,
+	[RelatedAmount]				MONEY,		-- used in Tax accounts, to store the quantiy of taxable item
+	[Time1]						TIME (0),	-- from time
+	[Time2]						TIME (0)	-- to time
 );

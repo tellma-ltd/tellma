@@ -1,8 +1,9 @@
 ﻿CREATE PROCEDURE [rpt].[MerchandiseInTransit__TrialBalance]
 	@FromDate Date = '01.01.2020',
 	@ToDate Date = '01.01.2020',
+	@CountUnitId INT,
 	@MassUnitId INT,
-	@CountUnitId INT
+	@VolumeUnitId INT
 AS
 BEGIN
 	WITH JournalSummary
@@ -13,9 +14,10 @@ BEGIN
 		FROM rpt.fi_JournalSummary(
 			N'CurrentInventoriesInTransit', -- @AccountTypeList
 			@FromDate,
-			@ToDate, 
+			@ToDate,
+			@CountUnitId,
 			@MassUnitId,
-			@CountUnitId
+			@VolumeUnitId
 		)
 		GROUP BY ResourceId
 	)

@@ -4,7 +4,12 @@
 	[DocumentLineId]			INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__DocumentLineId] FOREIGN KEY ([DocumentLineId])	REFERENCES [dbo].[DocumentLines] ([Id]) ON DELETE CASCADE,
 	[EntryNumber]				INT				NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
-	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__Accounts]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
+	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountId]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
+	[CurrencyId]				NCHAR (3)		NOT NULL CONSTRAINT [FK_DocumentLineEntries__CurrencyId] REFERENCES dbo.Currencies([Id]),
+
+	[AgentRelationDefinitionId]	NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
+	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
+	[ResourceId]				INT				REFERENCES dbo.Resources([Id]),
 	-- Entry Type is used to tag entries in a manner that does not affect the account balance
 	-- However, consider the case of acc depreciation. We want to map to a different GL. In that case, we set some account definition
 	-- to enforce a certain entry classification
@@ -23,33 +28,22 @@
 	--[Memo]						NVARCHAR (255),
 	[BatchCode]					NVARCHAR (50),
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings
-	[ExternalReference]			NVARCHAR (255),
--- The following are sort of dynamic properties that capture information for reporting purposes
-	[AdditionalReference]		NVARCHAR (255),
--- for debiting asset accounts, related resource is the good/service acquired from supplier/customer/storage
--- for crediting asset accounts, related resource is the good/service delivered to supplier/customer/storage as resource
--- for debiting VAT purchase account, related resource is the good/service purchased
--- for crediting VAT Sales account, related resource is the good/service sold
--- for crediting VAT purchase, debiting VAT sales, or liability account: related resource is N/A
--- for revenues and cost of sales related to a contract/job, related resourceis the contract/job.
-	[RelatedResourceId]			INT,		-- Good, Service, Labor, Machine usage
-	[RelatedAgentId]			INT,
-	[RelatedLocationId]			INT,
-	[RelatedQuantity]			MONEY,		-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedMonetaryValue]		MONEY,		-- e.g., amount subject to tax
-	[Time1]						TIME (0),	-- from time
-	[Time2]						TIME (0),	-- to time
--- Tracking additive measures, the data type is to be decided by AA
-	[Area]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
-	[Count]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
-	[Length]					DECIMAL (18,2)	NOT NULL DEFAULT 0,
-	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
 	[MonetaryValue]				MONEY			NOT NULL DEFAULT 0,
+-- Tracking additive measures, the data type is to be decided by AA
+	[Count]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
+	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
+	
 	[Time]						DECIMAL (18,2)	NOT NULL DEFAULT 0, -- ServiceTimeUnit
 	[Volume]					DECIMAL (18,2)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
 
 	[Value]						VTYPE			NOT NULL DEFAULT 0, -- equivalent in functional currency
-
+-- The following are sort of dynamic properties that capture information for reporting purposes
+	[ExternalReference]			NVARCHAR (255),
+	[AdditionalReference]		NVARCHAR (255),
+	[RelatedAgentId]			INT,
+	[RelatedAmount]				MONEY,		-- e.g., amount subject to tax
+	[Time1]						TIME (0),	-- from time
+	[Time2]						TIME (0),	-- to time
 	[SortKey]					INT,
 -- for auditing
 	[CreatedAt]					DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),

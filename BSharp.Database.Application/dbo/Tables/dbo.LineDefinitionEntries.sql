@@ -1,122 +1,39 @@
 ﻿CREATE TABLE [dbo].LineDefinitionEntries (
-	[LineDefinitionId]				NVARCHAR (50),
-	[EntryNumber]					INT,
+	[LineDefinitionId]					NVARCHAR (50),
+	[EntryNumber]						INT,
+	[Direction]							SMALLINT			NOT NULL,
+	-- Source = -1 (n/a), 0 (get from line def), 1 (get from Entry), 2 (get from line), 3 (from account), 4 (from other entry data), 8 (from balancing), 9 (from bll script)
 
-	-- IsEditableTill specifies the state up till which is is possible to edit the field
-	-- State "Archived" is used to indicate lifetime editability 
-	-- Must be added to all fields
-	-- if Document edit mode is immutable, signatures cannot be deleted, and edits are not allowed once the state is reached
-	-- If edit mode is is rigid, no edits are allowed after reaching the state unless the signatories delete their signatures
-	-- If edit mode is flexible, edits are allowed after reaching the state, and all signatories before the edit are alerted
+	-- Account is invisible in a tab, unless the source specifies it is entered by user. or in Manual line
+	[AccountSource]						SMALLINT			NOT NULL DEFAULT 0,-- 0: set from line def, 1: entered by User, 3: computed by system based on other info
+	[AccountId]							INT, -- invisible, except in 
 
-	[DirectionIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[DirectionIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
-	[DirectionExpression]			NVARCHAR (255),
-	[DirectionEntryNumber]			INT,
-	[Direction]						SMALLINT,
+	[AccountTypeSource]					SMALLINT			NOT NULL DEFAULT 2, -- 0:set from line def, 3: from account
+	[AccountTypeId]						NVARCHAR (50)	REFERENCES dbo.[AccountDefinitions]([Id]), -- 
 
-	[AccountIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[AccountIsEditableTill]			NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
-	[AccountDefinitionList]			NVARCHAR (1024),
-	[AccountTypeList]				NVARCHAR (1024),
-	[AccountIdExpression]			NVARCHAR (255),
-	[AccountIdEntryNumber]			INT,
-	[AccountId]						INT,
+	[AgentRelationDefinitionSource]		SMALLINT			NOT NULL DEFAULT 2, --  -1: n/a, 0:set from line def, 3: from account
+	[AgentRelationDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
 
-	[EntryTypeIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[EntryTypeIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
-	[EntryTypeIdExpression]			NVARCHAR (255),
-	[EntryTypeIdEntryNumber]		INT,
-	[EntryTypeId]					NVARCHAR (255),
+	[AgentSource]						SMALLINT			NOT NULL DEFAULT 1, --  -1: n/a, 3: from account
+	[AgentId]							INT				REFERENCES dbo.Agents([Id]),	-- fixed in the case of ERCA, e.g., VAT
 
-	[ResourceIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[ResourceIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
-	[ResourceDefinitionList]		NVARCHAR (1024),
-	[ResourceTypeList]				NVARCHAR (1024),
-	[ResourceIdEntryNumber]			INT,
-	[ResourceId]					INT,
-
-	[LocationIdIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[LocationIdIsEditableTill]		NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
-	[LocationDefinitionList]		NVARCHAR (1024),
-	[LocationTypeList]				NVARCHAR (1024),
-	[LocationIdEntryNumber]			INT,
-	[LocationId]					INT,
-
-	[AgentIdIsVisible]				BIT				NOT NULL DEFAULT 0,
-	[AgentIdIsEditableTill]			NVARCHAR (255)	NOT NULL DEFAULT N'Reviewed',
-	[AgentDefinitionList]			NVARCHAR (1024),
-	[AgentTypeList]					NVARCHAR (1024),
-	[AgentIdEntryNumber]			INT,
-	[AgentId]						INT,
+	[ResourceSource]					SMALLINT			NOT NULL DEFAULT 1,
+	[ResourceId]						INT				REFERENCES dbo.Resources([Id]),	-- Fixed in the case of unallocated expense
 	
-	[BatchCodeIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[BatchCodeExpression]			NVARCHAR (255),
-	[BatchCodeEntryNumber]			INT,
+	[CurrencySource]					SMALLINT			NOT NULL DEFAULT 2,
+	[CurrencyId]						NCHAR (3)		REFERENCES dbo.Currencies([Id]),	-- Fixed in the case of unallocated expense
 
-	[DueDateIsVisible]				BIT				NOT NULL DEFAULT 0,
-	[DueDateExpression]				NVARCHAR (255),
-	[DueDateEntryNumber]			INT,
-
-	[QuantityIsVisible]				BIT				NOT NULL DEFAULT 0,
-	[QuantityExpression]			NVARCHAR (255),
-	[QuantityEntryNumber]			INT,
-	[Quantity]						VTYPE,
-
-	[MoneyAmountIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[MoneyAmountExpression]			NVARCHAR (255),
-	[MoneyAmountEntryNumber]		INT,
-
-	[MassIsVisible]					BIT				NOT NULL DEFAULT 0,
-	[MassExpression]				NVARCHAR (255),
-	[MassEntryNumber]				INT,
-
-	[VolumeIsVisible]				BIT				NOT NULL DEFAULT 0,
-	[VolumeExpression]				NVARCHAR (255),
-	[VolumeEntryNumber]				INT,
-
-	[AreaIsVisible]					BIT				NOT NULL DEFAULT 0,
-	[AreaExpression]				NVARCHAR (255),
-	[AreaEntryNumber]				INT,
-
-	[LengthIsVisible]				BIT				NOT NULL DEFAULT 0,
-	[LengthExpression]				NVARCHAR (255),
-	[LengthEntryNumber]				INT,
-
-	[TimeIsVisible]					BIT				NOT NULL DEFAULT 0,
-	[TimeExpression]				NVARCHAR (255),
-	[TimeEntryNumber]				INT,
-
-	[CountIsVisible]				BIT				NOT NULL DEFAULT 0,
-	[CountExpression]				NVARCHAR (255),
-	[CountEntryNumber]				INT,
-	[Count]							INT,
+	[EntryTypeSource]					SMALLINT			NOT NULL DEFAULT 0,
+	[EntryTypeId]						NVARCHAR (255),
 	
-	[ValueIsVisible]				BIT				NOT NULL DEFAULT 0,
-	[ValueExpression]				NVARCHAR (255),
-	[ValueEntryNumber]				INT,
-
-	[MemoIsVisible]					BIT				NOT NULL DEFAULT 0,
-	[MemoExpression]				NVARCHAR (255),
-	[MemoEntryNumber]				INT,
-
-	[ExternalReferenceIsVisible]	BIT				NOT NULL DEFAULT 0,
-	[ExternalReferenceExpression]	NVARCHAR (255),
-	[ExternalReferenceEntryNumber]	INT,
-
-	[AdditionalReferenceIsVisible]	BIT				NOT NULL DEFAULT 0,
-	[AdditionalReferenceExpression]	NVARCHAR (255),
-	[AdditionalReferenceEntryNumber]INT,
-
-	[RelatedResourceId]				INT, -- Good, Service, Labor, Machine usage
-
-	[RelatedAgentIsVisible]			BIT				NOT NULL DEFAULT 0,
-	[RelatedAgentExpression]		NVARCHAR (255),
-	[RelatedAgentEntryNumber]		INT,
-		
-	[RelatedQuantity]				MONEY ,			-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedMoneyAmount]			MONEY 				NOT NULL DEFAULT 0, -- e.g., amount subject to tax
+	[MonetaryValueSource]				SMALLINT			NOT NULL DEFAULT 1,
+	[QuantitySource]					SMALLINT			NOT NULL DEFAULT 1,
+	[ExternalReferenceSource]			SMALLINT			NOT NULL DEFAULT 2,
+	[AdditionalReferenceSource]			SMALLINT			NOT NULL DEFAULT 2,
+	[RelatedAgentSource]				SMALLINT			NOT NULL DEFAULT 2,
+	[RelatedAmountSource]				SMALLINT			NOT NULL DEFAULT 2,
+	[DueDateSource]						SMALLINT			NOT NULL DEFAULT 1
 
     CONSTRAINT [PK_LineDefinitionEntries] PRIMARY KEY CLUSTERED ([LineDefinitionId], [EntryNumber]),
-	CONSTRAINT [FK_LineDefinitionEntries_LineDefinitions] FOREIGN KEY ([LineDefinitionId]) REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT [FK_LineDefinitionEntries_LineDefinitions] FOREIGN KEY ([LineDefinitionId]) REFERENCES [dbo].[LineDefinitions] ([Id])
 );

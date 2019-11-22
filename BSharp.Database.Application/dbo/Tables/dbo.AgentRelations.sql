@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[AgentRelations] (
 	[Id]						INT					CONSTRAINT [PK_AgentRelations] PRIMARY KEY IDENTITY,
+	[OperatingSegmentId]		INT,
 	[AgentRelationDefinitionId]	NVARCHAR(50)		NOT NULL CONSTRAINT [FK_AgentRelations__AgentRelationDefinitionId] FOREIGN KEY ([AgentRelationDefinitionId]) REFERENCES [dbo].[AgentRelationDefinitions] ([Id]),
 	[AgentId]					INT					NOT NULL CONSTRAINT [FK_AgentRelations__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]) ON DELETE CASCADE,
 	[StartDate]					DATE				DEFAULT (CONVERT (date, SYSDATETIME())),
@@ -19,6 +20,8 @@
 --	suppliers
 	[SupplierRating]			INT,			-- user defined list
 	[PaymentTerms]				NVARCHAR (255),
+--	cost centers
+	[CostCenterType]			NVARCHAR (50)		CHECK([CostCenterType] IN (N'None', N'CostUnit', N'Production', N'SellingAndDistribution', N'Admininstration', N'Service', N'Shared')),
 	
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AgentRelations__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),

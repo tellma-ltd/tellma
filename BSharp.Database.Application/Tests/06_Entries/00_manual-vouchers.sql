@@ -142,7 +142,7 @@ BEGIN
 		A.TaxIdentificationNumber As TIN, 
 		J.ExternalReference As [Invoice #], J.AdditionalReference As [Cash M/C #],
 		FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
-		FORMAT(SUM(J.[RelatedMonetaryValue]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
+		FORMAT(SUM(J.[RelatedAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date]
 	FROM [dbo].[fi_Journal]('2018.01.01','2019.01.01') J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id

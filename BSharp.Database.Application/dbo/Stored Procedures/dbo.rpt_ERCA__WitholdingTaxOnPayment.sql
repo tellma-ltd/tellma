@@ -9,7 +9,7 @@ BEGIN
 		A.[Name] As [Organization/Person Name],
 		A.[RegisteredAddress] As [Withholdee Address], 
 		J.[Memo] As [Withholding Type],
-		J.[RelatedMonetaryValue] As [Taxable Amount], 
+		J.[RelatedAmount] As [Taxable Amount], 
 		J.[MonetaryValue] As [Tax Withheld], 
 		J.[ExternalReference] As [Receipt Number], 
 		J.DocumentDate As [Receipt Date],

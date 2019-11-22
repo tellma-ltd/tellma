@@ -27,11 +27,9 @@ BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[DocumentLines]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[DocumentLineEntries]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[MeasurementUnits]', RESEED, 100) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[Locations]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Permissions]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[ResourceClassifications]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 1) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[ResponsibilityCenters]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Roles]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[RoleMemberships]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Workflows]', RESEED, 0) WITH NO_INFOMSGS;
@@ -40,7 +38,7 @@ BEGIN -- reset Identities
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
 	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugLocations bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccounts bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
 	DECLARE @LookupsSelect bit = 0;
@@ -60,6 +58,7 @@ END
 
 BEGIN TRY
 	BEGIN TRANSACTION
+	/*
 		:r .\00_Security\01_RolesPermissions.sql		
 		:r .\00_Security\02_Workflows.sql
 
@@ -89,7 +88,7 @@ BEGIN TRY
 		:r .\05_Accounts\00_AccountClassifications.sql
 		:r .\05_Accounts\01_gl-accounts.sql
 		:r .\05_Accounts\02_tax-accounts.sql
-
+		*/
 		IF @DebugAccounts = 1
 			SELECT * FROM map.Accounts();
 

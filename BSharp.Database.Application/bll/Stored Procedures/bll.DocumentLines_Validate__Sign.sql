@@ -88,14 +88,13 @@ SET NOCOUNT ON;
 	WITH
 	InventoryAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts] A
-		WHERE A.[AccountTypeId] = N'Inventory'
+		WHERE A.[AccountDefinitionId] = N'Inventory'
 	),
 	CurrentDocLines AS (
 		SELECT MAX(FE.[Index]) AS [Index], DLE.AccountId,
 			SUM(DLE.[Direction] * DLE.[Mass]) AS [Mass], 
 			SUM(DLE.[Direction] * DLE.[Volume]) AS [Volume], 
-			SUM(DLE.[Direction] * DLE.[Count]) AS [Count], 
-			SUM(DLE.[Direction] * DLE.[Area]) AS [Area]
+			SUM(DLE.[Direction] * DLE.[Count]) AS [Count]
 		FROM @Ids FE
 		JOIN dbo.[DocumentLineEntries] DLE ON FE.[Id] = DLE.[DocumentLineId]
 		WHERE DLE.AccountId IN (SELECT [Id] FROM InventoryAccounts)
@@ -103,14 +102,12 @@ SET NOCOUNT ON;
 		HAVING SUM(DLE.[Direction] * DLE.[Mass]) < 0
 		OR SUM(DLE.[Direction] * DLE.[Volume]) < 0
 		OR SUM(DLE.[Direction] * DLE.[Count]) < 0
-		OR SUM(DLE.[Direction] * DLE.[Area]) < 0
 	),
 	ReviewedDocLines AS (
 		SELECT DLE.AccountId,
 			SUM(DLE.[Direction] * DLE.[Mass]) AS [Mass], 
 			SUM(DLE.[Direction] * DLE.[Volume]) AS [Volume], 
-			SUM(DLE.[Direction] * DLE.[Count]) AS [Count], 
-			SUM(DLE.[Direction] * DLE.[Area]) AS [Area]
+			SUM(DLE.[Direction] * DLE.[Count]) AS [Count]
 		FROM dbo.DocumentLineEntriesDetailsView DLE
 		JOIN CurrentDocLines C ON DLE.AccountId = C.AccountId 
 		GROUP BY DLE.AccountId
@@ -122,7 +119,6 @@ SET NOCOUNT ON;
 		WHERE (C.[Mass] + P.[Mass]) < 0
 		OR (C.[Volume] + P.[Volume]) < 0
 		OR (C.[Count] + P.[Count]) < 0
-		OR (C.[Area] + P.[Area]) < 0
 	)
 	-- TODO: to be rewritten for each unit of measure. Also localize!
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])

@@ -16,7 +16,7 @@ SET NOCOUNT ON;
 		USING (
 			SELECT 
 				[Index], [Id],
-				[AccountTypeId],
+				@DefinitionId AS [AccountDefinitionId],
 				[AccountClassificationId], 
 				[Name], 
 				[Name2], 
@@ -24,15 +24,13 @@ SET NOCOUNT ON;
 				[Code], 
 				[PartyReference],
 				[ResourceId],
-				[AgentId],
-				[LocationId],
-				[ResponsibilityCenterId]
+				[AgentId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-				t.[AccountTypeId]			= s.[AccountTypeId],
+				t.[AccountDefinitionId]		= s.[AccountDefinitionId],
 				t.[AccountClassificationId]	= s.[AccountClassificationId], 
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
@@ -45,15 +43,15 @@ SET NOCOUNT ON;
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[AccountTypeId],
+				[AccountDefinitionId],
 				[AccountClassificationId], 
 				[Name], [Name2], [Name3], 
 				[Code], 
 				[PartyReference],
 				[ResourceId],
 				[AgentId])
-			VALUES (@DefinitionId,
-				s.[AccountTypeId],
+			VALUES (
+				s.[AccountDefinitionId],
 				s.[AccountClassificationId], 
 				s.[Name], s.[Name2], s.[Name3], 
 				s.[Code], 

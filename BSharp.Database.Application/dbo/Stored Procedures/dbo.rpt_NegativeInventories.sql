@@ -3,24 +3,23 @@
 AS
 	SELECT
 			[AccountId],
+			[AgentId],
 			[ResourceId],
-		--	[ResourceInstanceId],
 			[BatchCode],
+			[DueDate],
+			SUM([Count]) AS [Count],
 			SUM([Mass]) AS [Mass],
 			SUM([Volume]) As [Volume],
-			SUM([Area]) As [Area],
-			SUM([Length]) As [Length],
-			SUM([Count]) AS [Count],
 			SUM([Value]) As [Value]
 	FROM dbo.[fi_Journal](NULL, @AsOfDate) J
-	WHERE [AccountTypeId] = 'Inventorry'
+	WHERE [AccountDefinitionId] = 'Inventorry'
 	GROUP BY
 			[AccountId],
+			[AgentId],
 			[ResourceId],
-		--	[ResourceInstanceId],
-			[BatchCode]
+			[BatchCode],
+			[DueDate]
 	HAVING
-			SUM([Mass]) < 0 OR SUM([Volume]) < 0 OR SUM([Area]) < 0 OR 
-			SUM([Length]) < 0 OR SUM([Count]) < 0
+			SUM([Count]) < 0 OR SUM([Mass]) < 0 OR SUM([Volume]) < 0 
 	;
 GO;

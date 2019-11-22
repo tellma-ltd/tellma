@@ -11,9 +11,10 @@ BEGIN
 		FROM rpt.fi_JournalSummary (
 				N'BalancesWithBanks', -- @AccountTypeList
 				@FromDate,
-				@ToDate, 
+				@ToDate,
+				NULL, -- @CountUnitId
 				NULL, -- @MassUnitId,
-				NULL -- @CountUnitId
+				NULL -- @VolumneUnitId
 			)
 		GROUP BY [AccountClassificationId], AccountId -- rows
 	)

@@ -7,7 +7,7 @@ BEGIN
 	SELECT
 		A.[TaxIdentificationNumber] As [Employee TIN],
 		A.[Name] As [Employee Full Name],
-		J.[RelatedMonetaryValue] As [Taxable Income], 
+		J.[RelatedAmount] As [Taxable Income], 
 		J.[MonetaryValue] As [Tax Withheld]
 	FROM [dbo].[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id

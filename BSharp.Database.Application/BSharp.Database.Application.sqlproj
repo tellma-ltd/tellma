@@ -91,7 +91,6 @@
     <Folder Include="Tests\01_Lookups" />
     <Folder Include="Tests\03_Agents" />
     <Folder Include="Tests\05_Accounts" />
-    <Folder Include="Tests\04_Locations" />
     <Folder Include="Tests\00_Security" />
     <Folder Include="Tests\06_Entries" />
     <Folder Include="Provisioning\03_DocumentsLines" />
@@ -356,8 +355,6 @@
     <Build Include="bll\Functions\bll.fn_EmployeeIncomeTax.sql" />
     <Build Include="api\Stored Procedures\api.Paysheet__Prepare.sql" />
     <Build Include="api\Stored Procedures\api.ExchangeVariances__Prepare.sql" />
-    <Build Include="dbo\Tables\dbo.Locations.sql" />
-    <Build Include="dbo\Tables\dbo.LocationDefinitions.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Save.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Select.sql" />
@@ -379,7 +376,7 @@
     <Build Include="api\Stored Procedures\api.AccountClassifications__Deprecate.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Deprecate.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Deprecate.sql" />
-    <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
+    <Build Include="dbo\Tables\dbo.AccountDefinitions.sql" />
     <Build Include="Mapping\AccountClassifications.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Delete.sql" />
@@ -403,7 +400,7 @@
     <Build Include="dal\Stored Procedures\dal.Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.EntryTypes.sql" />
-    <None Include="Provisioning\01_AccountsEntries\a_AccountTypes.sql" />
+    <None Include="Provisioning\01_AccountsEntries\a_AccountDefinitions.sql" />
     <None Include="Provisioning\01_AccountsEntries\zOld_AccountTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\c_EntryTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\d_AccountTypesEntryTypes.sql" />
@@ -449,7 +446,6 @@
     <Build Include="api\Stored Procedures\api.DocumentLines__Unsign.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
     <Build Include="api\Stored Procedures\api.Documents__File.sql" />
-    <Build Include="api\Stored Procedures\api.Documents__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Void.sql" />
     <Build Include="bll\Stored Procedures\bll.DocumentLines__RelevantIndexIds.sql" />
     <Build Include="dbo\Functions\dbo.fn_State__StateId.sql" />
@@ -458,6 +454,9 @@
     <None Include="Provisioning\03_DocumentsLines\a_LineDefinitions.sql" />
     <None Include="Provisioning\03_DocumentsLines\b_DELETE_LineDefinitionEntries.sql" />
     <None Include="Provisioning\03_DocumentsLines\b_DocumentDefinitions.sql" />
+    <Build Include="bll\Stored Procedures\bll.PurchaseInvoice__Fill.sql" />
+    <Build Include="dbo\Tables\dbo.TaxAccounts.sql" />
+    <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -492,6 +491,8 @@
     <None Include="Tests\05_Accounts\02_tax-accounts.sql" />
     <None Include="Tests\06_Entries\00_manual-vouchers.sql" />
     <None Include="Tests\06_Entries\01_petty-cash-vouchers.sql" />
+    <None Include="Provisioning\00_Setup\c_CoreEntities.sql" />
+    <None Include="Provisioning\00_Setup\d_TaxAgencies.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

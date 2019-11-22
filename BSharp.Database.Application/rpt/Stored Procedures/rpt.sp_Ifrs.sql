@@ -47,7 +47,7 @@ BEGIN
 	INSERT INTO #IfrsDisclosureDetails([IfrsDisclosureId], [Concept], [Value])
 	SELECT AD.[IfrsDisclosureId], AD.[Concept], SUM([Value] * [Direction])
 	FROM dbo.[fi_Journal](@fromDate, @toDate) J
-	JOIN dbo.AccountsDisclosures AD ON J.AccountTypeId = AD.AccountTypeId
+	JOIN dbo.AccountsDisclosures AD ON J.AccountId = AD.AccountId
 	GROUP BY AD.[IfrsDisclosureId], AD.[Concept];
 
 	SELECT * FROM #IfrsDisclosureDetails;

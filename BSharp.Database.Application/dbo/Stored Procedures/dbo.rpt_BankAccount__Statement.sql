@@ -18,9 +18,9 @@ BEGIN
 		[VoucherNumericReference] As [CPV_CRV_Ref],
 		[Memo],
 		[ExternalReference] As [CheckRef],
-		[RelatedResourceId] As [OtherPartyCurrency],
 		[RelatedAgentId] As [OtherParty],
-		[RelatedMonetaryValue] As [OtherPartyAmount]
+		-- TODO: where to show the related currency?
+		[RelatedAmount] As [OtherPartyAmount]
 	FROM [dbo].[fi_Journal](@fromDate, @toDate)
 	WHERE [AccountId] = @AccountId;
 END;

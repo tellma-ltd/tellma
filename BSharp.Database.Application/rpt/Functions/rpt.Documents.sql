@@ -9,7 +9,7 @@ RETURN
 			CAST(D.[DocumentDate] AS NVARCHAR(30)) AS [DocumentDate],
 			D.[DocumentDefinitionId],
 			DT.Prefix + 
-			REPLICATE(N'0', DT.[NumericalLength] - 1 - FLOOR(LOG10(D.SerialNumber))) +
+			REPLICATE(N'0', DT.[CodeWidth] - 1 - FLOOR(LOG10(D.SerialNumber))) +
 			CAST(D.SerialNumber AS NVARCHAR(30)) AS [S/N],
 			D.[State],
 			ISNULL(VB.[StringPrefix], '') +

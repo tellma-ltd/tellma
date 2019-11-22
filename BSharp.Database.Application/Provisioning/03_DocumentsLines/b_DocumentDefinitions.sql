@@ -10,11 +10,7 @@
 	-- UI Specs
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT (3), -- For presentation purposes
-	[CustomerLabel]				NVARCHAR (50),
-	[SupplierLabel]				NVARCHAR (50),
-	[EmployeeLabel]				NVARCHAR (50),
-	[FromCustodyAccountLabel]	NVARCHAR (50),
-	[ToCustodyAccountLabel]		NVARCHAR (50)
+	[AgentRelationDefinitionId]	NVARCHAR (50)
 );
 INSERT @DocumentDefinitions ([Id], [Prefix]) VALUES
 	-- The list includes the following transaction types, and their variant flavours depending on country and industry:
@@ -67,10 +63,10 @@ WHEN NOT MATCHED BY SOURCE THEN
 WHEN NOT MATCHED BY TARGET THEN
     INSERT (
 		[Id], [IsSourceDocument], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
-		[Prefix], [NumericalLength], [CustomerLabel], [SupplierLabel], [EmployeeLabel], [FromCustodyAccountLabel], [ToCustodyAccountLabel]
+		[Prefix], [CodeWidth], [AgentRelationDefinitionId]
 	) VALUES (
 		s.[Id], s.[IsSourceDocument], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
-		s.[Prefix], s.[CodeWidth], s.[CustomerLabel], s.[SupplierLabel], s.[EmployeeLabel], s.[FromCustodyAccountLabel], s.[ToCustodyAccountLabel]
+		s.[Prefix], s.[CodeWidth], s.[AgentRelationDefinitionId]
 	);
 
 DECLARE @DocumentDefinitionsLineDefinitions TABLE(
