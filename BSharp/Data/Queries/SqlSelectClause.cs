@@ -38,7 +38,8 @@ namespace BSharp.Data.Queries
             var columnMap = _columns.Select(e => new SqlStatementColumn
             {
                 Path = e.Path,
-                Property = e.PropName
+                Property = e.PropName,
+                IsOriginal = true // in flat queries, all columns as original for practical purposes (value is never used anyways)
             })
             .ToList();
 

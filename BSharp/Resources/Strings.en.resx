@@ -124,6 +124,9 @@
   <data name="AddAnExternalSignIn" xml:space="preserve">
     <value>Add an External Sign-in</value>
   </data>
+  <data name="Administration" xml:space="preserve">
+    <value>Administration</value>
+  </data>
   <data name="Agent" xml:space="preserve">
     <value>Agent</value>
   </data>
@@ -613,6 +616,9 @@
   <data name="Facebook" xml:space="preserve">
     <value>Facebook</value>
   </data>
+  <data name="Financials" xml:space="preserve">
+    <value>Financials</value>
+  </data>
   <data name="ForgetThisBrowser" xml:space="preserve">
     <value>Forget This Browser</value>
   </data>
@@ -642,6 +648,12 @@
   </data>
   <data name="Home" xml:space="preserve">
     <value>Home</value>
+  </data>
+  <data name="Icon_ChartPie" xml:space="preserve">
+    <value>Chart Pie</value>
+  </data>
+  <data name="Icon_Clipboard" xml:space="preserve">
+    <value>Clipboard</value>
   </data>
   <data name="Identity_InvalidEmail" xml:space="preserve">
     <value>Email '{0}' is invalid.</value>
@@ -712,6 +724,9 @@
   <data name="IsActive" xml:space="preserve">
     <value>Is Active</value>
   </data>
+  <data name="Label" xml:space="preserve">
+    <value>Label</value>
+  </data>
   <data name="LockedOut" xml:space="preserve">
     <value>Locked Out</value>
   </data>
@@ -721,6 +736,12 @@
   <data name="LoginAlreadyAssociated" xml:space="preserve">
     <value>A user with this login already exists.</value>
   </data>
+  <data name="Lookup" xml:space="preserve">
+    <value>Lookup</value>
+  </data>
+  <data name="Lookups" xml:space="preserve">
+    <value>Lookups</value>
+  </data>
   <data name="MainMenuIcon" xml:space="preserve">
     <value>Icon</value>
   </data>
@@ -729,24 +750,6 @@
   </data>
   <data name="MainMenuSortKey" xml:space="preserve">
     <value>Menu Sort Key</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_avg" xml:space="preserve">
-    <value>Average</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_count" xml:space="preserve">
-    <value>Count</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_dcount" xml:space="preserve">
-    <value>Distinct Count</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_max" xml:space="preserve">
-    <value>Maximum</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_min" xml:space="preserve">
-    <value>Minimum</value>
-  </data>
-  <data name="MeasureDefinition_Aggregation_sum" xml:space="preserve">
-    <value>Sum</value>
   </data>
   <data name="MeasurementUnit" xml:space="preserve">
     <value>Measurement Unit</value>
@@ -952,6 +955,162 @@
   <data name="Remove0SignInFromYourAccount" xml:space="preserve">
     <value>Remove {0} sign in from your account</value>
   </data>
+  <data name="ReportDefinition" xml:space="preserve">
+    <value>Report Definition</value>
+  </data>
+  <data name="ReportDefinition_Aggregation" xml:space="preserve">
+    <value>Aggregation Function</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_avg" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_max" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_min" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="ReportDefinition_Aggregation_sum" xml:space="preserve">
+    <value>Sum</value>
+  </data>
+  <data name="ReportDefinition_AutoExpand" xml:space="preserve">
+    <value>Auto Expand</value>
+  </data>
+  <data name="ReportDefinition_Chart" xml:space="preserve">
+    <value>Chart</value>
+  </data>
+  <data name="ReportDefinition_Chart_Area" xml:space="preserve">
+    <value>Area Chart</value>
+  </data>
+  <data name="ReportDefinition_Chart_AreaNormalized" xml:space="preserve">
+    <value>Normalized Area Chart</value>
+  </data>
+  <data name="ReportDefinition_Chart_AreaStacked" xml:space="preserve">
+    <value>Stacked Area Chart</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsHorizontal" xml:space="preserve">
+    <value>Horizontal Bars</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsHorizontalGrouped" xml:space="preserve">
+    <value>Grouped Horizontal Bars</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsHorizontalNormalized" xml:space="preserve">
+    <value>Normalized Horizontal Bars</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsHorizontalStacked" xml:space="preserve">
+    <value>Stacked Horizontal Bars</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsVertical" xml:space="preserve">
+    <value>Vertical Bars</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsVerticalGrouped" xml:space="preserve">
+    <value>Grouped Vertical Bars</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsVerticalNormalized" xml:space="preserve">
+    <value>Normalized Vertical Bars</value>
+  </data>
+  <data name="ReportDefinition_Chart_BarsVerticalStacked" xml:space="preserve">
+    <value>Stacked Vertical Bars</value>
+  </data>
+  <data name="ReportDefinition_Chart_Card" xml:space="preserve">
+    <value>Card</value>
+  </data>
+  <data name="ReportDefinition_Chart_Doughnut" xml:space="preserve">
+    <value>Doughnut Chart</value>
+  </data>
+  <data name="ReportDefinition_Chart_Gauge" xml:space="preserve">
+    <value>Gauge</value>
+  </data>
+  <data name="ReportDefinition_Chart_HeatMap" xml:space="preserve">
+    <value>Heat Map</value>
+  </data>
+  <data name="ReportDefinition_Chart_Line" xml:space="preserve">
+    <value>Line Chart</value>
+  </data>
+  <data name="ReportDefinition_Chart_NumberCards" xml:space="preserve">
+    <value>Number Cards</value>
+  </data>
+  <data name="ReportDefinition_Chart_Pie" xml:space="preserve">
+    <value>Pie Chart</value>
+  </data>
+  <data name="ReportDefinition_Chart_Radar" xml:space="preserve">
+    <value>Radar Chart</value>
+  </data>
+  <data name="ReportDefinition_Chart_TreeMap" xml:space="preserve">
+    <value>Tree Map</value>
+  </data>
+  <data name="ReportDefinition_Collection" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="ReportDefinition_Columns" xml:space="preserve">
+    <value>Columns</value>
+  </data>
+  <data name="ReportDefinition_DefaultsToChart" xml:space="preserve">
+    <value>Defaults To Chart</value>
+  </data>
+  <data name="ReportDefinition_DefinitionId" xml:space="preserve">
+    <value>Definition</value>
+  </data>
+  <data name="ReportDefinition_Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="ReportDefinition_IsRequired" xml:space="preserve">
+    <value>Is Required</value>
+  </data>
+  <data name="ReportDefinition_Key" xml:space="preserve">
+    <value>Key</value>
+  </data>
+  <data name="ReportDefinition_Measures" xml:space="preserve">
+    <value>Measures</value>
+  </data>
+  <data name="ReportDefinition_OrderBy" xml:space="preserve">
+    <value>Order By</value>
+  </data>
+  <data name="ReportDefinition_OrderDirection" xml:space="preserve">
+    <value>Order Direction</value>
+  </data>
+  <data name="ReportDefinition_OrderDirection_asc" xml:space="preserve">
+    <value>Ascending</value>
+  </data>
+  <data name="ReportDefinition_OrderDirection_desc" xml:space="preserve">
+    <value>Descending</value>
+  </data>
+  <data name="ReportDefinition_Parameters" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="ReportDefinition_Path" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="ReportDefinition_Rows" xml:space="preserve">
+    <value>Rows</value>
+  </data>
+  <data name="ReportDefinition_Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="ReportDefinition_ShowColumnsTotal" xml:space="preserve">
+    <value>Show Columns Total</value>
+  </data>
+  <data name="ReportDefinition_ShowRowsTotal" xml:space="preserve">
+    <value>Show Rows Total</value>
+  </data>
+  <data name="ReportDefinition_Top" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="ReportDefinition_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="ReportDefinition_Type_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="ReportDefinition_Type_Summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="ReportDefinitions" xml:space="preserve">
+    <value>Report Definitions</value>
+  </data>
   <data name="RequiredAttribute" xml:space="preserve">
     <value>The {0} field is required.</value>
   </data>
@@ -981,6 +1140,9 @@
   </data>
   <data name="ResetYourPassword" xml:space="preserve">
     <value>Reset your password</value>
+  </data>
+  <data name="Resource" xml:space="preserve">
+    <value>Resource</value>
   </data>
   <data name="Resource_AreaUnit" xml:space="preserve">
     <value>Area Unit</value>
@@ -1024,8 +1186,17 @@
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>Volume Unit</value>
   </data>
+  <data name="ResourceClassification" xml:space="preserve">
+    <value>Resource Classification</value>
+  </data>
   <data name="ResourceClassification_IsLeaf" xml:space="preserve">
     <value>Is Leaf</value>
+  </data>
+  <data name="ResourceClassifications" xml:space="preserve">
+    <value>Resource Classifications</value>
+  </data>
+  <data name="Resources" xml:space="preserve">
+    <value>Resources</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>Role</value>
@@ -1108,6 +1279,9 @@
   <data name="SignOutMessage0" xml:space="preserve">
     <value>Would you like to sign out of {0}?</value>
   </data>
+  <data name="SortKey" xml:space="preserve">
+    <value>Sort Key</value>
+  </data>
   <data name="SqlDatabase_DatabaseName" xml:space="preserve">
     <value>Database Name</value>
   </data>
@@ -1155,6 +1329,9 @@
   </data>
   <data name="TheExternalSignInWasRemoved" xml:space="preserve">
     <value>The external sign-in was removed.</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
   </data>
   <data name="TitleSingular" xml:space="preserve">
     <value>Singular Name</value>

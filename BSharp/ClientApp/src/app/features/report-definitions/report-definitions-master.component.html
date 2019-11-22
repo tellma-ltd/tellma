@@ -1,0 +1,52 @@
+<b-master collection="ReportDefinition" [mode]="mode" [masterCrumb]="'ReportDefinitions' | translate"
+    [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+    selectDefault="State,Type" selectForTiles="Title,Title2,Title3,Description,Description2,Description3" theme="dark"
+    [inactiveFilter]="'State ne \'Archived\''" [multiselectActions]="[
+            { template: edit, action: onEdit, canAction: canUpdateState, actionTooltip: updateStateTooltip },
+            { template: deploy, action: onDeploy, canAction: canUpdateState, actionTooltip: updateStateTooltip },
+            { template: archive, action: onArchive, canAction: canUpdateState, actionTooltip: updateStateTooltip }
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            'State' : [
+              { template: draft, expression: 'State eq \'Draft\''},
+              { template: deployed, expression: 'State eq \'Deployed\''},
+              { template: archived, expression: 'State eq \'Archived\''}
+            ]
+          }">
+</b-master>
+
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+    <div class="d-flex justify-content-between">
+        <span
+            class="d-block text-truncate">{{ ws.getMultilingualValue('ReportDefinition', id, 'Title') || ('Untitled' | translate) }}</span>
+    </div>
+    <div class="d-flex justify-content-between mt-1 small">
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('ReportDefinition', id, 'Description') }}</span>
+        <b-auto-cell collection="ReportDefinition" path="State" [entity]="c[id]"></b-auto-cell>
+    </div>
+</ng-template>
+
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'ReportDefinition' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+    <span class="text-truncate">
+        <b-auto-cell collection="ReportDefinition" [entity]="c[id]"></b-auto-cell>
+    </span>
+</ng-template>
+
+<!-- Multiselect Actions -->
+<ng-template #edit> {{ 'Edit' | translate }} </ng-template>
+<ng-template #deploy> {{ 'Deploy' | translate }} </ng-template>
+<ng-template #archive> {{ 'Archive' | translate }} </ng-template>
+
+
+<!-- Filter Options -->
+<ng-template #draft> {{ 'Definition_State_Draft' | translate }} </ng-template>
+<ng-template #deployed> {{ 'Definition_State_Deployed' | translate }} </ng-template>
+<ng-template #archived> {{ 'Definition_State_Archived' | translate }} </ng-template>

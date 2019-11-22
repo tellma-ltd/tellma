@@ -105,6 +105,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   skipInput: number;
 
   @Input()
+  theme: 'light' | 'dark' = 'light';
+
+  @Input()
   filterDefinition: {
     [groupName: string]: {
       template: TemplateRef<any>,
@@ -843,10 +846,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     const s = this.state;
     if (s.masterStatus === MasterStatus.loaded) {
       // If the data is loaded, just count the data
-      return Math.max(s.skip + s.masterIds.length, 0);
+      return Math.min(s.skip + s.masterIds.length, s.total);
     } else {
       // Otherwise display the selected count while the data is loading
-      return Math.min(s.skip + s.top, this.total);
+      return Math.min(s.skip + DEFAULT_PAGE_SIZE, s.total);
     }
   }
 
@@ -949,6 +952,14 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   get isPopupMode(): boolean {
     return this.mode === 'popup';
+  }
+
+  get isLight() {
+    return this.theme === 'light';
+  }
+
+  get isDark() {
+    return this.theme === 'dark';
   }
 
   onTreeMode() {

@@ -1,16 +1,17 @@
 <div class="h-100 d-flex flex-column">
   <!-- Breadcrumb and Toolbar -->
-  <div class="row border-bottom bg-white" *ngIf="isScreenMode">
+  <div class="row border-bottom" [class.bg-white]="isLight" [class.b-less-dark]="isDark" [class.b-dark-border]="isDark"
+    [class.b-text-whitish]="isDark" *ngIf="isScreenMode">
 
     <!-- Breadcrumb -->
     <div class="col-12 p-1">
       <ul class="breadcrumb mb-0">
         <li class="breadcrumb-item" style="z-index: 1">
-          <a class="text-primary" [routerLink]="['..']">
+          <a [class.text-primary]="isLight" [class.b-text-whitish]="isDark" [routerLink]="['..']">
             {{ masterCrumb }}
           </a>
         </li>
-        <li class="breadcrumb-item active">
+        <li class="breadcrumb-item active" [class.b-text-whitish]="isDark">
           <ng-container *ngIf="(!showSpinner); else loading">
             <ng-container *ngIf="(!isNew); else new">
               <ng-container *ngIf="!showErrorMessage">
@@ -23,7 +24,8 @@
           <ng-template #loading>{{ 'Loading' | translate }}...</ng-template>
 
           <!-- Dirty Asterisk -->
-          <span class="text-danger b-dirty-asterisk" *ngIf="isDirty">&nbsp;*</span>
+          <span class="text-danger b-dirty-asterisk px-2" [class.text-danger]="isLight" [class.b-light-danger]="isDark"
+            *ngIf="isDirty">*</span>
         </li>
       </ul>
     </div>
@@ -35,7 +37,8 @@
         <!-- Edit -->
         <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="editTooltip" container="body"
           *ngIf="showEdit">
-          <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onEdit()" [disabled]="!canEdit">
+          <button class="btn btn-sm b-toolbar-button" [class.btn-primary]="isLight" [class.b-text-whitish]="isDark"
+            [class.font-weight-normal]="isDark" (click)="onEdit()" [disabled]="!canEdit">
             <fa-icon icon="pen"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Edit' | translate }}</span>
           </button>
@@ -44,8 +47,9 @@
         <!-- Create -->
         <div class="d-inline-block" [placement]="actionsDropdownPlacement" [ngbTooltip]="createTooltip"
           *ngIf="showCreate" container="body">
-          <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCreate()"
-            [disabled]="!canCreate">
+          <button class="btn btn-sm b-toolbar-button"
+            [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+            (click)="onCreate()" [disabled]="!canCreate">
             <fa-icon icon="plus"></fa-icon>
             <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Create' | translate }}</span>
           </button>
@@ -53,16 +57,16 @@
 
         <!-- Actions -->
         <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
-          <button type="button"
-            class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button dropdown-toggle" ngbDropdownToggle>
+          <button type="button" class="btn btn-sm b-toolbar-button dropdown-toggle" ngbDropdownToggle
+            [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }">
             {{ 'Actions' | translate }}
           </button>
-          <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action">
+          <div class="dropdown-menu shadow small" ngbDropdownMenu aria-labelledby="action" [class.b-less-dark]="isDark">
             <ng-container *ngFor="let action of actions">
               <div *ngIf="showAction(action)" [placement]="actionsDropdownPlacement"
                 [ngbTooltip]="actionTooltip(action)" container="body">
-                <button type="button" class="dropdown-item btn-light" (click)="onAction(action)"
-                  [disabled]="!canAction(action)">
+                <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
+                  [class.b-text-whitish]="isDark" (click)="onAction(action)" [disabled]="!canAction(action)">
                   <ng-container *ngTemplateOutlet="action.template"></ng-container>
                 </button>
               </div>
@@ -70,42 +74,46 @@
 
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
               *ngIf="showDelete">
-              <button type="button" class="dropdown-item btn-light" (click)="modalService.open(deleteModal)"
-                [disabled]="!canDelete" *ngIf="showDelete">
+              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
+                [class.b-text-whitish]="isDark" (click)="modalService.open(deleteModal)" [disabled]="!canDelete"
+                *ngIf="showDelete">
                 {{ 'Delete' | translate }}
               </button>
             </div>
 
             <div [placement]="actionsDropdownPlacement" [ngbTooltip]="cloneTooltip" container="body">
-              <button type="button" class="dropdown-item btn-light" *ngIf="showClone" (click)="onClone()"
-                [disabled]="!canClone">
+              <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
+                [class.b-text-whitish]="isDark" *ngIf="showClone" (click)="onClone()" [disabled]="!canClone">
                 {{ 'Clone' | translate }}
               </button>
 
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- Edit Toolbar -->
       <div *ngIf="showEditToolbar">
 
         <!-- Save -->
-        <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onSave()">
+        <button class="btn btn-sm b-toolbar-button" [class.btn-primary]="isLight" [class.b-text-whitish]="isDark"
+          (click)="onSave()">
           <fa-icon icon="save"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate }}
         </button>
 
         <!-- Cancel -->
-        <button class="btn btn-light btn-sm text-primary b-white-button b-toolbar-button" (click)="onCancel()">
+        <button class="btn btn-sm b-toolbar-button"
+          [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+          (click)="onCancel()">
           <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
         </button>
       </div>
 
       <div>
         <!-- Refresh -->
-        <button class="btn btn-light btn-sm b-white-button b-toolbar-button" *ngIf="showRefresh" type="button"
-          title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
+        <button class="btn btn-sm b-toolbar-button"
+          [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+          *ngIf="showRefresh" type="button" title="{{ 'Refresh' | translate }}" (click)="onRefresh()">
           <fa-icon icon="sync-alt"></fa-icon>
         </button>
 
@@ -116,12 +124,14 @@
             <span class="b-vertical-align-middle"> / {{ total | number }}</span>
           </div>
 
-          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-            title="{{ 'Previous' | translate }}" (click)="onPrevious()" [disabled]="!canPrevious">
+          <button class="btn btn-sm b-toolbar-button"
+            [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+            type="button" title="{{ 'Previous' | translate }}" (click)="onPrevious()" [disabled]="!canPrevious">
             <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
           </button>
-          <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-            title="{{ 'Next' | translate }}" (click)="onNext()" [disabled]="!canNext">
+          <button class="btn btn-sm b-toolbar-button"
+            [ngClass]="{ 'btn-light': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+            type="button" title="{{ 'Next' | translate }}" (click)="onNext()" [disabled]="!canNext">
             <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
           </button>
         </ng-container>
@@ -149,7 +159,7 @@
           <ng-template #loading>{{ 'Loading' | translate }}...</ng-template>
 
           <!-- Dirty Asterisk -->
-          <span class="text-danger b-dirty-asterisk" *ngIf="isDirty">&nbsp;*</span>
+          <span class="text-danger b-dirty-asterisk px-2" *ngIf="isDirty">*</span>
         </li>
       </ul>
     </div>
@@ -163,10 +173,10 @@
   <!-- Content Area -->
   <div class="row" [class.b-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode"
     [class.b-rest-of-screen]="isScreenMode">
-    <div class="w-100" [class.b-main-document]="showSidebar">
+    <div class="w-100 h-100" [class.b-main-document]="showSidebar">
 
-      <!-- Document -->
-      <div class="p-0 p-sm-3 d-flex flex-column align-items-center" *ngIf="showDocument">
+      <!-- Document content -->
+      <div class="p-0 p-sm-3 d-flex flex-column align-items-center" *ngIf="showDocument && documentLayout">
         <div class="border bg-white w-100 b-paper">
           <div class="border-bottom" *ngIf="documentHeaderTemplate">
             <ng-container *ngTemplateOutlet="documentHeaderTemplate;context: { model: activeModel, isEdit: isEdit }">
@@ -185,6 +195,12 @@
           </div>
         </div>
       </div>
+
+      <!-- Full screen content -->
+      <ng-container *ngIf="showDocument && fullScreenLayout">
+        <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, isEdit: isEdit }">
+        </ng-container>
+      </ng-container>
 
       <!-- Spinner -->
       <div class="w-100 mt-3" *ngIf="showSpinner">
@@ -207,11 +223,6 @@
       </ng-container>
     </div>
 
-
-    <!-- TODO: Flat document -->
-<!--     
-        <ng-container *ngTemplateOutlet="documentTemplate;context: { model: activeModel, isEdit: isEdit }">
-          </ng-container> -->
   </div>
 
   <!-- Popup Mode Footer -->
@@ -285,6 +296,7 @@
   </div>
 </ng-template>
 
+<!-- Success Modal -->
 <ng-template #successModal let-modal>
 
   <!-- header -->

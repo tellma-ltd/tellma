@@ -333,39 +333,38 @@ namespace BSharp.Data.Queries
         /// </summary>
         public static string AtomSql(string symbol, string propName, string aggregation)
         {
-            string sqlAggregation = null;
-            switch (aggregation)
-            {
-                case Aggregations.count:
-                    sqlAggregation = "COUNT({0})";
-                    break;
-
-                case Aggregations.dcount:
-                    sqlAggregation = "COUNT(DISTINCT {0})";
-                    break;
-
-                case Aggregations.sum:
-                    sqlAggregation = "SUM({0})";
-                    break;
-
-                case Aggregations.avg:
-                    sqlAggregation = "AVG(CAST({0} AS DECIMAL(18,8)))";
-                    break;
-
-                case Aggregations.min:
-                    sqlAggregation = "MIN({0})";
-                    break;
-
-                case Aggregations.max:
-                    sqlAggregation = "MAX({0})";
-                    break;
-            }
-
             var result = $"[{symbol}].[{propName}]";
 
             // Apply the aggregation if any
-            if (sqlAggregation != null)
+            if(!string.IsNullOrWhiteSpace(aggregation))
             {
+                string sqlAggregation;
+                switch (aggregation)
+                {
+                    case Aggregations.count:
+                        sqlAggregation = "COUNT({0})";
+                        break;
+
+                    case Aggregations.sum:
+                        sqlAggregation = "SUM({0})";
+                        break;
+
+                    case Aggregations.avg:
+                        sqlAggregation = "AVG(CAST({0} AS DECIMAL(18,8)))";
+                        break;
+
+                    case Aggregations.min:
+                        sqlAggregation = "MIN({0})";
+                        break;
+
+                    case Aggregations.max:
+                        sqlAggregation = "MAX({0})";
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Unrcognized aggregation '{aggregation}'");
+                }
+
                 result = string.Format(sqlAggregation, result);
             }
 

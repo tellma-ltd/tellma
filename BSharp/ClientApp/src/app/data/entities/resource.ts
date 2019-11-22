@@ -3,9 +3,10 @@
 import { EntityWithKey } from './base/entity-with-key';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { EntityDescriptor, NavigationPropDescriptor } from './base/metadata';
+import { EntityDescriptor, NavigationPropDescriptor, NumberPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
+import { GENERIC } from './base/constants';
 
 export class ResourceForSave extends EntityWithKey {
     Name: string;
@@ -43,24 +44,30 @@ const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
 let _definitions: DefinitionsForClient;
 let _cache: { [defId: string]: EntityDescriptor } = {};
+let _definitionIds: string[];
 
 export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
     // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
     if (ws.settings !== _settings || ws.definitions !== _definitions) {
         _settings = ws.settings;
         _definitions = ws.definitions;
+        _definitionIds = null;
 
         // clear the cache
         _cache = {};
     }
 
-    const key = definitionId || '_'; // undefined
+    const key = definitionId || GENERIC; // undefined
     if (!_cache[key]) {
+        if (!_definitionIds) {
+            _definitionIds = Object.keys(ws.definitions.Resources);
+        }
         const entityDesc: EntityDescriptor = {
             collection: 'Resource',
             definitionId,
-            titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular') || '???',
-            titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || '???',
+            definitionIds: _definitionIds,
+            titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular') || trx.instant('Resource'),
+            titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || trx.instant('Resources'),
             select: _select,
             apiEndpoint: 'resources/' + (definitionId || ''),
             screenUrl: !!definitionId ? 'resources/' + definitionId : null,
@@ -74,9 +81,9 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                 Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
                 Code: { control: 'text', label: () => trx.instant('Code') },
-                ResourceTypeId: { control: 'text', label: () => trx.instant('Resource_Type') },
+                ResourceTypeId: { control: 'text', label: () => `${trx.instant('Resource_Type')} (${trx.instant('Id')})` },
                 ResourceType: { control: 'navigation', label: () => trx.instant('Resource_Type'), type: 'ResourceType', definition: definitionId, foreignKeyName: 'ResourceTypeId' },
-                ResourceClassificationId: { control: 'number', label: () => trx.instant('Resource_Classification'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ResourceClassificationId: { control: 'number', label: () => `${trx.instant('Resource_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 ResourceClassification: { control: 'navigation', label: () => trx.instant('Resource_Classification'), type: 'ResourceClassification', definition: definitionId, foreignKeyName: 'ResourceClassificationId' },
                 CurrencyId: { control: 'text', label: () => `${trx.instant('Resource_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Resource_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
@@ -122,14 +129,11 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
         // Adjust according to definitions
         const definition = _definitions.Resources[definitionId];
         if (!definition) {
-            if (definitionId !== '<generic>') {
+            if (definitionId !== GENERIC) {
                 // Programmer mistake
                 console.error(`defintionId '${definitionId}' doesn't exist`);
             }
         } else {
-            entityDesc.titleSingular = () => ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular') || '???';
-            entityDesc.titlePlural = () => ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || '???';
-
 
             for (const propName of ['Memo', 'CustomsReference']) {
                 if (!definition[propName + '_Visibility']) {
@@ -149,6 +153,9 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                     const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
                     const defaultLabel = propDesc.label;
                     propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + '_Label') || defaultLabel();
+
+                    const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
+                    idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
                 }
             }
 
@@ -161,6 +168,9 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                     propDesc.definition = definition[propName + '_DefinitionId'];
                     const defaultLabel = propDesc.label;
                     propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + '_Label') || defaultLabel();
+
+                    const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
+                    idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
                 }
             }
         }

@@ -40,6 +40,8 @@ import { Account } from './entities/account';
 import { GetChildrenArguments } from './dto/get-children-arguments';
 import { GetAggregateArguments } from './dto/get-aggregate-arguments';
 import { GetAggregateResponse } from './dto/get-aggregate-response';
+import { UpdateStateArguments } from './dto/update-state-arguments';
+import { ReportDefinition } from './entities/report-definition';
 
 @Injectable({
   providedIn: 'root'
@@ -118,6 +120,42 @@ export class ApiService {
     return {
       activate: this.activateFactory<AccountType>('account-types', cancellationToken$),
       deactivate: this.deactivateFactory<AccountType>('account-types', cancellationToken$)
+    };
+  }
+
+  // TODO
+  public reportDefinitionsApi(cancellationToken$: Observable<void>) {
+    return {
+      updateState: (ids: (string | number)[], args: UpdateStateArguments) => {
+        const paramsArray: string[] = [`state=${encodeURIComponent(args.state)}`];
+
+        if (!!args.returnEntities) {
+          paramsArray.push(`returnEntities=${args.returnEntities}`);
+        }
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${args.expand}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appconfig.apiAddress + `api/report-definitions/update-state?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<EntitiesResponse<ReportDefinition>>(url, ids, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            this.showRotator = false;
+            const friendlyError = this.friendly(error);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      }
     };
   }
 
@@ -582,7 +620,7 @@ export class ApiService {
 
     // Note: cache=true instructs the HTTP interceptor to not add cache-busting parameters
     const url = appconfig.apiAddress + `api/${endpoint}?imageId=${imageId}`;
-    const obs$ = this.http.get(url, { responseType: 'blob', observe : 'response' }).pipe(
+    const obs$ = this.http.get(url, { responseType: 'blob', observe: 'response' }).pipe(
       map(res => {
         return { image: res.body, imageId: res.headers.get('x-image-id') };
       }),

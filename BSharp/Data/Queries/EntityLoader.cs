@@ -93,12 +93,11 @@ namespace BSharp.Data.Queries
 
                 // In case we are dealing with an aggregate query, we store the definitions of the dynamic properties here
                 var dynamicProps = new List<DynamicPropInfo>();
-                bool isAggregate = false;
                 bool isFirstRow = false;
 
                 // This method hydrates the simple properties of an entity from the reader 
                 // (whether a normal or a dynamic entity) as per the specifications in entityDef
-                void HydrateProperties(SqlDataReader reader, Entity entity, ColumnMapTree entityDef)
+                void HydrateProperties(SqlDataReader reader, Entity entity, DynamicEntity root, ColumnMapTree entityDef)
                 {
                     foreach (var (propInfo, index, aggregation) in entityDef.Properties)
                     {
@@ -116,11 +115,15 @@ namespace BSharp.Data.Queries
                                 dbValue = dbValue.ToString()[0]; // gets the char
                             }
 
-                            if (entity is DynamicEntity dynamicEntity)
+                            // The value goes in the root dynamic entity in one of 3 cases:
+                            // 1 - The current level does not have an Id
+                            // 2 - The current level is the root in an aggregate query
+                            // 3 - The current property has an aggregation
+                            if (entityDef.IsDynamicEntity || aggregation != null)
                             {
                                 // The propertyNameMap was populated as soon as the ColumnMapTree was created
                                 string propName = DynamicPropertyName(entityDef.Path, propInfo.Name, aggregation);
-                                dynamicEntity[propName] = dbValue;
+                                root[propName] = dbValue;
 
                                 if (isFirstRow)
                                 {
@@ -150,18 +153,12 @@ namespace BSharp.Data.Queries
                 // 1 - Either a proper EntityWithKey, if the entity definition contains an Id index
                 // 2 - Or a Fact Entity (without Id), if the entity defintion does not contain an Id index
                 // 3 - Or a DynamicEntity (a dictionary), if the entity defintion does not contain an Id index and this is an aggregate query
-                Entity AddEntity(SqlDataReader reader, ColumnMapTree entityDef, DynamicEntity dynamicEntity = null)
+                Entity AddEntity(SqlDataReader reader, ColumnMapTree entityDef, DynamicEntity dynamicEntity)
                 {
-                    if (isAggregate && !entityDef.IdExists)
+                    if (entityDef.IsDynamicEntity)
                     {
-                        // Either we have an aggregate query or the result comes from a fact table
-                        // either way, it is not to be added to the allEntities collection
-
-                        // This level is not Entityable and needs to be populated in a dynamic entity
-                        dynamicEntity = dynamicEntity ?? new DynamicEntity();
-
-                        // Hydrate the properties
-                        HydrateProperties(reader, dynamicEntity, entityDef);
+                        // Hydrate the properties in the dynamic entity
+                        HydrateProperties(reader, dynamicEntity, dynamicEntity, entityDef);
 
                         foreach (var subEntityDef in entityDef.Children)
                         {
@@ -238,13 +235,13 @@ namespace BSharp.Data.Queries
                         if (!isHydrated)
                         {
                             // Hydrate the properties
-                            HydrateProperties(reader, entity, entityDef);
+                            HydrateProperties(reader, entity, dynamicEntity, entityDef);
                         }
 
                         // Recursively call the next level down
                         foreach (var subEntityDef in entityDef.Children)
                         {
-                            AddEntity(reader, subEntityDef);
+                            AddEntity(reader, subEntityDef, dynamicEntity);
                         }
 
                         return entity;
@@ -262,11 +259,11 @@ namespace BSharp.Data.Queries
                         foreach (var statement in statements)
                         {
                             isFirstRow = true;
-                            isAggregate = statement.IsAggregate;
+                            var isAggregate = statement.IsAggregate;
                             var list = results[statement.Query];
 
                             // Group the column map by the path (which represents the target entity)
-                            var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap);
+                            var entityDef = ColumnMapTree.Build(statement.ResultType, statement.ColumnMap, isAggregate);
 
                             // Sanity checking: if this isn't an aggregate query, 
                             if (!isAggregate && entityDef.Children.Any(e => !e.IdExists))
@@ -278,7 +275,8 @@ namespace BSharp.Data.Queries
                             // Loop over the result from the result set
                             while (await reader.ReadAsync())
                             {
-                                var record = AddEntity(reader, entityDef);
+                                var dynamicEntity = isAggregate ? new DynamicEntity() : null;
+                                Entity record = AddEntity(reader, entityDef, dynamicEntity);
                                 list.Add(record);
                                 isFirstRow = false;
                             }
@@ -289,7 +287,7 @@ namespace BSharp.Data.Queries
                                 result = list;
 
                                 // Assign the dynamicProps list of property metadata to every DynamicEntity
-                                if (isAggregate && !entityDef.IdExists)
+                                if (entityDef.IsDynamicEntity)
                                 {
                                     result.ForEach(e => ((DynamicEntity)e).Properties = dynamicProps);
                                 }
@@ -551,11 +549,19 @@ namespace BSharp.Data.Queries
             public IEnumerable<ColumnMapTree> Children { get => Values; }
 
             /// <summary>
+            /// In Aggregte queries this property is true for levels that are either:
+            /// (1) The root (2) A level that lacks an original Id (not entityable)
+            /// Properties in such levels are set on the root dynamic entity not an entity
+            /// representing the current level so it's precomputed for efficiency
+            /// </summary>
+            public bool IsDynamicEntity { get; set; }
+
+            /// <summary>
             /// Takes a root type and a bunch of paths and constructs the entire <see cref="ColumnMapTree"/> which is useful
             /// for efficiently hydrating Entities and dynamic results from the SQL query result,
             /// a single tree is associated with a single SQL select statement
             /// </summary>
-            public static ColumnMapTree Build(Type type, List<SqlStatementColumn> columnMap)
+            public static ColumnMapTree Build(Type type, List<SqlStatementColumn> columnMap, bool isAggregate)
             {
                 var root = new ColumnMapTree { Type = type, Path = new string[0] };
                 for (var i = 0; i < columnMap.Count; i++)
@@ -563,7 +569,7 @@ namespace BSharp.Data.Queries
                     var columnInfo = columnMap[i];
                     var path = columnInfo.Path;
                     var propName = columnInfo.Property;
-                    var aggregation = columnInfo.Aggregation;
+                    var aggregation = string.IsNullOrWhiteSpace(columnInfo.Aggregation) ? null : columnInfo.Aggregation;
                     var currentTree = root;
 
                     for (int j = 0; j < path.Count; j++)
@@ -582,17 +588,24 @@ namespace BSharp.Data.Queries
                             currentTree[step] = new ColumnMapTree
                             {
                                 Type = prop.PropertyType,
-                                Path = new ArraySegment<string>(path.Array, path.Offset, j + 1)
+                                Path = new ArraySegment<string>(path.Array, path.Offset, j + 1),
+                                IsDynamicEntity = true // Unless an original Id appears (not one that is acting as a foreign key)
                             };
                         }
 
                         currentTree = currentTree[step];
                     }
 
-                    if (propName == "Id" && string.IsNullOrWhiteSpace(aggregation) && currentTree.Type.IsSubclassOf(typeof(EntityWithKey)))
+                    // The Id of the root level in an aggregate query is treated and added like the other properties, not through IdIndex
+                    // (1) There is no added optimization when putting it in IdIndex (since we never touch the same dynamic entity on 2 different runs of the creation/hydration loop)
+                    // (2) For dynamic entity there is logic to add every property to a collection to mimic reflection, this logic becomes simpler when we leave the Id as a regular property here
+                    // Also to flag IsDynamicEntity = false we require that the Id column is original rather then merely added as a foreign key in one-to-one relationships
+                    bool isAggregationRoot = isAggregate && root == currentTree;
+                    if (!isAggregationRoot && propName == "Id" && columnInfo.IsOriginal && string.IsNullOrWhiteSpace(aggregation) && currentTree.Type.IsSubclassOf(typeof(EntityWithKey)))
                     {
                         // This IdIndex is only set for Entityable path terminals
                         currentTree.IdIndex = i;
+                        currentTree.IsDynamicEntity = false;
                     }
                     else
                     {
@@ -600,6 +613,9 @@ namespace BSharp.Data.Queries
                         currentTree.Properties.Add((propInfo, i, aggregation));
                     }
                 }
+
+                // Set this on the root to true if this is an aggregate query
+                root.IsDynamicEntity = isAggregate;
 
                 // Ensures consistency of Ids
                 ValidateIds(root);
@@ -610,7 +626,6 @@ namespace BSharp.Data.Queries
 
             /// <summary>
             /// Ensures that if a parent has Id, that the children do as well, if this fails it exposes a programmer mistake
-            /// Also ensures that aggregations are forbidden anywhere on a subtree that has Ids
             /// </summary>
             private static void ValidateIds(ColumnMapTree currentTree, bool parentIdExists = false)
             {
@@ -620,15 +635,9 @@ namespace BSharp.Data.Queries
                     throw new InvalidOperationException($"The level '{string.Join("/", currentTree.Path)}' of type '{currentTree.Type.Name}' is missing its Id");
                 }
 
-                if (currentTree.IdExists && currentTree.Properties.Any(e => !string.IsNullOrWhiteSpace(e.Aggregation)))
-                {
-                    // Developer mistake
-                    throw new InvalidOperationException($"The level '{string.Join("/", currentTree.Path)}' of type '{currentTree.Type.Name}' has an Id and also one or more aggregations");
-                }
-
+                bool currentIdExists = currentTree.IdExists;
                 foreach (var childTree in currentTree.Children)
                 {
-                    bool currentIdExists = currentTree.IdExists;
                     ValidateIds(childTree, currentIdExists);
                 }
             }

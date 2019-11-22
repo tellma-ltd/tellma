@@ -33,11 +33,6 @@ export class CurrenciesMasterComponent extends MasterBaseComponent {
     return this.workspace.current;
   }
 
-  public unitTypeLookup(value: string): string {
-    const descriptor = metadata_Currency(this.ws, this.translate, null).properties.UnitType as ChoicePropDescriptor;
-    return descriptor.format(value);
-  }
-
   public onActivate = (ids: (number | string)[]): Observable<any> => {
     const obs$ = this.currenciesApi.activate(ids, { returnEntities: true, expand: this.expand }).pipe(
       tap(res => addToWorkspace(res, this.workspace))

@@ -26,6 +26,8 @@ export interface DropdownAction {
   showAction?: (model: EntityForSave) => boolean;
 }
 
+export type DocumentLayout = 'document' | 'full-screen';
+
 @Component({
   selector: 'b-details',
   templateUrl: './details.component.html'
@@ -68,6 +70,9 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   @Input() // popup: only the title and the document are visible
   mode: 'popup' | 'screen' = 'screen';
 
+  @Input() // determines the shape of the document
+  layout: DocumentLayout = 'document';
+
   // (collection, definition, idString) represent the identity of an abstract "instance" of this screen
   // so when they change it will be as if a screen closed and another screen opened from the point
   // of view of the user, for performance reasons Angular does not destroy and recreate the component
@@ -83,6 +88,9 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   @Input()
   idString: string;
+
+  @Input()
+  theme: 'light' | 'dark' = 'light';
 
   @Output()
   saved = new EventEmitter<number | string>();
@@ -467,6 +475,14 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     return !this.isEdit;
   }
 
+  get documentLayout(): boolean {
+    return this.layout === 'document';
+  }
+
+  get fullScreenLayout(): boolean {
+    return this.layout === 'full-screen';
+  }
+
   get isNew() {
     return this.idString === 'new';
   }
@@ -486,6 +502,14 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   get isPopupMode() {
     return this.mode === 'popup';
+  }
+
+  get isLight() {
+    return this.theme === 'light';
+  }
+
+  get isDark() {
+    return this.theme === 'dark';
   }
 
   get showViewToolbar(): boolean {

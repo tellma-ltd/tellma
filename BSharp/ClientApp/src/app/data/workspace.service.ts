@@ -13,7 +13,7 @@ import { ResourceClassification } from './entities/resource-classification';
 import { Subject, Observable } from 'rxjs';
 import { Agent } from './entities/agent';
 import { User } from './entities/user';
-import { DefinitionsForClient, Aggregation, ReportDefinitionForClient } from './dto/definitions-for-client';
+import { DefinitionsForClient, ReportDefinitionForClient } from './dto/definitions-for-client';
 import { Lookup } from './entities/lookup';
 import { Currency } from './entities/currency';
 import { Resource } from './entities/resource';
@@ -22,8 +22,8 @@ import { Action } from './views';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
 import { PropDescriptor } from './entities/base/metadata';
-import { isSpecified } from './util';
 import { Entity } from './entities/base/entity';
+import { Aggregation, ReportDefinition } from './entities/report-definition';
 
 export enum MasterStatus {
 
@@ -203,6 +203,7 @@ export class TenantWorkspace {
   AccountClassification: EntityWorkspace<AccountClassification>;
   AccountType: EntityWorkspace<AccountType>;
   Account: EntityWorkspace<Account>;
+  ReportDefinition: EntityWorkspace<ReportDefinition>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -225,6 +226,7 @@ export class TenantWorkspace {
     this.AccountClassification = new EntityWorkspace<AccountClassification>();
     this.AccountType = new EntityWorkspace<AccountType>();
     this.Account = new EntityWorkspace<Account>();
+    this.ReportDefinition = new EntityWorkspace<ReportDefinition>();
 
     this.notifyStateChanged();
   }
@@ -470,6 +472,7 @@ export interface MeasureCell {
 export class ReportStore {
   definition: ReportDefinitionForClient;
   skip = 0;
+  top = 0;
   total = 0;
   reportStatus: ReportStatus;
   errorMessage: string;
@@ -532,7 +535,7 @@ export class ReportStore {
   currentLangForMulti: string;
 }
 
-export const DEFAULT_PAGE_SIZE = 25;
+export const DEFAULT_PAGE_SIZE = 15;
 
 export class MasterDetailsStore {
 

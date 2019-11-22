@@ -2,7 +2,7 @@
     <div class="row border-bottom bg-white">
 
         <!-- Breadcrumb -->
-        <div class="col-12 p-1">
+        <div class="col-12 p-1" *ngIf="!!title">
             <ul class="breadcrumb mb-0">
                 <li class="breadcrumb-item active">
                     {{ title }}
@@ -106,41 +106,40 @@
             </div>
 
             <!-- Right Buttons -->
-            <div>
-                <!-- Report View Toggle -->
-                <div *ngIf="showReportViewToggle" class="btn-group btn-group-toggle b-toolbar-button">
-                    <label *ngFor="let view of views" class="btn btn-sm btn-light b-pointer"
-                        [class.active]="isActive(view.view)" title="{{ view.label | translate }}"
-                        (click)="onView(view.view)">
-                        <input type="radio" name="{{view.view}}">
-                        <fa-icon [icon]="view.icon"></fa-icon>
-                    </label>
+            <!-- Paging -->
+            <div *ngIf="showPagingControls">
+                <div class="d-inline small mr-2 ml-2">
+                    <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> -
+                        <span>{{ to | number }}</span>
+                    </span>
+                    <span class="b-vertical-align-middle"> / {{ total | number }}</span>
                 </div>
-
-                <!-- Paging -->
-                <ng-container *ngIf="showPagingControls">
-                    <div class="d-inline small mr-2 ml-2">
-                        <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> -
-                            <span>{{ to | number }}</span>
-                        </span>
-                        <span class="b-vertical-align-middle"> / {{ total | number }}</span>
-                    </div>
-                    <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-                        title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
-                        <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
-                    </button>
-                    <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-                        title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
-                        <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
-                    </button>
-                </ng-container>
+                <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+                    title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                    <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+                </button>
+                <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+                    title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+                    <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                </button>
             </div>
+
+            <!-- Report View Toggle -->
+            <div *ngIf="showReportViewToggle" class="btn-group btn-group-toggle b-toolbar-button">
+                <label *ngFor="let view of views" class="btn btn-sm btn-light b-pointer"
+                    [class.active]="isActive(view.view)" title="{{ view.label | translate }}"
+                    (click)="onView(view.view)">
+                    <input type="radio" name="{{view.view}}">
+                    <fa-icon [icon]="view.icon"></fa-icon>
+                </label>
+            </div>
+
         </div>
     </div>
-    <div class="row b-rest-of-screen">
-        <b-report-results class="h-100 w-100" *ngIf="areAllRequiredParamsSpecified"
-            [definition]="definition" [arguments]="immutableArguments" [view]="view" [refresh]="refresh"
-            [stateKey]="stateKey" [skip]="skip"></b-report-results>
+    <div class="row b-rest-of-screen" [style.overflow]="overflow">
+        <b-report-results class="h-100 w-100" *ngIf="areAllRequiredParamsSpecified" [definition]="definition"
+            [arguments]="immutableArguments" [view]="view" [refresh]="refresh" [state]="state" [mode]="mode">
+        </b-report-results>
         <div class="w-100 p-3 px-4" *ngIf="!areAllRequiredParamsSpecified">
             <fa-icon icon="info-circle"></fa-icon>
             &nbsp;

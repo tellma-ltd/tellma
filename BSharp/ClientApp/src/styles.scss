@@ -3,16 +3,21 @@ $enable-rounded: false; // Square corners
 $font-size-base: 0.9rem; // The default font (1rem) is too big
 // $font-family-base: Calibri, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-650: #5a636a;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
 $primary: #17a2b8; // Classy cyan
+$secondary: #6c757d;
 $dark-primary: #008784;
 $info: #007bff; // Bright blue
 
 $white: #ffffff;
-$whitish: #fafeff;
+$whitish: rgba(255, 255, 255, 0.75);
 $primary-disabled: #69c3d1;
-
-$gray-800: #343a40;
-$gray-900: #212529;
 
 // customize bootstrap colors and then import bootstrap
 @import "node_modules/bootstrap/scss/bootstrap";
@@ -190,8 +195,27 @@ ngb-tabset li.nav-item .small {
   background-color: transparent;
 }
 
+.b-less-dark .breadcrumb-item + .breadcrumb-item::before {
+  color: $whitish;
+}
+
 .form-control {
   transition: none;
+}
+
+.table-dark {
+  color: $whitish;
+}
+
+.btn-dark {
+  background-color: $gray-700;
+  border-color: $gray-700;
+}
+
+.btn-dark:hover,
+.btn-dark.active {
+  background-color: $gray-800 !important;
+  border-color: $gray-800 !important;
 }
 
 ///////////////////////////////// BSharp /////////////////////////////////
@@ -287,6 +311,10 @@ $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
 
 .b-tile:hover {
   box-shadow: 2px 2px 2px -2px dimgrey;
+}
+
+.b-less-dark.b-tile:hover {
+  box-shadow: 2px 2px 2px -2px black;
 }
 
 .b-tile-container {
@@ -398,6 +426,207 @@ input.b-h2,
   margin-bottom: -1px;
 }
 
+.b-studio-input {
+  padding: 0.15rem 0.45rem !important;
+  height: auto;
+  border: 1px solid $gray-800;
+  color: white !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+  background-color: $secondary !important;
+}
+
+.b-less-dark {
+  background-color: $gray-700;
+}
+
+.b-less-dark .b-input {
+  color: $whitish !important;
+}
+
+.b-less-dark .b-input::placeholder {
+  color: darkgrey;
+}
+
+.b-less-dark .b-input::-webkit-input-placeholder {
+  color: darkgrey;
+}
+
+.b-less-dark .b-input:-ms-input-placeholder {
+  color: darkgrey;
+}
+
+.b-much-less-dark {
+  background-color: $gray-600;
+  color: $whitish;
+}
+
+.b-studio-input::placeholder {
+  color: darkgrey;
+}
+
+.b-studio-input::-webkit-input-placeholder {
+  color: darkgrey;
+}
+
+.b-studio-input:-ms-input-placeholder {
+  color: darkgrey;
+}
+
+.b-studio-source-area {
+  overflow-y: auto;
+  color: white !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+}
+
+.b-icon-selector {
+  height: 6rem;
+  overflow-y: auto;
+  border: 1px solid $gray-800;
+  color: white !important;
+  background-color: $secondary !important;
+}
+
+.b-icon-selector-icon {
+  width: 32px;
+  border: 1px solid $secondary;
+}
+
+.b-icon-selector-icon:hover {
+  background-color: $gray-650;
+  // border-color: $gray-700;
+}
+
+.b-icon-selector-icon.b-highlighted {
+  background-color: $gray-650;
+  border-color: $gray-700;
+}
+
+.b-studio-drop-area {
+  min-height: 5rem;
+  overflow-y: auto;
+  border: 1px dashed $gray-800;
+  color: white !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+  background-color: $secondary !important;
+}
+
+.b-studio-source-row {
+  padding: 0.15rem !important;
+  margin: 0.15rem;
+  height: auto;
+  background-color: $gray-650 !important;
+  color: white !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+  border: 1px solid $gray-700;
+}
+
+.b-studio-drop-row {
+  padding: 0.15rem 0.15rem 0.15rem 0.45rem !important;
+  margin: 0.15rem;
+  height: auto;
+  background-color: $gray-650 !important;
+  color: white !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+  border: 1px solid $gray-700;
+  font-size: 80%;
+}
+
+.b-studio-section-header {
+  border-bottom: 1px solid $gray-800;
+  border-top: 1px solid $gray-800;
+  margin-top: -1px;
+  padding: 0.5rem;
+  background-color: $gray-700;
+}
+.b-studio-section-header:hover {
+  background-color: $gray-650;
+}
+
+.b-dark-border {
+  border-color: $gray-800 !important;
+}
+
+$studio-pane-width: 13.5rem;
+$studio-pane-border: 1px;
+$slightly-less-white: rgba(255, 255, 255, 0.9);
+
+.b-studio-pane {
+  width: $studio-pane-width;
+  min-width: $studio-pane-width;
+  color: $whitish !important;
+  border-right: $studio-pane-border solid $gray-900;
+  border-left: 0 solid $gray-900;
+}
+
+.b-collapsed-studio-pane {
+  color: $whitish !important;
+  border-right: $studio-pane-border solid $gray-900;
+}
+
+.b-collapsed-studio-pane span {
+  -ms-writing-mode: tb-rl;
+  -webkit-writing-mode: vertical-rl;
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+}
+
+.b-rtl {
+  .b-studio-pane {
+    border-right-width: 0px;
+    border-left-width: $studio-pane-border;
+  }
+
+  .b-collapsed-studio-pane {
+    border-right-width: 0px;
+    border-left-width: $studio-pane-border;
+  }
+
+  .b-studio-source-row {
+    padding: 0.15rem 0.45rem 0.15rem 0.15rem !important;
+  }
+
+  .b-studio-drop-row {
+    padding: 0.15rem 0.45rem 0.15rem 0.15rem !important;
+  }
+}
+
+.b-studio-area-watermark {
+  text-shadow: none;
+  color: darkgrey;
+}
+
+.b-dark-theme .modal-dialog,
+.b-dark-theme .modal-content {
+  background-color: $gray-900;
+}
+
+.cdk-drop-list-dragging .b-drag-label {
+  display: none;
+}
+
+.b-text-whitish {
+  color: $whitish !important;
+}
+
+button.b-text-whitish:hover,
+li.b-text-whitish:hover {
+  color: $white !important;
+}
+
+// this is the placeholder area while dragging a studio grid
+.b-studio-drop-area .cdk-drag-placeholder {
+  opacity: 0.5;
+}
+
+.b-studio-drop-row.b-draggable,
+.b-studio-source-row.b-draggable {
+  cursor: move;
+}
+
+.b-no-resize {
+  resize: none;
+}
+
 .table tr .b-input {
   border-bottom-width: 0px;
 }
@@ -454,7 +683,7 @@ input::-ms-clear {
 $flow-state-active: #f1f2f3; // #eaebec; // $hover-highlight-color;
 $flow-border: $gray-300;
 $flow-state: white;
-$flow-text: #6c757d;
+$flow-text: $secondary;
 
 .b-flow-chart {
   overflow: hidden;
@@ -584,6 +813,75 @@ $flow-text: #6c757d;
   }
 }
 
+// Dark themed flow state
+
+$dark-flow-state-active: $gray-700;
+$dark-flow-border: $gray-800;
+$dark-flow-state: transparent;
+$dark-flow-text: $whitish;
+
+.b-dark {
+  .b-flow-chart {
+    border-left-color: $dark-flow-border;
+  }
+
+  .b-flow-chart div span {
+    color: $dark-flow-text;
+    background-color: $dark-flow-state;
+  }
+
+  .b-flow-chart div span::after {
+    border-left-color: $dark-flow-state;
+  }
+
+  .b-flow-chart div span::before {
+    border-left-color: $dark-flow-border;
+    margin-left: 0px;
+  }
+
+  .b-lone-state {
+    border-left-color: $dark-flow-border;
+  }
+
+  .b-lone-state span {
+    color: $dark-flow-text;
+  }
+
+  .b-flow-chart div.active span,
+  .b-lone-state.active {
+    background-color: $dark-flow-state-active;
+  }
+
+  .b-flow-chart div.active span::after {
+    border-left-color: $dark-flow-state-active;
+  }
+
+  .b-rtl {
+    // For RTL state chart
+    .b-flow-chart {
+      border-right-color: $dark-flow-border;
+    }
+
+    .b-flow-chart div span::after {
+      border-right-color: $dark-flow-state;
+    }
+
+    .b-flow-chart div span::before {
+      border-right-color: $dark-flow-border;
+      margin-right: 0px;
+    }
+
+    .b-lone-state {
+      border-left-color: $dark-flow-border;
+      border-right-color: $dark-flow-border;
+    }
+
+    .b-flow-chart div.active span::after {
+      border-right-color: $dark-flow-state-active;
+    }
+  }
+}
+
 // set the layout for the main document and the sidebar
 // on large screens, show them side by side, on smaller
 // screens show them stacked vertically
@@ -669,7 +967,7 @@ th.cdk-drag-placeholder {
 
 .custom-control-label::before {
   background-color: $hover-highlight-color; // light background
-  border: 1px solid #6c757d; // border color
+  border: 1px solid $secondary; // border color
 }
 
 .custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
@@ -682,7 +980,11 @@ th.cdk-drag-placeholder {
 
 // Override the color of the checkbox indicator
 .custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
-  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%2317a2b8' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E");
+}
+//#17a2b8
+.custom-radio .custom-control-input:checked ~ .custom-control-label::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2317a2b8'/%3e%3c/svg%3e");
 }
 
 // center the checkbox
@@ -811,7 +1113,13 @@ div.custom-control.custom-checkbox.b-labelless-checkbox {
 
 // highlights master items that were recently viewed
 div.b-highlight {
+  // light theme
   background-color: rgba(17, 17, 17, 0.05) !important;
+}
+
+div.b-less-dark.b-highlight {
+  // dark theme
+  background-color: rgba(17, 17, 17, 0.25) !important;
 }
 
 @media (min-width: 576px) {
@@ -831,6 +1139,11 @@ tr.b-highlight {
 
 .b-transparent {
   color: transparent;
+  background-color: transparent;
+}
+
+.b-transparent-background {
+  background-color: transparent !important;
 }
 
 .b-details-modal,
@@ -943,7 +1256,7 @@ tr.b-highlight {
 }
 
 .b-navbar-button:disabled {
-  color: #6c757d !important;
+  color: $secondary !important;
   background-color: transparent;
   cursor: unset;
 }
@@ -970,7 +1283,7 @@ tr.b-highlight {
 }
 
 .b-page-title {
-  color: #6c757d;
+  color: $secondary;
   margin-bottom: 1rem;
   font-size: 1.2rem;
 }
@@ -992,7 +1305,7 @@ tr.b-highlight {
 }
 
 .b-menu-item:focus {
-  box-shadow: 0 0 0 0.2rem #343a40;
+  box-shadow: 0 0 0 0.2rem $gray-800;
 }
 
 @media (min-width: 576px) {
@@ -1031,7 +1344,7 @@ tr.b-highlight {
 }
 
 .b-menu-section {
-  color: #6c757d;
+  color: $secondary;
   margin-bottom: 1rem;
   font-size: 1.2rem;
 }
@@ -1056,7 +1369,7 @@ tr.b-highlight {
 }
 
 .b-menu-search-container {
-  color: #6c757d !important;
+  color: $secondary !important;
   display: flex;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.05);
@@ -1105,7 +1418,7 @@ $container-margin: 15px;
 }
 
 .b-companies-search-container {
-  color: #6c757d !important;
+  color: $secondary !important;
   display: flex;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.05);
@@ -1137,12 +1450,14 @@ $container-margin: 15px;
 
 /* Animate items as they're being sorted. */
 .cdk-drop-list-dragging .cdk-drag {
-  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+  // transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
+  transition: none;
 }
 
 /* Animate an item that has been dropped. */
 .cdk-drag-animating {
-  transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
+  // transition: transform 75ms cubic-bezier(0, 0, 0.2, 1);
+  transition: none;
 }
 
 .b-navbar {
@@ -1184,4 +1499,8 @@ h1.b-report-measure {
 h1.b-report-measure:hover {
   color: $dark-primary;
   // text-decoration: underline;
+}
+
+.b-light-danger {
+  color: lightpink !important;
 }

@@ -148,6 +148,7 @@ import { LabelPipe } from './label/label.pipe';
     FormsModule,
     FontAwesomeModule,
     NgxChartsModule,
+    DragDropModule,
 
     // Components & others
     SpinnerComponent,

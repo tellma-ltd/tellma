@@ -1,0 +1,640 @@
+<b-details collection="ReportDefinition" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [masterCrumb]="'ReportDefinitions' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
+    [documentTemplate]="document" layout="full-screen" [actions]="[]" [isInactive]="isInactive" theme="dark">
+
+</b-details>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ getMultilingualValue(model, 'Title', ws) || ('Untitled' | translate) }}</span>
+</ng-template>
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit">
+    <div class="h-100 d-flex flex-drop-row" *ngIf="watchIsEdit(isEdit)">
+
+
+        <!-- Collapsed Definition Editor -->
+        <div class="p-2 b-dark b-text-whitish b-collapsed-studio-pane b-pointer" *ngIf="isEdit && collapseFields"
+            (click)="onToggleFields()">
+            <div class="text-center mb-3">
+                <fa-icon icon="angle-right" [flip]="flipIcon(false)"></fa-icon>
+            </div>
+            <span>{{ 'Fields' | translate }}</span>
+        </div>
+
+        <!-- Fields -->
+        <div class="b-less-dark h-100 flex-column b-studio-pane" [class.d-flex]="isEdit && !collapseFields"
+            [class.d-none]="!isEdit || collapseFields">
+            <div class="py-2 px-3 b-dark b-text-whitish d-flex justify-content-between b-pointer" (click)="onToggleFields()">
+                <span>{{ 'Fields' | translate }}</span>
+                <div class="text-center">
+                    <fa-icon icon="angle-left" [flip]="flipIcon(false)"></fa-icon>
+                </div>
+            </div>
+            <div class="p-2 flex-grow-1 h-100 overflow-auto">
+
+                <!-- Collection -->
+                <div class="form-group">
+                    <label class="small" for="collection">{{ 'ReportDefinition_Collection' | translate }}</label>
+                    <select class="form-control b-studio-input" id="collection" [(ngModel)]="model.Collection"
+                        (ngModelChange)="onDefinitionChange(model)" required>
+                        <option value=""></option>
+                        <option *ngFor="let collection of allCollections" value="{{collection.value}}">
+                            {{ collection.name() }}</option>
+                    </select>
+                </div>
+
+                <!-- Definition -->
+                <div class="form-group" *ngIf="showDefinitionIdSelector(model)">
+                    <label class="small" for="collection">{{ 'ReportDefinition_DefinitionId' | translate }}</label>
+                    <select class="form-control b-studio-input" id="collection" [(ngModel)]="model.DefinitionId"
+                        (ngModelChange)="onDefinitionChange(model)">
+                        <option value=""></option>
+                        <option *ngFor="let defInfo of allDefinitionIds(model)" value="{{defInfo.value}}">
+                            {{ defInfo.name() }}</option>
+                    </select>
+                </div>
+                <hr />
+
+                <!-- Search -->
+                <div class="form-group">
+                    <input class="form-control b-studio-input" style="text-shadow: none;" id="search" type="text"
+                        [(ngModel)]="search" (ngModelChange)="onSearchChanged(model)" autocomplete="off"
+                        [placeholder]="('Search' | translate) + '...'" />
+                </div>
+
+                <!-- Fields List -->
+                <div class="b-studio-source-area" cdkDropList #fields="cdkDropList"
+                    [cdkDropListConnectedTo]="[rows, columns, measures, select]"
+                    (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="allFields(model)"
+                    cdkDropListSortingDisabled>
+                    <ng-container *ngFor="let node of allFields(model); let i = index">
+                        <div class="b-studio-source-row b-draggable" cdkDrag [class.d-none]="!showTreeNode(node)">
+                            <div class="text-truncate d-flex" [style.padding-left]="paddingLeft(node)"
+                                [style.padding-right]="paddingRight(node)">
+                                <!-- Expand button -->
+                                <button class="btn btn-sm m-0 py-0 px-2 border-0 text-white b-pointer b-transparent"
+                                    [style.opacity]="!hasChildren(node) ? 0 : 1" [disabled]="!hasChildren(node)"
+                                    (click)="onExpand(node, i, model)">
+                                    <fa-icon icon="angle-right" [flip]="flipNode(node)" [rotate]="rotateNode(node)">
+                                    </fa-icon>
+                                </button>
+                                <span class="small">{{ node.desc.label() }}</span>
+                            </div>
+                            <!-- <div class="small text-white" *cdkDragPreview>
+                                            {{ node.desc.label() }}
+                                        </div> -->
+                            <div class="b-studio-source-row" *cdkDragPlaceholder>
+                                &nbsp;
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+
+        <!-- Collapsed Definition Editor -->
+        <div class="p-2 b-dark b-text-whitish b-collapsed-studio-pane b-pointer"
+            *ngIf="isEdit && collapseDefinition" (click)="onToggleDefinition()">
+            <div class="text-center mb-3">
+                <fa-icon icon="angle-right" [flip]="flipIcon(false)"></fa-icon>
+            </div>
+            <span>{{ 'Definition' | translate }}</span>
+        </div>
+
+        <!-- Definition Editor -->
+        <div class="b-less-dark h-100 flex-column b-studio-pane" [class.d-flex]="isEdit && !collapseDefinition"
+            [class.d-none]="!isEdit || collapseDefinition">
+
+            <div class="py-2 px-3 b-dark b-text-whitish d-flex justify-content-between b-pointer" (click)="onToggleDefinition()">
+                <span>{{ 'Definition' | translate }}</span>
+                <div class="text-center">
+                    <fa-icon icon="angle-left" [flip]="flipIcon(false)"></fa-icon>
+                </div>
+            </div>
+            <div class="flex-grow-1 overflow-auto">
+                <div class="text-truncate b-studio-section-header b-pointer" (click)="onToggleSection('Data')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Data'))"
+                        [rotate]="rotateIcon(showSection('Data'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Data' | translate }}
+                </div>
+                <div class="p-2" [class.d-none]="!showSection('Data')">
+
+                    <!-- Summary/Details -->
+                    <div class="form-group">
+                        <label class="small d-block">{{ ('ReportDefinition_Type' | translate)}}</label>
+                        <div class="custom-control custom-radio custom-control-inline mx-0">
+                            <input class="custom-control-input" type="radio" name="type" id="type_summary"
+                                value="Summary" [checked]="model.Type === 'Summary'"
+                                (change)="model.Type = 'Summary'; onDefinitionChange(model);">
+                            <label class="custom-control-label"
+                                for="type_summary">{{ 'ReportDefinition_Type_Summary' | translate }}</label>
+                        </div>
+                        &nbsp;&nbsp;
+                        <div class="custom-control custom-radio custom-control-inline mx-0">
+                            <input class="custom-control-input" type="radio" name="type" id="type_details"
+                                value="Details" [checked]="model.Type === 'Details'"
+                                (change)="model.Type = 'Details'; onDefinitionChange(model);">
+                            <label class="custom-control-label"
+                                for="type_details">{{ 'ReportDefinition_Type_Details' | translate }}</label>
+                        </div>
+                    </div>
+
+                    <!-- Rows -->
+                    <div class="form-group" [class.d-none]="model.Type !== 'Summary'">
+                        <label class="small">{{ 'ReportDefinition_Rows' | translate }}</label>
+                        <div class="b-studio-drop-area" cdkDropList #rows="cdkDropList"
+                            [cdkDropListConnectedTo]="[fields, columns, measures]"
+                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getRows(model)">
+
+                            <div class="py-1 px-2 b-drag-label" *ngIf="!getRows(model).length">
+                                <span class="small b-studio-area-watermark">{{ 'DragFieldsHere' | translate }}</span>
+                            </div>
+                            <div class="b-studio-drop-row b-draggable" *ngFor="let dim of getRows(model); let i = index"
+                                cdkDrag>
+                                <div class="d-flex">
+                                    <b-auto-label class="flex-grow-1 text-truncate" [collection]="model.Collection"
+                                        [definition]="model.DefinitionId" [path]="dim.Path"></b-auto-label>
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
+                                        (click)="onConfigureRow(i, model)" [title]="'Configure' | translate">
+                                        <fa-icon icon="cog"></fa-icon>
+                                    </button>
+                                    &nbsp;
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
+                                        (click)="onDeleteRow(i, model)" [title]="'Delete' | translate">
+                                        <fa-icon icon="times"></fa-icon>
+                                    </button>
+                                </div>
+                                <div class="b-studio-drop-row" *cdkDragPlaceholder>
+                                    &zwnj;
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columns -->
+                    <div class="form-group" [class.d-none]="model.Type !== 'Summary'">
+                        <label class="small">{{ 'ReportDefinition_Columns' | translate }}</label>
+                        <div class="b-studio-drop-area" cdkDropList #columns="cdkDropList"
+                            [cdkDropListConnectedTo]="[fields, rows, measures]"
+                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getColumns(model)">
+                            <div class="py-1 px-2 b-drag-label" *ngIf="!getColumns(model).length">
+                                <span class="small b-studio-area-watermark ">{{ 'DragFieldsHere' | translate }}</span>
+                            </div>
+                            <div class="b-studio-drop-row b-draggable"
+                                *ngFor="let dim of getColumns(model); let i = index" cdkDrag>
+                                <div class="d-flex">
+                                    <b-auto-label class="flex-grow-1 text-truncate" [collection]="model.Collection"
+                                        [definition]="model.DefinitionId" [path]="dim.Path"></b-auto-label>
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
+                                        (click)="onConfigureColumn(i, model)" [title]="'Configure' | translate">
+                                        <fa-icon icon="cog"></fa-icon>
+                                    </button>
+                                    &nbsp;
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
+                                        (click)="onDeleteColumn(i, model)" [title]="'Delete' | translate">
+                                        <fa-icon icon="times"></fa-icon>
+                                    </button>
+                                </div>
+                                <div class="b-studio-drop-row" *cdkDragPlaceholder>
+                                    &zwnj;
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Measures -->
+                    <div class="form-group" [class.d-none]="model.Type !== 'Summary'">
+                        <label class="small">{{ 'ReportDefinition_Measures' | translate }}</label>
+                        <div class="b-studio-drop-area" cdkDropList #measures="cdkDropList"
+                            [cdkDropListConnectedTo]="[fields, rows, columns]"
+                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getMeasures(model)">
+                            <div class="py-1 px-2 b-drag-label" *ngIf="!getMeasures(model).length">
+                                <span class="small b-studio-area-watermark">{{ 'DragFieldsHere' | translate }}</span>
+                            </div>
+                            <div class="b-studio-drop-row b-draggable"
+                                *ngFor="let dim of getMeasures(model); let i = index" cdkDrag>
+                                <div class="d-flex">
+                                    <span class="flex-grow-1 text-truncate">
+                                        <b-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
+                                            [path]="dim.Path"></b-auto-label>
+                                        &nbsp;<span
+                                            *ngIf="dim.Aggregation">({{ ( 'ReportDefinition_Aggregation_' + dim.Aggregation) | translate }})</span>
+                                    </span>
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
+                                        (click)="onConfigureMeasure(i, model)" [title]="'Configure' | translate">
+                                        <fa-icon icon="cog"></fa-icon>
+                                    </button>
+                                    &nbsp;
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
+                                        (click)="onDeleteMeasure(i, model)" [title]="'Delete' | translate">
+                                        <fa-icon icon="times"></fa-icon>
+                                    </button>
+                                </div>
+                                <div class="b-studio-drop-row" *cdkDragPlaceholder>
+                                    &zwnj;
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Show Columns Total -->
+                    <div class="custom-control custom-checkbox" [class.d-none]="model.Type !== 'Summary'">
+                        <input type="checkbox" class="custom-control-input" id="showColumnsTotal"
+                            [(ngModel)]="model.ShowColumnsTotal" (ngModelChange)="onDefinitionChange(model)">
+                        <label class="custom-control-label"
+                            for="showColumnsTotal">{{ 'ReportDefinition_ShowColumnsTotal' | translate }}</label>
+                    </div>
+
+                    <!-- Show Rows Total -->
+                    <div class="custom-control custom-checkbox" [class.d-none]="model.Type !== 'Summary'">
+                        <input type="checkbox" class="custom-control-input" id="showRowsTotal"
+                            [(ngModel)]="model.ShowRowsTotal" (ngModelChange)="onDefinitionChange(model)">
+                        <label class="custom-control-label"
+                            for="showRowsTotal">{{ 'ReportDefinition_ShowRowsTotal' | translate }}</label>
+                    </div>
+
+                    <!-- Select -->
+                    <div class="form-group" [class.d-none]="model.Type !== 'Details'">
+                        <label class="small">{{ 'ReportDefinition_Select' | translate }}</label>
+                        <div class="b-studio-drop-area" style="height: 10rem;" cdkDropList #select="cdkDropList"
+                            [cdkDropListConnectedTo]="[fields, rows, columns]"
+                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getSelect(model)">
+                            <div class="py-1 px-2 b-drag-label" *ngIf="!getSelect(model).length">
+                                <span class="small b-studio-area-watermark">{{ 'DragFieldsHere' | translate }}</span>
+                            </div>
+                            <div class="b-studio-drop-row b-draggable"
+                                *ngFor="let dim of getSelect(model); let i = index" cdkDrag>
+                                <div class="d-flex">
+                                    <span class="flex-grow-1 text-truncate">
+                                        <b-auto-label [collection]="model.Collection" [definition]="model.DefinitionId"
+                                            [path]="dim.Path"></b-auto-label>
+                                    </span>
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
+                                        (click)="onConfigureSelect(i, model)" [title]="'Configure' | translate">
+                                        <fa-icon icon="cog"></fa-icon>
+                                    </button>
+                                    &nbsp;
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
+                                        (click)="onDeleteSelect(i, model)" [title]="'Delete' | translate">
+                                        <fa-icon icon="times"></fa-icon>
+                                    </button>
+                                </div>
+                                <div class="b-studio-drop-row" *cdkDragPlaceholder>
+                                    &zwnj;
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order By -->
+                    <div class="form-group" [class.d-none]="model.Type !== 'Details'">
+                        <label class="small" for="orderby">{{ 'ReportDefinition_OrderBy' | translate }}</label>
+                        <input class="form-control b-studio-input" id="orderby" type="text" [(ngModel)]="model.OrderBy"
+                            (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" />
+                    </div>
+
+                    <!-- Top -->
+                    <div class="form-group" [class.d-none]="model.Type !== 'Details'">
+                        <label class="small" for="top">{{ 'ReportDefinition_Top' | translate }}</label>
+                        <input class="form-control b-studio-input" id="top" type="number" [(ngModel)]="model.Top"
+                            (ngModelChange)="onDefinitionChange(model)" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" />
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="text-truncate b-studio-section-header b-pointer" (click)="onToggleSection('Filter')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Filter'))"
+                        [rotate]="rotateIcon(showSection('Filter'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Filter' | translate }}
+                </div>
+                <div class="p-2" [class.d-none]="!showSection('Filter')">
+
+                    <!-- Filter -->
+                    <div class="form-group">
+                        <label class="small" for="filter">{{ 'ReportDefinition_Filter' | translate }}</label>
+                        <textarea class="form-control b-studio-input b-no-resize" rows="4" id="filter" type="text"
+                            [(ngModel)]="model.Filter" (ngModelChange)="onFilterChange(model)"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" autocorrect="off"
+                            autocapitalize="off" spellcheck="false"></textarea>
+                    </div>
+
+                    <!-- Parameters -->
+                    <div class="form-group" *ngIf="!!getParameters(model).length">
+                        <label class="small">{{ 'ReportDefinition_Parameters' | translate }}</label>
+                        <div class="b-studio-drop-area" style="border-style: solid;" cdkDropList
+                            (cdkDropListDropped)="drop($event, model)" [cdkDropListData]="getParameters(model)">
+                            <div class="b-studio-drop-row b-draggable"
+                                *ngFor="let param of getParameters(model); let i = index" cdkDrag>
+                                <div class="d-flex">
+                                    <span class="flex-grow-1 text-truncate">
+                                        <!-- {{ ws.getMultilingualValueImmediate(param, 'Label') || param.Key }} -->
+                                        {{ param.Key }}
+                                    </span>
+                                    <button class="btn btn-sm m-0 py-0 px-1 border-0 text-white b-pointer b-transparent"
+                                        (click)="onConfigureParameter(i, model)" [title]="'Configure' | translate">
+                                        <fa-icon icon="cog"></fa-icon>
+                                    </button>
+                                </div>
+                                <div class="b-studio-drop-row" *cdkDragPlaceholder>
+                                    &zwnj;
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="text-truncate b-studio-section-header b-pointer" (click)="onToggleSection('Chart')"
+                    *ngIf="model.Type === 'Summary'">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Chart'))"
+                        [rotate]="rotateIcon(showSection('Chart'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Chart' | translate }}
+                </div>
+                <div class="p-2" [class.d-none]="!showSection('Chart')" *ngIf="model.Type === 'Summary'">
+
+                    <!-- Chart -->
+                    <div class="form-group">
+                        <label class="small" for="chart">{{ 'ReportDefinition_Chart' | translate }}</label>
+                        <select class="form-control b-studio-input" id="chart" [ngModel]="model.Chart"
+                            (ngModelChange)="onChartChange($event, model)">
+                            <option value=""></option>
+                            <option *ngFor="let chart of allCharts" value="{{chart.value}}">
+                                {{ chart.name() }}</option>
+                        </select>
+                    </div>
+
+                    <!-- Defaults to Chart -->
+                    <div class="custom-control custom-checkbox" *ngIf="!!model.Chart">
+                        <input type="checkbox" class="custom-control-input" id="defaultsToChart"
+                            [(ngModel)]="model.DefaultsToChart"
+                            (ngModelChange)="onDefinitionChange(model, 'DefaultsToChart')">
+                        <label class="custom-control-label"
+                            for="defaultsToChart">{{ 'ReportDefinition_DefaultsToChart' | translate }}</label>
+                    </div>
+                </div>
+
+                <!-- Title Section -->
+                <div class="text-truncate b-studio-section-header b-pointer" (click)="onToggleSection('Title')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('Title'))"
+                        [rotate]="rotateIcon(showSection('Title'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'Title' | translate }}
+                </div>
+                <div class="p-2" [class.d-none]="!showSection('Title')">
+                    <!-- Title -->
+                    <div class="form-group">
+                        <label class="small" for="title">{{ ('Title' | translate) + ws.primaryPostfix }}</label>
+                        <input class="form-control b-studio-input" id="title" type="text" [(ngModel)]="model.Title"
+                            (ngModelChange)="onDefinitionChange(model, 'Title')" [ngModelOptions]="{ updateOn: 'blur' }"
+                            autocomplete="off" />
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label class="small" for="desc">{{ ('Description' | translate) + ws.primaryPostfix }}</label>
+                        <textarea class="form-control b-studio-input b-no-resize" rows="3" id="desc" type="text"
+                            [(ngModel)]="model.Description" (ngModelChange)="onDefinitionChange(model, 'Description')"
+                            [ngModelOptions]="{ updateOn: 'blur' }"></textarea>
+                    </div>
+
+                    <!-- Title2 -->
+                    <div class="form-group" *ngIf="ws.settings?.SecondaryLanguageId">
+                        <label class="small" for="title2">{{ ('Title' | translate) + ws.secondaryPostfix }}</label>
+                        <input class="form-control b-studio-input" id="title2" type="text" [(ngModel)]="model.Title2"
+                            (ngModelChange)="onDefinitionChange(model, 'Title2')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                    </div>
+
+                    <!-- Description2 -->
+                    <div class="form-group" *ngIf="ws.settings?.SecondaryLanguageId">
+                        <label class="small" for="desc2">{{ ('Description' | translate) + ws.secondaryPostfix }}</label>
+                        <textarea class="form-control b-studio-input b-no-resize" rows="3" id="desc2" type="text"
+                            [(ngModel)]="model.Description2" (ngModelChange)="onDefinitionChange(model, 'Description2')"
+                            [ngModelOptions]="{ updateOn: 'blur' }"></textarea>
+                    </div>
+
+                    <!-- Title3 -->
+                    <div class="form-group" *ngIf="ws.settings?.TernaryLanguageId">
+                        <label class="small" for="title3">{{ ('Title' | translate) + ws.ternaryPostfix }}</label>
+                        <input class="form-control b-studio-input" id="title3" type="text" [(ngModel)]="model.Title3"
+                            (ngModelChange)="onDefinitionChange(model, 'Title3')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                    </div>
+
+                    <!-- Description3 -->
+                    <div class="form-group" *ngIf="ws.settings?.TernaryLanguageId">
+                        <label class="small" for="desc3">{{ ('Description' | translate) + ws.ternaryPostfix }}</label>
+                        <textarea class="form-control b-studio-input b-no-resize" rows="3" id="desc3" type="text"
+                            [(ngModel)]="model.Description3" (ngModelChange)="onDefinitionChange(model, 'Description3')"
+                            [ngModelOptions]="{ updateOn: 'blur' }"></textarea>
+                    </div>
+                </div>
+
+                <!-- Main Menu -->
+                <div class="text-truncate b-studio-section-header b-pointer" (click)="onToggleSection('MainMenu')">
+                    &nbsp;
+                    <fa-icon icon="angle-right" [flip]="flipIcon(showSection('MainMenu'))"
+                        [rotate]="rotateIcon(showSection('MainMenu'))">
+                    </fa-icon>
+                    &nbsp;
+                    {{ 'MainMenu' | translate }}
+                </div>
+                <div class="p-2" [class.d-none]="!showSection('MainMenu')">
+
+                    <!-- Main Menu Section -->
+                    <div class="form-group">
+                        <label class="small" for="mainMenuSection">{{ 'MainMenuSection' | translate }}</label>
+                        <select class="form-control b-studio-input" id="mainMenuSection"
+                            [(ngModel)]="model.MainMenuSection"
+                            (ngModelChange)="onDefinitionChange(model, 'MainMenuSection')">
+                            <option value=""></option>
+                            <option *ngFor="let mainMenuSection of allMainMenuSections"
+                                value="{{mainMenuSection.value}}">
+                                {{ mainMenuSection.name() }}</option>
+                        </select>
+                    </div>
+
+                    <!-- Main Menu Icon -->
+                    <div class="form-group">
+                        <label class="small" for="mainMenuIcon">{{ 'MainMenuIcon' | translate }}</label>
+                        <div class="b-icon-selector d-flex align-content-start flex-wrap p-1">
+                            <div class="py-1 text-center b-pointer b-icon-selector-icon"
+                                (click)="onIconClick(model, icon)"
+                                [class.b-highlighted]="icon.value === model.MainMenuIcon"
+                                *ngFor="let icon of allMainMenuIcons; let i = index">
+                                <fa-icon [icon]="icon.value"></fa-icon>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Menu Sort Key -->
+                    <div class="form-group">
+                        <label class="small" for="sortKey">{{ 'MainMenuSortKey' | translate }}</label>
+                        <input class="form-control b-studio-input" id="sortKey" type="number"
+                            [(ngModel)]="model.MainMenuSortKey"
+                            (ngModelChange)="onDefinitionChange(model, 'MainMenuSortKey')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="d-flex flex-column flex-grow-1">
+            <!-- Header -->
+            <div class="b-dark b-text-whitish d-flex justify-content-between">
+                <div class="p-2 px-3">
+                    <span>{{ 'Preview' | translate }}</span>
+                </div>
+                <div class="b-flow-chart small" *ngIf="model.State !== 'Archived'">
+                    <div [class.active]="model.State === 'Draft'"><span>{{'Definition_State_Draft' | translate}}</span>
+                    </div>
+                    <div [class.active]="model.State === 'Deployed'">
+                        <span>{{'Definition_State_Deployed' | translate}}</span></div>
+                </div>
+                <div class="small active b-lone-state" *ngIf="model.State === 'Archived'">
+                    <span>{{'Definition_State_Archived' | translate}}</span>
+                </div>
+            </div>
+
+            <!-- Report Preview -->
+            <div class="flex-grow-1">
+                <div class="col bg-light border shadow h-100">
+                    <b-report mode="preview" [previewDefinition]="getForClient(model)"
+                        [showChart]="model.DefaultsToChart">
+
+                    </b-report>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<!-- Configure Modal -->
+<ng-template #configureModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header b-dark b-text-whitish border-0">
+        <h5 class="modal-title font-weight-light">
+            {{ 'Configure' | translate }}
+        </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span class="b-text-whitish" aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body col b-less-dark b-text-whitish">
+        <div class="row">
+            <!-- Path -->
+            <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature !== 'parameter'">
+                <label class="small" for="path">{{ 'ReportDefinition_Path' | translate }}</label>
+                <input class="form-control b-studio-input" id="path" type="text" [(ngModel)]="itemToEdit['Path']"
+                    (ngModelChange)="itemToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" />
+            </div>
+
+            <!-- Key -->
+            <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'parameter'">
+                <label class="small" for="key">{{ 'ReportDefinition_Key' | translate }}</label>
+                <span class="form-control b-studio-input" id="key" style="opacity: 0.5;">{{ itemToEdit['Key'] }}</span>
+            </div>
+
+            <!-- Label -->
+            <div class="form-group col-12 col-sm-6">
+                <label class="small" for="label">{{ ('Label' | translate) + ws.primaryPostfix }}</label>
+                <input class="form-control b-studio-input" id="label" type="text" [(ngModel)]="itemToEdit.Label"
+                    (ngModelChange)="itemToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" />
+            </div>
+
+            <!-- Label2 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.SecondaryLanguageId">
+                <label class="small" for="label2">{{ ('Label' | translate) + ws.secondaryPostfix }}</label>
+                <input class="form-control b-studio-input" id="label2" type="text" [(ngModel)]="itemToEdit.Label2"
+                    (ngModelChange)="itemToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" />
+            </div>
+
+            <!-- Label3 -->
+            <div class="form-group col-12 col-sm-6" *ngIf="ws.settings?.TernaryLanguageId">
+                <label class="small" for="label3">{{ ('Label' | translate) + ws.ternaryPostfix }}</label>
+                <input class="form-control b-studio-input" id="label3" type="text" [(ngModel)]="itemToEdit.Label3"
+                    (ngModelChange)="itemToEditHasChanged = true" [ngModelOptions]="{ updateOn: 'blur' }"
+                    autocomplete="off" />
+            </div>
+
+            <!-- Order Direction -->
+            <div class="form-group col-12 col-sm-6"
+                *ngIf="itemToEditNature === 'dimension' || itemToEditNature === 'measure'">
+                <label class="small" for="orderDirection">{{ 'ReportDefinition_OrderDirection' | translate }}</label>
+                <select class="form-control b-studio-input" id="orderDirection"
+                    [(ngModel)]="itemToEdit['OrderDirection']" (ngModelChange)="itemToEditHasChanged = true">
+                    <option value=""></option>
+                    <option *ngFor="let dir of ['asc', 'desc']" value="{{dir}}">
+                        {{ ('ReportDefinition_OrderDirection_' + dir) | translate }}</option>
+                </select>
+            </div>
+
+            <!-- Aggregation -->
+            <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'measure'">
+                <label class="small" for="orderDirection">{{ 'ReportDefinition_Aggregation' | translate }}</label>
+                <select class="form-control b-studio-input" id="orderDirection" [(ngModel)]="itemToEdit['Aggregation']"
+                    (ngModelChange)="itemToEditHasChanged = true">
+                    <option value=""></option>
+                    <option *ngFor="let agg of ['sum', 'count', 'avg', 'max', 'min']" value="{{agg}}">
+                        {{ ('ReportDefinition_Aggregation_' + agg) | translate }}</option>
+                </select>
+            </div>
+
+            <!-- Auto Expand -->
+            <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'dimension'">
+                <label class="small">&zwnj;</label>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="autoExpand"
+                        [(ngModel)]="itemToEdit['AutoExpand']" (ngModelChange)="itemToEditHasChanged = true">
+                    <label class="custom-control-label"
+                        for="autoExpand">{{ 'ReportDefinition_AutoExpand' | translate }}</label>
+                </div>
+            </div>
+
+            <!-- IsRequired -->
+            <div class="form-group col-12 col-sm-6" *ngIf="itemToEditNature === 'parameter'">
+                <label class="small">&zwnj;</label>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="isRequired"
+                        [(ngModel)]="itemToEdit['IsRequired']" (ngModelChange)="itemToEditHasChanged = true">
+                    <label class="custom-control-label"
+                        for="isRequired">{{ 'ReportDefinition_IsRequired' | translate }}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer b-dark b-text-whitish border-0 p-2">
+        <button class="btn b-text-whitish font-weight-normal" (click)="modal.close();" [disabled]="!canApply">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Apply' | translate }}
+        </button>
+        <button class="btn b-text-whitish font-weight-normal" (click)="modal.dismiss();" ngbAutoFocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>

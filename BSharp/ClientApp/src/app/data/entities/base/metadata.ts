@@ -17,6 +17,9 @@ import {
 import { metadata_AccountClassification } from '../account-classification';
 import { metadata_AccountType } from '../account-type';
 import { metadata_Account } from '../account';
+import { metadata_ReportDefinition } from '../report-definition';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { GENERIC } from './constants';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, definitionId: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -31,6 +34,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     AccountClassification: metadata_AccountClassification,
     AccountType: metadata_AccountType,
     Account: metadata_Account,
+    ReportDefinition: metadata_ReportDefinition,
 
     // Temp
     VoucherBooklet: metadata_VoucherBooklet,
@@ -39,6 +43,19 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     IfrsAccountClassification: metadata_IfrsAccountClassification,
     IfrsEntryClassification: metadata_IfrsEntryClassification,
 };
+
+let _collections: SelectorChoice[];
+
+export function collections(ws: TenantWorkspace, trx: TranslateService) {
+    if (!_collections) {
+        _collections = Object.keys(metadata).map(key => ({
+            value: key,
+            name: metadata[key](ws, trx, GENERIC).titlePlural
+        }));
+    }
+
+    return _collections;
+}
 
 export interface EntityDescriptor {
 
@@ -51,6 +68,11 @@ export interface EntityDescriptor {
      * The definition Id of this entity descriptor
      */
     definitionId?: string;
+
+    /**
+     * Collections that have definitions list the definitions here
+     */
+    definitionIds?: string[];
 
     /**
      * The plural name of the entity (e.g. Agents).
@@ -88,7 +110,7 @@ export interface EntityDescriptor {
     selectForDefinition?: string;
 
     /**
-     * The property on this entity that carries the definitionId.
+     * Given an entity, retrieves the definition Id
      */
     definitionFunc?: (e: EntityWithKey) => string;
 
@@ -106,6 +128,13 @@ export interface EntityDescriptor {
      * The properties of the class.
      */
     properties: { [prop: string]: PropDescriptor };
+
+    /**
+     * Used for caching the list of definitions
+     */
+    definitionIdsArray?: SelectorChoice[];
+
+ //    propertiesArray?: { name: string; desc: PropDescriptor }[];
 }
 
 export interface PropDescriptorBase {
@@ -162,6 +191,11 @@ export interface StatePropDescriptor extends PropDescriptorBase {
      * Useful for components to cache the list of { name, value } for the selector
      */
     selector?: { value: string | number; name: () => string }[];
+}
+
+export function getChoices(desc: StatePropDescriptor | ChoicePropDescriptor): SelectorChoice[] {
+    desc.selector = desc.selector || desc.choices.map(c => ({ value: c, name: () => desc.format(c) }));
+    return desc.selector;
 }
 
 export interface NumberPropDescriptor extends PropDescriptorBase {
@@ -256,11 +290,11 @@ export function entityDescriptorImpl(
 }
 
 export function isText(propDesc: PropDescriptor): boolean {
-    return propDesc.control === 'text' ||
-        ((propDesc.control === 'state' || propDesc.control === 'choice') && (typeof propDesc.choices[0]) === 'string');
+    return !!propDesc && (propDesc.control === 'text' ||
+        ((propDesc.control === 'state' || propDesc.control === 'choice') && (typeof propDesc.choices[0]) === 'string'));
 }
 
 export function isNumeric(propDesc: PropDescriptor): boolean {
-    return propDesc.control === 'number' ||
-        ((propDesc.control === 'state' || propDesc.control === 'choice') && (typeof propDesc.choices[0]) === 'number');
+    return !!propDesc && (propDesc.control === 'number' ||
+        ((propDesc.control === 'state' || propDesc.control === 'choice') && (typeof propDesc.choices[0]) === 'number'));
 }

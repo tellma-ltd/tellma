@@ -323,12 +323,12 @@ namespace BSharp.Controllers
 
                             Type = ReportType.Summary,
                             Chart = "Line",
-                            DefaultsToChart = true,
+                            DefaultsToChart = false,
                             Collection = "MeasurementUnit",
                             Filter = "UnitType eq @UnitType and (Name contains @Name or Name2 contains @Name or Name3 contains @Name)",
-                            Parameters = new List<ReportParameterDefinition>
+                            Parameters = new List<ReportParameterDefinitionForClient>
                             {
-                                new ReportParameterDefinition
+                                new ReportParameterDefinitionForClient
                                 {
                                     Key = "Name", // "FromDate"
                                     Label = "Name Contains",
@@ -337,7 +337,7 @@ namespace BSharp.Controllers
                                     IsRequired = false
                                 },
                             },
-                            Columns = new List<ReportDimensionDefinition>
+                            Columns = new List<ReportDimensionDefinitionForClient>
                             {
                                 //new ReportDimensionDefinition
                                 //{
@@ -357,9 +357,9 @@ namespace BSharp.Controllers
                                 //    AutoExpand =true
                                 //},
                             },
-                            Rows = new List<ReportDimensionDefinition>
+                            Rows = new List<ReportDimensionDefinitionForClient>
                             {
-                                new ReportDimensionDefinition
+                                new ReportDimensionDefinitionForClient
                                 {
                                     Path = "CreatedBy",
                                     Label = "Created By",
@@ -367,19 +367,19 @@ namespace BSharp.Controllers
                                     Label3 = "我的密",
                                     AutoExpand = true,
                                 },
-                                new ReportDimensionDefinition
+                                new ReportDimensionDefinitionForClient
                                 {
                                     Path = "UnitType",
                                     Label = "Unit Type",
                                     Label2 = "نوع الوحدة",
                                     Label3 = "我的密",
                                     OrderDirection = "desc",
-                                    AutoExpand =true
+                                    AutoExpand = true
                                 },
                             },
-                            Measures = new List<ReportMeasureDefinition>
+                            Measures = new List<ReportMeasureDefinitionForClient>
                             {
-                                new ReportMeasureDefinition
+                                new ReportMeasureDefinitionForClient
                                 {
                                     Path = "Id",
                                     Aggregation = "count",
@@ -387,7 +387,7 @@ namespace BSharp.Controllers
                                     Label2 = "العدد",
                                     Label3 = "我的密"
                                 },
-                                new ReportMeasureDefinition
+                                new ReportMeasureDefinitionForClient
                                 {
                                     Path = "Id",
                                     Aggregation = "avg",
@@ -410,7 +410,7 @@ namespace BSharp.Controllers
                         ["my-incredible-report"] = new ReportDefinitionForClient
                         {
                             Title = "My Incredible Report",
-                            Title2 = "تقريري المذهل",
+                            Title2 = "تقريري المدهش",
                             Title3 = "我的惊人报告",
                             MainMenuIcon = "chart-pie",
                             MainMenuSection = "Financials",
@@ -418,12 +418,13 @@ namespace BSharp.Controllers
 
                             Type = ReportType.Summary,
                             Chart = "Card",
+                            DefaultsToChart = true,
                             Collection = "Resource",
                             DefinitionId = "finished-goods",
-                            //                    Filter = "Memo contains @Memo",
-                            Parameters = new List<ReportParameterDefinition>
+                            // Filter = "Memo contains @Memo",
+                            Parameters = new List<ReportParameterDefinitionForClient>
                             {
-                                new ReportParameterDefinition
+                                new ReportParameterDefinitionForClient
                                 {
                                     Key = "Memo", // "FromDate"
                                     Label = "Memo Contains",
@@ -432,11 +433,11 @@ namespace BSharp.Controllers
                                     IsRequired = false
                                 }
                             },
-                            Columns = new List<ReportDimensionDefinition>
+                            Columns = new List<ReportDimensionDefinitionForClient>
                             {
 
                             },
-                            Rows = new List<ReportDimensionDefinition>
+                            Rows = new List<ReportDimensionDefinitionForClient>
                             {
                                 //new ReportDimensionDefinition
                                 //{
@@ -466,9 +467,9 @@ namespace BSharp.Controllers
                                 //},
 
                             },
-                            Measures = new List<ReportMeasureDefinition>
+                            Measures = new List<ReportMeasureDefinitionForClient>
                             {
-                                new ReportMeasureDefinition
+                                new ReportMeasureDefinitionForClient
                                 {
                                     Path = "Id",
                                     Aggregation = "count",
@@ -488,7 +489,6 @@ namespace BSharp.Controllers
                             ShowColumnsTotal = false,
                             ShowRowsTotal = true,
                         },
-
                         ["my-awesome-report"] = new ReportDefinitionForClient
                         {
                             Title = "My Awesome Report",
@@ -502,32 +502,32 @@ namespace BSharp.Controllers
                             Collection = "MeasurementUnit",
                             Filter = "UnitType eq @UnitType",
                             OrderBy = "BaseAmount desc",
-                            Parameters = new List<ReportParameterDefinition>
+                            Parameters = new List<ReportParameterDefinitionForClient>
                             {
                             },
-                            Select = new List<ReportSelectDefinition>
+                            Select = new List<ReportSelectDefinitionForClient>
                             {
-                                new ReportSelectDefinition
+                                new ReportSelectDefinitionForClient
                                 {
                                     Path = ""
                                 },
-                                new ReportSelectDefinition
+                                new ReportSelectDefinitionForClient
                                 {
                                     Path = "Description"
                                 },
-                                new ReportSelectDefinition
+                                new ReportSelectDefinitionForClient
                                 {
                                     Path = "UnitType"
                                 },
-                                new ReportSelectDefinition
+                                new ReportSelectDefinitionForClient
                                 {
                                     Path = "CreatedBy"
                                 },
-                                new ReportSelectDefinition
+                                new ReportSelectDefinitionForClient
                                 {
                                     Path = "CreatedBy/State"
                                 },
-                                new ReportSelectDefinition
+                                new ReportSelectDefinitionForClient
                                 {
                                     Path = "BaseAmount",
                                     Label = "My Base Amount",

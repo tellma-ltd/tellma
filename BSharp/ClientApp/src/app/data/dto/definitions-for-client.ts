@@ -1,3 +1,5 @@
+import { ReportOrderDirection, Aggregation, ReportType, ChartType } from '../entities/report-definition';
+
 // tslint:disable:variable-name
 export class DefinitionsForClient {
     Documents: { [definitionId: string]: DocumentDefinitionForClient };
@@ -35,19 +37,19 @@ export interface ReportDefinitionForClient extends DefinitionForClient {
     DefaultsToChart: boolean; // ?
     Collection: string;
     DefinitionId?: string;
-    Select: ReportSelectDefinition[];
-    Parameters?: ReportParameterDefinition[];
+    Select: ReportSelectDefinitionForClient[];
+    Parameters?: ReportParameterDefinitionForClient[];
     Filter?: string;
     OrderBy?: string;
-    Rows: ReportDimensionDefinition[];
-    Columns: ReportDimensionDefinition[];
-    Measures: ReportMeasureDefinition[];
+    Rows: ReportDimensionDefinitionForClient[];
+    Columns: ReportDimensionDefinitionForClient[];
+    Measures: ReportMeasureDefinitionForClient[];
     Top?: number;
     ShowColumnsTotal: boolean;
     ShowRowsTotal: boolean;
 }
 
-export interface ReportParameterDefinition {
+export interface ReportParameterDefinitionForClient {
     Key: string; // e.g. 'FromDate'
     Label?: string;
     Label2?: string;
@@ -55,14 +57,14 @@ export interface ReportParameterDefinition {
     IsRequired: boolean;
 }
 
-export interface ReportSelectDefinition {
+export interface ReportSelectDefinitionForClient {
     Path: string;
     Label?: string;
     Label2?: string;
     Label3?: string;
 }
 
-export interface ReportMeasureDefinition {
+export interface ReportMeasureDefinitionForClient {
     Path: string;
     Label?: string;
     Label2?: string;
@@ -71,7 +73,7 @@ export interface ReportMeasureDefinition {
     Aggregation: Aggregation;
 }
 
-export interface ReportDimensionDefinition {
+export interface ReportDimensionDefinitionForClient {
     Path: string;
     Label?: string;
     Label2?: string;
@@ -79,11 +81,6 @@ export interface ReportDimensionDefinition {
     OrderDirection?: ReportOrderDirection;
     AutoExpand: boolean;
 }
-
-export type ReportOrderDirection = 'asc' | 'desc';
-export type ReportType = 'Summary' | 'Details';
-export type Aggregation = 'count' | 'dcount' | 'sum' | 'avg' | 'max' | 'min';
-export type ChartType = 'Card' | 'BarsVertical' | 'BarsHorizontal' | 'Line' | 'Pie';
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
     // TODO

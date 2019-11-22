@@ -110,19 +110,21 @@ namespace BSharp.Data.Queries
                 .Select(e => e.Path)
                 .ToList();
 
-            var selects = new HashSet<(string Symbol, string PropName, string aggregate)>(); // To ensure uniqueness
-            var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate)>();
+            // This is to ensure uniqueness
+            var columns = new Dictionary<(string Symbol, string PropName, string aggregate),
+                (string Symbol, ArraySegment<string> Path, string PropName, string Aggregate, bool IsOriginal)>();
 
-            void AddSelect(string symbol, ArraySegment<string> path, string propName, string aggregate)
+            //var selects = new HashSet<(string Symbol, string PropName, string aggregate)>(); // To ensure uniqueness
+            //var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate, bool IsOriginal)>();
+
+            void AddSelect(string symbol, ArraySegment<string> path, string propName, string aggregate, bool isOriginal)
             {
-                if (selects.Add((symbol, propName, aggregate)))
+                // If the select doesn't exist: add it, or if it is not original and it shows up again as original: upgrade it
+                if (!columns.ContainsKey((symbol, propName, aggregate)) || (!columns[(symbol, propName, aggregate)].IsOriginal && isOriginal))
                 {
-                    columns.Add((symbol, path, propName, aggregate));
+                    columns[(symbol, propName, aggregate)] = (symbol, path, propName, aggregate, isOriginal);
                 }
             }
-
-            // Optimization: remember the joins that have been selected and don't select them again
-            HashSet<JoinTree> selectedJoins = new HashSet<JoinTree>();
 
             foreach (var select in Select)
             {
@@ -130,11 +132,10 @@ namespace BSharp.Data.Queries
                 string[] path = select.Path;
 
                 {
-                    bool isEntityable = entityablePrefixes.Any(e => e.IsPrefixOf(path));
                     var join = joinTree[path];
                     var propName = select.Property; // Can be null
-                    var aggregation = isEntityable ? null : select.Aggregation; // Entityable never have aggregations
-                    AddSelect(join.Symbol, path, propName, aggregation);
+                    var aggregation = select.Aggregation;
+                    AddSelect(join.Symbol, path, propName, aggregation, true);
                 }
 
                 // In this loop we ensure all levels to the selected properties
@@ -154,22 +155,22 @@ namespace BSharp.Data.Queries
                     if (isEntityable)
                     {
                         // Unless this is root, we also go one level up and add the foreign key that points to this Entity
-                        if(subpath.Count > 0)
+                        if (subpath.Count > 0)
                         {
                             var prevPath = new ArraySegment<string>(subpath.Array, subpath.Offset, subpath.Count - 1);
                             var prevJoin = joinTree[prevPath];
 
-                            AddSelect(prevJoin.Symbol, prevPath, join.ForeignKeyName, null);
+                            AddSelect(prevJoin.Symbol, prevPath, join.ForeignKeyName, null, false);
                         }
 
                         // The Id is ALWAYS included in every returned Entity
-                        AddSelect(join.Symbol, subpath, "Id", null);
+                        AddSelect(join.Symbol, subpath, "Id", null, true);
                     }
                 }
             }
 
             // Change the hash set to a list so that the order is well defined
-            return new SqlSelectGroupByClause(columns, Top ?? 0);
+            return new SqlSelectGroupByClause(columns.Values.ToList(), Top ?? 0);
         }
 
         /// <summary>

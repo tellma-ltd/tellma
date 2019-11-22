@@ -1,6 +1,5 @@
 import {
-  Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, OnChanges,
-  SimpleChanges, Output, EventEmitter
+  Component, OnInit, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter
 } from '@angular/core';
 import {
   WorkspaceService, ReportStatus, ReportStore, MultiSeries, SingleSeries, ReportArguments,
@@ -14,12 +13,14 @@ import { ApiService } from '~/app/data/api.service';
 import { FilterTools, FilterExpression } from '~/app/data/filter-expression';
 import { isSpecified, mergeEntitiesInWorkspace } from '~/app/data/util';
 import {
-  ReportDefinitionForClient, ReportDimensionDefinition, ReportOrderDirection, ReportMeasureDefinition, ReportSelectDefinition, ChartType
+  ReportDefinitionForClient, ReportDimensionDefinitionForClient,
+  ReportMeasureDefinitionForClient, ReportSelectDefinitionForClient
 } from '~/app/data/dto/definitions-for-client';
 import { Router, Params } from '@angular/router';
 import { displayEntity, displayValue } from '~/app/shared/auto-cell/auto-cell.component';
 import { Entity } from '~/app/data/entities/base/entity';
 import { EntitiesResponse, GetResponse } from '~/app/data/dto/get-response';
+import { ReportOrderDirection, ChartType } from '~/app/data/entities/report-definition';
 
 export enum ReportView {
   pivot = 'pivot',
@@ -45,7 +46,7 @@ interface PivotHash {
 export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input()
-  stateKey: string; // immutable
+  state: ReportStore; // immutable
 
   @Input()
   definition: ReportDefinitionForClient; // immutable
@@ -57,13 +58,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   view: ReportView;
 
   @Input()
-  skip: number; // For details report
-
-  @Input()
   refresh: Observable<void>; // Must be set only once
 
   @Input()
-  mode: 'screen' | 'dashboard' = 'screen';
+  resize: Observable<void>; // Must be set only once
+
+  @Input()
+  mode: 'screen' | 'preview' | 'dashboard' = 'screen';
+
+  // @Output()
+  // skipChange: EventEmitter<number> = new EventEmitter<number>(); // In screen mode this informs the parent component to update the URL
 
   private _subscriptions: Subscription;
   private notifyFetch$ = new Subject();
@@ -97,16 +101,36 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   private _maxVisibleLevel: number;
 
   // NGX-Charts options
-  animations = false;
+  animations = true;
   showXAxis = true;
   showYAxis = true;
   showXAxisLabel = true;
   showYAxisLabel = true;
-  colorScheme = { domain: ['#17a2b8', '#4AA2A6', '#259093', '#357A78', '#159f85'] };
+  colorful = {
+    domain: [
+      '#17A2B8', '#1490A3', '#128091',
+      '#0D606D', '#10707F', '#0B505B',
+      '#073036', '#094049', '#042024',
+      // '#80E0EF', '#C9F2F8', '#49D3E9',
+      //   '#1BC0DA', '#25CBE4', '#19B0C8',
+    ]
+  };
+  monochromatic = { domain: ['#17a2b8'] };
+  heat = { domain: ['#96D5DF', '#17a2b8', '#052429'] }; // different shades of the same color for heat map
 
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService,
-    private api: ApiService, private cdr: ChangeDetectorRef, private router: Router) { }
+    private api: ApiService, private cdr: ChangeDetectorRef, private router: Router) {
+
+    // window.onresize = () => {
+    //   setTimeout(_ => {
+    //     console.log('resize');
+    //     window.dispatchEvent(new Event('resize'));
+    //   }, 20000);
+
+    //   // this.chartSize = [...this.chartSize.map(d => d + 10)];
+    // };
+  }
 
   ngOnInit() {
 
@@ -126,10 +150,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         .subscribe(() => this.fetch()));
     }
 
+    if (!!this.resize) {
+      this._subscriptions.add(this.resize.subscribe(() => this.remeasureChartSize()));
+    }
+
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
 
     // Set to default
     this.view = this.view || (!!this.definition.Chart && !!this.definition.DefaultsToChart ? ReportView.chart : ReportView.pivot);
+
+    this.state = this.state || new ReportStore(); // if no state is provided
 
     // Here we do the usual pattern of checking whether the state in the
     // singleton service is still the same as that supplied by the url
@@ -147,9 +177,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  public remeasureChartSize() {
+
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     // Using our famous pattern
-    const screenDefProperties = [changes.stateKey, changes.definition, changes.mode];
+    const screenDefProperties = [changes.state, changes.definition, changes.mode];
     const screenDefChanges = screenDefProperties.some(prop => !!prop && !prop.isFirstChange());
     if (screenDefChanges) {
 
@@ -158,10 +192,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     } else {
 
       // Changes that require a mere refresh
-      const screenRefreshProperties = [changes.skip, changes.arguments];
+      const screenRefreshProperties = [changes.arguments];
       const screenRefreshChanges = screenRefreshProperties.some(prop => !!prop && !prop.isFirstChange());
       // Refresh data whenever the arguments change
       if (screenRefreshChanges && this.applyChanges()) {
+        this.state.skip = 0; // when arguments change reset to first page
         this.fetch();
       }
     }
@@ -177,11 +212,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     if (this.definition !== s.definition) {
       s.definition = this.definition;
-      hasChanged = true;
-    }
-
-    if (this.skip !== s.skip) {
-      s.skip = this.skip;
       hasChanged = true;
     }
 
@@ -256,8 +286,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         filter
       }).pipe(
         tap((response: GetResponse) => {
-          this.state.total = response.Result.length < top ?
-            response.Skip + response.Result.length : response.TotalCount;
+          s = this.state;
+          s.top = response.Top;
+          s.skip = response.Skip;
+          s.total = response.TotalCount;
         })
       );
     } else {
@@ -302,7 +334,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  private computeMeasureInfos(measures: ReportMeasureDefinition[]): MeasureInfo[] {
+  private computeMeasureInfos(measures: ReportMeasureDefinitionForClient[]): MeasureInfo[] {
 
     if (!measures) {
       return [];
@@ -326,7 +358,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       let desc: PropDescriptor;
       switch (aggregation) {
         case 'count':
-        case 'dcount':
           desc = { control: 'number', label: propDesc.label, maxDecimalPlaces: 0, minDecimalPlaces: 0, alignment: 'right' };
           break;
         case 'max':
@@ -353,7 +384,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
       const label = () => !!measureDef.Label ? this.workspace.current.getMultilingualValueImmediate(measureDef, 'Label') :
         this.translate.instant('DefaultAggregationMeasure', {
-          aggregation: this.translate.instant('MeasureDefinition_Aggregation_' + aggregation),
+          aggregation: this.translate.instant('ReportDefinition_Aggregation_' + aggregation),
           measure: desc.label()
         });
 
@@ -361,7 +392,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  private computeRealDimensions(dims: ReportDimensionDefinition[]): DimensionInfo[] {
+  private computeRealDimensions(dims: ReportDimensionDefinitionForClient[]): DimensionInfo[] {
 
     if (!dims) {
       return [];
@@ -389,7 +420,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       // a real dimension is one which is not a property of another
       // dimension, e.g. "Resource" and "Resource/Code", the former
       // is a real dimension, the latter is just a property of it
-      const isReal = normalizedDims.every(p => dimStringPath === p || !dimStringPath.startsWith(p));
+      const isReal = normalizedDims.every(p => dimStringPath === p || !dimStringPath.startsWith(p + '/'));
       if (isReal) {
         const collection = comp.definition.Collection;
         const definitionId = comp.definition.DefinitionId;
@@ -448,20 +479,27 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
-    this.select.map(col => col.Path).forEach(path => {
+    const select: ReportSelectDefinitionForClient[] = this.select;
+    if (!!select) {
+      select.map(col => col.Path).forEach(path => {
 
-      const steps = path.split('/').map(e => e.trim());
-      path = steps.join('/'); // to trim extra spaces
+        if (!path) {
+          return;
+        }
 
-      try {
-        const currentDesc = entityDescriptorImpl(steps, this.collection,
-          this.definitionId, this.workspace.current, this.translate);
+        const steps = path.split('/').map(e => e.trim());
+        path = steps.join('/'); // to trim extra spaces
 
-        currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
-      } catch {
-        resultPaths[path] = true;
-      }
-    });
+        try {
+          const currentDesc = entityDescriptorImpl(steps, this.collection,
+            this.definitionId, this.workspace.current, this.translate);
+
+          currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
+        } catch {
+          resultPaths[path] = true;
+        }
+      });
+    }
 
     return Object.keys(resultPaths).join(',');
   }
@@ -549,11 +587,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private computeFilter(): string {
-    if (!this.definition.Filter) {
+
+    let exp: FilterExpression = FilterTools.parse(this.definition.Filter);
+    if (!exp) {
       return null;
     }
 
-    let exp: FilterExpression = FilterTools.parse(this.definition.Filter);
     const lowerCaseArgs: ReportArguments = {};
     for (const arg of Object.keys(this.arguments)) {
       lowerCaseArgs[arg.toLowerCase()] = this.arguments[arg];
@@ -631,29 +670,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           // no placeholder (@XYZ) in this atom, all good
           return exp;
         }
-    }
-  }
-
-  public get state(): ReportStore {
-    // Important to always reference the source, and not take a local reference
-    // on some occasions the source can be reset and using a local reference can cause bugs
-    if (this.mode === 'dashboard') {
-
-      // popups use a local store that vanishes when the popup is destroyed
-      if (!this.localState) {
-        this.localState = new ReportStore();
-      }
-
-      return this.localState;
-    } else { // this.mode === 'screen'
-
-      // screens on the other hand use a global store
-      if (!this.workspace.current.reportState[this.stateKey]) {
-        // this.workspace.current.reportState = {}; // This forces any other reports to refresh
-        this.workspace.current.reportState[this.stateKey] = new ReportStore();
-      }
-
-      return this.workspace.current.reportState[this.stateKey];
     }
   }
 
@@ -883,8 +899,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const rowGrandTotalIndex = rowCells.length;
 
       // Whether to show the column or row totals
-      const showColumnTotals: boolean = this.definition.ShowColumnsTotal || realColumns.length === 0;
-      const showRowTotals: boolean = this.definition.ShowRowsTotal || realRows.length === 0;
+      const showColumnTotals: boolean = s.measures.length > 0 &&
+        (this.definition.ShowColumnsTotal || realColumns.length === 0);
+      const showRowTotals: boolean = s.measures.length > 0 &&
+        (this.definition.ShowRowsTotal || realRows.length === 0 && s.measures.length > 0);
 
       if (showColumnTotals) {
         if (realColumns.length > 0) {
@@ -974,6 +992,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const realColumnsAndGrandTotal = showColumnTotals ? realColumns.concat([null]) : realColumns;
       const realRowsAndGrandTotal = showRowTotals ? realRows.concat([null]) : realRows;
 
+      function normalize(value: any) {
+        return isSpecified(value) ? value : null;
+      }
+
       // Add the data points
       for (const g of s.result) {
         let currentColHash = columnsHash;
@@ -1008,10 +1030,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               }
 
               rowIndex = currentRowHash.cell.index;
-            }
-
-            function normalize(value: any) {
-              return isSpecified(value) ? value : null;
             }
 
             s.measures.forEach((m, index) => {
@@ -1104,7 +1122,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // Calculate the maximum visible level
-    this._maxVisibleLevel = 0;
+    this._maxVisibleLevel = -1;
     cols.forEach(row => row.forEach(cell => {
       if (cell.isVisible && cell.level > this._maxVisibleLevel) {
         this._maxVisibleLevel = cell.level;
@@ -1185,7 +1203,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get showMeasureLabels(): boolean {
-    return !!this.rows && !!this.rows.length && (this.measures.length > 1 || this.state.realColumns.length === 0);
+    // The labels for the measures are hidden when there is only a
+    // single measure unless when there are no column dimensions
+    return !!this.rows && !!this.rows.length && this.measures.length !== 0 &&
+      (this.measures.length > 1 || this.state.realColumns.length === 0);
   }
 
   public get rowSpan(): number {
@@ -1242,7 +1263,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public isDefined(cell: DimensionCell) {
-    // IF this is false, a muted italic "(undefined...)" is displayed instead
+    // IF this is false, a muted italic "(undefined)" is displayed instead
     return isSpecified(cell.value);
   }
 
@@ -1253,7 +1274,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   /////////////////// SUMMARY - CHARTS
 
   public get point(): string {
-    // Single series charts bind to this property
+    // Point charts bind to this property
     const s = this.state;
     if (s.currentResultForPoint !== s.result) {
       s.currentResultForPoint = s.result;
@@ -1323,7 +1344,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       } else if (s.uniqueDimensions.length === 1) {
         // When the number of dimensions is just one, make the single-series pretend it's a multi-series
         const single = this.single;
-        const label = this.yAxisLabel;
+        const label = this.firstDimensionLabel;
         const singletonDimension = new ChartDimensionCell(label, '', label);
         s.multi = [{
           name: singletonDimension,
@@ -1400,13 +1421,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return d.display; // The chart labels
   }
 
-  public get xAxisLabel() {
-    const index = this.definition.Chart === 'Line' ? 1 : 0;
-    const dimension = this.state.uniqueDimensions[index] || this.state.uniqueDimensions[0];
+  public get firstDimensionLabel() {
+    const dimension = this.state.uniqueDimensions[0];
     return !!dimension ? dimension.label() : '';
   }
 
-  public get yAxisLabel() {
+  public get secondDimensionLabel() {
+    const dimension = this.state.uniqueDimensions[1];
+    return !!dimension ? dimension.label() : '';
+  }
+
+  public get measureLabel() {
     const measure = this.state.singleNumericMeasure;
     return !!measure ? measure.label() : '';
   }
@@ -1436,7 +1461,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get supportsMulti() {
-    return this.numberOfDimensions === 1 || this.numberOfDimensions === 2;
+    return this.numberOfDimensions === 2;
   }
 
 
@@ -1450,7 +1475,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return !!this.definition ? this.definition.DefinitionId : null;
   }
 
-  public get select(): ReportSelectDefinition[] {
+  public get select(): ReportSelectDefinitionForClient[] {
     return !!this.definition ? this.definition.Select : null;
   }
 
@@ -1458,7 +1483,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return this.state.result;
   }
 
-  public selectLabel(s: ReportSelectDefinition) {
+  public selectLabel(s: ReportSelectDefinitionForClient) {
     return this.workspace.current.getMultilingualValueImmediate(s, 'Label');
   }
 

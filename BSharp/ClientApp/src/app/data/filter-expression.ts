@@ -192,11 +192,12 @@ export class FilterTools {
      * @param filter the filter string to parse
      */
     public static parse(filter: string): FilterExpression {
-        if (!filter) {
+
+        const preprocessedFilter = this.preprocess(filter);
+        if (!preprocessedFilter) {
             return null;
         }
 
-        const preprocessedFilter = this.preprocess(filter);
         const tokenStream = this.tokenize(preprocessedFilter);
         const filterExpression = this.parseTokenStream(tokenStream);
 
@@ -205,15 +206,22 @@ export class FilterTools {
 
     private static preprocess(filter: string): string {
         filter = filter || '';
-        filter = filter.trim();
+
+        // Reduce all enters to a single space
+        let oldFilter: string = null;
+        while (oldFilter !== filter) {
+            oldFilter = filter;
+            filter = filter.replace(/(?:\r\n|\r|\n)/g, ' ');
+        }
 
         // Reduce all double spaces to a single space
-        let oldFilter = filter;
+        oldFilter = null;
         while (oldFilter !== filter) {
             oldFilter = filter;
             filter = filter.replace('  ', ' ');
         }
 
+        filter = filter.trim();
         return filter;
     }
 

@@ -33,7 +33,7 @@ namespace BSharp.Controllers.Dto
         public Dictionary<string, LookupDefinitionForClient> Lookups { get; set; }
 
         /// <summary>
-        /// Mapping from report definition Id to lookup definition
+        /// Mapping from report definition Id to report definition
         /// </summary>
         public Dictionary<string, ReportDefinitionForClient> Reports { get; set; }
     }
@@ -68,19 +68,19 @@ namespace BSharp.Controllers.Dto
         public bool DefaultsToChart { get; set; }
         public string Collection { get; set; }
         public string DefinitionId { get; set; }
-        public List<ReportParameterDefinition> Parameters { get; set; }
+        public List<ReportParameterDefinitionForClient> Parameters { get; set; }
         public string Filter { get; set; } // On drill down for summary
         public string OrderBy { get; set; } // On drill down for summary
-        public List<ReportSelectDefinition> Select { get; set; }
-        public List<ReportDimensionDefinition> Rows { get; set; }
-        public List<ReportDimensionDefinition> Columns { get; set; }
-        public List<ReportMeasureDefinition> Measures { get; set; }
+        public List<ReportSelectDefinitionForClient> Select { get; set; }
+        public List<ReportDimensionDefinitionForClient> Rows { get; set; }
+        public List<ReportDimensionDefinitionForClient> Columns { get; set; }
+        public List<ReportMeasureDefinitionForClient> Measures { get; set; }
         public int Top { get; set; }
         public bool ShowColumnsTotal { get; set; }
         public bool ShowRowsTotal { get; set; }
     }
 
-    public class ReportParameterDefinition
+    public class ReportParameterDefinitionForClient
     {
         public string Key { get; set; }
         public string Label { get; set; }
@@ -89,7 +89,7 @@ namespace BSharp.Controllers.Dto
         public bool IsRequired { get; set; }
     }
     
-    public class ReportSelectDefinition
+    public class ReportSelectDefinitionForClient
     {
         public string Path { get; set; }
         public string Label { get; set; }
@@ -97,7 +97,7 @@ namespace BSharp.Controllers.Dto
         public string Label3 { get; set; }
     }
 
-    public class ReportDimensionDefinition
+    public class ReportDimensionDefinitionForClient
     {
         public string Path { get; set; }
         public string Label { get; set; }
@@ -107,7 +107,7 @@ namespace BSharp.Controllers.Dto
         public bool AutoExpand { get; set; }
     }
 
-    public class ReportMeasureDefinition
+    public class ReportMeasureDefinitionForClient
     {
         public string Path { get; set; }
         public string Label { get; set; }

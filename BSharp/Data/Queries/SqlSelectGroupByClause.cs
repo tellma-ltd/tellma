@@ -11,12 +11,12 @@ namespace BSharp.Data.Queries
     public class SqlSelectGroupByClause
     {
         private readonly int _top;
-        private readonly List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation)> _columns;
+        private readonly List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation, bool IsOriginal)> _columns;
 
         /// <summary>
         /// Create a new instance of <see cref="SqlSelectGroupByClause"/> using the supplied column definitions
         /// </summary>
-        public SqlSelectGroupByClause(List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation)> columns, int top)
+        public SqlSelectGroupByClause(List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation, bool IsOriginal)> columns, int top)
         {
             _top = top;
             _columns = columns ?? throw new ArgumentNullException(nameof(columns));
@@ -58,7 +58,8 @@ namespace BSharp.Data.Queries
             {
                 Path = e.Path,
                 Property = e.PropName,
-                Aggregation = e.Aggregation
+                Aggregation = e.Aggregation,
+                IsOriginal = e.IsOriginal
             })
             .ToList();
 

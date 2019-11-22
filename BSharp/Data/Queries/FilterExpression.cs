@@ -24,12 +24,12 @@ namespace BSharp.Data.Queries
         /// </summary>
         public static FilterExpression Parse(string filter)
         {
-            if (string.IsNullOrWhiteSpace(filter))
+            string preprocessedFilter = Preprocess(filter);
+            if (string.IsNullOrWhiteSpace(preprocessedFilter))
             {
                 return null;
             }
 
-            string preprocessedFilter = Preprocess(filter);
             IEnumerable<string> tokenStream = Tokenize(preprocessedFilter);
             FilterExpression filterExpression = ParseTokenStream(tokenStream);
 
@@ -41,6 +41,14 @@ namespace BSharp.Data.Queries
         /// </summary>
         private static string Preprocess(string filter)
         {
+            if(filter == null)
+            {
+                return null;
+            }
+
+            // Reduce all enters to a single space
+            filter = filter.Replace(System.Environment.NewLine, " ");
+
             // Ensure no spaces are repeated
             Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
             filter = regex.Replace(filter, " ");

@@ -63,7 +63,7 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, _: st
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
-        User: { control: 'navigation', label: () => trx.instant('Agent_User'), type: 'User', foreignKeyName: 'Id' },
+     //   User: { control: 'navigation', label: () => trx.instant('Agent_User'), type: 'User', foreignKeyName: 'Id' },
         AgentType: {
           control: 'choice',
           label: () => trx.instant('Agent_AgentType'),
