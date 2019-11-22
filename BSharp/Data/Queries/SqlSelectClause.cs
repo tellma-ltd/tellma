@@ -39,7 +39,6 @@ namespace BSharp.Data.Queries
             {
                 Path = e.Path,
                 Property = e.PropName,
-                IsOriginal = true // in flat queries, all columns as original for practical purposes (value is never used anyways)
             })
             .ToList();
 

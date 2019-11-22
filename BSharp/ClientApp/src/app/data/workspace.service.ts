@@ -21,7 +21,7 @@ import { AccountClassification } from './entities/account-classification';
 import { Action } from './views';
 import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
-import { PropDescriptor } from './entities/base/metadata';
+import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
 import { Aggregation, ReportDefinition } from './entities/report-definition';
 
@@ -412,7 +412,15 @@ export interface MeasureInfo {
 export interface DimensionInfo {
   key: string;
   path: string;
-  collection: string;
+  propDesc: PropDescriptor;
+
+  /**
+   * This is set in the case of navigation properties
+   */
+  entityDesc?: EntityDescriptor;
+  idKey?: string;
+  selectKeys?: { prop: string, path: string}[];
+
   autoExpand: boolean;
   label: () => string;
 }
@@ -421,7 +429,9 @@ export class DimensionCell {
   type: 'dimension';
   path: string;
   value: any;
-  collection?: string;
+  valueId: any;
+  propDesc: PropDescriptor;
+  entityDesc?: EntityDescriptor;
   isExpanded: boolean;
   hasChildren: boolean;
   level: number;
@@ -440,7 +450,9 @@ export class ChartDimensionCell {
   constructor(
     public display: string,
     public path: string,
-    public value: any,
+    public valueId: any,
+    public propDesc: PropDescriptor,
+    public entityDesc: EntityDescriptor,
     public parent?: ChartDimensionCell) { }
 
   toString() {

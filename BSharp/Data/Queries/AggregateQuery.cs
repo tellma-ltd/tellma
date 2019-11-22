@@ -96,7 +96,7 @@ namespace BSharp.Data.Queries
         }
 
 
-        public async Task<List<Entity>> ToListAsync()
+        public async Task<List<DynamicEntity>> ToListAsync()
         {
             var args = await _factory();
             var conn = args.Connection;
@@ -188,7 +188,7 @@ namespace BSharp.Data.Queries
 
 
             // Prepare the internal query (this one should not have any select paths containing Parent property)
-            IQueryInternal query = new AggregateQueryInternal
+            AggregateQueryInternal query = new AggregateQueryInternal
             {
                 ResultType = typeof(T),
                 Select = selectExp,
@@ -202,9 +202,8 @@ namespace BSharp.Data.Queries
             SqlStatement statement = query.PrepareStatement(rawSources, ps, userId, userTimeZone);
 
             // load the entities and return them
-            var queries = new List<(IQueryInternal Query, SqlStatement Statement)> { (query, statement) };
-            var result = await EntityLoader.LoadStatements<T>(
-                queries: queries,
+            var result = await EntityLoader.LoadAggregateStatement(
+                statement: statement,
                 preparatorySql: null,
                 ps: ps,
                 conn: conn);

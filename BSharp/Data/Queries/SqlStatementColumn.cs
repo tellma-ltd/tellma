@@ -23,10 +23,5 @@ namespace BSharp.Data.Queries
         /// The aggregation function applied on the column if any (e.g. sum)
         /// </summary>
         public string Aggregation { get; set; }
-
-        /// <summary>
-        /// This is original to the query and was not added merely as a foreign key to another selected entity
-        /// </summary>
-        public bool IsOriginal { get; set; }
     }
 }

@@ -26,16 +26,13 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
   path: string;
 
   @Input()
-  entity: Entity;
+  entity: any;
 
   @Input()
-  finalValue: any; // when set, the input 'entity' is ignored
+  propDescriptor: PropDescriptor; // When set it (1) ignores collection, definition and path (2) assumes the entity is the immediate value
 
   @Input()
-  useFinalValue = false; // IF true, the finalValue is expected to be the immediate value
-
-  @Input()
-  propDescriptor: PropDescriptor; // When set, it assumes (1) the path is not a nav property (2) ignores collection, definition and path
+  entityDescriptor: EntityDescriptor;
 
   _subscription: Subscription;
 
@@ -92,10 +89,12 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
 
     try {
 
-      this._value = this.useFinalValue ? this.finalValue : this.entity;
+      this._value = this.entity;
 
       if (!!this.propDescriptor) {
+        // The parent of the component did all the heavy lifting and supplied these values
         this._propDescriptor = this.propDescriptor;
+        this._entityDescriptor = this.entityDescriptor;
         this._metavalue = 2;
         this._control = this._propDescriptor.control;
 
@@ -134,16 +133,14 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
                 currentDefinition = this._propDescriptor.definition;
                 this._entityDescriptor = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentDefinition);
 
-                if (!this.useFinalValue) {
-                  if (this._metavalue === 2 && !!this._value && this._value.EntityMetadata) {
-                    this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
+                if (this._metavalue === 2 && !!this._value && this._value.EntityMetadata) {
+                  this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
 
-                    const fkValue = this._value[this._propDescriptor.foreignKeyName];
-                    this._value = this.ws.current[currentCollection][fkValue];
+                  const fkValue = this._value[this._propDescriptor.foreignKeyName];
+                  this._value = this.ws.current[currentCollection][fkValue];
 
-                  } else {
-                    this._metavalue = 0;
-                  }
+                } else {
+                  this._metavalue = 0;
                 }
               } else {
                 // only allowed at the last step
@@ -151,14 +148,12 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
                   throw new Error(`'${step}' is not a navigation property on '${currentCollection}', definition:'${currentDefinition}'`);
                 }
 
-                if (!this.useFinalValue) {
-                  // set the property and control at the end
-                  if (this._metavalue === 2 && this._value && this._value.EntityMetadata) {
-                    this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
-                    this._value = this._value[step];
-                  } else {
-                    this._metavalue = 0;
-                  }
+                // set the property and control at the end
+                if (this._metavalue === 2 && this._value && this._value.EntityMetadata) {
+                  this._metavalue = step === 'Id' ? 2 : this._value.EntityMetadata[step] || 0;
+                  this._value = this._value[step];
+                } else {
+                  this._metavalue = 0;
                 }
               }
             }
@@ -261,6 +256,6 @@ export function displayValue(value: any, prop: PropDescriptor, trx: TranslateSer
  * @param entity The entity to represent as a string
  * @param entityDesc The entity descriptor used to format the entity as a string
  */
-export function displayEntity(entity: EntityWithKey, entityDesc: EntityDescriptor) {
+export function displayEntity(entity: Entity, entityDesc: EntityDescriptor) {
   return !!entityDesc.format ? entityDesc.format(entity) : '(Format function missing)';
 }

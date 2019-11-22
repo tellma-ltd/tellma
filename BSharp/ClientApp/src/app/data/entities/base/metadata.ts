@@ -20,6 +20,7 @@ import { metadata_Account } from '../account';
 import { metadata_ReportDefinition } from '../report-definition';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { GENERIC } from './constants';
+import { Entity } from './entity';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, definitionId: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -112,12 +113,12 @@ export interface EntityDescriptor {
     /**
      * Given an entity, retrieves the definition Id
      */
-    definitionFunc?: (e: EntityWithKey) => string;
+    definitionFunc?: (e: Entity) => string;
 
     /**
      * A function that returns a display string representing the entity.
      */
-    format: (item: EntityWithKey) => string;
+    format: (item: Entity) => string;
 
     /**
      * When applicable: returns all the values that the type parameter can take.

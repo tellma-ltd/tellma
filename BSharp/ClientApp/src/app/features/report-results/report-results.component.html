@@ -58,9 +58,8 @@
                                                     [rotate]="rotateArrow(col)">
                                                 </fa-icon>
                                             </button>&nbsp;</ng-container>
-                                        <b-auto-cell *ngIf="isDefined(col)" [collection]="collection"
-                                            [definition]="definitionId" [path]="col.path"
-                                            [finalValue]="finalValue(col.collection, col.value)" [useFinalValue]="true">
+                                        <b-auto-cell *ngIf="isDefined(col)" [propDescriptor]="col.propDesc"
+                                            [entityDescriptor]="col.entityDesc" [entity]="col.value">
                                         </b-auto-cell>
                                         <span class="font-italic text-muted"
                                             *ngIf="!isDefined(col)">{{ 'Undefined' | translate }}</span>
@@ -106,9 +105,8 @@
                                     (click)="onExpandRow(cell)">
                                     <fa-icon icon="angle-right" [flip]="flipArrow(cell)" [rotate]="rotateArrow(cell)">
                                     </fa-icon>
-                                </button>&nbsp;<b-auto-cell *ngIf="isDefined(cell)" [collection]="collection"
-                                    [definition]="definitionId" [path]="cell.path"
-                                    [finalValue]="finalValue(cell.collection, cell.value)" [useFinalValue]="true">
+                                </button>&nbsp;<b-auto-cell *ngIf="isDefined(cell)" [propDescriptor]="cell.propDesc"
+                                    [entityDescriptor]="cell.entityDesc" [entity]="cell.value">
                                 </b-auto-cell><span class="font-italic text-muted"
                                     *ngIf="!isDefined(cell)">{{ 'Undefined' | translate }}</span>
                             </td>

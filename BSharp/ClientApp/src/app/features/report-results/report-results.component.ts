@@ -61,9 +61,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   refresh: Observable<void>; // Must be set only once
 
   @Input()
-  resize: Observable<void>; // Must be set only once
-
-  @Input()
   mode: 'screen' | 'preview' | 'dashboard' = 'screen';
 
   // @Output()
@@ -75,7 +72,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   private crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$); // Just for intellisense
 
   // Stuff that should go in a service
-  private localState: ReportStore;
   private _currentRows: (DimensionCell | LabelCell | MeasureCell)[][];
   private _currentColumns: (DimensionCell | LabelCell)[][];
 
@@ -112,7 +108,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       '#0D606D', '#10707F', '#0B505B',
       '#073036', '#094049', '#042024',
       // '#80E0EF', '#C9F2F8', '#49D3E9',
-      //   '#1BC0DA', '#25CBE4', '#19B0C8',
+      // '#1BC0DA', '#25CBE4', '#19B0C8',
     ]
   };
   monochromatic = { domain: ['#17a2b8'] };
@@ -121,15 +117,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService,
     private api: ApiService, private cdr: ChangeDetectorRef, private router: Router) {
-
-    // window.onresize = () => {
-    //   setTimeout(_ => {
-    //     console.log('resize');
-    //     window.dispatchEvent(new Event('resize'));
-    //   }, 20000);
-
-    //   // this.chartSize = [...this.chartSize.map(d => d + 10)];
-    // };
   }
 
   ngOnInit() {
@@ -150,10 +137,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         .subscribe(() => this.fetch()));
     }
 
-    if (!!this.resize) {
-      this._subscriptions.add(this.resize.subscribe(() => this.remeasureChartSize()));
-    }
-
     this.crud = this.api.crudFactory(this.apiEndpoint, this.notifyDestruct$);
 
     // Set to default
@@ -169,16 +152,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     if (s.reportStatus !== ReportStatus.loaded || hasChanges) {
       s.realColumns = this.computeRealDimensions(this.definition.Columns);
       s.realRows = this.computeRealDimensions(this.definition.Rows);
+      console.log(s.realRows);
       s.uniqueDimensions = this.computeUniqueDimensions(s.realColumns.concat(s.realRows));
       s.measures = this.computeMeasureInfos(this.definition.Measures);
       s.singleNumericMeasure = this.state.measures.find(m => isNumeric(m.desc));
 
       this.fetch();
     }
-  }
-
-  public remeasureChartSize() {
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -394,62 +374,31 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   private computeRealDimensions(dims: ReportDimensionDefinitionForClient[]): DimensionInfo[] {
 
-    if (!dims) {
-      return [];
-    }
+    dims = dims || [];
+    return dims.map(dim => {
+      const path = dim.Path.split('/').map((e: string) => e.trim()).join('/');
+      const { propDesc, entityDesc } = this.getDescriptors2(path);
 
-    const comp = this;
+      const pathSlash = !!path ? path + '/' : '';
 
-    // Put all the paths in an array, trimming away any '/Id' at the end
-    const normalizedDims = dims.map(dim => {
-      let steps = dim.Path.split('/').map((e: string) => e.trim());
-      if (steps.length > 1 && steps[steps.length - 1] === 'Id') {
-        steps = steps.slice(0, -1);
+      // Create the dimension info
+      const result: DimensionInfo = {
+        key: path,
+        path,
+        propDesc,
+        autoExpand: dim.AutoExpand,
+        label: () => !!dim.Label ? this.workspace.current.getMultilingualValueImmediate(dim, 'Label') : propDesc.label()
+      };
+
+      // This is a nav property, add a few extra things
+      if (!!entityDesc) {
+        result.entityDesc = entityDesc;
+        result.idKey = `${pathSlash}Id`;
+        result.selectKeys = entityDesc.select.map(s => ({ path: `${pathSlash}${s}`, prop: s }));
       }
 
-      return steps.join('/');
+      return result;
     });
-
-    // Here we accumulate the dimensions that are not merely properties of other dimensions
-    const realDims: DimensionInfo[] = [];
-
-    for (const dim of dims) {
-      const dimSteps = dim.Path.split('/').map((e: string) => e.trim());
-      const dimStringPath = dimSteps.join('/');
-
-      // a real dimension is one which is not a property of another
-      // dimension, e.g. "Resource" and "Resource/Code", the former
-      // is a real dimension, the latter is just a property of it
-      const isReal = normalizedDims.every(p => dimStringPath === p || !dimStringPath.startsWith(p + '/'));
-      if (isReal) {
-        const collection = comp.definition.Collection;
-        const definitionId = comp.definition.DefinitionId;
-        const ws = comp.workspace.current;
-        const trx = comp.translate;
-        const currentDesc = entityDescriptorImpl(dimSteps.slice(0, -1), collection, definitionId, ws, trx);
-
-        const dimProperty = dimSteps[dimSteps.length - 1];
-        const propDesc = currentDesc.properties[dimProperty];
-        let targetCollection: string = null;
-        if (!!propDesc && propDesc.control === 'navigation') {
-          dimSteps[dimSteps.length - 1] = propDesc.foreignKeyName;
-          targetCollection = propDesc.type || propDesc.collection;
-        }
-
-        realDims.push({
-          key: dimSteps.join('/'),
-          path: dimStringPath,
-          collection: targetCollection,
-          autoExpand: dim.AutoExpand,
-          label: () => !!dim.Label ? this.workspace.current.getMultilingualValueImmediate(dim, 'Label') :
-            propDesc.label()
-        });
-      } else {
-        // Find the shortest match, and add it to it
-      }
-    }
-
-    return realDims;
   }
 
   private computeUniqueDimensions(dims: DimensionInfo[]): DimensionInfo[] {
@@ -468,7 +417,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   private computeSelect(): string {
     const resultPaths: { [path: string]: boolean } = {};
     const baseEntityDescriptor = this.entityDescriptor;
-
 
     // (1) append the current entity type default properties (usually 'Name', 'Name2' and 'Name3')
     baseEntityDescriptor.select.forEach(e => resultPaths[e] = true);
@@ -678,48 +626,32 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     let currentDimension = dimension;
     while (!!currentDimension) {
       let path = currentDimension.path;
+      let propDesc = currentDimension.propDesc;
 
-      const steps = path.split('/');
-      const prop = steps.pop();
-      const collection = this.definition.Collection;
-      const definitionId = this.definition.DefinitionId;
-      const ws = this.workspace.current;
-      const trx = this.translate;
-      const value = currentDimension.value;
+      if (!!propDesc) {
+        // Adjust path and propDesc in the case of a nav property
+        if (propDesc.control === 'navigation') {
+          const fkName = propDesc.foreignKeyName;
+          const steps = path.split('/').slice(0, -1);
+          path = steps.concat([fkName]).join('/');
+          const entityDesc = currentDimension.entityDesc;
+          propDesc = entityDesc.properties.Id;
 
-      const entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
-      let propDesc = entityDesc.properties[prop];
-
-      // Step (1) validation
-      if (!propDesc) {
-        throw new Error(`Property ${prop} does not exist on collection: '${collection}', definition: ${definitionId || ''}.`);
-      }
-
-      // Step (2) Adjust path and propDesc in the case of a nav property
-      if (propDesc.control === 'navigation') {
-        const fkName = propDesc.foreignKeyName;
-        propDesc = entityDesc.properties[fkName];
-        if (!propDesc) {
-          // In case the lazy developer did not add metadata for the fk property itself
-          const navEntityDesc = entityDescriptorImpl([...steps, prop], collection, definitionId, ws, trx);
-          propDesc = navEntityDesc.properties.Id;
+          if (!propDesc) {
+            // Developer mistake
+            throw new Error(`Entity descriptor for ${entityDesc.titlePlural()} is missing an Id descriptor.`);
+          }
         }
 
-        if (!propDesc) {
-          // Developer is way too lazy
-          throw new Error(`Either specify the metadata for the FK property '${fkName}' or for the Id of the target entity.`);
+        // Step (3) calculate the filter atom and add it
+        const value = currentDimension.valueId;
+        if (!isSpecified(value)) {
+          atoms.push(`${path} eq null`);
+        } else if (isText(propDesc)) {
+          atoms.push(`${path} eq '${value.replace('\'', '\'\'')}'`);
+        } else {
+          atoms.push(`${path} eq ${value + ''}`);
         }
-
-        path = steps.concat([fkName]).join('/');
-      }
-
-      // Step (3) calculate the filter atom and add it
-      if (!isSpecified(value)) {
-        atoms.push(`${path} eq null`);
-      } else if (isText(propDesc)) {
-        atoms.push(`${path} eq '${value.replace('\'', '\'\'')}'`);
-      } else {
-        atoms.push(`${path} eq ${value + ''}`);
       }
 
       currentDimension = currentDimension.parent;
@@ -728,8 +660,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return atoms;
   }
 
-  private getDescriptors(dim: DimensionInfo): { propDesc: PropDescriptor, entityDesc?: EntityDescriptor } {
-    const path = dim.path;
+  private getDescriptors2(path: string): { propDesc: PropDescriptor, entityDesc?: EntityDescriptor } {
     const collection = this.definition.Collection;
     const definitionId = this.definition.DefinitionId;
     const ws = this.workspace.current;
@@ -792,6 +723,35 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   //////// SUMMARY - PIVOT
 
+  public extractValueAndValueId(g: Entity, dimension: DimensionInfo): { value: any, valueId: any } {
+    let value: any;
+    let valueId: any;
+    if (!!dimension.entityDesc) {
+      // For navigation properties, the value is an object emulating the real entity, and the id is its Id
+      valueId = g[dimension.idKey];
+      if (isSpecified(valueId)) {
+        value = { Id: valueId };
+        dimension.selectKeys.forEach(key => value[key.prop] = g[key.path]);
+      }
+    } else {
+      // For simple properties (non-nav) both the id and the value are set to the value of that property
+      valueId = g[dimension.key];
+      value = valueId;
+    }
+
+    return { value, valueId };
+  }
+
+  public extractId(g: Entity, dimension: DimensionInfo): any {
+    if (!!dimension.entityDesc) {
+      // For navigation properties, the value is an object emulating the real entity, and the id is its Id
+      return g[dimension.idKey];
+    } else {
+      // For simple properties (non-nav) both the id and the value are set to the value of that property
+      return g[dimension.key];
+    }
+  }
+
   public get pivot(): PivotTable {
     // The various parts of the pivot table bind to what is returned by this property
     const s = this.state;
@@ -799,10 +759,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       s.currentResultForPivot = s.result;
 
       // Helper function that builds hashes mapping every combination of dimensions to a dimension index
-      function dimensionHash(dimensions: DimensionInfo[]): { hash: PivotHash, cells: DimensionCell[] } {
+      const dimensionHash = (dimensions: DimensionInfo[]): { hash: PivotHash, cells: DimensionCell[] } => {
 
         const rootHash: PivotHash = { cell: null, children: [] }; // cell == null is the root
-        // const cells: DimensionCell[] = [];
 
         if (dimensions.length > 0) {
           for (const g of s.result) {
@@ -810,16 +769,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             let level = 0;
             const lastDimension = dimensions[dimensions.length - 1];
             for (const dimension of dimensions) {
-              const value = g[dimension.key];
+              const { value, valueId: id } = this.extractValueAndValueId(g, dimension);
               let targetHash: PivotHash;
 
               // Either go down the values or the undefined route
-              if (isSpecified(value)) {
+              if (isSpecified(id)) {
                 if (!currentHash.values) {
                   currentHash.values = {};
                 }
 
-                targetHash = currentHash.values[value];
+                targetHash = currentHash.values[id];
 
               } else {
                 targetHash = currentHash.undefined;
@@ -832,7 +791,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                     type: 'dimension',
                     path: dimension.path,
                     value,
-                    collection: dimension.collection,
+                    valueId: id,
+                    propDesc: dimension.propDesc,
+                    entityDesc: dimension.entityDesc,
                     isExpanded: dimension !== lastDimension && dimension.autoExpand,
                     hasChildren: dimension !== lastDimension,
                     level,
@@ -845,8 +806,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
                 currentHash.children.push(targetHash.cell);
 
-                if (isSpecified(value)) {
-                  currentHash.values[value] = targetHash;
+                if (isSpecified(id)) {
+                  currentHash.values[id] = targetHash;
                 } else {
                   currentHash.undefined = targetHash;
                 }
@@ -866,7 +827,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           for (const cell of hash.children) {
             cell.index = index++;
             cells.push(cell);
-            const childHash = isSpecified(cell.value) ? hash.values[cell.value] : hash.undefined;
+            const childHash = isSpecified(cell.valueId) ? hash.values[cell.valueId] : hash.undefined;
             addHash(childHash);
           }
         }
@@ -874,7 +835,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         addHash(rootHash);
 
         return { hash: rootHash, cells };
-      }
+      };
 
       /////////// Calculate the top half of the report (the "columnHeaders")
       const realColumns = s.realColumns;
@@ -1005,9 +966,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             // Grand total
             colIndex = columnGrandTotalIndex;
           } else {
-            const colValue = g[col.key];
-            if (isSpecified(colValue)) {
-              currentColHash = currentColHash.values[colValue];
+
+            const colId = this.extractId(g, col);
+            if (isSpecified(colId)) {
+              currentColHash = currentColHash.values[colId];
             } else {
               currentColHash = currentColHash.undefined;
             }
@@ -1022,9 +984,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               // Grand total
               rowIndex = rowGrandTotalIndex;
             } else {
-              const rowValue = g[row.key];
-              if (isSpecified(rowValue)) {
-                currentRowHash = currentRowHash.values[rowValue];
+              const rowId = this.extractId(g, row);
+              if (isSpecified(rowId)) {
+                currentRowHash = currentRowHash.values[rowId];
               } else {
                 currentRowHash = currentRowHash.undefined;
               }
@@ -1223,10 +1185,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return this.state.measures;
   }
 
-  public finalValue(collection: string, value: any) {
-    return !!collection ? this.workspace.current.get(collection, value) : value;
-  }
-
   public onMeasureClick(cell: MeasureCell, rowIndex: number) {
     const col: DimensionCell = cell.parent;
     const row: DimensionCell = this.rows[rowIndex][0].type === 'dimension' ? this.rows[rowIndex][0] as DimensionCell : null;
@@ -1264,7 +1222,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   public isDefined(cell: DimensionCell) {
     // IF this is false, a muted italic "(undefined)" is displayed instead
-    return isSpecified(cell.value);
+    return isSpecified(cell.valueId);
   }
 
   public get addRowExpanders() {
@@ -1306,16 +1264,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         try {
           const dim = s.uniqueDimensions[0];
           const path = dim.path;
-          const { propDesc, entityDesc } = this.getDescriptors(dim);
+          const { propDesc, entityDesc } = dim;
 
           s.single = s.result.map(g => {
-            const value = g[dim.key];
-            const display = !isSpecified(value) ? this.translate.instant('Undefined') :
-              !!entityDesc ? displayEntity(this.finalValue(dim.collection, value), entityDesc) :
+            const { value, valueId } = this.extractValueAndValueId(g, dim);
+            const display = !isSpecified(valueId) ? this.translate.instant('Undefined') :
+              !!entityDesc ? displayEntity(value, entityDesc) :
                 displayValue(value, propDesc, this.translate);
 
             return {
-              name: new ChartDimensionCell(display, path, value),
+              name: new ChartDimensionCell(display, path, valueId, propDesc, entityDesc),
               value: g[measure.key]
             };
           });
@@ -1345,7 +1303,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         // When the number of dimensions is just one, make the single-series pretend it's a multi-series
         const single = this.single;
         const label = this.firstDimensionLabel;
-        const singletonDimension = new ChartDimensionCell(label, '', label);
+        const singletonDimension = new ChartDimensionCell(label, '', label, null, null);
         s.multi = [{
           name: singletonDimension,
           series: single
@@ -1353,53 +1311,56 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       } else if (s.uniqueDimensions.length === 2) {
         const dim = s.uniqueDimensions[0];
         const path = dim.path;
-        const { propDesc, entityDesc } = this.getDescriptors(dim);
+        const { propDesc, entityDesc } = dim;
 
         const dim2 = s.uniqueDimensions[1];
         const path2 = dim2.path;
-        const { propDesc: propDesc2, entityDesc: entityDesc2 } = this.getDescriptors(dim2);
+        const { propDesc: propDesc2, entityDesc: entityDesc2 } = dim2;
 
-        const valueToChildCollectionMap: { [value: string]: { cell: ChartDimensionCell, value: number }[] } = {};
+        const valueToChildCollectionMap: { [id: string]: { cell: ChartDimensionCell, value: number }[] } = {};
         let undefinedChildCollectionMap: { cell: ChartDimensionCell, value: number }[];
 
         const rootCollection: ChartDimensionCell[] = [];
 
         for (const g of s.result) {
-          const value = g[dim.key];
+          const { value, valueId } = this.extractValueAndValueId(g, dim);
           let childCollection: { cell: ChartDimensionCell, value: number }[];
           if (isSpecified(value)) {
-            childCollection = valueToChildCollectionMap[value];
+            childCollection = valueToChildCollectionMap[valueId];
           } else {
             childCollection = undefinedChildCollectionMap;
           }
 
           if (!childCollection) {
-            const display = !isSpecified(value) ? this.translate.instant('Undefined') :
-              !!entityDesc ? displayEntity(this.finalValue(dim.collection, value), entityDesc) :
+            const display = !isSpecified(valueId) ? this.translate.instant('Undefined') :
+              !!entityDesc ? displayEntity(value, entityDesc) :
                 displayValue(value, propDesc, this.translate);
-            const dimensionCell = new ChartDimensionCell(display, path, value);
+            const dimensionCell = new ChartDimensionCell(display, path, valueId, propDesc, entityDesc);
 
             rootCollection.push(dimensionCell);
             childCollection = [];
 
             if (isSpecified(value)) {
-              valueToChildCollectionMap[value] = childCollection;
+              valueToChildCollectionMap[valueId] = childCollection;
             } else {
               undefinedChildCollectionMap = childCollection;
             }
           }
 
-          const value2 = g[dim2.key];
-          const display2 = !isSpecified(value2) ? this.translate.instant('Undefined') :
-            !!entityDesc2 ? displayEntity(this.finalValue(dim2.collection, value2), entityDesc2) :
+          const { value: value2, valueId: valueId2 } = this.extractValueAndValueId(g, dim2);
+          const display2 = !isSpecified(valueId2) ? this.translate.instant('Undefined') :
+            !!entityDesc2 ? displayEntity(value2, entityDesc2) :
               displayValue(value2, propDesc2, this.translate);
 
-          childCollection.push({ cell: new ChartDimensionCell(display2, path2, value2), value: g[measure.key] });
+          childCollection.push({
+            cell: new ChartDimensionCell(display2, path2, valueId2, propDesc2, entityDesc2),
+            value: g[measure.key]
+          });
         }
 
         s.multi = rootCollection.map(cell => {
-          const childCollection = isSpecified(cell.value) ?
-            valueToChildCollectionMap[cell.value] : undefinedChildCollectionMap;
+          const childCollection = isSpecified(cell.valueId) ?
+            valueToChildCollectionMap[cell.valueId] : undefinedChildCollectionMap;
 
           // Map children to their parents here
           childCollection.forEach(child => child.cell.parent = cell);
@@ -1409,6 +1370,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             series: childCollection.map(cellValue => ({ name: cellValue.cell, value: cellValue.value }))
           };
         });
+
+        console.log(s.multi);
       } else {
         s.multi = null;
       }

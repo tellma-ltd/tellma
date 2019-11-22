@@ -9,7 +9,7 @@ namespace BSharp.Data.Queries
     /// Responsible for creating an <see cref="SqlStatement"/> based on some query parameters.
     /// This is a helper class used internally in the implementation of <see cref="AggregateQuery{T}"/> and should not be used elsewhere in the solution
     /// </summary>
-    internal class AggregateQueryInternal : IQueryInternal
+    internal class AggregateQueryInternal
     {
         /// <summary>
         /// The select parameter, should NOT contain collection nav properties or tree nav properties (Parent)
@@ -72,8 +72,7 @@ namespace BSharp.Data.Queries
                 Sql = sql,
                 ResultType = ResultType,
                 ColumnMap = selectClause.GetColumnMap(),
-                Query = this,
-                IsAggregate = true
+                Query = null, // Not used anyways
             };
         }
 
@@ -104,73 +103,27 @@ namespace BSharp.Data.Queries
         /// </summary>
         private SqlSelectGroupByClause PrepareSelect(JoinTree joinTree)
         {
-            // Entityable analysis
-            var entityablePrefixes = Select
-                .Where(e => e.Property == "Id" && e.IsDimension)
-                .Select(e => e.Path)
-                .ToList();
-
-            // This is to ensure uniqueness
-            var columns = new Dictionary<(string Symbol, string PropName, string aggregate),
-                (string Symbol, ArraySegment<string> Path, string PropName, string Aggregate, bool IsOriginal)>();
-
-            //var selects = new HashSet<(string Symbol, string PropName, string aggregate)>(); // To ensure uniqueness
-            //var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate, bool IsOriginal)>();
-
-            void AddSelect(string symbol, ArraySegment<string> path, string propName, string aggregate, bool isOriginal)
-            {
-                // If the select doesn't exist: add it, or if it is not original and it shows up again as original: upgrade it
-                if (!columns.ContainsKey((symbol, propName, aggregate)) || (!columns[(symbol, propName, aggregate)].IsOriginal && isOriginal))
-                {
-                    columns[(symbol, propName, aggregate)] = (symbol, path, propName, aggregate, isOriginal);
-                }
-            }
+            var selects = new HashSet<(string Symbol, string PropName, string aggregate)>(); // To ensure uniqueness
+            var columns = new List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregate)>();
 
             foreach (var select in Select)
             {
                 // Add the property
                 string[] path = select.Path;
+                var join = joinTree[path];
+                var symbol = join.Symbol;
+                var propName = select.Property; // Can be null
+                var aggregation = select.Aggregation;
 
+                // If the select doesn't exist: add it, or if it is not original and it shows up again as original: upgrade it
+                if (selects.Add((symbol, propName, aggregation)))
                 {
-                    var join = joinTree[path];
-                    var propName = select.Property; // Can be null
-                    var aggregation = select.Aggregation;
-                    AddSelect(join.Symbol, path, propName, aggregation, true);
-                }
-
-                // In this loop we ensure all levels to the selected properties
-                // have their Ids and Foreign Keys added to the select collection
-                for (int i = 0; i <= path.Length; i++)
-                {
-                    var subpath = new ArraySegment<string>(path, 0, i);
-                    var join = joinTree[subpath];
-                    if (join == null)
-                    {
-                        // Developer mistake
-                        throw new InvalidOperationException($"The path '{string.Join('/', subpath)}' was not found in the joinTree");
-                    }
-
-                    // This does not add "Id" and foreign key by default unless it is a Entityable path
-                    bool isEntityable = entityablePrefixes.Any(e => e.IsPrefixOf(subpath));
-                    if (isEntityable)
-                    {
-                        // Unless this is root, we also go one level up and add the foreign key that points to this Entity
-                        if (subpath.Count > 0)
-                        {
-                            var prevPath = new ArraySegment<string>(subpath.Array, subpath.Offset, subpath.Count - 1);
-                            var prevJoin = joinTree[prevPath];
-
-                            AddSelect(prevJoin.Symbol, prevPath, join.ForeignKeyName, null, false);
-                        }
-
-                        // The Id is ALWAYS included in every returned Entity
-                        AddSelect(join.Symbol, subpath, "Id", null, true);
-                    }
+                    columns.Add((symbol, path, propName, aggregation));
                 }
             }
 
             // Change the hash set to a list so that the order is well defined
-            return new SqlSelectGroupByClause(columns.Values.ToList(), Top ?? 0);
+            return new SqlSelectGroupByClause(columns.ToList(), Top ?? 0);
         }
 
         /// <summary>
@@ -223,19 +176,5 @@ namespace BSharp.Data.Queries
 
             return orderbySql;
         }
-
-        #region IQueryInternal
-
-        // None of these are used
-
-        public QueryInternal PrincipalQuery { get; set; }
-
-        public string ForeignKeyToPrincipalQuery { get; set; }
-
-        public ArraySegment<string> PathToCollectionPropertyInPrincipal { get; set; }
-
-        public bool IsAncestorExpand { get; set; }
-
-        #endregion
     }
 }

@@ -28,11 +28,6 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// The query that produced this <see cref="SqlStatement"/>
         /// </summary>
-        public IQueryInternal Query { get; set; }
-
-        /// <summary>
-        /// True if and only if this was produced by an <see cref="AggregateQuery{T}"/>
-        /// </summary>
-        public bool IsAggregate { get; set; }
+        public QueryInternal Query { get; set; }
     }
 }

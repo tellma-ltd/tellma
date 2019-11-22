@@ -569,12 +569,13 @@ namespace BSharp.Data.Queries
             var rawSources = QueryTools.RawSources(sources, ps);
 
             // Prepare the SqlStatements
-            List<(IQueryInternal, SqlStatement)> queries = segments.Values.Cast<IQueryInternal>().Select(q =>
-                (q, q.PrepareStatement(rawSources, ps, userId, userTimeZone))).ToList(); // The order matters for the Entity loader
+            List<SqlStatement> statements = segments.Values
+                .Select(q => q.PrepareStatement(rawSources, ps, userId, userTimeZone))
+                .ToList(); // The order matters for the Entity loader
 
             // Load the entities
             var result = await EntityLoader.LoadStatements<T>(
-                queries: queries,
+                statements: statements,
                 preparatorySql: null,
                 ps: ps,
                 conn: conn);

@@ -81,12 +81,5 @@ namespace BSharp.Data.Queries
         }
 
         #endregion
-
-        /// <summary>
-        /// Reflection cannot be used to retrieve the properties of a <see cref="DynamicEntity"/> in
-        /// the same manner as other types <see cref="Entity"/>, since the properties here are
-        /// stored as dictionary entries. This list covers that gap
-        /// </summary>
-        public List<DynamicPropInfo> Properties { get; set; } = new List<DynamicPropInfo>();
     }
 }

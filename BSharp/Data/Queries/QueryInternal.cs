@@ -11,7 +11,7 @@ namespace BSharp.Data.Queries
     /// This represents a query without any one-to-many path steps (e.g. expand=Order/LineItems is not allowed).
     /// This is a helper class used internally in the implementation of <see cref="Query{T}"/> and should not be used elsewhere in the solution
     /// </summary>
-    public class QueryInternal : IQueryInternal
+    public class QueryInternal
     {
         /// <summary>
         /// For a <see cref="QueryInternal"/> X that is created for the purpose of loading a collection
