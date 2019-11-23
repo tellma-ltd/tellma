@@ -91,7 +91,7 @@
     <Folder Include="Tests\01_Lookups" />
     <Folder Include="Tests\03_Agents" />
     <Folder Include="Tests\05_Accounts" />
-    <Folder Include="Tests\00_Security" />
+    <Folder Include="Tests\00_Setup" />
     <Folder Include="Tests\06_Entries" />
     <Folder Include="Provisioning\03_DocumentsLines" />
   </ItemGroup>
@@ -400,15 +400,12 @@
     <Build Include="dal\Stored Procedures\dal.Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.EntryTypes.sql" />
-    <None Include="Provisioning\01_AccountsEntries\a_AccountDefinitions.sql" />
     <None Include="Provisioning\01_AccountsEntries\zOld_AccountTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\c_EntryTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\d_AccountTypesEntryTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\x_AccountClassifications.sql" />
     <Build Include="Mapping\map.EntryTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Activate.sql" />
-    <None Include="Provisioning\02_ResourcesUnits\a_Currencies.sql" />
-    <None Include="Provisioning\02_ResourcesUnits\b_MeasurementUnits.sql" />
     <None Include="Provisioning\02_ResourcesUnits\c_ResourceTypes.sql" />
     <None Include="Tests\02_Resources\d1_FG_vehicles.sql" />
     <Build Include="dbo\Functions\dbo.fn_Lookup.sql" />
@@ -439,8 +436,8 @@
     <Build Include="api\Stored Procedures\api.AgentRelations__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.AgentRelations_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.AgentRelations__Save.sql" />
-    <None Include="Tests\00_Security\01_RolesPermissions.sql" />
-    <None Include="Tests\00_Security\02_Workflows.sql" />
+    <None Include="Tests\00_Setup\a_RolesMemberships.sql" />
+    <None Include="Tests\00_Setup\h_Workflows.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__File.sql" />
     <Build Include="api\Stored Procedures\api.DocumentLines__Unsign.sql" />
@@ -457,6 +454,9 @@
     <Build Include="bll\Stored Procedures\bll.PurchaseInvoice__Fill.sql" />
     <Build Include="dbo\Tables\dbo.TaxAccounts.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
+    <None Include="Tests\00_Setup\b_Currencies.sql" />
+    <None Include="Tests\00_Setup\d_AccountDefinitions.sql" />
+    <None Include="Tests\00_Setup\c_MeasurementUnits.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -491,8 +491,6 @@
     <None Include="Tests\05_Accounts\02_tax-accounts.sql" />
     <None Include="Tests\06_Entries\00_manual-vouchers.sql" />
     <None Include="Tests\06_Entries\01_petty-cash-vouchers.sql" />
-    <None Include="Provisioning\00_Setup\c_CoreEntities.sql" />
-    <None Include="Provisioning\00_Setup\d_TaxAgencies.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
