@@ -1,32 +1,40 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-	[Id],		[TitlePlural],	[TitleSingular],[ResourceTypeParentList], [Lookup1Visibility], [Lookup1Lable], [Lookup1DefinitionId]) VALUES
-	(N'sdks',	N'SDKs',		N'SDK',			N'FinishedGoods');
+	[Id],		[TitlePlural],	[TitleSingular],[ResourceTypeParentList], [Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
+	(N'skds',	N'SKDs',		N'SKD',			N'FinishedGoods',			N'Required',		N'Body Color',	N'body-colors');
 	
-DECLARE @Sdks [dbo].ResourceList;
+DECLARE @SKDs [dbo].ResourceList;
 
 	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'vehicles'
-					[Name],		[IsLeaf],	[Node]) VALUES
-	(N'vehicles',	N'Cars',	1,			N'/1/'),
-	(N'vehicles',	N'Sedan',	1,			N'/1/1/'),
-	(N'vehicles',	N'4xDrive',	1,			N'/1/2/'),
-	(N'vehicles',	N'Sports',	1,			N'/1/3/'),
-	(N'vehicles',	N'Trucks',	0,			N'/2/');
+				[Name],		[IsLeaf],	[Node]) VALUES
+	(N'skds',	N'Cars',	1,			N'/1/'),
+	(N'skds',	N'Sedan',	1,			N'/1/1/'),
+	(N'skds',	N'4xDrive',	1,			N'/1/2/'),
+	(N'skds',	N'Sports',	1,			N'/1/3/'),
+	(N'skds',	N'Trucks',	0,			N'/2/');
 
-	INSERT INTO @Sdks ([Index],
-	[ResourceClassificationId],		[Code],	[Name],				[ProductionDate],	[Description] ) VALUES
-	(0, dbo.fn_RCName__Id(N'Sedan'),N'101',	N'Toyota Camry 2018',	N'2017.10.01',	N'Red/White/Leather'),
-	(1, dbo.fn_RCName__Id(N'Sedan'),N'102',	N'Toyota Camry 2018',	N'2017.10.15',	N'Black/Black/Wool'),
-	(2, dbo.fn_RCName__Id(N'Sedan'),N'103',	N'Toyota Camry 2018',	N'2017.10.01',	N'Red/White/Leather'),
-	(3, dbo.fn_RCName__Id(N'Sedan'),N'104',	N'Toyota Camry 2018',	N'2017.10.01',	N'Red/White/Leather'),
-	(4, dbo.fn_RCName__Id(N'Sedan'),N'199',	N'Fake',				NULL,			N''),--1
-	(5, dbo.fn_RCName__Id(N'Sedan'),N'201',	N'Toyota Yaris 2018',	N'2017.10.01',	N'Red/White/Leather');--1
+	INSERT INTO @SKDs ([Index],
+		[ResourceTypeId],	[ResourceClassificationId],	[Code],	[Name],									[Description] ) VALUES
+	(0, N'Vehicles',		dbo.fn_RCName__Id(N'Sedan'),N'101',	N'Toyota Camry 2018 Red/White/Leather',	N'Red/White/Leather'),
+	(1, N'Vehicles',		dbo.fn_RCName__Id(N'Sedan'),N'102',	N'Toyota Camry 2018 Black/Black/Wool',	N'Black/Black/Wool'),
+	(3, N'Vehicles',		dbo.fn_RCName__Id(N'Sedan'),N'199',	N'Fake',				NULL),--1
+	(4, N'Vehicles',		dbo.fn_RCName__Id(N'Sedan'),N'201',	N'Toyota Yaris 2018 Red/White/Leather',	N'Red/White/Leather');--1
 
 	EXEC [api].[Resources__Save]
-		@DefinitionId = N'sdks',
-		@Resources = @Sdks,
+		@DefinitionId = N'skds',
+		@Entities = @SKDs,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Inserting sdks'
+		Print 'Inserting SKDs'
 		GOTO Err_Label;
 	END;
+
+	IF @DebugResources = 1 
+	BEGIN
+		SELECT N'skds' AS [Resource Definition]
+		DECLARE @SKDIds dbo.IdList;
+		INSERT INTO @SKDIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'skds';
+
+		SELECT ResourceTypeId, [Name] AS 'SKD', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
+		FROM rpt.Resources(@SKDIds);
+	END

@@ -17,8 +17,7 @@ BEGIN
 		SELECT ROW_NUMBER() OVER (ORDER BY [AccountId]) AS [Index],
 		[AccountId], -SUM([Direction] * E.[Value]) AS ValueBalance, SUM([Direction] * E.[MonetaryValue]) AS FXBalance
 		FROM dbo.fi_Journal(NULL, @DocumentDate) E
-		JOIN dbo.Resources R ON E.ResourceId = R.Id
-		WHERE R.[MonetaryValueCurrencyId] = @CurrencyId
+		WHERE E.[CurrencyId] = @CurrencyId
 		AND [AccountId] IN (SELECT [Id] FROM ExchangeVarianceAccounts)
 		GROUP BY [AccountId]
 		HAVING SUM([Direction] * E.[Value]) * @Rate <> SUM([Direction] * E.[MonetaryValue])

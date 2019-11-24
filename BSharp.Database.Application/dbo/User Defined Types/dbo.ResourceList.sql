@@ -8,27 +8,17 @@
 	[Name3]							NVARCHAR (255),
 	[Code]							NVARCHAR (255),
 
-	[AreaUnitId]					INT,
-	--[UnitAreaMean]				DECIMAL,
-	--[UnitAreaVariance]			DECIMAL (5,2),
 	[CountUnitId]					INT,
-	--[UnitCountMean]				DECIMAL,
-	--[UnitCountVariance]			DECIMAL (5,2),
-	[LengthUnitId]					INT,
-	--[UnitLengthMean]				DECIMAL,
-	--[UnitLengthVariance]			DECIMAL (5,2),
+
+	[CurrencyId]					NCHAR (3),
+	[MonetaryValue]					DECIMAL,
 	[MassUnitId]					INT,
-	--[UnitMassMean]				DECIMAL,
-	--[UnitMassVariance]			DECIMAL (5,2),
-	[MonetaryValueCurrencyId]		NCHAR (3) DEFAULT CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId')),
-	--[UnitMonetaryValueMean]		DECIMAL,
-	--[UnitMonetaryValueVariance]	DECIMAL (5,2),
-	[TimeUnitId]					INT,
-	--[UnitTimeMean]				DECIMAL,
-	--[UnitTimeVariance]			DECIMAL (5,2),
 	[VolumeUnitId]					INT,
-	--[UnitVolumeMean]				DECIMAL,
-	--[UnitVolumeVariance]			DECIMAL (5,2),
+	[TimeUnitId]					INT,
+
+	--[Mass]							DECIMAL,
+	--[Volume]						DECIMAL,
+	--[Time]							DECIMAL,
 
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
@@ -40,7 +30,10 @@
 
 	[AvailableSince]				DATE,			-- Comment
 	[AvailableTill]					DATE,			-- Comment
-	[GloballyUniqueReference]		NVARCHAR(50),	-- Comment
+
+	[UniqueReference1]				NVARCHAR(50), -- such as VIN, UPC, EPC, etc...
+	[UniqueReference2]				NVARCHAR(50), -- such as Engine number
+	[UniqueReference3]				NVARCHAR(50), -- such as Plate number
 	
 	[AssetAccountId]				INT,			-- Comment
 	[LiabilityAccountId]			INT,			-- Comment
@@ -52,12 +45,18 @@
 	[Agent2Id]						INT,			-- Comment
 	[Date1]							DATE,			-- Comment
 	[Date2]							DATE,			-- Comment
+	[Decimal1]						DECIMAL,
+	[Decimal2]						DECIMAL,
+	[INT1]							INT,			-- Engine Capacity
+	[INT2]							INT,
 
 	[Lookup1Id]						INT,
 	[Lookup2Id]						INT,
 	[Lookup3Id]						INT,
 	[Lookup4Id]						INT,
 	[Lookup5Id]						INT,			-- Comment
+	[Money1]						MONEY,
+	[Money2]						MONEY,
 	[Text1]							NVARCHAR (255), -- Comment
 	[Text2]							NVARCHAR (255), -- Comment
 

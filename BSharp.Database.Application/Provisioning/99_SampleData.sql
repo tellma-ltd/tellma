@@ -38,15 +38,15 @@ SELECT
 	   	   +  ISNULL(cast([ModifiedById] as nvarchar(50)), N'NULL') + '),'
   FROM [BSharp.101].[dbo].[Resources]
 */
-INSERT INTO [dbo].[Resources](
-[Id], [ResourceDefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], [Code], [CountUnitId], [MassUnitId],[VolumeUnitId], [LengthUnitId], [TimeUnitId], [MonetaryValueCurrencyId], [Description], [CustomsReference], [Lookup1Id],[Lookup2Id], [CreatedById], [ModifiedById]) VALUES
-(2, N'raw-materials', NULL, N'HR 1000mx0.8mm', NULL, NULL, N'HR 1000x0.8', NULL, 81, NULL, NULL, NULL, NULL, N'ETB', N'My default memo', NULL, 16, NULL, 1, 1),
-(3, N'raw-materials', NULL, N'HR 1000mx0.9mm', NULL, NULL, N'HR 1000x0.9', NULL, 81, 83, 86, 72, 72, N'USD', N'This is a memo', N'398254', 17, 27, 1, 1),
-(5, N'finished-goods', 4, N'Bucket - Blue', N'دلو أزرق', N'斗-蓝色', N'01', NULL, NULL, NULL, NULL, NULL, NULL, N'ETB', NULL, NULL, 3, NULL, 1, 1),
-(6, N'finished-goods', 8, N'Bucket - Red', N'دلو أحمر', N'斗-红色', N'02', NULL, NULL, NULL, NULL, NULL, NULL, N'ETB', NULL, NULL, 1, NULL, 1, 1),
-(7, N'finished-goods', 6, N'Bucket - Grey', N'دلو رمادي', N'斗-灰色', N'03', NULL, NULL, NULL, NULL, NULL, NULL, N'ETB', NULL, NULL, 10, NULL, 1, 1),
-(8, N'finished-goods', 7, N'Bucket - Orange', N'دلو برتقالي', N'斗-橙色', N'04', NULL, NULL, NULL, NULL, NULL, NULL, N'ETB', NULL, NULL, 4, NULL, 1, 1),
-(10, N'raw-materials', 3, N'HR 1000mx1.0mm', NULL, N'撤销删除', N'HR 1000x1.0', 68, 81, 83, 86, 72, 72, N'USD', N'My default memo', NULL, 18, 30, 1, 1);
+--INSERT INTO [dbo].[Resources](
+--[Id], [ResourceDefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], [Code], [CountUnitId], [MassUnitId],[VolumeUnitId], [LengthUnitId], [TimeUnitId], [Description], [CustomsReference], [Lookup1Id],[Lookup2Id], [CreatedById], [ModifiedById]) VALUES
+--(2, N'raw-materials', NULL, N'HR 1000mx0.8mm', NULL, NULL, N'HR 1000x0.8', NULL, 81, NULL, NULL, NULL, NULL, N'ETB', N'My default memo', NULL, 16, NULL, 1, 1),
+--(3, N'raw-materials', NULL, N'HR 1000mx0.9mm', NULL, NULL, N'HR 1000x0.9', NULL, 81, 83, 86, 72, 72, N'USD', N'This is a memo', N'398254', 17, 27, 1, 1),
+--(5, N'finished-goods', 4, N'Bucket - Blue', N'دلو أزرق', N'斗-蓝色', N'01', NULL, NULL, NULL, NULL, NULL, NULL, N'ETB', NULL, NULL, 3, NULL, 1, 1),
+--(6, N'finished-goods', 8, N'Bucket - Red', N'دلو أحمر', N'斗-红色', N'02', NULL, NULL, NULL, NULL, NULL, NULL, N'ETB', NULL, NULL, 1, NULL, 1, 1),
+--(7, N'finished-goods', 6, N'Bucket - Grey', N'دلو رمادي', N'斗-灰色', N'03', NULL, NULL, NULL, NULL, NULL, NULL, N'ETB', NULL, NULL, 10, NULL, 1, 1),
+--(8, N'finished-goods', 7, N'Bucket - Orange', N'دلو برتقالي', N'斗-橙色', N'04', NULL, NULL, NULL, NULL, NULL, NULL, N'ETB', NULL, NULL, 4, NULL, 1, 1),
+--(10, N'raw-materials', 3, N'HR 1000mx1.0mm', NULL, N'撤销删除', N'HR 1000x1.0', 68, 81, 83, 86, 72, 72, N'USD', N'My default memo', NULL, 18, 30, 1, 1);
 
 /*
 SELECT 

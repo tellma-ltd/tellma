@@ -125,7 +125,7 @@ SET NOCOUNT ON;
 	SELECT
 		'[' + ISNULL(CAST([Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheResource0Account1Shortage2',
-		R.[Name], A.[Name], [Mass] -- 
+		R.[Name], A.[Name], D.[Mass] -- 
 	FROM OffendingEntries D
 	JOIN dbo.[Accounts] A ON D.AccountId = A.Id
 	JOIN dbo.Resources R ON A.ResourceId = R.Id

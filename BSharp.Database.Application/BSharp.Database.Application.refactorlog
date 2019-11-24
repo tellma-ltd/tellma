@@ -1619,4 +1619,58 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[AccountDefinitionId]" />
   </Operation>
+  <Operation Name="Move Schema" Key="f7372c28-f8c6-49a3-8415-4c845614fe18" ChangeDateTime="11/24/2019 11:16:36">
+    <Property Name="ElementName" Value="[dbo].[api_ResponsibilityCenters__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e2d90f6d-668a-4d8c-a289-2f83582f2cc5" ChangeDateTime="11/24/2019 11:16:50">
+    <Property Name="ElementName" Value="[api].[api_ResponsibilityCenters__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResponsibilityCenters__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="803e82f8-80ec-478d-974c-a453bc076027" ChangeDateTime="11/24/2019 11:17:50">
+    <Property Name="ElementName" Value="[dbo].[dal_ResponsibilityCenters__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="dal" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="09acd2da-8a47-47cd-a080-019996e9a557" ChangeDateTime="11/24/2019 11:18:25">
+    <Property Name="ElementName" Value="[dal].[dal_ResponsibilityCenters__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResponsibilityCenters__Save]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2d696586-6c8f-46c1-aaa3-678c2893e1ff" ChangeDateTime="11/24/2019 11:45:59">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitCountMean]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Count]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="16bbf3c9-4cc6-426d-a78f-e5e6d27fbfb7" ChangeDateTime="11/24/2019 11:48:40">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitMassMean]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Mass]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d54cf98a-8463-4b76-9bcb-ba5352debf53" ChangeDateTime="11/24/2019 11:50:19">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitVolumeMean]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Volume]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e38de562-f658-4e09-8f4d-756a3e62f7b8" ChangeDateTime="11/24/2019 11:50:54">
+    <Property Name="ElementName" Value="[dbo].[Resources].[UnitTimeMean]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Time]" />
+  </Operation>
 </Operations>

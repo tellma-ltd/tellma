@@ -5,7 +5,7 @@
 	DECLARE @FunctionalCurrencyId NCHAR(3)			= '$(FunctionalCurrency)'; --N'ETB'
 	DECLARE @DefinitionsVersion UNIQUEIDENTIFIER	= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER		= NEWID();
-	DECLARE @ChartOfAccounts NVARCHAR(255)			= NULL; --'$(CHartOfAccounts)';
+	DECLARE @ChartOfAccounts NVARCHAR(255)			= NULL; --'$(ChartOfAccounts)';
 END
 -- Local Variables
 DECLARE @AdminUserId INT, @RoleId INT, @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET(), @ValidationErrorsJson NVARCHAR(MAX);

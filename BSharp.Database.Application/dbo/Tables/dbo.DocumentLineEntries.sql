@@ -5,11 +5,10 @@
 	[EntryNumber]				INT				NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountId]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
-	[CurrencyId]				NCHAR (3)		NOT NULL CONSTRAINT [FK_DocumentLineEntries__CurrencyId] REFERENCES dbo.Currencies([Id]),
 
 	[AgentRelationDefinitionId]	NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
-	[ResourceId]				INT				REFERENCES dbo.Resources([Id]),
+	[ResourceId]				INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__ResourceId] REFERENCES dbo.Resources([Id]),
 	-- Entry Type is used to tag entries in a manner that does not affect the account balance
 	-- However, consider the case of acc depreciation. We want to map to a different GL. In that case, we set some account definition
 	-- to enforce a certain entry classification

@@ -37,9 +37,9 @@ BEGIN -- reset Identities
 
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
 	DECLARE @ValidationErrorsJson nvarchar(max);
-	DECLARE @DebugRoles bit = 0;
-	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 1;
-	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugRoles bit = 0, @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
+	DECLARE @DebugLookups bit = 0;
+	DECLARE @DebugResources bit = 1, @DebugAgents bit = 0, @DebugAccounts bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
 	DECLARE @LookupsSelect bit = 0;
@@ -63,24 +63,18 @@ BEGIN TRY
 		:r .\00_Setup\a_RolesMemberships.sql		
 		:r .\00_Setup\b_Currencies.sql
 		:r .\00_Setup\c_MeasurementUnits.sql
+		:r .\00_Setup\d_Lookups.sql
+		:r .\00_Setup\e_ResourceTypes.sql
 		--:r .\00_Security\02_Workflows.sql
 
-		--:r .\01_Lookups\a_body-colors.sql
-		--:r .\01_Lookups\b_vehicle-makes.sql
-		--:r .\01_Lookups\c_steel-thicknesses.sql
-		--:r .\01_Lookups\d_it-equipment-manufacturers.sql
-		--:r .\01_Lookups\e_operating-systems.sql
-		----select * from lookups;
-
-		--:r .\02_Resources\a1_PPE_motor-vehicles.sql
-		--:r .\02_Resources\a2_PPE_it-equipment.sql
-		--:r .\02_Resources\a3_PPE_machineries.sql
-		--:r .\02_Resources\a4_PPE_general-fixed-assets.sql
-		--:r .\02_Resources\b_Inventories_-raw-materials.sql
-		----:r .\02_Resources\d1_FG_vehicles.sql
-		--:r .\02_Resources\d2_FG_steel-products.sql
-		--:r .\02_Resources\e1_CCE_cash-assets.sql
-		----:r .\02_Resources\e2_CCE_received-checks.sql
+		:r .\02_Resources\a1_PPE_motor-vehicles.sql
+		:r .\02_Resources\a2_PPE_it-equipment.sql
+		:r .\02_Resources\a3_PPE_machineries.sql
+		:r .\02_Resources\a4_PPE_general-fixed-assets.sql
+		:r .\02_Resources\b_Inventories_raw-materials.sql
+		:r .\02_Resources\d1_FG_vehicles.sql
+		:r .\02_Resources\d2_FG_steel-products.sql
+		:r .\02_Resources\e1_CCE_received-checks.sql
 		--:r .\02_Resources\h_PL_employee-benefits.sql
 
 		--:r .\03_Agents\01_Agents.sql

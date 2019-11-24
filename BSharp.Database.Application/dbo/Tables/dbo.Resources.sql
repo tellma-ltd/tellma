@@ -1,6 +1,8 @@
-﻿CREATE TABLE [dbo].[Resources] (
+﻿-- Properties of a resource, if defined, must be compatible with those of the account used in it. They must also be compatibled with the entries used in it.
+-- So, if a resource has a defined currency, it propagates to the entries used. The same applies if it has an external reference.
+-- Similarly, if it has a defined monetary value, it propagates to the entries used
+CREATE TABLE [dbo].[Resources] (
 -- Resource can be seen as the true leaf level of Resource Classifications.
--- When isFungible = 0, transaction cannot be completed unless the Instance Id is specified.
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
 	-- Inspired by IFRS, with additions to simplify application logic
 	[ResourceTypeId]				NVARCHAR (255)		NOT NULL CONSTRAINT [FK_Resources__ResourceTypeId] FOREIGN KEY ([ResourceTypeId]) REFERENCES [dbo].[ResourceTypes] ([Id]),
@@ -16,63 +18,16 @@
 	-- Unique within a definition - when no null - property that is language independent, --	Tag #, Coil #, Check #, LC #
 	[Code]							NVARCHAR (255),
 
-	-- Unit used to measure the area. This is either the physical area, or the area serviced, if service value is measureable by area (e.g., area of land irrigated)
-	[AreaUnitId]					INT					CONSTRAINT [FK_Resources__AreaUnitId] FOREIGN KEY ([AreaUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	-- if resource is measureable primarily by mass or length or count, UnitAreaMean is the average per unit of mass or length or piece.
-	-- If the resource is measureable primarily by Area  (الممسوحات), then UnitAreaMean = 1.
-	[UnitAreaMean]					DECIMAL,
-	-- If the resource is measureable primarily by Area  (الممسوحات), then UnitAreaVariance = 0
-	[UnitAreaVariance]				DECIMAL (5,2)		DEFAULT 0,
-
-	-- Unit used to measure the Count. This is either the physical Count, or the Count serviced, if service value is measureable by Count (e.g., number of copies made)
 	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] FOREIGN KEY ([CountUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	-- if resource is measureable primarily by mass or volume or area, UnitCountMean is the average per unit of area or mass or volume.
-	-- If the resource is measureable primarily by Count  (المعدودات), then UnitCountMean = 1.
-	[UnitCountMean]					DECIMAL,
-	-- If the resource is measureable primarily by Count  (المعدودات), then UnitCountVariance = 0
-	[UnitCountVariance]				DECIMAL (5,2),
-
-	-- Unit used to measure the length. This is either the physical length, or the length serviced, if service value is measureable by length (e.g., distance of road travelled)
-	[LengthUnitId]					INT					CONSTRAINT [FK_Resources__LengthUnitId] FOREIGN KEY ([LengthUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	-- if resource is measureable primarily by mass or volume or count, UnitLengthMean is the average per unit of mass or volume or piece.
-	-- If the resource is measureable primarily by Length  (المذروعات), then UnitLengthMean = 1.
-	[UnitLengthMean]				DECIMAL,
-	-- If the resource is measureable primarily by Length  (المذروعات), then UnitLengthVariance = 0
-	[UnitLengthVariance]			DECIMAL (5,2),
-
-	-- Unit used to measure the mass. This is either the physical weight, or the weight serviced, if service value is measureable by weight (e.g., weight of items shipped)
+	[Count]							DECIMAL, -- if count is not null, this value is forced in Entries
+	[CurrencyId]					NCHAR (3)			NOT NULL CONSTRAINT [FK_Resources__CurrencyId] FOREIGN KEY ([CurrencyId]) REFERENCES [dbo].[Currencies] ([Id]),
+	[MonetaryValue]					DECIMAL, -- if [MonetaryValue] is not null, this value is forced in Entries
 	[MassUnitId]					INT					CONSTRAINT [FK_Resources__MassUnitId] FOREIGN KEY ([MassUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	-- if resource is measureable primarily by volume or length or count, UnitMassMean is the average mass per unit of volume or length or piece.
-	-- If the resource is measureable primarily by mass (الموزونات), then UnitMassMean = 1.
-	[UnitMassMean]					DECIMAL,
-	-- if resource is measureable primarily volume or length or count, UnitMassMean is the maximum acceptable variation in mass from the mean, per unit of volume or length or piece.
-	-- If the resource is measureable primarily by mass (الموزونات), then UnitMassVariance = 0.
-	[UnitMassVariance]				DECIMAL (5,2),
-
-	-- Currency used to measure the monetary value. This is either the resource monetary value, or the monetary amount serviced (e.g., money transferred)
-	[MonetaryValueCurrencyId]		NCHAR (3)			NOT NULL DEFAULT CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId'))
-														CONSTRAINT [FK_Resources__MValueCurrencyId] FOREIGN KEY ([MonetaryValueCurrencyId]) REFERENCES [dbo].[Currencies] ([Id]),
-	-- if resource is measureable primarily by mass or volume or count, UnitValueMean is the average value per unit of mass or volume or piece.
-	-- If the resource is measureable primarily by monetrary amount (النقود), then UnitValueMean = 1.
-	[UnitMonetaryValueMean]			DECIMAL,
-	-- If the resource is measureable primarily by monetary amount (النقود), then UniValueVariance = 0
-	[UnitMonetaryValueVariance]		DECIMAL (5,2),
-
-	-- Unit used to measure the time. Since time is intangible, this measure applies to services only (e.g., days worked)
-	[TimeUnitId]					INT					CONSTRAINT [FK_Resources__TimeUnitId] FOREIGN KEY ([TimeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	-- if service is measureable primarily by mass or volume or count, UnitTimeMean is the average time taken to process a unit of mass or volume or piece.
-	-- If the service is measureable primarily by time (إجارة زمن), then UnitTimeMean = 1.
-	[UnitTimeMean]					DECIMAL,
-	-- If the service is measureable primarily by time (إجارة زمن), then UnitTimeVariance = 0
-	[UnitTimeVariance]				DECIMAL (5,2),
-		
-	-- Unit used to measure the volume. This is either the physical volume, or the volumne serviced, if service value is measureable by volume (e.g., volume of water purified)
+	[Mass]							DECIMAL,
 	[VolumeUnitId]					INT					CONSTRAINT [FK_Resources__VolumeUnitId] FOREIGN KEY ([VolumeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	-- if resource is measureable primarily by mass or length or count, UnitVolumeMean is the average per unit of mass or length or piece.
-	-- If the resource is measureable primarily by volumne  (المكيلات), then UnitVolumeMean = 1.
-	[UnitVolumeMean]				DECIMAL,
-	-- If the resource is measureable primarily by volumne  (المكيلات), then [UnitVolumeVariance] = 0.
-	[UnitVolumeVariance]			DECIMAL (5,2),
+	[Volume]						DECIMAL,
+	[TimeUnitId]					INT					CONSTRAINT [FK_Resources__TimeUnitId] FOREIGN KEY ([TimeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[Time]							DECIMAL,
 
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),

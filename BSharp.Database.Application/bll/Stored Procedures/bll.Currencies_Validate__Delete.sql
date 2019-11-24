@@ -10,11 +10,11 @@ SET NOCOUNT ON;
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheCurrency0IsUsedIn12', 
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,
-		[dbo].[fn_Localize](RD.[TitleSingular], RD.[TitleSingular2], RD.[TitleSingular3]) AS ResourceDefinitionTitleSingular,
-		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS ResourceName
+		[dbo].[fn_Localize](AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AccountDefinitionTitleSingular,
+		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS ResourceName
     FROM [dbo].[Currencies] C
-	JOIN [dbo].[Resources] R ON R.[MonetaryValueCurrencyId] = C.Id
-	JOIN dbo.ResourceDefinitions RD ON R.ResourceDefinitionId = RD.Id
+	JOIN [dbo].Accounts A ON A.[CurrencyId] = C.Id
+	JOIN dbo.AccountDefinitions AD ON A.AccountDefinitionId = AD.Id
 	JOIN @Ids FE ON FE.[Id] = C.[Id];
 
 	---- TODO: Is it really used in [dbo].[Accounts]?

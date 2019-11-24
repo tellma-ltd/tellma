@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[api_ResponsibilityCenters__Save]
+﻿CREATE PROCEDURE [api].[ResponsibilityCenters__Save]
 	@Entities [ResponsibilityCenterList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -21,6 +21,6 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dbo].[dal_ResponsibilityCenters__Save]
+	EXEC [dal].[ResponsibilityCenters__Save]
 		@Entities = @Entities;
 END;

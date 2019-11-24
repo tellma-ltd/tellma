@@ -69,7 +69,6 @@ BEGIN
 				L.[Id],
 				DI.Id AS DocumentId,
 				L.[LineDefinitionId], 
-				L.[CurrencyId],
 				L.[AgentRelationDefinitionId],
 				L.[AgentId],
 				L.[ResourceId],
@@ -83,7 +82,6 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[LineDefinitionId]			= s.[LineDefinitionId],
-				t.[CurrencyId]					= s.[CurrencyId],
 				t.[AgentRelationDefinitionId]	= s.[AgentRelationDefinitionId],
 				t.[AgentId]						= s.[AgentId],
 				t.[ResourceId]					= s.[ResourceId],
@@ -95,7 +93,6 @@ BEGIN
 				t.[ModifiedById]				= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([DocumentId], [LineDefinitionId], [SortKey],
-				[CurrencyId],
 				[AgentRelationDefinitionId],
 				[AgentId],
 				[ResourceId],
@@ -105,7 +102,6 @@ BEGIN
 				[AdditionalReference]
 			)
 			VALUES (s.[DocumentId], s.[LineDefinitionId], s.[Index],
-				s.[CurrencyId],
 				s.[AgentRelationDefinitionId],
 				s.[AgentId],
 				s.[ResourceId],
@@ -128,7 +124,7 @@ BEGIN
 	USING (
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [Direction], [AccountId], [EntryTypeId],
-			[AgentId], [ResourceId], [CurrencyId],
+			[AgentId], [ResourceId],
 			[BatchCode], [DueDate],
 			[MonetaryValue], E.[Mass], E.[Volume], E.[Time], E.[Count], E.[Value],
 			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAmount]
@@ -145,7 +141,6 @@ BEGIN
 			t.[EntryTypeId]				= s.[EntryTypeId],
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
-			t.[CurrencyId]				= s.[CurrencyId],
 			t.[BatchCode]				= s.[BatchCode],
 			t.[Count]					= s.[Count],
 			t.[Mass]					= s.[Mass],
@@ -161,11 +156,11 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], [EntryTypeId], [AgentId], [ResourceId], [CurrencyId], [BatchCode],
+		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], [EntryTypeId], [AgentId], [ResourceId], [BatchCode],
 				[MonetaryValue], [Mass], [Volume], [Time], [Count],  [Value],
 				[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAmount]
 				)
-		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Index], s.[Direction], s.[AccountId], s.[EntryTypeId], s.[AgentId], s.[ResourceId], s.[CurrencyId], s.[BatchCode],
+		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[Index], s.[Direction], s.[AccountId], s.[EntryTypeId], s.[AgentId], s.[ResourceId], s.[BatchCode],
 				s.[MonetaryValue], s.[Mass], s.[Volume], s.[Time], s.[Count], s.[Value],
 				s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentId], s.[RelatedAmount]
 				)

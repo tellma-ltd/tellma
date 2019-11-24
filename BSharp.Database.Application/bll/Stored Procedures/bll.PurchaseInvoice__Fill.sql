@@ -48,7 +48,6 @@ WHERE LDE.ResourceSource = 2 AND E.ResourceId = L.ResourceId
 -- Copy information from Account to entries
 UPDATE E 
 SET
-	E.CurrencyId = CASE WHEN A.HasSingleCurrency = 1 THEN A.CurrencyId ELSE E.CurrencyId END,
 	E.AgentId = CASE WHEN A.HasSingleAgent = 1 THEN A.AgentId ELSE E.AgentId END,
 	E.ResourceId = CASE WHEN A.HasSingleResource = 1 THEN A.ResourceId ELSE E.ResourceId END,
 	E.EntryTypeId = CASE WHEN A.HasSingleEntryTypeId = 1 THEN A.EntryTypeId ELSE E.EntryTypeId END
@@ -56,3 +55,16 @@ FROM @FilledEntries E JOIN @FilledLines L ON E.DocumentLineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.LineDefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE LDE.AccountSource = 1; -- Entered by user
+
+-- Copy information from Resource to entries
+-- TODO: Copy all the relevant fixed measures of the resource, as well as other properties like ExternalReference etc..
+UPDATE E 
+SET
+	E.[MonetaryValue] = COALESCE(R.[MonetaryValue], E.[MonetaryValue]),
+	E.[Count]		=	COALESCE(R.[Count], E.[Count]),
+	E.[Mass]		=	COALESCE(R.[Mass], E.[Mass]),
+	E.[Volume]		=	COALESCE(R.[Volume], E.[Volume])
+FROM @FilledEntries E JOIN @FilledLines L ON E.DocumentLineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.LineDefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+JOIN dbo.Resources R ON E.ResourceId = R.Id
+WHERE LDE.ResourceSource = 1; -- Entered by user

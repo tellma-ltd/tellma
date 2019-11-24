@@ -20,7 +20,7 @@ AS
 		L.[Memo],
 		E.[Direction],
 		E.[AccountId],
-		E.[CurrencyId],
+		R.[CurrencyId],
 		E.[AgentRelationDefinitionId],
 		E.[AgentId],
 		E.[ResourceId],
@@ -48,6 +48,7 @@ AS
 		JOIN [dbo].[DocumentLines] L ON E.[DocumentLineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
+		JOIN dbo.Resources R ON E.ResourceId = R.Id
 	WHERE
 		D.[State] = N'Filed'
 		AND L.[State] = N'Reviewed';

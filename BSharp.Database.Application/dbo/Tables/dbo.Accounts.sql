@@ -12,9 +12,11 @@
 	[Code]							NVARCHAR (50), -- used for import.
 	[PartyReference]				NVARCHAR (50), -- how it is referred to by the other party
 
-	[HasSingleCurrency]				BIT					NOT NULL DEFAULT 1,
+	-- technically, Currency Id is set by the resource: Money/ETB, Money/USD etc, whenever the account is used for financial tracking only, such as 
+	-- Financial assets, Financial liabilities, Equity, Financial gains, and financial losses.
+	[HasSingleCurrency]				BIT					NOT NULL DEFAULT 1, 
 	[CurrencyId]					NCHAR (3)			NOT NULL DEFAULT CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId')) CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
-	[HasSpecificLiquidity]			BIT					NOT NULL DEFAULT 1,
+	[HasSpecificLiquidity]			BIT					NOT NULL DEFAULT 1, -- is either current or non current.
 	[IsCurrent]						BIT					NOT NULL DEFAULT 1,
 	[HasSingleResponsibilityCenterId] BIT,
 	[ResponsibilityCenterId]		INT					CONSTRAINT [FK_Accounts__ResponsibilityCenterId] FOREIGN KEY ([ResponsibilityCenterId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id]) ON DELETE CASCADE,

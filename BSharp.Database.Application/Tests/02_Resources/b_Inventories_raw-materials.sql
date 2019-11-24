@@ -5,9 +5,9 @@
 	
 	DECLARE @RawMaterials dbo.ResourceList;
 	INSERT INTO @RawMaterials ([Index],
-	[ResourceTypeId],	[Name],				[Code],			[MassUnitId],				[CountUnitId],				[MonetaryValueCurrencyId]) VALUES
-	(0, N'RawMaterials',N'HR 1000MMx1.9MM',	N'HR1000x1.9',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'), N'USD'),
-	(1, N'RawMaterials',N'CR 1000MMx1.4MM',	N'CR1000x1.4',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'), N'USD');
+	[ResourceTypeId],	[Name],				[Code],			[MassUnitId],				[CountUnitId]) VALUES
+	(0, N'RawMaterials',N'HR 1000MMx1.9MM',	N'HR1000x1.9',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(1, N'RawMaterials',N'CR 1000MMx1.4MM',	N'CR1000x1.4',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'));
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'raw-materials',
@@ -26,6 +26,6 @@
 		DECLARE @RawMaterialsIds dbo.IdList;
 		INSERT INTO @RawMaterialsIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'raw-materials';
 
-		SELECT ResourceTypeId, [Name] AS 'Raw Material', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In', [Currency] AS 'Price in'
+		SELECT ResourceTypeId, [Name] AS 'Raw Material', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
 		FROM rpt.Resources(@RawMaterialsIds);
 	END
