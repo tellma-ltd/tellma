@@ -574,6 +574,9 @@
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>字段{0}必须是有效的HTML十六进制颜色，如：＃AB12E5。</value>
   </data>
+  <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
+    <value>系统保留了以下密钥:{0}</value>
+  </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>与ID的记录“{0}”没有被发现。也许它已经被删除，请重新整理。</value>
   </data>

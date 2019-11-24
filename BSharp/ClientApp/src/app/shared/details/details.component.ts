@@ -17,6 +17,7 @@ import { DetailsStatus, MasterDetailsStore, WorkspaceService } from '~/app/data/
 import { ICanDeactivate } from '~/app/data/unsaved-changes.guard';
 import { Subject, Observable, of, Subscription } from 'rxjs';
 import { EntityDescriptor, metadata } from '~/app/data/entities/base/metadata';
+import { environment } from '~/environments/environment';
 
 export interface DropdownAction {
   template: TemplateRef<any>;
@@ -147,7 +148,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   @HostListener('window:beforeunload', ['$event'])
   doSomething($event: BeforeUnloadEvent) {
-    if (this.isDirty) {
+    if (environment.production && this.isDirty) {
       $event.returnValue = this.translate.instant('UnsavedChangesConfirmationMessage');
     }
   }

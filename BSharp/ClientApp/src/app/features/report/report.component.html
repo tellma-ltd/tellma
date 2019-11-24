@@ -84,7 +84,7 @@
 
                 <!-- Refresh -->
                 <button class="btn btn-primary btn-sm b-toolbar-button" (click)="onRefresh()"
-                    [disabled]="!areAllRequiredParamsSpecified">
+                    [disabled]="disableRefresh">
                     <fa-icon icon="sync-alt"></fa-icon>
                     <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Refresh' | translate }}</span>
                 </button>
@@ -97,43 +97,47 @@
                         {{ 'Data' | translate }}
                     </button>
                     <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-                        <button type="button" class="dropdown-item btn-light" (click)="onExport()"
+                            <button type="button" class="dropdown-item btn-light" (click)="onExport()"
                             [disabled]="!canExport">
                             {{ 'Export' | translate }}
                         </button>
+                        <button type="button" *ngIf="description" class="dropdown-item btn-light" (click)="modalService.open(descModal)">
+                        {{ 'Description' | translate }}
+                    </button>
                     </div>
                 </div>
             </div>
 
             <!-- Right Buttons -->
-            <!-- Paging -->
-            <div *ngIf="showPagingControls">
-                <div class="d-inline small mr-2 ml-2">
-                    <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> -
-                        <span>{{ to | number }}</span>
-                    </span>
-                    <span class="b-vertical-align-middle"> / {{ total | number }}</span>
+            <div>
+                <!-- Paging -->
+                <div *ngIf="showPagingControls">
+                    <div class="d-inline small mx-2">
+                        <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> -
+                            <span>{{ to | number }}</span>
+                        </span>
+                        <span class="b-vertical-align-middle"> / {{ total | number }}</span>
+                    </div>
+                    <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+                        title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
+                        <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
+                    </button>
+                    <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
+                        title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
+                        <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
+                    </button>
                 </div>
-                <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-                    title="{{ 'Previous' | translate }}" (click)="onPreviousPage()" [disabled]="!canPreviousPage">
-                    <fa-icon icon="angle-left" [flip]="flip"></fa-icon>
-                </button>
-                <button class="btn btn-light btn-sm b-white-button b-toolbar-button" type="button"
-                    title="{{ 'Next' | translate }}" (click)="onNextPage()" [disabled]="!canNextPage">
-                    <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
-                </button>
-            </div>
 
-            <!-- Report View Toggle -->
-            <div *ngIf="showReportViewToggle" class="btn-group btn-group-toggle b-toolbar-button">
-                <label *ngFor="let view of views" class="btn btn-sm btn-light b-pointer"
-                    [class.active]="isActive(view.view)" title="{{ view.label | translate }}"
-                    (click)="onView(view.view)">
-                    <input type="radio" name="{{view.view}}">
-                    <fa-icon [icon]="view.icon"></fa-icon>
-                </label>
+                <!-- Report View Toggle -->
+                <div *ngIf="showReportViewToggle" class="btn-group btn-group-toggle b-toolbar-button">
+                    <label *ngFor="let view of views" class="btn btn-sm btn-light b-pointer"
+                        [class.active]="isActive(view.view)" title="{{ view.label | translate }}"
+                        (click)="onView(view.view)">
+                        <input type="radio" name="{{view.view}}">
+                        <fa-icon [icon]="view.icon"></fa-icon>
+                    </label>
+                </div>
             </div>
-
         </div>
     </div>
     <div class="row b-rest-of-screen" [style.overflow]="overflow">
@@ -147,3 +151,28 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Modal -->
+<ng-template #descModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'Description' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        {{ description }}
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.dismiss();">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'OK' | translate }}
+        </button>
+    </div>
+</ng-template>

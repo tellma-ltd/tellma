@@ -133,6 +133,10 @@ namespace BSharp.Controllers
             var result = new List<ReportDefinition>(entities.Count);
             foreach (var entityForSave in entities)
             {
+                if (string.IsNullOrWhiteSpace(entityForSave.Id))
+                {
+                    entityForSave.Id = Guid.NewGuid().ToString("D");
+                }
                 var entity = new ReportDefinition();
 
                 foreach (var prop in typeof(ReportDefinition).GetProperties().Where(e => !e.PropertyType.IsList()))
@@ -469,6 +473,8 @@ namespace BSharp.Controllers
                     ["State"] = FieldMetadata.Loaded,
                     ["Type"] = FieldMetadata.Loaded,
                     ["Title"] = FieldMetadata.Loaded,
+                    ["Description"] = FieldMetadata.Loaded,
+                    ["Description2"] = FieldMetadata.Loaded,
                 }
             },
             ["my-incredible-report"] = new ReportDefinition
@@ -557,6 +563,8 @@ namespace BSharp.Controllers
                     ["State"] = FieldMetadata.Loaded,
                     ["Type"] = FieldMetadata.Loaded,
                     ["Title"] = FieldMetadata.Loaded,
+                    ["Description"] = FieldMetadata.Loaded,
+                    ["Description2"] = FieldMetadata.Loaded,
                 }
             },
             ["my-awesome-report"] = new ReportDefinition
@@ -612,6 +620,8 @@ namespace BSharp.Controllers
                     ["State"] = FieldMetadata.Loaded,
                     ["Type"] = FieldMetadata.Loaded,
                     ["Title"] = FieldMetadata.Loaded,
+                    ["Description"] = FieldMetadata.Loaded,
+                    ["Description2"] = FieldMetadata.Loaded,
                 }
             }
         };

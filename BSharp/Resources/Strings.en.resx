@@ -574,6 +574,9 @@
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>The field {0} must be a valid HTML hexadecimal color, such as: #AB12E5.</value>
   </data>
+  <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
+    <value>The following keys are reserved by the system: {0}</value>
+  </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>The record with Id '{0}' was not found. Perhaps it was already deleted, please try refreshing.</value>
   </data>

@@ -1,6 +1,55 @@
-import { Component, Input, ContentChild, AfterContentInit, OnDestroy } from '@angular/core';
+import { Component, Input, ContentChild } from '@angular/core';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { NgControl } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
+
+/**
+ * Determines whether the input needs to be highlighted in red color indicating that it's invalid
+ *
+ * @param control The NgControl bound to the input
+ * @param serverErrors The server errors associated with this input
+ */
+export function highlightInvalid(control: NgControl, serverErrors: string[]): boolean {
+  return (!!control && control.invalid && control.touched) || areServerErrors(serverErrors);
+}
+
+/**
+ * Returns a list of functions that return error messages
+ *
+ * @param control The NgControl bound to the input
+ * @param serverErrors The server errors associated with this input
+ */
+export function validationErrors(control: NgControl, serverErrors: string[], trx: TranslateService): (() => string)[] {
+
+  // IF there are server errors, hide the client errors
+  if (areServerErrors(serverErrors)) {
+    return serverErrors.map(e => () => e);
+
+  } else if (!!control) {
+
+    const result: string[] = [];
+    const errors = control.errors;
+    if (!!errors) {
+      if (errors.required) {
+        result.push('RequiredField');
+      }
+
+      if (errors.ngbDate) {
+        result.push('InvalidDate');
+      }
+
+      if (errors.email) {
+        result.push('InvalidEmail');
+      }
+    }
+
+    return result.map(e => (() => trx.instant(e)));
+  }
+}
+
+export function areServerErrors(serverErrors: string[]) {
+  return !!serverErrors && serverErrors.length > 0;
+}
 
 @Component({
   selector: 'b-form-group',
@@ -24,7 +73,7 @@ export class FormGroupComponent {
   @ContentChild(NgControl, { static : false })
   control: NgControl;
 
-  constructor(private workspace: WorkspaceService) { }
+  constructor(private workspace: WorkspaceService, private translate: TranslateService) { }
 
   get showLabel(): boolean {
     return !!this.label;
@@ -35,40 +84,16 @@ export class FormGroupComponent {
   }
 
   get invalid(): boolean {
-    return (!!this.control && !!this.control.invalid && this.control.touched)
-      || (!!this.serverErrors && !!this.serverErrors.length);
+    return highlightInvalid(this.control, this.serverErrors);
   }
 
-  get errors(): string[] {
+  get errors(): (() => string)[] {
 
-    // IF there are server errors, hide the client errors
-    if (this.areServerErrors) {
-      return this.serverErrors;
-
-    } else if (!!this.control) {
-
-      const result: string[] = [];
-      const errors = this.control.errors;
-      if (!!errors) {
-        if (errors.required) {
-          result.push('RequiredField');
-        }
-
-        if (errors.ngbDate) {
-          result.push('InvalidDate');
-        }
-
-        if (errors.email) {
-          result.push('InvalidEmail');
-        }
-      }
-
-      return result;
-    }
+    return validationErrors(this.control, this.serverErrors, this.translate);
   }
 
   get areServerErrors(): boolean {
-    return !!this.serverErrors && !!this.serverErrors.length;
+    return areServerErrors(this.serverErrors);
   }
 
   get isRtl(): boolean {

@@ -24,5 +24,5 @@
   <span *ngSwitchCase="0" class="text-muted font-italic">(Not Loaded)</span>
 
   <!-- Invalid Path -->
-  <span *ngSwitchCase="-1" class="text-danger font-italic">({{ 'Error' | translate }})</span>
+  <span *ngSwitchCase="-1" class="text-danger font-italic" [title]="errorMessage">({{ 'Error' | translate }})</span>
 </ng-container>

@@ -21,8 +21,10 @@ namespace BSharp.Entities
         [ForeignKey(nameof(RoleMembership.AgentId))]
         public List<TRoleMembership> Roles { get; set; }
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            base.Validate(validationContext);
+
             if (Id == 0)
             {
                 // User is in a 0..1-1 relationship with Agents. So the User's Id is required

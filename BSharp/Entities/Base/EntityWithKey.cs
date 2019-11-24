@@ -1,4 +1,10 @@
-﻿namespace BSharp.Entities
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+
+namespace BSharp.Entities
 {
     /// <summary>
     /// Rule 1: No Entity class can contain a property Id unless it inherits from <see cref="EntityWithKey"/>
@@ -6,6 +12,11 @@
     /// </summary>
     public abstract class EntityWithKey : Entity
     {
+        /// <summary>
+        /// Those strings cannot be used as Ids in Entities with string Ids because they will mess up the routing logic
+        /// </summary>
+        public static readonly string[] RESERVED_IDS = { "new", "import", "export", "aggregate", "children-of" };
+
         /// <summary>
         /// All inheriting classes will have a strongly typed Id property that is usually an int or a string,
         /// this method returns either one as an object, it is useful for logic that performs reflection
@@ -23,7 +34,7 @@
     /// Base class of all entities that have an Id property
     /// </summary>
     /// <typeparam name="TKey">The type of the Id property</typeparam>
-    public abstract class EntityWithKey<TKey> : EntityWithKey
+    public abstract class EntityWithKey<TKey> : EntityWithKey, IValidatableObject
     {
         /// <summary>
         /// This is an integer for entities that have a simple integer Id in the SQL database,
@@ -50,6 +61,23 @@
         {
             Id = (TKey)id;
             _id = id;
+        }
+
+        public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            // This ensures that no Id is ever stored that is one of the reserved words
+            if (typeof(TKey) == typeof(string))
+            {
+                string id = GetId()?.ToString();
+                if (id != null && RESERVED_IDS.Any(ri => id.Equals(ri)))
+                {
+                    var localizer = validationContext.GetRequiredService<IStringLocalizer<Strings>>();
+                    var errorMessage = localizer["Error_TheFollowingKeyWordsAreReserved0", string.Join(", ", RESERVED_IDS)];
+                    var memberNames = new string[] { nameof(Id) };
+
+                    yield return new ValidationResult(errorMessage, memberNames);
+                }
+            }
         }
     }
 }

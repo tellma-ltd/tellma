@@ -150,14 +150,22 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     const s = this.state;
     const hasChanges = this.applyChanges();
     if (s.reportStatus !== ReportStatus.loaded || hasChanges) {
-      s.realColumns = this.computeRealDimensions(this.definition.Columns);
-      s.realRows = this.computeRealDimensions(this.definition.Rows);
-      console.log(s.realRows);
-      s.uniqueDimensions = this.computeUniqueDimensions(s.realColumns.concat(s.realRows));
-      s.measures = this.computeMeasureInfos(this.definition.Measures);
-      s.singleNumericMeasure = this.state.measures.find(m => isNumeric(m.desc));
+      try {
 
-      this.fetch();
+        s.realColumns = this.computeRealDimensions(this.definition.Columns);
+        s.realRows = this.computeRealDimensions(this.definition.Rows);
+        s.uniqueDimensions = this.computeUniqueDimensions(s.realColumns.concat(s.realRows));
+        s.measures = this.computeMeasureInfos(this.definition.Measures);
+        s.singleNumericMeasure = this.state.measures.find(m => isNumeric(m.desc));
+
+        s.disableFetch = false;
+        this.fetch();
+      } catch (ex) {
+        s.disableFetch = true;
+        s.reportStatus = ReportStatus.error;
+        s.errorMessage = ex;
+        this.cdr.markForCheck();
+      }
     }
   }
 
@@ -233,8 +241,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   doFetch(): Observable<void> {
 
-    // Remove previous Ids from the store
     let s = this.state;
+    if (s.disableFetch) {
+      // bad definition
+      return of(null);
+    }
+
     s.reportStatus = ReportStatus.loading;
 
     // FILTER
@@ -242,9 +254,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     try {
       filter = this.computeFilter();
     } catch (ex) {
-      console.error(ex.message);
       s.reportStatus = ReportStatus.error;
-      s.errorMessage = ex.message;
+      s.errorMessage = ex;
       return of(null);
     }
 
@@ -257,6 +268,13 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       const skip = !!this.definition.Top ? 0 : s.skip;
       const select = this.computeSelect();
       const orderby = this.definition.OrderBy;
+
+      if (!select) {
+        s.reportStatus = ReportStatus.information;
+        s.information = () => this.translate.instant('DragSelect');
+
+        return of(null);
+      }
 
       obs$ = this.crud.get({
         top,
@@ -272,12 +290,12 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
           s.total = response.TotalCount;
         })
       );
-    } else {
+    } else { // Show Summary or Chart
       // SELECT
       const select = this.computeAggregateSelect();
       if (!select) {
-        s.reportStatus = ReportStatus.error;
-        s.errorMessage = 'Please add some dimensions or measures';
+        s.reportStatus = ReportStatus.information;
+        s.information = () => this.translate.instant('DragDimensionsOrMeasures');
 
         return of(null);
       }
@@ -376,10 +394,27 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     dims = dims || [];
     return dims.map(dim => {
+      // Normalized the path
       const path = dim.Path.split('/').map((e: string) => e.trim()).join('/');
-      const { propDesc, entityDesc } = this.getDescriptors2(path);
 
-      const pathSlash = !!path ? path + '/' : '';
+      // Get the PropDescriptor describing the target property of the path
+      const collection = this.definition.Collection;
+      const definitionId = this.definition.DefinitionId;
+      const ws = this.workspace.current;
+      const trx = this.translate;
+      const steps = path.split('/');
+      const prop = steps[steps.length - 1];
+      const parentEntityDesc = entityDescriptorImpl(steps.slice(0, -1), collection, definitionId, ws, trx);
+      const propDesc = parentEntityDesc.properties[prop];
+      if (!propDesc) {
+        throw new Error(`Property ${prop} does not exist on collection: '${collection}', definition: '${definitionId || ''}'.`);
+      }
+
+      // If this is a nav property, get the EntityDescriptor describing the target entity as well
+      let entityDesc: EntityDescriptor;
+      if (propDesc.control === 'navigation') {
+        entityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
+      }
 
       // Create the dimension info
       const result: DimensionInfo = {
@@ -390,8 +425,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         label: () => !!dim.Label ? this.workspace.current.getMultilingualValueImmediate(dim, 'Label') : propDesc.label()
       };
 
-      // This is a nav property, add a few extra things
+      // This is a nav property, add a few extra things to allow for
+      // efficient extraction of mock navigation entities from the server results
       if (!!entityDesc) {
+        const pathSlash = !!path ? path + '/' : '';
+
         result.entityDesc = entityDesc;
         result.idKey = `${pathSlash}Id`;
         result.selectKeys = entityDesc.select.map(s => ({ path: `${pathSlash}${s}`, prop: s }));
@@ -401,6 +439,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  /**
+   * Used for charts, calculates the unique set of dimensions across the combined rows and charts
+   */
   private computeUniqueDimensions(dims: DimensionInfo[]): DimensionInfo[] {
     const tracker = {};
     const result: DimensionInfo[] = [];
@@ -415,6 +456,11 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private computeSelect(): string {
+    const select: ReportSelectDefinitionForClient[] = this.select;
+    if (!select || select.length === 0) {
+      return '';
+    }
+
     const resultPaths: { [path: string]: boolean } = {};
     const baseEntityDescriptor = this.entityDescriptor;
 
@@ -427,27 +473,24 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
-    const select: ReportSelectDefinitionForClient[] = this.select;
-    if (!!select) {
-      select.map(col => col.Path).forEach(path => {
+    select.map(col => col.Path).forEach(path => {
 
-        if (!path) {
-          return;
-        }
+      if (!path) {
+        return;
+      }
 
-        const steps = path.split('/').map(e => e.trim());
-        path = steps.join('/'); // to trim extra spaces
+      const steps = path.split('/').map(e => e.trim());
+      path = steps.join('/'); // to trim extra spaces
 
-        try {
-          const currentDesc = entityDescriptorImpl(steps, this.collection,
-            this.definitionId, this.workspace.current, this.translate);
+      try {
+        const currentDesc = entityDescriptorImpl(steps, this.collection,
+          this.definitionId, this.workspace.current, this.translate);
 
-          currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
-        } catch {
-          resultPaths[path] = true;
-        }
-      });
-    }
+        currentDesc.select.forEach(descSelect => resultPaths[`${path}/${descSelect}`] = true);
+      } catch {
+        resultPaths[path] = true;
+      }
+    });
 
     return Object.keys(resultPaths).join(',');
   }
@@ -629,28 +672,30 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
       let propDesc = currentDimension.propDesc;
 
       if (!!propDesc) {
-        // Adjust path and propDesc in the case of a nav property
+        // (1) Adjust path and propDesc in the case of a nav property
         if (propDesc.control === 'navigation') {
+          // Update path
           const fkName = propDesc.foreignKeyName;
           const steps = path.split('/').slice(0, -1);
           path = steps.concat([fkName]).join('/');
+
+          // Update propDesc
           const entityDesc = currentDimension.entityDesc;
           propDesc = entityDesc.properties.Id;
-
           if (!propDesc) {
             // Developer mistake
             throw new Error(`Entity descriptor for ${entityDesc.titlePlural()} is missing an Id descriptor.`);
           }
         }
 
-        // Step (3) calculate the filter atom and add it
-        const value = currentDimension.valueId;
-        if (!isSpecified(value)) {
+        // (2) Calculate the filter atom and add it
+        const valueId = currentDimension.valueId;
+        if (!isSpecified(valueId)) {
           atoms.push(`${path} eq null`);
         } else if (isText(propDesc)) {
-          atoms.push(`${path} eq '${value.replace('\'', '\'\'')}'`);
+          atoms.push(`${path} eq '${valueId.replace('\'', '\'\'')}'`);
         } else {
-          atoms.push(`${path} eq ${value + ''}`);
+          atoms.push(`${path} eq ${valueId + ''}`);
         }
       }
 
@@ -660,27 +705,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return atoms;
   }
 
-  private getDescriptors2(path: string): { propDesc: PropDescriptor, entityDesc?: EntityDescriptor } {
-    const collection = this.definition.Collection;
-    const definitionId = this.definition.DefinitionId;
-    const ws = this.workspace.current;
-    const trx = this.translate;
-    const steps = path.split('/');
-    const prop = steps[steps.length - 1];
-    const entityDesc = entityDescriptorImpl(steps.slice(0, -1), collection, definitionId, ws, trx);
-    const propDesc = entityDesc.properties[prop];
-    if (!propDesc) {
-      throw new Error(`Property ${prop} does not exist on collection: '${collection}', definition: ${definitionId || ''}.`);
-    }
-
-    let navEntityDesc: EntityDescriptor;
-    if (propDesc.control === 'navigation') {
-      navEntityDesc = entityDescriptorImpl(steps, collection, definitionId, ws, trx);
-    }
-
-    return { propDesc, entityDesc: navEntityDesc };
-  }
-
   // UI Bindings
 
   public get showDetails(): boolean {
@@ -688,11 +712,18 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get showSummary(): boolean {
-    return !!this.definition && this.definition.Type === 'Summary' && this.view === ReportView.pivot;
+    return !!this.definition && this.definition.Type === 'Summary'
+      && this.view === ReportView.pivot;
   }
 
   public get showChart(): boolean {
-    return !!this.definition && this.definition.Type === 'Summary' && this.view === ReportView.chart;
+    return !!this.definition && this.definition.Type === 'Summary'
+      && this.view === ReportView.chart && !!this.state.singleNumericMeasure;
+  }
+
+  public get showSpecifyNumericMeasure(): boolean {
+    return !!this.definition && this.definition.Type === 'Summary'
+      && this.view === ReportView.chart && !this.state.singleNumericMeasure;
   }
 
   public get showResults(): boolean {
@@ -701,6 +732,10 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   public get showErrorMessage(): boolean {
     return this.state.reportStatus === ReportStatus.error;
+  }
+
+  public get showInformation(): boolean {
+    return this.state.reportStatus === ReportStatus.information;
   }
 
   public get showSpinner(): boolean {
@@ -717,13 +752,17 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return this.state.errorMessage;
   }
 
+  public information(): string {
+    return this.state.information();
+  }
+
   public get chart(): ChartType {
     return !!this.definition ? this.definition.Chart : null;
   }
 
   //////// SUMMARY - PIVOT
 
-  public extractValueAndValueId(g: Entity, dimension: DimensionInfo): { value: any, valueId: any } {
+  private extractValueAndValueId(g: Entity, dimension: DimensionInfo): { value: any, valueId: any } {
     let value: any;
     let valueId: any;
     if (!!dimension.entityDesc) {
@@ -742,7 +781,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     return { value, valueId };
   }
 
-  public extractId(g: Entity, dimension: DimensionInfo): any {
+  private extractValueId(g: Entity, dimension: DimensionInfo): any {
     if (!!dimension.entityDesc) {
       // For navigation properties, the value is an object emulating the real entity, and the id is its Id
       return g[dimension.idKey];
@@ -769,16 +808,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             let level = 0;
             const lastDimension = dimensions[dimensions.length - 1];
             for (const dimension of dimensions) {
-              const { value, valueId: id } = this.extractValueAndValueId(g, dimension);
+              const { value, valueId } = this.extractValueAndValueId(g, dimension);
               let targetHash: PivotHash;
 
               // Either go down the values or the undefined route
-              if (isSpecified(id)) {
+              if (isSpecified(valueId)) {
                 if (!currentHash.values) {
                   currentHash.values = {};
                 }
 
-                targetHash = currentHash.values[id];
+                targetHash = currentHash.values[valueId];
 
               } else {
                 targetHash = currentHash.undefined;
@@ -791,7 +830,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
                     type: 'dimension',
                     path: dimension.path,
                     value,
-                    valueId: id,
+                    valueId,
                     propDesc: dimension.propDesc,
                     entityDesc: dimension.entityDesc,
                     isExpanded: dimension !== lastDimension && dimension.autoExpand,
@@ -806,8 +845,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 
                 currentHash.children.push(targetHash.cell);
 
-                if (isSpecified(id)) {
-                  currentHash.values[id] = targetHash;
+                if (isSpecified(valueId)) {
+                  currentHash.values[valueId] = targetHash;
                 } else {
                   currentHash.undefined = targetHash;
                 }
@@ -967,9 +1006,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             colIndex = columnGrandTotalIndex;
           } else {
 
-            const colId = this.extractId(g, col);
-            if (isSpecified(colId)) {
-              currentColHash = currentColHash.values[colId];
+            const colValueId = this.extractValueId(g, col);
+            if (isSpecified(colValueId)) {
+              currentColHash = currentColHash.values[colValueId];
             } else {
               currentColHash = currentColHash.undefined;
             }
@@ -984,9 +1023,9 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
               // Grand total
               rowIndex = rowGrandTotalIndex;
             } else {
-              const rowId = this.extractId(g, row);
-              if (isSpecified(rowId)) {
-                currentRowHash = currentRowHash.values[rowId];
+              const rowValueId = this.extractValueId(g, row);
+              if (isSpecified(rowValueId)) {
+                currentRowHash = currentRowHash.values[rowValueId];
               } else {
                 currentRowHash = currentRowHash.undefined;
               }
@@ -1325,7 +1364,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         for (const g of s.result) {
           const { value, valueId } = this.extractValueAndValueId(g, dim);
           let childCollection: { cell: ChartDimensionCell, value: number }[];
-          if (isSpecified(value)) {
+          if (isSpecified(valueId)) {
             childCollection = valueToChildCollectionMap[valueId];
           } else {
             childCollection = undefinedChildCollectionMap;
@@ -1340,7 +1379,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             rootCollection.push(dimensionCell);
             childCollection = [];
 
-            if (isSpecified(value)) {
+            if (isSpecified(valueId)) {
               valueToChildCollectionMap[valueId] = childCollection;
             } else {
               undefinedChildCollectionMap = childCollection;
@@ -1370,8 +1409,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
             series: childCollection.map(cellValue => ({ name: cellValue.cell, value: cellValue.value }))
           };
         });
-
-        console.log(s.multi);
       } else {
         s.multi = null;
       }
@@ -1469,3 +1506,34 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 }
+
+/*
+  [Reporting Framework TODO]
+  - Implement the backend API
+  - Add the State commands to the UI
+  - Implement dimension properties
+  - Add flat report totals
+  - Support tree dimensions
+  - Implement dashboard framework
+  - Localize report definition error messages
+  - Protect against huge number of pivot table columns
+  - Protect against huge number of data points for charts
+  - Handle mismatching of aggregation function and data type before SQL
+  - Handle mismatching of aggregation function in the UI
+  - Allow Top in Summary reports
+  - Support Date parts in paths
+  - Support special date filter operators
+  - Add copy to clipboard to the fields list
+  - Show validation on the remaining fields
+
+  [Dimension Properties Steps]
+  - Add field to ReportDimensionDefinition  (C#)
+  - Add field to ReportDimensionDefinition  (TS)
+  - Add field to ReportDimensionDefinitionForClient
+  - Add field in edit modal
+  - Account for it in computeSelect
+  - Add collection in DimensionInfo
+  - Add collection of DimensionCell in DimensionCell
+  - Add popover to all column and row cells
+  - In case of one row and no columns, add the properties as columns
+*/

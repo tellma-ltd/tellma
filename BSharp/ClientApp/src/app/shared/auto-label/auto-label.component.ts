@@ -24,6 +24,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
 
   _subscription: Subscription;
   _label: string;
+  _errorMessage: string;
 
   constructor(private ws: WorkspaceService, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
 
@@ -59,6 +60,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
 
     // clear previous values
     this._label = null;
+    this._errorMessage = null;
 
     try {
       if (!this.collection) {
@@ -85,7 +87,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
           currentPropDesc = currentEntityDesc.properties[step];
 
           if (!currentPropDesc) {
-            throw new Error(`'${step}' does not exist on '${currentCollection}', definition:'${currentDefinition}'`);
+            throw new Error(`'${step}' does not exist on '${currentCollection || ''}', definition:'${currentDefinition || ''}'`);
 
           } else if (currentPropDesc.control === 'navigation') {
 
@@ -94,7 +96,8 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
             currentEntityDesc = this.metadataFactory(currentCollection)(this.ws.current, this.translate, currentDefinition);
 
           } else if (i !== pathArray.length - 1) {
-            throw new Error(`'${step}' is not a navigation property on '${currentCollection}', definition:'${currentDefinition}'`);
+            throw new Error(
+              `'${step}' is not a navigation property on '${currentCollection || ''}', definition:'${currentDefinition || ''}'`);
           }
 
           labelArray.push(currentPropDesc.label());
@@ -105,7 +108,7 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
     } catch (ex) {
 
       this._label = `(${this.translate.instant('Error')})`;
-      console.error(ex.message);
+      this._errorMessage = ex.message;
     }
   }
 
@@ -114,6 +117,10 @@ export class AutoLabelComponent implements OnInit, OnChanges, OnDestroy {
 
   get label(): string {
     return this._label;
+  }
+
+  get errorMessage(): string {
+    return this._errorMessage || '';
   }
 
 }

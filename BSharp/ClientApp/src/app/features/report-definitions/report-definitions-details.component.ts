@@ -17,6 +17,8 @@ import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FilterTools } from '~/app/data/filter-expression';
+import { NgControl } from '@angular/forms';
+import { highlightInvalid, validationErrors, areServerErrors } from '~/app/shared/form-group/form-group.component';
 
 export interface FieldInfo {
   path: string;
@@ -97,7 +99,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     result.State = 'Draft';
-    result.Collection = 'MeasurementUnit';
+    // result.Collection = 'MeasurementUnit';
     result.Type = 'Summary';
     result.Rows = [];
     result.Columns = [];
@@ -642,5 +644,28 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     }
 
     return true;
+  }
+
+  public invalid(control: NgControl, serverErrors: string[]): boolean {
+    return highlightInvalid(control, serverErrors);
+  }
+
+  public errors(control: NgControl, serverErrors: string[]): (() => string)[] {
+    return validationErrors(control, serverErrors, this.translate);
+  }
+
+  public titleSectionErrors(model: ReportDefinition) {
+    if (!model.serverErrors) {
+      return false;
+    }
+
+    return areServerErrors(model.serverErrors.Id) ||
+      areServerErrors(model.serverErrors.Id) ||
+      areServerErrors(model.serverErrors.Title) ||
+      areServerErrors(model.serverErrors.Description) ||
+      areServerErrors(model.serverErrors.Title2) ||
+      areServerErrors(model.serverErrors.Description2) ||
+      areServerErrors(model.serverErrors.Title3) ||
+      areServerErrors(model.serverErrors.Description3);
   }
 }

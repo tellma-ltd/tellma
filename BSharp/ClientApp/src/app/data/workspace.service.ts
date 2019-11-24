@@ -92,6 +92,9 @@ export enum ReportStatus {
 
   // The last fetch of data from the server completed with an error
   error = 3,
+
+  // The report definition or parameters are not yet complete
+  information = 4,
 }
 
 /**
@@ -488,9 +491,11 @@ export class ReportStore {
   total = 0;
   reportStatus: ReportStatus;
   errorMessage: string;
+  information: () => string;
   arguments: ReportArguments = {};
   result: Entity[] = [];
   filter: string; // the one used to retrieve the result
+  disableFetch = false; // set it to true upon a catastrophic failure from a bad definition
 
   //////////// Pivot table
 

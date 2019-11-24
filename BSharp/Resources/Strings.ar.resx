@@ -574,6 +574,9 @@
   <data name="Error_TheField0MustBeAValidColorFormat" xml:space="preserve">
     <value>حقل {0} يجب أن يكون لون HTML سداسي عشري صالح، مثال: #AB12E5</value>
   </data>
+  <data name="Error_TheFollowingKeyWordsAreReserved0" xml:space="preserve">
+    <value>المفاتيح التالية يحتكرها النظام: {0}</value>
+  </data>
   <data name="Error_TheId0WasNotFound" xml:space="preserve">
     <value>البيان ذو المفتاح ({0}) غير موجود، لعل بعضهم حذفه، يرجى محاولة التحديث</value>
   </data>
