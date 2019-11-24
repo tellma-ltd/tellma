@@ -20,9 +20,9 @@ CREATE TABLE [dbo].[Resources] (
 
 	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] FOREIGN KEY ([CountUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[Count]							DECIMAL, -- if count is not null, this value is forced in Entries
-	[CurrencyId]					NCHAR (3)			NOT NULL CONSTRAINT [FK_Resources__CurrencyId] FOREIGN KEY ([CurrencyId]) REFERENCES [dbo].[Currencies] ([Id]),
+	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[MonetaryValue]					DECIMAL, -- if [MonetaryValue] is not null, this value is forced in Entries
-	[MassUnitId]					INT					CONSTRAINT [FK_Resources__MassUnitId] FOREIGN KEY ([MassUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
+	[MassUnitId]					INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[Mass]							DECIMAL,
 	[VolumeUnitId]					INT					CONSTRAINT [FK_Resources__VolumeUnitId] FOREIGN KEY ([VolumeUnitId]) REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[Volume]						DECIMAL,

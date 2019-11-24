@@ -70,7 +70,7 @@ INSERT INTO @ResourceTypes
 (N'CurrentFuel',							N'Fuel',										N'/1/11/7/',	1,				0),
 
 (N'TradeAndOtherReceivables',				N'Trade and other receivables',					N'/1/12/',		1,				1),
-(N'CashEquivalents',						N'CashEquivalents',								N'/1/13/',		1,				1),
+(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					N'/1/13/',		1,				1),
 (N'Liabilities',							N'Liabilities',									N'/2/',			0,				1),
 (N'TradeAndOtherPayables',					N'Trade and other payables',					N'/2/1/',		1,				1),
 (N'FinancialLiabilities',					N'Financial liabilities',						N'/2/2/',		1,				0),

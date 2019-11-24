@@ -6,6 +6,7 @@
 	[EntryNumber]				INT					NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
+	[ResponsibilityCenterId]	INT,
 	[CurrencyId]				NCHAR (3),
 	[AgentRelationDefinitionId]	NVARCHAR (50),
 	[AgentId]					INT,
@@ -24,5 +25,6 @@
 	[RelatedAgentId]			INT,
 	[RelatedAmount]				MONEY,		-- used in Tax accounts, to store the quantiy of taxable item
 	[Time1]						TIME (0),	-- from time
-	[Time2]						TIME (0)	-- to time
+	[Time2]						TIME (0),	-- to time
+	[SortKey]					INT
 );

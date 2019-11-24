@@ -6,6 +6,7 @@
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountId]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
 
+	[ResponsibilityCenterId]	INT				REFERENCES dbo.ResponsibilityCenters([Id]),
 	[AgentRelationDefinitionId]	NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
 	[ResourceId]				INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__ResourceId] REFERENCES dbo.Resources([Id]),
@@ -28,6 +29,7 @@
 	[BatchCode]					NVARCHAR (50),
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings
 	[MonetaryValue]				MONEY			NOT NULL DEFAULT 0,
+	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
 -- Tracking additive measures, the data type is to be decided by AA
 	[Count]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
 	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0,

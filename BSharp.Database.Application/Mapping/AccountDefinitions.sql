@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [map].[AccountTypes]()
+﻿CREATE FUNCTION [map].[AccountDefinitions]()
 RETURNS TABLE AS 
 RETURN (
 	SELECT *

@@ -60,12 +60,13 @@ INSERT INTO @AccountTypes ([Id]) VALUES
 ;
 -- The G/L Account definitions are meant as Catch-All, or enough to show primary IFRS statements. They are dumb accounts, and are excluded in smart posting
 -- We need to show them in separate format, to avoid confusion
-/*
+
 INSERT INTO @AccountDefinitions
 ([Id],						[AccountTypeId],	[TitleSingular],					[TitlePlural]) VALUES
 (N'OtherNonCurrentAsset',	N'NonCurrentAsset',	N'Other Non Current Asset Account',	N'Non Current Assets Accounts'),
 (N'OtherCurrentAsset',		N'CurrentAsset',	N'Other Current Asset Account',		N'Current Assets Accounts')
 ;
+/*
 INSERT INTO @AccountDefinitions
 ([Id],			[AccountTypeId],	[AgentRelationDefinitionId], [ResourceTypeId],	[TitleSingular],				[TitlePlural],					[DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
 (N'',			N'NonCurrentAsset',N'CostCenter',					N'PPE',			N'Fixed Asset Account',			N'Fixed Assets Accounts',		N'Acquired From',		N'Used By'),

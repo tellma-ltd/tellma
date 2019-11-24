@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [dbo].[AccountDefinitions] (
 	[Id]							NVARCHAR (50) PRIMARY KEY, --CONSTRAINT [PK_AccountDefinitions] PRIMARY KEY,
-	[AccountTypeId]					NVARCHAR (50) REFERENCEs dbo.AccountTypes([Id]),
+	[AccountTypeId]					NVARCHAR (50) CONSTRAINT [FK_AccountDefinitions__AccountTypeId] REFERENCES dbo.AccountTypes([Id]),
 	[AgentRelationDefinitionId]		NVARCHAR (50),
 	[ResourceTypeId]				NVARCHAR (50),
-	[EntryTypeId]					NVARCHAR (255) CONSTRAINT [FK_AccountTypes__EntryTypeId] REFERENCES dbo.EntryTypes([Id]),
+	[EntryTypeId]					NVARCHAR (255) CONSTRAINT [FK_AccountDefinitionss__EntryTypeId] REFERENCES dbo.EntryTypes([Id]),
 
 	[Description]					NVARCHAR (255),
 	[Description2]					NVARCHAR (255),

@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Agents] (
 --	These includes all the natural and legal persons with which the business entity may interact
-	[Id]						INT PRIMARY KEY IDENTITY,
+	[Id]						INT				CONSTRAINT [PK_Agents] PRIMARY KEY IDENTITY,
 	[IsActive]					BIT				NOT NULL DEFAULT 1, -- 0 means the person is dead or the organization is close
 	[Name]						NVARCHAR (255)	NOT NULL, -- CONSTRAINT [IX_Agents__Name] UNIQUE,
 	[Name2]						NVARCHAR (255),

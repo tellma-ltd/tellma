@@ -1673,4 +1673,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[Time]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="80b864b7-31b3-495d-afcc-eea4daaa9cd1" ChangeDateTime="11/24/2019 18:20:27">
+    <Property Name="ElementName" Value="[map].[AccountTypes]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountDefinitions]" />
+  </Operation>
 </Operations>

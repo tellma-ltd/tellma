@@ -6,10 +6,10 @@ DECLARE @ReceivedChecks [dbo].ResourceList;
 
 -- Bydefining the monetary amount
 INSERT INTO @ReceivedChecks ([Index],
-		[ResourceTypeId],	[Name],							[CountUnitId]) VALUES
-	(0,	N'CashEquivalents', N'Walia Steel Oct 2019 Check',	dbo.fn_UnitName__Id(N'ea'), 69000),
-	(1,	N'CashEquivalents', N'Best Plastic Oct 2019 Check',	dbo.fn_UnitName__Id(N'ea'), 15700),
-	(2,	N'CashEquivalents', N'Best Paint Oct 2019 Check',	dbo.fn_UnitName__Id(N'ea'), 6900);
+		[ResourceTypeId],	[Name],							[CountUnitId],				MonetaryValue) VALUES
+	(0,	N'CashAndCashEquivalents', N'Walia Steel Oct 2019 Check',	dbo.fn_UnitName__Id(N'ea'), 69000),
+	(1,	N'CashAndCashEquivalents', N'Best Plastic Oct 2019 Check',	dbo.fn_UnitName__Id(N'ea'), 15700),
+	(2,	N'CashAndCashEquivalents', N'Best Paint Oct 2019 Check',	dbo.fn_UnitName__Id(N'ea'), 6900);
 
 	EXEC [api].[Resources__Save] -- N'received-checks'
 	@DefinitionId =  N'received-checks',
@@ -27,6 +27,6 @@ BEGIN
 	DECLARE @ReceivedChecksIds dbo.IdList;
 	INSERT INTO @ReceivedChecksIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'received-checks';
 	
-	SELECT ResourceTypeId, [Name] AS 'Received Check', Money1 AS [Amount]
+	SELECT ResourceTypeId, [Name] AS 'Received Check', MonetaryValue AS [Amount]
 	FROM rpt.Resources(@ReceivedChecksIds);
 END

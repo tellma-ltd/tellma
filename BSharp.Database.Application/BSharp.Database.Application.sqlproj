@@ -86,12 +86,13 @@
     <Folder Include="Mapping" />
     <Folder Include="Provisioning\01_AccountsEntries" />
     <Folder Include="Provisioning\00_Setup" />
-    <Folder Include="Tests\02_Resources" />
-    <Folder Include="Tests\03_Agents" />
-    <Folder Include="Tests\05_Accounts" />
-    <Folder Include="Tests\00_Setup" />
-    <Folder Include="Tests\06_Entries" />
     <Folder Include="Provisioning\03_DocumentsLines" />
+    <Folder Include="Samples" />
+    <Folder Include="Samples\00_Setup" />
+    <Folder Include="Samples\02_Resources" />
+    <Folder Include="Samples\03_Agents" />
+    <Folder Include="Samples\05_Accounts" />
+    <Folder Include="Samples\06_Entries" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -379,7 +380,7 @@
     <Build Include="Mapping\AccountClassifications__AsQuery.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__DeleteWithDescendants.sql" />
-    <Build Include="Mapping\AccountTypes.sql" />
+    <Build Include="Mapping\AccountDefinitions.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Save.sql" />
@@ -402,11 +403,9 @@
     <None Include="Provisioning\01_AccountsEntries\x_AccountClassifications.sql" />
     <Build Include="Mapping\map.EntryTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Activate.sql" />
-    <None Include="Tests\02_Resources\d1_FG_vehicles.sql" />
     <Build Include="dbo\Functions\dbo.fn_Lookup.sql" />
     <Build Include="dbo\Functions\dbo.fn_UnitName__Id.sql" />
     <Build Include="dbo\Functions\dbo.fn_ResourceName__Id.sql" />
-    <None Include="Tests\02_Resources\a2_PPE_it-equipment.sql" />
     <Build Include="dbo\Tables\dbo.ResourcePacks.sql" />
     <Build Include="dbo\User Defined Types\dbo.LookupDefinitionList.sql" />
     <Build Include="bll\Stored Procedures\bll.LookupDefinitions_Validate__Save.sql" />
@@ -418,20 +417,11 @@
     <Build Include="Mapping\LookupDefinitions__AsQuery.sql" />
     <Build Include="dbo\Functions\dbo.fn_RCName__Id.sql" />
     <Build Include="rpt\Functions\rpt.AccountClassificationGLAccount__Statement.sql" />
-    <None Include="Tests\02_Resources\h_PL_employee-benefits.sql" />
-    <None Include="Tests\02_Resources\b_Inventories_raw-materials.sql" />
-    <None Include="Tests\02_Resources\d2_FG_steel-products.sql" />
-    <None Include="Tests\03_Agents\01_Agents.sql" />
-    <None Include="Tests\02_Resources\e1_CCE_received-checks.sql" />
-    <None Include="Tests\05_Accounts\00_AccountClassifications.sql" />
-    <None Include="Tests\03_Agents\06_ResponsibilityCenters.sql" />
     <Build Include="rpt\Functions\rpt.Accounts__TrialBalance.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentRelationList.sql" />
     <Build Include="api\Stored Procedures\api.AgentRelations__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.AgentRelations_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.AgentRelations__Save.sql" />
-    <None Include="Tests\00_Setup\a_RolesMemberships.sql" />
-    <None Include="Tests\00_Setup\h_Workflows.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__File.sql" />
     <Build Include="api\Stored Procedures\api.DocumentLines__Unsign.sql" />
@@ -448,12 +438,35 @@
     <Build Include="bll\Stored Procedures\bll.PurchaseInvoice__Fill.sql" />
     <Build Include="dbo\Tables\dbo.TaxAccounts.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
-    <None Include="Tests\00_Setup\b_Currencies.sql" />
-    <None Include="Tests\00_Setup\g_AccountDefinitions.sql" />
-    <None Include="Tests\00_Setup\c_MeasurementUnits.sql" />
-    <None Include="Tests\00_Setup\e_ResourceTypes.sql" />
     <Build Include="api\Stored Procedures\api.ResponsibilityCenters__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.ResponsibilityCenters__Save.sql" />
+    <None Include="Samples\00_Setup\a_RolesMemberships.sql" />
+    <None Include="Samples\00_Setup\b_ResourceTypes.sql" />
+    <None Include="Samples\00_Setup\c_Currencies.sql" />
+    <None Include="Samples\00_Setup\d_MeasurementUnits.sql" />
+    <None Include="Samples\00_Setup\e_Lookups.sql" />
+    <None Include="Samples\00_Setup\h_Workflows.sql" />
+    <None Include="Samples\02_Resources\a1_PPE_motor-vehicles.sql" />
+    <None Include="Samples\02_Resources\a2_PPE_it-equipment.sql" />
+    <None Include="Samples\02_Resources\a3_PPE_machineries.sql" />
+    <None Include="Samples\02_Resources\a4_PPE_general-fixed-assets.sql" />
+    <None Include="Samples\02_Resources\b_Inventories_raw-materials.sql" />
+    <None Include="Samples\02_Resources\d1_FG_vehicles.sql" />
+    <None Include="Samples\02_Resources\d2_FG_steel-products.sql" />
+    <None Include="Samples\02_Resources\e1_CCE_received-checks.sql" />
+    <None Include="Samples\02_Resources\h_PL_employee-benefits.sql" />
+    <None Include="Samples\03_Agents\01_Agents.sql" />
+    <None Include="Samples\03_Agents\02_Suppliers.sql" />
+    <None Include="Samples\03_Agents\03_Customers.sql" />
+    <None Include="Samples\03_Agents\04_Employees.sql" />
+    <None Include="Samples\03_Agents\06_ResponsibilityCenters.sql" />
+    <None Include="Samples\05_Accounts\b_AccountClassifications.sql" />
+    <None Include="Samples\05_Accounts\c_gl-accounts.sql" />
+    <None Include="Samples\05_Accounts\d_tax-accounts.sql" />
+    <None Include="Samples\06_Entries\00_manual-vouchers.sql" />
+    <None Include="Samples\06_Entries\01_petty-cash-vouchers.sql" />
+    <None Include="Samples\FillSampleData.sql" />
+    <None Include="Samples\05_Accounts\a_AccountDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -470,20 +483,8 @@
     <None Include="Tests\07_Resources_FinancialAssets.sql" />
     <None Include="Tests\07_Resources_ProductionSupplies.sql" />
     <None Include="Tests\13_HRCycle.sql" />
-    <None Include="Provisioning\99_SampleData.sql" />
     <None Include="Provisioning\00_Setup\a_AdminSetup.sql" />
     <None Include="Provisioning\00_Setup\b_Settings.sql" />
-    <None Include="Tests\02_Resources\a1_PPE_motor-vehicles.sql" />
-    <None Include="Tests\02_Resources\a4_PPE_general-fixed-assets.sql" />
-    <None Include="Tests\02_Resources\a3_PPE_machineries.sql" />
-    <None Include="Tests\03_Agents\02_Suppliers.sql" />
-    <None Include="Tests\03_Agents\03_Customers.sql" />
-    <None Include="Tests\03_Agents\04_Employees.sql" />
-    <None Include="Tests\05_Accounts\01_gl-accounts.sql" />
-    <None Include="Tests\05_Accounts\02_tax-accounts.sql" />
-    <None Include="Tests\06_Entries\00_manual-vouchers.sql" />
-    <None Include="Tests\06_Entries\01_petty-cash-vouchers.sql" />
-    <None Include="Tests\00_Setup\d_Lookups.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

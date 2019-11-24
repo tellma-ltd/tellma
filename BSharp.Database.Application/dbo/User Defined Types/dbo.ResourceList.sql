@@ -23,28 +23,28 @@
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
 	[Description3]					NVARCHAR (2048),
-	[AttachmentsFolderURL]			NVARCHAR (255), -- Comment
+	[AttachmentsFolderURL]			NVARCHAR (255), 
 
 	[CustomsReference]				NVARCHAR (255), -- how it is referred to by Customs
 	--[PreferredSupplierId]			INT,			-- FK, Table Agents, specially for purchasing
 
-	[AvailableSince]				DATE,			-- Comment
-	[AvailableTill]					DATE,			-- Comment
+	[AvailableSince]				DATE,			
+	[AvailableTill]					DATE,			
 
 	[UniqueReference1]				NVARCHAR(50), -- such as VIN, UPC, EPC, etc...
 	[UniqueReference2]				NVARCHAR(50), -- such as Engine number
 	[UniqueReference3]				NVARCHAR(50), -- such as Plate number
 	
-	[AssetAccountId]				INT,			-- Comment
-	[LiabilityAccountId]			INT,			-- Comment
-	[EquityAccountId]				INT,			-- Comment
-	[RevenueAccountId]				INT,			-- Comment
-	[ExpensesAccountId]				INT,			-- Comment
+	[AssetAccountId]				INT,			
+	[LiabilityAccountId]			INT,			
+	[EquityAccountId]				INT,			
+	[RevenueAccountId]				INT,			
+	[ExpensesAccountId]				INT,			
 
-	[Agent1Id]						INT,			-- Comment
-	[Agent2Id]						INT,			-- Comment
-	[Date1]							DATE,			-- Comment
-	[Date2]							DATE,			-- Comment
+	[Agent1Id]						INT,			
+	[Agent2Id]						INT,			
+	[Date1]							DATE,			
+	[Date2]							DATE,			
 	[Decimal1]						DECIMAL,
 	[Decimal2]						DECIMAL,
 	[INT1]							INT,			-- Engine Capacity
@@ -54,11 +54,11 @@
 	[Lookup2Id]						INT,
 	[Lookup3Id]						INT,
 	[Lookup4Id]						INT,
-	[Lookup5Id]						INT,			-- Comment
+	[Lookup5Id]						INT,			
 	[Money1]						MONEY,
 	[Money2]						MONEY,
-	[Text1]							NVARCHAR (255), -- Comment
-	[Text2]							NVARCHAR (255), -- Comment
+	[Text1]							NVARCHAR (255), 
+	[Text2]							NVARCHAR (255), 
 
 	INDEX IX_ResourceList__Code ([Code])
 );
