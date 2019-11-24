@@ -1,9 +1,9 @@
 ﻿	INSERT INTO dbo.AgentRelationDefinitions([Id], [SingularLabel], [PluralLabel], [Prefix]) VALUES
 	(N'owners', N'Owner', N'Owners', N'O'),
-	(N'responsibility-centers', N'Responsibility Center', N'Responsibility Centers', N'R'),
-	(N'tax-offices', N'Tax Office', N'Tax Offices', N'T'),
-	(N'creditors', N'Creditor', N'Creditors', N'B'),
-	(N'depositors', N'Debtor', N'Debtors', N'B')
+	(N'responsibility-centers', N'Responsibility Center', N'Responsibility Centers', N'RC'),
+	(N'tax-offices', N'Tax Office', N'Tax Offices', N'TX'),
+	(N'creditors', N'Creditor', N'Creditors', N'CR'),
+	(N'debtors', N'Debtor', N'Debtors', N'DR')
 	;
 /* Use Cases
 Missing

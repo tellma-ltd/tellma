@@ -18,3 +18,6 @@ EXEC dal.Currencies__Activate
 	@IsActive = 1;
 
 EXEC master.sys.sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;
+
+IF @DebugCurrencies = 1
+	SELECT * FROM map.Currencies();

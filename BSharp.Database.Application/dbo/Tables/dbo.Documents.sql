@@ -24,22 +24,9 @@
 	-- Additional properties to simplify data entry. No report should be based on them!!!
 	[Memo]									NVARCHAR (255),
 	[MemoIsCommon]							BIT				DEFAULT 1,
-	[CustomerAccountId]						INT,
-	[CustomerAccountIsCommon]				BIT				DEFAULT 1,
-	[SupplierAccountId]						INT, 
-	[SupplierAccountIsCommon]				BIT				DEFAULT 1,
-	[EmployeeAccountId]						INT, 
-	[EmployeeAccountIsCommon]				BIT				DEFAULT 1,
+	[AgentId]								INT,
 	[CurrencyId]							INT, 
-	[CurrencyIsCommon]						BIT				DEFAULT 1,
-	-- For non cash items, as cash is usually one line only.
-	-- We are using "Stock", which includes "Farm/livestock" and any other non-cash custody.
-	[SourceStockAccountId]					INT, 
-	[SourceStockAccountIdIsCommon]			BIT				DEFAULT 1,
-	[DestinationStockAccountId]				INT, 
-	[DestinationStockAccountIdIsCommon]		BIT				DEFAULT 1,
-	[InvoiceReference]						NVARCHAR (255),
-	[InvoiceReferenceIsCommon]				BIT				DEFAULT 1,
+	[InvoiceReference]						NVARCHAR (50),
 	-- Transaction specific, to record the acquisition or loss of goods and services
 	-- Orders that are not negotiables, are assumed to happen, and hence are journalized, even we are verifying it later.
 	-- an easy way to define a recurrent document	
@@ -55,8 +42,8 @@
 						WHEN [Frequency] = N'Yearly' THEN DATEADD(YEAR, [Repetitions], [DocumentDate])
 					END
 	) PERSISTED,
-	-- Request specific: purchase requisition, payment requesition, production request, maintenance request
-	[Request]								NVARCHAR (1024),
+	-- Entered while the lines are still in the requested state.
+	[Request]								NVARCHAR (1024), --  this the detailed explanation
 	[NeededBy]								DATE, -- here or in lines (?)
 	[Response]								NVARCHAR (1024),
 	-- Offer expiry date can be put on the generated template (expires in two weeks from above date)

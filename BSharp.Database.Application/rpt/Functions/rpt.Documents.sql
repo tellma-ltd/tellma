@@ -9,7 +9,7 @@ RETURN
 			CAST(D.[DocumentDate] AS NVARCHAR(30)) AS [DocumentDate],
 			D.[DocumentDefinitionId],
 			DT.Prefix + 
-			REPLICATE(N'0', DT.[NumericalLength] - 1 - FLOOR(LOG10(D.SerialNumber))) +
+			REPLICATE(N'0', DT.[CodeWidth] - 1 - FLOOR(LOG10(D.SerialNumber))) +
 			CAST(D.SerialNumber AS NVARCHAR(30)) AS [S/N],
 			D.[State],
 			ISNULL(VB.[StringPrefix], '') +
@@ -36,8 +36,8 @@ RETURN
 		LEFT JOIN dbo.DocumentLines DL ON D.[Id] = DL.[DocumentId]
 		LEFT JOIN dbo.DocumentLineEntries DLE ON DL.[Id] = DLE.[DocumentLineId]
 		JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
-		LEFT JOIN dbo.Resources R ON A.[ResourceId] = R.[Id]
-		LEFT JOIN dbo.Currencies C ON R.[MonetaryValueCurrencyId] = C.[Id]
+		JOIN dbo.Resources R ON DLE.[ResourceId] = R.[Id]
+		JOIN dbo.Currencies C ON DLE.[CurrencyId] = C.[Id]
 		LEFT JOIN dbo.MeasurementUnits MUM ON R.[MassUnitId] = MUM.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @Ids)
 	)
@@ -52,7 +52,7 @@ RETURN
 		(CASE WHEN [SortKey] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
 		CAST([SortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineDefinitionId],
-		[EntryNumber], [Account], [EntryTypeId],[Resource], --[ResourceInstanceId],
+		[EntryNumber], [Account], [EntryTypeId],[Resource],
 		[Direction], [Value], [MonetaryValue], [Currency], [Mass], [MassUnit]
 	FROM Docs;
 GO

@@ -12,6 +12,8 @@ BEGIN
 /*
 -- Only saved document lines can be signed
 -- The documents lines might be in different states. The system knows for each line what are the missing roles signatures to move to next state
+-- A line can be split and merged, and remains in the same state with the same signatures
+-- A line can be moved to a separate document of the same type, and remains in the same state and same signatures
 -- The system lists the missing roles signatures. This helps the user see if he can sign, and usign which role
 -- The system shows all the states (positive and negative) accessible from the current state
 -- The user selects the state he wants to move the lines to. By default, it is the min positive state
@@ -24,12 +26,12 @@ BEGIN
 -- The system refreshes the document lines and the list of accessible states.
 -- The document can be filed/posted provided that:
 	1) All the lines have reached their final states
-	2) The lines with state Reviewed are balanced
+	2) The lines with state REVIEWED are balanced
 -- The user may edit/save a document provided that the document is active
 -- When a user modifies a line that was signed by others, there are two options:
 	1) Flexible: System allows changing and alerts the prior users
 	2) Rigid: System prevents changing. In this case, the prior users must unsign before editing
--- Accounts are affected by lines in state (Reviewed) where the document is (Posted)
+-- Accounts are affected by lines in state (REVIEWED) where the document is (Posted)
 */
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];

@@ -21,45 +21,38 @@ RETURN
 		V.[LineDefinitionId],
 		V.[Direction],
 		V.[AccountId],
-		A.[AccountTypeId],
+		A.[AccountDefinitionId],
 		A.[AccountClassificationId],
 		V.[EntryTypeId],
-		A.[AgentId],
-		A.[ResponsibilityCenterId],
-		A.[ResourceId],
-		--V.[ResourceInstanceId],
+		V.[AgentRelationDefinitionId],
+		V.[AgentId],
+		V.[ResourceId],
+		V.[CurrencyId],
 		V.[BatchCode],
+		V.[DueDate],
 		--V.[Quantity],
 -- because too many joins with table Measurement units affects performance, I will only add the 
 -- normalized quantities when needed
 		V.[MonetaryValue],
-		R.[MonetaryValueCurrencyId],
-		-- When financial instruments 
-		V.[Mass],
-		R.[MassUnitId],
-		V.[Volume],
-		R.[VolumeUnitId],
-		--ISNULL(V.[Volume] * VU.[BaseAmount] / VU.[UnitAmount], 0) As NormalizedVolume,		
-		V.[Area],
-		R.[AreaUnitId],
-		V.[Length],
-		R.[LengthUnitId],
-		V.[Time],
-		R.[TimeUnitId],
 		V.[Count],
 		R.[CountUnitId],
 		--ISNULL(V.[Count] * CU.[BaseAmount] / CU.[UnitAmount],0) As NormalizedCount,
+		V.[Mass],
+		R.[MassUnitId],
+		V.[Time],
+		R.[TimeUnitId],
+		V.[Volume],
+		R.[VolumeUnitId],
+		--ISNULL(V.[Volume] * VU.[BaseAmount] / VU.[UnitAmount], 0) As NormalizedVolume,		
 		V.[Value],
 		V.[Memo],
 		V.[ExternalReference],
 		V.[AdditionalReference],
-		V.[RelatedResourceId],
 		V.[RelatedAgentId],
-		V.[RelatedQuantity],
-		V.[RelatedMonetaryValue]
+		V.[RelatedAmount]
 	FROM dbo.[DocumentLineEntriesDetailsView] V
 	JOIN dbo.Accounts A ON V.AccountId = A.Id
-	LEFT JOIN dbo.Resources R ON A.ResourceId = R.Id
+	LEFT JOIN dbo.Resources R ON V.ResourceId = R.Id
 	--LEFT JOIN dbo.MeasurementUnits MU ON R.MassUnitId = MU.Id
 	--LEFT JOIN dbo.MeasurementUnits VU ON R.VolumeUnitId = VU.Id
 	--LEFT JOIN dbo.MeasurementUnits CU ON R.CountUnitId = CU.Id

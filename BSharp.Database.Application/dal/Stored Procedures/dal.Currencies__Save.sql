@@ -26,5 +26,27 @@ SET NOCOUNT ON;
 			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], [E])
-		VALUES (s.[Id], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[E])
-	OUTPUT s.[Index], inserted.[Id];
+		VALUES (s.[Id], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[E]);
+
+	MERGE INTO [dbo].[Resources] AS t
+	USING (
+		SELECT
+			[Id], [Name], [Name2], [Name3],
+			[Description], [Description2], [Description3]
+		FROM @Entities 
+	) AS s ON (t.[Code] = s.Id) AND (t.[ResourceDefinitionId] = N'monetary-resources')
+	WHEN MATCHED 
+	THEN
+		UPDATE SET 
+			t.[Name]			= s.[Name],
+			t.[Name2]			= s.[Name2],
+			t.[Name3]			= s.[Name3],
+			t.[CurrencyId]		= s.[Id],
+			t.[Description]		= s.[Description],
+			t.[Description2]	= s.[Description2],
+			t.[Description3]	= s.[Description3],
+			t.[ModifiedAt]		= @Now,
+			t.[ModifiedById]	= @UserId
+	WHEN NOT MATCHED THEN
+		INSERT ([Code], [ResourceDefinitionId],	[ResourceTypeId],			[Name], [Name2], [Name3], [Description], [Description2], [Description3], [CurrencyId])
+		VALUES (s.[Id],  N'monetary-resources',	N'CashAndCashEquivalents',	s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[Id]);

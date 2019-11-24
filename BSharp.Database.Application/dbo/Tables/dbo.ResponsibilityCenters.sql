@@ -1,26 +1,40 @@
 ﻿CREATE TABLE [dbo].[ResponsibilityCenters] (
 /*
-WSI (I)
-	0 Executive Office (includes Internal audit)  (C, A)
-		00 Manager
-		01 Internat Audit (C, A)
-	1 Marketing & Sales (R, S), 
-		10 AG Office
-		11 Bole Office (girls salaries, office rental)
-	2 Production (C, O), -- each stage consumes Direct Materials, Services, Labor, Machines in addition to output of previous stage
-		20 Manager (Mesfin salary and Laptop depreciation)
-		21 Slitting (HR, CR)
-		22 pipe making 
-		23 Cut to size
-	3 Maintenance (C, O) (labor), apportioned to other functions
-	4 Materials and Purchases (C, A/S/O)
-	5 MIS (C, A)
-	6 HR & General services, (C. A)(utilities, labor, consumables)
-	7 Finance, (C, A) (labor, education, stationery, interest expenses)
-	8 Coffee Processing (I, A/S/O)
+WSI
+	10 Executive Office (includes Internal audit and dept managers)  (Cost Center: Admin)
+	11 Finance (Cost Center: Admin)
+	12 HR & General services (Cost Center: Service)
+		111 HR Team (Cost Center: Service) apportioned to others by number of staff in each cost center
+		112 Cafeteria (Cost Center: Service) apportioned to others by number of staff in each cost center
+	13 Maintenance (Cost Center: Service) apportioned to other cost centers, based on the services hours they provided, 
+	14 MIS (Cost Center: Service) apportioned to other cost centers, based on the services hours they provided
+	15 Marketing & Sales
+		211 AG Sales Unit (Cost Center: S&D, Salaries, PPE depreciation), (Revenue Center)
+		212 Bole Sales Unit (Cost Center: S & D, Salaries, office rental, PPE depreciation), (Revenue Center)
+		213 Marketing (Cost Center: S&D), includes labor, PPE and campaigns.
+	16 Warehouses (Cost Center: Service) All expenses (labor, depreciation) apportioned by store requisitions		
+	17 Production, -- each stage consumes Direct Materials, Services, Labor, Machines in addition to output of previous stage
+		171 Slitting (HR, CR) (Cost Center: Production)
+		172 pipe making (Cost Center: Production)
+		173 Cut to size (Cost Center: Production)
+		179 Production - Shared. e.g., electricity
+	18 Coffee Processing
+		30 Administration (Cost Center: Admin), [Offloads admin share from HR]
+		91 Selling & Distribution (Cost Center: S&D),
+		92 Processing (Cost Center: Production)
+		99 Coffee Processing - Shared
+	99 Shared (Steel & Coffee)
 
-	Legend: C: Cost center, R: Revenue Center, P: Profit center, I: Investment center
-	A: leftover expenses are administrative, S: leftover are selling and distribution, O: leftover are Cost of Sales
+	Steel (Ooperating Segment)
+		HSP (Kg) (Cost Unit: Gross Profit)
+		LTZ (Kg) (Cost Unit: Gross Profit)
+		CP (Kg) (Cost Unit: Gross Profit)
+		Other Products (Kg)
+	Coffee Processing (Operating Segment)
+		
+		Coffee (Kg) (Cost Unit: Gross Profit),
+
+
 We identify business units as those whose managers may potentially prepare and submit a yearly budget. Eventually, those managers signatures 
 are required for expense approvals
 We may go further down by identifying activities in a business unit, and allocate expenses to those, for more accurate cost accounting

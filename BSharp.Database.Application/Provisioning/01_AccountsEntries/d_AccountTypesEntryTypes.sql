@@ -21,8 +21,8 @@ WITH
 AccountTypesDescendants(AccountTypeId, ParentAccountTypeId) AS
 (
 	SELECT AT1.[Id], AT2.[Id]
-	FROM dbo.AccountTypes AT1
-	JOIN dbo.AccountTypes AT2 ON AT1.[Node].IsDescendantOf(AT2.[Node]) = 1
+	FROM dbo.[AccountDefinitions] AT1
+	JOIN dbo.[AccountDefinitions] AT2 ON AT1.[Node].IsDescendantOf(AT2.[Node]) = 1
 	WHERE AT2.[Id] IN (SELECT [ParentAccountTypeId] FROM @AccountTypesEntryTypesParents)
 	AND AT1.IsAssignable = 1
 ),

@@ -1,8 +1,5 @@
-﻿-- This table can be used to migrate:
--- 1) The roots and intermediate nodes of the legacy chart of accounts
--- 2) The two leaves corresponding to debtors and creditors
--- 3) The accounts to which stockable items are mapped
--- Then the tree, augmented with the gl-accounts, shall be used to generate trial balance. See :[rpt].[AccountClassificationsGLAccounts__TrialBalance] 
+﻿-- This table can be used to migrate the roots and intermediate nodes of the legacy chart of accounts
+-- Alternatively, it can be used to mimic the ERCA tree for easier reporting
 CREATE TABLE [dbo].[AccountClassifications] (
 	[Id]								INT					CONSTRAINT [PK_AccountClassifications] PRIMARY KEY NONCLUSTERED IDENTITY,
 	-- This one is not needed, and must be replaces with AccountDefinition

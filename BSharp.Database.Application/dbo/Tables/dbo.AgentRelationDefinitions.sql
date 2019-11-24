@@ -19,7 +19,7 @@
 
 
 /* 
-Shareholder, Investment, Customer, Supplier, Employee, ResponsibilityCenter, Other Debtor, Other Creditor
+Shareholder, Investment, Customer, Supplier, Employee, CostCenter, Cost Unit, Revenue Center, Debtor, Creditor
 Two levels might be a good idea. We may want to separate the customer categories into: Bookshop customers, students, etc.
 Shareholders: 0
 	Shareholder					

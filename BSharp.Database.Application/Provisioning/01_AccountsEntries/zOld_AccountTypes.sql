@@ -72,25 +72,3 @@ INSERT INTO @AccountTypes
 (N'DistributionCosts',						N'Distribution costs',						N'/3/3/2/1/',	1,				1),
 (N'AdministrativeExpense',					N'Administrative expenses',					N'/3/3/2/2/',	1,				1),
 (N'OtherExpenseByFunction',					N'Other expense',							N'/3/3/2/3/',	1,				1);
-
-
---OtherGainsLosses, Other gains (losses)
-MERGE [dbo].[AccountTypes] AS t
-USING (
-		SELECT [Id], [IsAssignable], [Name], [Name2], [Name3], [IsActive], [Node]
-		FROM @AccountTypes
-) AS s
-ON s.[Id] = t.[Id]
-WHEN MATCHED
-THEN
-	UPDATE SET
-		t.[IsAssignable]	=	s.[IsAssignable],
-		t.[Name]			=	s.[Name],
-		t.[Name2]			=	s.[Name2],
-		t.[Name3]			=	s.[Name3],
-		t.[Node]			=	s.[Node]
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Id],	[IsAssignable],		[Name],		[Name2], [Name3], [IsActive],	[Node])
-    VALUES (s.[Id], s.[IsAssignable], s.[Name], s.[Name2], s.[Name3], s.[IsActive], s.[Node]);

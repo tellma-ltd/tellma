@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Agents] (
 --	These includes all the natural and legal persons with which the business entity may interact
-	[Id]						INT PRIMARY KEY IDENTITY,
+	[Id]						INT				CONSTRAINT [PK_Agents] PRIMARY KEY IDENTITY,
 	[IsActive]					BIT				NOT NULL DEFAULT 1, -- 0 means the person is dead or the organization is close
 	[Name]						NVARCHAR (255)	NOT NULL, -- CONSTRAINT [IX_Agents__Name] UNIQUE,
 	[Name2]						NVARCHAR (255),
@@ -8,7 +8,7 @@
 	--[ShortName]					NVARCHAR (255),		-- Nickname
 	[Code]						NVARCHAR (50),
 --	Common
-	[AgentType]					NVARCHAR (30)	NOT NULL	CONSTRAINT [CK_Agents_AgentType] CHECK ([AgentType] IN (N'Individual', N'Organization', N'System')), -- Organization includes Dept, Team
+	[AgentType]					NVARCHAR (30)	NOT NULL	CONSTRAINT [CK_Agents_AgentType] CHECK ([AgentType] IN (N'Individual', N'Organization', N'ResponsibilityCenter', N'System')),
 	[IsRelated]					BIT				NOT NULL DEFAULT 0,
 	[TaxIdentificationNumber]	NVARCHAR (30),  -- China has the maximum, 18 characters
 	[IsLocal]					BIT,
@@ -52,7 +52,11 @@
 	[RegisteredAddress]			NVARCHAR (1024),
 	[OwnershipType]				NVARCHAR (255), -- Investment/Shareholder/SisterCompany/Other(Default) -- We Own shares in them, they own share in us, ...
 	[OwnershipPercent]			DECIMAL	DEFAULT 0, -- If investment, how much the entity owns in this agent. If shareholder, how much he owns in the entity
-
+--	Responsibility Centers only
+	[ResponsibilityDomain]		NVARCHAR (255),		 -- Investment, Profit, Revenue, Cost
+	[IsOperatingSegment]		BIT,
+	[ParentId]					INT					REFERENCES dbo.Agents([Id]),
+	[ParentAgentType]			NVARCHAR (30)		DEFAULT N'ResponsibilityCenter',
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Agents__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Agents] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[dal_ResponsibilityCenters__Save]
+﻿CREATE PROCEDURE [dal].[ResponsibilityCenters__Save]
 	@Entities [ResponsibilityCenterList] READONLY,
 	@ReturnIds BIT = 0
 AS

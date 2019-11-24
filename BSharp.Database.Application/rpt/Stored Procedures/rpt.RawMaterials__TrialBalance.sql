@@ -1,8 +1,9 @@
 ﻿CREATE PROCEDURE [rpt].[RawMaterials__TrialBalance]
 	@FromDate Date = '01.01.2020',
 	@ToDate Date = '01.01.2020',
+	@CountUnitId INT,
 	@MassUnitId INT,
-	@CountUnitId INT
+	@VolumeUnitId INT
 AS
 BEGIN
 	WITH JournalSummary
@@ -14,8 +15,9 @@ BEGIN
 			N'RawMaterials', -- @AccountTypeList
 			@FromDate,
 			@ToDate, 
+			@CountUnitId,
 			@MassUnitId,
-			@CountUnitId
+			@VolumeUnitId
 		)
 		GROUP BY ResourceId
 	)

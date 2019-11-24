@@ -1,4 +1,6 @@
 ﻿CREATE PROCEDURE [api].[Documents__Void]
+-- TODO: merge it with api_Documents__Close --> 
+-- all final states are negative
 	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS

@@ -93,11 +93,7 @@ END
 --		[CurrencyId], [MassUnitId], [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 --	FROM [dbo].Resources
 --	WHERE [Name] IN (N'Toyota Camry 2018')
---	INSERT INTO @RP2 ( [ResourceIndex], [Id], [ResourceId],	[Code], [ProductionDate])
---	SELECT				R2.[Index], RI.[Id], RI.[ResourceId],  RI.[Code], RI.[ProductionDate]
---	FROM [dbo].[ResourceInstances] RI
---	JOIN @R2 R2 ON RI.ResourceId = R2.[Id]
---	WHERE ResourceId IN (SELECT [Id] FROM @R2);
+
 
 --	UPDATE @R2
 --	SET 

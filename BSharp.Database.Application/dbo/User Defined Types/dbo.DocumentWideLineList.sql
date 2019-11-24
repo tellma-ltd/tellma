@@ -15,7 +15,6 @@
 	[AdditionalReference1]		NVARCHAR (255),
 	[RelatedAgentId1]			INT,
 	[RelatedDate1]				DATE,
-	[RelatedLocationId1]		INT,
 	[RelatedQuantity1]			MONEY,
 	[RelatedResourceId1]		INT,
 

@@ -1,14 +1,15 @@
 ﻿CREATE PROCEDURE [dbo].[rpt_Production__Actual_vs_Planned]
 	@FromDate Date,
 	@ToDate Date,
+	@CountUnitId INT,
 	@MassUnitId INT,
-	@CountUnitId INT
+	@VolumeUnitId INT
 AS
 BEGIN
 	WITH FinishedGoodsResourceTypes AS (
 		SELECT Id FROM dbo.[ResourceTypes]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[ResourceTypes] WHERE Id = N'Inventories')
+			(SELECT [Node] FROM dbo.[ResourceTypes] WHERE Id = N'Goods')
 		) = 1
 	),
 	UnitConversionRates([Id], [ConversionRate]) AS (
@@ -24,16 +25,16 @@ BEGIN
 	),
 	Actual([ResourceLookup1Id], [ResponsibleActorId], [Mass], [Count]) AS (
 		SELECT 
-			R.[Lookup1Id], J.[ResponsibilityCenterId],
+			R.[Lookup1Id], J.[AgentId],
 			SUM(J.Direction * J.[Mass]) AS [Mass],
 			SUM(J.Direction * J.[Count]) AS [Count]
-		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @MassUnitId, @CountUnitId) J
+		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
 		WHERE J.[EntryTypeId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		-- TODO: we need a way to separate finished goods from the rest
 		AND R.ResourceTypeId IN (SELECT [Id] FROM FinishedGoodsResourceTypes)
-		GROUP BY J.[ResponsibilityCenterId], R.[Lookup1Id]
+		GROUP BY J.[AgentId], R.[Lookup1Id]
 	),
 	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (
 		SELECT 

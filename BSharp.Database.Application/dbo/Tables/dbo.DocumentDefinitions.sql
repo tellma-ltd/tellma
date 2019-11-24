@@ -19,12 +19,8 @@
 	-- UI Specs
 	[SortKey]					DECIMAL (9,4),
 	[Prefix]					NVARCHAR (5)	NOT NULL,
-	[NumericalLength]			TINYINT			DEFAULT 3, -- For presentation purposes
-	[CustomerLabel]				NVARCHAR (50),
-	[SupplierLabel]				NVARCHAR (50),
-	[EmployeeLabel]				NVARCHAR (50),
-	[FromCustodyAccountLabel]	NVARCHAR (50),
-	[ToCustodyAccountLabel]		NVARCHAR (50),
+	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
+	[AgentRelationDefinitionId]	NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
 
 	[State]						NVARCHAR (50)			DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),
