@@ -18,16 +18,14 @@ export class ResourceForSave extends EntityWithKey {
     CurrencyId: number;
     MassUnitId: number;
     VolumeUnitId: number;
-    AreaUnitId: number;
-    LengthUnitId: number;
     TimeUnitId: number;
     CountUnitId: number;
-    Memo: string;
     CustomsReference: string;
-    ResourceLookup1Id: number;
-    ResourceLookup2Id: number;
-    ResourceLookup3Id: number;
-    ResourceLookup4Id: number;
+    Lookup1Id: number;
+    Lookup2Id: number;
+    Lookup3Id: number;
+    Lookup4Id: number;
+    Lookup5Id: number;
 }
 
 export class Resource extends ResourceForSave {
@@ -91,24 +89,26 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                 MassUnit: { control: 'navigation', label: () => trx.instant('Resource_MassUnit'), type: 'MeasurementUnit', foreignKeyName: 'MassUnitId' },
                 VolumeUnitId: { control: 'number', label: () => `${trx.instant('Resource_VolumeUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 VolumeUnit: { control: 'navigation', label: () => trx.instant('Resource_VolumeUnit'), type: 'MeasurementUnit', foreignKeyName: 'VolumeUnitId' },
-                AreaUnitId: { control: 'number', label: () => `${trx.instant('Resource_AreaUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                AreaUnit: { control: 'navigation', label: () => trx.instant('Resource_AreaUnit'), type: 'MeasurementUnit', foreignKeyName: 'AreaUnitId' },
-                LengthUnitId: { control: 'number', label: () => `${trx.instant('Resource_LengthUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                LengthUnit: { control: 'navigation', label: () => trx.instant('Resource_LengthUnit'), type: 'MeasurementUnit', foreignKeyName: 'LengthUnitId' },
+                // AreaUnitId: { control: 'number', label: () => `${trx.instant('Resource_AreaUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                // AreaUnit: { control: 'navigation', label: () => trx.instant('Resource_AreaUnit'), type: 'MeasurementUnit', foreignKeyName: 'AreaUnitId' },
+                // LengthUnitId: { control: 'number', label: () => `${trx.instant('Resource_LengthUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                // LengthUnit: { control: 'navigation', label: () => trx.instant('Resource_LengthUnit'), type: 'MeasurementUnit', foreignKeyName: 'LengthUnitId' },
                 TimeUnitId: { control: 'number', label: () => `${trx.instant('Resource_TimeUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 TimeUnit: { control: 'navigation', label: () => trx.instant('Resource_TimeUnit'), type: 'MeasurementUnit', foreignKeyName: 'TimeUnitId' },
                 CountUnitId: { control: 'number', label: () => `${trx.instant('Resource_CountUnit')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 CountUnit: { control: 'navigation', label: () => trx.instant('Resource_CountUnit'), type: 'MeasurementUnit', foreignKeyName: 'CountUnitId' },
-                Memo: { control: 'text', label: () => trx.instant('Memo') },
+                // Memo: { control: 'text', label: () => trx.instant('Memo') },
                 CustomsReference: { control: 'text', label: () => trx.instant('Resource_CustomsReference') },
-                ResourceLookup1Id: { control: 'number', label: () => `${trx.instant('Resource_ResourceLookup1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ResourceLookup1: { control: 'navigation', label: () => trx.instant('Resource_ResourceLookup1'), type: 'Lookup', foreignKeyName: 'ResourceLookup1Id' },
-                ResourceLookup2Id: { control: 'number', label: () => `${trx.instant('Resource_ResourceLookup2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ResourceLookup2: { control: 'navigation', label: () => trx.instant('Resource_ResourceLookup2'), type: 'Lookup', foreignKeyName: 'ResourceLookup2Id' },
-                ResourceLookup3Id: { control: 'number', label: () => `${trx.instant('Resource_ResourceLookup3')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ResourceLookup3: { control: 'navigation', label: () => trx.instant('Resource_ResourceLookup3'), type: 'Lookup', foreignKeyName: 'ResourceLookup3Id' },
-                ResourceLookup4Id: { control: 'number', label: () => `${trx.instant('Resource_ResourceLookup4')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ResourceLookup4: { control: 'navigation', label: () => trx.instant('Resource_ResourceLookup4'), type: 'Lookup', foreignKeyName: 'ResourceLookup4Id' },
+                Lookup1Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup1')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup1: { control: 'navigation', label: () => trx.instant('Resource_Lookup1'), type: 'Lookup', foreignKeyName: 'Lookup1Id' },
+                Lookup2Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup2')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup2: { control: 'navigation', label: () => trx.instant('Resource_Lookup2'), type: 'Lookup', foreignKeyName: 'Lookup2Id' },
+                Lookup3Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup3')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup3: { control: 'navigation', label: () => trx.instant('Resource_Lookup3'), type: 'Lookup', foreignKeyName: 'Lookup3Id' },
+                Lookup4Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup4')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup4: { control: 'navigation', label: () => trx.instant('Resource_Lookup4'), type: 'Lookup', foreignKeyName: 'Lookup4Id' },
+                Lookup5Id: { control: 'number', label: () => `${trx.instant('Resource_Lookup5')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Lookup5: { control: 'navigation', label: () => trx.instant('Resource_Lookup5'), type: 'Lookup', foreignKeyName: 'Lookup5Id' },
 
                 IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
@@ -135,7 +135,7 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
             }
         } else {
 
-            for (const propName of ['Memo', 'CustomsReference']) {
+            for (const propName of [/* 'Memo', */ 'CustomsReference']) {
                 if (!definition[propName + '_Visibility']) {
                     delete entityDesc.properties[propName];
                 } else {
@@ -145,7 +145,7 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                 }
             }
 
-            for (const propName of ['MassUnit', 'VolumeUnit', 'AreaUnit', 'LengthUnit', 'TimeUnit', 'CountUnit']) {
+            for (const propName of ['MassUnit', 'VolumeUnit', /* 'AreaUnit', 'LengthUnit',  */'TimeUnit', 'CountUnit']) {
                 if (!definition[propName + '_Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];
@@ -159,7 +159,7 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                 }
             }
 
-            for (const propName of ['1', '2', '3', '4'].map(pf => 'ResourceLookup' + pf)) {
+            for (const propName of ['1', '2', '3', '4', '5'].map(pf => 'Lookup' + pf)) {
                 if (!definition[propName + '_Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

@@ -1525,6 +1525,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   - Support special date filter operators
   - Add copy to clipboard to the fields list
   - Show validation on the remaining fields
+  - Add the remaining parameter controls, especially the details pickers
 
   [Dimension Properties Steps]
   - Add field to ReportDimensionDefinition  (C#)

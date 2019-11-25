@@ -20,32 +20,6 @@ export class VoucherBooklet extends VoucherBookletForSave {
   IsActive: boolean;
 }
 
-export class ResourcePickForSave extends EntityWithKey {
-  Code: string;
-  ResourceId: number | string;
-  ProductionDate: string;
-  ExpiryDate: string;
-  MonetaryValue: number;
-  Mass: number;
-  Volume: number;
-  Area: number;
-  Length: number;
-  Time: number;
-  Count: number;
-  Beneficiary: string;
-  IssuingBankAccountId: number | string;
-  IssuingBankId: number | string;
-}
-
-export class ResourcePick extends ResourcePickForSave {
-  IsActive: boolean;
-  CreatedAt: string;
-  CreatedById: number | string;
-  ModifiedAt: string;
-  ModifiedById: number | string;
-}
-
-
 export class ResponsibilityCenterForSave extends EntityWithKey {
   ParentId: number | string;
   Name: string;
@@ -139,55 +113,6 @@ export function metadata_VoucherBooklet(ws: TenantWorkspace, trx: TranslateServi
   }
 
   return _voucherBookletCache;
-}
-
-let _resourcePickSettings: SettingsForClient;
-let _resourcePickCache: EntityDescriptor;
-
-export function metadata_ResourcePick(ws: TenantWorkspace, trx: TranslateService, _subtype: string): EntityDescriptor {
-  // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (ws.settings !== _resourcePickSettings) {
-    _resourcePickSettings = ws.settings;
-    _resourcePickCache = {
-      collection: 'ResourcePick',
-      titleSingular: () =>  'Resource Pick',
-      titlePlural: () =>  'Resource Picks',
-      select: ['Code'],
-      apiEndpoint: 'resource-picks',
-      screenUrl: 'resource-picks',
-      orderby: ['Code'],
-      format: (item: ResourcePick) => item.Code,
-      properties: {
-        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Code: { control: 'text', label: () => trx.instant('Code') },
-
-        // Temp
-        ResourceId: { control: 'number', label: () => 'Resource', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Resource: { control: 'navigation', label: () => 'Resource', type: 'Resource', foreignKeyName: 'ResourceId' },
-        ProductionDate: { control: 'date', label: () => 'Production Date' },
-        ExpiryDate: { control: 'date', label: () => 'Expiry Date' },
-        MonetaryValue: { control: 'number', label: () => 'Monetary Value', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Mass: { control: 'number', label: () => 'Mass', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Volume: { control: 'number', label: () => 'Volume', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Area: { control: 'number', label: () => 'Area', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Length: { control: 'number', label: () => 'Length', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Time: { control: 'number', label: () => 'Time', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Count: { control: 'number', label: () => 'Count', minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
-        Beneficiary: { control: 'text', label: () => 'Beneficiary' },
-        IssuingBankAccountId: { control: 'number', label: () => 'Issuing Bank Account Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        IssuingBankId: { control: 'number', label: () => 'Issuing Bank Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        // End Temp
-
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
-      }
-    };
-  }
-
-  return _resourcePickCache;
 }
 
 

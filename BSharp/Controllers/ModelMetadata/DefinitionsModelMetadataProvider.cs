@@ -130,15 +130,15 @@ namespace BSharp.Controllers
                             displayMetadata = LocalizeResourceProperty(e => e.VolumeUnit_Visibility, e => e.VolumeUnit_Label, e => e.VolumeUnit_Label2, e => e.VolumeUnit_Label3, defaultName);
                             break;
 
-                        case nameof(Resource.AreaUnit):
-                        case nameof(Resource.AreaUnitId):
-                            displayMetadata = LocalizeResourceProperty(e => e.AreaUnit_Visibility, e => e.AreaUnit_Label, e => e.AreaUnit_Label2, e => e.AreaUnit_Label3, defaultName);
-                            break;
+                        //case nameof(Resource.AreaUnit):
+                        //case nameof(Resource.AreaUnitId):
+                        //    displayMetadata = LocalizeResourceProperty(e => e.AreaUnit_Visibility, e => e.AreaUnit_Label, e => e.AreaUnit_Label2, e => e.AreaUnit_Label3, defaultName);
+                        //    break;
 
-                        case nameof(Resource.LengthUnit):
-                        case nameof(Resource.LengthUnitId):
-                            displayMetadata = LocalizeResourceProperty(e => e.LengthUnit_Visibility, e => e.LengthUnit_Label, e => e.LengthUnit_Label2, e => e.LengthUnit_Label3, defaultName);
-                            break;
+                        //case nameof(Resource.LengthUnit):
+                        //case nameof(Resource.LengthUnitId):
+                        //    displayMetadata = LocalizeResourceProperty(e => e.LengthUnit_Visibility, e => e.LengthUnit_Label, e => e.LengthUnit_Label2, e => e.LengthUnit_Label3, defaultName);
+                        //    break;
 
                         case nameof(Resource.TimeUnit):
                         case nameof(Resource.TimeUnitId):
@@ -150,32 +150,32 @@ namespace BSharp.Controllers
                             displayMetadata = LocalizeResourceProperty(e => e.CountUnit_Visibility, e => e.CountUnit_Label, e => e.CountUnit_Label2, e => e.CountUnit_Label3, defaultName);
                             break;
 
-                        case nameof(Resource.Memo):
-                            displayMetadata = LocalizeResourceProperty(e => e.Memo_Visibility, e => e.Memo_Label, e => e.Memo_Label2, e => e.Memo_Label3, defaultName);
-                            break;
+                        //case nameof(Resource.Memo):
+                        //    displayMetadata = LocalizeResourceProperty(e => e.Memo_Visibility, e => e.Memo_Label, e => e.Memo_Label2, e => e.Memo_Label3, defaultName);
+                        //    break;
 
                         case nameof(Resource.CustomsReference):
                             displayMetadata = LocalizeResourceProperty(e => e.CustomsReference_Visibility, e => e.CustomsReference_Label, e => e.CustomsReference_Label2, e => e.CustomsReference_Label3, defaultName);
                             break;
 
-                        case nameof(Resource.ResourceLookup1):
-                        case nameof(Resource.ResourceLookup1Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup1_Visibility, e => e.ResourceLookup1_Label, e => e.ResourceLookup1_Label2, e => e.ResourceLookup1_Label3, defaultName);
+                        case nameof(Resource.Lookup1):
+                        case nameof(Resource.Lookup1Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.Lookup1_Visibility, e => e.Lookup1_Label, e => e.Lookup1_Label2, e => e.Lookup1_Label3, defaultName);
                             break;
 
-                        case nameof(Resource.ResourceLookup2):
-                        case nameof(Resource.ResourceLookup2Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup2_Visibility, e => e.ResourceLookup2_Label, e => e.ResourceLookup2_Label2, e => e.ResourceLookup2_Label3, defaultName);
+                        case nameof(Resource.Lookup2):
+                        case nameof(Resource.Lookup2Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.Lookup2_Visibility, e => e.Lookup2_Label, e => e.Lookup2_Label2, e => e.Lookup2_Label3, defaultName);
                             break;
 
-                        case nameof(Resource.ResourceLookup3):
-                        case nameof(Resource.ResourceLookup3Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup3_Visibility, e => e.ResourceLookup3_Label, e => e.ResourceLookup3_Label2, e => e.ResourceLookup3_Label3, defaultName);
+                        case nameof(Resource.Lookup3):
+                        case nameof(Resource.Lookup3Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.Lookup3_Visibility, e => e.Lookup3_Label, e => e.Lookup3_Label2, e => e.Lookup3_Label3, defaultName);
                             break;
 
-                        case nameof(Resource.ResourceLookup4):
-                        case nameof(Resource.ResourceLookup4Id):
-                            displayMetadata = LocalizeResourceProperty(e => e.ResourceLookup4_Visibility, e => e.ResourceLookup4_Label, e => e.ResourceLookup4_Label2, e => e.ResourceLookup4_Label3, defaultName);
+                        case nameof(Resource.Lookup4):
+                        case nameof(Resource.Lookup4Id):
+                            displayMetadata = LocalizeResourceProperty(e => e.Lookup4_Visibility, e => e.Lookup4_Label, e => e.Lookup4_Label2, e => e.Lookup4_Label3, defaultName);
                             break;
                         default:
                             displayMetadata = null;

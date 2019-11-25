@@ -220,37 +220,45 @@ namespace BSharp.Controllers.Dto
         public string CustomsReference_DefaultValue { get; set; }
 
 
-        // Resource Lookup 1
-        public string ResourceLookup1_Label { get; set; }
-        public string ResourceLookup1_Label2 { get; set; }
-        public string ResourceLookup1_Label3 { get; set; }
-        public byte ResourceLookup1_Visibility { get; set; } // 0, 1, 2 (not visible, visible, visible and required)
-        public int? ResourceLookup1_DefaultValue { get; set; }
-        public string ResourceLookup1_DefinitionId { get; set; }
+        // Lookup 1
+        public string Lookup1_Label { get; set; }
+        public string Lookup1_Label2 { get; set; }
+        public string Lookup1_Label3 { get; set; }
+        public byte Lookup1_Visibility { get; set; } // 0, 1, 2 (not visible, visible, visible and required)
+        public int? Lookup1_DefaultValue { get; set; }
+        public string Lookup1_DefinitionId { get; set; }
 
-        // Resource Lookup 2
-        public string ResourceLookup2_Label { get; set; }
-        public string ResourceLookup2_Label2 { get; set; }
-        public string ResourceLookup2_Label3 { get; set; }
-        public byte ResourceLookup2_Visibility { get; set; }
-        public int? ResourceLookup2_DefaultValue { get; set; }
-        public string ResourceLookup2_DefinitionId { get; set; }
+        // Lookup 2
+        public string Lookup2_Label { get; set; }
+        public string Lookup2_Label2 { get; set; }
+        public string Lookup2_Label3 { get; set; }
+        public byte Lookup2_Visibility { get; set; }
+        public int? Lookup2_DefaultValue { get; set; }
+        public string Lookup2_DefinitionId { get; set; }
 
-        // Resource Lookup 3
-        public string ResourceLookup3_Label { get; set; }
-        public string ResourceLookup3_Label2 { get; set; }
-        public string ResourceLookup3_Label3 { get; set; }
-        public byte ResourceLookup3_Visibility { get; set; }
-        public int? ResourceLookup3_DefaultValue { get; set; }
-        public string ResourceLookup3_DefinitionId { get; set; }
+        // Lookup 3
+        public string Lookup3_Label { get; set; }
+        public string Lookup3_Label2 { get; set; }
+        public string Lookup3_Label3 { get; set; }
+        public byte Lookup3_Visibility { get; set; }
+        public int? Lookup3_DefaultValue { get; set; }
+        public string Lookup3_DefinitionId { get; set; }
 
-        // Resource Lookup 4
-        public string ResourceLookup4_Label { get; set; }
-        public string ResourceLookup4_Label2 { get; set; }
-        public string ResourceLookup4_Label3 { get; set; }
-        public byte ResourceLookup4_Visibility { get; set; }
-        public int? ResourceLookup4_DefaultValue { get; set; }
-        public string ResourceLookup4_DefinitionId { get; set; }
+        // Lookup 4
+        public string Lookup4_Label { get; set; }
+        public string Lookup4_Label2 { get; set; }
+        public string Lookup4_Label3 { get; set; }
+        public byte Lookup4_Visibility { get; set; }
+        public int? Lookup4_DefaultValue { get; set; }
+        public string Lookup4_DefinitionId { get; set; }
+
+        // Lookup 5
+        public string Lookup5_Label { get; set; }
+        public string Lookup5_Label2 { get; set; }
+        public string Lookup5_Label3 { get; set; }
+        public byte Lookup5_Visibility { get; set; }
+        public int? Lookup5_DefaultValue { get; set; }
+        public string Lookup5_DefinitionId { get; set; }
     }
 
     public class LookupDefinitionForClient : MasterDetailDefinitionForClient

@@ -11,7 +11,7 @@ import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
 import {
-    metadata_VoucherBooklet, metadata_ResourcePick, metadata_ResponsibilityCenter,
+    metadata_VoucherBooklet, metadata_ResponsibilityCenter,
     metadata_IfrsAccountClassification, metadata_IfrsEntryClassification
 } from '../_temp';
 import { metadata_AccountClassification } from '../account-classification';
@@ -39,7 +39,6 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
 
     // Temp
     VoucherBooklet: metadata_VoucherBooklet,
-    ResourcePick: metadata_ResourcePick,
     ResponsibilityCenter: metadata_ResponsibilityCenter,
     IfrsAccountClassification: metadata_IfrsAccountClassification,
     IfrsEntryClassification: metadata_IfrsEntryClassification,

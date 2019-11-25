@@ -79,6 +79,12 @@
     <b-selector *ngIf="isEdit" [(ngModel)]="model.AgentType" [choices]="agentTypeChoices" required></b-selector>
   </b-form-group>
 
+  <!-- Tax Identification Number -->
+  <b-form-group class="b-form-group" [label]="'Agent_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
+    <div *ngIf="!isEdit">{{ model?.TaxIdentificationNumber }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  </b-form-group>
+
   <!-- Preferred Language -->
   <b-form-group class="b-form-group" [label]="'Agent_PreferredLanguage' | translate"
     [serverErrors]="model?.serverErrors?.PreferredLanguage">

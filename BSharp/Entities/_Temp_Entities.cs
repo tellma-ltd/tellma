@@ -151,148 +151,82 @@ namespace BSharp.Entities
         //public VoucherType VoucherType { get; set; }
     }
 
-    [StrongEntity]
-    public class ResourcePickForSave : EntityWithKey<int>
-    {
-        // Where is Name ?? The name of the Resource itself?
+    //[StrongEntity]
+    //public class ResponsibilityCenterForSave : EntityWithKey<int>
+    //{
+    //    [NotMapped]
+    //    public int? ParentIndex { get; set; }
 
-        [Display(Name = "Code")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string Code { get; set; }
+    //    [AlwaysAccessible]
+    //    public int? ParentId { get; set; }
 
-        // Temp
+    //    [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
+    //    [Required(ErrorMessage = nameof(RequiredAttribute))]
+    //    [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+    //    [AlwaysAccessible]
+    //    public string Name { get; set; }
 
-        public int? ResourceId { get; set; }
-        public DateTime? ProductionDate { get; set; }
-        public DateTime? ExpiryDate { get; set; }
-        public decimal? MonetaryValue { get; set; }
-        public decimal? Mass { get; set; }
-        public decimal? Volume { get; set; }
-        public decimal? Area { get; set; }
-        public decimal? Length { get; set; }
-        public decimal? Time { get; set; }
-        public decimal? Count { get; set; }
-        public string Beneficiary { get; set; }
-        public int? IssuingBankAccountId { get; set; }
-        public int? IssuingBankId { get; set; }
-    }
+    //    [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
+    //    [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+    //    [AlwaysAccessible]
+    //    public string Name2 { get; set; }
 
-    public class ResourcePick : ResourcePickForSave
-    {
-        [Display(Name = "IsActive")]
-        [AlwaysAccessible]
-        public bool? IsActive { get; set; }
+    //    [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
+    //    [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+    //    [AlwaysAccessible]
+    //    public string Name3 { get; set; }
 
-        [Display(Name = "CreatedAt")]
-        public DateTimeOffset? CreatedAt { get; set; }
+    //    [Display(Name = "Code")]
+    //    [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+    //    [AlwaysAccessible]
+    //    public string Code { get; set; }
+    //}
 
-        [Display(Name = "CreatedBy")]
-        public int? CreatedById { get; set; }
+    //public class ResponsibilityCenter : ResponsibilityCenterForSave
+    //{
+    //    //[AlwaysAccessible]
+    //    //public short? Level { get; set; }
 
-        [Display(Name = "ModifiedAt")]
-        public DateTimeOffset? ModifiedAt { get; set; }
+    //    //[AlwaysAccessible]
+    //    //public int? ActiveChildCount { get; set; }
 
-        [Display(Name = "ModifiedBy")]
-        public int? ModifiedById { get; set; }
+    //    //[AlwaysAccessible]
+    //    //public int? ChildCount { get; set; }
 
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
+    //    [Display(Name = "IsActive")]
+    //    [AlwaysAccessible]
+    //    public bool? IsActive { get; set; }
 
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
+    //    [Display(Name = "CreatedAt")]
+    //    public DateTimeOffset? CreatedAt { get; set; }
 
-        // Temp
+    //    [Display(Name = "CreatedBy")]
+    //    public int? CreatedById { get; set; }
 
-        [ForeignKey(nameof(ResourceId))]
-        public Resource Resource { get; set; }
+    //    [Display(Name = "ModifiedAt")]
+    //    public DateTimeOffset? ModifiedAt { get; set; }
 
-        //[ForeignKey(nameof(IssuingBankAccountId))]
-        //public ??? IssuingBankAccount { get; set; }
+    //    [Display(Name = "ModifiedBy")]
+    //    public int? ModifiedById { get; set; }
 
-        //[ForeignKey(nameof(IssuingBankId))]
-        //public ??? IssuingBank { get; set; }
+    //    // For Query
 
-    }
+    //    //[AlwaysAccessible]
+    //    //public HierarchyId Node { get; set; }
 
-    [StrongEntity]
-    public class ResponsibilityCenterForSave : EntityWithKey<int>
-    {
-        [NotMapped]
-        public int? ParentIndex { get; set; }
+    //    //[AlwaysAccessible]
+    //    //public HierarchyId ParentNode { get; set; }
 
-        [AlwaysAccessible]
-        public int? ParentId { get; set; }
+    //    [Display(Name = "TreeParent")]
+    //    [ForeignKey(nameof(ParentId))]
+    //    public ResponsibilityCenter Parent { get; set; }
 
-        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string Name { get; set; }
+    //    [Display(Name = "CreatedBy")]
+    //    [ForeignKey(nameof(CreatedById))]
+    //    public User CreatedBy { get; set; }
 
-        [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string Name2 { get; set; }
-
-        [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string Name3 { get; set; }
-
-        [Display(Name = "Code")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string Code { get; set; }
-    }
-
-    public class ResponsibilityCenter : ResponsibilityCenterForSave
-    {
-        //[AlwaysAccessible]
-        //public short? Level { get; set; }
-
-        //[AlwaysAccessible]
-        //public int? ActiveChildCount { get; set; }
-
-        //[AlwaysAccessible]
-        //public int? ChildCount { get; set; }
-
-        [Display(Name = "IsActive")]
-        [AlwaysAccessible]
-        public bool? IsActive { get; set; }
-
-        [Display(Name = "CreatedAt")]
-        public DateTimeOffset? CreatedAt { get; set; }
-
-        [Display(Name = "CreatedBy")]
-        public int? CreatedById { get; set; }
-
-        [Display(Name = "ModifiedAt")]
-        public DateTimeOffset? ModifiedAt { get; set; }
-
-        [Display(Name = "ModifiedBy")]
-        public int? ModifiedById { get; set; }
-
-        // For Query
-
-        //[AlwaysAccessible]
-        //public HierarchyId Node { get; set; }
-
-        //[AlwaysAccessible]
-        //public HierarchyId ParentNode { get; set; }
-
-        [Display(Name = "TreeParent")]
-        [ForeignKey(nameof(ParentId))]
-        public ResponsibilityCenter Parent { get; set; }
-
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
-
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
-    }
+    //    [Display(Name = "CreatedBy")]
+    //    [ForeignKey(nameof(ModifiedById))]
+    //    public User ModifiedBy { get; set; }
+    //}
 }

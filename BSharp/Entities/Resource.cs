@@ -44,37 +44,30 @@ namespace BSharp.Entities
         [Display(Name = "Resource_VolumeUnit")]
         public int? VolumeUnitId { get; set; }
 
-        [Display(Name = "Resource_AreaUnit")]
-        public int? AreaUnitId { get; set; }
-
-        [Display(Name = "Resource_LengthUnit")]
-        public int? LengthUnitId { get; set; }
-
         [Display(Name = "Resource_TimeUnit")]
         public int? TimeUnitId { get; set; }
 
         [Display(Name = "Resource_CountUnit")]
         public int? CountUnitId { get; set; }
 
-        [Display(Name = "Memo")]
-        [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
-        public string Memo { get; set; }
-
         [Display(Name = "Resource_CustomsReference")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string CustomsReference { get; set; }
 
-        [Display(Name = "Resource_ResourceLookup1")]
-        public int? ResourceLookup1Id { get; set; }
+        [Display(Name = "Resource_Lookup1")]
+        public int? Lookup1Id { get; set; }
 
-        [Display(Name = "Resource_ResourceLookup2")]
-        public int? ResourceLookup2Id { get; set; }
+        [Display(Name = "Resource_Lookup2")]
+        public int? Lookup2Id { get; set; }
 
-        [Display(Name = "Resource_ResourceLookup3")]
-        public int? ResourceLookup3Id { get; set; }
+        [Display(Name = "Resource_Lookup3")]
+        public int? Lookup3Id { get; set; }
 
-        [Display(Name = "Resource_ResourceLookup4")]
-        public int? ResourceLookup4Id { get; set; }
+        [Display(Name = "Resource_Lookup4")]
+        public int? Lookup4Id { get; set; }
+
+        [Display(Name = "Resource_Lookup5")]
+        public int? Lookup5Id { get; set; }
     }
 
     public class Resource : ResourceForSave
@@ -127,14 +120,6 @@ namespace BSharp.Entities
         [ForeignKey(nameof(VolumeUnitId))]
         public MeasurementUnit VolumeUnit { get; set; }
 
-        [Display(Name = "Resource_AreaUnit")]
-        [ForeignKey(nameof(AreaUnitId))]
-        public MeasurementUnit AreaUnit { get; set; }
-
-        [Display(Name = "Resource_LengthUnit")]
-        [ForeignKey(nameof(LengthUnitId))]
-        public MeasurementUnit LengthUnit { get; set; }
-
         [Display(Name = "Resource_TimeUnit")]
         [ForeignKey(nameof(TimeUnitId))]
         public MeasurementUnit TimeUnit { get; set; }
@@ -143,20 +128,24 @@ namespace BSharp.Entities
         [ForeignKey(nameof(CountUnitId))]
         public MeasurementUnit CountUnit { get; set; }
 
-        [Display(Name = "Resource_ResourceLookup1")]
-        [ForeignKey(nameof(ResourceLookup1Id))]
-        public Lookup ResourceLookup1 { get; set; }
+        [Display(Name = "Resource_Lookup1")]
+        [ForeignKey(nameof(Lookup1Id))]
+        public Lookup Lookup1 { get; set; }
 
-        [Display(Name = "Resource_ResourceLookup2")]
-        [ForeignKey(nameof(ResourceLookup2Id))]
-        public Lookup ResourceLookup2 { get; set; }
+        [Display(Name = "Resource_Lookup2")]
+        [ForeignKey(nameof(Lookup2Id))]
+        public Lookup Lookup2 { get; set; }
 
-        [Display(Name = "Resource_ResourceLookup3")]
-        [ForeignKey(nameof(ResourceLookup3Id))]
-        public Lookup ResourceLookup3 { get; set; }
+        [Display(Name = "Resource_Lookup3")]
+        [ForeignKey(nameof(Lookup3Id))]
+        public Lookup Lookup3 { get; set; }
 
-        [Display(Name = "Resource_ResourceLookup4")]
-        [ForeignKey(nameof(ResourceLookup4Id))]
-        public Lookup ResourceLookup4 { get; set; }
+        [Display(Name = "Resource_Lookup4")]
+        [ForeignKey(nameof(Lookup4Id))]
+        public Lookup Lookup4 { get; set; }
+
+        [Display(Name = "Resource_Lookup5")]
+        [ForeignKey(nameof(Lookup5Id))]
+        public Lookup Lookup5 { get; set; }
     }
 }

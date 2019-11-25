@@ -184,37 +184,45 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     CustomsReference_Visibility: Visibility;
     CustomsReference_DefaultValue: string;
 
-    // Resource Lookup 1
-    ResourceLookup1_Label: string;
-    ResourceLookup1_Label2: string;
-    ResourceLookup1_Label3: string;
-    ResourceLookup1_Visibility: Visibility;
-    ResourceLookup1_DefaultValue: number;
-    ResourceLookup1_DefinitionId: string;
+    // Lookup 1
+    Lookup1_Label: string;
+    Lookup1_Label2: string;
+    Lookup1_Label3: string;
+    Lookup1_Visibility: Visibility;
+    Lookup1_DefaultValue: number;
+    Lookup1_DefinitionId: string;
 
-    // Resource Lookup 2
-    ResourceLookup2_Label: string;
-    ResourceLookup2_Label2: string;
-    ResourceLookup2_Label3: string;
-    ResourceLookup2_Visibility: Visibility;
-    ResourceLookup2_DefaultValue: number;
-    ResourceLookup2_DefinitionId: string;
+    // Lookup 2
+    Lookup2_Label: string;
+    Lookup2_Label2: string;
+    Lookup2_Label3: string;
+    Lookup2_Visibility: Visibility;
+    Lookup2_DefaultValue: number;
+    Lookup2_DefinitionId: string;
 
-    // Resource Lookup 3
-    ResourceLookup3_Label: string;
-    ResourceLookup3_Label2: string;
-    ResourceLookup3_Label3: string;
-    ResourceLookup3_Visibility: Visibility;
-    ResourceLookup3_DefaultValue: number;
-    ResourceLookup3_DefinitionId: string;
+    // Lookup 3
+    Lookup3_Label: string;
+    Lookup3_Label2: string;
+    Lookup3_Label3: string;
+    Lookup3_Visibility: Visibility;
+    Lookup3_DefaultValue: number;
+    Lookup3_DefinitionId: string;
 
-    // Resource Lookup 4
-    ResourceLookup4_Label: string;
-    ResourceLookup4_Label2: string;
-    ResourceLookup4_Label3: string;
-    ResourceLookup4_Visibility: Visibility;
-    ResourceLookup4_DefaultValue: number;
-    ResourceLookup4_DefinitionId: string;
+    // Lookup 4
+    Lookup4_Label: string;
+    Lookup4_Label2: string;
+    Lookup4_Label3: string;
+    Lookup4_Visibility: Visibility;
+    Lookup4_DefaultValue: number;
+    Lookup4_DefinitionId: string;
+
+    // Lookup 5
+    Lookup5_Label: string;
+    Lookup5_Label2: string;
+    Lookup5_Label3: string;
+    Lookup5_Visibility: Visibility;
+    Lookup5_DefaultValue: number;
+    Lookup5_DefinitionId: string;
 }
 
 export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {

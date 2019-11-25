@@ -33,7 +33,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public expand = `ResourceClassification,Currency,MassUnit,VolumeUnit,AreaUnit,LengthUnit,TimeUnit,
-CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
+CountUnit,Lookup1,Lookup2,Lookup3,Lookup4`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -80,16 +80,17 @@ CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
 
     result.MassUnitId = defs.MassUnit_DefaultValue;
     result.VolumeUnitId = defs.VolumeUnit_DefaultValue;
-    result.AreaUnitId = defs.AreaUnit_DefaultValue;
-    result.LengthUnitId = defs.LengthUnit_DefaultValue;
+    // result.AreaUnitId = defs.AreaUnit_DefaultValue;
+    // result.LengthUnitId = defs.LengthUnit_DefaultValue;
     result.TimeUnitId = defs.TimeUnit_DefaultValue;
     result.CountUnitId = defs.CountUnit_DefaultValue;
-    result.Memo = defs.Memo_DefaultValue;
+    // result.Memo = defs.Memo_DefaultValue;
     result.CustomsReference = defs.CustomsReference_DefaultValue;
-    result.ResourceLookup1Id = defs.ResourceLookup1_DefaultValue;
-    result.ResourceLookup2Id = defs.ResourceLookup2_DefaultValue;
-    result.ResourceLookup3Id = defs.ResourceLookup3_DefaultValue;
-    result.ResourceLookup4Id = defs.ResourceLookup4_DefaultValue;
+    result.Lookup1Id = defs.Lookup1_DefaultValue;
+    result.Lookup2Id = defs.Lookup2_DefaultValue;
+    result.Lookup3Id = defs.Lookup3_DefaultValue;
+    result.Lookup4Id = defs.Lookup4_DefaultValue;
+    result.Lookup5Id = defs.Lookup5_DefaultValue;
 
     return result;
   }
@@ -102,20 +103,20 @@ CountUnit,ResourceLookup1,ResourceLookup2,ResourceLookup3,ResourceLookup4`;
     return metadata_Resource(this.ws, this.translate, this.definitionId).properties;
   }
 
-  public get resourceLookup1Definition() {
-    return (this.p.ResourceLookup1 as NavigationPropDescriptor).definition;
+  public get Lookup1Definition() {
+    return (this.p.Lookup1 as NavigationPropDescriptor).definition;
   }
 
-  public get resourceLookup2Definition() {
-    return (this.p.ResourceLookup2 as NavigationPropDescriptor).definition;
+  public get Lookup2Definition() {
+    return (this.p.Lookup2 as NavigationPropDescriptor).definition;
   }
 
-  public get resourceLookup3Definition() {
-    return (this.p.ResourceLookup3 as NavigationPropDescriptor).definition;
+  public get Lookup3Definition() {
+    return (this.p.Lookup3 as NavigationPropDescriptor).definition;
   }
 
-  public get resourceLookup4Definition() {
-    return (this.p.ResourceLookup4 as NavigationPropDescriptor).definition;
+  public get Lookup4Definition() {
+    return (this.p.Lookup4 as NavigationPropDescriptor).definition;
   }
 
   public get d(): ResourceDefinitionForClient {
