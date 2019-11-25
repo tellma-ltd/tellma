@@ -84,10 +84,10 @@ END
 BEGIN
 	DELETE FROM @OperationsDTO;
 	INSERT INTO @OperationsDTO (
-		[Id], [Name], [ParentId], [Code], [ProductCategoryId], [GeographicRegionId], [CustomerSegmentId], [FunctionId], [EntityState]
+		[Id], [Name], [ParentId], [Code]
 	)
 	SELECT
-		[Id], [Name], [ParentId], [Code], [ProductCategoryId], [GeographicRegionId], [CustomerSegmentId], [FunctionId], N'Unchanged'
+		[Id], [Name], [ParentId], [Code]
 	FROM [dbo].[ResponsibilityCenters];
 
 	UPDATE @OperationsDTO 

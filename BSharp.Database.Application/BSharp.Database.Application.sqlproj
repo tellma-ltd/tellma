@@ -120,7 +120,6 @@
     <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_ResponsibilityCenters_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.SettingList.sql" />
     <Build Include="dbo\User Defined Types\dbo.StringList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
@@ -134,7 +133,7 @@
     <None Include="Tests\00_TestMain.sql" />
     <None Include="Tests\04_IfrsDisclosures.sql" />
     <None Include="Tests\03_MeasurementUnits.sql" />
-    <None Include="Tests\71_Operations.sql" />
+    <None Include="Tests\71_ResponsibilityCenters.sql" />
     <None Include="Tests\07_Resources.sql" />
     <None Include="Tests\73_Places.sql" />
     <None Include="Tests\30_HRCycle.sql" />
@@ -168,7 +167,6 @@
     <Build Include="dbo\Tables\dbo.Views.sql" />
     <Build Include="dbo\User Defined Types\dbo.RoleList.sql" />
     <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Roles__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.ViewList.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLineEntries.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentLineEntryList.sql" />
@@ -455,11 +453,11 @@
     <None Include="Samples\02_Resources\d2_FG_steel-products.sql" />
     <None Include="Samples\02_Resources\e1_CCE_received-checks.sql" />
     <None Include="Samples\02_Resources\h_PL_employee-benefits.sql" />
-    <None Include="Samples\03_Agents\01_Agents.sql" />
+    <None Include="Samples\03_Agents\00_Agents.sql" />
     <None Include="Samples\03_Agents\02_Suppliers.sql" />
     <None Include="Samples\03_Agents\03_Customers.sql" />
     <None Include="Samples\03_Agents\04_Employees.sql" />
-    <None Include="Samples\03_Agents\06_ResponsibilityCenters.sql" />
+    <None Include="Samples\03_Agents\01_ResponsibilityCenters.sql" />
     <None Include="Samples\05_Accounts\b_AccountClassifications.sql" />
     <None Include="Samples\05_Accounts\c_gl-accounts.sql" />
     <None Include="Samples\05_Accounts\d_tax-accounts.sql" />
@@ -467,13 +465,15 @@
     <None Include="Samples\06_Entries\01_petty-cash-vouchers.sql" />
     <None Include="Samples\FillSampleData.sql" />
     <None Include="Samples\05_Accounts\a_AccountDefinitions.sql" />
+    <Build Include="api\Stored Procedures\api.Roles__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.ResponsibilityCenters_Validate__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
     <None Include="BSharp.publish.xml" />
     <None Include="Provisioning\90_IfrsConcepts.sql" />
     <None Include="Provisioning\91_IfrsDisclosures.sql" />
-    <None Include="Tests\72_ProductCategories.sql" />
+    <None Include="Tests\72_ResourceClassifications.sql" />
     <None Include="Dev.publish.xml" />
     <None Include="Tests\12_Purchasing.sql" />
     <None Include="Tests\14_Sales.sql" />

@@ -17,5 +17,16 @@
 	[PerDiemRate]				MONEY,			-- probably better moved to a template table
 --	supplier
 	[SupplierRating]			INT,			-- user defined list
-	[PaymentTerms]				NVARCHAR (255)
+	[PaymentTerms]				NVARCHAR (255),
+--	cost centers
+	[CostObjectType]			NVARCHAR (50)		CHECK([CostObjectType] IN (
+															N'CostUnit',
+															--N'CostCenter', -- replaced by the ones underneath
+															N'Production', -- this would be absorbed but not exactly
+															N'SellingAndDistribution',
+															N'Administration',
+															N'Service', -- this should have zero expense after re-allocation
+															N'Shared' -- should have zero expense after re-allocation
+														)
+													)
 );

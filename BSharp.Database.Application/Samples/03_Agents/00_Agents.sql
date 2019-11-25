@@ -6,8 +6,6 @@
 			@MesfinWolde int;
 	DECLARE @BananIT int, @WaliaSteel int, @Lifan int, @Sesay int, @ERCA int, @Paint int, @Plastic int, @CBE int, @AWB int,
 			@NIB int, @Regus int, @NocJimma INT, @Toyota INT;
-	DECLARE @ExecutiveOffice int, @Production int, @SalesAndMarketing int, @Finance int, @HR int,
-			@MaterialsAndPurchasing int;
 END
 BEGIN -- Insert individuals and organizations
 	--INSERT INTO @Agents([Index],
@@ -39,14 +37,6 @@ BEGIN -- Insert individuals and organizations
 	--(23,N'Organization', N'Regus',			0,		N'0008895353',		N'AA, Girgi, 22, New',		NULL,		9,	NULL),
 	
 	--(24,N'Organization', N'Noc Jimma Ber Service Station',	0,NULL,				NULL,				NULL,		9,	NULL),
-
-	--(25,N'Organization', N'Executive Office',1,	NULL,						NULL,				NULL,		9,	NULL),
-	--(26,N'Organization', N'Production Department',0,NULL,						NULL,				NULL,		9,	NULL),
-	--(27,N'Organization', N'Sales & Marketing Department',0,NULL,				NULL,				NULL,		9,	NULL),
-	--(28,N'Organization', N'Finance Department',0,	NULL,						NULL,				NULL,		9,	NULL),
-	--(29,N'Organization', N'Human Resources Department',0,NULL,					NULL,				NULL,		9,	NULL),
-	--(30,N'Organization', N'Materials & Purchasing Department',0,NULL,			NULL,				NULL,		9,	NULL);
-
 
 	INSERT INTO @Agents([Index],
 	[AgentType],		[Name],				[IsRelated], [Code]) VALUES
@@ -87,6 +77,7 @@ BEGIN -- Insert individuals and organizations
 	(29,N'Organization', N'Finance Department',0, 'R'),
 	(30,N'Organization', N'Human Resources Department',0, 'R'),
 	(31,N'Organization', N'Materials & Purchasing Department',0, 'R');
+
 	UPDATE @Agents SET [Code] = [Code] + CAST([Index] AS NVARCHAR(50));
 	EXEC [api].[Agents__Save]
 		@Entities = @Agents,
@@ -127,14 +118,9 @@ SELECT
 	@NIB = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'NIB'),
 	@Regus = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Regus'),
 	@NocJimma = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Noc Jimma Ber Service Station'),
-	@Toyota =  (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Toyota, Ethiopia'),
+	@Toyota =  (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Toyota, Ethiopia');
 
-	@ExecutiveOffice = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Executive Office'),
-	@Production = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Production Department'),
-	@SalesAndMarketing = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Sales & Marketing Department'),
-	@Finance = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Finance Department'),
-	@HR = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Human Resources Department'),
-	@MaterialsAndPurchasing = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Materials & Purchasing Department');
+
 /*
 INSERT INTO dbo.AgentsResources(
 	[AgentId], [RelationType],	[ResourceId], [UnitCost], CreatedAt, CreatedById, ModifiedAt, ModifiedById) VALUES

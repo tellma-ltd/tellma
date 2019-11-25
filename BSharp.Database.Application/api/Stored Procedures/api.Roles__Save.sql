@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[api_Roles__Save]
+﻿CREATE PROCEDURE [api].[Roles__Save]
 	@Roles [dbo].[RoleList] READONLY,
 	@Members [dbo].[RoleMembershipList] READONLY,
 	@Permissions [dbo].[PermissionList] READONLY,

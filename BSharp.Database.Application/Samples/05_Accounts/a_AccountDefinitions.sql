@@ -43,7 +43,7 @@ DECLARE @AccountDefinitions AS TABLE
 	[RelatedAmountLabel3]			NVARCHAR (50),
 	INDEX IX_AccountTypes([AccountTypeId], [AgentRelationDefinitionId], [ResourceTypeId])
 )
-INSERT INTO @AccountTypes ([Id]) VALUES
+INSERT INTO dbo.AccountTypes ([Id]) VALUES
 (N'NonCurrentAsset'),
 (N'CurrentAsset'),
 (N'Prepayment'),
@@ -66,21 +66,22 @@ INSERT INTO @AccountDefinitions
 (N'OtherNonCurrentAsset',	N'NonCurrentAsset',	N'Other Non Current Asset Account',	N'Non Current Assets Accounts'),
 (N'OtherCurrentAsset',		N'CurrentAsset',	N'Other Current Asset Account',		N'Current Assets Accounts')
 ;
-/*
+
 INSERT INTO @AccountDefinitions
 ([Id],			[AccountTypeId],	[AgentRelationDefinitionId], [ResourceTypeId],	[TitleSingular],				[TitlePlural],					[DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
-(N'',			N'NonCurrentAsset',N'CostCenter',					N'PPE',			N'Fixed Asset Account',			N'Fixed Assets Accounts',		N'Acquired From',		N'Used By'),
-(N'',			N'NonCurrentAsset',N'CostCenter',					N'Intangible',	N'Intangible Asset Account',	N'Intangible Assets Accounts',	N'Acquired From',		N'Used By'),
-(N'',			N'NonCurrentAsset',N'CostCenter',					N'Biological',	N'Biological Asset Account',	N'Intangible Assets Accounts',	N'Acquired From',		N'Used By')
+(N'PPE',		N'NonCurrentAsset',	N'CostCenter',					N'PPE',			N'Fixed Asset Account',			N'Fixed Assets Accounts',		N'Acquired From',		N'Used By'),
+(N'Intangible',	N'NonCurrentAsset',	N'CostCenter',					N'Intangible',	N'Intangible Asset Account',	N'Intangible Assets Accounts',	N'Acquired From',		N'Used By'),
+(N'Biological',	N'NonCurrentAsset',	N'CostCenter',					N'Biological',	N'Biological Asset Account',	N'Intangible Assets Accounts',	N'Acquired From',		N'Used By')
 ;
 INSERT INTO @AccountDefinitions
-([AccountTypeId],	[TitleSingular],[TitlePlural]) VALUES
-(N'Prepayment',		N'Employee',	N'Employee Prepayment Account',		N'Employee Prepayment Accounts'),
-(N'Prepayment',		N'Supplier',	N'Supplier Prepayment Account',		N'Supplier Prepayment Accounts'),
-(N'Receivable',		N'Customer',	N'Customer Receivable Account',		N'Receivable Accounts'),
-(N'Receivable',		N'Debtor',		N'Debtor Account',					N'Debtors Accounts'),
-(N'AccruedIncome',	N'Customer',	N'Customer Accrued Income Account',	N'Customer Accrued Income Accounts')
+([Id],						[AccountTypeId],	[AgentRelationDefinitionId], [TitleSingular],					[TitlePlural]) VALUES
+(N'EmployeePrepayment',		N'Prepayment',		N'Employee',				N'Employee Prepayment Account',		N'Employee Prepayment Accounts'),
+(N'SupplierPrepayment',		N'Prepayment',		N'Supplier',				N'Supplier Prepayment Account',		N'Supplier Prepayment Accounts'),
+(N'CustomerReceivable',		N'Receivable',		N'Customer',				N'Customer Receivable Account',		N'Receivable Accounts'),
+(N'DebtorReceivable',		N'Receivable',		N'Debtor',					N'Debtor Receivable Account',		N'Debtors Receivable Accounts'),
+(N'CustomerAccruedIncome',	N'AccruedIncome',	N'Customer',				N'Customer Accrued Income Account',	N'Customer Accrued Income Accounts')
 ;
+/*
 INSERT INTO @AccountDefinitions
 ([AccountTypeId],[AgentRelationDefinitionId],	[ResourceTypeId],	[TitleSingular],				[TitlePlural],					[DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
 (N'Inventory',	N'StorageCustody',				N'FinishedGood',	N'FG Inventory Account',		N'FG Inventory Accounts',		N'Received From',		N'Issued To'),
@@ -261,3 +262,6 @@ WHEN NOT MATCHED BY TARGET THEN
 			s.[RelatedAmountLabel]		,
 			s.[RelatedAmountLabel2]		,
 			s.[RelatedAmountLabel3]		);
+
+		IF @DebugAccounts = 1
+			SELECT * FROM map.AccountDefinitions();

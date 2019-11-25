@@ -8,7 +8,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [dbo].[bll_ResponsibilityCenters_Validate__Save]
+	EXEC [bll].[ResponsibilityCenters_Validate__Save]
 		@Entities = @Entities;
 
 	SELECT @ValidationErrorsJson = 

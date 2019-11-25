@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[bll_ResponsibilityCenters_Validate__Save]
+﻿CREATE PROCEDURE [bll].[ResponsibilityCenters_Validate__Save]
 	@Entities [ResponsibilityCenterList] READONLY,
 	@Top INT = 10
 AS
@@ -20,7 +20,7 @@ SET NOCOUNT ON;
 		N'Error_TheId0WasNotFound',
 		CAST([Id] As NVARCHAR (255))
     FROM @Entities
-    WHERE Id Is NOT NULL AND Id NOT IN (SELECT Id from [dbo].[ResponsibilityCenters])
+    WHERE Id <> 0 AND Id NOT IN (SELECT Id from [dbo].[ResponsibilityCenters])
 
 	-- Code must be unique
     INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -30,7 +30,7 @@ SET NOCOUNT ON;
 		FE.Code
 	FROM @Entities FE
 	JOIN [dbo].[ResponsibilityCenters] BE ON FE.Code = BE.Code
-	WHERE (FE.Id IS NULL) OR (FE.Id <> BE.Id);
+	WHERE (FE.Id <> BE.Id);
 
 	-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

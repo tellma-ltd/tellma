@@ -1680,4 +1680,58 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[AccountDefinitions]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="2462eacc-bb72-4a88-973b-ede527c8b76a" ChangeDateTime="11/25/2019 02:57:28">
+    <Property Name="ElementName" Value="[dbo].[AgentRelations].[CostCenterType]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentRelations]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CostObjectType]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="735f7c54-aa95-44f3-8ebf-3ffca8ce4271" ChangeDateTime="11/25/2019 03:06:59">
+    <Property Name="ElementName" Value="[dbo].[AgentRelations].[OperatingSegmentId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentRelations]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityCenterId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1ca54554-1251-4219-8654-51a73f757c91" ChangeDateTime="11/25/2019 03:34:34">
+    <Property Name="ElementName" Value="[dbo].[ResponsibilityCenters].[ResponsibilityDomain]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResponsibilityCenters]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResponsibilityTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1057d6c9-bdc8-4d67-8d28-b762c820d0f8" ChangeDateTime="11/25/2019 04:07:23">
+    <Property Name="ElementName" Value="[dbo].[AgentRelations].[ResponsibilityCenterId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentRelations]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[OperatingSegmentId]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="1ec3ef8a-686f-425a-822f-fd9f087d13e7" ChangeDateTime="11/25/2019 05:14:04">
+    <Property Name="ElementName" Value="[dbo].[api_Roles__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="api" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c3f9b040-0962-4609-bc4f-da9b53951796" ChangeDateTime="11/25/2019 05:14:21">
+    <Property Name="ElementName" Value="[api].[api_Roles__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Roles__Save]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="3680487f-42b5-4a9f-92e5-711e6cea03d4" ChangeDateTime="11/25/2019 05:16:39">
+    <Property Name="ElementName" Value="[dbo].[bll_ResponsibilityCenters_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="NewSchema" Value="bll" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b72e1cb3-ec4b-4873-95b5-d667590a4c02" ChangeDateTime="11/25/2019 05:16:57">
+    <Property Name="ElementName" Value="[bll].[bll_ResponsibilityCenters_Validate__Save]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResponsibilityCenters_Validate__Save]" />
+  </Operation>
 </Operations>

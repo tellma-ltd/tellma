@@ -1,7 +1,7 @@
 ﻿		DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @DebugRoles bit = 0, @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
 	DECLARE @DebugLookups bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccounts bit = 0, @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
 	DECLARE @LookupsSelect bit = 0;
@@ -34,10 +34,14 @@
 		:r .\02_Resources\e1_CCE_received-checks.sql
 		:r .\02_Resources\h_PL_employee-benefits.sql
 
-		:r .\03_Agents\01_Agents.sql
+		:r .\03_Agents\00_Agents.sql
+		:r .\03_Agents\01_ResponsibilityCenters.sql
 		:r .\03_Agents\02_Suppliers.sql
 		:r .\03_Agents\03_Customers.sql
 		:r .\03_Agents\04_Employees.sql
+
+		:r .\05_Accounts\a_AccountDefinitions.sql
+		:r .\05_Accounts\b_AccountClassifications.sql
 
 RETURN;
 ERR_LABEL:

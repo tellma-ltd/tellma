@@ -34,5 +34,11 @@ EXEC [api].[MeasurementUnits__Save]
 	@Entities = @MU,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'MeasurementUnits: Inserting'
+	GOTO Err_Label;
+END;
+
 IF @DebugMeasurementUnits = 1
 	SELECT * FROM map.MeasurementUnits();
