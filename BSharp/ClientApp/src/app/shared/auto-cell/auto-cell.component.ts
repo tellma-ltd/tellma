@@ -167,8 +167,6 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
       this._metavalue = -1;
       this._value = ex.message;
       this._control = 'error';
-
-      console.error(ex.message);
     }
   }
 
@@ -180,6 +178,10 @@ export class AutoCellComponent implements OnInit, OnChanges, OnDestroy {
 
   get metavalue(): -1 | 0 | 1 | 2 { // -1=Error, 0=Not Loaded, 1=Restricted, 2=Loaded
     return this._metavalue;
+  }
+
+  get errorMessage(): string {
+    return this._metavalue === -1 ? this._value : '';
   }
 
   get displayValue(): string {

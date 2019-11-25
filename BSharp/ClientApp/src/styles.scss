@@ -855,8 +855,10 @@ $dark-flow-text: $whitish;
   .b-flow-chart div.active span::after {
     border-left-color: $dark-flow-state-active;
   }
+}
 
-  .b-rtl {
+.b-rtl {
+  .b-dark {
     // For RTL state chart
     .b-flow-chart {
       border-right-color: $dark-flow-border;
@@ -1503,4 +1505,8 @@ h1.b-report-measure:hover {
 
 .b-light-danger {
   color: lightpink !important;
+}
+
+.is-invalid .b-studio-input {
+  border-color: lightpink !important;
 }

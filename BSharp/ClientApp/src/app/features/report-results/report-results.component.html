@@ -348,6 +348,11 @@
 
     </div>
 
+    <div class="w-100 p-3 px-4" *ngIf="showSpecifyNumericMeasure">
+        <fa-icon icon="info-circle"></fa-icon>
+        &nbsp;
+        {{ 'SpecifyNumericMeasure' | translate }}
+    </div>
 </ng-container><!-- End *ngIf="showResults" -->
 
 <!-- Spinner -->
@@ -365,4 +370,10 @@
     <b-error-message>
         {{ errorMessage }}
     </b-error-message>
+</div>
+
+<div class="w-100 p-3 px-4" *ngIf="showInformation">
+    <fa-icon icon="info-circle"></fa-icon>
+    &nbsp;
+    {{ information() }}
 </div>

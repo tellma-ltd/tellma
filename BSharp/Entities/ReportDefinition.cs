@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class ReportDefinitionForSave<TParameter,TRow, TColumn, TMeasure, TSelect> : EntityWithKey<string>
+    public class ReportDefinitionForSave<TParameter, TRow, TColumn, TMeasure, TSelect> : EntityWithKey<string>
     {
         [MultilingualDisplay(Name = "Title", Language = Language.Primary)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -40,14 +40,34 @@ namespace BSharp.Entities
         [Display(Name = "ReportDefinition_Type")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
-        [ChoiceList(new object[] { "Summary", "Details" }, 
+        [ChoiceList(new object[] { "Summary", "Details" },
             new string[] { "ReportDefinition_Type_Summary", "ReportDefinition_Type_Details" })]
         public string Type { get; set; }
 
         [Display(Name = "ReportDefinition_Chart")]
         [AlwaysAccessible]
-        [ChoiceList(new object[] { "Card", "BarsVertical", "BarsHorizontal", "Line", "Pie" }, // TODO Add the rest, here and in TypeScript
-            new string[] { "ReportDefinition_Chart_Card", "ReportDefinition_Chart_BarsVertical", "ReportDefinition_Chart_BarsHorizontal", "ReportDefinition_Chart_Line", "ReportDefinition_Chart_Pie" })]
+        [ChoiceList(new object[] {
+                // 0 Dimensions
+                "Card",
+                // 1 Dimension
+                "BarsVertical", "BarsHorizontal", "Pie", "Doughnut", "TreeMap", "NumberCards", "Gauge",
+                // 1 or 2 Dimensions
+                "Line", "Area",
+                // 2 Dimensions
+                "BarsVerticalGrouped", "BarsVerticalStacked", "BarsVerticalNormalized", "BarsHorizontalGrouped",
+                "BarsHorizontalStacked", "BarsHorizontalNormalized", "HeatMap"
+            },
+            new string[] {
+                // 0 Dimensions
+                "ReportDefinition_Chart_Card",
+                // 1 Dimension
+                "ReportDefinition_Chart_BarsVertical", "ReportDefinition_Chart_BarsHorizontal", "ReportDefinition_Chart_Pie", "ReportDefinition_Chart_Doughnut", "ReportDefinition_Chart_TreeMap", "ReportDefinition_Chart_NumberCards", "ReportDefinition_Chart_Gauge",
+                // 1 or 2 Dimensions
+                "ReportDefinition_Chart_Line", "ReportDefinition_Chart_Area",
+                // 2 Dimensions
+                "ReportDefinition_Chart_BarsVerticalGrouped", "ReportDefinition_Chart_BarsVerticalStacked", "ReportDefinition_Chart_BarsVerticalNormalized", "ReportDefinition_Chart_BarsHorizontalGrouped",
+                "ReportDefinition_Chart_BarsHorizontalStacked", "ReportDefinition_Chart_BarsHorizontalNormalized", "ReportDefinition_Chart_HeatMap"
+            })]
         public string Chart { get; set; }
 
         [Display(Name = "ReportDefinition_DefaultsToChart")]

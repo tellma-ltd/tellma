@@ -172,7 +172,7 @@
 
         <!-- Paging -->
         <ng-container *ngIf="showPagingControls">
-          <div class="d-inline small mr-2 ml-2">
+          <div class="d-inline small mx-2">
             <span class="b-vertical-align-middle"> <span>{{ from | number }}</span> - <span>{{ to | number }}</span>
             </span>
             <span class="b-vertical-align-middle"> / {{ total | number }}</span>
@@ -224,7 +224,7 @@
     <!-- Multi-Select Toolbar -->
     <div class="col-12 p-1 d-flex justify-content-between b-toolbar" *ngIf="areAnyChecked">
       <div>
-        <span class="ml-2 mr-2 b-vertical-align-middle">
+        <span class="mx-2 b-vertical-align-middle">
           {{ 'NSelectedItems' | translate: { count: checkedCount } }}
         </span>
 
@@ -327,7 +327,7 @@
 
               <!-- Checkboxes -->
               <th class="b-multiselect-th">
-                <div class="ml-2 mr-2">
+                <div class="mx-2">
                   <div class="custom-control custom-checkbox b-labelless-checkbox" *ngIf="isScreenMode">
                     <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
                       (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
@@ -448,7 +448,7 @@
 
           <!-- In screen mode, this column contains the multiselect checkboxes -->
           <td *ngIf="isScreenMode">
-            <div class="ml-2 mr-2">
+            <div class="mx-2">
 
               <!-- checkbox -->
               <div class="custom-control custom-checkbox b-labelless-checkbox d-inline">
@@ -469,7 +469,7 @@
           <td class="pl-0 pr-0" *ngIf="isScreenMode">
 
             <!-- Validation errors -->
-            <div class="ml-2 mr-2" *ngIf="showErrorHighlight(id)">
+            <div class="mx-2" *ngIf="showErrorHighlight(id)">
               <fa-icon class="text-danger" icon="exclamation-triangle" ngbPopover="{{ actionValidationErrors[id] }}"
                 triggers="mouseenter:mouseleave" [placement]="errorPopoverPlacement"></fa-icon>
             </div>
@@ -537,7 +537,7 @@
           <fa-icon icon="angle-right" [flip]="flip"></fa-icon>
         </button>
 
-        <div class="d-inline ml-2 mr-2">
+        <div class="d-inline mx-2">
           <span class="b-vertical-align-middle"> <span>{{ fromExport | number }}</span> - <span>{{ toExport | number
               }}</span>
           </span>

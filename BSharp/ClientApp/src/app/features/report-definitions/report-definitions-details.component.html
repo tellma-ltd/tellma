@@ -26,7 +26,8 @@
         <!-- Fields -->
         <div class="b-less-dark h-100 flex-column b-studio-pane" [class.d-flex]="isEdit && !collapseFields"
             [class.d-none]="!isEdit || collapseFields">
-            <div class="py-2 px-3 b-dark b-text-whitish d-flex justify-content-between b-pointer" (click)="onToggleFields()">
+            <div class="py-2 px-3 b-dark b-text-whitish d-flex justify-content-between b-pointer"
+                (click)="onToggleFields()">
                 <span>{{ 'Fields' | translate }}</span>
                 <div class="text-center">
                     <fa-icon icon="angle-left" [flip]="flipIcon(false)"></fa-icon>
@@ -35,25 +36,31 @@
             <div class="p-2 flex-grow-1 h-100 overflow-auto">
 
                 <!-- Collection -->
-                <div class="form-group">
+                <div class="form-group" [class.is-invalid]="invalid(collection, model.serverErrors?.Collection)">
                     <label class="small" for="collection">{{ 'ReportDefinition_Collection' | translate }}</label>
                     <select class="form-control b-studio-input" id="collection" [(ngModel)]="model.Collection"
-                        (ngModelChange)="onDefinitionChange(model)" required>
+                        #collection="ngModel" (ngModelChange)="onDefinitionChange(model)" required>
                         <option value=""></option>
                         <option *ngFor="let collection of allCollections" value="{{collection.value}}">
                             {{ collection.name() }}</option>
                     </select>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: collection, serverErrors: model.serverErrors?.Collection }">
+                    </ng-container>
                 </div>
 
                 <!-- Definition -->
-                <div class="form-group" *ngIf="showDefinitionIdSelector(model)">
-                    <label class="small" for="collection">{{ 'ReportDefinition_DefinitionId' | translate }}</label>
-                    <select class="form-control b-studio-input" id="collection" [(ngModel)]="model.DefinitionId"
-                        (ngModelChange)="onDefinitionChange(model)">
+                <div class="form-group" *ngIf="showDefinitionIdSelector(model)"  [class.is-invalid]="invalid(definitionId, model.serverErrors?.DefinitionId)">
+                    <label class="small" for="definitionId">{{ 'ReportDefinition_DefinitionId' | translate }}</label>
+                    <select class="form-control b-studio-input" id="definitionId" [(ngModel)]="model.DefinitionId"
+                        #definitionId="ngModel" (ngModelChange)="onDefinitionChange(model)">
                         <option value=""></option>
-                        <option *ngFor="let defInfo of allDefinitionIds(model)" value="{{defInfo.value}}">
+                        <option *ngFor="let defInfo of allDefinitionIds(model)" value="{{ defInfo.value }}">
                             {{ defInfo.name() }}</option>
                     </select>
+                    <ng-container
+                        *ngTemplateOutlet="errorsTemplate;context: { control: definitionId, serverErrors: model.serverErrors?.DefinitionId }">
+                    </ng-container>
                 </div>
                 <hr />
 
@@ -95,8 +102,8 @@
         </div>
 
         <!-- Collapsed Definition Editor -->
-        <div class="p-2 b-dark b-text-whitish b-collapsed-studio-pane b-pointer"
-            *ngIf="isEdit && collapseDefinition" (click)="onToggleDefinition()">
+        <div class="p-2 b-dark b-text-whitish b-collapsed-studio-pane b-pointer" *ngIf="isEdit && collapseDefinition"
+            (click)="onToggleDefinition()">
             <div class="text-center mb-3">
                 <fa-icon icon="angle-right" [flip]="flipIcon(false)"></fa-icon>
             </div>
@@ -107,7 +114,8 @@
         <div class="b-less-dark h-100 flex-column b-studio-pane" [class.d-flex]="isEdit && !collapseDefinition"
             [class.d-none]="!isEdit || collapseDefinition">
 
-            <div class="py-2 px-3 b-dark b-text-whitish d-flex justify-content-between b-pointer" (click)="onToggleDefinition()">
+            <div class="py-2 px-3 b-dark b-text-whitish d-flex justify-content-between b-pointer"
+                (click)="onToggleDefinition()">
                 <span>{{ 'Definition' | translate }}</span>
                 <div class="text-center">
                     <fa-icon icon="angle-left" [flip]="flipIcon(false)"></fa-icon>
@@ -394,8 +402,21 @@
                     </fa-icon>
                     &nbsp;
                     {{ 'Title' | translate }}
+                    <fa-icon class="b-light-danger mx-1" icon="exclamation-triangle" *ngIf="titleSectionErrors(model)">
+                    </fa-icon>
                 </div>
                 <div class="p-2" [class.d-none]="!showSection('Title')">
+                    <!-- Id -->
+                    <div class="form-group" [class.is-invalid]="invalid(id, model.serverErrors?.Id)">
+                        <label class="small" for="id">{{ 'Id' }}</label>
+                        <input class="form-control b-studio-input" id="id" type="text" [(ngModel)]="model.Id"
+                            #id="ngModel" (ngModelChange)="onDefinitionChange(model, 'Id')"
+                            [ngModelOptions]="{ updateOn: 'blur' }" autocomplete="off" [disabled]="!isNew" />
+                        <ng-container
+                            *ngTemplateOutlet="errorsTemplate;context: { control: id, serverErrors: model.serverErrors?.Id }">
+                        </ng-container>
+                    </div>
+
                     <!-- Title -->
                     <div class="form-group">
                         <label class="small" for="title">{{ ('Title' | translate) + ws.primaryPostfix }}</label>
@@ -525,6 +546,15 @@
     </div>
 </ng-template>
 
+
+<ng-template #errorsTemplate let-control="control" let-serverErrors="serverErrors">
+    <ng-container *ngIf="invalid(control, serverErrors)">
+        <span class="small b-light-danger px-1" *ngFor="let e of errors(control, serverErrors)">
+            {{ e() }}
+        </span>
+    </ng-container>
+</ng-template>
+
 <!-- Configure Modal -->
 <ng-template #configureModal let-modal>
 
@@ -596,7 +626,6 @@
                 <label class="small" for="orderDirection">{{ 'ReportDefinition_Aggregation' | translate }}</label>
                 <select class="form-control b-studio-input" id="orderDirection" [(ngModel)]="itemToEdit['Aggregation']"
                     (ngModelChange)="itemToEditHasChanged = true">
-                    <option value=""></option>
                     <option *ngFor="let agg of ['sum', 'count', 'avg', 'max', 'min']" value="{{agg}}">
                         {{ ('ReportDefinition_Aggregation_' + agg) | translate }}</option>
                 </select>

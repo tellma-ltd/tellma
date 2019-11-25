@@ -12,6 +12,7 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ReportDefinition } from '~/app/data/entities/report-definition';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 interface ParameterInfo { label: () => string; key: string; desc: PropDescriptor; isRequired: boolean; }
 
@@ -61,7 +62,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   constructor(
     private workspace: WorkspaceService, private translate: TranslateService,
-    private router: Router, private route: ActivatedRoute) { }
+    private router: Router, private route: ActivatedRoute, public modalService: NgbModal) { }
 
   ngOnInit() {
     // Pick up state from the URL
@@ -441,5 +442,13 @@ export class ReportComponent implements OnInit, OnDestroy {
     // But in reality they always occupy 100% hight and never exceed it
     // We use this trick to avoid the brief appearance of the scroller
     return this.isChart ? 'hidden' : 'auto';
+  }
+
+  public get description(): string {
+    return this.workspace.current.getMultilingualValueImmediate(this.definition, 'Description');
+  }
+
+  public get disableRefresh(): boolean {
+    return !this.areAllRequiredParamsSpecified || this.state.disableFetch;
   }
 }
