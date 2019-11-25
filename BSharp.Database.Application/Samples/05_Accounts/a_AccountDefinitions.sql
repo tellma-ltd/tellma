@@ -149,7 +149,7 @@ INSERT INTO @AccountDefinitions
 (N'FA',			N'Fixed Asset Account',	N'Fixed Asset Accounts',N'CostCenter,CostUnit',			N'PPE,IA,BA',				N'Acquired From',		N'Used By');
 
 */
-MERGE [dbo].[AccountDefinitions] AS t
+MERGE [dbo].[AccountGroups] AS t
 USING (
 		SELECT [Id],[TitleSingular],[TitleSingular2],[TitleSingular3],[TitlePlural],[TitlePlural2],[TitlePlural3],	
 			[MonetaryAmountLabel]		,

@@ -2,5 +2,5 @@
 RETURNS TABLE AS 
 RETURN (
 	SELECT *
-	FROM dbo.[AccountDefinitions]
+	FROM dbo.[AccountGroups]
 );

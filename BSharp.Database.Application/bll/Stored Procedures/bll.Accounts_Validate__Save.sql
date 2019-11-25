@@ -1,5 +1,4 @@
 ﻿CREATE PROCEDURE [bll].[Accounts_Validate__Save]
-	@DefinitionId NVARCHAR (50),
 	@Entities [dbo].[AccountList] READONLY,
 	@Top INT = 10
 AS

@@ -56,11 +56,11 @@ SET NOCOUNT ON;
 	SELECT
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
-		N'Error_TheAccountType0RequiresAnEntryType', A.[AccountDefinitionId]
+		N'Error_TheAccountType0RequiresAnEntryType', A.[AccountGroupId]
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE (E.[EntryTypeId] IS NULL)
-	AND A.[AccountDefinitionId] IN (
+	AND A.[AccountGroupId] IN (
 		SELECT [AccountTypeId] FROM dbo.[AccountTypesEntryTypes]
 	);
 
@@ -70,10 +70,10 @@ SET NOCOUNT ON;
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
 		N'Error_IncompatibleAccountType0AndEntryType1',
-		A.[AccountDefinitionId], E.EntryTypeId
+		A.[AccountGroupId], E.EntryTypeId
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	LEFT JOIN dbo.[AccountTypesEntryTypes] AE ON (A.[AccountDefinitionId] = AE.[AccountTypeId]) AND (E.EntryTypeId = AE.EntryTypeId)
+	LEFT JOIN dbo.[AccountTypesEntryTypes] AE ON (A.[AccountGroupId] = AE.[AccountTypeId]) AND (E.EntryTypeId = AE.EntryTypeId)
 	WHERE (E.EntryTypeId IS NOT NULL AND AE.EntryTypeId IS NULL);
 
 	-- RelatedAgent is required for selected account definition, 

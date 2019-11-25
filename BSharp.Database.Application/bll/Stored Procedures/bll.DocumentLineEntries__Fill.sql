@@ -19,7 +19,7 @@ SET
 		END
 FROM @FilledEntries E
 JOIN dbo.[Accounts] A ON E.AccountId = A.Id
-JOIN dbo.AccountDefinitions AD ON A.AccountDefinitionId = AD.[Id]
+JOIN dbo.[AccountGroups] AD ON A.[AccountGroupId] = AD.[Id]
 WHERE (AD.[EntryTypeId] IS NOT NULL)
 
 UPDATE E

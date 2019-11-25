@@ -1,9 +1,9 @@
-﻿CREATE TABLE [dbo].[AccountDefinitions] (
+﻿CREATE TABLE [dbo].[AccountGroups] (
 	[Id]							NVARCHAR (50) PRIMARY KEY, --CONSTRAINT [PK_AccountDefinitions] PRIMARY KEY,
-	[AccountTypeId]					NVARCHAR (50) CONSTRAINT [FK_AccountDefinitions__AccountTypeId] REFERENCES dbo.AccountTypes([Id]),
+	[AccountTypeId]					NVARCHAR (50) CONSTRAINT [FK_AccountGroups__AccountTypeId] REFERENCES dbo.AccountTypes([Id]),
 	[AgentRelationDefinitionId]		NVARCHAR (50),
 	[ResourceTypeId]				NVARCHAR (50),
-	[EntryTypeId]					NVARCHAR (255) CONSTRAINT [FK_AccountDefinitionss__EntryTypeId] REFERENCES dbo.EntryTypes([Id]),
+	[EntryTypeId]					NVARCHAR (255) CONSTRAINT [FK_AccountGroups__EntryTypeId] REFERENCES dbo.EntryTypes([Id]),
 
 	[Description]					NVARCHAR (255),
 	[Description2]					NVARCHAR (255),
@@ -45,6 +45,6 @@
 	[RelatedAmountLabel3]			NVARCHAR (50)
 );
 GO
-CREATE UNIQUE INDEX [IX_AccountDefinitions__AccountTypeId_AgentRelationDefinitionId_ResourceTypeId_EntryTypeId] ON
-	[dbo].[AccountDefinitions]([AccountTypeId], [AgentRelationDefinitionId], [ResourceTypeId], [EntryTypeId]);
+CREATE UNIQUE INDEX [IX_AccountGroups__AccountTypeId_AgentRelationDefinitionId_ResourceTypeId_EntryTypeId] ON
+	[dbo].[AccountGroups]([AccountTypeId], [AgentRelationDefinitionId], [ResourceTypeId], [EntryTypeId]);
 GO

@@ -1,5 +1,4 @@
 ﻿CREATE PROCEDURE [dal].[Accounts__Save]
-	@DefinitionId NVARCHAR (50),
 	@Entities [dbo].[AccountList] READONLY,
 	@ReturnIds BIT = 0
 AS
@@ -16,7 +15,7 @@ SET NOCOUNT ON;
 		USING (
 			SELECT 
 				[Index], [Id],
-				@DefinitionId AS [AccountDefinitionId],
+				[AccountGroupId],
 				[AccountClassificationId], 
 				[Name], 
 				[Name2], 
@@ -30,7 +29,7 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-				t.[AccountDefinitionId]		= s.[AccountDefinitionId],
+				t.[AccountGroupId]			= s.[AccountGroupId],
 				t.[AccountClassificationId]	= s.[AccountClassificationId], 
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
@@ -43,7 +42,7 @@ SET NOCOUNT ON;
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[AccountDefinitionId],
+				[AccountGroupId],
 				[AccountClassificationId], 
 				[Name], [Name2], [Name3], 
 				[Code], 
@@ -51,7 +50,7 @@ SET NOCOUNT ON;
 				[ResourceId],
 				[AgentId])
 			VALUES (
-				s.[AccountDefinitionId],
+				s.[AccountGroupId],
 				s.[AccountClassificationId], 
 				s.[Name], s.[Name2], s.[Name3], 
 				s.[Code], 

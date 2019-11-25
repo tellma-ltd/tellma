@@ -14,7 +14,7 @@ SET NOCOUNT ON;
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS ResourceName
     FROM [dbo].[Currencies] C
 	JOIN [dbo].Accounts A ON A.[CurrencyId] = C.Id
-	JOIN dbo.AccountDefinitions AD ON A.AccountDefinitionId = AD.Id
+	JOIN dbo.[AccountGroups] AD ON A.[AccountGroupId] = AD.Id
 	JOIN @Ids FE ON FE.[Id] = C.[Id];
 
 	---- TODO: Is it really used in [dbo].[Accounts]?

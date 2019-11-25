@@ -21,7 +21,7 @@ RETURN
 		V.[LineDefinitionId],
 		V.[Direction],
 		V.[AccountId],
-		A.[AccountDefinitionId],
+		A.[AccountGroupId],
 		A.[AccountClassificationId],
 		V.[EntryTypeId],
 		V.[AgentRelationDefinitionId],

@@ -13,7 +13,7 @@ RETURN
 	ReportAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts]
 		WHERE @AccountDefinitionList IS NULL 
-		OR [AccountDefinitionId] IN (SELECT TRIM(VALUE) FROM STRING_SPLIT(@AccountDefinitionList, ',') )
+		OR [AccountGroupId] IN (SELECT TRIM(VALUE) FROM STRING_SPLIT(@AccountDefinitionList, ',') )
 	),
 	OpeningBalances AS (
 		SELECT
@@ -63,7 +63,7 @@ RETURN
 		FULL OUTER JOIN Movements ON OpeningBalances.AccountId = Movements.AccountId
 	)
 	SELECT
-		AccountId, R.[EntryTypeId], A.[AccountDefinitionId], A.[AccountClassificationId], A.ResourceId, A.[AgentId], A.PartyReference,
+		AccountId, R.[EntryTypeId], A.[AccountGroupId], A.[AccountClassificationId], A.ResourceId, A.[AgentId], A.PartyReference,
 		OpeningCount, CountIn, CountOut, EndingCount,
 		OpeningMass, MassIn, MassOut, EndingMass,
 		[Opening], [Debit], [Credit], [Closing]

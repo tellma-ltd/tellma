@@ -88,7 +88,7 @@ SET NOCOUNT ON;
 	WITH
 	InventoryAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts] A
-		WHERE A.[AccountDefinitionId] = N'Inventory'
+		WHERE A.[AccountGroupId] = N'Inventory'
 	),
 	CurrentDocLines AS (
 		SELECT MAX(FE.[Index]) AS [Index], DLE.AccountId,

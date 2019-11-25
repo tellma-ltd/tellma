@@ -18,8 +18,6 @@
 	[CountUnitVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([CountUnitVisibility] IN (N'None', N'Required', N'Optional')),
 	[MassUnitVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([MassUnitVisibility] IN (N'None', N'Required', N'Optional')),
 	[VolumeUnitVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([VolumeUnitVisibility] IN (N'None', N'Required', N'Optional')),
-	[AreaUnitVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([AreaUnitVisibility] IN (N'None', N'Required', N'Optional')),
-	[LengthUnitVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([LengthUnitVisibility] IN (N'None', N'Required', N'Optional')),
 	[TimeUnitVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([TimeUnitVisibility] IN (N'None', N'Required', N'Optional')),
 	[CurrencyVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([CurrencyVisibility] IN (N'None', N'Required', N'Optional')),
 	[CustomsReferenceVisibility]		NVARCHAR (50) DEFAULT N'None' CHECK ([CustomsReferenceVisibility] IN (N'None', N'Required', N'Optional')),
