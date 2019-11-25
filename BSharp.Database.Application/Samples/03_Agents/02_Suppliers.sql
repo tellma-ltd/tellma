@@ -4,12 +4,12 @@
 	DECLARE @Suppliers dbo.[AgentRelationList];
 
 	INSERT INTO @Suppliers
-	([Index],	[AgentId],	[StartDate]) VALUES
-	(0,			@BananIT,	'2017.09.15'),
-	(1,			@Lifan,		'2017.10.25'),
-	(2,			@Regus,		'2018.01.05'),
-	(3,			@NocJimma,	'2018.03.11'),
-	(4,			@Toyota,	'2019.03.19');
+	([Index],	[AgentId],	[StartDate],	[OperatingSegmentId]) VALUES
+	(0,			@BananIT,	'2017.09.15',	@OS_WSI),
+	(1,			@Lifan,		'2017.10.25',	@OS_WSI),
+	(2,			@Regus,		'2018.01.05',	@OS_BananIT),
+	(3,			@NocJimma,	'2018.03.11',	@OS_WSI),
+	(4,			@Toyota,	'2019.03.19',	@OS_WSI);
 
 	EXEC [api].[AgentRelations__Save]
 		@DefinitionId = N'suppliers',

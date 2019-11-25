@@ -4,6 +4,7 @@
 CREATE TABLE [dbo].[Resources] (
 -- Resource can be seen as the true leaf level of Resource Classifications.
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
+	[OperatingSegmentId]			INT					CONSTRAINT [FK_Resources__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
 	-- Inspired by IFRS, with additions to simplify application logic
 	[ResourceTypeId]				NVARCHAR (255)		NOT NULL CONSTRAINT [FK_Resources__ResourceTypeId] FOREIGN KEY ([ResourceTypeId]) REFERENCES [dbo].[ResourceTypes] ([Id]),
 	-- to define labels and control visibilities of dynamic properties

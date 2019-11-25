@@ -17,6 +17,7 @@ SET NOCOUNT ON;
 			SELECT 	
 				[Index],
 				[Id],
+				[OperatingSegmentId],
 				[AgentId], 
 				[StartDate],
 				[Code],
@@ -29,6 +30,7 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
+				t.[OperatingSegmentId] = s.[OperatingSegmentId],
 				t.[AgentId]			=	s.[AgentId],
 				t.[StartDate]		=	s.[StartDate],
 				t.[Code]			=	s.[Code],
@@ -39,7 +41,9 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]		=	@Now,
 				t.[ModifiedById]	=	@UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([AgentRelationDefinitionId],
+			INSERT (
+				[OperatingSegmentId],
+				[AgentRelationDefinitionId],
 				[AgentId],
 				[StartDate],
 				[Code],
@@ -48,7 +52,9 @@ SET NOCOUNT ON;
 				[TransportationAllowance],
 				[OvertimeRate]
 			)
-			VALUES (@DefinitionId,
+			VALUES (
+				[OperatingSegmentId],
+				@DefinitionId,
 				s.[AgentId],
 				s.[StartDate],
 				s.[Code],

@@ -44,20 +44,20 @@ INSERT INTO @ESave -- Purchases and Rentals
 (	6,	2,	@Sales,		N'CurrentWithholdingTaxPayable',@ERCA,		@ETB,			-1,		480,	NULL,		NULL,							N'WT0902',		NULL,				@Regus,					12000),
 (	6,	3,	@Sales,		N'BalancesWithBanks',		@CBEETB,		@ETB,			-1,		27120,	NULL,		N'PaymentsToSuppliersForGoodsAndServices',N'Ck003',	NULL,			NULL,					NULL),
 -- Vehicles Depreciation
-(	8,	1,	@ExecOffice,N'AdministrativeExpense',	@ExecutiveOffice,@Car1Svc,		+1,		+1,		@VR1_2,		N'DepreciationExpense',			NULL,			NULL,				NULL,					NULL),
-(	8,	2,	@ExecOffice,N'MotorVehicles',			@ExecutiveOffice,@Car1Svc,		-1,		+1,		@VR1_2,		N'DepreciationPropertyPlantAndEquipment',NULL,	NULL,				NULL,					NULL),
+(	8,	1,	@ExecOffice,N'AdministrativeExpense',	@RC_ExecutiveOffice,@Car1Svc,		+1,		+1,		@VR1_2,		N'DepreciationExpense',			NULL,			NULL,				NULL,					NULL),
+(	8,	2,	@ExecOffice,N'MotorVehicles',			@RC_ExecutiveOffice,@Car1Svc,		-1,		+1,		@VR1_2,		N'DepreciationPropertyPlantAndEquipment',NULL,	NULL,				NULL,					NULL),
 -- Sales Point Rental
 (	9,	1,	@Sales,		N'DistributionCosts',		@SalesAndMarketing,	@Goff,			+1,		+1,		4000,		N'OfficeSpaceExpense',			NULL,			NULL,				NULL,					NULL),
 (	9,	2,	@Sales,		N'RentAccrualClassifiedAsCurrent',@Regus,	@Goff,			-1,		+1,		4000,		NULL,							NULL,			NULL,				NULL,					NULL),
 -- Vehicle 1 Reinforcement
-(	10,	1,	@ExecOffice,N'MotorVehicles',			@ExecutiveOffice,@Car1Svc,		+1,		@P2_3,	120000,		N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',NULL,NULL,NULL,	NULL),
+(	10,	1,	@ExecOffice,N'MotorVehicles',			@RC_ExecutiveOffice,@Car1Svc,		+1,		@P2_3,	120000,		N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',NULL,NULL,NULL,	NULL),
 (	10,	2,	@WSI,		N'BalancesWithBanks',		@CBEETB,		@ETB,			-1,		120000,	NULL,		N'PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities',N'Ck001',NULL,NULL,	NULL),
 -- Reverse Depreciation
-(	11,	1,	@ExecOffice,N'AdministrativeExpense',	@ExecutiveOffice,@Car1Svc,		+1,		-1,		-@VR1_2,	N'DepreciationExpense',			NULL,			NULL,				NULL,					NULL),
-(	11,	2,	@ExecOffice,N'MotorVehicles',			@ExecutiveOffice,@Car1Svc,		-1,		-1,		-@VR1_2,	N'DepreciationPropertyPlantAndEquipment',NULL,	NULL,				NULL,					NULL),
+(	11,	1,	@ExecOffice,N'AdministrativeExpense',	@RC_ExecutiveOffice,@Car1Svc,		+1,		-1,		-@VR1_2,	N'DepreciationExpense',			NULL,			NULL,				NULL,					NULL),
+(	11,	2,	@ExecOffice,N'MotorVehicles',			@RC_ExecutiveOffice,@Car1Svc,		-1,		-1,		-@VR1_2,	N'DepreciationPropertyPlantAndEquipment',NULL,	NULL,				NULL,					NULL),
 ---- Vehicles Depreciation
-(	12,	1,	@ExecOffice,N'AdministrativeExpense',	@ExecutiveOffice,@Car1Svc,		+1,		+1,		@VRU_3,		N'DepreciationExpense',			NULL,			NULL,				NULL,					NULL),
-(	12,	2,	@ExecOffice,N'MotorVehicles',			@ExecutiveOffice,@Car1Svc,		-1,		+1,		@VRU_3,		N'DepreciationPropertyPlantAndEquipment',NULL,	NULL,				NULL,					NULL);
+(	12,	1,	@ExecOffice,N'AdministrativeExpense',	@RC_ExecutiveOffice,@Car1Svc,		+1,		+1,		@VRU_3,		N'DepreciationExpense',			NULL,			NULL,				NULL,					NULL),
+(	12,	2,	@ExecOffice,N'MotorVehicles',			@RC_ExecutiveOffice,@Car1Svc,		-1,		+1,		@VRU_3,		N'DepreciationPropertyPlantAndEquipment',NULL,	NULL,				NULL,					NULL);
 INSERT INTO @ESave -- HR, Employment Contract
 ([LineIndex],EntryNumber,OperationId,AccountId,		AgentId,		ResourceId,	Direction, Amount,	[Value],	NoteId,							[Reference],	[RelatedReference], [RelatedAgentId], [RelatedAmount]) VALUES
 -- Employee Hire: similar to depreciation and rental.

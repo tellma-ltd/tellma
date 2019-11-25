@@ -5,8 +5,9 @@
 -- Kimbirly suggestion: [Id]: PRIMARY KEY NONCLUSTERED, ([DocumentDate], [Id]): Clustered index
 	[Id]									INT				CONSTRAINT [PK_Documents] PRIMARY KEY IDENTITY,
 	-- Common to all document types
-	[DocumentDefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DocumentDefinitionId] FOREIGN KEY ([DocumentDefinitionId]) REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
+	[DocumentDefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DocumentDefinitionId] REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
 	[SerialNumber]							INT				NOT NULL,	-- auto generated, copied to paper if needed.
+	[OperatingSegmentId]					INT				NOT NULL CONSTRAINT [FK_Documents__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
 	[DocumentDate]							DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()) CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())),
 	[State]									NVARCHAR (30)	NOT NULL DEFAULT N'Active' CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Active', N'Void', N'Filed')),
 	

@@ -1,6 +1,7 @@
 ﻿CREATE TYPE [dbo].[DocumentList] AS TABLE (
 	[Index]									INT				PRIMARY KEY,-- IDENTITY (0,1),
 	[Id]									INT				NOT NULL DEFAULT 0,
+	[OperatingSegmentId]					INT				NOT NULL,
 	[DocumentDate]							DATE			NOT NULL DEFAULT (CONVERT (date, SYSDATETIME())),
 	[VoucherBookletId]						INT, -- each range might be dedicated for a special purpose
 	[VoucherNumericReference]				INT, -- must fall between RangeStarts and RangeEnds of the booklet

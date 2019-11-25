@@ -18,7 +18,7 @@ BEGIN
 		MERGE INTO [dbo].[Documents] AS t
 		USING (
 			SELECT 
-				[Index], [Id], [DocumentDate], [VoucherNumericReference], --[SortKey],
+				[Index], [Id], [OperatingSegmentId], [DocumentDate], [VoucherNumericReference], --[SortKey],
 				[Memo],-- [Frequency], [Repetitions],
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
@@ -29,6 +29,7 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DocumentDate]			= s.[DocumentDate],
+				t.[OperatingSegmentId]		= s.[OperatingSegmentId],
 				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
 				t.[Memo]					= s.[Memo],
 				--t.[Frequency]				= s.[Frequency],
@@ -38,11 +39,11 @@ BEGIN
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[DocumentDefinitionId], [SerialNumber], [DocumentDate], [VoucherNumericReference], --[SortKey],
+				[DocumentDefinitionId], [SerialNumber], [OperatingSegmentId], [DocumentDate], [VoucherNumericReference], --[SortKey],
 				[Memo]--, [Frequency], [Repetitions]
 			)
 			VALUES (
-				@DefinitionId, s.[SerialNumber], s.[DocumentDate], s.[VoucherNumericReference], --s.[SerialNumber], 
+				@DefinitionId, s.[SerialNumber], [OperatingSegmentId], s.[DocumentDate], s.[VoucherNumericReference], --s.[SerialNumber], 
 				s.[Memo]--, s.[Frequency], s.[Repetitions]
 			)
 		OUTPUT s.[Index], inserted.[Id] 

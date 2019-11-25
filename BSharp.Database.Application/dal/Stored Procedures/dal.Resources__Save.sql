@@ -15,7 +15,8 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Resources] AS t
 		USING (
 			SELECT 	
-				[Index], [Id], 
+				[Index], [Id],
+				[OperatingSegmentId],
 				[Name], 
 				[Name2], 
 				[Name3], 
@@ -61,7 +62,8 @@ SET NOCOUNT ON;
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
 		THEN
-			UPDATE SET 
+			UPDATE SET
+				t.[OperatingSegmentId]		= s.[OperatingSegmentId],
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
@@ -103,7 +105,7 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ResourceDefinitionId], [Name], [Name2], [Name3], [Code], [ResourceTypeId],  [ResourceClassificationId], 
+			INSERT ([OperatingSegmentId], [ResourceDefinitionId], [Name], [Name2], [Name3], [Code], [ResourceTypeId],  [ResourceClassificationId], 
 				[CurrencyId],
 				[MonetaryValue],
 				[CountUnitId],
@@ -140,7 +142,7 @@ SET NOCOUNT ON;
 				[Text1],					
 				[Text2]			
 				)
-			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[ResourceTypeId], s.[ResourceClassificationId],
+			VALUES (s.[OperatingSegmentId], @DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[ResourceTypeId], s.[ResourceClassificationId],
 				s.[CurrencyId],
 				s.[MonetaryValue],
 				s.[CountUnitId],

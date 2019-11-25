@@ -27,8 +27,8 @@ WSI
 	Coffee
 */
 DECLARE @ResponsibilityCenters dbo.ResponsibilityCenterList;
-DECLARE @ExecutiveOffice INT, @HR INT, @Materials INT,	@Production INT, 
-		@SalesAG INT, @SalesBole INT;
+DECLARE @OS_WSI INT, @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@RC_Production INT, 
+		@RC_SalesAG INT, @RC_SalesBole INT, @OS_BananIT INT;
 
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 	[Name],							[Code], [ResponsibilityTypeId], [IsOperatingSegment], [ManagerId], [ParentIndex]) VALUES
@@ -43,7 +43,8 @@ INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 (8,1,N'Materials',					N'16',	N'Cost',					0,					@AyelechHora,		0),
 (9,0,N'Technical',					N'17',	N'Cost',					0,					NULL,				0),
 (10,1,N'Production',				N'171',	N'Cost',					0,					@MesfinWolde,		9),
-(11,1,N'Maintenance',				N'172',	N'Cost',					0,					NULL,				9)
+(11,1,N'Maintenance',				N'172',	N'Cost',					0,					NULL,				9),
+(12,1,N'Banan IT, PLC',				N'2',	N'Investment',				1,					@MohamadAkra,		NULL)
 ;
 	EXEC [api].[ResponsibilityCenters__Save]
 		@Entities = @ResponsibilityCenters,
@@ -56,10 +57,11 @@ INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 	END;
 	IF @DebugResponsibilityCenters = 1
 		SELECT * FROM [dbo].ResponsibilityCenters;
-
-SELECT @ExecutiveOffice = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'10';
-SELECT @SalesAG =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'141';
-SELECT @SalesBole = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'142';
-SELECT @HR = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'15';
-SELECT @Materials =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'16';
-SELECT @Production =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'171';
+SELECT @OS_WSI = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'1';
+SELECT @RC_ExecutiveOffice = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'10';
+SELECT @RC_SalesAG =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'141';
+SELECT @RC_SalesBole = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'142';
+SELECT @RC_HR = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'15';
+SELECT @RC_Materials =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'16';
+SELECT @RC_Production =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'171';
+SELECT @OS_BananIT = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'2';

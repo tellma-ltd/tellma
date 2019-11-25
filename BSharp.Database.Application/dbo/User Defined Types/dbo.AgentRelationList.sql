@@ -1,6 +1,7 @@
 ﻿CREATE TYPE [dbo].[AgentRelationList] AS TABLE (
 	[Index]						INT				PRIMARY KEY,
 	[Id]						INT				NOT NULL DEFAULT 0,
+	[OperatingSegmentId]		INT				NOT NULL,
 	[AgentId]					INT				NOT NULL,
 	[StartDate]					DATE			DEFAULT (CONVERT (date, SYSDATETIME())),
 	[Code]						NVARCHAR (50),

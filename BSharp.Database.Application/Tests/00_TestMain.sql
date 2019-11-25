@@ -78,7 +78,7 @@ BEGIN TRY
 
 		:r ..\Samples\03_Agents\00_Agents.sql
 		:r ..\Samples\03_Agents\01_ResponsibilityCenters.sql
-		--:r ..\Samples\03_Agents\02_Suppliers.sql
+		:r ..\Samples\03_Agents\02_Suppliers.sql
 		--:r ..\Samples\03_Agents\03_Customers.sql
 		--:r ..\Samples\03_Agents\04_Employees.sql
 
