@@ -13,7 +13,7 @@ BEGIN
 	FixedAssetAccounts AS (
 		SELECT Id
 		FROM Accounts
-		WHERE [AccountDefinitionId] IN (N'PPE')
+		WHERE [AccountGroupId] IN (N'PPE')
 	),
 	OpeningBalances AS (
 		SELECT

@@ -1,4 +1,4 @@
-﻿INSERT INTO dbo.AccountDefinitions
+﻿INSERT INTO dbo.[AccountGroups]
 ([Id],				[TitleSingular],	[TitlePlural],	[RelatedAgentVisibility],	[RelatedAgentLabel],			[RelatedAgentRelationDefinitionList],
 					[RelatedMonetaryAmountVisibility],	[RelatedMonetaryAmountLabel],[ExternalReferenceVisibility], [ExternalReferenceLabel]) VALUES
 (N'tax-accounts',	N'Tax Account',		N'Tax Accounts',N'RequiredInEntries',		N'Customer/Supplier',			N'customers,suppliers',

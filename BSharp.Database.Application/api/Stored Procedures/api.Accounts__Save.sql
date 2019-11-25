@@ -1,5 +1,4 @@
 ﻿CREATE PROCEDURE [api].[Accounts__Save]
-	@DefinitionId NVARCHAR (255),
 	@Entities [dbo].[AccountList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -17,7 +16,6 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Accounts_Validate__Save]
-		@DefinitionId = @DefinitionId,
 		@Entities = @FilledAccounts;
 
 	SELECT @ValidationErrorsJson = 
@@ -31,7 +29,6 @@ SET NOCOUNT ON;
 		RETURN;
 
 	EXEC [dal].[Accounts__Save]
-		@DefinitionId = @DefinitionId,
 		@Entities = @FilledAccounts,
 		@ReturnIds = @ReturnIds;
 END;

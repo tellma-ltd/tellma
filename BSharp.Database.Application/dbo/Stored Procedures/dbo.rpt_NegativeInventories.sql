@@ -12,7 +12,7 @@ AS
 			SUM([Volume]) As [Volume],
 			SUM([Value]) As [Value]
 	FROM dbo.[fi_Journal](NULL, @AsOfDate) J
-	WHERE [AccountDefinitionId] = 'Inventorry'
+	WHERE [AccountGroupId] = 'Inventorry'
 	GROUP BY
 			[AccountId],
 			[AgentId],

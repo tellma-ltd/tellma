@@ -33,4 +33,4 @@ RETURN
 	FROM dbo.[fi_NormalizedJournal](NULL, NULL, @CountUnitId, @MassUnitId, @VolumeUnitId) J
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
-	WHERE J.[AccountDefinitionId] = N'Inventory'
+	WHERE J.[AccountGroupId] = N'Inventory'

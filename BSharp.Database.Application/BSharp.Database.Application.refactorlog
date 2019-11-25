@@ -1734,4 +1734,18 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ResponsibilityCenters_Validate__Save]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="61dca6c6-6cc1-4e55-8d00-a2184cc9fdb1" ChangeDateTime="11/25/2019 14:34:51">
+    <Property Name="ElementName" Value="[dbo].[AccountDefinitions]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountGroups]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c518082c-f683-4f9d-be51-b1873e5a0082" ChangeDateTime="11/25/2019 14:36:28">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[AccountDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountGroupId]" />
+  </Operation>
 </Operations>

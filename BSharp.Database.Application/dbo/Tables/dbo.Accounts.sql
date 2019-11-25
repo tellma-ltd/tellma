@@ -4,8 +4,8 @@
 -- Trade Debtors: migrated to DefinitionId = N'trade-debtors-accounts', and to Account classification Trade debtors
 -- Trade Creditors: same story
 	[Id]							INT					CONSTRAINT [PK__Accounts] PRIMARY KEY IDENTITY,
-	[AccountDefinitionId]			NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Accounts__AccountDefinitionId] FOREIGN KEY ([AccountDefinitionId]) REFERENCES [dbo].[AccountDefinitions] ([Id]),
-	[AccountClassificationId]		INT					CONSTRAINT [FK_Accounts__AccountClassificationId] FOREIGN KEY ([AccountClassificationId]) REFERENCES [dbo].[AccountClassifications] ([Id]) ON DELETE CASCADE,
+	[AccountGroupId]				NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Accounts__AccountGroupId] REFERENCES [dbo].[AccountGroups] ([Id]),
+	[AccountClassificationId]		INT					CONSTRAINT [FK_Accounts__AccountClassificationId] REFERENCES [dbo].[AccountClassifications] ([Id]) ON DELETE CASCADE,
 	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
@@ -38,4 +38,4 @@
 	[ModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Accounts__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 );
 GO
-CREATE UNIQUE INDEX [IX_Accounts__Id_AccountDefinitionId] ON dbo.Accounts([Id], [AccountDefinitionId]);
+CREATE UNIQUE INDEX [IX_Accounts__Id_AccountDefinitionId] ON dbo.Accounts([Id], [AccountGroupId]);

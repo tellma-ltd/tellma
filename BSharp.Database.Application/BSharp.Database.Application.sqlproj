@@ -371,7 +371,7 @@
     <Build Include="api\Stored Procedures\api.AccountClassifications__Deprecate.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Deprecate.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Deprecate.sql" />
-    <Build Include="dbo\Tables\dbo.AccountDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AccountGroups.sql" />
     <Build Include="Mapping\AccountClassifications.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Delete.sql" />

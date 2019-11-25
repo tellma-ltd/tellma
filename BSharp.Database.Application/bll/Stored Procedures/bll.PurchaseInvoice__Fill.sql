@@ -56,15 +56,20 @@ JOIN dbo.LineDefinitionEntries LDE ON L.LineDefinitionId = LDE.LineDefinitionId 
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE LDE.AccountSource = 1; -- Entered by user
 
--- Copy information from Resource to entries
+-- If the Resource is a singleton, R.[Count] is one.
+UPDATE E 
+SET
+	E.[Count]		=	COALESCE(R.[Count], E.[Count])
+FROM @FilledEntries E JOIN @FilledLines L ON E.DocumentLineIndex = L.[Index]
+JOIN dbo.LineDefinitionEntries LDE ON L.LineDefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
+JOIN dbo.Resources R ON E.ResourceId = R.Id;
+
 -- TODO: Copy all the relevant fixed measures of the resource, as well as other properties like ExternalReference etc..
 UPDATE E 
 SET
-	E.[MonetaryValue] = COALESCE(R.[MonetaryValue], E.[MonetaryValue]),
-	E.[Count]		=	COALESCE(R.[Count], E.[Count]),
-	E.[Mass]		=	COALESCE(R.[Mass], E.[Mass]),
-	E.[Volume]		=	COALESCE(R.[Volume], E.[Volume])
+	E.[MonetaryValue] = COALESCE(R.[MonetaryValue] * E.[Count], E.[MonetaryValue]),
+	E.[Mass]		=	COALESCE(R.[Mass] * E.[Count], E.[Mass]),
+	E.[Volume]		=	COALESCE(R.[Volume] * E.[Count], E.[Volume])
 FROM @FilledEntries E JOIN @FilledLines L ON E.DocumentLineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.LineDefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-JOIN dbo.Resources R ON E.ResourceId = R.Id
-WHERE LDE.ResourceSource = 1; -- Entered by user
+JOIN dbo.Resources R ON E.ResourceId = R.Id;

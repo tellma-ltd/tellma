@@ -34,7 +34,7 @@ RETURN
 		J.[LineDefinitionId],
 		J.[Direction],
 		J.[AccountId],
-		J.[AccountDefinitionId],
+		J.[AccountGroupId],
 		J.[AgentRelationDefinitionId],
 		J.[AgentId],
 		J.[EntryTypeId],
