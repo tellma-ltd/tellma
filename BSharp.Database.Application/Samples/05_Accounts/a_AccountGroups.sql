@@ -5,7 +5,7 @@
 	[ResourceTypeList]				NVARCHAR (1024),
 	[EntryTypeId]					NVARCHAR (255)
 );
-DECLARE @AccountDefinitions AS TABLE
+DECLARE @AccountGroups AS TABLE
 (
 	[Id]							NVARCHAR (50) PRIMARY KEY,
 	[AccountTypeId]					NVARCHAR (50),
@@ -61,19 +61,22 @@ INSERT INTO dbo.AccountTypes ([Id]) VALUES
 -- The G/L Account definitions are meant as Catch-All, or enough to show primary IFRS statements. They are dumb accounts, and are excluded in smart posting
 -- We need to show them in separate format, to avoid confusion
 
-INSERT INTO @AccountDefinitions
-([Id],						[AccountTypeId],	[TitleSingular],					[TitlePlural]) VALUES
-(N'OtherNonCurrentAsset',	N'NonCurrentAsset',	N'Other Non Current Asset Account',	N'Non Current Assets Accounts'),
-(N'OtherCurrentAsset',		N'CurrentAsset',	N'Other Current Asset Account',		N'Current Assets Accounts')
+INSERT INTO @AccountGroups
+([Id],							[AccountTypeId],		[TitleSingular],						[TitlePlural]) VALUES
+(N'OtherNonCurrentAsset',		N'NonCurrentAsset',		N'Other Non Current Asset Account',		N'Other Non Current Assets Accounts'),
+(N'OtherCurrentAsset',			N'CurrentAsset',		N'Other Current Asset Account',			N'Other Current Assets Accounts'),
+(N'OtherNonCurrentLiability',	N'NonCurrentLiability',	N'Other Non Current Liability Account',	N'Non Current Liabilities Accounts'),
+(N'OtherCurrentLiability',		N'CurrentLiability',	N'Other Current Liability Account',		N'Other Current Liabilities Accounts')
+
 ;
 
-INSERT INTO @AccountDefinitions
-([Id],			[AccountTypeId],	[AgentRelationDefinitionId], [ResourceTypeId],	[TitleSingular],				[TitlePlural],					[DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
-(N'PPE',		N'NonCurrentAsset',	N'CostCenter',					N'PPE',			N'Fixed Asset Account',			N'Fixed Assets Accounts',		N'Acquired From',		N'Used By'),
-(N'Intangible',	N'NonCurrentAsset',	N'CostCenter',					N'Intangible',	N'Intangible Asset Account',	N'Intangible Assets Accounts',	N'Acquired From',		N'Used By'),
-(N'Biological',	N'NonCurrentAsset',	N'CostCenter',					N'Biological',	N'Biological Asset Account',	N'Intangible Assets Accounts',	N'Acquired From',		N'Used By')
+INSERT INTO @AccountGroups
+([Id],								[AccountTypeId],	[AgentRelationDefinitionId], [ResourceTypeId],	[TitleSingular],				[TitlePlural],					[DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
+(N'PropertyPlantAndEquipment',		N'NonCurrentAsset',	N'CostCenter',					N'PPE',			N'Fixed Asset Account',			N'Fixed Assets Accounts',		N'Acquired From',		N'Used By'),
+(N'Intangible',						N'NonCurrentAsset',	N'CostCenter',					N'Intangible',	N'Intangible Asset Account',	N'Intangible Assets Accounts',	N'Acquired From',		N'Used By'),
+(N'Biological',						N'NonCurrentAsset',	N'CostCenter',					N'Biological',	N'Biological Asset Account',	N'Intangible Assets Accounts',	N'Acquired From',		N'Used By')
 ;
-INSERT INTO @AccountDefinitions
+INSERT INTO @AccountGroups
 ([Id],						[AccountTypeId],	[AgentRelationDefinitionId], [TitleSingular],					[TitlePlural]) VALUES
 (N'EmployeePrepayment',		N'Prepayment',		N'Employee',				N'Employee Prepayment Account',		N'Employee Prepayment Accounts'),
 (N'SupplierPrepayment',		N'Prepayment',		N'Supplier',				N'Supplier Prepayment Account',		N'Supplier Prepayment Accounts'),
@@ -81,8 +84,15 @@ INSERT INTO @AccountDefinitions
 (N'DebtorReceivable',		N'Receivable',		N'Debtor',					N'Debtor Receivable Account',		N'Debtors Receivable Accounts'),
 (N'CustomerAccruedIncome',	N'AccruedIncome',	N'Customer',				N'Customer Accrued Income Account',	N'Customer Accrued Income Accounts')
 ;
+INSERT INTO @AccountGroups
+([Id],					[AccountTypeId],[AgentRelationDefinitionId],	[TitleSingular],			[TitlePlural],			[DebitPartyNameLabel], [CreditPartyNameLabel], [DueDateLabel]) VALUES
+(N'CashOnHand',			N'Cash',			N'Cashier',					N'Cash ccount',				N'Cash Accounts',			N'Received From',	N'Issued To',			NULL),
+(N'BalancesWithBanks',	N'Cash',			N'Bank',					N'Bank Account',			N'Bank Accounts',			N'Received From',	N'Issued To',			N'Check Date'),
+(N'IncomingChecks',		N'CashEquivalent',	N'Cashier',					N'Incoming Checks Account',	N'Incoming Checks Accounts',N'Received From',	N'Issued To',			N'Check Date')
+;
+
 /*
-INSERT INTO @AccountDefinitions
+INSERT INTO @AccountGroups
 ([AccountTypeId],[AgentRelationDefinitionId],	[ResourceTypeId],	[TitleSingular],				[TitlePlural],					[DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
 (N'Inventory',	N'StorageCustody',				N'FinishedGood',	N'FG Inventory Account',		N'FG Inventory Accounts',		N'Received From',		N'Issued To'),
 (N'Inventory',	N'StorageCustody',				N'RawMaterials',	N'RM Inventory Account',		N'RM Inventory Accounts',		N'Received From',		N'Issued To'),
@@ -91,28 +101,21 @@ INSERT INTO @AccountDefinitions
 (N'Inventory',	N'TransitCustody',				N'Merchanside',		N'Merch. In Transit Account',	N'Merch. In Transit Accounts',	N'Received From',		N'Issued To'),
 (N'Inventory',	N'GoodsReceivedForIssueCustody',N'Goods',			N'Goods RFI Account',			N'Goods RFI Accounts',			N'Received From',		N'Issued To')
 ;
-INSERT INTO @AccountDefinitions 
+INSERT INTO @AccountGroups 
 -- Payable e.g., Customer VAT, Supplier WT, Employee Income Tax, Employee Pension, Employee Cost Sharing
 -- Receivable e.g., Supplier VAT and Customer WT
 ([Id],				[AccountTypeId],	[TitleSingular],			[TitlePlural],				[AgentRelationTypeList], [HasRelatedAgent],	[RelatedAmountLabel]) VALUES
 (N'TaxPayable',		N'Payable',			N'Tax Payable Account',		N'Tax Payables Accounts',	N'TaxAgency',					1,					N'Taxable Amount'),
 (N'TaxReceivable',	N'Receivable',		N'Tax Receivable Account',	N'Tax Receivable Accounts',	N'TaxAgency',					1,					N'Taxable Amount');
 
-INSERT INTO @AccountDefinitions
+INSERT INTO @AccountGroups
 ([Id],			[TitleSingular],		[TitlePlural],			[AgentRelationTypeList],	[ResourceTypeList],			[DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
 (N'Expense',	N'Expense Account',		N'Expense Accounts',	N'CostCenter,CostUnit',		N'Goods,Labor,PPE,Expense',	N'Consumed By',			NULL),
 (N'FA',			N'Fixed Asset Account',	N'Fixed Asset Accounts',N'CostCenter,CostUnit',		N'PPE,IA,BA',				N'Acquired From',		N'Used By');
-INSERT INTO @AccountDefinitions
+INSERT INTO @AccountGroups
 ([Id],			[TitleSingular],		[TitlePlural],			[AgentRelationTypeList],	[ResourceTypeList],			[HasRelatedAgent]) VALUES
 (N'Sale',		N'Sale Account',		N'Sale Accounts',		N'RevenueCenter',				N'PPE,IA,BA,Good,Service',	1);
 
-INSERT INTO @AccountDefinitions
-([AccountTypeId],	[AgentRelationDefinitionId],	[TitleSingular],					[TitlePlural],					[HasRelatedAgentId], [DebitPartyNameLabel], [CreditPartyNameLabel], [DueDateLabel], [RelatedAmountLabel]) VALUES
-
---N'Bank,Cashier',
-(N'Cash',			N'Cashier',						N'Cash Account',					N'Cash Accounts',					1,				N'Received From',		N'Issued To',			NULL,				NULL),
-(N'Cash',			N'Bank',						N'Bank Account',					N'Bank Accounts',					1,				N'Received From',		N'Issued To',			N'Check Date',		NULL),
-(N'CashEquivalent',	N'Cashier',						N'Incoming Checks Account',			N'Incoming Checks Accounts',		1,				N'Received From',		N'Issued To',			N'Check Date',		NULL), -- e.g., checks and CC authorization voucher
 
 
 (N'Accrual',		N'Employee',					N'Employee Accrual Account',		N'Employee Accrual Accounts',		0),
@@ -125,25 +128,25 @@ INSERT INTO @AccountDefinitions
 ;
 
 
-INSERT INTO @AccountDefinitions
+INSERT INTO @AccountGroups
 ([Id],				[TitleSingular],			[TitlePlural],				[AgentRelationTypeList],  [DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
 (N'Cash',			N'Cash Account',			N'Cash Accounts',			N'Bank,Cashier',				N'Received From',		N'Issued To'),
 (N'CashEquivalent',	N'Cash Equivalent Account',	N'Cash Equivalent Accounts',N'Cashier',						N'Received From',		N'Issued To'); -- e.g., checks and CC authorization voucher
-INSERT INTO @AccountDefinitions
+INSERT INTO @AccountGroups
 ([Id],			[TitleSingular],		[TitlePlural],			[AgentRelationTypeList],								[ResourceTypeList], [DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
 (N'Inventory',	N'Inventory Account',	N'Inventory Accounts',	N'StorageCustody,TransitCustody,GoodsReceivedFOrIssueCustody', N'Goods',		N'Acquired From',		N'Issued To');
 
-INSERT INTO @AccountDefinitions
+INSERT INTO @AccountGroups
 ([Id],			[TitleSingular],		[TitlePlural],			[AgentRelationTypeList],	[ResourceTypeList]) VALUES
 (N'Control',	N'Control Account',		N'Control Accounts',	N'CostCenter,CostUnit',			N'All');
-INSERT INTO @AccountDefinitions 
+INSERT INTO @AccountGroups 
 -- Payable e.g., Customer VAT, Supplier WT, Employee Income Tax, Employee Pension, Employee Cost Sharing
 -- Receivable e.g., Supplier VAT and Customer WT
 ([Id],				[TitleSingular],			[TitlePlural],				[AgentRelationTypeList], [HasRelatedAgent],	[RelatedAmountLabel]) VALUES
 (N'TaxPayable',		N'Tax Payable Account',		N'Tax Payables Accounts',	N'TaxAgency',					1,					N'Taxable Amount'),
 (N'TaxReceivable',	N'Tax Receivable Account',	N'Tax Receivable Accounts',	N'TaxAgency',					1,					N'Taxable Amount');
 
-INSERT INTO @AccountDefinitions
+INSERT INTO @AccountGroups
 ([Id],			[TitleSingular],		[TitlePlural],			[AgentRelationTypeList],	[ResourceTypeList],			[DebitPartyNameLabel], [CreditPartyNameLabel]) VALUES
 (N'Expense',	N'Expense Account',		N'Expense Accounts',	N'CostCenter,CostUnit',			N'Goods,Labor,PPE,Expense',	N'Consumed By',			NULL),
 (N'FA',			N'Fixed Asset Account',	N'Fixed Asset Accounts',N'CostCenter,CostUnit',			N'PPE,IA,BA',				N'Acquired From',		N'Used By');
@@ -175,7 +178,7 @@ USING (
 			[RelatedAmountLabel]		,
 			[RelatedAmountLabel2]		,
 			[RelatedAmountLabel3]		
-		FROM @AccountDefinitions
+		FROM @AccountGroups
 ) AS s
 ON s.[Id] = t.[Id]
 WHEN MATCHED

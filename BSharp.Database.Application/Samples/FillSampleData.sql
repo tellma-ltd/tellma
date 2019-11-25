@@ -9,7 +9,7 @@
 	EXEC sp_set_session_context 'Debug', 1;
 	DECLARE @UserId INT, @RowCount INT;
 
-	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = '$(DeployEmail)';-- N'support@banan-it.com';
+	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = N'admin@bsharp.online';-- '$(DeployEmail)';-- N'support@banan-it.com';
 	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
 
 	DECLARE @FunctionalCurrencyId NCHAR(3);
@@ -40,7 +40,7 @@
 		:r .\03_Agents\03_Customers.sql
 		:r .\03_Agents\04_Employees.sql
 
-		:r .\05_Accounts\a_AccountDefinitions.sql
+		:r .\05_Accounts\a_AccountGroups.sql
 		:r .\05_Accounts\b_AccountClassifications.sql
 
 RETURN;
