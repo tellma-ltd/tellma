@@ -464,7 +464,7 @@
     <None Include="Samples\06_Entries\00_manual-vouchers.sql" />
     <None Include="Samples\06_Entries\01_petty-cash-vouchers.sql" />
     <None Include="Samples\FillSampleData.sql" />
-    <None Include="Samples\05_Accounts\a_AccountDefinitions.sql" />
+    <None Include="Samples\05_Accounts\a_AccountGroups.sql" />
     <Build Include="api\Stored Procedures\api.Roles__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ResponsibilityCenters_Validate__Save.sql" />
   </ItemGroup>

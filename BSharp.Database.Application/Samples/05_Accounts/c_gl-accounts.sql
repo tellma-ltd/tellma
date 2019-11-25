@@ -1,11 +1,11 @@
 ﻿DECLARE @GLAccounts dbo.AccountList;
 INSERT INTO @GLAccounts([Index],
-	[AccountTypeId],				[AccountClassificationId],	[Name],								[Code]) VALUES
+	[AccountGroupId],				[AccountClassificationId],	[Name],								[Code]) VALUES
 (0,N'BalancesWithBanks',			@BankAndCash_AC,			N'CBE - USD',						N'1101'),
 (1,N'BalancesWithBanks',			@BankAndCash_AC,			N'CBE - ETB',						N'1102'),
-(2,N'Liabilities',					@BankAndCash_AC,			N'CBE - LC',						N'1201'), -- reserved money to pay for LC when needed
-(3,N'Inventories',					@Inventories_AC,			N'TF1903950009',					N'1209'), -- Merchandise in transit, for given LC
-(4,N'Inventories',					@Inventories_AC,			N'PPE Warehouse',					N'1210'),
+(2,N'OtherCurrentLiability',		@BankAndCash_AC,			N'CBE - LC',						N'1201'), -- reserved money to pay for LC when needed
+--(3,N'Inventories',					@Inventories_AC,			N'TF1903950009',					N'1209'), -- Merchandise in transit, for given LC
+--(4,N'Inventories',					@Inventories_AC,			N'PPE Warehouse',					N'1210'),
 (5,N'PropertyPlantAndEquipment',	@NonCurrentAssets_AC,		N'PPE - Vehicles',					N'1301'),
 (6,N'TradeAndOtherCurrentPayables',	@Liabilities_AC,			N'Vimeks',							N'2101'),
 (7,N'Equity',						@Equity_AC,					N'Capital - MA',					N'3101'),
@@ -29,7 +29,6 @@ INSERT INTO @GLAccounts([Index],
 
 
 EXEC [api].[Accounts__Save] --  N'cash-and-cash-equivalents',
-	@DefinitionId = N'gl-accounts',
 	@Entities = @GLAccounts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

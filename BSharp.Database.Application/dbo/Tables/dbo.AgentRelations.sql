@@ -13,10 +13,9 @@
 	[CreditLine]				MONEY				DEFAULT 0,
 --	employees
 	[JobTitle]					NVARCHAR (50), -- FK to table Jobs
-	[BasicSalary]				MONEY,			-- As of now, typically part of direct labor expenses
-	[TransportationAllowance]	MONEY,			-- As of now, typically part of overhead expenses.
-	[OvertimeRate]				MONEY,			-- probably better moved to a template table
-	[PerDiemRate]				MONEY,			-- probably better moved to a template table
+	[BasicSalary]				MONEY,
+	[TransportationAllowance]	MONEY,
+	[OvertimeRate]				MONEY,
 --	suppliers
 	[SupplierRating]			INT,			-- user defined list
 	[PaymentTerms]				NVARCHAR (255),

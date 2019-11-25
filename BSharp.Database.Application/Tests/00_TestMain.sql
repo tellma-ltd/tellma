@@ -39,7 +39,7 @@ BEGIN -- reset Identities
 	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @DebugRoles bit = 0, @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
 	DECLARE @DebugLookups bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAgents bit = 1, @DebugAccounts bit = 1, @DebugResponsibilityCenters bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccounts bit = 1, @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
 	DECLARE @LookupsSelect bit = 0;
@@ -82,9 +82,9 @@ BEGIN TRY
 		:r ..\Samples\03_Agents\03_Customers.sql
 		:r ..\Samples\03_Agents\04_Employees.sql
 
-		--:r ..\Samples\05_Accounts\a_AccountDefinitions.sql
-		--:r ..\Samples\05_Accounts\b_AccountClassifications.sql
-		--:r .\05_Accounts\01_gl-accounts.sql
+		:r ..\Samples\05_Accounts\a_AccountGroups.sql
+		:r ..\Samples\05_Accounts\b_AccountClassifications.sql
+		:r ..\Samples\05_Accounts\c_gl-accounts.sql
 		--:r .\05_Accounts\02_tax-accounts.sql
 		--:r .\00_Security\02_Workflows.sql		
 
