@@ -1,10 +1,4 @@
-﻿	INSERT INTO dbo.AgentRelationDefinitions([Id], [SingularLabel], [PluralLabel], [Prefix]) VALUES
-	(N'owners', N'Owner', N'Owners', N'O'),
-	(N'tax-agencies', N'Tax Agency', N'Tax Agencies', N'TX'),
-	(N'creditors', N'Creditor', N'Creditors', N'CR'),
-	(N'debtors', N'Debtor', N'Debtors', N'DR')
-	;
-/* Use Cases
+﻿/* Use Cases
 Missing
 	- Inserting
 	- Updating

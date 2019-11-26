@@ -89,10 +89,11 @@
     <Folder Include="Provisioning\03_DocumentsLines" />
     <Folder Include="Samples" />
     <Folder Include="Samples\00_Setup" />
-    <Folder Include="Samples\02_Resources" />
-    <Folder Include="Samples\03_Agents" />
+    <Folder Include="Samples\03_Resources" />
+    <Folder Include="Samples\02_Agents" />
     <Folder Include="Samples\05_Accounts" />
     <Folder Include="Samples\06_Entries" />
+    <Folder Include="Samples\01_Basic" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -395,8 +396,6 @@
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.EntryTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\zOld_AccountTypes.sql" />
-    <None Include="Provisioning\01_AccountsEntries\c_EntryTypes.sql" />
-    <None Include="Provisioning\01_AccountsEntries\d_AccountTypesEntryTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\x_AccountClassifications.sql" />
     <Build Include="Mapping\map.EntryTypes.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryTypes__Activate.sql" />
@@ -438,25 +437,21 @@
     <Build Include="api\Stored Procedures\api.ResponsibilityCenters__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.ResponsibilityCenters__Save.sql" />
     <None Include="Samples\00_Setup\a_RolesMemberships.sql" />
-    <None Include="Samples\00_Setup\b_ResourceTypes.sql" />
-    <None Include="Samples\00_Setup\c_Currencies.sql" />
-    <None Include="Samples\00_Setup\d_MeasurementUnits.sql" />
-    <None Include="Samples\00_Setup\e_Lookups.sql" />
-    <None Include="Samples\00_Setup\h_Workflows.sql" />
-    <None Include="Samples\02_Resources\a1_PPE_motor-vehicles.sql" />
-    <None Include="Samples\02_Resources\a2_PPE_it-equipment.sql" />
-    <None Include="Samples\02_Resources\a3_PPE_machineries.sql" />
-    <None Include="Samples\02_Resources\a4_PPE_general-fixed-assets.sql" />
-    <None Include="Samples\02_Resources\b_Inventories_raw-materials.sql" />
-    <None Include="Samples\02_Resources\d1_FG_vehicles.sql" />
-    <None Include="Samples\02_Resources\d2_FG_steel-products.sql" />
-    <None Include="Samples\02_Resources\e1_CCE_received-checks.sql" />
-    <None Include="Samples\02_Resources\h_PL_employee-benefits.sql" />
-    <None Include="Samples\03_Agents\00_Agents.sql" />
-    <None Include="Samples\03_Agents\02_Suppliers.sql" />
-    <None Include="Samples\03_Agents\03_Customers.sql" />
-    <None Include="Samples\03_Agents\04_Employees.sql" />
-    <None Include="Samples\03_Agents\01_ResponsibilityCenters.sql" />
+    <None Include="Samples\00_Setup\c_ResourceTypes.sql" />
+    <None Include="Samples\03_Resources\a1_PPE_motor-vehicles.sql" />
+    <None Include="Samples\03_Resources\a2_PPE_it-equipment.sql" />
+    <None Include="Samples\03_Resources\a3_PPE_machineries.sql" />
+    <None Include="Samples\03_Resources\a4_PPE_general-fixed-assets.sql" />
+    <None Include="Samples\03_Resources\b_Inventories_raw-materials.sql" />
+    <None Include="Samples\03_Resources\d1_FG_vehicles.sql" />
+    <None Include="Samples\03_Resources\d2_FG_steel-products.sql" />
+    <None Include="Samples\03_Resources\e1_CCE_received-checks.sql" />
+    <None Include="Samples\03_Resources\h_PL_employee-benefits.sql" />
+    <None Include="Samples\02_Agents\00_Agents.sql" />
+    <None Include="Samples\02_Agents\02_Suppliers.sql" />
+    <None Include="Samples\02_Agents\03_Customers.sql" />
+    <None Include="Samples\02_Agents\04_Employees.sql" />
+    <None Include="Samples\02_Agents\01_ResponsibilityCenters.sql" />
     <None Include="Samples\05_Accounts\b_AccountClassifications.sql" />
     <None Include="Samples\05_Accounts\c_gl-accounts.sql" />
     <None Include="Samples\05_Accounts\d_tax-accounts.sql" />
@@ -473,6 +468,12 @@
     <Build Include="dal\Stored Procedures\dal.ResponsibilityCenters__Activate.sql" />
     <Build Include="Mapping\ResponsibilityCenters.sql" />
     <Build Include="Mapping\ResponsibilityCenters__AsQuery.sql" />
+    <None Include="Samples\01_Basic\d_Currencies.sql" />
+    <None Include="Samples\01_Basic\e_MeasurementUnits.sql" />
+    <None Include="Samples\01_Basic\g_Lookups.sql" />
+    <None Include="Samples\00_Setup\d_EntryTypes.sql" />
+    <None Include="Samples\00_Setup\e_ResourceTypesEntryTypes.sql" />
+    <None Include="Samples\01_Basic\h_Workflows.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -491,6 +492,9 @@
     <None Include="Tests\13_HRCycle.sql" />
     <None Include="Provisioning\00_Setup\a_AdminSetup.sql" />
     <None Include="Provisioning\00_Setup\b_Settings.sql" />
+    <None Include="Samples\00_Setup\b_AgentRelationDefinitions.sql" />
+    <None Include="Samples\00_Setup\z_LookupDefinitions.sql" />
+    <None Include="Samples\00_Setup\f_AccountTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

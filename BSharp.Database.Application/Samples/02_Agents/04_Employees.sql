@@ -1,7 +1,4 @@
-﻿	INSERT INTO dbo.AgentRelationDefinitions([Id], [SingularLabel], [PluralLabel], [Prefix]) VALUES
-	(N'employees', N'Employee', N'Employees', N'E');
-
-	DECLARE @employees dbo.[AgentRelationList];
+﻿	DECLARE @employees dbo.[AgentRelationList];
 
 	INSERT INTO @employees
 	([Index],	[AgentId],		[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate], [OperatingSegmentId]) VALUES

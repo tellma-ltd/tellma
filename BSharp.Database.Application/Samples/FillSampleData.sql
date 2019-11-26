@@ -18,31 +18,29 @@
 	EXEC sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;--, @read_only = 1;
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-
 		:r .\00_Setup\a_RolesMemberships.sql
-		:r .\00_Setup\b_ResourceTypes.sql
-		:r .\00_Setup\c_Currencies.sql
-		:r .\00_Setup\d_MeasurementUnits.sql
-		:r .\00_Setup\e_Lookups.sql
+		:r .\00_Setup\b_AgentRelationDefinitions.sql
+		:r .\00_Setup\c_ResourceTypes.sql
 
-		:r .\02_Resources\a1_PPE_motor-vehicles.sql
-		:r .\02_Resources\a2_PPE_it-equipment.sql
-		:r .\02_Resources\a3_PPE_machineries.sql
-		:r .\02_Resources\a4_PPE_general-fixed-assets.sql
-		:r .\02_Resources\b_Inventories_raw-materials.sql
-		:r .\02_Resources\d1_FG_vehicles.sql
-		:r .\02_Resources\d2_FG_steel-products.sql
-		:r .\02_Resources\e1_CCE_received-checks.sql
-		:r .\02_Resources\h_PL_employee-benefits.sql
+		:r .\01_Basic\d_Currencies.sql
+		:r .\01_Basic\e_MeasurementUnits.sql
+		:r .\01_Basic\g_Lookups.sql
+		
+		:r .\02_Agents\00_Agents.sql
+		:r .\02_Agents\01_ResponsibilityCenters.sql
+		:r .\02_Agents\02_Suppliers.sql
+		:r .\02_Agents\03_Customers.sql
+		:r .\02_Agents\04_Employees.sql
 
-		:r .\03_Agents\00_Agents.sql
-		:r .\03_Agents\01_ResponsibilityCenters.sql
-		:r .\03_Agents\02_Suppliers.sql
-		:r .\03_Agents\03_Customers.sql
-		:r .\03_Agents\04_Employees.sql
-
-		:r .\05_Accounts\a_AccountGroups.sql
-		:r .\05_Accounts\b_AccountClassifications.sql
+		:r .\03_Resources\a1_PPE_motor-vehicles.sql
+		:r .\03_Resources\a2_PPE_it-equipment.sql
+		:r .\03_Resources\a3_PPE_machineries.sql
+		:r .\03_Resources\a4_PPE_general-fixed-assets.sql
+		:r .\03_Resources\b_Inventories_raw-materials.sql
+		:r .\03_Resources\d1_FG_vehicles.sql
+		:r .\03_Resources\d2_FG_steel-products.sql
+		:r .\03_Resources\e1_CCE_received-checks.sql
+		:r .\03_Resources\h_PL_employee-benefits.sql
 
 RETURN;
 ERR_LABEL:

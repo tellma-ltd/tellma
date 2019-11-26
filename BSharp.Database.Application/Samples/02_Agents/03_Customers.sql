@@ -1,7 +1,4 @@
-﻿	INSERT INTO dbo.AgentRelationDefinitions([Id], [SingularLabel], [PluralLabel], [Prefix]) VALUES
-	(N'customers', N'Customer', N'Customers', N'C');
-
-	DECLARE @Customers dbo.[AgentRelationList];
+﻿	DECLARE @Customers dbo.[AgentRelationList];
 
 	INSERT INTO @Customers
 	([Index],	[AgentId],	[StartDate], [CreditLine], [OperatingSegmentId]) VALUES

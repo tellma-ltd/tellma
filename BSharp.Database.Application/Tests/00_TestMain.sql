@@ -59,38 +59,43 @@ BEGIN -- reset Identities
 END
 
 BEGIN TRY
-	BEGIN TRANSACTION
-	
+	BEGIN TRANSACTION	
 		:r ..\Samples\00_Setup\a_RolesMemberships.sql
-		:r ..\Samples\00_Setup\b_ResourceTypes.sql
-		:r ..\Samples\00_Setup\c_Currencies.sql
-		:r ..\Samples\00_Setup\d_MeasurementUnits.sql
-		:r ..\Samples\00_Setup\e_Lookups.sql
+		:r ..\Samples\00_Setup\b_AgentRelationDefinitions.sql
+		:r ..\Samples\00_Setup\c_ResourceTypes.sql
+		:r ..\Samples\00_Setup\d_EntryTypes.sql
+		--:r ..\Samples\00_Setup\e_ResourceTypesEntryTypes.sql
+		--:r ..\Samples\00_Setup\d_AccountTypes.sql
+		--:r ..\Samples\00_Setup\z_LookupDefinitions.sql
 
-		:r ..\Samples\02_Resources\a1_PPE_motor-vehicles.sql
-		:r ..\Samples\02_Resources\a2_PPE_it-equipment.sql
-		:r ..\Samples\02_Resources\a3_PPE_machineries.sql
-		:r ..\Samples\02_Resources\a4_PPE_general-fixed-assets.sql
-		:r ..\Samples\02_Resources\b_Inventories_raw-materials.sql
-		:r ..\Samples\02_Resources\d1_FG_vehicles.sql
-		:r ..\Samples\02_Resources\d2_FG_steel-products.sql
-		:r ..\Samples\02_Resources\e1_CCE_received-checks.sql
-		:r ..\Samples\02_Resources\h_PL_employee-benefits.sql
+		--:r ..\Samples\01_Basic\a_Currencies.sql
+		--:r ..\Samples\01_Basic\b_MeasurementUnits.sql
+		--:r ..\Samples\01_Basic\c_Lookups.sql
+		
+		--:r ..\Samples\02_Agents\00_Agents.sql
+		--:r ..\Samples\02_Agents\01_ResponsibilityCenters.sql
+		--:r ..\Samples\02_Agents\02_Suppliers.sql
+		--:r ..\Samples\02_Agents\03_Customers.sql
+		--:r ..\Samples\02_Agents\04_Employees.sql
 
-		:r ..\Samples\03_Agents\00_Agents.sql
-		:r ..\Samples\03_Agents\01_ResponsibilityCenters.sql
-		:r ..\Samples\03_Agents\02_Suppliers.sql
-		:r ..\Samples\03_Agents\03_Customers.sql
-		:r ..\Samples\03_Agents\04_Employees.sql
+		--:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
+		--:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql
+		--:r ..\Samples\03_Resources\a3_PPE_machineries.sql
+		--:r ..\Samples\03_Resources\a4_PPE_general-fixed-assets.sql
+		--:r ..\Samples\03_Resources\b_Inventories_raw-materials.sql
+		--:r ..\Samples\03_Resources\d1_FG_vehicles.sql
+		--:r ..\Samples\03_Resources\d2_FG_steel-products.sql
+		--:r ..\Samples\03_Resources\e1_CCE_received-checks.sql
+		--:r ..\Samples\03_Resources\h_PL_employee-benefits.sql
 
-		:r ..\Samples\05_Accounts\a_AccountGroups.sql
-		:r ..\Samples\05_Accounts\b_AccountClassifications.sql
-		:r ..\Samples\05_Accounts\c_gl-accounts.sql
+		--:r ..\Samples\05_Accounts\a_AccountGroups.sql
+		--:r ..\Samples\05_Accounts\b_AccountClassifications.sql
+		--:r ..\Samples\05_Accounts\c_gl-accounts.sql
 		--:r .\05_Accounts\02_tax-accounts.sql
 		--:r .\00_Security\02_Workflows.sql		
 
 
-		:r ..\Samples\06_Entries\00_manual-vouchers.sql
+		--:r ..\Samples\06_Entries\00_manual-vouchers.sql
 		--:r .\06_Entries\01_petty-cash-vouchers.sql
 		;
 		

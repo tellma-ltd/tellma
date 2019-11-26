@@ -73,5 +73,6 @@
   <ItemGroup>
     <None Include="Dev.publish.xml" />
     <None Include="IntegrationTests.publish.xml" />
+    <None Include="BSharp.Database.Identity.publish.xml" />
   </ItemGroup>
 </Project>
