@@ -2,9 +2,10 @@
 For the time being, this document will contain instructions for developers.
 
 ## First Time Setup
-Follow the steps below to run the application for the first time.
+Follow the steps below to setup the solution for the first time.
 
 ### Database Tier
+- Make sure SQL Server 2017 (or later) Developer Edition is installed and accessible on "." with Windows auth
 - Deploy the BSharp.Database.Admin and BSharp.Database.Identity sql projects in one database `[BSharp]` on the server "."
 - Deploy the BSharp.Database.Application sql project in a separate database `[BSharp.101]` on the same server "."
 - In the Admin database, seed the following tables (Id values are not important as long as referential integrity is maintained): 
@@ -42,7 +43,6 @@ Follow the steps below to run the application for the first time.
 ```
 
 ### Client App
-- Make sure SQL Server 2017 (or later) Developer Edition is installed and accessible on "." with Windows auth
 - Install NodeJS (LTS edition) from the [official website](https://nodejs.org/en/)
 - Install Angular CLI by running the following in cmd: `npm install -g @angular/cli`
 - Install typescript by running the following in cmd: `npm install -g typescript`
