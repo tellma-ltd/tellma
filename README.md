@@ -4,7 +4,7 @@ For the time being, this document will contain instructions for developers.
 ## First Time Setup
 Follow the steps below to run the application for the first time.
 
-**Database Tier**
+### Database Tier
 - Deploy the BSharp.Database.Admin and BSharp.Database.Identity sql projects in one database `[BSharp]` on the server "."
 - Deploy the BSharp.Database.Application sql project in a separate database `[BSharp.101]` on the same server "."
 - In the Admin database, seed the following tables (Id values are not important as long as referential integrity is maintained): 
@@ -13,9 +13,9 @@ Follow the steps below to run the application for the first time.
 	`SqlDatabases: Id=101, ServerId=1, DatabaseName=(Name of application database), CreatedById=1, ModifiedById=1`
 	`GlobalUsers: Id=1, Email='admin@bsharp.online'`
 	`GlobalUserMemberships: UserId=1, DatabaseId=101`
-- Repeat the steps above for the integration tests databases: `[BSharp.IntegrationTests]` and `[BSharp.IntegrationTests.101]`, this time without deploying Identity
+- Repeat the steps above for the integration tests databases: `[BSharp.IntegrationTests]` and `[BSharp.IntegrationTests.101]`, this time without deploying BSharp.Database.Identity
 
-**Application Tier**
+### Application Tier
 - Right click BSharp project -> Properties -> Debug, un-check "Launch browser" and check "Enable SSL", copy the SSL address into the App URL (making them identical), keep it for the next steps
 - Right click BSharp project -> Manage User Secrets, and paste the following (replacing XXXXX with values from your environment):
 ```
@@ -41,7 +41,7 @@ Follow the steps below to run the application for the first time.
 }
 ```
 
-**Client App**
+### Client App
 - Make sure SQL Server 2017 (or later) Developer Edition is installed and accessible on "." with Windows auth
 - Install NodeJS (LTS edition) from the [official website](https://nodejs.org/en/)
 - Install Angular CLI by running the following in cmd: `npm install -g @angular/cli`
@@ -73,21 +73,21 @@ Follow the steps below to run the application for the first time.
 }
 ```
 
-**Integration Tests - Final Steps**
-1 - Open (SolutionDir)/BSharp/appsettings.json and change the value of WebClientAccessTokenLifetimeInDays to 3650
-2 - Run the app (as per the below instructions)
-3 - In the Chrome browser open developer tools (by hitting F12 on Windows), and go to Application >- Local Storage -> http://localhost:4200
-4 - Find the value of access_token and copy it
-5 - Right click BSharp.IntegrationTests project -> Manage User Secrets, and paste the value as the AccessToken. 
-6 - Open (SolutionDir)/BSharp/appsettings.json and change the value of WebClientAccessTokenLifetimeInDays back to 3
+### Integration Tests - Final Steps
+- Open (SolutionDir)/BSharp/appsettings.json and change the value of WebClientAccessTokenLifetimeInDays to 3650
+- Run the app (as per the below instructions)
+- In the Chrome browser open developer tools (by hitting F12 on Windows), and go to Application >- Local Storage -> http://localhost:4200
+- Find the value of access_token and copy it
+- Right click BSharp.IntegrationTests project -> Manage User Secrets, and paste the value as the AccessToken. 
+- Open (SolutionDir)/BSharp/appsettings.json and change the value of WebClientAccessTokenLifetimeInDays back to 3
 
 
 
 ## Running The App
-**To Run The Application**
-(1) Start the backend server: Debug -> Start without debugging (Make sure BSharp is the startup project)
-(2) Start the frontend server: Open the command line inside "(SolutionDir)/BSharp/ClientApp/" and run: `ng serve -o`
+### To Run The Application
+- Start the backend server: Debug -> Start without debugging (Make sure BSharp is the startup project)
+- Start the frontend server: Open the command line inside "(SolutionDir)/BSharp/ClientApp/" and run: `ng serve -o`
 
-**To Run The Tests**
-(1) Start the backend server: Debug -> Start without debugging (Make sure BSharp is the startup project)
-(2) Right Click BSharp.IntegrationTests => Run Tests
+### To Run The Tests
+- Start the backend server: Debug -> Start without debugging (Make sure BSharp is the startup project)
+- Right Click BSharp.IntegrationTests -> Run Tests
