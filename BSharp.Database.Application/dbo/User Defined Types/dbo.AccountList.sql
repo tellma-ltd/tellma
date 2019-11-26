@@ -14,7 +14,6 @@
 	[IsCurrent]						BIT				NOT NULL DEFAULT 1,
 	[HasSingleResponsibilityCenterId] BIT			DEFAULT 1,
 	[ResponsibilityCenterId]		INT,
-	[AgentRelationDefinitionId]		NVARCHAR(50),
 	[HasSingleAgent]				BIT,
 	[AgentId]						INT,
 	[HasSingleResource]				BIT,

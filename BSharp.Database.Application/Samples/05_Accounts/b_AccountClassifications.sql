@@ -51,5 +51,5 @@ SELECT @Equity_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'3';
 SELECT @Revenue_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'4';
 SELECT @Expenses_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'5';
 
-IF @DebugAccounts = 1
+IF @DebugAccountClassifications = 1
 	SELECT * FROM [map].[AccountClassifications]();

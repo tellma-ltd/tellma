@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[AccountGroups] (
-	[Id]							NVARCHAR (50) PRIMARY KEY, --CONSTRAINT [PK_AccountDefinitions] PRIMARY KEY,
+	[Id]							NVARCHAR (50) PRIMARY KEY, --CONSTRAINT [PK_AccountGroups] PRIMARY KEY,
 	[AccountTypeId]					NVARCHAR (50) CONSTRAINT [FK_AccountGroups__AccountTypeId] REFERENCES dbo.AccountTypes([Id]),
 	[AgentRelationDefinitionId]		NVARCHAR (50),
 	[ResourceTypeId]				NVARCHAR (50),
@@ -20,13 +20,15 @@
 	[MonetaryAmountLabel2]			NVARCHAR (50),
 	[MonetaryAmountLabel3]			NVARCHAR (50),
 
-	[DebitPartyNameLabel]			NVARCHAR (50), -- NULL means it is invisible
-	[DebitPartyNameLabel2]			NVARCHAR (50),
-	[DebitPartyNameLabel3]			NVARCHAR (50),
+	[HasRelatedAgent]				BIT,
+	-- If HasRelatedAgent = 0 and DebitRelatedAgentLabel is not null, then the user is supposed to fill the related agent name, instead of related agent Id
+	[DebitRelatedAgentLabel]		NVARCHAR (50), -- NULL means it is invisible
+	[DebitRelatedAgentLabel2]		NVARCHAR (50),
+	[DebitRelatedAgentLabel3]		NVARCHAR (50),
 
-	[CreditPartyNameLabel]			NVARCHAR (50), -- NULL means it is invisible
-	[CreditPartyNameLabel2]			NVARCHAR (50),
-	[CreditPartyNameLabel3]			NVARCHAR (50),
+	[CreditRelatedAgentLabel]		NVARCHAR (50), -- NULL means it is invisible
+	[CreditRelatedAgentLabel2]		NVARCHAR (50),
+	[CreditRelatedAgentLabel3]		NVARCHAR (50),
 
 	[DueDateLabel]					NVARCHAR (50), -- NULL means it is invisible
 	[DueDateLabel2]					NVARCHAR (50),

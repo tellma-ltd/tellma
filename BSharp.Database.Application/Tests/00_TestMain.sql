@@ -39,7 +39,8 @@ BEGIN -- reset Identities
 	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @DebugRoles bit = 0, @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
 	DECLARE @DebugLookups bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccounts bit = 1, @DebugResponsibilityCenters bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccountGroups bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
 	DECLARE @LookupsSelect bit = 0;
@@ -47,7 +48,7 @@ BEGIN -- reset Identities
 	EXEC sp_set_session_context 'Debug', 1;
 	DECLARE @UserId INT, @RowCount INT;
 
-	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = '$(DeployEmail)';-- N'support@banan-it.com';
+	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = N'admin@bsharp.online';-- '$(DeployEmail)';
 	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
 
 	DECLARE @FunctionalCurrencyId NCHAR(3);
@@ -89,7 +90,7 @@ BEGIN TRY
 		--:r .\00_Security\02_Workflows.sql		
 
 
-		----:r .\06_Entries\00_manual-vouchers.sql
+		:r ..\Samples\06_Entries\00_manual-vouchers.sql
 		--:r .\06_Entries\01_petty-cash-vouchers.sql
 		;
 		

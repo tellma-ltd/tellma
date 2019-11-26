@@ -62,22 +62,22 @@ BEGIN -- Inserting
 	(4, 4, 1,1,+1,@CBEETB,			N'InternalCashTransferExtension', 	1175000),
 	(5, 5, 1,1,-1,@CBEUSD,			N'InternalCashTransferExtension',	1175000);
 
-	INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],		[EntryTypeId],						[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryValue]) VALUES
-	(6, 6, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),--
-	(7, 7, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, NULL),--
-	(8, 8, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),
-	(9, 9, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, 600000),
-	(10,10,2,1,-1,@ToyotaAccount,	NULL,								1380000,	NULL,				NULL, NULL, NULL),
+	--INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	--			[AccountId],		[EntryTypeId],						[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryValue]) VALUES
+	--(6, 6, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),--
+	--(7, 7, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, NULL),--
+	--(8, 8, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),
+	--(9, 9, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, 600000),
+	--(10,10,2,1,-1,@ToyotaAccount,	NULL,								1380000,	NULL,				NULL, NULL, NULL),
 
-	(11,11,3,1,+1,@PPEVehicles,		N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',
-																		600000,		NULL,				NULL, NULL, NULL),
-	(12,12,3,1,-1,@PPEWarehouse,	N'InventoryReclassifiedAsPropertyPlantAndEquipment',
-																		600000,		NULL,				NULL, NULL, NULL),
-	(13,13,4,1,+1,@VATInput,		NULL,								2250,		N'C-25301',			N'BP188954', @Regus, 15000),
-	(14,14,4,1,+1,@PrepaidRental,	NULL,								15000,		N'C-25301',			NULL, NULL, NULL),
-	(15,15,4,1,-1,@RegusAccount,	NULL, 								17250,		N'C-25301',			NULL, NULL, NULL);
-	; 
+	--(11,11,3,1,+1,@PPEVehicles,		N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',
+	--																	600000,		NULL,				NULL, NULL, NULL),
+	--(12,12,3,1,-1,@PPEWarehouse,	N'InventoryReclassifiedAsPropertyPlantAndEquipment',
+	--																	600000,		NULL,				NULL, NULL, NULL),
+	--(13,13,4,1,+1,@VATInput,		NULL,								2250,		N'C-25301',			N'BP188954', @Regus, 15000),
+	--(14,14,4,1,+1,@PrepaidRental,	NULL,								15000,		N'C-25301',			NULL, NULL, NULL),
+	--(15,15,4,1,-1,@RegusAccount,	NULL, 								17250,		N'C-25301',			NULL, NULL, NULL);
+	--; 
 
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'manual-journals',
@@ -133,7 +133,7 @@ BEGIN
 		Format(Credit, '##,#.00;-;-', 'en-us') AS Credit,
 		Format(Closing , '##,#.00;(##,#.00);-', 'en-us') AS Closing
 	FROM [rpt].[Accounts__TrialBalance] ('2018.01.02','2019.01.01') JS
-	LEFT JOIN dbo.Accounts A ON JS.GLAccountId = A.Id
+	JOIN dbo.Accounts A ON JS.AccountId = A.Id
 	LEFT JOIN dbo.AccountClassifications AC ON JS.AccountClassificationId = AC.Id
 	ORDER BY AC.[Code], A.[Code]
 

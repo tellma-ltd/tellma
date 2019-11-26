@@ -353,7 +353,6 @@
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Save.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Select.sql" />
-    <Build Include="dbo\Tables\dbo.zOldAccountDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
     <Build Include="rpt\Functions\rpt.fi_JournalSummary.sql" />
     <Build Include="rpt\Stored Procedures\rpt.FinishedGoods__TrialBalance.sql" />
@@ -378,7 +377,7 @@
     <Build Include="Mapping\AccountClassifications__AsQuery.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__DeleteWithDescendants.sql" />
-    <Build Include="Mapping\AccountDefinitions.sql" />
+    <Build Include="Mapping\AccountGroups.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Save.sql" />

@@ -70,10 +70,11 @@ SET NOCOUNT ON;
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
 		N'Error_IncompatibleAccountType0AndEntryType1',
-		A.[AccountGroupId], E.EntryTypeId
+		AG.[AccountTypeId], E.EntryTypeId
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	LEFT JOIN dbo.[AccountTypesEntryTypes] AE ON (A.[AccountGroupId] = AE.[AccountTypeId]) AND (E.EntryTypeId = AE.EntryTypeId)
+	JOIN dbo.AccountGroups AG ON A.AccountGroupId = AG.[Id]
+	LEFT JOIN dbo.[AccountTypesEntryTypes] AE ON (AG.[AccountTypeId] = AE.[AccountTypeId]) AND (E.EntryTypeId = AE.EntryTypeId)
 	WHERE (E.EntryTypeId IS NOT NULL AND AE.EntryTypeId IS NULL);
 
 	-- RelatedAgent is required for selected account definition, 
@@ -84,7 +85,7 @@ SET NOCOUNT ON;
 	--	N'Error_TheRelatedAgentIsNotSpecified'
 	--FROM @Entries E
 	--JOIN dbo.[Accounts] A On E.AccountId = A.Id
-	--JOIN dbo.[AccountDefinitions] AD ON A.[AccountDefinitionId] = AD.Id
+	--JOIN dbo.[AccountGroups] AD ON A.[AccountDefinitionId] = AD.Id
 	--WHERE (E.[RelatedAgentId] IS NULL)
 	--AND (AD.[HasRelatedAgent] = 1);
 

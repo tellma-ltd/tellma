@@ -42,6 +42,7 @@
 	[ExternalReference]			NVARCHAR (255),
 	[AdditionalReference]		NVARCHAR (255),
 	[RelatedAgentId]			INT,
+	[RelatedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
 	[RelatedAmount]				MONEY,		-- e.g., amount subject to tax
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0),	-- to time

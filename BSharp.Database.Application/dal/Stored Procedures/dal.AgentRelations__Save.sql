@@ -30,16 +30,16 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
-				t.[OperatingSegmentId] = s.[OperatingSegmentId],
-				t.[AgentId]			=	s.[AgentId],
-				t.[StartDate]		=	s.[StartDate],
-				t.[Code]			=	s.[Code],
-				t.[CreditLine]		=	s.[CreditLine],
-				t.[BasicSalary]		=	s.[BasicSalary],
+				t.[OperatingSegmentId]		= s.[OperatingSegmentId],
+				t.[AgentId]					=	s.[AgentId],
+				t.[StartDate]				=	s.[StartDate],
+				t.[Code]					=	s.[Code],
+				t.[CreditLine]				=	s.[CreditLine],
+				t.[BasicSalary]				=	s.[BasicSalary],
 				t.[TransportationAllowance] = s.[TransportationAllowance],
-				t.[OvertimeRate]	=	s.[OvertimeRate],
-				t.[ModifiedAt]		=	@Now,
-				t.[ModifiedById]	=	@UserId
+				t.[OvertimeRate]			=	s.[OvertimeRate],
+				t.[ModifiedAt]				=	@Now,
+				t.[ModifiedById]			=	@UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[OperatingSegmentId],
@@ -53,7 +53,7 @@ SET NOCOUNT ON;
 				[OvertimeRate]
 			)
 			VALUES (
-				[OperatingSegmentId],
+				s.[OperatingSegmentId],
 				@DefinitionId,
 				s.[AgentId],
 				s.[StartDate],

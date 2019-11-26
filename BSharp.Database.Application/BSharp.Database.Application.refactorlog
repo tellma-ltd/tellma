@@ -1748,4 +1748,46 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[AccountGroupId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="1bb36049-6624-4d59-8870-e81410382ce5" ChangeDateTime="11/26/2019 05:20:19">
+    <Property Name="ElementName" Value="[dbo].[AccountGroups].[DebitPartyNameLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountGroups]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitRelatedAgentLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4721d448-07ad-4c3d-b2bd-2806a7327022" ChangeDateTime="11/26/2019 05:20:39">
+    <Property Name="ElementName" Value="[dbo].[AccountGroups].[DebitPartyNameLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountGroups]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitRelatedAgentLabel2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0513d51b-4a05-4680-9e59-2dbf03de6fdb" ChangeDateTime="11/26/2019 05:21:27">
+    <Property Name="ElementName" Value="[dbo].[AccountGroups].[DebitPartyNameLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountGroups]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DebitRelatedAgentLabel3]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1abba9da-c90d-4a11-8e1c-14c37b1d100e" ChangeDateTime="11/26/2019 05:22:29">
+    <Property Name="ElementName" Value="[dbo].[AccountGroups].[CreditPartyNameLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountGroups]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CreditRelatedAgentLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6fd01054-a173-4090-800c-0a8b444d1eff" ChangeDateTime="11/26/2019 05:22:50">
+    <Property Name="ElementName" Value="[dbo].[AccountGroups].[CreditPartyNameLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountGroups]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CreditRelatedAgentLabel2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="026f6abb-bcbf-4a82-8eb6-cfc0ac3e1a78" ChangeDateTime="11/26/2019 05:23:12">
+    <Property Name="ElementName" Value="[dbo].[AccountGroups].[CreditPartyNameLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AccountGroups]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CreditRelatedAgentLabel3]" />
+  </Operation>
 </Operations>

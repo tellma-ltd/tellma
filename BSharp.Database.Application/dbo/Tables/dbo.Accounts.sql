@@ -20,11 +20,10 @@
 	[IsCurrent]						BIT					NOT NULL DEFAULT 1,
 	[HasSingleResponsibilityCenterId] BIT,
 	[ResponsibilityCenterId]		INT					CONSTRAINT [FK_Accounts__ResponsibilityCenterId] FOREIGN KEY ([ResponsibilityCenterId]) REFERENCES [dbo].[ResponsibilityCenters] ([Id]) ON DELETE CASCADE,
-
-	[AgentRelationDefinitionId]		NVARCHAR(50),
-	[HasSingleAgent]				BIT,
+	
+	[HasSingleAgent]				BIT					DEFAULT 1,
 	[AgentId]						INT					CONSTRAINT [FK_Accounts__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),
-	[HasSingleResource]				BIT,
+	[HasSingleResource]				BIT					DEFAULT 1,
 	[ResourceId]					INT					CONSTRAINT [FK_Accounts__ResourceId] FOREIGN KEY ([ResourceId])	REFERENCES [dbo].[Resources] ([Id]),
 
 	[HasSingleEntryTypeId]			BIT,

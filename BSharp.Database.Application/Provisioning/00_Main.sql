@@ -12,7 +12,7 @@ DECLARE @AdminUserId INT, @RoleId INT, @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSE
 
 :r .\00_Setup\a_AdminSetup.sql
 :r .\00_Setup\b_Settings.sql
---:r .\01_AccountsEntries\a_AccountDefinitions.sql
+--:r .\01_AccountsEntries\a_AccountGroups.sql
 --:r .\01_AccountsEntries\b_AccountTypes.sql
 --:r .\01_AccountsEntries\c_EntryTypes.sql
 --:r .\01_AccountsEntries\d_AccountTypesEntryTypes.sql

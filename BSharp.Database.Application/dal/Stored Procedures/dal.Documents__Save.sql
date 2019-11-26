@@ -127,7 +127,7 @@ BEGIN
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], 
 			[ResponsibilityCenterId], [CurrencyId], [AgentRelationDefinitionId], [AgentId], [ResourceId], [EntryTypeId], [BatchCode], [DueDate],
 			[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
-			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAmount]
+			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAgentName], E.[RelatedAmount]
 				
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
@@ -155,6 +155,7 @@ BEGIN
 			t.[ExternalReference]		= s.[ExternalReference],
 			t.[AdditionalReference]		= s.[AdditionalReference],
 			t.[RelatedAgentId]			= s.[RelatedAgentId],
+			t.[RelatedAgentName]		= s.[RelatedAgentName],
 			t.[RelatedAmount]			= s.[RelatedAmount],
 	
 			t.[ModifiedAt]				= @Now,
@@ -163,12 +164,12 @@ BEGIN
 		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], 
 				[ResponsibilityCenterId], [CurrencyId], [AgentRelationDefinitionId], [AgentId], [ResourceId], [EntryTypeId], [BatchCode], [DueDate],
 				[MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
-				[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAmount]
+				[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount]
 				)
 		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId], 
 				s.[ResponsibilityCenterId], s.[CurrencyId], s.[AgentRelationDefinitionId], s.[AgentId], s.[ResourceId], s.[EntryTypeId], s.[BatchCode], s.[DueDate],
 				s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
-				s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentId], s.[RelatedAmount]
+				s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentName], s.[RelatedAgentId], s.[RelatedAmount]
 				)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
