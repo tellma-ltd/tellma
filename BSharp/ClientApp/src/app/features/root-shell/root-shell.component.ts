@@ -4,7 +4,7 @@ import { NavigationService } from '~/app/data/navigation.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 import { AuthService } from '~/app/data/auth.service';
-import { appconfig } from '~/app/data/appconfig';
+import { appsettings } from '~/app/data/global-resolver.guard';
 import { DOCUMENT } from '@angular/common';
 import { supportedCultures } from '~/app/data/supported-cultures';
 
@@ -89,7 +89,7 @@ export class RootShellComponent implements OnInit, OnDestroy {
 
   public onMySystemAccount(): void {
     // TODO make these pages part of the SPA
-    location.href = appconfig.identityAddress + '/identity/manage/';
+    location.href = appsettings.identityAddress + '/identity/manage/';
   }
 
   public onSignOut(): void {
