@@ -98,5 +98,6 @@
     <None Include="Dev.publish.xml" />
     <None Include="IntegrationTests.publish.xml" />
     <None Include="BSharp.Database.Admin.publish.xml" />
+    <None Include="BSharp_1.Database.Admin.publish.xml" />
   </ItemGroup>
 </Project>
