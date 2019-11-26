@@ -1,46 +1,12 @@
 import { Injectable, ApplicationRef } from '@angular/core';
 import { AuthConfig, OAuthService, JwksValidationHandler, OAuthEvent, OAuthErrorEvent } from 'angular-oauth2-oidc';
-import { appconfig } from './appconfig';
+import { appsettings } from './global-resolver.guard';
 import { Subject, Observable, timer, of, from, ReplaySubject, throwError } from 'rxjs';
 import { catchError, filter, map, flatMap, first, tap, finalize } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { CleanerService } from './cleaner.service';
 import { ProgressOverlayService } from './progress-overlay.service';
 
-const authConfig: AuthConfig = {
-
-  // url of the Identity Provider
-  issuer: appconfig.identityAddress,
-
-  // when identity server is hosted in the same domain, we refere to it as "/" and this library complains about lack of https
-  // requireHttps: false,
-  // strictDiscoveryDocumentValidation: false,
-
-  // url of the SPA to redirect the user to after login
-  redirectUri: window.location.origin + '/sign-in-callback',
-
-  // url of the SPA to redirect the hidden iFrame to after a silent refresh
-  silentRefreshRedirectUri: window.location.origin + '/assets/silent-refresh-callback.html',
-
-  // enable OpenID Connect session management
-  sessionChecksEnabled: true,
-
-  // without this the angular router was getting thrown off and refused to redirect in SignInCallbackGuard
-  clearHashAfterLogin: false,
-
-  // the SPA's id. The SPA is registerd with this id at the auth-server
-  clientId: 'WebClient',
-
-  // the scope for the permissions the client should request
-  scope: 'openid profile email bsharp',
-
-  // these can be null and if they are they will be retrieved by loading the discovery document
-  // setting them in the appconfig is just an optimization to allow instant startup of the app
-  jwks: appconfig.identityConfig ? appconfig.identityConfig.jwks : null,
-  loginUrl: appconfig.identityConfig ? appconfig.identityConfig.loginUrl : null,
-  logoutUrl: appconfig.identityConfig ? appconfig.identityConfig.logoutUrl : null,
-  sessionCheckIFrameUrl: appconfig.identityConfig ? appconfig.identityConfig.sessionCheckIFrameUrl : null,
-};
 
 // a set of events that various services in the application are interested in knowing about
 export enum AuthEvent {
@@ -68,8 +34,9 @@ export class AuthService {
   private nonce: string;
   private discoveryDocumentLoaded$ = new ReplaySubject<boolean>();
 
-  constructor(private oauth: OAuthService, private storage: StorageService, private progress: ProgressOverlayService,
-              private cleaner: CleanerService, private appRef: ApplicationRef) {
+  constructor(
+    private oauth: OAuthService, private storage: StorageService, private progress: ProgressOverlayService,
+    private cleaner: CleanerService, private appRef: ApplicationRef) {
     this.init();
   }
 
@@ -79,6 +46,41 @@ export class AuthService {
   }
 
   private init(): void {
+
+    const authConfig: AuthConfig = {
+
+      // url of the Identity Provider
+      issuer: appsettings.identityAddress,
+
+      // when identity server is hosted in the same domain, we refere to it as "/" and this library complains about lack of https
+      // requireHttps: false,
+      // strictDiscoveryDocumentValidation: false,
+
+      // url of the SPA to redirect the user to after login
+      redirectUri: window.location.origin + '/sign-in-callback',
+
+      // url of the SPA to redirect the hidden iFrame to after a silent refresh
+      silentRefreshRedirectUri: window.location.origin + '/assets/silent-refresh-callback.html',
+
+      // enable OpenID Connect session management
+      sessionChecksEnabled: true,
+
+      // without this the angular router was getting thrown off and refused to redirect in SignInCallbackGuard
+      clearHashAfterLogin: false,
+
+      // the SPA's id. The SPA is registerd with this id at the auth-server
+      clientId: 'WebClient',
+
+      // the scope for the permissions the client should request
+      scope: 'openid profile email bsharp',
+
+      // these can be null and if they are they will be retrieved by loading the discovery document
+      // setting them in the appsettings is just an optimization to allow instant startup of the app
+      jwks: appsettings.identityConfig ? appsettings.identityConfig.jwks : null,
+      loginUrl: appsettings.identityConfig ? appsettings.identityConfig.loginUrl : null,
+      logoutUrl: appsettings.identityConfig ? appsettings.identityConfig.logoutUrl : null,
+      sessionCheckIFrameUrl: appsettings.identityConfig ? appsettings.identityConfig.sessionCheckIFrameUrl : null,
+    };
 
     // configure the 'angular-oauth2-oidc' library
     this.oauth.configure(authConfig);
@@ -117,7 +119,7 @@ export class AuthService {
       // capture the discovery document events in a replay subject
       // so that all events that require the discovery documents can
       // reliably wait for it to be available
-      if (this.isDiscoveryDocumentNeeded) {
+      if (this.isDiscoveryDocumentNeeded(authConfig)) {
 
         if (e.type === 'discovery_document_loaded') {
           // for some reason this event is fired twice, first with info = null
@@ -137,7 +139,7 @@ export class AuthService {
       }
     });
 
-    if (this.isDiscoveryDocumentNeeded) {
+    if (this.isDiscoveryDocumentNeeded(authConfig)) {
       // if the configuration is not complete then we must load the discovery document
       // it will be needed for: sign-in, sign-out, url token validation and silent refresh
       this.oauth.loadDiscoveryDocument();
@@ -151,7 +153,7 @@ export class AuthService {
   public setupAutomaticSilentRefresh() {
 
     // setup periodic silent refresh
-    const basePeriodInSecondsFromConfig = appconfig.identityConfig ? appconfig.identityConfig.tokenRefreshPeriodInSeconds : null;
+    const basePeriodInSecondsFromConfig = appsettings.identityConfig ? appsettings.identityConfig.tokenRefreshPeriodInSeconds : null;
     const basePeriod = (basePeriodInSecondsFromConfig || (60 * 60)) * 1000; // Default is 1 hour
     const rand = (Math.random() * 2) - 1; // between 1 and -1
     const period = basePeriod + (rand * basePeriod / 2); // 1 hour +/-30 minutes
@@ -189,7 +191,7 @@ export class AuthService {
     });
   }
 
-  private get isDiscoveryDocumentNeeded(): boolean {
+  private isDiscoveryDocumentNeeded(authConfig: AuthConfig): boolean {
     return !authConfig.jwks || !authConfig.loginUrl || !authConfig.logoutUrl || !authConfig.sessionCheckIFrameUrl;
   }
 

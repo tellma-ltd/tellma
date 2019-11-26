@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, throwError } from 'rxjs';
@@ -15,7 +15,7 @@ import { ImportResult } from './dto/import-result';
 import { ExportArguments } from './dto/export-arguments';
 import { GetByIdResponse } from './dto/get-by-id-response';
 import { SaveArguments } from './dto/save-arguments';
-import { appconfig } from './appconfig';
+import { appsettings } from './global-resolver.guard';
 import { Agent } from './entities/agent';
 import { Role } from './entities/role';
 import { Settings } from './entities/settings';
@@ -43,6 +43,8 @@ import { GetAggregateResponse } from './dto/get-aggregate-response';
 import { UpdateStateArguments } from './dto/update-state-arguments';
 import { ReportDefinition } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
+import { friendlify } from './util';
+
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +54,7 @@ export class ApiService {
   public showRotator = false;
 
   // Will abstract away standard API calls for CRUD operations
-  constructor(public http: HttpClient, public translate: TranslateService) { }
+  constructor(public http: HttpClient, public trx: TranslateService) { }
 
   public measurementUnitsApi(cancellationToken$: Observable<void>) {
     return {
@@ -139,7 +141,7 @@ export class ApiService {
         }
 
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/report-definitions/update-state?${params}`;
+        const url = appsettings.apiAddress + `api/report-definitions/update-state?${params}`;
 
         this.showRotator = true;
         const obs$ = this.http.put<EntitiesResponse<ReportDefinition>>(url, ids, {
@@ -148,7 +150,7 @@ export class ApiService {
           tap(() => this.showRotator = false),
           catchError(error => {
             this.showRotator = false;
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
@@ -179,10 +181,10 @@ export class ApiService {
       activate: this.activateFactory<User>('users', cancellationToken$),
       deactivate: this.deactivateFactory<User>('users', cancellationToken$),
       getForClient: () => {
-        const url = appconfig.apiAddress + `api/users/client`;
+        const url = appsettings.apiAddress + `api/users/client`;
         const obs$ = this.http.get<DataWithVersion<UserSettingsForClient>>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -193,10 +195,10 @@ export class ApiService {
       saveForClient: (key: string, value: string) => {
         const keyParam = `key=${encodeURIComponent(key)}`;
         const valueParam = !!value ? `&value=${encodeURIComponent(value)}` : '';
-        const url = appconfig.apiAddress + `api/users/client?` + keyParam + valueParam;
+        const url = appsettings.apiAddress + `api/users/client?` + keyParam + valueParam;
         const obs$ = this.http.post<DataWithVersion<UserSettingsForClient>>(url, null).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -206,12 +208,12 @@ export class ApiService {
       },
       invite: (id: number | string) => {
         this.showRotator = true;
-        const url = appconfig.apiAddress + `api/users/invite?id=${id}`;
+        const url = appsettings.apiAddress + `api/users/invite?id=${id}`;
         const obs$ = this.http.put(url, null).pipe(
           tap(() => this.showRotator = false),
           catchError(error => {
             this.showRotator = false;
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
@@ -226,10 +228,10 @@ export class ApiService {
   public companiesApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appconfig.apiAddress + `api/companies/client`;
+        const url = appsettings.apiAddress + `api/companies/client`;
         const obs$ = this.http.get<UserCompany[]>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -243,10 +245,10 @@ export class ApiService {
   public globalSettingsApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appconfig.apiAddress + `api/global-settings/client`;
+        const url = appsettings.apiAddress + `api/global-settings/client`;
         const obs$ = this.http.get<DataWithVersion<GlobalSettingsForClient>>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -256,7 +258,7 @@ export class ApiService {
       },
 
       ping: () => {
-        const url = appconfig.apiAddress + `api/global-settings/ping`;
+        const url = appsettings.apiAddress + `api/global-settings/ping`;
         const obs$ = this.http.get(url).pipe(
           takeUntil(cancellationToken$)
         );
@@ -277,11 +279,11 @@ export class ApiService {
         }
 
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/settings?${params}`;
+        const url = appsettings.apiAddress + `api/settings?${params}`;
 
         const obs$ = this.http.get<GetEntityResponse<Settings>>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -291,10 +293,10 @@ export class ApiService {
       },
 
       getForClient: () => {
-        const url = appconfig.apiAddress + `api/settings/client`;
+        const url = appsettings.apiAddress + `api/settings/client`;
         const obs$ = this.http.get<DataWithVersion<SettingsForClient>>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -304,7 +306,7 @@ export class ApiService {
       },
 
       ping: () => {
-        const url = appconfig.apiAddress + `api/settings/ping`;
+        const url = appsettings.apiAddress + `api/settings/ping`;
         const obs$ = this.http.get(url).pipe(
           takeUntil(cancellationToken$)
         );
@@ -322,7 +324,7 @@ export class ApiService {
         }
 
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/settings?${params}`;
+        const url = appsettings.apiAddress + `api/settings?${params}`;
 
         const obs$ = this.http.post<SaveSettingsResponse>(url, entity, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -330,7 +332,7 @@ export class ApiService {
           tap(() => this.showRotator = false),
           catchError((error) => {
             this.showRotator = false;
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
@@ -345,10 +347,10 @@ export class ApiService {
   public permissionsApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appconfig.apiAddress + `api/permissions/client`;
+        const url = appsettings.apiAddress + `api/permissions/client`;
         const obs$ = this.http.get<DataWithVersion<PermissionsForClient>>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -362,10 +364,10 @@ export class ApiService {
   public definitionsApi(cancellationToken$: Observable<void>) {
     return {
       getForClient: () => {
-        const url = appconfig.apiAddress + `api/definitions/client`;
+        const url = appsettings.apiAddress + `api/definitions/client`;
         const obs$ = this.http.get<DataWithVersion<DefinitionsForClient>>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -382,11 +384,11 @@ export class ApiService {
       get: (args: GetArguments) => {
         const paramsArray = this.stringifyGetArguments(args);
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/${endpoint}?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
 
         const obs$ = this.http.get<GetResponse<TEntity>>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -408,11 +410,11 @@ export class ApiService {
         }
 
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/${endpoint}/${id}?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}/${id}?${params}`;
 
         const obs$ = this.http.get<GetByIdResponse<TEntity>>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -434,11 +436,11 @@ export class ApiService {
         }
 
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/${endpoint}/aggregate?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}/aggregate?${params}`;
 
         const obs$ = this.http.get<GetAggregateResponse>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -472,11 +474,11 @@ export class ApiService {
         }
 
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/${endpoint}/children-of?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}/children-of?${params}`;
 
         const obs$ = this.http.get<EntitiesResponse<TEntity>>(url).pipe(
           catchError(error => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$)
@@ -497,7 +499,7 @@ export class ApiService {
         paramsArray.push(`returnEntities=${!!args.returnEntities}`);
 
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/${endpoint}?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}?${params}`;
 
         const obs$ = this.http.post<EntitiesResponse<TEntity>>(url, entities, {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -505,7 +507,7 @@ export class ApiService {
           tap(() => this.showRotator = false),
           catchError((error) => {
             this.showRotator = false;
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
@@ -517,12 +519,12 @@ export class ApiService {
 
       delete: (ids: (number | string)[]) => {
         this.showRotator = true;
-        const url = appconfig.apiAddress + `api/${endpoint}`;
+        const url = appsettings.apiAddress + `api/${endpoint}`;
         const obs$ = this.http.request('DELETE', url, { body: ids }).pipe(
           tap(() => this.showRotator = false),
           catchError((error) => {
             this.showRotator = false;
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
@@ -534,12 +536,12 @@ export class ApiService {
 
       deleteWithDescendants: (ids: (number | string)[]) => {
         this.showRotator = true;
-        const url = appconfig.apiAddress + `api/${endpoint}/with-descendants`;
+        const url = appsettings.apiAddress + `api/${endpoint}/with-descendants`;
         const obs$ = this.http.request('DELETE', url, { body: ids }).pipe(
           tap(() => this.showRotator = false),
           catchError((error) => {
             this.showRotator = false;
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
@@ -559,10 +561,10 @@ export class ApiService {
         }
 
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/${endpoint}/template?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}/template?${params}`;
         const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
           catchError((error) => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
@@ -587,12 +589,12 @@ export class ApiService {
 
         this.showRotator = true;
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/${endpoint}/import?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}/import?${params}`;
         const obs$ = this.http.post<ImportResult>(url, formData).pipe(
           tap(() => this.showRotator = false),
           catchError((error) => {
             this.showRotator = false;
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
@@ -610,10 +612,10 @@ export class ApiService {
         }
 
         const params: string = paramsArray.join('&');
-        const url = appconfig.apiAddress + `api/${endpoint}/export?${params}`;
+        const url = appsettings.apiAddress + `api/${endpoint}/export?${params}`;
         const obs$ = this.http.get(url, { responseType: 'blob' }).pipe(
           catchError((error) => {
-            const friendlyError = this.friendly(error);
+            const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);
           }),
           takeUntil(cancellationToken$),
@@ -627,13 +629,13 @@ export class ApiService {
   public getImage(endpoint: string, imageId: string, cancellationToken$: Observable<void>) {
 
     // Note: cache=true instructs the HTTP interceptor to not add cache-busting parameters
-    const url = appconfig.apiAddress + `api/${endpoint}?imageId=${imageId}`;
+    const url = appsettings.apiAddress + `api/${endpoint}?imageId=${imageId}`;
     const obs$ = this.http.get(url, { responseType: 'blob', observe: 'response' }).pipe(
       map(res => {
         return { image: res.body, imageId: res.headers.get('x-image-id') };
       }),
       catchError(error => {
-        const friendlyError = this.friendly(error);
+        const friendlyError = friendlify(error, this.trx);
         return throwError(friendlyError);
       }),
       takeUntil(cancellationToken$)
@@ -657,7 +659,7 @@ export class ApiService {
       }
 
       const params: string = paramsArray.join('&');
-      const url = appconfig.apiAddress + `api/${endpoint}/activate?${params}`;
+      const url = appsettings.apiAddress + `api/${endpoint}/activate?${params}`;
 
       this.showRotator = true;
       const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
@@ -666,7 +668,7 @@ export class ApiService {
         tap(() => this.showRotator = false),
         catchError(error => {
           this.showRotator = false;
-          const friendlyError = this.friendly(error);
+          const friendlyError = friendlify(error, this.trx);
           return throwError(friendlyError);
         }),
         takeUntil(cancellationToken$),
@@ -692,7 +694,7 @@ export class ApiService {
       }
 
       const params: string = paramsArray.join('&');
-      const url = appconfig.apiAddress + `api/${endpoint}/deactivate?${params}`;
+      const url = appsettings.apiAddress + `api/${endpoint}/deactivate?${params}`;
 
       this.showRotator = true;
       const obs$ = this.http.put<EntitiesResponse<TDto>>(url, ids, {
@@ -701,7 +703,7 @@ export class ApiService {
         tap(() => this.showRotator = false),
         catchError(error => {
           this.showRotator = false;
-          const friendlyError = this.friendly(error);
+          const friendlyError = friendlify(error, this.trx);
           return throwError(friendlyError);
         }),
         takeUntil(cancellationToken$),
@@ -749,58 +751,4 @@ export class ApiService {
 
     return paramsArray;
   }
-
-  // Function to turn status codes into friendly localized human-readable errors
-  friendly(error: any): {
-    status: number,
-    error: any
-  } {
-    const friendlyStructure = (status: number, err: any) => {
-      return {
-        status,
-        error: err
-      };
-    };
-
-    // Translates HttpClient's errors into human-friendly errors
-    if (error instanceof HttpErrorResponse) {
-      const res = error as HttpErrorResponse;
-
-      switch (res.status) {
-        case 0: // Offline
-        case 504: // Service worker reports
-          return friendlyStructure(res.status, this.translate.instant(`Error_UnableToReachServer`));
-
-        case 400: // Bad Request
-        case 422: // Unprocessible entity
-          if (error.error instanceof Blob) {
-            // TODO: Need a better solution to handle blobs
-            return friendlyStructure(res.status, this.translate.instant(`Error_UnkownClientError`));
-          } else {
-            // These two status codes mean a friendly error is already coming from the server
-            return friendlyStructure(res.status, res.error);
-          }
-
-        case 401:  // Unauthorized
-          return friendlyStructure(res.status, this.translate.instant(`Error_LoginSessionExpired`));
-
-        case 403:  // Forbidden
-          return friendlyStructure(res.status, this.translate.instant(`Error_AccountDoesNotHaveSufficientPermissions`));
-
-        case 404: // Not found
-          return friendlyStructure(res.status, this.translate.instant(`Error_RecordNotFound`));
-
-        case 500:  // Internal Server Error
-          return friendlyStructure(res.status, this.translate.instant(`Error_UnhandledServerError`));
-
-        default:  // Any other HTTP error
-          return friendlyStructure(res.status, this.translate.instant(`Error_UnkownServerError`));
-      }
-
-    } else {
-      console.error(error);
-      return friendlyStructure(null, this.translate.instant(`Error_UnkownClientError`));
-    }
-  }
-
 }

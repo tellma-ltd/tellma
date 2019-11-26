@@ -63,57 +63,65 @@ export function LoadAdminModule() {
 @Component({ template: '<div></div>' }) export class PlaceholderComponent { }
 
 export const routes: Routes = [
+  ///// Almost all routes require loading the global settings first
   {
-    path: 'root',
-    component: RootShellComponent,
+    path: '',
     canActivate: [GlobalResolverGuard],
     children: [
       {
-        path: 'welcome',
-        component: LandingComponent,
+        path: 'root',
+        component: RootShellComponent,
+        children: [
+          {
+            path: 'welcome',
+            component: LandingComponent,
+          },
+          {
+            path: 'companies',
+            component: CompaniesComponent,
+            canActivate: [AuthGuard]
+          },
+          {
+            path: 'error/:error',
+            component: ErrorComponent
+          },
+          {
+            path: '',
+            redirectTo: 'welcome',
+            pathMatch: 'full'
+          },
+          {
+            path: '**',
+            redirectTo: 'error/page-not-found',
+          }
+        ]
+      },
+
+      // Lazy loaded modules,
+      {
+        path: 'app',
+        canActivate: [AuthGuard], // otherwise the tenant resolver can't work
+        loadChildren: LoadApplicationModule,
+        data: { preload: true }
       },
       {
-        path: 'companies',
-        component: CompaniesComponent,
-        canActivate: [AuthGuard]
+        path: 'admin',
+        canActivate: [AuthGuard],
+        loadChildren: LoadAdminModule,
+        data: { preload: false }
       },
-      {
-        path: 'error/:error',
-        component: ErrorComponent
-      },
-      {
-        path: '',
-        redirectTo: 'welcome',
-        pathMatch: 'full'
-      },
-      {
-        path: '**',
-        redirectTo: 'error/page-not-found',
-        // component: PageNotFoundComponent
-      }
+
+      // those paths always end in a redirect
+      { path: 'sign-in-callback', component: PlaceholderComponent, canActivate: [SignInCallbackGuard] },
+      { path: '', component: PlaceholderComponent, canActivate: [BaseAddressGuard] },
+
     ]
   },
 
-  // Lazy loaded modules,
-  {
-    path: 'app',
-    canActivate: [AuthGuard, GlobalResolverGuard], // otherwise the tenant resolver can't work
-    loadChildren: LoadApplicationModule,
-    data: { preload: true }
-  },
-  {
-    path: 'admin',
-    canActivate: [AuthGuard, GlobalResolverGuard],
-    loadChildren: LoadAdminModule,
-    data: { preload: false }
-  },
+  ///// Error screens are accessible regardless of global settings
 
-  // global error screen
+  // error screen
   { path: 'error/:error', component: ErrorComponent },
-
-  // those paths always end in a redirect
-  { path: 'sign-in-callback', component: PlaceholderComponent, canActivate: [SignInCallbackGuard] },
-  { path: '', component: PlaceholderComponent, canActivate: [BaseAddressGuard] },
 
   // page not found
   {
@@ -121,6 +129,66 @@ export const routes: Routes = [
     redirectTo: 'error/page-not-found',
   }
 ];
+
+// export const routes: Routes = [
+//   {
+//     path: 'root',
+//     component: RootShellComponent,
+//     canActivate: [GlobalResolverGuard],
+//     children: [
+//       {
+//         path: 'welcome',
+//         component: LandingComponent,
+//       },
+//       {
+//         path: 'companies',
+//         component: CompaniesComponent,
+//         canActivate: [AuthGuard]
+//       },
+//       {
+//         path: 'error/:error',
+//         component: ErrorComponent
+//       },
+//       {
+//         path: '',
+//         redirectTo: 'welcome',
+//         pathMatch: 'full'
+//       },
+//       {
+//         path: '**',
+//         redirectTo: 'error/page-not-found',
+//         // component: PageNotFoundComponent
+//       }
+//     ]
+//   },
+
+//   // Lazy loaded modules,
+//   {
+//     path: 'app',
+//     canActivate: [AuthGuard, GlobalResolverGuard], // otherwise the tenant resolver can't work
+//     loadChildren: LoadApplicationModule,
+//     data: { preload: true }
+//   },
+//   {
+//     path: 'admin',
+//     canActivate: [AuthGuard, GlobalResolverGuard],
+//     loadChildren: LoadAdminModule,
+//     data: { preload: false }
+//   },
+
+//   // global error screen
+//   { path: 'error/:error', component: ErrorComponent },
+
+//   // those paths always end in a redirect
+//   { path: 'sign-in-callback', component: PlaceholderComponent, canActivate: [SignInCallbackGuard] },
+//   { path: '', component: PlaceholderComponent, canActivate: [BaseAddressGuard] },
+
+//   // page not found
+//   {
+//     path: '**',
+//     redirectTo: 'error/page-not-found',
+//   }
+// ];
 
 @NgModule({
   declarations: [
@@ -166,4 +234,4 @@ export class RootModule {
     library.addIcons(faInternetExplorer, faSpinner, faArrowRight, faArrowLeft, faChevronRight,
       faSyncAlt, faSearch, faCube, faCogs, faHands, faSignInAlt, faExclamationTriangle, faHome, faRedoAlt);
   }
- }
+}

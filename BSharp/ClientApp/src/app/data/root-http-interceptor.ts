@@ -81,60 +81,63 @@ export class RootHttpInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-    // we accumulate all the headers params in these objects
-    const headers: { [key: string]: string } = {};
-    const params: { [key: string]: string } = {};
-
-    // tenant ID
     const tenantId = this.workspace.ws.tenantId;
-    if (!!tenantId) {
-      // This piece of logic does not really belong to the root module and is
-      // specific to the application module, but moving it there is not worth
-      // the hassle now
-      headers['X-Tenant-Id'] = tenantId.toString();
+    if (!req.url.endsWith('/appsettings.json') && !req.url.endsWith('/appsettings.development.json')) {
 
-      // Even though API response caching is disabled with server headers, this is a last defense
-      // to absolutely guarantee that caching will never cause one tenant's data to show up while
-      // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
-      params['tenant-id'] = tenantId.toString();
-    }
+      // we accumulate all the headers params in these objects
+      const headers: { [key: string]: string } = {};
+      const params: { [key: string]: string } = {};
 
-    if (!!this.authStorage) {
-      const accessToken = this.authStorage.getItem('access_token');
-      if (!!accessToken) {
-        headers.Authorization = `Bearer ${accessToken}`;
-      }
-    }
+      // tenant ID
+      if (!!tenantId) {
+        // This piece of logic does not really belong to the root module and is
+        // specific to the application module, but moving it there is not worth
+        // the hassle now
+        headers['X-Tenant-Id'] = tenantId.toString();
 
-    // UI culture
-    const culture = this.workspace.ws.culture || this.translate.currentLang || this.translate.defaultLang;
-    if (!!culture) {
-      params['ui-culture'] = culture;
-    }
-
-    // the version refresh APIs should not include the version headers
-    const isVersionRefreshRequest = req.url.endsWith('/client') || req.url.indexOf('/client/') !== -1;
-    if (!isVersionRefreshRequest) {
-      // tenant versions
-      const current = this.workspace.current;
-      if (!!current) {
-        headers['X-Settings-Version'] = current.settingsVersion || '???';
-        headers['X-Definitions-Version'] = current.definitionsVersion || '???';
-        headers['X-Permissions-Version'] = current.permissionsVersion || '???';
-        headers['X-User-Settings-Version'] = current.userSettingsVersion || '???';
+        // Even though API response caching is disabled with server headers, this is a last defense
+        // to absolutely guarantee that caching will never cause one tenant's data to show up while
+        // you're logged into another tenant, but the server only relies on the header X-Tenant-Id
+        params['tenant-id'] = tenantId.toString();
       }
 
-      // global versions
-      if (!!this.workspace.globalSettingsVersion) {
-        headers['X-Global-Settings-Version'] = this.workspace.globalSettingsVersion;
+      if (!!this.authStorage) {
+        const accessToken = this.authStorage.getItem('access_token');
+        if (!!accessToken) {
+          headers.Authorization = `Bearer ${accessToken}`;
+        }
       }
-    }
 
-    // clone the request and set the headers and parameters
-    req = req.clone({
-      setHeaders: headers,
-      setParams: params
-    });
+      // UI culture
+      const culture = this.workspace.ws.culture || this.translate.currentLang || this.translate.defaultLang;
+      if (!!culture) {
+        params['ui-culture'] = culture;
+      }
+
+      // the version refresh APIs should not include the version headers
+      const isVersionRefreshRequest = req.url.endsWith('/client') || req.url.indexOf('/client/') !== -1;
+      if (!isVersionRefreshRequest) {
+        // tenant versions
+        const current = this.workspace.current;
+        if (!!current) {
+          headers['X-Settings-Version'] = current.settingsVersion || '???';
+          headers['X-Definitions-Version'] = current.definitionsVersion || '???';
+          headers['X-Permissions-Version'] = current.permissionsVersion || '???';
+          headers['X-User-Settings-Version'] = current.userSettingsVersion || '???';
+        }
+
+        // global versions
+        if (!!this.workspace.globalSettingsVersion) {
+          headers['X-Global-Settings-Version'] = this.workspace.globalSettingsVersion;
+        }
+      }
+
+      // clone the request and set the headers and parameters
+      req = req.clone({
+        setHeaders: headers,
+        setParams: params
+      });
+    }
 
     return next.handle(req).pipe(
       tap(e => this.handleServerVersions(e, tenantId)),

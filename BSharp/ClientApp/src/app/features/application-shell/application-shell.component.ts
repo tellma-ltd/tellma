@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService, TenantWorkspace } from '~/app/data/workspace.service';
 import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { AuthService } from '~/app/data/auth.service';
-import { appconfig } from '~/app/data/appconfig';
+import { appsettings } from '~/app/data/global-resolver.guard';
 import { ProgressOverlayService } from '~/app/data/progress-overlay.service';
 import { NavigationService } from '~/app/data/navigation.service';
 
@@ -72,7 +72,7 @@ export class ApplicationShellComponent implements OnInit {
 
   public onMySystemAccount(): void {
     // TODO make these pages part of the SPA
-    location.href = appconfig.identityAddress + '/identity/manage/';
+    location.href = appsettings.identityAddress + '/identity/manage/';
   }
 
   public onSignOut(): void {
