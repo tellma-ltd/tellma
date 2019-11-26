@@ -28,7 +28,6 @@ namespace BSharp.Entities
         public string PrimaryLanguageId { get; set; }
 
         [Display(Name = "Settings_PrimaryLanguageSymbol")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string PrimaryLanguageSymbol { get; set; }
 

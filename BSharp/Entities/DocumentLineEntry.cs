@@ -29,9 +29,6 @@ namespace BSharp.Entities
         [Display(Name = "DocumentLineEntry_Resource")]
         public int? ResourceId { get; set; }
 
-        [Display(Name = "DocumentLineEntry_ResourcePick")]
-        public int? ResourcePickId { get; set; }
-
         [Display(Name = "DocumentLineEntry_BatchCode")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string BatchCode { get; set; }
@@ -98,10 +95,6 @@ namespace BSharp.Entities
         [Display(Name = "DocumentLineEntry_Resource")]
         [ForeignKey(nameof(ResourceId))]
         public Resource Resource { get; set; }
-
-        [Display(Name = "DocumentLineEntry_ResourcePick")]
-        [ForeignKey(nameof(ResourcePickId))]
-        public ResourcePick ResourcePick { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

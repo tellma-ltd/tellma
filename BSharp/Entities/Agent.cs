@@ -41,6 +41,10 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public bool? IsRelated { get; set; }
 
+        [Display(Name = "Agent_TaxIdentificationNumber")]
+        [StringLength(30, ErrorMessage = nameof(StringLengthAttribute))]
+        public string TaxIdentificationNumber { get; set; }
+
         [Display(Name = "Agent_PreferredLanguage")]
         [Culture]
         [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]

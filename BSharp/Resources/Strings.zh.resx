@@ -160,6 +160,9 @@
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>税号</value>
   </data>
+  <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
+    <value>税号</value>
+  </data>
   <data name="Agent_Title" xml:space="preserve">
     <value>标题</value>
   </data>
@@ -408,9 +411,6 @@
   </data>
   <data name="DocumentLineEntry_Resource" xml:space="preserve">
     <value>资源</value>
-  </data>
-  <data name="DocumentLineEntry_ResourcePick" xml:space="preserve">
-    <value>匹克的资源</value>
   </data>
   <data name="DocumentLineEntry_ResponsibilityCenter" xml:space="preserve">
     <value>责任中心</value>
@@ -726,6 +726,9 @@
   </data>
   <data name="IsActive" xml:space="preserve">
     <value>活跃</value>
+  </data>
+  <data name="IsLeaf" xml:space="preserve">
+    <value>为叶子</value>
   </data>
   <data name="Label" xml:space="preserve">
     <value>标签</value>
@@ -1147,9 +1150,6 @@
   <data name="Resource" xml:space="preserve">
     <value>资源</value>
   </data>
-  <data name="Resource_AreaUnit" xml:space="preserve">
-    <value>面积单位</value>
-  </data>
   <data name="Resource_Classification" xml:space="preserve">
     <value>分类</value>
   </data>
@@ -1162,23 +1162,23 @@
   <data name="Resource_CustomsReference" xml:space="preserve">
     <value>海关参考</value>
   </data>
-  <data name="Resource_LengthUnit" xml:space="preserve">
-    <value>长度单位</value>
+  <data name="Resource_Lookup1" xml:space="preserve">
+    <value>资源查找1</value>
+  </data>
+  <data name="Resource_Lookup2" xml:space="preserve">
+    <value>资源查找2</value>
+  </data>
+  <data name="Resource_Lookup3" xml:space="preserve">
+    <value>资源查找3</value>
+  </data>
+  <data name="Resource_Lookup4" xml:space="preserve">
+    <value>资源查找4</value>
+  </data>
+  <data name="Resource_Lookup5" xml:space="preserve">
+    <value>资源查找5</value>
   </data>
   <data name="Resource_MassUnit" xml:space="preserve">
     <value>质量单位</value>
-  </data>
-  <data name="Resource_ResourceLookup1" xml:space="preserve">
-    <value>资源查找1</value>
-  </data>
-  <data name="Resource_ResourceLookup2" xml:space="preserve">
-    <value>资源查找2</value>
-  </data>
-  <data name="Resource_ResourceLookup3" xml:space="preserve">
-    <value>资源查找3</value>
-  </data>
-  <data name="Resource_ResourceLookup4" xml:space="preserve">
-    <value>资源查找4</value>
   </data>
   <data name="Resource_TimeUnit" xml:space="preserve">
     <value>时间单位</value>
@@ -1192,14 +1192,38 @@
   <data name="ResourceClassification" xml:space="preserve">
     <value>资源分类</value>
   </data>
-  <data name="ResourceClassification_IsLeaf" xml:space="preserve">
-    <value>为叶子</value>
-  </data>
   <data name="ResourceClassifications" xml:space="preserve">
     <value>资源分类</value>
   </data>
   <data name="Resources" xml:space="preserve">
     <value>资源</value>
+  </data>
+  <data name="ResponsibilityCenter" xml:space="preserve">
+    <value>责任中心</value>
+  </data>
+  <data name="ResponsibilityCenter_IsOperatingSegment" xml:space="preserve">
+    <value>是一家以经营分部</value>
+  </data>
+  <data name="ResponsibilityCenter_Manager" xml:space="preserve">
+    <value>经理</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType" xml:space="preserve">
+    <value>责任类型</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Cost" xml:space="preserve">
+    <value>成本</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Investment" xml:space="preserve">
+    <value>投资</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Profit" xml:space="preserve">
+    <value>利润</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Revenue" xml:space="preserve">
+    <value>收入</value>
+  </data>
+  <data name="ResponsibilityCenters" xml:space="preserve">
+    <value>责任中心</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>角色</value>

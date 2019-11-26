@@ -130,30 +130,30 @@ namespace BSharp.Controllers
             // Set default values
             SetDefaultValue(entities, e => e.MassUnitId, definition.MassUnit_DefaultValue);
             SetDefaultValue(entities, e => e.VolumeUnitId, definition.VolumeUnit_DefaultValue);
-            SetDefaultValue(entities, e => e.AreaUnitId, definition.AreaUnit_DefaultValue);
-            SetDefaultValue(entities, e => e.LengthUnitId, definition.LengthUnit_DefaultValue);
+            //SetDefaultValue(entities, e => e.AreaUnitId, definition.AreaUnit_DefaultValue);
+            //SetDefaultValue(entities, e => e.LengthUnitId, definition.LengthUnit_DefaultValue);
             SetDefaultValue(entities, e => e.TimeUnitId, definition.TimeUnit_DefaultValue);
             SetDefaultValue(entities, e => e.CountUnitId, definition.CountUnit_DefaultValue);
-            SetDefaultValue(entities, e => e.Memo, definition.Memo_DefaultValue);
+            //SetDefaultValue(entities, e => e.Memo, definition.Memo_DefaultValue);
             SetDefaultValue(entities, e => e.CustomsReference, definition.CustomsReference_DefaultValue);
-            SetDefaultValue(entities, e => e.ResourceLookup1Id, definition.ResourceLookup1_DefaultValue);
-            SetDefaultValue(entities, e => e.ResourceLookup2Id, definition.ResourceLookup2_DefaultValue);
-            SetDefaultValue(entities, e => e.ResourceLookup3Id, definition.ResourceLookup3_DefaultValue);
-            SetDefaultValue(entities, e => e.ResourceLookup4Id, definition.ResourceLookup4_DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup1Id, definition.Lookup1_DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup2Id, definition.Lookup2_DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup3Id, definition.Lookup3_DefaultValue);
+            SetDefaultValue(entities, e => e.Lookup4Id, definition.Lookup4_DefaultValue);
 
             // Validate required stuff
             ValidateIfRequired(entities, e => e.MassUnitId, definition.MassUnit_Visibility);
             ValidateIfRequired(entities, e => e.VolumeUnitId, definition.VolumeUnit_Visibility);
-            ValidateIfRequired(entities, e => e.AreaUnitId, definition.AreaUnit_Visibility);
-            ValidateIfRequired(entities, e => e.LengthUnitId, definition.LengthUnit_Visibility);
+            //ValidateIfRequired(entities, e => e.AreaUnitId, definition.AreaUnit_Visibility);
+            //ValidateIfRequired(entities, e => e.LengthUnitId, definition.LengthUnit_Visibility);
             ValidateIfRequired(entities, e => e.TimeUnitId, definition.TimeUnit_Visibility);
             ValidateIfRequired(entities, e => e.CountUnitId, definition.CountUnit_Visibility);
-            ValidateIfRequired(entities, e => e.Memo, definition.Memo_Visibility);
+            //ValidateIfRequired(entities, e => e.Memo, definition.Memo_Visibility);
             ValidateIfRequired(entities, e => e.CustomsReference, definition.CustomsReference_Visibility);
-            ValidateIfRequired(entities, e => e.ResourceLookup1Id, definition.ResourceLookup1_Visibility);
-            ValidateIfRequired(entities, e => e.ResourceLookup2Id, definition.ResourceLookup2_Visibility);
-            ValidateIfRequired(entities, e => e.ResourceLookup3Id, definition.ResourceLookup3_Visibility);
-            ValidateIfRequired(entities, e => e.ResourceLookup4Id, definition.ResourceLookup4_Visibility);
+            ValidateIfRequired(entities, e => e.Lookup1Id, definition.Lookup1_Visibility);
+            ValidateIfRequired(entities, e => e.Lookup2Id, definition.Lookup2_Visibility);
+            ValidateIfRequired(entities, e => e.Lookup3Id, definition.Lookup3_Visibility);
+            ValidateIfRequired(entities, e => e.Lookup4Id, definition.Lookup4_Visibility);
 
             // No need to invoke SQL if the model state is full of errors
             if (ModelState.HasReachedMaxErrors)

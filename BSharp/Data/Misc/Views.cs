@@ -131,6 +131,17 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "responsibility-centers",
+                        Name = "ResponsibilityCenters",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("IsActive")
+                        }
+                    },
+                    new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
                         Actions = new ActionInfo[]

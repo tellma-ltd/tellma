@@ -470,7 +470,12 @@ namespace BSharp.Data.Queries
                         var isIntKey = (Nullable.GetUnderlyingType(KeyType) ?? KeyType) == typeof(int);
                         var isStringKey = KeyType == typeof(string);
 
-                        DataTable idsTable = RepositoryUtilities.DataTable(Ids.Select(id => new { Id = id }));
+                        // Prepare the ids table
+                        DataTable idsTable = isIntKey ? RepositoryUtilities.DataTable(Ids.Select(id => new { Id = (int)id }))
+                            : isStringKey ? RepositoryUtilities.DataTable(Ids.Select(id => new { Id = id.ToString() }))
+                            : throw new InvalidOperationException("Only string and Integer Ids are supported");
+
+                        // 
                         var idsTvp = new SqlParameter("@Ids", idsTable)
                         {
                             TypeName = isIntKey ? "[dbo].[IdList]" : isStringKey ? "[dbo].[StringList]" : throw new InvalidOperationException("Only string and Integer Ids are supported"),

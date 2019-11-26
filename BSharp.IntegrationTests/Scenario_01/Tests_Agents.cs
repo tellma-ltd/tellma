@@ -65,6 +65,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name = "John Wick",
                 Name2 = "جون ويك",
                 Code = "JW",
+                TaxIdentificationNumber = "13345",
                 PreferredLanguage = "en",
                 AgentType = "Individual",
                 IsRelated = false
@@ -75,6 +76,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name = "Jason Bourne",
                 Name2 = "جيسن بورن",
                 Code = "JB",
+                TaxIdentificationNumber = "13346",
                 PreferredLanguage = "en",
                 AgentType = "Individual",
                 IsRelated = false
@@ -102,7 +104,9 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             Assert.Equal(dtoForSave.Name, responseDto.Name);
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
+            Assert.Equal(dtoForSave.Name3, responseDto.Name3);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
+            Assert.Equal(dtoForSave.TaxIdentificationNumber, responseDto.TaxIdentificationNumber);
             Assert.Equal(dtoForSave.PreferredLanguage, responseDto.PreferredLanguage);
             Assert.Equal(dtoForSave.AgentType, responseDto.AgentType);
 
@@ -111,7 +115,9 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             Assert.Equal(dtoForSave2.Name, responseDto2.Name);
             Assert.Equal(dtoForSave2.Name2, responseDto2.Name2);
+            Assert.Equal(dtoForSave2.Name3, responseDto2.Name3);
             Assert.Equal(dtoForSave2.Code, responseDto2.Code);
+            Assert.Equal(dtoForSave2.TaxIdentificationNumber, responseDto2.TaxIdentificationNumber);
             Assert.Equal(dtoForSave2.PreferredLanguage, responseDto2.PreferredLanguage);
             Assert.Equal(dtoForSave2.AgentType, responseDto2.AgentType);
 

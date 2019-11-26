@@ -5,13 +5,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class ResourceClassificationForSave : EntityWithKey<int>
+    public class ResponsibilityCenterForSave : EntityWithKey<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
 
+        [Display(Name = "TreeParent")]
         [AlwaysAccessible]
         public int? ParentId { get; set; }
+        // N'Investment', N'Profit', N'Revenue', N'Cost'
+        [Display(Name = "ResponsibilityCenter_ResponsibilityType")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [ChoiceList(new object[] { "Investment", "Profit", "Revenue", "Cost" },
+            new string[] {
+                "ResponsibilityCenter_ResponsibilityType_Investment",
+                "ResponsibilityCenter_ResponsibilityType_Profit",
+                "ResponsibilityCenter_ResponsibilityType_Revenue",
+                "ResponsibilityCenter_ResponsibilityType_Cost" })]
+        public string ResponsibilityTypeId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -29,6 +41,14 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
+        [Display(Name = "ResponsibilityCenter_Manager")]
+        public int? ManagerId { get; set; }
+
+        [Display(Name = "ResponsibilityCenter_IsOperatingSegment")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [AlwaysAccessible]
+        public bool? IsOperatingSegment { get; set; } = false;
+
         [Display(Name = "Code")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
@@ -37,13 +57,11 @@ namespace BSharp.Entities
         [Display(Name = "IsLeaf")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
-        public bool? IsLeaf { get; set; }
+        public bool? IsLeaf { get; set; } = true;
     }
 
-    public class ResourceClassification : ResourceClassificationForSave
+    public class ResponsibilityCenter : ResponsibilityCenterForSave
     {
-        public string ResourceDefinitionId { get; set; }
-
         [AlwaysAccessible]
         public short? Level { get; set; }
 
@@ -71,6 +89,10 @@ namespace BSharp.Entities
 
         // For Query
 
+        [Display(Name = "ResponsibilityCenter_Manager")]
+        [ForeignKey(nameof(ManagerId))]
+        public Agent Manager { get; set; }
+
         [AlwaysAccessible]
         public HierarchyId Node { get; set; }
 
@@ -79,7 +101,7 @@ namespace BSharp.Entities
 
         [Display(Name = "TreeParent")]
         [ForeignKey(nameof(ParentId))]
-        public ResourceClassification Parent { get; set; }
+        public ResponsibilityCenter Parent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

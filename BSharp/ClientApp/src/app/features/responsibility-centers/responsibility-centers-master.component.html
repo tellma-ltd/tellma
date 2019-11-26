@@ -1,0 +1,50 @@
+<b-master collection="ResponsibilityCenter" [mode]="mode" [enableTreeView]="true"
+    [masterCrumb]="'ResponsibilityCenters' | translate" [tileTemplate]="tile" [filterDefault]="filter"
+    [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+    selectDefault="Code,ResponsibilityTypeId" selectForTiles="Code, ResponsibilityTypeId" [multiselectActions]="[
+          { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+          { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+            'CreatedBy' : [
+              { template: createdByMe, expression: 'CreatedById eq me'}
+            ],
+            'ResponsibilityTypeId' : [
+                { template: investment, expression: 'ResponsibilityTypeId eq \'Investment\''},
+                { template: profit, expression: 'ResponsibilityTypeId eq \'Profit\''},
+                { template: revenue, expression: 'ResponsibilityTypeId eq \'Revenue\''},
+                { template: cost, expression: 'ResponsibilityTypeId eq \'Cost\''}
+            ]
+          }">
+</b-master>
+
+<!-- Tile Template -->
+<ng-template #tile let-id="id">
+    <div class="d-flex justify-content-between">
+        <span class="d-block text-truncate">{{ ws.getMultilingualValue('ResponsibilityCenter', id, 'Name') }}</span>
+    </div>
+    <div class="d-flex justify-content-between mt-1 small">
+        <span>{{ c[id].Code }}</span>
+    </div>
+</ng-template>
+
+<!-- Summary Header -->
+<ng-template #summaryHeader let-id="id">
+    {{ 'ResponsibilityCenter' | translate }}
+</ng-template>
+
+<!-- Summary Column -->
+<ng-template #summaryColumn let-id="id">
+    <span class="text-truncate">{{ ws.getMultilingualValue('ResponsibilityCenter', id, 'Name') }}</span>
+</ng-template>
+
+<!-- Multiselect Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+<!-- Filter Options -->
+<ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
+
+<ng-template #investment> {{ 'ResponsibilityCenter_ResponsibilityType_Investment' | translate }} </ng-template>
+<ng-template #profit> {{ 'ResponsibilityCenter_ResponsibilityType_Profit' | translate }} </ng-template>
+<ng-template #revenue> {{ 'ResponsibilityCenter_ResponsibilityType_Revenue' | translate }} </ng-template>
+<ng-template #cost> {{ 'ResponsibilityCenter_ResponsibilityType_Cost' | translate }} </ng-template>

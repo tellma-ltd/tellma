@@ -14,6 +14,7 @@ export class AgentForSave extends EntityWithKey {
   Code: string;
   AgentType: string;
   IsRelated: boolean;
+  TaxIdentificationNumber: string;
   PreferredLanguage: string;
   Image: string;
 }
@@ -77,6 +78,7 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, _: st
             }
           }
         },
+        TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Agent_TaxIdentificationNumber') },
         PreferredLanguage: {
           control: 'choice',
           label: () => trx.instant('Agent_PreferredLanguage'),

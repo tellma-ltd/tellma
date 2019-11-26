@@ -42,6 +42,7 @@ import { GetAggregateArguments } from './dto/get-aggregate-arguments';
 import { GetAggregateResponse } from './dto/get-aggregate-response';
 import { UpdateStateArguments } from './dto/update-state-arguments';
 import { ReportDefinition } from './entities/report-definition';
+import { ResponsibilityCenter } from './entities/responsibility-center';
 
 @Injectable({
   providedIn: 'root'
@@ -156,6 +157,13 @@ export class ApiService {
 
         return obs$;
       }
+    };
+  }
+
+  public responsibilityCenterApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<ResponsibilityCenter>('responsibility-centers', cancellationToken$),
+      deactivate: this.deactivateFactory<ResponsibilityCenter>('responsibility-centers', cancellationToken$)
     };
   }
 

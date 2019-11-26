@@ -1,0 +1,46 @@
+<b-details-picker [filter]="filter" [masterTemplate]="responsibilityCentersMaster"
+    [detailsTemplate]="responsibilityCentersDetails" collection="ResponsibilityCenter">
+</b-details-picker>
+
+<!-- The Responsibility Center Details Modal -->
+<ng-template #responsibilityCentersDetails let-modal="modal" let-update="update" let-initialText="initialText"
+    let-idString="idString">
+    <div class="modal-body">
+        <b-responsibility-centers-details mode="popup" [initialText]="initialText" [idString]="idString"
+            (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
+        </b-responsibility-centers-details>
+    </div>
+</ng-template>
+
+<!-- The Responsibility Center Master Modal -->
+<ng-template #responsibilityCentersMaster let-modal="modal" let-update="update" let-create="create">
+    <div class="modal-body">
+        <b-responsibility-centers-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
+            (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
+        </b-responsibility-centers-master>
+    </div>
+</ng-template>
+
+
+        <!-- <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ParentId" collection="ResponsibilityCenter"
+            [masterTemplate]="responsibilityCentersMaster" [detailsTemplate]="responsibilityCentersDetail">
+        </b-details-picker> -->
+
+        <!-- The Resource Classifications Details Modal -->
+        <!-- <ng-template #responsibilityCentersDetail let-modal="modal" let-update="update" let-initialText="initialText"
+            let-idString="idString">
+            <div class="modal-body">
+                <b-responsibility-centers-details mode="popup" [initialText]="initialText" [idString]="idString"
+                    (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
+                </b-responsibility-centers-details>
+            </div>
+        </ng-template> -->
+
+        <!-- The Resource Classifications Master Modal -->
+        <!-- <ng-template #responsibilityCentersMaster let-modal="modal" let-update="update" let-create="create">
+            <div class="modal-body">
+                <b-responsibility-centers-master mode="popup" (cancel)="modal.close(false);"
+                    (choose)="modal.close(true); update($event); " (create)="modal.close(false); create()">
+                </b-responsibility-centers-master>
+            </div>
+        </ng-template> -->

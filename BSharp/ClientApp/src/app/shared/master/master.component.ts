@@ -402,7 +402,13 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         select,
         filter,
         roots: true
-      });
+      }).pipe(
+        tap((response: GetResponse) => {
+          s.top = response.Result.length;
+          s.skip = 0;
+          s.total = s.top;
+        }),
+      );
 
     } else {
       const top = DEFAULT_PAGE_SIZE;

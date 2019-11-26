@@ -2,7 +2,6 @@ import { metadata_MeasurementUnit } from '../measurement-unit';
 import { TenantWorkspace } from '../../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata_User as metadata_User } from '../user';
-import { EntityWithKey } from './entity-with-key';
 import { metadata_Role } from '../role';
 import { metadata_ResourceClassification } from '../resource-classification';
 import { metadata_IfrsNote } from '../ifrs-note';
@@ -10,10 +9,7 @@ import { metadata_Agent } from '../agent';
 import { metadata_Lookup } from '../lookup';
 import { metadata_Currency } from '../currency';
 import { metadata_Resource } from '../resource';
-import {
-    metadata_VoucherBooklet, metadata_ResourcePick, metadata_ResponsibilityCenter,
-    metadata_IfrsAccountClassification, metadata_IfrsEntryClassification
-} from '../_temp';
+import { metadata_VoucherBooklet, metadata_IfrsAccountClassification, metadata_IfrsEntryClassification } from '../_temp';
 import { metadata_AccountClassification } from '../account-classification';
 import { metadata_AccountType } from '../account-type';
 import { metadata_Account } from '../account';
@@ -21,6 +17,7 @@ import { metadata_ReportDefinition } from '../report-definition';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { GENERIC } from './constants';
 import { Entity } from './entity';
+import { metadata_ResponsibilityCenter } from '../responsibility-center';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, definitionId: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -36,11 +33,10 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     AccountType: metadata_AccountType,
     Account: metadata_Account,
     ReportDefinition: metadata_ReportDefinition,
+    ResponsibilityCenter: metadata_ResponsibilityCenter,
 
     // Temp
     VoucherBooklet: metadata_VoucherBooklet,
-    ResourcePick: metadata_ResourcePick,
-    ResponsibilityCenter: metadata_ResponsibilityCenter,
     IfrsAccountClassification: metadata_IfrsAccountClassification,
     IfrsEntryClassification: metadata_IfrsEntryClassification,
 };
@@ -135,7 +131,7 @@ export interface EntityDescriptor {
      */
     definitionIdsArray?: SelectorChoice[];
 
- //    propertiesArray?: { name: string; desc: PropDescriptor }[];
+    //    propertiesArray?: { name: string; desc: PropDescriptor }[];
 }
 
 export interface PropDescriptorBase {

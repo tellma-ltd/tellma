@@ -60,6 +60,9 @@ import { ReportResultsComponent } from './report-results/report-results.componen
 import { ReportDefinitionsMasterComponent } from './report-definitions/report-definitions-master.component';
 import { ReportDefinitionsDetailsComponent } from './report-definitions/report-definitions-details.component';
 import { ReportDefinitionsImportComponent } from './report-definitions/report-definitions-import.component';
+import { ResponsibilityCentersMasterComponent } from './responsibility-centers/responsibility-centers-master.component';
+import { ResponsibilityCentersDetailsComponent } from './responsibility-centers/responsibility-centers-details.component';
+import { ResponsibilityCentersPickerComponent } from './responsibility-centers/responsibility-centers-picker.component';
 
 const routes: Routes = [
   {
@@ -279,6 +282,18 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Report Definitions
+      {
+        path: 'responsibility-centers',
+        component: ResponsibilityCentersMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'responsibility-centers/:id',
+        component: ResponsibilityCentersDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Report
       {
         path: 'report/:definitionId',
@@ -357,7 +372,10 @@ const routes: Routes = [
     ReportResultsComponent,
     ReportDefinitionsMasterComponent,
     ReportDefinitionsDetailsComponent,
-    ReportDefinitionsImportComponent
+    ReportDefinitionsImportComponent,
+    ResponsibilityCentersMasterComponent,
+    ResponsibilityCentersDetailsComponent,
+    ResponsibilityCentersPickerComponent
   ],
   imports: [
     SharedModule,

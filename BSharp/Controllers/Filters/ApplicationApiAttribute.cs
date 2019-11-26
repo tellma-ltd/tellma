@@ -213,10 +213,10 @@ namespace BSharp.Controllers
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 203m,
 
-                            ResourceLookup1_Label = "Thickness",
-                            ResourceLookup1_Label2 = "السماكة",
-                            ResourceLookup1_Visibility = Visibility.Visible,
-                            ResourceLookup1_DefinitionId = "thicknesses",
+                            Lookup1_Label = "Thickness",
+                            Lookup1_Label2 = "السماكة",
+                            Lookup1_Visibility = Visibility.Visible,
+                            Lookup1_DefinitionId = "thicknesses",
 
                             MassUnit_Visibility = Visibility.Visible,
                             VolumeUnit_Visibility = Visibility.Visible,
@@ -238,10 +238,10 @@ namespace BSharp.Controllers
                             MainMenuIcon = "truck",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 204m,
-                            ResourceLookup1_Label = "Color",
-                            ResourceLookup1_Label2 = "اللون",
-                            ResourceLookup1_Visibility = Visibility.Visible,
-                            ResourceLookup1_DefinitionId = "colors"
+                            Lookup1_Label = "Color",
+                            Lookup1_Label2 = "اللون",
+                            Lookup1_Visibility = Visibility.Visible,
+                            Lookup1_DefinitionId = "colors"
                         }
                     },
 
@@ -449,7 +449,7 @@ namespace BSharp.Controllers
                                 //},
                                 //new ReportDimensionDefinition
                                 //{
-                                //    Path = "ResourceLookup1",
+                                //    Path = "Lookup1",
                                 //    //Label = "Modified By State",
                                 //    //Label2 = "آخر تعديل",
                                 //    //Label3 = "我的密",

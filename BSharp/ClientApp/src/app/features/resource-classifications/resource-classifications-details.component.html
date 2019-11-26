@@ -95,7 +95,7 @@
   </b-form-group>
 
   <!-- Is Leaf -->
-  <b-form-group class="b-form-group" [label]="'ResourceClassification_IsLeaf' | translate">
+  <b-form-group class="b-form-group" [label]="'IsLeaf' | translate">
     <div *ngIf="!isEdit">{{ (model?.IsLeaf ? 'Yes' : 'No') | translate }}</div>
     <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
       <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsLeaf" id="isLeaf">
