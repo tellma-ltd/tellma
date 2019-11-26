@@ -22,6 +22,7 @@ namespace BSharp.IntegrationTests.Scenario_01
     {
         private HttpClient _client;
         private SharedCollection _shared;
+        private string _token;
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -56,6 +57,9 @@ namespace BSharp.IntegrationTests.Scenario_01
                 connString = config.GetConnectionString(Constants.AdminConnection);
                 adminEmail = config.Get<GlobalOptions>()?.Admin?.Email ?? "admin@bsharp.online";
                 shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
+
+                // Retrieve the access token specific to the developer
+                _token = config.GetValue<string>("AccessToken");
             }
 
             ArrangeDatabasesForTests(connString, adminEmail, shardResolver);
@@ -107,7 +111,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             client.DefaultRequestHeaders.Add("X-Tenant-Id", "101");
 
             // This extremely long-lived access token (life time of 6 years) was specifically generated for the integration tests
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjJiOGY5ZmU3NzQ3ZTA3YzA2NzlkNjMzYzg4ZDM3MmMxIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NjcxNzgyMjQsImV4cCI6MTgwOTA5ODIyNCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzNjgiLCJhdWQiOlsiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzNjgvcmVzb3VyY2VzIiwiYnNoYXJwIl0sImNsaWVudF9pZCI6IldlYkNsaWVudCIsInN1YiI6ImFlNDcyYTUwLWEyYzAtNGE1ZC04ZjI3LTk2ZDhiMTk4MTkzMyIsImF1dGhfdGltZSI6MTU2NzA4MzkyMywiaWRwIjoibG9jYWwiLCJlbWFpbCI6ImFkbWluQGJzaGFycC5vbmxpbmUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsImVtYWlsIiwiYnNoYXJwIl0sImFtciI6WyJwd2QiXX0.jUiXEZe36NBoWzwVVkLyM_FPgHqAmxiotPZbGZqr9nFxAwERiQ0qc8iSwUhZZon73Iq9ITL9gDijDGF4txvtopgPlpbn94d5FycjlZKD4azgXHtdIfwWAK0N0qRkZD0W9-Wxcdl-sZJjAlbYSeWCRAcx2i-_3Je_79dRf3wQvqgX4v8Wti6snt85Blgz2kazJ80o9NLpFxBwliU09MXqpH6PblcSUMd3EaO7GTw7LFt5eoB_MucqDg-8puUzYETC-9oy14XDKqeT7LmyNBwy3GI70rCHKknEJSmmsAY1QcdpxXAJtiNcHrZfHK3FYQf7Fjb51w9AMXNHrmKama1Z4g");
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
         }
 
         protected override void Dispose(bool disposing)
