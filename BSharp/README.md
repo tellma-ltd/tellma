@@ -1,5 +1,5 @@
 ﻿# BSharp
-For the time being, this document will contain instructions for other developers.
+For the time being, this document will contain instructions for developers.
 
 ## First Time Setup
 Follow the steps below to run the application for the first time.
