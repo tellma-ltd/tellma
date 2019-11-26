@@ -32,6 +32,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             builder.ConfigureAppConfiguration((_, cfg) =>
             {
                 cfg.AddJsonFile(configPath);
+                cfg.AddUserSecrets(typeof(Scenario_01).Assembly);
             });
         }
 
