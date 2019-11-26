@@ -1,7 +1,4 @@
-﻿	INSERT INTO dbo.AgentRelationDefinitions([Id], [SingularLabel], [PluralLabel], [Prefix]) VALUES
-	(N'suppliers', N'Supplier', N'Suppliers', N'P');
-
-	DECLARE @Suppliers dbo.[AgentRelationList];
+﻿	DECLARE @Suppliers dbo.[AgentRelationList];
 
 	INSERT INTO @Suppliers
 	([Index],	[AgentId],	[StartDate],	[OperatingSegmentId]) VALUES

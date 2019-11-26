@@ -1,11 +1,5 @@
 ﻿SELECT * FROM dbo.EntryTypes;
-DECLARE @AccountTypes AS TABLE
-(
-	[Id]							NVARCHAR (50)	PRIMARY KEY,
-	[HasResource]					BIT				NOT NULL DEFAULT 0,
-	[ResourceTypeList]				NVARCHAR (1024),
-	[EntryTypeId]					NVARCHAR (255)
-);
+
 DECLARE @AccountGroups AS TABLE
 (
 	[Id]							NVARCHAR (50) PRIMARY KEY,
@@ -44,21 +38,7 @@ DECLARE @AccountGroups AS TABLE
 	[RelatedAmountLabel3]			NVARCHAR (50),
 	INDEX IX_AccountTypes([AccountTypeId], [AgentRelationDefinitionId], [ResourceTypeId])
 )
-INSERT INTO dbo.AccountTypes ([Id]) VALUES
-(N'NonCurrentAsset'),
-(N'CurrentAsset'),
-(N'Prepayment'),
-(N'Receivable'),
-(N'AccruedIncome'),
-(N'Inventories'),
-(N'Cash'),
-(N'CashEquivalent'),
-(N'NonCurrentLiability'),
-(N'CurrentLiability'),
-(N'Equity'),
-(N'Sale'),
-(N'Expense')
-;
+
 -- The G/L Account definitions are meant as Catch-All, or enough to show primary IFRS statements. They are dumb accounts, and are excluded in smart posting
 -- We need to show them in separate format, to avoid confusion
 

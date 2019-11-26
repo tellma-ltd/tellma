@@ -251,3 +251,4 @@ WHEN NOT MATCHED BY TARGET THEN
     INSERT ([Id],	[IsAssignable],		[Node],		[IsActive],		[ForDebit],		[ForCredit],	[Name])
     VALUES (s.[Id], s.[IsAssignable],	s.[Node],	s.[IsActive],	s.[ForDebit],	s.[ForCredit],	s.[Name]);
 ;
+select * From EntryTypes;

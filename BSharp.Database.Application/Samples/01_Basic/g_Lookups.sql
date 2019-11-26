@@ -1,12 +1,10 @@
-﻿INSERT INTO dbo.LookupDefinitions([Id]) VALUES(N'body-colors');
-INSERT INTO dbo.Lookups
+﻿INSERT INTO dbo.Lookups
 ([LookupDefinitionId], [Name]) VALUES
 (N'body-colors',		N'Black'),
 (N'body-colors',		N'White'),
 (N'body-colors',		N'Silver'),
 (N'body-colors',		N'Navy Blue');
 
-INSERT INTO dbo.LookupDefinitions([Id]) VALUES(N'vehicle-makes');
 INSERT INTO dbo.Lookups
 ([LookupDefinitionId], [Name]) VALUES
 (N'vehicle-makes',		N'Toyota'),
@@ -14,7 +12,6 @@ INSERT INTO dbo.Lookups
 (N'vehicle-makes',		N'Honda'),
 (N'vehicle-makes',		N'BMW');
 
-INSERT INTO dbo.LookupDefinitions([Id]) VALUES(N'steel-thicknesses');
 INSERT INTO dbo.Lookups
 ([LookupDefinitionId], [Name]) VALUES
 (N'steel-thicknesses',	N'0.3'),
@@ -22,7 +19,6 @@ INSERT INTO dbo.Lookups
 (N'steel-thicknesses',	N'0.7'),
 (N'steel-thicknesses',	N'1.2');
 
-INSERT INTO dbo.LookupDefinitions([Id]) VALUES(N'it-equipment-manufacturers');
 INSERT INTO dbo.Lookups
 ([LookupDefinitionId],				[Name]) VALUES
 (N'it-equipment-manufacturers',		N'Dell'),
@@ -30,7 +26,6 @@ INSERT INTO dbo.Lookups
 (N'it-equipment-manufacturers',		N'Apple'),
 (N'it-equipment-manufacturers',		N'Microsoft');
 
-INSERT INTO dbo.LookupDefinitions([Id]) VALUES(N'operating-systems');
 INSERT INTO dbo.Lookups
 ([LookupDefinitionId],				[Name]) VALUES
 (N'operating-systems',		N'Windows 10'),

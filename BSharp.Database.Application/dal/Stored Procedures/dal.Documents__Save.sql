@@ -43,7 +43,7 @@ BEGIN
 				[Memo]--, [Frequency], [Repetitions]
 			)
 			VALUES (
-				@DefinitionId, s.[SerialNumber], [OperatingSegmentId], s.[DocumentDate], s.[VoucherNumericReference], --s.[SerialNumber], 
+				@DefinitionId, s.[SerialNumber], s.[OperatingSegmentId], s.[DocumentDate], s.[VoucherNumericReference], --s.[SerialNumber], 
 				s.[Memo]--, s.[Frequency], s.[Repetitions]
 			)
 		OUTPUT s.[Index], inserted.[Id] 

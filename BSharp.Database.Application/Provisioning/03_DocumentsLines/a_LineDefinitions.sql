@@ -88,7 +88,7 @@ INSERT INTO @LineDefinitionColumns
 (N'ManualLine',			4,			N'Entry[0].MonetaryAmount',	N'Credit'),
 (N'ManualLine',			5,			N'Entry[0].Dynamic',		N'Properties')
 ;
-
+/*
 INSERT @LineDefinitions(
 [Id],					[TitleSingular],		[TitlePlural]) VALUES
 (N'PurchaseInvoice',	N'Purchase Invoice',	N'Purchase Invoices');
@@ -167,7 +167,7 @@ INSERT INTO @LineDefinitionColumns
 (N'TaxWithholding',		6,			N'Entry[2].MonetaryAmount',	N'Total'),
 (N'TaxWithholding',		7,			N'Entry[2].DueDate',		N'Due Date')
 ;
-
+*/
 -- consumable with invoice
 --	durables with invoice
 -- consumables without invoice
