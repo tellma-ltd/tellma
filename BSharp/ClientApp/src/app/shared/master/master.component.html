@@ -263,8 +263,9 @@
         </div>
 
         <!-- Cancel -->
-        <button class="btn btn-sm b-toolbar-button" [class.btn-primary]="isLight" [class.b-text-whitish]="isDark"
-          [class.font-weight-normal]="isDark" type="button" (click)="onCancelMultiselect()">
+        <button class="btn btn-sm b-toolbar-button"
+          [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }"
+          type="button" (click)="onCancelMultiselect()">
           <fa-icon icon="times"></fa-icon>
           <span class="d-none d-md-inline">&nbsp;&nbsp;{{ 'Cancel' | translate }}</span>
         </button>

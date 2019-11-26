@@ -412,9 +412,6 @@
   <data name="DocumentLineEntry_Resource" xml:space="preserve">
     <value>المورد</value>
   </data>
-  <data name="DocumentLineEntry_ResourcePick" xml:space="preserve">
-    <value>المورد المحدد</value>
-  </data>
   <data name="DocumentLineEntry_ResponsibilityCenter" xml:space="preserve">
     <value>مركز التكلفة</value>
   </data>
@@ -729,6 +726,9 @@
   </data>
   <data name="IsActive" xml:space="preserve">
     <value>منشط</value>
+  </data>
+  <data name="IsLeaf" xml:space="preserve">
+    <value>بدون فروع</value>
   </data>
   <data name="Label" xml:space="preserve">
     <value>الاسم</value>
@@ -1150,9 +1150,6 @@
   <data name="Resource" xml:space="preserve">
     <value>مورد</value>
   </data>
-  <data name="Resource_AreaUnit" xml:space="preserve">
-    <value>وحدة قياس المساحة</value>
-  </data>
   <data name="Resource_Classification" xml:space="preserve">
     <value>التصنيف</value>
   </data>
@@ -1165,23 +1162,23 @@
   <data name="Resource_CustomsReference" xml:space="preserve">
     <value>الرقم الجمركي</value>
   </data>
-  <data name="Resource_LengthUnit" xml:space="preserve">
-    <value>وحدة قياس الطول</value>
+  <data name="Resource_Lookup1" xml:space="preserve">
+    <value>الصفة 1</value>
+  </data>
+  <data name="Resource_Lookup2" xml:space="preserve">
+    <value>الصفة 2</value>
+  </data>
+  <data name="Resource_Lookup3" xml:space="preserve">
+    <value>الصفة 3</value>
+  </data>
+  <data name="Resource_Lookup4" xml:space="preserve">
+    <value>الصفة 4</value>
+  </data>
+  <data name="Resource_Lookup5" xml:space="preserve">
+    <value>الصفة 5</value>
   </data>
   <data name="Resource_MassUnit" xml:space="preserve">
     <value>وحدة قياس الوزن</value>
-  </data>
-  <data name="Resource_ResourceLookup1" xml:space="preserve">
-    <value>الصفة 1</value>
-  </data>
-  <data name="Resource_ResourceLookup2" xml:space="preserve">
-    <value>الصفة 2</value>
-  </data>
-  <data name="Resource_ResourceLookup3" xml:space="preserve">
-    <value>الصفة 3</value>
-  </data>
-  <data name="Resource_ResourceLookup4" xml:space="preserve">
-    <value>الصفة 4</value>
   </data>
   <data name="Resource_TimeUnit" xml:space="preserve">
     <value>وحدة قياس الزمن</value>
@@ -1195,14 +1192,38 @@
   <data name="ResourceClassification" xml:space="preserve">
     <value>تصنيف أصل</value>
   </data>
-  <data name="ResourceClassification_IsLeaf" xml:space="preserve">
-    <value>بدون فروع</value>
-  </data>
   <data name="ResourceClassifications" xml:space="preserve">
     <value>تصنيفات أصول</value>
   </data>
   <data name="Resources" xml:space="preserve">
     <value>موارد</value>
+  </data>
+  <data name="ResponsibilityCenter" xml:space="preserve">
+    <value>مركز مسؤولية</value>
+  </data>
+  <data name="ResponsibilityCenter_IsOperatingSegment" xml:space="preserve">
+    <value>قطاع تشغيل</value>
+  </data>
+  <data name="ResponsibilityCenter_Manager" xml:space="preserve">
+    <value>المدير</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType" xml:space="preserve">
+    <value>نوع المركز</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Cost" xml:space="preserve">
+    <value>تكلفة</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Investment" xml:space="preserve">
+    <value>استثمار</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Profit" xml:space="preserve">
+    <value>ربح</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Revenue" xml:space="preserve">
+    <value>إيراد</value>
+  </data>
+  <data name="ResponsibilityCenters" xml:space="preserve">
+    <value>مراكز مسؤولية</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>دور</value>

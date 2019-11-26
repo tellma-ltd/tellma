@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 
 export class AccountClassificationForSave extends EntityForSave {
+  ParentId: number;
   Name: string;
   Name2: string;
   Name3: string;
@@ -14,7 +15,6 @@ export class AccountClassificationForSave extends EntityForSave {
 }
 
 export class AccountClassification extends AccountClassificationForSave {
-  ParentId: number;
   Level: number;
   ChildCount: number;
   ActiveChildCount: number;

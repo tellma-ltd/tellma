@@ -412,9 +412,6 @@
   <data name="DocumentLineEntry_Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
-  <data name="DocumentLineEntry_ResourcePick" xml:space="preserve">
-    <value>Resource Pick</value>
-  </data>
   <data name="DocumentLineEntry_ResponsibilityCenter" xml:space="preserve">
     <value>Responsibility Center</value>
   </data>
@@ -729,6 +726,9 @@
   </data>
   <data name="IsActive" xml:space="preserve">
     <value>Is Active</value>
+  </data>
+  <data name="IsLeaf" xml:space="preserve">
+    <value>Is Leaf</value>
   </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>
@@ -1150,9 +1150,6 @@
   <data name="Resource" xml:space="preserve">
     <value>Resource</value>
   </data>
-  <data name="Resource_AreaUnit" xml:space="preserve">
-    <value>Area Unit</value>
-  </data>
   <data name="Resource_Classification" xml:space="preserve">
     <value>Classification</value>
   </data>
@@ -1165,23 +1162,23 @@
   <data name="Resource_CustomsReference" xml:space="preserve">
     <value>Customs Reference</value>
   </data>
-  <data name="Resource_LengthUnit" xml:space="preserve">
-    <value>Length Unit</value>
+  <data name="Resource_Lookup1" xml:space="preserve">
+    <value>Attribute 1</value>
+  </data>
+  <data name="Resource_Lookup2" xml:space="preserve">
+    <value>Attribute 2</value>
+  </data>
+  <data name="Resource_Lookup3" xml:space="preserve">
+    <value>Attribute 3</value>
+  </data>
+  <data name="Resource_Lookup4" xml:space="preserve">
+    <value>Attribute 4</value>
+  </data>
+  <data name="Resource_Lookup5" xml:space="preserve">
+    <value>Attribute 5</value>
   </data>
   <data name="Resource_MassUnit" xml:space="preserve">
     <value>Mass Unit</value>
-  </data>
-  <data name="Resource_ResourceLookup1" xml:space="preserve">
-    <value>Attribute 1</value>
-  </data>
-  <data name="Resource_ResourceLookup2" xml:space="preserve">
-    <value>Attribute 2</value>
-  </data>
-  <data name="Resource_ResourceLookup3" xml:space="preserve">
-    <value>Attribute 3</value>
-  </data>
-  <data name="Resource_ResourceLookup4" xml:space="preserve">
-    <value>Attribute 4</value>
   </data>
   <data name="Resource_TimeUnit" xml:space="preserve">
     <value>Time Unit</value>
@@ -1195,14 +1192,38 @@
   <data name="ResourceClassification" xml:space="preserve">
     <value>Resource Classification</value>
   </data>
-  <data name="ResourceClassification_IsLeaf" xml:space="preserve">
-    <value>Is Leaf</value>
-  </data>
   <data name="ResourceClassifications" xml:space="preserve">
     <value>Resource Classifications</value>
   </data>
   <data name="Resources" xml:space="preserve">
     <value>Resources</value>
+  </data>
+  <data name="ResponsibilityCenter" xml:space="preserve">
+    <value>Responsibility Center</value>
+  </data>
+  <data name="ResponsibilityCenter_IsOperatingSegment" xml:space="preserve">
+    <value>Is Operating Segment</value>
+  </data>
+  <data name="ResponsibilityCenter_Manager" xml:space="preserve">
+    <value>Manager</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType" xml:space="preserve">
+    <value>Responsibility Type</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Cost" xml:space="preserve">
+    <value>Cost</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Investment" xml:space="preserve">
+    <value>Investment</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Profit" xml:space="preserve">
+    <value>Profit</value>
+  </data>
+  <data name="ResponsibilityCenter_ResponsibilityType_Revenue" xml:space="preserve">
+    <value>Revenue</value>
+  </data>
+  <data name="ResponsibilityCenters" xml:space="preserve">
+    <value>Responsibility Centers</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>Role</value>

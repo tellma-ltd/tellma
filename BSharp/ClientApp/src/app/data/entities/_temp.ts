@@ -20,22 +20,6 @@ export class VoucherBooklet extends VoucherBookletForSave {
   IsActive: boolean;
 }
 
-export class ResponsibilityCenterForSave extends EntityWithKey {
-  ParentId: number | string;
-  Name: string;
-  Name2: string;
-  Name3: string;
-  Code: string;
-}
-
-export class ResponsibilityCenter extends ResponsibilityCenterForSave {
-  IsActive: boolean;
-  CreatedAt: string;
-  CreatedById: number | string;
-  ModifiedAt: string;
-  ModifiedById: number | string;
-}
-
 export class IfrsAccountClassification extends EntityWithKey {
   Level: number;
   ActiveChildCount: number;
@@ -113,46 +97,6 @@ export function metadata_VoucherBooklet(ws: TenantWorkspace, trx: TranslateServi
   }
 
   return _voucherBookletCache;
-}
-
-
-let _responsibilityCenterSettings: SettingsForClient;
-let _responsibilityCenterCache: EntityDescriptor;
-
-export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
-  // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (ws.settings !== _responsibilityCenterSettings) {
-    _responsibilityCenterSettings = ws.settings;
-    _responsibilityCenterCache = {
-      collection: 'ResponsibilityCenter',
-      titleSingular: () =>  'Responsibility Center',
-      titlePlural: () =>  'Responsibility Centers',
-      select: _select,
-      apiEndpoint: 'responsibility-centers',
-      screenUrl: 'responsibility-centers',
-      orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
-      format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
-      properties: {
-        Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
-        Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
-        Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-        Code: { control: 'text', label: () => trx.instant('Code') },
-        ParentId: { control: 'number', label: () => 'Area Unit Id', minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        Parent: {
-          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'ResponsibilityCenter',
-          foreignKeyName: 'ResponsibilityCenterId'
-        },
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
-      }
-    };
-  }
-
-  return _responsibilityCenterCache;
 }
 
 const _label = ['', '2', '3'].map(pf => 'Label' + pf);
