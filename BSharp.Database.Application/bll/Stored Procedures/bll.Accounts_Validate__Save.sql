@@ -54,27 +54,27 @@ SET NOCOUNT ON;
  --   SELECT
 	--	'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 	--	N'Error_TheResponsibilityCenter0WasNotFound', 
-	--	(SELECT dbo.fn_Localize([ResponsibilityCenterLabel], [ResponsibilityCenterLabel2], [ResponsibilityCenterLabel3]) FROM dbo.AccountDefinitions WHERE [Id] = @DefinitionId)
+	--	(SELECT dbo.fn_Localize([ResponsibilityCenterLabel], [ResponsibilityCenterLabel2], [ResponsibilityCenterLabel3]) FROM dbo.AccountGroups WHERE [Id] = @DefinitionId)
  --   FROM @Entities FE
-	--WHERE (SELECT [ResponsibilityCenterVisibility] FROM dbo.AccountDefinitions WHERE [Id] = @DefinitionId) = N'RequiredInAccounts'
+	--WHERE (SELECT [ResponsibilityCenterVisibility] FROM dbo.AccountGroups WHERE [Id] = @DefinitionId) = N'RequiredInAccounts'
 	--AND [ResponsibilityCenterId] IS NULL;
 
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
  --   SELECT
 	--	'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 	--	N'Error_TheCustodian0WasNotFound', 
-	--	(SELECT dbo.fn_Localize([CustodianLabel], [CustodianLabel2], [CustodianLabel3]) FROM dbo.AccountDefinitions WHERE [Id] = @DefinitionId)
+	--	(SELECT dbo.fn_Localize([CustodianLabel], [CustodianLabel2], [CustodianLabel3]) FROM dbo.AccountGroups WHERE [Id] = @DefinitionId)
  --   FROM @Entities FE
-	--WHERE (SELECT [CustodianVisibility] FROM dbo.AccountDefinitions WHERE [Id] = @DefinitionId) = N'RequiredInAccounts'
+	--WHERE (SELECT [CustodianVisibility] FROM dbo.AccountGroups WHERE [Id] = @DefinitionId) = N'RequiredInAccounts'
 	--AND [CustodianId] IS NULL;
 
 	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
  --   SELECT
 	--	'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 	--	N'Error_TheResource0WasNotFound', 
-	--	(SELECT dbo.fn_Localize([ResourceLabel], [ResourceLabel2], [ResourceLabel3]) FROM dbo.AccountDefinitions WHERE [Id] = @DefinitionId)
+	--	(SELECT dbo.fn_Localize([ResourceLabel], [ResourceLabel2], [ResourceLabel3]) FROM dbo.AccountGroups WHERE [Id] = @DefinitionId)
  --   FROM @Entities FE
-	--WHERE (SELECT [ResourceVisibility] FROM dbo.AccountDefinitions WHERE [Id] = @DefinitionId) = N'RequiredInAccounts'
+	--WHERE (SELECT [ResourceVisibility] FROM dbo.AccountGroups WHERE [Id] = @DefinitionId) = N'RequiredInAccounts'
 	--AND [ResourceId] IS NULL;
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

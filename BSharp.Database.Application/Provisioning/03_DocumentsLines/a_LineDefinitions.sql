@@ -18,15 +18,30 @@ DECLARE @LineDefinitionEntries TABLE (
 	-- Source = -1 (n/a), 0 (get from line def), 1 (get from Entry), 2 (get from line), 3 (from account), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
 	-- 4: from resource/agent/currency etc./5 from (Resource, Account Type), 6: from Counter/Contra/Related in Line, 7:
 	-- Account is invisible in a tab, unless the source specifies it is entered by user. or in Manual line
-	[AccountSource]						SMALLINT		NOT NULL DEFAULT 0,-- 0: set from line def, 1: entered by User, 3: computed by system based on other info
+	
+	-- Account Group Properties
+	[AccountSource]						SMALLINT			NOT NULL DEFAULT 4,-- 0: set from line def, 1: entered by User, 3: computed by system based on other info
 	[AccountId]							INT, -- invisible, except in 
 
-	[AccountTypeSource]					SMALLINT			NOT NULL DEFAULT 0, -- 0:set from line def, 3: from account
-	[AccountTypeId]						NVARCHAR (50),--	REFERENCES dbo.AccountTypes([Id]), -- 
+	[AccountTypeId]						NVARCHAR (50), -- if account is entered by user, all the group properties get set.
+
+	[LiquiditySource]					SMALLINT			NOT NULL DEFAULT -1, -- -1: n/a, 0:set from line def, 3: from account
+	[IsCurrent]							BIT,
+
+	[ResourceTypeSource]				SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
 
 	[AgentRelationDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, --  -1: n/a, 0:set from line def, 3: from account
-	[AgentRelationDefinitionId]			NVARCHAR (50),--	REFERENCES dbo.AgentRelationDefinitions([Id]),
+	[AgentRelationDefinitionId]			NVARCHAR (50),
+	-- Concluded from Agent. User will not figure out
+--	[AgentRelatedness]					SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
 
+	[EntryTypeSource]					SMALLINT			NOT NULL DEFAULT 0,
+	[EntryTypeId]						NVARCHAR (255),
+
+	[RelatedAgentRelationDefinitionSource]SMALLINT			NOT NULL DEFAULT -1, --  -1: n/a, 0:set from line def, 3: from account
+	[RelatedAgentRelationDefinitionId]	NVARCHAR (50),
+
+	-- Account Details Properties
 	[AgentSource]						SMALLINT			NOT NULL DEFAULT 1, --  -1: n/a, 3: from account
 	[AgentId]							INT,--				REFERENCES dbo.Agents([Id]),	-- fixed in the case of ERCA, e.g., VAT
 
@@ -35,9 +50,6 @@ DECLARE @LineDefinitionEntries TABLE (
 	
 	[CurrencySource]					SMALLINT			NOT NULL DEFAULT 2,
 	[CurrencyId]						NCHAR (3),--		REFERENCES dbo.Currencies([Id]),	-- Fixed in the case of unallocated expense
-
-	[EntryTypeSource]					SMALLINT			NOT NULL DEFAULT 0,
-	[EntryTypeId]						NVARCHAR (255),
 	
 	[MonetaryValueSource]				SMALLINT			NOT NULL DEFAULT 1,
 	[QuantitySource]					SMALLINT			NOT NULL DEFAULT 1,
@@ -60,8 +72,8 @@ DECLARE @LineDefinitionColumns TABLE (
 INSERT @LineDefinitions([Id], [TitleSingular], [TitlePlural]) VALUES
 (N'ManualLine', N'Adjustment', N'Adjustments');
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeSource], [AgentRelationDefinitionSource],[AgentSource],[ResourceSource], [CurrencySource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [ExternalReferenceSource], [AdditionalReferenceSource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
-(N'ManualLine',			0,			1,				3,					3,									3,			3,					3,				3,				1,						1,					1,						1,								1,					1);
+([LineDefinitionId], [EntryNumber],[AccountSource]) VALUES
+(N'ManualLine',			0,			1);
 -- There is a special case, where 
 -- [Direction] = SIGN ([Debit]) + SIGN([Credit]), [MonetaryAmount] = [Debit]-[Credit]
 -- IF [Direction] = 1 THEN [Debit] = [Direction] * SIGN([MonetaryAmount]), [Credit] = 0
@@ -74,7 +86,7 @@ INSERT INTO @LineDefinitionColumns
 (N'ManualLine',			2,			N'Entry[0].Currency',		N'Currency'), -- only if it appears,
 (N'ManualLine',			3,			N'Entry[0].MonetaryAmount',	N'Debit'), -- see special case
 (N'ManualLine',			4,			N'Entry[0].MonetaryAmount',	N'Credit'),
-(N'ManualLine',			5,			N'Entry[0].Dunamic',		N'Properties')
+(N'ManualLine',			5,			N'Entry[0].Dynamic',		N'Properties')
 ;
 
 INSERT @LineDefinitions(
