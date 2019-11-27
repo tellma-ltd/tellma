@@ -61,7 +61,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE (E.[EntryTypeId] IS NULL)
 	AND A.[AccountGroupId] IN (
-		SELECT [AccountTypeId] FROM dbo.[AccountTypesEntryTypes]
+		SELECT [ResourceTypeId] FROM dbo.[ResourceTypesEntryTypes]
 	);
 
 	-- Invalid Entry Type Id
@@ -74,7 +74,7 @@ SET NOCOUNT ON;
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	JOIN dbo.AccountGroups AG ON A.AccountGroupId = AG.[Id]
-	LEFT JOIN dbo.[AccountTypesEntryTypes] AE ON (AG.[AccountTypeId] = AE.[AccountTypeId]) AND (E.EntryTypeId = AE.EntryTypeId)
+	LEFT JOIN dbo.[ResourceTypesEntryTypes] AE ON (AG.[AccountTypeId] = AE.[ResourceTypeId]) AND (E.EntryTypeId = AE.EntryTypeId)
 	WHERE (E.EntryTypeId IS NOT NULL AND AE.EntryTypeId IS NULL);
 
 	-- RelatedAgent is required for selected account definition, 

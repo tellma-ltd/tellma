@@ -10,7 +10,7 @@
 INSERT INTO @ResourceTypes
 ([Id],										[Name],											[Node],			[IsAssignable], [IsActive]) VALUES
 -- Non financial resources
-(N'Assets',									N'Assets',										N'/1/',			0,				1),
+(N'NonFinancialAssets',						N'Non financial assets',						N'/1/',			0,				1),
 (N'PropertyPlantAndEquipment',				N'Property, plant and equipment',				N'/1/1/',		1,				1),
 	(N'LandAndBuildings',					N'Land and buildings',							N'/1/1/1/',		1,				1),
 		(N'Land',							N'Land',										N'/1/1/1/1/',	1,				1),
@@ -26,7 +26,7 @@ INSERT INTO @ResourceTypes
 	(N'CommunicationAndNetworkEquipment',	N'Communication and network equipment',			N'/1/1/7/',		1,				1),
 	(N'NetworkInfrastructure',				N'Network infrastructure',						N'/1/1/8/',		1,				1),
 	--(N'BearerPlants',						N'Bearer plants',								N'/1/1/9/',		1,				0),
-	(N'TangibleExplorationAndEvaluationAssets', N'Tangible exploration and evaluation assets',	N'/1/1/10/',	1,				0),
+	(N'TangibleExplorationAndEvaluationAssets', N'Tangible exploration and evaluation assets',	N'/1/1/10/',1,				0),
 	--(N'MiningAssets',						N'Mining assets',								N'/1/1/11/',	1,				0),
 	--	(N'MiningProperty',					N'Mining property',								N'/1/1/11/1/',	1,				0),
 	--(N'OilAndGasAssets',					N'Oil and gas assets',							N'/1/1/12/',	1,				0),
@@ -34,7 +34,6 @@ INSERT INTO @ResourceTypes
 	(N'LeaseholdImprovements',				N'Leasehold improvements',						N'/1/1/14/',	1,				1),
 	(N'ConstructionInProgress',				N'Construction in progress',					N'/1/1/15/',	1,				1),
 	(N'OtherPropertyPlantAndEquipment',		N'Other property, plant and equipment',			N'/1/1/16/',	1,				1),
-
 (N'InvestmentProperty',						N'Investment property',							N'/1/2/',		1,				0),
 (N'IntangibleAssetsOtherThanGoodwill',		N'Intangible assets other than goodwill',		N'/1/3/',		1,				1),
 (N'BiologicalAssets',						N'Biological assets',							N'/1/10/',		1,				0),
@@ -53,7 +52,6 @@ INSERT INTO @ResourceTypes
 (N'CashAndCashEquivalents',					N'Cash and cash equivalents',					N'/1/13/',		0,				1),
 	(N'Cash',								N'Cash',										N'/1/13/1/',	1,				1),
 	(N'CashEquivalents',					N'Cash equivalents',							N'/1/13/2/',	1,				1),
-
 -- Consumables and services
 (N'ExpenseByNature',						N'Expenses, by nature',							N'/3/',			0,				1),
 (N'ServicesExpense',						N'Services',									N'/3/1/',		1,				1),
@@ -74,9 +72,19 @@ INSERT INTO @ResourceTypes
 (N'OtherShorttermEmployeeBenefits',			N'Other short-term employee benefits',			N'/3/2/1/3/',	1,				1),
 (N'PostemploymentBenefitExpenseDefinedContributionPlans',
 											N'Post-employment benefit expense, defined contribution plans',
-																							N'/3/2/2/',		1,				1),																							
-(N'OtherExpenseByNature',					N'Other',										N'/3/3/',		1,				1)	
-
+																							N'/3/2/2/',		1,				1),																				
+(N'DepreciationAmortisationAndImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss',
+											N'Depreciation, amortisation and impairment loss (reversal of impairment loss) recognised in profit or loss',
+																							N'/3/3/',		1,				1),
+(N'DepreciationAndAmortisationExpense',		N'Depreciation and amortisation expense',		N'/3/3/1/',		1,				1),
+(N'DepreciationExpense',					N'Depreciation expense',						N'/3/3/1/1/',	1,				1),
+(N'AmortisationExpense',					N'Amortisation expense',						N'/3/3/1/2/',	1,				1),
+(N'ImpairmentLossReversalOfImpairmentLossRecognisedInProfitOrLoss',
+											N'Impairment loss (reversal of impairment loss) recognised in profit or loss',
+																							N'/3/4/',		1,				1),
+(N'TaxExpenseOtherThanIncomeTaxExpense',	N'Tax expense other than income tax expense',	N'/3/5/',		1,				1),
+(N'PropertyTaxExpense',						N'Property tax expense',						N'/3/5/1/',		1,				1),
+(N'OtherExpenseByNature',					N'Other',										N'/3/6/',		1,				1)	
 
 --(N'FinancialAssets',						N'Financial assets',							N'/1/4/',		1,				0),
 --(N'FinancialAssetsAtFairValueThroughProfitOrLoss',N'Financial assets at fair value through profit or loss',
@@ -132,3 +140,7 @@ WHEN NOT MATCHED BY SOURCE THEN
 WHEN NOT MATCHED BY TARGET THEN
     INSERT ([Id],	[IsAssignable],		[Name],	[Name2],	[Name3],	[IsActive],	[Node])
     VALUES (s.[Id], s.[IsAssignable], s.[Name], s.[Name2], s.[Name3], s.[IsActive], s.[Node]);
+
+IF @DebugResourceTypes = 1
+	SELECT Id, SPACE(5 * ([Node].GetLevel() - 1)) +  [Name] As [Name], [Node].ToString() As [Path]
+	FROM dbo.ResourceTypes;

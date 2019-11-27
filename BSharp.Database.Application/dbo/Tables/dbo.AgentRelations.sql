@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[AgentRelations] (
 	[Id]						INT					CONSTRAINT [PK_AgentRelations] PRIMARY KEY IDENTITY,
-	[OperatingSegmentId]	INT					NOT NULL CONSTRAINT [FK_AgentRelations__ResponsibilityCenterId] REFERENCES dbo.[ResponsibilityCenters]([Id]),
+	[OperatingSegmentId]		INT					NOT NULL CONSTRAINT [FK_AgentRelations__ResponsibilityCenterId] REFERENCES dbo.[ResponsibilityCenters]([Id]),
 	[AgentRelationDefinitionId]	NVARCHAR(50)		NOT NULL CONSTRAINT [FK_AgentRelations__AgentRelationDefinitionId] REFERENCES [dbo].[AgentRelationDefinitions]([Id]),
 	[AgentId]					INT					NOT NULL CONSTRAINT [FK_AgentRelations__AgentId] REFERENCES [dbo].[Agents] ([Id]) ON DELETE CASCADE,
 	[StartDate]					DATE				DEFAULT (CONVERT (date, SYSDATETIME())),
@@ -15,6 +15,7 @@
 	[JobTitle]					NVARCHAR (50), -- FK to table Jobs
 	[BasicSalary]				MONEY,
 	[TransportationAllowance]	MONEY,
+	[HardshipAllowance]			MONEY,
 	[OvertimeRate]				MONEY,
 --	suppliers
 	[SupplierRating]			INT,			-- user defined list

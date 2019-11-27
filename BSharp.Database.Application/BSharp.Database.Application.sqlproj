@@ -129,7 +129,7 @@
     <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Functions\dbo.fe_Responsibility__FirstSibling.sql" />
-    <Build Include="dbo\Tables\dbo.AccountTypesEntryTypes.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceTypesEntryTypes.sql" />
     <Build Include="dbo\User Defined Types\dbo.VType.sql" />
     <None Include="Tests\00_TestMain.sql" />
     <None Include="Tests\04_IfrsDisclosures.sql" />

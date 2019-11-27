@@ -251,4 +251,6 @@ WHEN NOT MATCHED BY TARGET THEN
     INSERT ([Id],	[IsAssignable],		[Node],		[IsActive],		[ForDebit],		[ForCredit],	[Name])
     VALUES (s.[Id], s.[IsAssignable],	s.[Node],	s.[IsActive],	s.[ForDebit],	s.[ForCredit],	s.[Name]);
 ;
-select * From EntryTypes;
+IF @DebugEntryTypes = 1
+	SELECT Id, SPACE(5 * ([Node].GetLevel() - 1)) +  [Name] As [Name], [Node].ToString() As [Path]
+	FROM dbo.EntryTypes;

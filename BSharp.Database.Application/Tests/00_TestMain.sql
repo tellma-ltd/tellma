@@ -37,9 +37,10 @@ BEGIN -- reset Identities
 
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
 	DECLARE @ValidationErrorsJson nvarchar(max);
-	DECLARE @DebugRoles bit = 0, @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
+	DECLARE @DebugRoles bit = 0, @DebugResourceTypes bit = 0, @DebugEntryTypes bit = 0, @DebugResourceTypesEntryTypes bit = 0, @DebugAccountTypes bit = 1;
+	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
 	DECLARE @DebugLookups bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccountGroups bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
 	DECLARE @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
@@ -64,8 +65,8 @@ BEGIN TRY
 		:r ..\Samples\00_Setup\b_AgentRelationDefinitions.sql
 		:r ..\Samples\00_Setup\c_ResourceTypes.sql
 		:r ..\Samples\00_Setup\d_EntryTypes.sql
-		--:r ..\Samples\00_Setup\e_ResourceTypesEntryTypes.sql
-		--:r ..\Samples\00_Setup\d_AccountTypes.sql
+		:r ..\Samples\00_Setup\e_ResourceTypesEntryTypes.sql
+		:r ..\Samples\00_Setup\f_AccountTypes.sql
 		--:r ..\Samples\00_Setup\z_LookupDefinitions.sql
 
 		--:r ..\Samples\01_Basic\a_Currencies.sql

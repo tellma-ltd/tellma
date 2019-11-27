@@ -1790,4 +1790,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[CreditRelatedAgentLabel3]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="63c28bdc-af13-44f2-9857-0d5528c1d1ed" ChangeDateTime="11/27/2019 05:26:54">
+    <Property Name="ElementName" Value="[dbo].[AccountTypesEntryTypes]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[ResourceTypesEntryTypes]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="15c5e043-b62b-43e9-baae-a3b6e300d3e0" ChangeDateTime="11/27/2019 05:27:07">
+    <Property Name="ElementName" Value="[dbo].[ResourceTypesEntryTypes].[AccountTypeId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceTypesEntryTypes]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceTypeId]" />
+  </Operation>
 </Operations>

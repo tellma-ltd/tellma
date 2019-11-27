@@ -1,51 +1,53 @@
-﻿DECLARE @AccountTypesEntryTypesParents AS TABLE (
-	[ParentAccountTypeId]		NVARCHAR (255)		NOT NULL,
+﻿DECLARE @ResourceTypesEntryTypesParents AS TABLE (
+	[ParentResourceTypeId]		NVARCHAR (255)		NOT NULL,
 	[ParentEntryTypeId]		NVARCHAR (255)		NOT NULL,
-  PRIMARY KEY ([ParentAccountTypeId], [ParentEntryTypeId])
+  PRIMARY KEY ([ParentResourceTypeId], [ParentEntryTypeId])
 );
-INSERT INTO @AccountTypesEntryTypesParents
-([ParentAccountTypeId],					[ParentEntryTypeId]) VALUES
+INSERT INTO @ResourceTypesEntryTypesParents
+([ParentResourceTypeId],					[ParentEntryTypeId]) VALUES
 (N'PropertyPlantAndEquipment',			N'ChangesInPropertyPlantAndEquipment'), 
 (N'InvestmentProperty',					N'ChangesInInvestmentProperty'), 
-(N'Goodwill',							N'ChangesInGoodwill'), 
+--(N'Goodwill',							N'ChangesInGoodwill'), 
 (N'IntangibleAssetsOtherThanGoodwill',	N'ChangesInIntangibleAssetsOtherThanGoodwill'), 
-(N'NoncurrentBiologicalAssets',			N'ChangesInBiologicalAssets'), 
-(N'CurrentBiologicalAssets',			N'ChangesInBiologicalAssets'), 
+(N'BiologicalAssets',					N'ChangesInBiologicalAssets'), 
 (N'Inventories',						N'ChangesInInventories'),		
 (N'CashAndCashEquivalents',				N'IncreaseDecreaseInCashAndCashEquivalents'), 
 (N'Equity',								N'ChangesInEquity'), 
 (N'OtherLongtermProvisions',			N'ChangesInOtherProvisions'), 
-(N'OperatingExpense',					N'ExpenseByNature');
+(N'ExpenseByNature',					N'ExpenseByFunctionExtension');
 
 WITH
-AccountTypesDescendants(AccountTypeId, ParentAccountTypeId) AS
+ResourceTypesDescendants(ResourceTypeId, ParentResourceTypeId) AS
 (
-	SELECT AT1.[Id], AT2.[Id]
-	FROM dbo.[AccountGroups] AT1
-	JOIN dbo.[AccountGroups] AT2 ON AT1.[Node].IsDescendantOf(AT2.[Node]) = 1
-	WHERE AT2.[Id] IN (SELECT [ParentAccountTypeId] FROM @AccountTypesEntryTypesParents)
-	AND AT1.IsAssignable = 1
+	SELECT RT1.[Id], RT2.[Id]
+	FROM dbo.[ResourceTypes] RT1
+	JOIN dbo.[ResourceTypes] RT2 ON RT1.[Node].IsDescendantOf(RT2.[Node]) = 1
+	WHERE RT2.[Id] IN (SELECT [ParentResourceTypeId] FROM @ResourceTypesEntryTypesParents)
+	AND RT1.IsAssignable = 1
 ),
 EntryTypesDescendants(EntryTypeId, ParentEntryTypeId) AS
 (
 	SELECT ET1.[Id], ET2.[Id]
 	FROM dbo.EntryTypes ET1
 	JOIN dbo.EntryTypes ET2 ON ET1.[Node].IsDescendantOf(ET2.[Node]) = 1 
-	WHERE ET2.[Id] IN (SELECT [ParentEntryTypeId] FROM @AccountTypesEntryTypesParents)
+	WHERE ET2.[Id] IN (SELECT [ParentEntryTypeId] FROM @ResourceTypesEntryTypesParents)
 	AND ET1.IsAssignable = 1
 ),
-AccountTypesEntryTypesExpanded([AccountTypeId], [EntryTypeId]) AS
+ResourceTypesEntryTypesExpanded([ResourceTypeId], [EntryTypeId]) AS
 (
-	SELECT TA.AccountTypeId , TE.EntryTypeId
-	FROM AccountTypesDescendants TA
-	JOIN @AccountTypesEntryTypesParents TM ON TA.[ParentAccountTypeId] = TM.[ParentAccountTypeId]
+	SELECT TA.ResourceTypeId, TE.EntryTypeId
+	FROM ResourceTypesDescendants TA
+	JOIN @ResourceTypesEntryTypesParents TM ON TA.[ParentResourceTypeId] = TM.[ParentResourceTypeId]
 	JOIN EntryTypesDescendants TE ON TM.[ParentEntryTypeId] = TE.[ParentEntryTypeId]
 )
-MERGE [dbo].[AccountTypesEntryTypes] AS t
-USING AccountTypesEntryTypesExpanded AS s
-ON (s.[AccountTypeId] = t.[AccountTypeId] AND s.[EntryTypeId] = t.[EntryTypeId])
+MERGE [dbo].[ResourceTypesEntryTypes] AS t
+USING ResourceTypesEntryTypesExpanded AS s
+ON (s.[ResourceTypeId] = t.[ResourceTypeId] AND s.[EntryTypeId] = t.[EntryTypeId])
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([AccountTypeId], [EntryTypeId])
-    VALUES (s.[AccountTypeId], s.[EntryTypeId]);
+    INSERT ([ResourceTypeId], [EntryTypeId])
+    VALUES (s.[ResourceTypeId], s.[EntryTypeId]);
+
+IF @DebugResourceTypesEntryTypes = 1
+	SELECT * FROM dbo.ResourceTypesEntryTypes;
