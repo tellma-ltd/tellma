@@ -72,6 +72,8 @@ namespace BSharp.Data.Queries
 
         public int? Top { get; set; }
 
+        public string FromSql { get; set; }
+
         // Private fields
 
         private string _cachedWhere = null;
@@ -91,7 +93,7 @@ namespace BSharp.Data.Queries
         {
             // (1) Prepare the JOIN's clause
             var joinTree = PrepareJoin();
-            var joinSql = joinTree.GetSql(sources);
+            var joinSql = joinTree.GetSql(sources, FromSql);
 
             // (2) Prepare the SELECT clause
             SqlSelectClause selectClause = PrepareSelect(joinTree);
@@ -144,7 +146,7 @@ namespace BSharp.Data.Queries
         }
 
         /// <summary>
-        /// Creates the SQL JOIN clause of the current query
+        /// Creates the <see cref="JoinTree"/> of the current query
         /// </summary>
         public JoinTree JoinSql()
         {
@@ -168,7 +170,7 @@ namespace BSharp.Data.Queries
         {
             // (1) Prepare the JOIN's clause
             JoinTree joinTree = PrepareJoin(pathToCollectionProperty);
-            var joinSql = joinTree.GetSql(sources);
+            var joinSql = joinTree.GetSql(sources, FromSql);
 
             // (2) Prepare the SELECT clause
             SqlSelectClause selectClause = PrepareSelectAsPrincipal(joinTree, pathToCollectionProperty, isAncestorExpand);

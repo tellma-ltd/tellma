@@ -70,7 +70,7 @@ namespace BSharp.Data.Queries
         /// <summary>
         /// Transforms the <see cref="JoinTree"/> into an SQL JOIN clause. For example: <c>FROM [dbo].[Table1] AS [P] LEFT JOIN [dbo].[Table2] AS [P1] ON [P].[Table2Id] = [P2].[Id]</c>
         /// </summary>
-        public string GetSql(Func<Type, string> sources, string parentSymbol = null)
+        public string GetSql(Func<Type, string> sources, string fromSql, string parentSymbol = null)
         {
             if (sources == null)
             {
@@ -78,9 +78,9 @@ namespace BSharp.Data.Queries
                 throw new ArgumentNullException(nameof(sources));
             }
 
-            string source = sources(Type);
             StringBuilder builder = new StringBuilder();
-            if (parentSymbol == null)
+            bool isRoot = parentSymbol == null;
+            if (isRoot)
             {
                 if (Symbol == null)
                 {
@@ -88,17 +88,19 @@ namespace BSharp.Data.Queries
                     InitializeSymbols();
                 }
 
+                string source = string.IsNullOrWhiteSpace(fromSql) ? sources(Type) : $"({fromSql})";
                 builder.Append($"FROM {source} As [{Symbol}]");
             }
             else
             {
+                string source = sources(Type);
                 builder.AppendLine();
                 builder.Append($"LEFT JOIN {source} As [{Symbol}] ON [{parentSymbol}].[{ForeignKeyName}] = [{Symbol}].[Id]");
             }
 
             foreach (var key in Keys)
             {
-                builder.Append(this[key].GetSql(sources, Symbol));
+                builder.Append(this[key].GetSql(sources, null, Symbol));
             }
 
             return builder.ToString();

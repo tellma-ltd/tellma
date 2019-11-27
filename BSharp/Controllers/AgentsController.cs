@@ -45,6 +45,14 @@ namespace BSharp.Controllers
             _blobService = blobService;
         }
 
+        [HttpGet("of-relation/{relation}")]
+        public async Task<ActionResult<GetResponse<Agent>>> GetAgentsOfRelation([FromRoute] string relation, [FromQuery] GetArguments args)
+        {
+            // TODO: implement properly, this is just a test
+            var relationParameter = new System.Data.SqlClient.SqlParameter("Type", relation);
+            return await GetInnerAsync(args, "SELECT * FROM [map].[Agents]() WHERE [AgentType] = @Type", null, relationParameter);
+        }
+
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Agent>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {

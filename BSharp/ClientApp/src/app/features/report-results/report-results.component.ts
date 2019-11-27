@@ -1526,6 +1526,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   - Add copy to clipboard to the fields list
   - Show validation on the remaining fields
   - Add the remaining parameter controls, especially the details pickers
+  - The gauge chart displays total sum even when the aggregation is avg, max or min
 
   [Dimension Properties Steps]
   - Add field to ReportDimensionDefinition  (C#)

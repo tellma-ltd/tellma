@@ -42,7 +42,7 @@ namespace BSharp.Data.Queries
         {
             // (1) Prepare the JOIN's clause
             var joinTree = PrepareJoin();
-            var joinSql = joinTree.GetSql(sources);
+            var joinSql = joinTree.GetSql(sources, fromSql: null);
 
             // (2) Prepare the SELECT clause
             SqlSelectGroupByClause selectClause = PrepareSelect(joinTree);
