@@ -48,9 +48,8 @@ namespace BSharp.Controllers
         [HttpGet("of-relation/{relation}")]
         public async Task<ActionResult<GetResponse<Agent>>> GetAgentsOfRelation([FromRoute] string relation, [FromQuery] GetArguments args)
         {
-            // TODO: implement properly, this is just a test
-            var relationParameter = new System.Data.SqlClient.SqlParameter("Type", relation);
-            return await GetInnerAsync(args, "SELECT * FROM [map].[Agents]() WHERE [AgentType] = @Type", null, relationParameter);
+            var queryOverride = _repo.Agents_OfRelation(relation);
+            return await GetInnerAsync(args, queryOverride);
         }
 
         [HttpPut("activate")]

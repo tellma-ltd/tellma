@@ -80,7 +80,7 @@ namespace BSharp.Controllers
             }
         }
         
-        protected override async Task<GetResponse<ReportDefinition>> GetImplAsync(GetArguments args, string fromSql = null, string preSql = null, params SqlParameter[] parameters)
+        protected override async Task<GetResponse<ReportDefinition>> GetImplAsync(GetArguments args, Query<ReportDefinition> queryOverride)
         {
             // Prepare the query
             IEnumerable<ReportDefinition> query = _db.Values;

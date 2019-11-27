@@ -229,9 +229,9 @@ namespace BSharp.Data.Queries
         }
 
         /// <summary>
-        /// Low level API, instructs the query to use the provided SQL for type <see cref="T"/> instead of the default one provided by the "sources" constructor argument
+        /// Low level API, instructs the <see cref="Query{T}"/> to use the provided SQL code for the root source (the part in the SQL statement after FROM ...)
         /// </summary>
-        /// <param name="fromSql">The SQL to use when loading <see cref="T"/></param>
+        /// <param name="fromSql">The SQL to use after FROM, can be either a table-valued function call, or a SELECT statement surrounded in parentheses</param>
         /// <param name="preSql">Any SQL to be prepended at the beginning before the main SQL script. This cannot contain any SELECT query or any code that returns a result set</param>
         /// <param name="parameters">An array of SQL parameters to include in the result</param>
         public Query<T> FromSql(string fromSql, string preSql = null, params SqlParameter[] parameters)

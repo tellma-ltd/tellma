@@ -88,8 +88,8 @@ namespace BSharp.Data.Queries
                     InitializeSymbols();
                 }
 
-                string source = string.IsNullOrWhiteSpace(fromSql) ? sources(Type) : $"({fromSql})";
-                builder.Append($"FROM {source} As [{Symbol}]");
+                string source =  string.IsNullOrWhiteSpace(fromSql) ? sources(Type) : fromSql;
+                builder.Append($"FROM {fromSql ?? source} As [{Symbol}]");
             }
             else
             {

@@ -59,11 +59,11 @@ namespace BSharp.Controllers
             return await GetInnerAsync(args);
         }
 
-        protected virtual async Task<ActionResult<GetResponse<TEntity>>> GetInnerAsync(GetArguments args, string fromSql = null, string preSql = null, params SqlParameter[] parameters)
+        protected virtual async Task<ActionResult<GetResponse<TEntity>>> GetInnerAsync(GetArguments args, Query<TEntity> queryOverride = null)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetImplAsync(args, fromSql, preSql, parameters);
+                var result = await GetImplAsync(args, queryOverride);
                 return Ok(result);
             }, _logger);
         }
@@ -95,7 +95,7 @@ namespace BSharp.Controllers
         /// <summary>
         /// Returns the entities as per the specifications in the get request
         /// </summary>
-        protected virtual async Task<GetResponse<TEntity>> GetImplAsync(GetArguments args, string fromSql = null, string preSql = null, params SqlParameter[] parameters)
+        protected virtual async Task<GetResponse<TEntity>> GetImplAsync(GetArguments args, Query<TEntity> queryOverride = null)
         {
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
@@ -104,7 +104,7 @@ namespace BSharp.Controllers
             var select = SelectExpression.Parse(args.Select);
 
             // Prepare the query
-            var query = GetRepository().Query<TEntity>();
+            var query = queryOverride ?? GetRepository().Query<TEntity>();
 
             // Retrieve the user permissions for the current view
             var permissions = await UserPermissions(Constants.Read);
@@ -116,9 +116,6 @@ namespace BSharp.Controllers
             // Apply read permissions
             var permissionsFilter = GetReadPermissionsCriteria(permissions);
             query = query.Filter(permissionsFilter);
-
-            // From SQL
-            query = query.FromSql(fromSql, preSql, parameters);
 
             // Search
             query = Search(query, args, permissions);
