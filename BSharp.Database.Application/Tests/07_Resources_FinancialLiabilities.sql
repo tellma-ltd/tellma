@@ -1,6 +1,6 @@
 ﻿	DECLARE @R7 [dbo].ResourceList,  @RP7 [dbo].ResourceInstanceList;
 
-	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'financial-liabilities
+	INSERT INTO dbo.ResourceClassifications ([DefinitionId], -- N'financial-liabilities
 								[Name],									[IsLeaf],	[Node]) VALUES
 	(N'financial-liabilities',	N'at fair value through profit or loss',	1,			N'/1/'),
 	(N'financial-liabilities',	N'at amortised cost',						1,			N'/2/'),

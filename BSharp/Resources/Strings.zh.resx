@@ -556,8 +556,8 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>该代码已经被使用“{0}”。</value>
   </data>
-  <data name="Error_TheCurrency0IsUsedIn12" xml:space="preserve">
-    <value>货币 '{0}' 中使用的{1} '{2}'</value>
+  <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
+    <value>货币 '{0}' 中使用的 '{1}'</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>电子邮件“{0}”被复制。</value>

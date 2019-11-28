@@ -113,7 +113,7 @@ namespace BSharp.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Account.AccountDefinitionId)} eq '{DefinitionId}'";
+            string filter = $"{nameof(Account.DefinitionId)} eq '{DefinitionId}'";
             return new FilteredRepository<Account>(_repo, filter);
         }
 
@@ -268,7 +268,7 @@ namespace BSharp.Controllers
             foreach (var permission in permissions.Where(e => e.ViewId != "all"))
             {
                 string definitionId = permission.ViewId.Remove(0, prefix.Length).Replace("'", "''");
-                string definitionPredicate = $"{nameof(Account.AccountDefinitionId)} eq '{definitionId}'";
+                string definitionPredicate = $"{nameof(Account.DefinitionId)} eq '{definitionId}'";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
                     permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";

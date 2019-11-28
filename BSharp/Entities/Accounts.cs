@@ -56,7 +56,7 @@ namespace BSharp.Entities
 
     public class Account : AccountForSave
     {
-        public string AccountDefinitionId { get; set; }
+        public string DefinitionId { get; set; }
 
         [Display(Name = "Account_IsDeprecated")]
         [AlwaysAccessible]

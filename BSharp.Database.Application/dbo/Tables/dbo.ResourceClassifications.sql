@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[ResourceClassifications] (
 	[Id]				INT					PRIMARY KEY NONCLUSTERED IDENTITY,
-	[ResourceDefinitionId]NVARCHAR(50)		NOT NULL CONSTRAINT [FK_ResourceClassificatons__ResourceDefinitionId] FOREIGN KEY ([ResourceDefinitionId]) REFERENCES [dbo].[ResourceDefinitions] ([Id]),
+	[DefinitionId]		NVARCHAR(50)		NOT NULL CONSTRAINT [FK_ResourceClassificatons__ResourceDefinitionId] FOREIGN KEY ([DefinitionId]) REFERENCES [dbo].[ResourceDefinitions] ([Id]),
 	[ParentId]			INT,
 	[IsLeaf]			BIT					NOT NULL DEFAULT 1,
 	[Name]				NVARCHAR (255)		NOT NULL,
@@ -20,8 +20,8 @@
 );
 GO
 CREATE UNIQUE CLUSTERED INDEX [IX_ResourceClassifications__ResourceDefinitionId_Node]
-	ON [dbo].[ResourceClassifications]([ResourceDefinitionId], [Node]);
+	ON [dbo].[ResourceClassifications]([DefinitionId], [Node]);
 GO
 CREATE UNIQUE INDEX [IX_ResourceClassifications__ResourceDefinitionId_Code]
-	ON [dbo].[ResourceClassifications]([ResourceDefinitionId], [Code]) WHERE [Code] IS NOT NULL;
+	ON [dbo].[ResourceClassifications]([DefinitionId], [Code]) WHERE [Code] IS NOT NULL;
 GO

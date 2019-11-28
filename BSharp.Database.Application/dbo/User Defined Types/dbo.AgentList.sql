@@ -6,7 +6,7 @@
 	[Name3]						NVARCHAR (255),
 	[Code]						NVARCHAR (30),
 --	Common
-	[AgentType]					NVARCHAR (30)		NOT NULL,  -- -- 'Individual', 'System' (software), 'Organization' (Dept, Team)
+--	[AgentType]					NVARCHAR (30)		NOT NULL,  -- -- 'Individual', 'System' (software), 'Organization' (Dept, Team)
 	[IsRelated]					BIT					NOT NULL DEFAULT 0,
 	[TaxIdentificationNumber]	NVARCHAR (30),  -- China has the maximum, 18 characters
 	--[IsLocal]					BIT,

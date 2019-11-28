@@ -23,7 +23,7 @@ export class AccountForSave extends EntityWithKey {
 }
 
 export class Account extends AccountForSave {
-    AccountDefinitionId: string;
+    DefinitionId: string;
     IsDeprecated: boolean;
     CreatedAt: string;
     CreatedById: number | string;
@@ -66,8 +66,8 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, def
             screenUrl: !!definitionId ? 'accounts/' + definitionId : null,
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
-            definitionFunc: (e: Account) => e.AccountDefinitionId,
-            selectForDefinition: 'AccountDefinitionId',
+            definitionFunc: (e: Account) => e.DefinitionId,
+            selectForDefinition: 'DefinitionId',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AccountTypeId: { control: 'text', label: () => trx.instant('Account_Type') },

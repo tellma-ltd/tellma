@@ -99,7 +99,7 @@
     <!-- Resource -->
     <b-form-group class="b-form-group" [label]="p.Resource | label" *ngIf="!!p.Resource"
         [serverErrors]="model?.serverErrors?.ResourceId">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resources/' + ws.Resource[model?.ResourceId]?.ResourceDefinitionId"
+        <b-view-link *ngIf="!isEdit" [link]="'../../../resources/' + ws.Resource[model?.ResourceId]?.DefinitionId"
             [itemId]="model?.ResourceId">
             <b-auto-cell collection="Account" [definition]="definitionId" path="Resource" [entity]="model">
             </b-auto-cell>

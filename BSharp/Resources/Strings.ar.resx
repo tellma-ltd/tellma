@@ -556,8 +556,8 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>الكود ({0}) مستخدم حاليا</value>
   </data>
-  <data name="Error_TheCurrency0IsUsedIn12" xml:space="preserve">
-    <value>العملة ({0}) مستخدمة في {1} ({2})</value>
+  <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
+    <value>العملة ({0}) مستخدمة في ({1})</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>البريد الإلكتروني ({0}) مكرر</value>

@@ -100,7 +100,7 @@ namespace BSharp.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(ResourceClassification.ResourceDefinitionId)} eq '{DefinitionId}'";
+            string filter = $"{nameof(ResourceClassification.DefinitionId)} eq '{DefinitionId}'";
             return new FilteredRepository<ResourceClassification>(_repo, filter);
         }
 

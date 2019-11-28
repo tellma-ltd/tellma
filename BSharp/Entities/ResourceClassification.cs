@@ -42,7 +42,7 @@ namespace BSharp.Entities
 
     public class ResourceClassification : ResourceClassificationForSave
     {
-        public string ResourceDefinitionId { get; set; }
+        public string DefinitionId { get; set; }
 
         [AlwaysAccessible]
         public short? Level { get; set; }

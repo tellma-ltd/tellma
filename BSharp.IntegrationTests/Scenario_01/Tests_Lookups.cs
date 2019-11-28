@@ -100,7 +100,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.SingleOrDefault();
 
             Assert.NotNull(responseDto?.Id);
-            Assert.Equal(_definitionId, responseDto.LookupDefinitionId);
+            Assert.Equal(_definitionId, responseDto.DefinitionId);
             Assert.Equal(dtoForSave.Name, responseDto.Name);
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
@@ -125,7 +125,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             var responseDto = getByIdResponse.Result;
             Assert.Equal(id, responseDto.Id);
-            Assert.Equal(_definitionId, responseDto.LookupDefinitionId);
+            Assert.Equal(_definitionId, responseDto.DefinitionId);
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Equal(entity.Name2, responseDto.Name2);
             Assert.Equal(entity.Code, responseDto.Code);

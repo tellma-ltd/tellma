@@ -4,7 +4,7 @@
 	
 DECLARE @SKDs [dbo].ResourceList;
 
-	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'vehicles'
+	INSERT INTO dbo.ResourceClassifications ([DefinitionId], -- N'vehicles'
 				[Name],		[IsLeaf],	[Node]) VALUES
 	(N'skds',	N'Cars',	1,			N'/1/'),
 	(N'skds',	N'Sedan',	1,			N'/1/1/'),

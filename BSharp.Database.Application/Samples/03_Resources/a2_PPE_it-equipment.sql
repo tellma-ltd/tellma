@@ -12,7 +12,7 @@
 			N'Optional', N'Operating System', N'operating-systems'
 		);
 	
-		INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'computer-equipment'
+		INSERT INTO dbo.ResourceClassifications ([DefinitionId], -- N'computer-equipment'
 						[Name],				[IsLeaf],	[Node]) VALUES
 		(N'it-equipment',	N'Computers',		0,			N'/1/'),
 		(N'it-equipment',	N'Servers',			1,			N'/1/1/'),

@@ -36,7 +36,7 @@ BEGIN -- Inserting
 				REPLICATE(N'    ', RC.[Node].GetLevel() - 1) + RC.[Name] AS [Name],
 				RC.[Code], RC.[IsActive], RC.[IsLeaf]
 		FROM dbo.ResourceClassifications RC
-		RIGHT JOIN dbo.ResourceDefinitions RD ON RC.ResourceDefinitionId = RD.Id
+		RIGHT JOIN dbo.ResourceDefinitions RD ON RC.[DefinitionId] = RD.Id
 		ORDER BY RD.[SortKey], [ResourceDefinitionId], [Node];
 		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
 		EXEC rpt.[sp_Resources] @R2Ids;

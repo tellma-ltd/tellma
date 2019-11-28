@@ -72,7 +72,7 @@ namespace BSharp.Entities
 
     public class Resource : ResourceForSave
     {
-        public string ResourceDefinitionId { get; set; }
+        public string DefinitionId { get; set; }
 
         [Display(Name = "IsActive")]
         [AlwaysAccessible]

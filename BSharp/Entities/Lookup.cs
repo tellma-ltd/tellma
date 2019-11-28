@@ -32,7 +32,7 @@ namespace BSharp.Entities
     public class Lookup : LookupForSave
     {
         [AlwaysAccessible]
-        public string LookupDefinitionId { get; set; }
+        public string DefinitionId { get; set; }
 
         [AlwaysAccessible]
         public decimal SortKey { get; set; }

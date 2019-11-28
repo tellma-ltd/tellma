@@ -109,7 +109,7 @@ namespace BSharp.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(Lookup.LookupDefinitionId)} eq '{DefinitionId}'";
+            string filter = $"{nameof(Lookup.DefinitionId)} eq '{DefinitionId}'";
             return new FilteredRepository<Lookup>(_repo, filter);
         }
 

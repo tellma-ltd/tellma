@@ -29,7 +29,7 @@ export class ResourceForSave extends EntityWithKey {
 }
 
 export class Resource extends ResourceForSave {
-    ResourceDefinitionId: string;
+    DefinitionId: string;
     IsActive: boolean;
     CreatedAt: string;
     CreatedById: number | string;
@@ -70,9 +70,9 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
             apiEndpoint: 'resources/' + (definitionId || ''),
             screenUrl: !!definitionId ? 'resources/' + definitionId : null,
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
-            definitionFunc: (e: Resource) => e.ResourceDefinitionId,
+            definitionFunc: (e: Resource) => e.DefinitionId,
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
-            selectForDefinition: 'ResourceDefinitionId',
+            selectForDefinition: 'DefinitionId',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },

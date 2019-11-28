@@ -4,7 +4,7 @@
 	(N'motor-vehicles',	N'Motor Vehicles',	N'Motor Vehicle',	N'MotorVehicles',		N'Required',			N'Make',		N'vehicle-makes');
 	
 	INSERT INTO dbo.ResourceClassifications (
-	[ResourceDefinitionId],	[Name],		[IsLeaf],	[Node]) VALUES
+	[DefinitionId],	[Name],		[IsLeaf],	[Node]) VALUES
 	(N'motor-vehicles',		N'Cars',	0,			N'/1/'),
 	(N'motor-vehicles',		N'Minivans',1,			N'/2/');
 

@@ -3,7 +3,7 @@
 	( N'employee-benefits',	N'Employee Benefits',	N'Employee Benefit',	N'EmployeeBenefitsExpense');
 
 	INSERT INTO dbo.ResourceClassifications (
-	[ResourceDefinitionId],	[Name],														[IsLeaf],	[Node]) VALUES
+	[DefinitionId],	[Name],														[IsLeaf],	[Node]) VALUES
 	(N'employee-benefits',	N'Short-term employee benefits expense',						0,			N'/1/'),
 	(N'employee-benefits',	N'Wages and salaries',											0,			N'/1/1/'),
 	(N'employee-benefits',	N'Social security contributions',								0,			N'/1/2/'),

@@ -16,7 +16,7 @@ export class LookupForSave extends EntityForSave {
 }
 
 export class Lookup extends LookupForSave {
-    LookupDefinitionId: string;
+    DefinitionId: string;
     SortKey: number;
     IsActive: boolean;
     CreatedAt: string;
@@ -60,8 +60,8 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
             screenUrl: !!definitionId ? 'lookups/' + definitionId : null,
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
-            definitionFunc: (e: Lookup) => e.LookupDefinitionId,
-            selectForDefinition: 'LookupDefinitionId',
+            definitionFunc: (e: Lookup) => e.DefinitionId,
+            selectForDefinition: 'DefinitionId',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },

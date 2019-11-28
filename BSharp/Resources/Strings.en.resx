@@ -556,8 +556,8 @@
   <data name="Error_TheCode0IsUsed" xml:space="preserve">
     <value>The code '{0}' is already used.</value>
   </data>
-  <data name="Error_TheCurrency0IsUsedIn12" xml:space="preserve">
-    <value>The Currency '{0}' is used in {1} '{2}'</value>
+  <data name="Error_TheCurrency0IsUsedIn1" xml:space="preserve">
+    <value>The Currency '{0}' is used in '{1}'</value>
   </data>
   <data name="Error_TheEmail0IsDuplicated" xml:space="preserve">
     <value>The email '{0}' is duplicated.</value>

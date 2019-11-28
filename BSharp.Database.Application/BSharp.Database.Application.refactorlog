@@ -1860,4 +1860,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ResourceDescriptorId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="ae309739-837b-453f-87d3-1dd114228fbc" ChangeDateTime="11/28/2019 17:52:04">
+    <Property Name="ElementName" Value="[dbo].[ResourceClassifications].[ResourceDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceClassifications]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefinitionId]" />
+  </Operation>
 </Operations>

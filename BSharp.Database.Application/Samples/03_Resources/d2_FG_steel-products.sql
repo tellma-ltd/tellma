@@ -2,7 +2,7 @@
 		[Id],				[TitlePlural],			[TitleSingular],	[ResourceTypeParentList]) VALUES
 	( N'steel-products',	N'Steel Products',		N'Steel products',	N'FinishedGoods');
 
-	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'steel-products'
+	INSERT INTO dbo.ResourceClassifications ([DefinitionId], -- N'steel-products'
 						[Name],	[IsLeaf],	[Node]) VALUES
 	(N'steel-products',	N'D',		1,			N'/1/'),
 	(N'steel-products',	N'HSP',		0,			N'/2/'),
