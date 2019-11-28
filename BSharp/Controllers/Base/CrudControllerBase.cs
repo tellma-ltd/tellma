@@ -49,7 +49,7 @@ namespace BSharp.Controllers
         public virtual async Task<ActionResult<EntitiesResponse<TEntity>>> Save([FromBody] List<TEntityForSave> entities, [FromQuery] SaveArguments args)
         {
             // Note here we use lists https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=netcore-2.1
-            // since the order is symantically relevant for reporting validation errors on the entities
+            // since the order is semantically relevant for reporting validation errors
 
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
