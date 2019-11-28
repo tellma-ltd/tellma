@@ -55,7 +55,10 @@ export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: Translat
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                ParentId: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ParentId: {
+                    control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`,
+                    minDecimalPlaces: 0, maxDecimalPlaces: 0
+                },
                 ResponsibilityTypeId: {
                     control: 'choice',
                     label: () => trx.instant('ResponsibilityCenter_ResponsibilityType'),

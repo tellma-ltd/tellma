@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -78,9 +79,8 @@ namespace BSharp.Controllers
                 }
             }
         }
-
-
-        protected override async Task<GetResponse<ReportDefinition>> GetImplAsync(GetArguments args)
+        
+        protected override async Task<GetResponse<ReportDefinition>> GetImplAsync(GetArguments args, Query<ReportDefinition> queryOverride)
         {
             // Prepare the query
             IEnumerable<ReportDefinition> query = _db.Values;

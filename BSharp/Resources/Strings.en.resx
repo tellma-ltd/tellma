@@ -1366,6 +1366,15 @@
   <data name="Total" xml:space="preserve">
     <value>Total</value>
   </data>
+  <data name="TreeActiveChildCount" xml:space="preserve">
+    <value>Active Child Count</value>
+  </data>
+  <data name="TreeChildCount" xml:space="preserve">
+    <value>Child Count</value>
+  </data>
+  <data name="TreeLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
   <data name="TreeParent" xml:space="preserve">
     <value>Parent</value>
   </data>

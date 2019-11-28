@@ -1366,6 +1366,15 @@
   <data name="Total" xml:space="preserve">
     <value>总</value>
   </data>
+  <data name="TreeActiveChildCount" xml:space="preserve">
+    <value>运动儿童计数</value>
+  </data>
+  <data name="TreeChildCount" xml:space="preserve">
+    <value>儿童计数</value>
+  </data>
+  <data name="TreeLevel" xml:space="preserve">
+    <value>水平</value>
+  </data>
   <data name="TreeParent" xml:space="preserve">
     <value>亲</value>
   </data>

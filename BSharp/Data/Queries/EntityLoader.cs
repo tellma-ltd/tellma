@@ -139,6 +139,9 @@ namespace BSharp.Data.Queries
                 }
                 finally
                 {
+                    // Otherwise we might get an error when a parameter is reused
+                    cmd.Parameters.Clear();
+
                     // The connection is never owned, but we add this code anyways for robustness
                     if (ownsConnection)
                     {
@@ -332,6 +335,9 @@ namespace BSharp.Data.Queries
                 }
                 finally
                 {
+                    // Otherwise we might get an error when a parameter is reused
+                    cmd.Parameters.Clear();
+
                     // The connection is never owned, but we add this code anyways for robustness
                     if (ownsConnection)
                     {

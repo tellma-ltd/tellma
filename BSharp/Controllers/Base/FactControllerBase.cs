@@ -11,6 +11,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -55,9 +56,14 @@ namespace BSharp.Controllers
         [HttpGet]
         public virtual async Task<ActionResult<GetResponse<TEntity>>> Get([FromQuery] GetArguments args)
         {
+            return await GetInnerAsync(args);
+        }
+
+        protected virtual async Task<ActionResult<GetResponse<TEntity>>> GetInnerAsync(GetArguments args, Query<TEntity> queryOverride = null)
+        {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                var result = await GetImplAsync(args);
+                var result = await GetImplAsync(args, queryOverride);
                 return Ok(result);
             }, _logger);
         }
@@ -89,7 +95,7 @@ namespace BSharp.Controllers
         /// <summary>
         /// Returns the entities as per the specifications in the get request
         /// </summary>
-        protected virtual async Task<GetResponse<TEntity>> GetImplAsync(GetArguments args)
+        protected virtual async Task<GetResponse<TEntity>> GetImplAsync(GetArguments args, Query<TEntity> queryOverride = null)
         {
             // Parse the parameters
             var filter = FilterExpression.Parse(args.Filter);
@@ -98,7 +104,7 @@ namespace BSharp.Controllers
             var select = SelectExpression.Parse(args.Select);
 
             // Prepare the query
-            var query = GetRepository().Query<TEntity>();
+            var query = queryOverride ?? GetRepository().Query<TEntity>();
 
             // Retrieve the user permissions for the current view
             var permissions = await UserPermissions(Constants.Read);

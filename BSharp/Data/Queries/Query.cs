@@ -31,8 +31,8 @@ namespace BSharp.Data.Queries
         private IEnumerable<object> _ids;
         private IEnumerable<object> _parentIds;
         private bool _includeRoots;
-        private string _composableSql;
-        private string _preparatorySql;
+        private string _fromSql;
+        private string _preSql;
         private SqlParameter[] _parameters;
 
         /// <summary>
@@ -64,8 +64,8 @@ namespace BSharp.Data.Queries
                 _ids = _ids == null ? null : new List<object>(_ids),
                 _parentIds = _parentIds == null ? null : new List<object>(_parentIds),
                 _includeRoots = _includeRoots,
-                _composableSql = _composableSql,
-                _preparatorySql = _preparatorySql,
+                _fromSql = _fromSql,
+                _preSql = _preSql,
                 _parameters = _parameters?.ToArray(),
             };
 
@@ -229,16 +229,16 @@ namespace BSharp.Data.Queries
         }
 
         /// <summary>
-        /// Low level API, instructs the query to use the provided SQL for type <see cref="T"/> instead of the default one provided by the "sources" constructor argument
+        /// Low level API, instructs the <see cref="Query{T}"/> to use the provided SQL code for the root source (the part in the SQL statement after FROM ...)
         /// </summary>
-        /// <param name="composableSql">The SQL to use when loading <see cref="T"/></param>
-        /// <param name="preparatorySql">Any SQL to be prepended at the beginning before the main SQL script. This cannot contain any SELECT query or any code that returns a result set</param>
+        /// <param name="fromSql">The SQL to use after FROM, can be either a table-valued function call, or a SELECT statement surrounded in parentheses</param>
+        /// <param name="preSql">Any SQL to be prepended at the beginning before the main SQL script. This cannot contain any SELECT query or any code that returns a result set</param>
         /// <param name="parameters">An array of SQL parameters to include in the result</param>
-        public Query<T> FromSql(string composableSql, string preparatorySql = null, params SqlParameter[] parameters)
+        public Query<T> FromSql(string fromSql, string preSql = null, params SqlParameter[] parameters)
         {
             var clone = Clone();
-            clone._composableSql = composableSql;
-            clone._preparatorySql = preparatorySql;
+            clone._fromSql = fromSql;
+            clone._preSql = preSql;
             clone._parameters = parameters;
 
             return clone;
@@ -274,27 +274,20 @@ namespace BSharp.Data.Queries
                 ParentIds = _parentIds,
                 IncludeRoots = _includeRoots,
                 Skip = _skip,
-                Top = _top
+                Top = _top,
+                FromSql = _fromSql
             };
 
             // Prepare the parameters
             var ps = new SqlStatementParameters();
 
-            // Prepare the sources
-            if (!string.IsNullOrWhiteSpace(_composableSql))
+            // Add the from sql parameters
+            if(_parameters != null)
             {
-                // If a composable SQL is provided in a FromSql call, use it as the source of T rather than the default
-                sources = (t) =>
+                foreach(var p in _parameters)
                 {
-                    if (t == typeof(T))
-                    {
-                        return new SqlSource($@"({_composableSql})", _parameters);
-                    }
-                    else
-                    {
-                        return sources(t);
-                    }
-                };
+                    ps.AddParameter(p);
+                }
             }
 
             // Get raw SQL sources
@@ -308,9 +301,9 @@ namespace BSharp.Data.Queries
 ) As [S]";
 
             // always prepend the preparatory sql to the beginning
-            if (!string.IsNullOrWhiteSpace(_preparatorySql))
+            if (!string.IsNullOrWhiteSpace(_preSql))
             {
-                sql = $@"{_preparatorySql}
+                sql = $@"{_preSql}
 
 {sql}";
             }
@@ -340,6 +333,9 @@ namespace BSharp.Data.Queries
                 }
                 finally
                 {
+                    // Otherwise we might get an error
+                    cmd.Parameters.Clear();
+
                     // This block is never entered, but we put anyways for robustness
                     if (ownsConnection)
                     {
@@ -542,27 +538,20 @@ namespace BSharp.Data.Queries
             root.IncludeRoots = _includeRoots;
             root.Skip = _skip;
             root.Top = _top;
+            root.FromSql = _fromSql;
 
             // ------------------------ Step #2
 
             // Prepare the parameters
             var ps = new SqlStatementParameters();
 
-            // Prepare the sources
-            if (!string.IsNullOrWhiteSpace(_composableSql))
+            // Add the fromSql parameters
+            if (_parameters != null)
             {
-                // If a composable SQL is provided in FromSql call, use it as the source of T rather then the default
-                sources = (t) =>
+                foreach (var p in _parameters)
                 {
-                    if (t == typeof(T))
-                    {
-                        return new SqlSource($@"({_composableSql})", _parameters);
-                    }
-                    else
-                    {
-                        return sources(t);
-                    }
-                };
+                    ps.AddParameter(p);
+                }
             }
 
             // Get raw SQL sources
@@ -665,27 +654,20 @@ namespace BSharp.Data.Queries
                 IncludeRoots = _includeRoots,
                 OrderBy = orderByExp,
                 Skip = _skip,
-                Top = _top
+                Top = _top,
+                FromSql = _fromSql
             };
 
             // Prepare the parameters
             var ps = new SqlStatementParameters();
 
-            // Prepare the sources
-            if (!string.IsNullOrWhiteSpace(_composableSql))
+            // Add the fromSql parameters
+            if (_parameters != null)
             {
-                // If a composable SQL is provided in FromSql call, use it as the source of T rather then the default
-                sources = (t) =>
+                foreach (var p in _parameters)
                 {
-                    if (t == typeof(T))
-                    {
-                        return new SqlSource($@"{_composableSql}", _parameters);
-                    }
-                    else
-                    {
-                        return sources(t);
-                    }
-                };
+                    ps.AddParameter(p);
+                }
             }
 
             // Get raw SQL sources
@@ -694,21 +676,7 @@ namespace BSharp.Data.Queries
             // Use the internal query to create the SQL
             var sourceSql = flatQuery.PrepareStatement(rawSources, ps, userId, userTimeZone).Sql;
 
-            // Prepare a new sources function that uses the above SQL to override the default SQL for type T
-            string RawSourceOverride(Type t)
-            {
-                if (t == typeof(T))
-                {
-                    return $@"({sourceSql})";
-                }
-                else
-                {
-                    return rawSources(t);
-                }
-            }
-
             List<StringBuilder> toBeUnioned = new List<StringBuilder>(criteriaIndexes.Count());
-
             foreach (var criteriaIndex in criteriaIndexes)
             {
                 int index = criteriaIndex.Index;
@@ -721,12 +689,12 @@ namespace BSharp.Data.Queries
                 {
                     ResultType = typeof(T),
                     KeyType = typeof(TKey),
-                    Filter = criteriaExp,
+                    Filter = criteriaExp
                 };
 
                 JoinTree joinTree = criteriaQuery.JoinSql();
-                string joinSql = joinTree.GetSql(RawSourceOverride);
-                string whereSql = criteriaQuery.WhereSql(RawSourceOverride, joinTree, ps, userId, userTimeZone);
+                string joinSql = joinTree.GetSql(rawSources, fromSql: $@"({sourceSql})");
+                string whereSql = criteriaQuery.WhereSql(rawSources, joinTree, ps, userId, userTimeZone);
 
 
                 var sqlBuilder = new StringBuilder();
@@ -743,9 +711,9 @@ UNION
 
 {s2}");
 
-            if (!string.IsNullOrWhiteSpace(_preparatorySql))
+            if (!string.IsNullOrWhiteSpace(_preSql))
             {
-                sql = $@"{_preparatorySql}
+                sql = $@"{_preSql}
 
 {sql}";
             }
@@ -789,6 +757,9 @@ UNION
                 }
                 finally
                 {
+                    // Otherwise we might get an error
+                    cmd.Parameters.Clear();
+
                     // This block is never entered but we add it here for robustness
                     if (ownsConnection)
                     {

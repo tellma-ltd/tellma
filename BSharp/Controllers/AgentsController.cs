@@ -45,6 +45,13 @@ namespace BSharp.Controllers
             _blobService = blobService;
         }
 
+        [HttpGet("of-relation/{relation}")]
+        public async Task<ActionResult<GetResponse<Agent>>> GetAgentsOfRelation([FromRoute] string relation, [FromQuery] GetArguments args)
+        {
+            var queryOverride = _repo.Agents_OfRelation(relation);
+            return await GetInnerAsync(args, queryOverride);
+        }
+
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<Agent>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
         {
