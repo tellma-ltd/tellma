@@ -56,11 +56,11 @@ SET NOCOUNT ON;
 	SELECT
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
-		N'Error_TheAccountType0RequiresAnEntryType', A.[AccountGroupId]
+		N'Error_TheAccountType0RequiresAnEntryType', A.[AccountTypeId]
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
 	WHERE (E.[EntryTypeId] IS NULL)
-	AND A.[AccountGroupId] IN (
+	AND A.[AccountTypeId] IN (
 		SELECT [ResourceTypeId] FROM dbo.[ResourceTypesEntryTypes]
 	);
 
@@ -69,13 +69,11 @@ SET NOCOUNT ON;
 	SELECT
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
-		N'Error_IncompatibleAccountType0AndEntryType1',
-		AG.[AccountTypeId], E.EntryTypeId
+		N'Error_IncompatibleResourceType0AndEntryType1',
+		E.[ResourceTypeId], E.[EntryTypeId]
 	FROM @Entries E
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.AccountGroups AG ON A.AccountGroupId = AG.[Id]
-	LEFT JOIN dbo.[ResourceTypesEntryTypes] AE ON (AG.[AccountTypeId] = AE.[ResourceTypeId]) AND (E.EntryTypeId = AE.EntryTypeId)
-	WHERE (E.EntryTypeId IS NOT NULL AND AE.EntryTypeId IS NULL);
+	LEFT JOIN dbo.[ResourceTypesEntryTypes] RE ON (E.[ResourceTypeId] = RE.[ResourceTypeId]) AND (E.EntryTypeId = RE.EntryTypeId)
+	WHERE (E.EntryTypeId IS NOT NULL AND RE.EntryTypeId IS NULL);
 
 	-- RelatedAgent is required for selected account definition, 
 	--INSERT INTO @ValidationErrors([Key], [ErrorName])

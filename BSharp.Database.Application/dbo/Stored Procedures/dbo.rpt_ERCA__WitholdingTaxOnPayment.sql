@@ -7,7 +7,7 @@ BEGIN
 	SELECT
 		A.TaxIdentificationNumber As [Withholdee TIN],
 		A.[Name] As [Organization/Person Name],
-		A.[RegisteredAddress] As [Withholdee Address], 
+--		A.[RegisteredAddress] As [Withholdee Address], 
 		J.[Memo] As [Withholding Type],
 		J.[RelatedAmount] As [Taxable Amount], 
 		J.[MonetaryValue] As [Tax Withheld], 

@@ -11,7 +11,7 @@ AS
 	FROM dbo.[DocumentLineEntries] DLE
 	JOIN dbo.[DocumentLines] DL ON DLE.[DocumentLineId] = DL.[Id]
 	JOIN dbo.[Documents] D ON DL.[DocumentId] = D.[Id]
-	JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
+	JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 	WHERE D.[State] = N'Filed'
 	AND DL.[State] = N'Reviewed'
 	GROUP BY

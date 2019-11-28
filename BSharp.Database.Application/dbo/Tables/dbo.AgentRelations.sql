@@ -1,26 +1,27 @@
 ﻿CREATE TABLE [dbo].[AgentRelations] (
 	[Id]						INT					CONSTRAINT [PK_AgentRelations] PRIMARY KEY IDENTITY,
 	[OperatingSegmentId]		INT					NOT NULL CONSTRAINT [FK_AgentRelations__ResponsibilityCenterId] REFERENCES dbo.[ResponsibilityCenters]([Id]),
-	[AgentRelationDefinitionId]	NVARCHAR(50)		NOT NULL CONSTRAINT [FK_AgentRelations__AgentRelationDefinitionId] REFERENCES [dbo].[AgentRelationDefinitions]([Id]),
+	[DefinitionId]				NVARCHAR(50)		NOT NULL CONSTRAINT [FK_AgentRelations__DefinitionId] REFERENCES [dbo].[AgentRelationDefinitions]([Id]),
 	[AgentId]					INT					NOT NULL CONSTRAINT [FK_AgentRelations__AgentId] REFERENCES [dbo].[Agents] ([Id]) ON DELETE CASCADE,
 	[StartDate]					DATE				DEFAULT (CONVERT (date, SYSDATETIME())),
 	[Code]						NVARCHAR (50), -- 
 	[IsActive]					BIT					NOT NULL DEFAULT 1,
 --	customers
-	[CustomerRating]			INT,			-- user defined list
-	[ShippingAddress]			NVARCHAR (255), -- default, the full list is in a separate table
-	[BillingAddress]			NVARCHAR (255),
-	[CreditLine]				MONEY				DEFAULT 0,
+	--[CustomerRating]			INT,			-- user defined list
+	--[ShippingAddress]			NVARCHAR (255), -- default, the full list is in a separate table
+	--[BillingAddress]			NVARCHAR (255),
+	--[CreditLine]				MONEY				DEFAULT 0,
 --	employees
-	[JobTitle]					NVARCHAR (50), -- FK to table Jobs
+	[JobId]						INT, -- FK to table Jobs
 	[BasicSalary]				MONEY,
 	[TransportationAllowance]	MONEY,
-	[HardshipAllowance]			MONEY,
+--	[HardshipAllowance]			MONEY,
 	[OvertimeRate]				MONEY,
+	[BankAccountNumber]			NVARCHAR (34),
 --	suppliers
-	[SupplierRating]			INT,			-- user defined list
-	[PaymentTerms]				NVARCHAR (255),
---	cost centers
+	--[SupplierRating]			INT,			-- user defined list
+	--[PaymentTerms]				NVARCHAR (255),
+--	cost objects
 	[CostObjectType]			NVARCHAR (50)		CONSTRAINT [CK_AgentRelations__CostObjectType] CHECK([CostObjectType] IN (
 															N'CostUnit',
 															--N'CostCenter', -- replaced by the ones underneath
@@ -34,7 +35,7 @@
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AgentRelations__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AgentRelations__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AgentRelations__ModifiedById]  FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 /*
 	Agent Relation type		UDL (can only have ONE default account per (agent, relation type)
 		N'investor'			-- 
@@ -84,5 +85,5 @@ WSI
 */
 );
 GO
-CREATE UNIQUE INDEX [IX_AgentRelations__OperatingSegmentId_AgentRelationDefinitionId_AgentId] ON dbo.AgentRelations([OperatingSegmentId], [AgentRelationDefinitionId], [AgentId]);
+CREATE UNIQUE INDEX [IX_AgentRelations__OperatingSegmentId_AgentRelationDefinitionId_AgentId] ON dbo.AgentRelations([OperatingSegmentId], [DefinitionId], [AgentId]);
 GO

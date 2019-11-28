@@ -16,7 +16,7 @@ SELECT DISTINCT
 		DS.[RevokedAt] AS [Revoked At]
 	FROM dbo.Documents D
 	JOIN dbo.DocumentLines DL ON D.[Id] = DL.[DocumentId]
-	JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
+	JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 	JOIN dbo.[DocumentLineSignatures] DS ON DL.[Id] = DS.DocumentLineId
 	JOIN dbo.Agents AG ON DS.AgentId = AG.Id
 	JOIN dbo.Roles RL ON DS.RoleId = RL.[Id]

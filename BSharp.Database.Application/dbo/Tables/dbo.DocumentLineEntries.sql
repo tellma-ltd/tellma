@@ -6,10 +6,20 @@
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountId]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
 
-	[ResponsibilityCenterId]	INT				REFERENCES dbo.ResponsibilityCenters([Id]),
+	[AccountTypeId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
 	[AgentRelationDefinitionId]	NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
+	[ResourceTypeId]			NVARCHAR (50),
+	[IsCurrent]					BIT,
+
+	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
 	[ResourceId]				INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__ResourceId] REFERENCES dbo.Resources([Id]),
+	[ResponsibilityCenterId]	INT				REFERENCES dbo.ResponsibilityCenters([Id]),
+	[AccountDescriptorId]		NVARCHAR (10),--	CONSTRAINT [FK_DocumentLineEntriess__AccountDescriptorId] REFERENCES dbo.AccountDescriptors([Id]), -- to resolve Uniqueness Constraint
+	
+	[ResourceDescriptorId]		NVARCHAR (10),
+	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings	
+	
 	-- Entry Type is used to tag entries in a manner that does not affect the account balance
 	-- However, consider the case of acc depreciation. We want to map to a different GL. In that case, we set some account definition
 	-- to enforce a certain entry classification
@@ -26,10 +36,9 @@
 	--[ResourceInstanceId]		INT				CONSTRAINT [FK_DocumentLineEntries__ResourcePInstanceId] FOREIGN KEY ([ResourceInstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
 	--[Memo]						NVARCHAR (255),
-	[BatchCode]					NVARCHAR (50),
-	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings
+	
 	[MonetaryValue]				MONEY			NOT NULL DEFAULT 0,
-	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
+
 -- Tracking additive measures, the data type is to be decided by AA
 	[Count]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
 	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
@@ -49,14 +58,14 @@
 	[SortKey]					INT,
 -- for auditing
 	[CreatedAt]					DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__CreatedById] FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__ModifiedById] FOREIGN KEY ([ModifiedById])REFERENCES [dbo].[Users] ([Id]),	
+	[ModifiedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__ModifiedById]  FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),	
 );
 GO
-CREATE INDEX [IX_DocumentLineEntries__DocumentId] ON [dbo].[DocumentLineEntries]([DocumentLineId]);
+CREATE INDEX [IX_DocumentLineEntries__DocumentLineId] ON [dbo].[DocumentLineEntries]([DocumentLineId]);
 GO
 CREATE INDEX [IX_DocumentLineEntries__AccountId] ON [dbo].[DocumentLineEntries]([AccountId]);
 GO
-CREATE INDEX [IX_DocumentLineEntries__IfrsEntryClassificationId] ON [dbo].[DocumentLineEntries]([EntryTypeId]);
+CREATE INDEX [IX_DocumentLineEntries__EntryTypeId] ON [dbo].[DocumentLineEntries]([EntryTypeId]);
 GO

@@ -22,7 +22,7 @@ BEGIN
 				[Memo],-- [Frequency], [Repetitions],
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
-					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DocumentDefinitionId] = @DefinitionId
+					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
 				) As [SerialNumber]
 			FROM @Documents D
 		) AS s ON (t.Id = s.Id)
@@ -39,7 +39,7 @@ BEGIN
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[DocumentDefinitionId], [SerialNumber], [OperatingSegmentId], [DocumentDate], [VoucherNumericReference], --[SortKey],
+				[DefinitionId], [SerialNumber], [OperatingSegmentId], [DocumentDate], [VoucherNumericReference], --[SortKey],
 				[Memo]--, [Frequency], [Repetitions]
 			)
 			VALUES (
@@ -69,7 +69,7 @@ BEGIN
 				L.[Index],
 				L.[Id],
 				DI.Id AS DocumentId,
-				L.[LineDefinitionId], 
+				L.[DefinitionId], 
 				L.[AgentRelationDefinitionId],
 				L.[AgentId],
 				L.[ResourceId],
@@ -82,7 +82,7 @@ BEGIN
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
-				t.[LineDefinitionId]			= s.[LineDefinitionId],
+				t.[DefinitionId]			= s.[DefinitionId],
 				t.[AgentRelationDefinitionId]	= s.[AgentRelationDefinitionId],
 				t.[AgentId]						= s.[AgentId],
 				t.[ResourceId]					= s.[ResourceId],
@@ -93,7 +93,7 @@ BEGIN
 				t.[ModifiedAt]					= @Now,
 				t.[ModifiedById]				= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DocumentId], [LineDefinitionId], [SortKey],
+			INSERT ([DocumentId], [DefinitionId], [SortKey],
 				[AgentRelationDefinitionId],
 				[AgentId],
 				[ResourceId],
@@ -102,7 +102,7 @@ BEGIN
 				[ExternalReference],
 				[AdditionalReference]
 			)
-			VALUES (s.[DocumentId], s.[LineDefinitionId], s.[Index],
+			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index],
 				s.[AgentRelationDefinitionId],
 				s.[AgentId],
 				s.[ResourceId],
@@ -125,7 +125,8 @@ BEGIN
 	USING (
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], 
-			[ResponsibilityCenterId], [CurrencyId], [AgentRelationDefinitionId], [AgentId], [ResourceId], [EntryTypeId], [BatchCode], [DueDate],
+			[ResponsibilityCenterId], [CurrencyId], [AgentRelationDefinitionId], [AgentId], [ResourceId], [EntryTypeId], --[BatchCode], 
+			[DueDate],
 			[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
 			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAgentName], E.[RelatedAmount]
 				
@@ -144,7 +145,7 @@ BEGIN
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
-			t.[BatchCode]				= s.[BatchCode],
+		--	t.[ResourceDescriptorId]				= s.[BatchCode],
 			t.[DueDate]					= s.[DueDate],
 			t.[MonetaryValue]			= s.[MonetaryValue],
 			t.[Count]					= s.[Count],
@@ -162,12 +163,14 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], 
-				[ResponsibilityCenterId], [CurrencyId], [AgentRelationDefinitionId], [AgentId], [ResourceId], [EntryTypeId], [BatchCode], [DueDate],
+				[ResponsibilityCenterId], [CurrencyId], [AgentRelationDefinitionId], [AgentId], [ResourceId], [EntryTypeId], --[BatchCode], 
+				[DueDate],
 				[MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
 				[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount]
 				)
 		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId], 
-				s.[ResponsibilityCenterId], s.[CurrencyId], s.[AgentRelationDefinitionId], s.[AgentId], s.[ResourceId], s.[EntryTypeId], s.[BatchCode], s.[DueDate],
+				s.[ResponsibilityCenterId], s.[CurrencyId], s.[AgentRelationDefinitionId], s.[AgentId], s.[ResourceId], s.[EntryTypeId], --s.[BatchCode], 
+				s.[DueDate],
 				s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
 				s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentName], s.[RelatedAgentId], s.[RelatedAmount]
 				)

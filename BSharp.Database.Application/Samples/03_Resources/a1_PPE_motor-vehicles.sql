@@ -32,7 +32,7 @@
 	BEGIN
 		SELECT  N'motor-vehicles' AS [Resource Definition]
 		DECLARE @MotorVehiclesIds dbo.IdList;
-		INSERT INTO @MotorVehiclesIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'motor-vehicles';
+		INSERT INTO @MotorVehiclesIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'motor-vehicles';
 
 		SELECT ResourceTypeId, [Classification], [Name] AS 'Vehcile', --[Currency] AS 'Price In',	[LengthUnit] AS 'Usage In',	
 		[AvailableSince] AS 'Production Date', [Lookup1] AS N'Make', [Text1] AS 'Plate #'

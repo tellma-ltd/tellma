@@ -11,7 +11,7 @@ RETURNS TABLE AS RETURN
 		SELECT DL.Id AS DocumentLineId, WS.RoleId
 		FROM @Ids FE
 		JOIN dbo.DocumentLines DL ON FE.[Id] = DL.[Id]
-		JOIN dbo.Workflows W ON DL.LineDefinitionId = W.LineDefinitionId AND DL.[State] = W.[FromState]
+		JOIN dbo.Workflows W ON DL.[DefinitionId] = W.LineDefinitionId AND DL.[State] = W.[FromState]
 		JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 		WHERE [bll].[fn_DocumentLine_Criteria__Satisfied](FE.[Id], WS.Criteria) = 1	
 	),

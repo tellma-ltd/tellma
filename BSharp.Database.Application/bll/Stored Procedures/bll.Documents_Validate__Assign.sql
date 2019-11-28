@@ -13,7 +13,7 @@ SET NOCOUNT ON;
 		BE.[State]
 	FROM @Ids FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
-	JOIN [dbo].[DocumentDefinitions] DT ON BE.[DocumentDefinitionId] = DT.Id
+	JOIN [dbo].[DocumentDefinitions] DT ON BE.[DefinitionId] = DT.Id
 	WHERE (BE.[State] <> N'Active');
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

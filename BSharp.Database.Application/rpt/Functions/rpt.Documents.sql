@@ -7,9 +7,9 @@ RETURN
 		SELECT 	
 			CAST(D.[Id] AS NVARCHAR(30)) AS [Id],
 			CAST(D.[DocumentDate] AS NVARCHAR(30)) AS [DocumentDate],
-			D.[DocumentDefinitionId],
-			DT.Prefix + 
-			REPLICATE(N'0', DT.[CodeWidth] - 1 - FLOOR(LOG10(D.SerialNumber))) +
+			D.[DefinitionId] AS DocumentDefinitionId,
+			DD.Prefix + 
+			REPLICATE(N'0', DD.[CodeWidth] - 1 - FLOOR(LOG10(D.SerialNumber))) +
 			CAST(D.SerialNumber AS NVARCHAR(30)) AS [S/N],
 			D.[State],
 			ISNULL(VB.[StringPrefix], '') +
@@ -18,7 +18,7 @@ RETURN
 			D.[Memo],
 			DL.[Id] As [LineId],
 			DL.[SortKey],
-			DL.[LineDefinitionId],
+			DL.[DefinitionId] AS LineDefinitionId,
 			DLE.[Direction],
 			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryTypeId], 
 			R.[Name] AS [Resource],
@@ -29,7 +29,7 @@ RETURN
 			CAST(DLE.[Mass] AS MONEY) AS [Mass],
 			MUM.[Name] AS [MassUnit]
 		FROM dbo.Documents D
-		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
+		JOIN dbo.[DocumentDefinitions] DD ON D.[DefinitionId] = DD.[Id]
 		LEFT JOIN dbo.VoucherBooklets VB ON D.VoucherBookletId = VB.Id
 		LEFT JOIN dbo.DocumentAssignments DA ON D.[Id] = DA.[DocumentId]
 		LEFT JOIN dbo.Agents AG ON DA.AssigneeId = AG.Id
@@ -44,7 +44,7 @@ RETURN
 	SELECT 
 		(CASE WHEN [SortKey] = 1 THEN [Id] ELSE '' END) AS [Id],
 		(CASE WHEN [SortKey] = 1 THEN [DocumentDate] ELSE '' END) AS [DocumentDate],
-		(CASE WHEN [SortKey] = 1 THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentTypeId],
+		(CASE WHEN [SortKey] = 1 THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentDefinitionId],
 		(CASE WHEN [SortKey] = 1 THEN [S/N] ELSE '' END) AS [S/N],
 		(CASE WHEN [SortKey] = 1 THEN [State] ELSE '' END) AS [State],
 		(CASE WHEN [SortKey] = 1 THEN [VoucherRef] ELSE '' END) AS [VoucherRef],

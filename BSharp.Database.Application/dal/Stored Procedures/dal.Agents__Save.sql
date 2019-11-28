@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[Agents__Save]
+	@DefinitionId NVARCHAR (50),
 	@Entities [AgentList] READONLY,
 	@ImageIds [IndexedImageIdList] READONLY, -- Index, ImageId
 	@ReturnIds BIT = 0
@@ -16,11 +17,11 @@ SET NOCOUNT ON;
 		MERGE INTO [dbo].[Agents] AS t
 		USING (
 			SELECT [Index], [Id], 
-				[Name], [Name2], [Name3], [Code], [AgentType], [IsRelated], 
-				[TaxIdentificationNumber],
+				@DefinitionId AS [DefinitionId], [Name], [Name2], [Name3], [Code], [IsRelated], 
+				[TaxIdentificationNumber] --, [ImageId], -- imageId is handled separately in the code below.
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
-				[PreferredLanguage]
+				--[PreferredLanguage]
 				--[BirthDate], [Title], [TitleId], [Gender], [ResidentialAddress], [MaritalStatus], [NumberOfChildren],
 				--[Religion], [Race],  [TribeId], [RegionId],  
 				--[EducationLevelId], [EducationSublevelId], [BankId], [BankAccountNumber],
@@ -29,15 +30,15 @@ SET NOCOUNT ON;
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
 		THEN
-			UPDATE SET 
+			UPDATE SET
+				t.[DefinitionId]			= s.[DefinitionId],
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
 				t.[Code]					= s.[Code],
-				t.[AgentType]				= s.[AgentType], 
-
 				t.[IsRelated]				= s.[IsRelated],
 				t.[TaxIdentificationNumber] = s.[TaxIdentificationNumber],
+			--	t.[ImageId]					= s.[ImageId],
 				--t.[IsLocal]					= s.[IsLocal],
 				--t.[Citizenship]				= s.[Citizenship],
 				--t.[Facebook]				= s.[Facebook],
@@ -47,7 +48,7 @@ SET NOCOUNT ON;
 				--t.[PreferredContactAddress1] = s.[PreferredContactAddress1],
 				--t.[PreferredContactChannel2] = s.[PreferredContactChannel2],
 				--t.[PreferredContactAddress2] = s.[PreferredContactAddress2],
-				t.[PreferredLanguage] = s.[PreferredLanguage],
+				--t.[PreferredLanguage] = s.[PreferredLanguage],
 
 				--t.[BirthDate]				= s.[BirthDate],
 				--t.[Title]					= s.[Title],
@@ -78,22 +79,22 @@ SET NOCOUNT ON;
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[Name], [Name2], [Name3], [Code], [AgentType], [IsRelated], 
-				[TaxIdentificationNumber],
+				[DefinitionId], [Name], [Name2], [Name3], [Code], [IsRelated], 
+				[TaxIdentificationNumber]--,[ImageId]
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
-				[PreferredLanguage]
+				--[PreferredLanguage]
 				--[BirthDate], [Title], [TitleId], [Gender], [ResidentialAddress], [MaritalStatus], [NumberOfChildren],
 				--[Religion], [Race],  [TribeId], [RegionId],  
 				--[EducationLevelId], [EducationSublevelId], [BankId], [BankAccountNumber],
 				--[OrganizationType], [WebSite], [ContactPerson], [RegisteredAddress], [OwnershipType], [OwnershipPercent]
 				)
 			VALUES (
-				s.[Name], s.[Name2], s.[Name3], s.[Code], s.[AgentType], s.[IsRelated], 
-				s.[TaxIdentificationNumber],
+				s.[DefinitionId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[IsRelated], 
+				s.[TaxIdentificationNumber]--, s[ImageId]
 				--s.[IsLocal], s.[Citizenship], s.[Facebook], s.[Instagram], s.[Twitter],
 				--s.[PreferredContactChannel1], s.[PreferredContactAddress1], s.[PreferredContactChannel2], s.[PreferredContactAddress2],
-				s.[PreferredLanguage]
+				--s.[PreferredLanguage]
 				--s.[BirthDate], s.[Title], s.[TitleId], s.[Gender], s.[ResidentialAddress], s.[MaritalStatus], s.[NumberOfChildren], s.[Religion], s.[Race], s.[TribeId], s.[RegionId], 
 				--s.[EducationLevelId], s.[EducationSublevelId], s.[BankId], s.[BankAccountNumber],
 				--s.[OrganizationType], s.[WebSite], s.[ContactPerson], s.[RegisteredAddress], s.[OwnershipType], s.[OwnershipPercent]

@@ -2,7 +2,8 @@
 (
 	@EmployeeTaxableIncomes dbo.AgentBalanceList READONLY
 )
-RETURNS TABLE AS RETURN
+RETURNS TABLE 
+AS RETURN
 (
 	SELECT AgentId,
 		(CASE 

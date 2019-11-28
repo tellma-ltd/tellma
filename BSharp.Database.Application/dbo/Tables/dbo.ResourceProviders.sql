@@ -2,5 +2,4 @@
 (
 	[ResourceId]	INT, -- FK Resources
 	[ProviderId]	INT, -- FK Agents
-
-)
+);

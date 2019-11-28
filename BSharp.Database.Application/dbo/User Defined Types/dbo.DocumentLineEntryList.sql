@@ -6,11 +6,18 @@
 	[EntryNumber]				INT					NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
-	[ResponsibilityCenterId]	INT,
-	[CurrencyId]				NCHAR (3),
+	[AccountTypeId]				NVARCHAR (50),
 	[AgentRelationDefinitionId]	NVARCHAR (50),
+	[ResourceTypeId]			NVARCHAR (50),
+	[IsCurrent]					BIT,
 	[AgentId]					INT,
 	[ResourceId]				INT,
+	[ResponsibilityCenterId]	INT,
+	[AccountDescriptorId]		NVARCHAR (10),
+	[ResourceDescriptorId]		NVARCHAR (10),
+	[CurrencyId]				NCHAR (3),
+
+
 	[EntryTypeId]				NVARCHAR (255),		-- Note that the responsibility center might define the Ifrs Note
 	[BatchCode]					NVARCHAR (50),
 	[DueDate]					DATE,

@@ -47,7 +47,7 @@ IF @DebugResources = 1
 BEGIN
 	SELECT  N'employee-benefits' AS [Resource Definition]
 	DECLARE @EmployeeBenefitIds dbo.IdList;
-	INSERT INTO @EmployeeBenefitIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'employee-benefits';
+	INSERT INTO @EmployeeBenefitIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'employee-benefits';
 	
 	SELECT ResourceTypeId, [Name] AS 'Employee Benefit', [TimeUnit]
 	FROM rpt.Resources(@EmployeeBenefitIds);

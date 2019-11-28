@@ -1,29 +1,27 @@
 ﻿CREATE TABLE [dbo].[AgentRelationDefinitions] ( -- managed by Banan IT
-	[Id]						NVARCHAR (50) PRIMARY KEY,
-	[SingularLabel]				NVARCHAR (50)	NOT NULL, -- legal Label
-	[SingularLabel2]			NVARCHAR (50),
-	[SingularLabel3]			NVARCHAR (50),
-	[PluralLabel]				NVARCHAR (50),
-	[PluralLabel2]				NVARCHAR (50),
-	[PluralLabel3]				NVARCHAR (50),
-	[Prefix]					NVARCHAR (30)	DEFAULT (N''),
-	[CodeWidth]					TINYINT			DEFAULT (3), -- For presentation purposes
-	[IsActive]					BIT				NOT NULL DEFAULT 1,
+	[Id]							NVARCHAR (50) PRIMARY KEY,
+	[SingularLabel]					NVARCHAR (50)	NOT NULL, -- legal Label
+	[SingularLabel2]				NVARCHAR (50),
+	[SingularLabel3]				NVARCHAR (50),
+	[PluralLabel]					NVARCHAR (50),
+	[PluralLabel2]					NVARCHAR (50),
+	[PluralLabel3]					NVARCHAR (50),
+	[Prefix]						NVARCHAR (30)	DEFAULT (N''),
+	[CodeWidth]						TINYINT			DEFAULT (3), -- For presentation purposes
+	[IsActive]						BIT				NOT NULL DEFAULT 1,
 
-	[PayType]					NVARCHAR (50), -- Hourly, Daily, weekly, monthly
-	[JobTitleVisibility]		NVARCHAR (50), -- not visible, visible, visible and required
-	[BasicSalaryVisibility]		NVARCHAR (50),
+	[JobTitleVisibility]			NVARCHAR (50), -- not visible, visible, visible and required
+	[BasicSalaryVisibility]			NVARCHAR (50),
 	[TransportationAllowanceVisibility]		NVARCHAR (50),
 	[HardshipAllowanceVisibility]	NVARCHAR (50),
-	[OvertimeRate]				MONEY,
+	[OvertimeRate]					MONEY,
 
-
-	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
-	[ModifiedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedAt]						DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
+	[CreatedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[ModifiedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 
+	[ModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 	CONSTRAINT [FK_AgentRelationDefinitions__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_AgentRelationDefinitions__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),
+	CONSTRAINT [FK_AgentRelationDefinitions__ModifiedById]  FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),
 );
 
 

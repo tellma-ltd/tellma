@@ -49,7 +49,7 @@
 		SELECT  N'it-equipment' AS [Resource Definition]
 
 		DECLARE @ITEquipmentIds dbo.IdList;
-		INSERT INTO @ITEquipmentIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'it-equipment';
+		INSERT INTO @ITEquipmentIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'it-equipment';
 
 		SELECT ResourceTypeId, Classification, [Name] AS 'IT Equipment', [TimeUnit] AS 'Usage In',
 			[Lookup1] AS 'Manufacturer', [Lookup2] AS 'Operating System'

@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [api].[Agents__Save]
+	@DefinitionId NVARCHAR(50),
 	@Entities [AgentList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -9,6 +10,7 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Agents_Validate__Save]
+		@DefinitionId = @DefinitionId,
 		@Entities = @Entities;
 
 	SELECT @ValidationErrorsJson = 
@@ -22,5 +24,7 @@ SET NOCOUNT ON;
 		RETURN;
 
 	EXEC [dal].[Agents__Save]
-		@Entities = @Entities, @ReturnIds = @ReturnIds;
+		@DefinitionId = @DefinitionId,
+		@Entities = @Entities,
+		@ReturnIds = @ReturnIds;
 END

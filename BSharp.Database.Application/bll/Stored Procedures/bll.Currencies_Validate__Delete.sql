@@ -5,16 +5,14 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
     SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheCurrency0IsUsedIn12', 
+		N'Error_TheCurrency0IsUsedIn1', 
 		[dbo].[fn_Localize](C.[Name], C.[Name2], C.[Name3]) AS CurrencyName,
-		[dbo].[fn_Localize](AD.[TitleSingular], AD.[TitleSingular2], AD.[TitleSingular3]) AS AccountDefinitionTitleSingular,
-		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS ResourceName
+		[dbo].[fn_Localize](R.[Name], R.[Name2], R.[Name3]) AS ResourceName
     FROM [dbo].[Currencies] C
-	JOIN [dbo].Accounts A ON A.[CurrencyId] = C.Id
-	JOIN dbo.[AccountGroups] AD ON A.[AccountGroupId] = AD.Id
+	JOIN [dbo].[Resources] R ON R.[CurrencyId] = C.Id
 	JOIN @Ids FE ON FE.[Id] = C.[Id];
 
 	---- TODO: Is it really used in [dbo].[Accounts]?

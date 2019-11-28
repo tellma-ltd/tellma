@@ -25,7 +25,7 @@ INSERT INTO @ReceivedChecks ([Index],
 BEGIN
 	SELECT  N'received-checks' AS [Resource Definition]
 	DECLARE @ReceivedChecksIds dbo.IdList;
-	INSERT INTO @ReceivedChecksIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'received-checks';
+	INSERT INTO @ReceivedChecksIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'received-checks';
 	
 	SELECT ResourceTypeId, [Name] AS 'Received Check', MonetaryValue AS [Amount]
 	FROM rpt.Resources(@ReceivedChecksIds);

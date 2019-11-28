@@ -1804,4 +1804,60 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ResourceTypeId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="819c2856-04fc-4571-87c4-638463dc377e" ChangeDateTime="11/27/2019 16:44:35">
+    <Property Name="ElementName" Value="[dbo].[Agents].[AgentType]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Agents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="67695c97-b85e-4ef1-9d18-980968f0f752" ChangeDateTime="11/27/2019 16:55:43">
+    <Property Name="ElementName" Value="[dbo].[AgentRelations].[AgentRelationDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentRelations]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ed4c7b6d-8949-4ed1-9041-db4691c291ef" ChangeDateTime="11/27/2019 16:59:50">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[AccountGroupId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountTypeId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="54a0aa7c-79bf-44ba-9223-ae4e35017d0e" ChangeDateTime="11/27/2019 17:58:16">
+    <Property Name="ElementName" Value="[dbo].[DocumentLines].[LineDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLines]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a02a760e-d7ec-419c-941e-5a2d104b13f6" ChangeDateTime="11/27/2019 18:03:51">
+    <Property Name="ElementName" Value="[dbo].[Documents].[DocumentDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Documents]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e5fabc2f-c280-42b3-b9e8-985a21aebe48" ChangeDateTime="11/27/2019 18:07:49">
+    <Property Name="ElementName" Value="[dbo].[Lookups].[LookupDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Lookups]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="75e083ba-d521-4000-953e-cbc84d6e56cd" ChangeDateTime="11/27/2019 18:17:50">
+    <Property Name="ElementName" Value="[dbo].[Resources].[ResourceDefinitionId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Resources]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DefinitionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="467a5088-97a0-46d8-b2d7-4a2787a709a7" ChangeDateTime="11/27/2019 20:00:57">
+    <Property Name="ElementName" Value="[dbo].[DocumentLineEntries].[BatchCode]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentLineEntries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceDescriptorId]" />
+  </Operation>
 </Operations>

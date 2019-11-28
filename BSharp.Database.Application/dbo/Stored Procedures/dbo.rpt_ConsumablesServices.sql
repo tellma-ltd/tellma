@@ -9,7 +9,7 @@ BEGIN
 			SUM(J.[Direction] * J.[Value]) AS [Expense]
 		FROM [dbo].[fi_Journal](@fromDate, @toDate) J
 		JOIN dbo.[Agents] CO ON J.[AgentId] = CO.Id
-		JOIN dbo.[AgentRelations] AR ON AR.AgentId = J.AgentId AND AR.AgentRelationDefinitionId =  J.[AgentRelationDefinitionId]
+		JOIN dbo.[AgentRelations] AR ON AR.AgentId = J.AgentId AND AR.[DefinitionId] =  J.[AgentRelationDefinitionId]
 		WHERE AR.[CostObjectType] IN (
 			N'CostUnit',
 			--N'CostCenter', -- replaced by the ones underneath

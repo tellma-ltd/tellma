@@ -25,12 +25,12 @@ RETURN
 		J.[RelatedAgentId],
 		J.[RelatedAmount],
 		
-		R.[ResourceDefinitionId],
+		R.[DefinitionId],
 		R.[Lookup1Id],
-		R.[Lookup2Id],
-		R.[Lookup3Id],
-		R.[Lookup4Id]
+		R.[Lookup2Id]--,
+		--R.[Lookup3Id],
+		--R.[Lookup4Id]
 	FROM dbo.[fi_NormalizedJournal](NULL, NULL, @CountUnitId, @MassUnitId, @VolumeUnitId) J
 	JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
-	WHERE J.[AccountGroupId] = N'Inventory'
+	WHERE J.[AccountTypeId] = N'NonFinancialAsset' AND J.ResourceTypeId = N'Inventories'
