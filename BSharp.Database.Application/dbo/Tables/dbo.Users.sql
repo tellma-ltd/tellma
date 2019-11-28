@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Users] (
-	[Id]					INT	PRIMARY KEY,
+	[Id]					INT	PRIMARY KEY 	CONSTRAINT [FK_Users__Id] REFERENCES [dbo].[Agents] ([Id]),
 	[ExternalId]			NVARCHAR (450),
 	[Email]					NVARCHAR (255)		NOT NULL UNIQUE, -- Required
 
@@ -14,13 +14,10 @@
 
 	-- ??
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Users__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
-	-- ??
-	CONSTRAINT [FK_Users__Id] FOREIGN KEY ([Id]) REFERENCES [dbo].[Agents] ([Id]),
-	CONSTRAINT [FK_Users__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_Users__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Users__ModifiedById]  FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	-- ??	
 );
 GO
 --CREATE CLUSTERED INDEX [IX_LocalUsers__SortKey]

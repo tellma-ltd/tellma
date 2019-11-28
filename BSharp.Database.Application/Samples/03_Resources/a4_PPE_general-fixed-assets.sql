@@ -24,7 +24,7 @@
 	BEGIN
 		SELECT  N'fixed-assets' AS [Resource Definition]
 		DECLARE @FixedAssetsIds dbo.IdList;
-		INSERT INTO @FixedAssetsIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'fixed-assets';
+		INSERT INTO @FixedAssetsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'fixed-assets';
 
 		SELECT ResourceTypeId, [Name] AS 'Fixed Asset', [TimeUnit] AS 'Usage In' -- Custodian/Location, etc.... from DLE
 		FROM rpt.Resources(@FixedAssetsIds);

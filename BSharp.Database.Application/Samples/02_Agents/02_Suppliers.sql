@@ -20,7 +20,8 @@
 
 	IF @DebugAgents = 1
 		SELECT AR.[Code], A.[Name], AR.[StartDate] AS 'Supplier Since', AR.[IsActive],
-		AR.[SupplierRating], AR.[PaymentTerms], RC.[Name] AS OperatingSegment
+		--AR.[SupplierRating], AR.[PaymentTerms], 
+		RC.[Name] AS OperatingSegment
 		FROM dbo.Agents A
-		JOIN dbo.AgentRelations AR ON A.[Id] = AR.[AgentId] AND AR.AgentRelationDefinitionId = N'suppliers'
+		JOIN dbo.AgentRelations AR ON A.[Id] = AR.[AgentId] AND AR.[DefinitionId] = N'suppliers'
 		JOIN dbo.ResponsibilityCenters RC ON AR.OperatingSegmentId = RC.Id;

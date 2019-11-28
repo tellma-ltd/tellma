@@ -9,7 +9,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
     SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheUnit0IsUsedInResouces', MU.[Name], R.[ResourceDefinitionId], R.[Name]
+		N'Error_TheUnit0IsUsedInResouces', MU.[Name], R.[DefinitionId], R.[Name]
     FROM dbo.MeasurementUnits MU
 	JOIN dbo.[Resources] R ON R.MassUnitId = MU.Id
 	JOIN @Ids FE ON FE.[Id] = MU.[Id]
@@ -18,7 +18,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
     SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheUnit0IsUsedInResouces', MU.[Name], R.[ResourceDefinitionId], R.[Name]
+		N'Error_TheUnit0IsUsedInResouces', MU.[Name], R.[DefinitionId], R.[Name]
     FROM dbo.MeasurementUnits MU
 	JOIN dbo.[Resources] R ON R.VolumeUnitId = MU.Id
 	JOIN @Ids FE ON FE.[Id] = MU.[Id]
@@ -27,7 +27,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
     SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheUnit0IsUsedInResouces', MU.[Name], R.[ResourceDefinitionId], R.[Name]
+		N'Error_TheUnit0IsUsedInResouces', MU.[Name], R.[DefinitionId], R.[Name]
     FROM dbo.MeasurementUnits MU
 	JOIN dbo.[Resources] R ON R.CountUnitId = MU.Id
 	JOIN @Ids FE ON FE.[Id] = MU.[Id]
@@ -36,7 +36,7 @@ SET NOCOUNT ON;
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
     SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
-		N'Error_TheUnit0IsUsedInResouces', MU.[Name], R.[ResourceDefinitionId], R.[Name]
+		N'Error_TheUnit0IsUsedInResouces', MU.[Name], R.[DefinitionId], R.[Name]
     FROM dbo.MeasurementUnits MU
 	JOIN dbo.[Resources] R ON R.TimeUnitId = MU.Id
 	JOIN @Ids FE ON FE.[Id] = MU.[Id]

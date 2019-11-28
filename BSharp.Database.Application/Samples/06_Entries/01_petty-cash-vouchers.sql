@@ -73,7 +73,7 @@ BEGIN
 	IF @DebugPettyCashVouchers = 1
 	BEGIN
 		DECLARE @PettyCashVoucherIds dbo.IdList;
-		INSERT INTO @PettyCashVoucherIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DocumentDefinitionId = N'petty-cash-vocuhers';
+		INSERT INTO @PettyCashVoucherIds([Id]) SELECT [Id] FROM dbo.Documents WHERE [DefinitionId] = N'petty-cash-vocuhers';
 		EXEC [rpt].[Docs__UI] @PettyCashVoucherIds;
 	END
 /*

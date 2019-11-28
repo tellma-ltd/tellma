@@ -6,7 +6,7 @@ RETURN
 	SELECT [Id] AS DocumentLineId
 	FROM dbo.DocumentLines
 	WHERE [Id] IN (SELECT [Id] FROM @DocumentLinesIds)
-	AND [LineDefinitionId] NOT IN (
+	AND [DefinitionId] NOT IN (
 		SELECT [LineDefinitionId] FROM dbo.Workflows
 	)
 )

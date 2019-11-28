@@ -41,7 +41,7 @@ IF @DebugResources = 1
 BEGIN
 	SELECT N'steel-products' AS [Resource Definition]
 	DECLARE @SteelProductsIds dbo.IdList;
-	INSERT INTO @SteelProductsIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'steel-products';
+	INSERT INTO @SteelProductsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'steel-products';
 
 	SELECT ResourceTypeId, [Name] AS 'Steel Prooduct', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
 	FROM rpt.Resources(@SteelProductsIds);

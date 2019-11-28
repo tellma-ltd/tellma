@@ -23,7 +23,7 @@ SET NOCOUNT ON;
 	-- TODO: convert State to integers
 	WITH DocumentsLineDefinitions AS
 	(
-		SELECT DISTINCT DL.LineDefinitionId FROM 
+		SELECT DISTINCT DL.[DefinitionId] FROM 
 		dbo.DocumentLines DL
 		JOIN @Ids D ON DL.DocumentId = D.[Id]
 	),
@@ -31,7 +31,7 @@ SET NOCOUNT ON;
 	(
 		SELECT LineDefinitionId, MAX([dbo].[fn_State__StateId]([ToState])) AS FinalStateId
 		FROM dbo.Workflows
-		WHERE LineDefinitionId IN (SELECT LineDefinitionId FROM DocumentsLineDefinitions)
+		WHERE LineDefinitionId IN (SELECT [DefinitionId] FROM DocumentsLineDefinitions)
 		GROUP BY LineDefinitionId
 	),
 	WorkflowsFinalStates AS
@@ -47,7 +47,7 @@ SET NOCOUNT ON;
 		DL.[State]
 	FROM @Ids D
 	JOIN dbo.DocumentLines DL ON DL.[DocumentId] = D.[Id]
-	JOIN WorkflowsFinalStates WFS ON DL.[LineDefinitionId] = WFS.[LineDefinitionId]
+	JOIN WorkflowsFinalStates WFS ON DL.[DefinitionId] = WFS.[LineDefinitionId]
 	WHERE DL.[State] NOT IN (N'Void', N'Rejected', N'Failed', N'Invalid', WFS.FinalState)
 
 	-- Cannot file a document with non-balanced (Reviewed) lines

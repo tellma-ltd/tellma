@@ -29,7 +29,7 @@ SET NOCOUNT ON;
 		N'Error_TheCode0IsUsed',
 		FE.Code
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.Code = BE.Code AND BE.ResourceDefinitionId = @DefinitionId
+	JOIN [dbo].[Resources] BE ON FE.Code = BE.Code AND BE.[DefinitionId] = @DefinitionId
 	WHERE (FE.Id <> BE.Id);
 
 	-- Code must not be duplicated in the uploaded list
@@ -54,7 +54,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name] = BE.[Name] AND BE.ResourceDefinitionId = @DefinitionId
+	JOIN [dbo].[Resources] BE ON FE.[Name] = BE.[Name] AND BE.[DefinitionId] = @DefinitionId
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name2 must not exist in the db
@@ -64,7 +64,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name2]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name2] = BE.[Name2] AND BE.ResourceDefinitionId = @DefinitionId
+	JOIN [dbo].[Resources] BE ON FE.[Name2] = BE.[Name2] AND BE.[DefinitionId] = @DefinitionId
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name3 must not exist in the db
@@ -74,7 +74,7 @@ SET NOCOUNT ON;
 		N'Error_TheName0IsUsed',
 		FE.[Name3]
 	FROM @Entities FE 
-	JOIN [dbo].[Resources] BE ON FE.[Name3] = BE.[Name3] AND BE.ResourceDefinitionId = @DefinitionId
+	JOIN [dbo].[Resources] BE ON FE.[Name3] = BE.[Name3] AND BE.[DefinitionId] = @DefinitionId
 	WHERE (FE.Id <> BE.Id);
 
 	-- Name must be unique in the uploaded list

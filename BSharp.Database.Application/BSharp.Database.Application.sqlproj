@@ -150,11 +150,9 @@
     <Build Include="dbo\Tables\dbo.LineDefinitions.sql" />
     <Build Include="dbo\Functions\dbo.fe_EndDateTime__StartDateTime_Frequency_Duration.sql" />
     <Build Include="dbo\Stored Procedures\dbo.ui_Documents_Lines_Entries__Json.sql" />
-    <None Include="dbo\Stored Procedures\dbo.bll_Documents__Fill.sql" />
     <Build Include="dbo\Functions\dbo.fw_Documents__Json.sql" />
     <Build Include="dbo\Functions\dbo.fw_TransactionLines__Json.sql" />
     <Build Include="dbo\Functions\dbo.fw_TransactionEntries__Json.sql" />
-    <Build Include="dbo\User Defined Types\dbo.DocumentLineTypeList.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountList.sql" />
     <Build Include="dbo\Functions\dbo.fn_User__Language.sql" />
     <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Unpost.sql" />
@@ -263,7 +261,6 @@
     <Build Include="api\Stored Procedures\api.Resources__Save.sql" />
     <Build Include="api\Stored Procedures\api.Resources__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources_Validate__Delete.sql" />
-    <Build Include="dbo\User Defined Types\dbo.ResourceInstanceList.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Agents__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexedImageIdList.sql" />
@@ -371,14 +368,12 @@
     <Build Include="api\Stored Procedures\api.AccountClassifications__Deprecate.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Deprecate.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Deprecate.sql" />
-    <Build Include="dbo\Tables\dbo.AccountGroups.sql" />
     <Build Include="Mapping\AccountClassifications.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Delete.sql" />
     <Build Include="Mapping\AccountClassifications__AsQuery.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__DeleteWithDescendants.sql" />
-    <Build Include="Mapping\AccountGroups.sql" />
     <Build Include="api\Stored Procedures\api.Accounts__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Save.sql" />
@@ -432,7 +427,6 @@
     <None Include="Provisioning\03_DocumentsLines\b_DELETE_LineDefinitionEntries.sql" />
     <None Include="Provisioning\03_DocumentsLines\b_DocumentDefinitions.sql" />
     <Build Include="bll\Stored Procedures\bll.PurchaseInvoice__Fill.sql" />
-    <Build Include="dbo\Tables\dbo.TaxAccounts.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
     <Build Include="api\Stored Procedures\api.ResponsibilityCenters__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.ResponsibilityCenters__Save.sql" />
@@ -468,12 +462,14 @@
     <Build Include="dal\Stored Procedures\dal.ResponsibilityCenters__Activate.sql" />
     <Build Include="Mapping\ResponsibilityCenters.sql" />
     <Build Include="Mapping\ResponsibilityCenters__AsQuery.sql" />
-    <None Include="Samples\01_Basic\d_Currencies.sql" />
-    <None Include="Samples\01_Basic\e_MeasurementUnits.sql" />
-    <None Include="Samples\01_Basic\g_Lookups.sql" />
+    <None Include="Samples\01_Basic\a_Currencies.sql" />
+    <None Include="Samples\01_Basic\b_MeasurementUnits.sql" />
+    <None Include="Samples\01_Basic\c_Lookups.sql" />
     <None Include="Samples\00_Setup\d_EntryTypes.sql" />
     <None Include="Samples\00_Setup\e_ResourceTypesEntryTypes.sql" />
     <None Include="Samples\01_Basic\h_Workflows.sql" />
+    <Build Include="dbo\Tables\dbo.AgentDefinitions.sql" />
+    <Build Include="dbo\Tables\dbo.AccountDescriptors.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -496,6 +492,7 @@
     <None Include="Samples\00_Setup\z_LookupDefinitions.sql" />
     <None Include="Samples\00_Setup\f_AccountTypes.sql" />
     <None Include="IntegrationTests.publish.publish.xml" />
+    <None Include="dbo\Tables\Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

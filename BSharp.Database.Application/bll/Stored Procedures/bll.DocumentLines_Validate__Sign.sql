@@ -26,7 +26,7 @@ SET NOCOUNT ON;
 		WHERE [Id] IN (
 			SELECT DL.[Id] 
 			FROM dbo.DocumentLines DL
-			JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[LineDefinitionId]
+			JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId]
 			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 			WHERE W.ToState = @ToState AND WS.[ProxyRoleId] IS NULL
 		);
@@ -42,7 +42,7 @@ SET NOCOUNT ON;
 		WHERE [Id] IN (
 			SELECT DL.[Id] 
 			FROM dbo.DocumentLines DL
-			JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[LineDefinitionId]
+			JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId]
 			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 			WHERE W.ToState = @ToState
 			AND WS.[ProxyRoleId] NOT IN (
@@ -60,7 +60,7 @@ SET NOCOUNT ON;
 		@ToState
 	FROM @Ids FE
 	JOIN dbo.DocumentLines DL ON FE.[Id] = DL.[Id]
-	LEFT JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[LineDefinitionId] AND W.[FromState] = DL.[State]
+	LEFT JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId] AND W.[FromState] = DL.[State]
 	WHERE W.ToState <> @ToState
 
 	-- cannot sign lines unless the document is active. Document can be active, posted/filed	,
@@ -88,7 +88,7 @@ SET NOCOUNT ON;
 	WITH
 	InventoryAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts] A
-		WHERE A.[AccountGroupId] = N'Inventory'
+		WHERE A.[AccountTypeId] = N'Inventory'
 	),
 	CurrentDocLines AS (
 		SELECT MAX(FE.[Index]) AS [Index], DLE.AccountId,

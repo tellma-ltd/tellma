@@ -14,8 +14,8 @@ BEGIN
 	DECLARE @AllEntries dbo.DocumentLineEntryList;
 	DECLARE @FilledAllEntries [dbo].[DocumentLineEntryList];
 
-	INSERT INTO @AllLines([Index], [DocumentIndex], [Id], [LineDefinitionId])
-	SELECT [Index], [DocumentIndex], [Id], [LineDefinitionId] FROM @Lines
+	INSERT INTO @AllLines([Index], [DocumentIndex], [Id], [DefinitionId])
+	SELECT [Index], [DocumentIndex], [Id], [DefinitionId] FROM @Lines
 	UNION
 	SELECT [Index], [DocumentIndex], [Id], [LineDefinitionId] FROM @WideLines
 

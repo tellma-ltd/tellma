@@ -33,7 +33,7 @@ DECLARE @SKDs [dbo].ResourceList;
 	BEGIN
 		SELECT N'skds' AS [Resource Definition]
 		DECLARE @SKDIds dbo.IdList;
-		INSERT INTO @SKDIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'skds';
+		INSERT INTO @SKDIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'skds';
 
 		SELECT ResourceTypeId, [Name] AS 'SKD', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
 		FROM rpt.Resources(@SKDIds);

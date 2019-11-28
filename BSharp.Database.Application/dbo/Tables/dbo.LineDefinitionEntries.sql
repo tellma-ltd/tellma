@@ -9,7 +9,7 @@
 	[AccountId]							INT, -- invisible, except in 
 
 	[AccountTypeSource]					SMALLINT			NOT NULL DEFAULT 2, -- 0:set from line def, 3: from account
-	[AccountTypeId]						NVARCHAR (50)	REFERENCES dbo.[AccountGroups]([Id]), -- 
+	[AccountTypeId]						NVARCHAR (50)	REFERENCES dbo.[AccountTypes]([Id]), -- 
 
 	[AgentRelationDefinitionSource]		SMALLINT			NOT NULL DEFAULT 2, --  -1: n/a, 0:set from line def, 3: from account
 	[AgentRelationDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),

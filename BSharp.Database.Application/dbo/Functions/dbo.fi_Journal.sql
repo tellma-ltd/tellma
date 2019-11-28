@@ -14,42 +14,56 @@ RETURN
 		V.[Id],
 		V.[DocumentLineId],
 		V.[DocumentId],
-		V.[DocumentDate],
-		V.[SerialNumber],
-		V.[VoucherNumericReference],
 		V.[DocumentDefinitionId],
+		V.[SerialNumber],
+		V.[DocumentDate],
+		V.[VoucherNumericReference],
+		V.[DocumentLookup1Id],
+		V.[DocumentLookup2Id],
+		V.[DocumentLookup3Id],
+		V.[DocumentText1],
+		V.[DocumentText2],
+		--D.[Frequency],
+		--D.[Repetitions],
+		--D.[EndDate],
 		V.[LineDefinitionId],
+		V.[Memo],
+		V.[EntryNumber],
 		V.[Direction],
-		V.[AccountId],
-		A.[AccountGroupId],
 		A.[AccountClassificationId],
-		V.[EntryTypeId],
+		V.[AccountId],		
+		V.[AccountTypeId],
 		V.[AgentRelationDefinitionId],
+		V.[ResourceTypeId],
+		V.[IsCurrent],		
+		V.[CurrencyId],
 		V.[AgentId],
 		V.[ResourceId],
-		V.[CurrencyId],
-		V.[BatchCode],
-		V.[DueDate],
-		--V.[Quantity],
--- because too many joins with table Measurement units affects performance, I will only add the 
--- normalized quantities when needed
-		V.[MonetaryValue],
-		V.[Count],
+		V.[ResponsibilityCenterId],
+		V.[AccountDescriptorId],
+		V.[ResourceDescriptorId],
+		V.[DueDate],		
+		V.[EntryTypeId],
+		V.[MonetaryValue], -- normalization is already done in the Value and stored in the entry
 		R.[CountUnitId],
-		--ISNULL(V.[Count] * CU.[BaseAmount] / CU.[UnitAmount],0) As NormalizedCount,
-		V.[Mass],
+		V.[Count], -- we can normalize every measure, but just showing a proof of concept
 		R.[MassUnitId],
-		V.[Time],
-		R.[TimeUnitId],
-		V.[Volume],
+		V.[Mass],
 		R.[VolumeUnitId],
-		--ISNULL(V.[Volume] * VU.[BaseAmount] / VU.[UnitAmount], 0) As NormalizedVolume,		
+		V.[Volume],
+		R.[TimeUnitId],
+		V.[Time],
 		V.[Value],
-		V.[Memo],
 		V.[ExternalReference],
 		V.[AdditionalReference],
 		V.[RelatedAgentId],
-		V.[RelatedAmount]
+		V.[RelatedAmount],
+		V.[Time1],
+		V.[Time2],
+		V.[CreatedAt],
+		V.[CreatedById],
+		V.[ModifiedAt],
+		V.[ModifiedById]
 	FROM dbo.[DocumentLineEntriesDetailsView] V
 	JOIN dbo.Accounts A ON V.AccountId = A.Id
 	LEFT JOIN dbo.Resources R ON V.ResourceId = R.Id
@@ -57,8 +71,8 @@ RETURN
 	--LEFT JOIN dbo.MeasurementUnits VU ON R.VolumeUnitId = VU.Id
 	--LEFT JOIN dbo.MeasurementUnits CU ON R.CountUnitId = CU.Id
 	--LEFT JOIN dbo.Resources RR ON V.RelatedResourceId = RR.Id
-	WHERE V.[Frequency]		= N'OneTime'
-	AND (@fromDate IS NULL OR [DocumentDate] >= @fromDate)
+	WHERE --V.[Frequency]		= N'OneTime' AND 
+	(@fromDate IS NULL OR [DocumentDate] >= @fromDate)
 	AND (@toDate IS NULL OR [DocumentDate] < DATEADD(DAY, 1, @toDate))
 	--AND [DocumentDate] <
 	--	CASE 

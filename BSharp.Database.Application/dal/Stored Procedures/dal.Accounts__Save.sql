@@ -15,48 +15,73 @@ SET NOCOUNT ON;
 		USING (
 			SELECT 
 				[Index], [Id],
-				[AccountGroupId],
 				[AccountClassificationId], 
 				[Name], 
 				[Name2], 
 				[Name3], 
 				[Code], 
-				[PartyReference],
+				--[PartyReference],
+				[AccountTypeId],
+				[AgentRelationDefinitionId],
+				[ResourceTypeId],
+				[IsCurrent],
+				[AgentId],
 				[ResourceId],
-				[AgentId]
+				[ResponsibilityCenterId],
+				[DescriptorId],
+				[EntryTypeId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-				t.[AccountGroupId]			= s.[AccountGroupId],
+
 				t.[AccountClassificationId]	= s.[AccountClassificationId], 
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
 				t.[Code]					= s.[Code],
-				t.[PartyReference]			= s.[PartyReference],
-				t.[ResourceId]				= s.[ResourceId],
+				--t.[PartyReference]			= s.[PartyReference],
+				t.[AccountTypeId]			= s.[AccountTypeId],
+				t.[AgentRelationDefinitionId]=s.[AgentRelationDefinitionId],
+				t.[ResourceTypeId]			= s.[ResourceTypeId],
+				t.[IsCurrent]				= s.[IsCurrent],
 				t.[AgentId]					= s.[AgentId],
+				t.[ResourceId]				= s.[ResourceId],
+				t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
+				t.[DescriptorId]			= s.[DescriptorId],
+				t.[EntryTypeId]				= s.[EntryTypeId],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
-				[AccountGroupId],
 				[AccountClassificationId], 
 				[Name], [Name2], [Name3], 
 				[Code], 
-				[PartyReference],
+				--[PartyReference],
+				[AccountTypeId],
+				[AgentRelationDefinitionId],
+				[ResourceTypeId],
+				[IsCurrent],
+				[AgentId],
 				[ResourceId],
-				[AgentId])
+				[ResponsibilityCenterId],
+				[DescriptorId],
+				[EntryTypeId])
 			VALUES (
-				s.[AccountGroupId],
 				s.[AccountClassificationId], 
 				s.[Name], s.[Name2], s.[Name3], 
 				s.[Code], 
-				s.[PartyReference],
+				--s.[PartyReference],
+				s.[AccountTypeId],
+				s.[AgentRelationDefinitionId],
+				s.[ResourceTypeId],
+				s.[IsCurrent],
+				s.[AgentId],
 				s.[ResourceId],
-				s.[AgentId])
+				s.[ResponsibilityCenterId],
+				s.[DescriptorId],
+				s.[EntryTypeId])
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 

@@ -23,7 +23,7 @@ SET NOCOUNT ON;
 		N'Error_TheRelation0IsAlreadyEstablishedForAgent1',
 		@DefinitionId, AG.[Name]
 	FROM @Entities FE 
-	JOIN [dbo].[AgentRelations] BE ON BE.AgentRelationDefinitionId = @DefinitionId AND BE.AgentId =  FE.AgentId
+	JOIN [dbo].[AgentRelations] BE ON BE.[DefinitionId] = @DefinitionId AND BE.AgentId =  FE.AgentId
 	JOIN dbo.[Agents] AG ON BE.AgentId = AG.Id
 	WHERE (FE.Id <> BE.Id);
 

@@ -34,12 +34,13 @@ RETURN
 		J.[LineDefinitionId],
 		J.[Direction],
 		J.[AccountId],
-		J.[AccountGroupId],
+		J.[AccountTypeId],
 		J.[AgentRelationDefinitionId],
+		J.[ResourceTypeId],
 		J.[AgentId],
 		J.[EntryTypeId],
 		J.[ResourceId],
-		J.[BatchCode],
+		J.[ResourceDescriptorId],
 		J.[DueDate],
 		J.[MonetaryValue],
 		J.[CurrencyId],
@@ -57,5 +58,4 @@ RETURN
 	LEFT JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN UnitRatios CR ON R.CountUnitId = CR.Id
 	LEFT JOIN UnitRatios MR ON R.MassUnitId = MR.Id
-	LEFT JOIN UnitRatios CV ON R.VolumeUnitId = CV.Id
-
+	LEFT JOIN UnitRatios CV ON R.VolumeUnitId = CV.Id;

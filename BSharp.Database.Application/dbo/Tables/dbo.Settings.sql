@@ -24,19 +24,10 @@
 	[ResourceLookup1sLabel3]	NVARCHAR (50),
 
 	[ResourceLookup2Label]		NVARCHAR (50),
-
 	[ResourceLookup3Label]		NVARCHAR (50),
 
-	[InstanceLookup1Label]		NVARCHAR (50),
-	[InstanceLookup1Label2]		NVARCHAR (50),
-	[InstanceLookup1Label3]		NVARCHAR (50),
-	[InstanceLookup1sLabel]		NVARCHAR (50),
-	[InstanceLookup1sLabel2]	NVARCHAR (50),
-	[InstanceLookup1sLabel3]	NVARCHAR (50),
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
+	[CreatedById]				INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId'))
-	CONSTRAINT [FK_Settings__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
-	CONSTRAINT [FK_Settings__ModifiedById] FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]				INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Settings__ModifiedById]  FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
 );

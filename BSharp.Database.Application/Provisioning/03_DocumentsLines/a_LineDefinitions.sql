@@ -15,23 +15,28 @@ DECLARE @LineDefinitions TABLE (
 DECLARE @LineDefinitionEntries TABLE (
 	[LineDefinitionId]					NVARCHAR (50),
 	[EntryNumber]						INT,
+	[Direction]							SMALLINT,
 	-- Source = -1 (n/a), 0 (get from line def), 1 (get from Entry), 2 (get from line), 3 (from account), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
 	-- 4: from resource/agent/currency etc./5 from (Resource, Account Type), 6: from Counter/Contra/Related in Line, 7:
 	-- Account is invisible in a tab, unless the source specifies it is entered by user. or in Manual line
 	
 	-- Account Group Properties
-	[AccountSource]						SMALLINT			NOT NULL DEFAULT 4,-- 0: set from line def, 1: entered by User, 3: computed by system based on other info
 	[AccountId]							INT, -- invisible, except in 
 
 	[AccountTypeId]						NVARCHAR (50), -- if account is entered by user, all the group properties get set.
 
+	[AgentRelationDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, --  -1: n/a, 0:set from line def, 3: from account
+	[AgentRelationDefinitionId]			NVARCHAR (50),
+
+	[ResourceTypeSource]				SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
+	[ResourceType]						NVARCHAR (50),
+
 	[LiquiditySource]					SMALLINT			NOT NULL DEFAULT -1, -- -1: n/a, 0:set from line def, 3: from account
 	[IsCurrent]							BIT,
 
-	[ResourceTypeSource]				SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
+	
 
-	[AgentRelationDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, --  -1: n/a, 0:set from line def, 3: from account
-	[AgentRelationDefinitionId]			NVARCHAR (50),
+
 	-- Concluded from Agent. User will not figure out
 --	[AgentRelatedness]					SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
 
@@ -69,16 +74,15 @@ DECLARE @LineDefinitionColumns TABLE (
 	[Label3]							NVARCHAR (50)
 );
 
-INSERT @LineDefinitions([Id], [TitleSingular], [TitlePlural]) VALUES
-(N'ManualLine', N'Adjustment', N'Adjustments');
-INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource]) VALUES
-(N'ManualLine',			0,			1);
+
+-- The behavior of the manual line is driven by the account.
+INSERT @LineDefinitions([Id], [TitleSingular], [TitlePlural]) VALUES (N'ManualLine', N'Adjustment', N'Adjustments');
 -- There is a special case, where 
 -- [Direction] = SIGN ([Debit]) + SIGN([Credit]), [MonetaryAmount] = [Debit]-[Credit]
 -- IF [Direction] = 1 THEN [Debit] = [Direction] * SIGN([MonetaryAmount]), [Credit] = 0
 -- IF [Direction] = -1 THEN [Debit] = 0, [Credit] = - [Direction] * SIGN([MonetaryAmount])
 -- NB: Debit & Credit Cannot be both non-zero. If both are zero, we set direction to +1.
+
 INSERT INTO @LineDefinitionColumns
 ([LineDefinitionId], [SortIndex],	[ColumnName],				[Label]) VALUES
 (N'ManualLine',			0,			N'Line.Memo',				N'Memo'), -- only if it appears,

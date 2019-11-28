@@ -8,7 +8,7 @@ AS
 BEGIN
 	RETURN (
 		SELECT [Id] FROM dbo.Lookups
-		WHERE LookupDefinitionId = @LookupDefinitionId
+		WHERE [DefinitionId] = @LookupDefinitionId
 		AND [Name] = @Name
 	)
 END

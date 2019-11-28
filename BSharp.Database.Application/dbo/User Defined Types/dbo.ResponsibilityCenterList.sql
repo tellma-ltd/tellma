@@ -12,6 +12,6 @@
 	[IsOperatingSegment]	BIT					NOT NULL DEFAULT 0, -- on each path from root to leaf, at most one O/S
 
 	[Code]					NVARCHAR (255),
-	[IsLeaf]			BIT DEFAULT 1
+	[IsLeaf]				BIT DEFAULT 1
 	INDEX IX_ResponsibilityCenterList__Code ([Code])
 );

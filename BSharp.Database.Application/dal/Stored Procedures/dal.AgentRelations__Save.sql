@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dal].[AgentRelations__Save]
-	@DefinitionId NVARCHAR (255),
+	@DefinitionId NVARCHAR (50),
 	@Entities dbo.[AgentRelationList] READONLY,
 	@ReturnIds BIT = 0
 AS
@@ -18,50 +18,64 @@ SET NOCOUNT ON;
 				[Index],
 				[Id],
 				[OperatingSegmentId],
+				@DefinitionId AS [DefinitionId],
 				[AgentId], 
 				[StartDate],
 				[Code],
-				[CreditLine],
+				--[CreditLine],
+				[JobId],
 				[BasicSalary],
 				[TransportationAllowance],
-				[OvertimeRate]
+				[OvertimeRate],
+				[BankAccountNumber],
+				[CostObjectType]
 			FROM @Entities 
 		) AS s ON (t.[Id] = s.[Id])
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
-				t.[OperatingSegmentId]		= s.[OperatingSegmentId],
+				t.[OperatingSegmentId]		=	s.[OperatingSegmentId],
+				t.[DefinitionId]			=	s.[DefinitionId],
 				t.[AgentId]					=	s.[AgentId],
 				t.[StartDate]				=	s.[StartDate],
 				t.[Code]					=	s.[Code],
-				t.[CreditLine]				=	s.[CreditLine],
+				--t.[CreditLine]				=	s.[CreditLine],
+				t.[JobId]					=	s.[JobId],
 				t.[BasicSalary]				=	s.[BasicSalary],
 				t.[TransportationAllowance] = s.[TransportationAllowance],
 				t.[OvertimeRate]			=	s.[OvertimeRate],
+				t.[BankAccountNumber]		=	s.[BankAccountNumber],
+				t.[CostObjectType]			=	s.[CostObjectType],
 				t.[ModifiedAt]				=	@Now,
 				t.[ModifiedById]			=	@UserId
 		WHEN NOT MATCHED THEN
 			INSERT (
 				[OperatingSegmentId],
-				[AgentRelationDefinitionId],
+				[DefinitionId],
 				[AgentId],
 				[StartDate],
 				[Code],
-				[CreditLine],
+				--[CreditLine],
+				[JobId],
 				[BasicSalary],
 				[TransportationAllowance],
-				[OvertimeRate]
+				[OvertimeRate],
+				[BankAccountNumber],
+				[CostObjectType]
 			)
 			VALUES (
 				s.[OperatingSegmentId],
-				@DefinitionId,
+				s.[DefinitionId],
 				s.[AgentId],
 				s.[StartDate],
 				s.[Code],
-				s.[CreditLine],
+				--s.[CreditLine],
+				s.[JobId],
 				s.[BasicSalary],
 				s.[TransportationAllowance],
-				s.[OvertimeRate]
+				s.[OvertimeRate],
+				s.[BankAccountNumber],
+				s.[CostObjectType]
 			)
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;

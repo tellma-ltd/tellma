@@ -18,7 +18,7 @@
 	--[PreferredContactAddress1]	NVARCHAR (255),  -- e.g., +251 94 123 4567
 	--[PreferredContactChannel2]	INT,			-- e.g., email
 	--[PreferredContactAddress2]	NVARCHAR (255),	-- e.g., info@contoso.com
-	[PreferredLanguage]			NCHAR (2)			NOT NULL DEFAULT (N'en'), 
+	--[PreferredLanguage]			NCHAR (2)			NOT NULL DEFAULT (N'en'), 
 ----	Individuals only
 ----	--	Personal
 --	[BirthDate]					DATE,
@@ -26,7 +26,7 @@
 --	[TitleId]					TINYINT,		-- LKT
 --	[Gender]					TINYINT,		-- ISO/IEC 5218. 0=unknown, 1=Male, 2=Female, 9=N/A
 --	[ResidentialAddress]		NVARCHAR (1024), -- in the country language
---	[ImageId]					NVARCHAR (50),
+	[ImageId]					NVARCHAR (50),
 ----	--	Social
 --	[MaritalStatus]				TINYINT,		-- LKT
 --	[NumberOfChildren]			TINYINT,

@@ -5,19 +5,19 @@ AS
 			[AccountId],
 			[AgentId],
 			[ResourceId],
-			[BatchCode],
+			[ResourceDescriptorId],
 			[DueDate],
 			SUM([Count]) AS [Count],
 			SUM([Mass]) AS [Mass],
 			SUM([Volume]) As [Volume],
 			SUM([Value]) As [Value]
 	FROM dbo.[fi_Journal](NULL, @AsOfDate) J
-	WHERE [AccountGroupId] = 'Inventorry'
+	WHERE [AccountTypeId] = 'Inventorry'
 	GROUP BY
 			[AccountId],
 			[AgentId],
 			[ResourceId],
-			[BatchCode],
+			[ResourceDescriptorId],
 			[DueDate]
 	HAVING
 			SUM([Count]) < 0 OR SUM([Mass]) < 0 OR SUM([Volume]) < 0 

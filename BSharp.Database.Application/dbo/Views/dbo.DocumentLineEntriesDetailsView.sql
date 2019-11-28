@@ -4,7 +4,7 @@ AS
 		E.[Id],
 		E.[DocumentLineId],
 		L.[DocumentId],
-		D.[DocumentDefinitionId],
+		D.[DefinitionId] As DocumentDefinitionId,
 		D.[SerialNumber],
 		D.[DocumentDate],
 		D.[VoucherNumericReference],
@@ -13,20 +13,26 @@ AS
 		D.[DocumentLookup3Id],
 		D.[DocumentText1],
 		D.[DocumentText2],
-		D.[Frequency],
-		D.[Repetitions],
-		D.[EndDate],
-		L.[LineDefinitionId],
+		--D.[Frequency],
+		--D.[Repetitions],
+		--D.[EndDate],
+		L.[DefinitionId] As LineDefinitionId,
 		L.[Memo],
+		E.[EntryNumber],
 		E.[Direction],
-		E.[AccountId],
-		E.[CurrencyId],
+		E.[AccountId],		
+		E.[AccountTypeId],
 		E.[AgentRelationDefinitionId],
+		E.[ResourceTypeId],
+		E.[IsCurrent],		
+		E.[CurrencyId],
 		E.[AgentId],
 		E.[ResourceId],
+		E.[ResponsibilityCenterId],
+		E.[AccountDescriptorId],
+		E.[ResourceDescriptorId],
+		E.[DueDate],		
 		E.[EntryTypeId],
-		E.[BatchCode],
-		E.[DueDate],
 		E.[MonetaryValue], -- normalization is already done in the Value and stored in the entry
 		E.[Count], -- we can normalize every measure, but just showing a proof of concept
 		E.[Mass],
@@ -47,7 +53,7 @@ AS
 		[dbo].[DocumentLineEntries] E
 		JOIN [dbo].[DocumentLines] L ON E.[DocumentLineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
-		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
+		JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 	WHERE
 		D.[State] = N'Filed'
 		AND L.[State] = N'Reviewed';

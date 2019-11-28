@@ -1,6 +1,4 @@
-﻿SELECT * FROM dbo.EntryTypes;
-
-DECLARE @AccountGroups AS TABLE
+﻿DECLARE @AccountGroups AS TABLE
 (
 	[Id]							NVARCHAR (50) PRIMARY KEY,
 	[AccountTypeId]					NVARCHAR (50),
@@ -136,7 +134,7 @@ INSERT INTO @AccountGroups
 (N'Expense',	N'Expense Account',		N'Expense Accounts',	N'CostCenter,CostUnit',			N'Goods,Labor,PPE,Expense',	N'Consumed By',			NULL),
 (N'FA',			N'Fixed Asset Account',	N'Fixed Asset Accounts',N'CostCenter,CostUnit',			N'PPE,IA,BA',				N'Acquired From',		N'Used By');
 
-*/
+
 MERGE [dbo].[AccountGroups] AS t
 USING (
 		SELECT [Id],[TitleSingular],[TitleSingular2],[TitleSingular3],[TitlePlural],[TitlePlural2],[TitlePlural3],	
@@ -246,6 +244,4 @@ WHEN NOT MATCHED BY TARGET THEN
 			s.[RelatedAmountLabel]		,
 			s.[RelatedAmountLabel2]		,
 			s.[RelatedAmountLabel3]		);
-
-		IF @DebugAccountGroups = 1
-			SELECT * FROM map.AccountGroups();
+*/

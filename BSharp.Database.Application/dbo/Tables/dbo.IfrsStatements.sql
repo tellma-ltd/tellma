@@ -11,4 +11,4 @@
 	[CustomName]		NVARCHAR(255)	NOT NULL,
 	[CustomName2]		NVARCHAR(255)	NOT NULL,
 	[CustomName3]		NVARCHAR(255)	NOT NULL
-)
+);

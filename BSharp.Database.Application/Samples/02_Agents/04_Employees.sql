@@ -27,5 +27,5 @@
 		SELECT AR.[Code], A.[Name], AR.[StartDate] AS 'Employee Since', AR.[IsActive],
 		AR.[BasicSalary], AR.[TransportationAllowance], AR.[OvertimeRate] AS 'Day Overtime Rate', RC.[Name] AS OperatingSegment
 		FROM dbo.Agents A
-		JOIN dbo.AgentRelations AR ON A.[Id] = AR.[AgentId] AND AR.AgentRelationDefinitionId = N'employees'
+		JOIN dbo.AgentRelations AR ON A.[Id] = AR.[AgentId] AND AR.[DefinitionId] = N'employees'
 		JOIN dbo.ResponsibilityCenters RC ON AR.OperatingSegmentId = RC.Id;

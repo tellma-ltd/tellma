@@ -18,7 +18,7 @@ BEGIN
 			)
 		GROUP BY [AccountClassificationId], AccountId -- rows
 	)
-	SELECT JS.*, A.[Code], A.[Name], A.[Name2], A.[Name3], A.[PartyReference]
+	SELECT JS.*, A.[Code], A.[Name], A.[Name2], A.[Name3]--, A.[PartyReference]
 	FROM JournalSummary JS
 	JOIN dbo.Accounts A ON JS.AccountId = A.Id
 END;

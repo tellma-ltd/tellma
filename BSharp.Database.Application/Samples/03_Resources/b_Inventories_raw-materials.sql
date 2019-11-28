@@ -24,7 +24,7 @@
 	BEGIN
 		SELECT N'raw-materials' AS [Resource Definition]
 		DECLARE @RawMaterialsIds dbo.IdList;
-		INSERT INTO @RawMaterialsIds SELECT [Id] FROM dbo.Resources WHERE [ResourceDefinitionId] = N'raw-materials';
+		INSERT INTO @RawMaterialsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'raw-materials';
 
 		SELECT ResourceTypeId, [Name] AS 'Raw Material', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
 		FROM rpt.Resources(@RawMaterialsIds);

@@ -11,7 +11,7 @@ BEGIN
 		[DocumentDate],
 		[DocumentDefinitionId],
 		[SerialNumber],
-		[Direction],
+		[Direction], -- direction will 
 		[EntryTypeId],
 		[MonetaryValue],
 		[Value],

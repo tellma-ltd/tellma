@@ -6,7 +6,7 @@ BEGIN
 		SELECT 	
 			CAST(D.[Id] AS NVARCHAR(30)) AS [Id],
 			CAST(D.[DocumentDate] AS NVARCHAR(30)) AS [DocumentDate],
-			D.[DocumentDefinitionId],
+			D.[DefinitionId] AS DocumentDefinitionId,
 			DT.Prefix + 
 			REPLICATE(N'0', DT.[CodeWidth] - 1 - FLOOR(LOG10(D.SerialNumber))) +
 			CAST(D.SerialNumber AS NVARCHAR(30)) AS [S/N],
@@ -18,7 +18,7 @@ BEGIN
 			D.[Memo],
 			DL.[Id] As [LineId],
 			DL.[SortKey] AS [LineSortKey],
-			DL.[LineDefinitionId],
+			DL.[DefinitionId] AS LineDefinitionId,
 			DL.[State] AS [LineState],
 			DLE.SortKey,
 			DLE.[Direction],
@@ -26,7 +26,7 @@ BEGIN
 			--CAST(DLE.[Value] AS MONEY) AS 
 			DLE.[Value]
 		FROM dbo.Documents D
-		JOIN dbo.[DocumentDefinitions] DT ON D.[DocumentDefinitionId] = DT.[Id]
+		JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 		LEFT JOIN dbo.VoucherBooklets VB ON D.VoucherBookletId = VB.Id
 		LEFT JOIN dbo.DocumentAssignments DA ON D.[Id] = DA.[DocumentId]
 		LEFT JOIN dbo.Agents AG ON DA.AssigneeId = AG.Id
@@ -45,7 +45,7 @@ BEGIN
 	SELECT 
 		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [Id] ELSE '' END) AS [Id],
 		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [DocumentDate] ELSE '' END) AS [DocumentDate],
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentTypeId],
+		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentDefinitionId],
 		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [S/N] ELSE '' END) AS [S/N],
 		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [State] ELSE '' END) AS [State],
 		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [VoucherRef] ELSE '' END) AS [V. Ref],
