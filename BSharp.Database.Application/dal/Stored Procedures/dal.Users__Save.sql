@@ -4,17 +4,16 @@
 	@Roles [dbo].[RoleMembershipList] READONLY,
 	@ReturnIds BIT = 0
 AS
+BEGIN
+SET NOCOUNT ON;
+
+	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	CREATE TABLE #IndexedIdsAndEmails (
-		[Index]		INT,
-		[Id]		INT,
-		[OldEmail]	NVARCHAR(255) NULL
-	);
-
-	INSERT INTO #IndexedIdsAndEmails([Index], [Id], [OldEmail])
-	SELECT x.[Index], x.[Id], x.[OldEmail]
+	-- Users
+	INSERT INTO @IndexedIds([Index], [Id])
+	SELECT x.[Index], x.[Id]
 	FROM
 	(
 		MERGE INTO [dbo].[Users] AS t
@@ -30,13 +29,14 @@ AS
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
-				t.[PermissionsVersion]	= NEWID(),
+				t.[PermissionsVersion]	= NEWID(), -- To trigger clients to refresh cached permissions
+				t.[UserSettingsVersion] = NEWID(), -- To trigger clients to refresh cached user settings
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([Name], [Name2], [Name3], [Email])
 			VALUES (s.[Name], s.[Name2], s.[Name3], s.[Email])
-		OUTPUT s.[Index], INSERTED.[Id], DELETED.[Email] AS [OldEmail]
+		OUTPUT s.[Index], INSERTED.[Id]
 	) AS x
 	OPTION (RECOMPILE);
 
@@ -62,18 +62,15 @@ AS
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
-	UPDATE A --dbo.Agents
-	SET A.ImageId = L.ImageId
-	FROM dbo.Agents A
-	JOIN #IndexedIdsAndEmails II ON A.Id = II.[Id]
+	-- Images
+	UPDATE U
+	SET U.ImageId = L.ImageId
+	FROM [dbo].[Users] U
+	JOIN @IndexedIds II ON U.Id = II.[Id]
 	JOIN @ImageIds L ON II.[Index] = L.[Index]
-	
-	-- To trigger clients to refresh cached settings
-	UPDATE [dbo].[Users] SET [UserSettingsVersion] = NEWID()
-	WHERE [Id] IN (SELECT [Id] FROM #IndexedIdsAndEmails)
 
-	-- Return the new emails
-	SELECT [NewEmail] FROM #IndexedIdsAndEmails WHERE [NewEmail] IS NOT NULL AND ([OldEmail] IS NULL OR [NewEmail] <> [OldEmail]);
+	-- Return the results if needed
+	IF @ReturnIds = 1
+	SELECT * FROM @IndexedIds;
 
-	-- Then return the old emails
-	SELECT [OldEmail] FROM #IndexedIdsAndEmails WHERE [OldEmail] IS NOT NULL AND ([NewEmail] IS NULL OR [NewEmail] <> [OldEmail]);
+END
