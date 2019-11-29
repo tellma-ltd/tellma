@@ -14,8 +14,8 @@
 	[JobTitleVisibility]				NVARCHAR (50), -- not visible, visible, visible and required
 	[BasicSalaryVisibility]				NVARCHAR (50),
 	[TransportationAllowanceVisibility]	NVARCHAR (50),
-	[HardshipAllowanceVisibility]		NVARCHAR (50),
-	[OvertimeRateVisibility]			MONEY,
+--	[HardshipAllowanceVisibility]		NVARCHAR (50),
+	[OvertimeRateVisibility]			NVARCHAR (50),
 
 	[CreatedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]		INT DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AgentDefinitions__CreatedById] REFERENCES [dbo].[Users] ([Id]),

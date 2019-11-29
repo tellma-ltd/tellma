@@ -10,14 +10,14 @@
 	[ReviewedAt]				DATETIMEOFFSET(7),
 
 	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_DocumentLines__CurrencyId] REFERENCES dbo.Currencies([Id]),
-	[AgentDefinitionId]			NVARCHAR (50)		REFERENCES dbo.AgentRelationDefinitions([Id]),
-	[AgentId]					INT					REFERENCES dbo.Agents([Id]), -- useful for storing the conversion agent in conversion transactions
-	[ResourceId]				INT					REFERENCES dbo.Resources([Id]),
+	[AgentDefinitionId]			NVARCHAR (50)		CONSTRAINT [FK_DocumentLines__AgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
+	[AgentId]					INT					CONSTRAINT [FK_DocumentLines__AgentId] REFERENCES dbo.Agents([Id]), -- useful for storing the conversion agent in conversion transactions
+	[ResourceId]				INT					CONSTRAINT [FK_DocumentLines__ResourceId] REFERENCES dbo.Resources([Id]),
 	[Amount]					MONEY,
 -- Additional information to satisfy reporting requirements
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
-	[ExternalReference]		NVARCHAR (50),
-	[AdditionalReference]	NVARCHAR (50),
+	[ExternalReference]			NVARCHAR (50),
+	[AdditionalReference]		NVARCHAR (50),
 -- While Voucher Number referes to the source document, this refers to any other identifying string 
 -- for support documents, such as deposit slip reference, invoice number, etc...
 

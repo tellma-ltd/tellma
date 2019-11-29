@@ -21,24 +21,24 @@ WSI
 	Coffee
 */
 DECLARE @ResponsibilityCenters dbo.ResponsibilityCenterList;
-DECLARE @OS_WSI INT, @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@RC_Production INT, 
+DECLARE @OS_WSI INT, @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@RC_Production INT, @RC_Finance INT,
 		@RC_SalesAG INT, @RC_SalesBole INT, @OS_BananIT INT;
 
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-	[Name],							[Code], [ResponsibilityTypeId], [IsOperatingSegment], [ManagerId], [ParentIndex]) VALUES
-(0,0,N'Walia Steel Industry, PLC',	N'1',	N'Investment',				1,					@BadegeKebede,		NULL),
-(1,1,N'Executive Office',			N'10',	N'Cost',					0,					@BadegeKebede,		0),
-(2,1,N'Finance',					N'12',	N'Cost',					0,					@TizitaNigussie,	0),
-(3,0,N'Marketing & Sales',			N'13',	N'Revenue',					0,					@Ashenafi,			0),
-(4,1,N'Sales Dept Mgmt Office',		N'140',	N'Cost',					0,					@Ashenafi,			3),
-(5,1,N'Sales - AG',					N'141',	N'Revenue',					0,					@Ashenafi,			3),
-(6,1,N'Sales - Bole',				N'142',	N'Revenue',					0,					@Ashenafi,			3),
-(7,1,N'HR',							N'15',	N'Cost',					0,					NULL,				0),
-(8,1,N'Materials',					N'16',	N'Cost',					0,					@AyelechHora,		0),
-(9,0,N'Technical',					N'17',	N'Cost',					0,					NULL,				0),
-(10,1,N'Production',				N'171',	N'Cost',					0,					@MesfinWolde,		9),
-(11,1,N'Maintenance',				N'172',	N'Cost',					0,					NULL,				9),
-(12,1,N'Banan IT, PLC',				N'2',	N'Investment',				1,					@MohamadAkra,		NULL)
+	[Name],							[Code], [ResponsibilityTypeId], [IsOperatingSegment], [ParentIndex]) VALUES
+(0,0,N'Walia Steel Industry, PLC',	N'1',	N'Investment',				1,					NULL),
+(1,1,N'Executive Office',			N'10',	N'Cost',					0,					0),
+(2,1,N'Finance',					N'12',	N'Cost',					0,					0),
+(3,0,N'Marketing & Sales',			N'13',	N'Revenue',					0,					0),
+(4,1,N'Sales Dept Mgmt Office',		N'140',	N'Cost',					0,					3),
+(5,1,N'Sales - AG',					N'141',	N'Revenue',					0,					3),
+(6,1,N'Sales - Bole',				N'142',	N'Revenue',					0,					3),
+(7,1,N'HR',							N'15',	N'Cost',					0,					0),
+(8,1,N'Materials',					N'16',	N'Cost',					0,					0),
+(9,0,N'Technical',					N'17',	N'Cost',					0,					0),
+(10,1,N'Production',				N'171',	N'Cost',					0,					9),
+(11,1,N'Maintenance',				N'172',	N'Cost',					0,					9),
+(12,1,N'Banan IT, PLC',				N'2',	N'Investment',				1,					NULL)
 ;
 	EXEC [api].[ResponsibilityCenters__Save]
 		@Entities = @ResponsibilityCenters,

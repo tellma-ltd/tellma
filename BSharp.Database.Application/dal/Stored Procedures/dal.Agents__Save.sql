@@ -16,9 +16,9 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].[Agents] AS t
 		USING (
-			SELECT [Index], [Id], 
+			SELECT [Index], [Id], [OperatingSegmentId],
 				@DefinitionId AS [DefinitionId], [Name], [Name2], [Name3], [Code], [IsRelated], 
-				[TaxIdentificationNumber] --, [ImageId], -- imageId is handled separately in the code below.
+				[TaxIdentificationNumber], --[ImageId], -- imageId is handled separately in the code below.
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
 				--[PreferredLanguage]
@@ -26,11 +26,20 @@ SET NOCOUNT ON;
 				--[Religion], [Race],  [TribeId], [RegionId],  
 				--[EducationLevelId], [EducationSublevelId], [BankId], [BankAccountNumber],
 				--[OrganizationType], [WebSite], [ContactPerson], [RegisteredAddress], [OwnershipType], [OwnershipPercent]
+				[StartDate],
+				--[CreditLine],
+				[JobId],
+				[BasicSalary],
+				[TransportationAllowance],
+				[OvertimeRate],
+				[BankAccountNumber],
+				[CostObjectType]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
 		THEN
 			UPDATE SET
+				t.[OperatingSegmentId]		= s.[OperatingSegmentId],
 				t.[DefinitionId]			= s.[DefinitionId],
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
@@ -75,12 +84,21 @@ SET NOCOUNT ON;
 				--t.[OwnershipType]			= s.[OwnershipType],
 				--t.[OwnershipPercent]		= s.[OwnershipPercent],
 
+				t.[StartDate]				= s.[StartDate],
+				--[CreditLine],
+				t.[JobId]					= s.[JobId],
+				t.[BasicSalary]				= s.[BasicSalary],
+				t.[TransportationAllowance] = s.[TransportationAllowance],
+				t.[OvertimeRate]			= s.[OvertimeRate],
+				t.[BankAccountNumber]		= s.[BankAccountNumber],
+				t.[CostObjectType]			= s.[CostObjectType],
+
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT (
+			INSERT ([OperatingSegmentId],
 				[DefinitionId], [Name], [Name2], [Name3], [Code], [IsRelated], 
-				[TaxIdentificationNumber]--,[ImageId]
+				[TaxIdentificationNumber],--,[ImageId]
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
 				--[PreferredContactChannel1], [PreferredContactAddress1], [PreferredContactChannel2], [PreferredContactAddress2],
 				--[PreferredLanguage]
@@ -88,20 +106,37 @@ SET NOCOUNT ON;
 				--[Religion], [Race],  [TribeId], [RegionId],  
 				--[EducationLevelId], [EducationSublevelId], [BankId], [BankAccountNumber],
 				--[OrganizationType], [WebSite], [ContactPerson], [RegisteredAddress], [OwnershipType], [OwnershipPercent]
+				[StartDate],
+				--[CreditLine],
+				[JobId],
+				[BasicSalary],
+				[TransportationAllowance],
+				[OvertimeRate],
+				[BankAccountNumber],
+				[CostObjectType]
 				)
-			VALUES (
+			VALUES (s.[OperatingSegmentId],
 				s.[DefinitionId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[IsRelated], 
-				s.[TaxIdentificationNumber]--, s[ImageId]
+				s.[TaxIdentificationNumber],--, s[ImageId]
 				--s.[IsLocal], s.[Citizenship], s.[Facebook], s.[Instagram], s.[Twitter],
 				--s.[PreferredContactChannel1], s.[PreferredContactAddress1], s.[PreferredContactChannel2], s.[PreferredContactAddress2],
 				--s.[PreferredLanguage]
 				--s.[BirthDate], s.[Title], s.[TitleId], s.[Gender], s.[ResidentialAddress], s.[MaritalStatus], s.[NumberOfChildren], s.[Religion], s.[Race], s.[TribeId], s.[RegionId], 
 				--s.[EducationLevelId], s.[EducationSublevelId], s.[BankId], s.[BankAccountNumber],
 				--s.[OrganizationType], s.[WebSite], s.[ContactPerson], s.[RegisteredAddress], s.[OwnershipType], s.[OwnershipPercent]
+				s.[StartDate],
+				--[CreditLine],
+				s.[JobId],
+				s.[BasicSalary],
+				s.[TransportationAllowance],
+				s.[OvertimeRate],
+				s.[BankAccountNumber],
+				s.[CostObjectType]
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 
+	--TODO:  Shall we remove the code below?
 	-- indices appearing in IndexedImageList will cause the imageId to be update, if different.
 	UPDATE A --dbo.Agents
 	SET A.ImageId = L.ImageId
@@ -109,6 +144,7 @@ SET NOCOUNT ON;
 	JOIN @IndexedIds II ON A.Id = II.[Id]
 	JOIN @ImageIds L ON II.[Index] = L.[Index]
 
+	--TODO:  Shall we remove the code below?
 	-- To trigger clients to refresh cached settings
 	UPDATE [dbo].[Users] SET [UserSettingsVersion] = NEWID()
 	WHERE [Id] IN (SELECT [Id] FROM @IndexedIds)

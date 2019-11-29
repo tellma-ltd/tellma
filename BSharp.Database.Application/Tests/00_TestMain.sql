@@ -40,7 +40,8 @@ BEGIN -- reset Identities
 	DECLARE @DebugRoles bit = 0, @DebugResourceTypes bit = 0, @DebugEntryTypes bit = 0, @DebugResourceTypesEntryTypes bit = 0, @DebugAccountTypes bit = 0;
 	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
 	DECLARE @DebugLookups bit = 0;
-	DECLARE @DebugResources bit = 1, @DebugAgents bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugResources bit = 1, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 1, @DebugShareholders bit = 0, @DebugBanks bit = 0;
 	DECLARE @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
@@ -73,18 +74,17 @@ BEGIN TRY
 		:r ..\Samples\01_Basic\b_MeasurementUnits.sql
 		:r ..\Samples\01_Basic\c_Lookups.sql
 		
-		--:r ..\Samples\02_Agents\00_Agents.sql
-		--:r ..\Samples\02_Agents\01_ResponsibilityCenters.sql
-		--:r ..\Samples\02_Agents\02_Suppliers.sql
-		--:r ..\Samples\02_Agents\03_Customers.sql
-		--:r ..\Samples\02_Agents\04_Employees.sql
+		:r ..\Samples\02_Agents\01_ResponsibilityCenters.sql
+		:r ..\Samples\02_Agents\02_Suppliers.sql
+		:r ..\Samples\02_Agents\03_Customers.sql
+		:r ..\Samples\02_Agents\04_Employees.sql
 
-		:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
-		:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql
-		:r ..\Samples\03_Resources\a3_PPE_machineries.sqlm
-		:r ..\Samples\03_Resources\a4_PPE_general-fixed-assets.sql
-		:r ..\Samples\03_Resources\b_Inventories_raw-materials.sql
-		:r ..\Samples\03_Resources\d1_FG_vehicles.sql
+		--:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
+		--:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql
+		--:r ..\Samples\03_Resources\a3_PPE_machineries.sqlm
+		--:r ..\Samples\03_Resources\a4_PPE_general-fixed-assets.sql
+		--:r ..\Samples\03_Resources\b_Inventories_raw-materials.sql
+		--:r ..\Samples\03_Resources\d1_FG_vehicles.sql
 		--:r ..\Samples\03_Resources\d2_FG_steel-products.sql
 		--:r ..\Samples\03_Resources\e1_CCE_received-checks.sql
 		--:r ..\Samples\03_Resources\h_PL_employee-benefits.sql
