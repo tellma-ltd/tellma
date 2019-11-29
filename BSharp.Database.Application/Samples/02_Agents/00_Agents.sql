@@ -9,20 +9,20 @@
 END
 BEGIN 
 	INSERT INTO @Individuals([Index],
-	[AgentType],		[Name],				[IsRelated], [Code]) VALUES
-	(0,N'individuals',	N'Mohamad Akra',	0,		''), -- shareholders
-	(1,N'individuals',	N'Ahmad Akra',		0,		''),
-	(2,N'individuals',	N'Badege Kebede',	1,		'E'), -- employees
-	(3,N'individuals',	N'Tizita Nigussie',	0,		'E'),
-	(4,N'individuals',	N'Ashenafi Fantahun',0,		'E'),
-	(5,N'individuals',	N'Yisak Fikadu',	0,		'E'),
-	(6,N'individuals',	N'Zewdinesh Hora',	0,		'E'),
-	(7,N'individuals',	N'Tigist Negash',	0,		'E'),
-	(8,N'individuals',	N'Roman Zenebe',	0,		'E'),
-	(9,N'individuals',	N'Mestawet G/Egziyabhare',	0, 'E'),
-	(10,N'individuals',	N'Ayelech Hora',	0,		'E'),
-	(11,N'individuals',	N'Yigezu Legesse',	0,		'E'),
-	(12,N'individuals',	N'Mesfin Wolde',	0,		'E');
+		[Name],					[IsRelated], [Code]) VALUES
+	(0,	N'Mohamad Akra',		0,			''), -- shareholders
+	(1,	N'Ahmad Akra',			0,			''),
+	(2,	N'Badege Kebede',		1,			'E'), -- employees
+	(3,	N'Tizita Nigussie',		0,			'E'),
+	(4,	N'Ashenafi Fantahun',	0,			'E'),
+	(5,	N'Yisak Fikadu',		0,			'E'),
+	(6,	N'Zewdinesh Hora',		0,			'E'),
+	(7,	N'Tigist Negash',		0,			'E'),
+	(8,	N'Roman Zenebe',		0,			'E'),
+	(9,	N'Mestawet G/Egziyabhare',	0,		'E'),
+	(10,N'Ayelech Hora',		0,			'E'),
+	(11,N'Yigezu Legesse',		0,			'E'),
+	(12,N'Mesfin Wolde',		0,			'E');
 	UPDATE @Individuals SET [Code] = [Code] + CAST([Index] AS NVARCHAR(50));
 
 	EXEC [api].[Agents__Save]
@@ -37,30 +37,32 @@ BEGIN
 	END;
 
 	INSERT INTO @Organizations([Index],
-	[AgentType],		[Name],				[IsRelated], [Code]) VALUES
-	(13,N'organizations', N'Banan Information technologies, plc', 1, 'S'), -- suppliers
-	(14,N'organizations', N'Walia Steel Industry, plc',	1, ''),
-	(15,N'organizations', N'Yangfan Motors, PLC', 0, 'S'), -- suppliers
-	(16,N'organizations', N'Sisay Tesfaye, PLC', 0, 'O'),
-	(17,N'organizations', N'Ethiopian Revenues and Customs Authority', 0, 'T'), -- taxing
-	(18,N'organizations', N'Best Paint Industry', 1, 'CS'),
-	(19,N'organizations', N'Best Plastic Industry', 1, 'CS'),
-	(20,N'organizations', N'Commercial Bank of Ethiopia', 0, 'BC'), -- banking
-	(21,N'organizations', N'Awash Bank', 0, 'B'), -- banking
-	(22,N'organizations', N'NIB', 0, 'B');
+		[Name],									[IsRelated], [Code]) VALUES
+	(13, N'Banan Information technologies, plc',	1,		'S'), -- suppliers
+	(14, N'Walia Steel Industry, plc',				1,		''),
+	(15, N'Yangfan Motors, PLC',					0,		'S'), -- suppliers
+	(16, N'Sisay Tesfaye, PLC',						0,		'O'),
+	(17, N'Ethiopian Revenues and Customs Authority',0,		'T'), -- taxing
+	(18, N'Best Paint Industry',					1,		'CS'),
+	(19, N'Best Plastic Industry',					1,		'CS'),
+	(20, N'Commercial Bank of Ethiopia',			0,		'BC'), -- banking
+	(21, N'Awash Bank',								0,		'B'), -- banking
+	(22, N'NIB',									0,		'B');
+
 	INSERT INTO @Organizations([Index],
-	[AgentType],		[Name],		[IsRelated], [Code], [TaxIdentificationNumber]) VALUES
-	(23,N'organizations', N'Regus',0, 'S', N'4544287');
+		[Name],									[IsRelated], [Code], [TaxIdentificationNumber]) VALUES
+	(23, N'Regus',									0,		'S',	N'4544287');
+
 	INSERT INTO @Organizations([Index],
-	[AgentType],		[Name],		[IsRelated], [Code]) VALUES	
-	(24,N'organizations', N'Noc Jimma Ber Service Station',	0, 'S'), -- suppliers
-	(25,N'organizations', N'Toyota, Ethiopia',	0, 'S'),
-	(26,N'organizations', N'Executive Office',1, 'R'),
-	(27,N'organizations', N'Production Department',0, 'R'),
-	(28,N'organizations', N'Sales & Marketing Department',0, 'R'),
-	(29,N'organizations', N'Finance Department',0, 'R'),
-	(30,N'organizations', N'Human Resources Department',0, 'R'),
-	(31,N'organizations', N'Materials & Purchasing Department',0, 'R');
+		[Name],									[IsRelated], [Code]) VALUES	
+	(24, N'Noc Jimma Ber Service Station',			0,		'S'), -- suppliers
+	(25, N'Toyota, Ethiopia',						0,		'S'),
+	(26, N'Executive Office',						1,		'R'),
+	(27, N'Production Department',					0,		'R'),
+	(28, N'Sales & Marketing Department',			0,		'R'),
+	(29, N'Finance Department',						0,		'R'),
+	(30, N'Human Resources Department',				0,		'R'),
+	(31, N'Materials & Purchasing Department',		0,		'R');
 	UPDATE @Organizations SET [Code] = [Code] + CAST([Index] AS NVARCHAR(50));
 
 	EXEC [api].[Agents__Save]

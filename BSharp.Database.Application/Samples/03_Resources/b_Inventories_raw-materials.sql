@@ -8,6 +8,7 @@
 	[ResourceTypeId],	[Name],				[Code],			[MassUnitId],				[CountUnitId]) VALUES
 	(0, N'RawMaterials',N'HR 1000MMx1.9MM',	N'HR1000x1.9',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
 	(1, N'RawMaterials',N'CR 1000MMx1.4MM',	N'CR1000x1.4',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'));
+	-- For RM, we use the descriptor - if any - in Entries
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'raw-materials',

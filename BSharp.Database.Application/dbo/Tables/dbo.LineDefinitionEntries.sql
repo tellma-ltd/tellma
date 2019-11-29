@@ -11,8 +11,8 @@
 	[AccountTypeSource]					SMALLINT			NOT NULL DEFAULT 2, -- 0:set from line def, 3: from account
 	[AccountTypeId]						NVARCHAR (50)	REFERENCES dbo.[AccountTypes]([Id]), -- 
 
-	[AgentRelationDefinitionSource]		SMALLINT			NOT NULL DEFAULT 2, --  -1: n/a, 0:set from line def, 3: from account
-	[AgentRelationDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
+	[AgentDefinitionSource]				SMALLINT			NOT NULL DEFAULT 2, --  -1: n/a, 0:set from line def, 3: from account
+	[AgentDefinitionId]					NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
 
 	[AgentSource]						SMALLINT			NOT NULL DEFAULT 1, --  -1: n/a, 3: from account
 	[AgentId]							INT				REFERENCES dbo.Agents([Id]),	-- fixed in the case of ERCA, e.g., VAT

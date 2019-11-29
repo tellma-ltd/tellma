@@ -33,7 +33,7 @@ RETURN
 		A.[AccountClassificationId],
 		V.[AccountId],		
 		V.[AccountTypeId],
-		V.[AgentRelationDefinitionId],
+		V.[AgentDefinitionId],
 		V.[ResourceTypeId],
 		V.[IsCurrent],		
 		V.[CurrencyId],

@@ -1,4 +1,5 @@
-﻿	DECLARE @ValidationErrorsJson nvarchar(max);
+﻿-- TODO: Make it idempotent, and also write it so as not to repeat the variable declarations
+	DECLARE @ValidationErrorsJson nvarchar(max);
 	DECLARE @DebugRoles bit = 0, @DebugResourceTypes bit = 0, @DebugEntryTypes bit = 0, @DebugResourceTypesEntryTypes bit = 0, @DebugAccountTypes bit = 0;
 	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
 	DECLARE @DebugLookups bit = 0;

@@ -1,4 +1,4 @@
-﻿	DECLARE @employees dbo.[AgentRelationList];
+﻿	DECLARE @employees dbo.[AgentList];
 
 	INSERT INTO @employees
 	([Index],	[AgentId],		[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate], [OperatingSegmentId]) VALUES
@@ -9,10 +9,9 @@
 	(4,			@TizitaNigussie,'2019.09.01',	N'E3',	4700,			0,							28.25,			@OS_BananIT),
 	(5,			@Ashenafi,		'2019.09.01',	N'E3',	4700,			0,							28.25,			@OS_BananIT),
 	(6,			@MesfinWolde,	'2019.09.01',	N'E3',	4700,			0,							28.25,			@OS_BananIT)
-	
 	;
 
-	EXEC [api].[AgentRelations__Save]
+	EXEC [api].[Agents__Save]
 		@DefinitionId = N'employees',
 		@Entities = @employees,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -26,6 +25,5 @@
 	IF @DebugAgents = 1
 		SELECT AR.[Code], A.[Name], AR.[StartDate] AS 'Employee Since', AR.[IsActive],
 		AR.[BasicSalary], AR.[TransportationAllowance], AR.[OvertimeRate] AS 'Day Overtime Rate', RC.[Name] AS OperatingSegment
-		FROM dbo.Agents A
-		JOIN dbo.AgentRelations AR ON A.[Id] = AR.[AgentId] AND AR.[DefinitionId] = N'employees'
-		JOIN dbo.ResponsibilityCenters RC ON AR.OperatingSegmentId = RC.Id;
+		FROM dbo.fi_Agents(N'employees', NULL) A
+		JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;

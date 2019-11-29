@@ -1,4 +1,4 @@
-﻿	DECLARE @Suppliers dbo.[AgentRelationList];
+﻿	DECLARE @Suppliers dbo.[AgentList];
 
 	INSERT INTO @Suppliers
 	([Index],	[AgentId],	[StartDate],	[OperatingSegmentId]) VALUES
@@ -7,7 +7,7 @@
 	(2,			@NocJimma,	'2018.03.11',	@OS_WSI),
 	(3,			@Toyota,	'2019.03.19',	@OS_WSI);
 
-	EXEC [api].[AgentRelations__Save]
+	EXEC [api].[Agents__Save]
 		@DefinitionId = N'suppliers',
 		@Entities = @Suppliers,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -22,6 +22,5 @@
 		SELECT AR.[Code], A.[Name], AR.[StartDate] AS 'Supplier Since', AR.[IsActive],
 		--AR.[SupplierRating], AR.[PaymentTerms], 
 		RC.[Name] AS OperatingSegment
-		FROM dbo.Agents A
-		JOIN dbo.AgentRelations AR ON A.[Id] = AR.[AgentId] AND AR.[DefinitionId] = N'suppliers'
-		JOIN dbo.ResponsibilityCenters RC ON AR.OperatingSegmentId = RC.Id;
+		FROM dbo.fi_Agents(N'suppliers', NULL) A
+		JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;

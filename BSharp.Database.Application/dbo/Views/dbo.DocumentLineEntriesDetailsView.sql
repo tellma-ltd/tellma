@@ -22,7 +22,7 @@ AS
 		E.[Direction],
 		E.[AccountId],		
 		E.[AccountTypeId],
-		E.[AgentRelationDefinitionId],
+		E.[AgentDefinitionId],
 		E.[ResourceTypeId],
 		E.[IsCurrent],		
 		E.[CurrencyId],

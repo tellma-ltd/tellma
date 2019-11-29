@@ -38,13 +38,13 @@ AS
 	-- Role Memberships
 	WITH BE AS (
 		SELECT * FROM [dbo].[RoleMemberships]
-		WHERE [AgentId] IN (SELECT [Id] FROM @Entities)
+		WHERE [UserId] IN (SELECT [Id] FROM @Entities)
 	)
 	MERGE INTO BE AS t
 	USING (
-		SELECT L.[Id], [AgentId], [RoleId], [Memo]
+		SELECT L.[Id], [UserId], [RoleId], [Memo]
 		FROM @Roles L
-		JOIN @Entities H ON L.[AgentId] = H.[Id]
+		JOIN @Entities H ON L.[UserId] = H.[Id]
 	) AS s ON t.[Id] = s.[Id]
 	WHEN MATCHED THEN
 		UPDATE SET 
@@ -52,8 +52,8 @@ AS
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[AgentId],	[Memo])
-		VALUES (s.[RoleId], s.[AgentId], s.[Memo])
+		INSERT ([RoleId],	[UserId],	[Memo])
+		VALUES (s.[RoleId], s.[UserId], s.[Memo])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

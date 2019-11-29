@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[AgentRelationDefinitions] ( -- managed by Banan IT
-	[Id]							NVARCHAR (50) PRIMARY KEY,
+	[Id]							NVARCHAR (50)	CONSTRAINT [PK_AgentRelationDefinitions] PRIMARY KEY,
 	[SingularLabel]					NVARCHAR (50)	NOT NULL, -- legal Label
 	[SingularLabel2]				NVARCHAR (50),
 	[SingularLabel3]				NVARCHAR (50),

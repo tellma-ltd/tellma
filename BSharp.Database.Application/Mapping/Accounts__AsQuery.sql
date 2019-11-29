@@ -15,7 +15,7 @@ RETURN (
 		[Code],
 --		[PartyReference],
 		[AccountTypeId],
-		[AgentRelationDefinitionId],
+		[AgentDefinitionId],
 		[ResourceTypeId],
 		[IsCurrent],
 		[AgentId],

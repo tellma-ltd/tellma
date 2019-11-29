@@ -452,7 +452,6 @@
     <None Include="Samples\06_Entries\00_manual-vouchers.sql" />
     <None Include="Samples\06_Entries\01_petty-cash-vouchers.sql" />
     <None Include="Samples\FillSampleData.sql" />
-    <None Include="Samples\05_Accounts\a_AccountGroups.sql" />
     <Build Include="api\Stored Procedures\api.Roles__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ResponsibilityCenters_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.ResponsibilityCenters__Delete.sql" />
@@ -488,7 +487,7 @@
     <None Include="Tests\13_HRCycle.sql" />
     <None Include="Provisioning\00_Setup\a_AdminSetup.sql" />
     <None Include="Provisioning\00_Setup\b_Settings.sql" />
-    <None Include="Samples\00_Setup\b_AgentRelationDefinitions.sql" />
+    <None Include="Samples\00_Setup\b_AgentDefinitions.sql" />
     <None Include="Samples\00_Setup\z_LookupDefinitions.sql" />
     <None Include="Samples\00_Setup\f_AccountTypes.sql" />
     <None Include="IntegrationTests.publish.publish.xml" />

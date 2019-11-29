@@ -1,14 +1,14 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-		[Id],			[TitlePlural],		[TitleSingular],	[ResourceTypeParentList]) VALUES
-	(N'fixed-assets',	N'Fixed Assets',	N'Fixed Assets',	N'PropertyPlantAndEquipment');
+		[Id],			[TitlePlural],		[TitleSingular],	[ResourceTypeParentList],			[DescriptorIdLabel]) VALUES
+	(N'fixed-assets',	N'Fixed Assets',	N'Fixed Assets',	N'PropertyPlantAndEquipment',		N'Used By');
 	
 	DECLARE @FixedAssets dbo.ResourceList;
 	INSERT INTO @FixedAssets ([Index],
-	[ResourceTypeId],							[Name],				[TimeUnitId]) VALUES
-	(0, N'CommunicationAndNetworkEquipment',	N'Asus Router',		dbo.fn_UnitName__Id(N'Yr')),
-	(1, N'OfficeEquipment',						N'HP Deskjet',		dbo.fn_UnitName__Id(N'Yr')),
-	(2, N'FixturesAndFittings',					N'Office Chair MA',	dbo.fn_UnitName__Id(N'Yr')),
-	(3, N'FixturesAndFittings',					N'Office Chair AA',	dbo.fn_UnitName__Id(N'Yr'));
+	[ResourceTypeId],							[Name],				[TimeUnitId],				[DescriptorId]) VALUES
+	(0, N'CommunicationAndNetworkEquipment',	N'Asus Router',		dbo.fn_UnitName__Id(N'Yr'),	NULL),
+	(1, N'OfficeEquipment',						N'HP Deskjet',		dbo.fn_UnitName__Id(N'Yr'),	NULL),
+	(2, N'FixturesAndFittings',					N'Office Chair',	dbo.fn_UnitName__Id(N'Yr'), N'MA'),
+	(3, N'FixturesAndFittings',					N'Office Chair',	dbo.fn_UnitName__Id(N'Yr'), N'AA');
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'fixed-assets',
@@ -26,6 +26,6 @@
 		DECLARE @FixedAssetsIds dbo.IdList;
 		INSERT INTO @FixedAssetsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'fixed-assets';
 
-		SELECT ResourceTypeId, [Name] AS 'Fixed Asset', [TimeUnit] AS 'Usage In' -- Custodian/Location, etc.... from DLE
+		SELECT ResourceTypeId, [Name] AS 'Fixed Asset', [DescriptorId] AS N'Used By', [TimeUnit] AS 'Usage In' -- Custodian/Location, etc.... from DLE
 		FROM rpt.Resources(@FixedAssetsIds);
 	END

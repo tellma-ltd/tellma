@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[RoleMemberships] (
 	[Id]				INT				CONSTRAINT [PK_RoleMemberships] PRIMARY KEY IDENTITY,
-	[AgentId]			INT				NOT NULL CONSTRAINT [FK_RoleMemberships__AgentId] REFERENCES [dbo].[Agents] ([Id]) ON DELETE CASCADE,	
+	[UserId]			INT				NOT NULL CONSTRAINT [FK_RoleMemberships__UserId] REFERENCES [dbo].[Users] ([Id]) ON DELETE CASCADE,	
 	[RoleId]			INT				NOT NULL CONSTRAINT [FK_RoleMemberships__RoleId] REFERENCES [dbo].[Roles] ([Id]) ON DELETE CASCADE,
 	[Memo]				NVARCHAR (255),
 	-- Computed columns require a workaround for Temporal tables:

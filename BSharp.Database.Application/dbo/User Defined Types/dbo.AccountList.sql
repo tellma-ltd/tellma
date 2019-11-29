@@ -9,7 +9,7 @@
 	[Code]							NVARCHAR (255),
 
 	[AccountTypeId]					NVARCHAR (50)		NOT NULL,
-	[AgentRelationDefinitionId]		NVARCHAR (50),
+	[AgentDefinitionId]				NVARCHAR (50),
 	[ResourceTypeId]				NVARCHAR (50),
 	[IsCurrent]						BIT,
 -- Minor properties: range of values is restricted by defining a major property. For example, if AccountTypeId = N'Payable', then responsibility center
