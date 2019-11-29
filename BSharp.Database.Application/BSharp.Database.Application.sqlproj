@@ -172,7 +172,6 @@
     <Build Include="dbo\Tables\dbo.RoleMemberships.sql" />
     <Build Include="dbo\Tables\dbo.AccountClassifications.sql" />
     <Build Include="dbo\Stored Procedures\dbo.rpt_ConsumablesServices.sql" />
-    <Build Include="dbo\Tables\dbo.AgentRelations.sql" />
     <Build Include="dbo\Tables\dbo.TemplateLines.sql" />
     <Build Include="dbo\Views\dbo.Employees.sql" />
     <Build Include="dbo\Functions\dbo.fi_Agents.sql" />
@@ -227,7 +226,6 @@
     <Build Include="dal\Stored Procedures\dal.MeasurementUnits__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.MeasurementUnits_Validate__Save.sql" />
-    <Build Include="dbo\Tables\dbo.AgentRelationDefinitions.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Save.sql" />
@@ -409,10 +407,6 @@
     <Build Include="dbo\Functions\dbo.fn_RCName__Id.sql" />
     <Build Include="rpt\Functions\rpt.AccountClassificationGLAccount__Statement.sql" />
     <Build Include="rpt\Functions\rpt.Accounts__TrialBalance.sql" />
-    <Build Include="dbo\User Defined Types\dbo.AgentRelationList.sql" />
-    <Build Include="api\Stored Procedures\api.AgentRelations__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.AgentRelations_Validate__Save.sql" />
-    <Build Include="dal\Stored Procedures\dal.AgentRelations__Save.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__File.sql" />
     <Build Include="api\Stored Procedures\api.DocumentLines__Unsign.sql" />
@@ -441,7 +435,6 @@
     <None Include="Samples\03_Resources\d2_FG_steel-products.sql" />
     <None Include="Samples\03_Resources\e1_CCE_received-checks.sql" />
     <None Include="Samples\03_Resources\h_PL_employee-benefits.sql" />
-    <None Include="Samples\02_Agents\00_Agents.sql" />
     <None Include="Samples\02_Agents\02_Suppliers.sql" />
     <None Include="Samples\02_Agents\03_Customers.sql" />
     <None Include="Samples\02_Agents\04_Employees.sql" />
@@ -492,6 +485,7 @@
     <None Include="Samples\00_Setup\f_AccountTypes.sql" />
     <None Include="IntegrationTests.publish.publish.xml" />
     <None Include="dbo\Tables\Readme.txt" />
+    <None Include="Samples\02_Agents\05_Banks.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

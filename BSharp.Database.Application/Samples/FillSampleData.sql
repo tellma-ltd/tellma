@@ -3,7 +3,8 @@
 	DECLARE @DebugRoles bit = 0, @DebugResourceTypes bit = 0, @DebugEntryTypes bit = 0, @DebugResourceTypesEntryTypes bit = 0, @DebugAccountTypes bit = 0;
 	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
 	DECLARE @DebugLookups bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAgents bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0, @DebugBanks bit = 0;
 	DECLARE @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
@@ -21,7 +22,7 @@
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 		:r .\00_Setup\a_RolesMemberships.sql
-		:r .\00_Setup\b_AgentRelationDefinitions.sql
+		:r .\00_Setup\b_AgentDefinitions.sql
 		:r .\00_Setup\c_ResourceTypes.sql
 		:r .\00_Setup\d_EntryTypes.sql
 		:r .\00_Setup\e_ResourceTypesEntryTypes.sql
@@ -32,7 +33,6 @@
 		:r .\01_Basic\b_MeasurementUnits.sql
 		:r .\01_Basic\c_Lookups.sql
 		
-		:r .\02_Agents\00_Agents.sql
 		:r .\02_Agents\01_ResponsibilityCenters.sql
 		:r .\02_Agents\02_Suppliers.sql
 		:r .\02_Agents\03_Customers.sql
