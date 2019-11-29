@@ -7,71 +7,71 @@ DECLARE @LineDefinitions TABLE (
 	[TitlePlural]						NVARCHAR (255) NOT NULL,
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
-	[AgentRelationDefinitionId]			NVARCHAR (50),--	REFERENCES dbo.AgentRelationDefinitions([Id]),
+	[AgentDefinitionId]					NVARCHAR (50),--	REFERENCES dbo.AgentDefinitions([Id]),
 	[ResourceType]						NVARCHAR (255),
 	[Script]							NVARCHAR (MAX)
 );
 
 DECLARE @LineDefinitionEntries TABLE (
-	[LineDefinitionId]					NVARCHAR (50),
-	[EntryNumber]						INT,
-	[Direction]							SMALLINT,
+	[LineDefinitionId]			NVARCHAR (50),
+	[EntryNumber]				INT,
+	[Direction]					SMALLINT,
 	-- Source = -1 (n/a), 0 (get from line def), 1 (get from Entry), 2 (get from line), 3 (from account), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
 	-- 4: from resource/agent/currency etc./5 from (Resource, Account Type), 6: from Counter/Contra/Related in Line, 7:
 	-- Account is invisible in a tab, unless the source specifies it is entered by user. or in Manual line
 	
 	-- Account Group Properties
-	[AccountId]							INT, -- invisible, except in 
+	[AccountId]					INT, -- invisible, except in 
 
-	[AccountTypeId]						NVARCHAR (50), -- if account is entered by user, all the group properties get set.
+	[AccountTypeId]				NVARCHAR (50), -- if account is entered by user, all the group properties get set.
 
-	[AgentRelationDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, --  -1: n/a, 0:set from line def, 3: from account
-	[AgentRelationDefinitionId]			NVARCHAR (50),
+	[AgentDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, --  -1: n/a, 0:set from line def, 3: from account
+	[AgentDefinitionId]			NVARCHAR (50),
 
-	[ResourceTypeSource]				SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
-	[ResourceType]						NVARCHAR (50),
+	[ResourceTypeSource]		SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
+	[ResourceType]				NVARCHAR (50),
 
-	[LiquiditySource]					SMALLINT			NOT NULL DEFAULT -1, -- -1: n/a, 0:set from line def, 3: from account
-	[IsCurrent]							BIT,
+	[LiquiditySource]			SMALLINT			NOT NULL DEFAULT -1, -- -1: n/a, 0:set from line def, 3: from account
+	[IsCurrent]					BIT,
 
 	
 
 
 	-- Concluded from Agent. User will not figure out
---	[AgentRelatedness]					SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
+--	[AgentRelatedness]			SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
 
-	[EntryTypeSource]					SMALLINT			NOT NULL DEFAULT 0,
-	[EntryTypeId]						NVARCHAR (255),
+	[EntryTypeSource]			SMALLINT			NOT NULL DEFAULT 0,
+	[EntryTypeId]				NVARCHAR (255),
 
-	[RelatedAgentRelationDefinitionSource]SMALLINT			NOT NULL DEFAULT -1, --  -1: n/a, 0:set from line def, 3: from account
-	[RelatedAgentRelationDefinitionId]	NVARCHAR (50),
+	[RelatedAgentDefinitionSource]SMALLINT			NOT NULL DEFAULT -1, --  -1: n/a, 0:set from line def, 3: from account
+	[RelatedAgentDefinitionId]	NVARCHAR (50),
 
 	-- Account Details Properties
-	[AgentSource]						SMALLINT			NOT NULL DEFAULT 1, --  -1: n/a, 3: from account
-	[AgentId]							INT,--				REFERENCES dbo.Agents([Id]),	-- fixed in the case of ERCA, e.g., VAT
+	[AgentSource]				SMALLINT			NOT NULL DEFAULT 1, --  -1: n/a, 3: from account
+	[AgentId]					INT,--				REFERENCES dbo.Agents([Id]),	-- fixed in the case of ERCA, e.g., VAT
 
-	[ResourceSource]					SMALLINT			NOT NULL DEFAULT 1,
-	[ResourceId]						INT,--				REFERENCES dbo.Resources([Id]),	-- Fixed in the case of unallocated expense
+	[ResourceSource]			SMALLINT			NOT NULL DEFAULT 1,
+	[ResourceId]				INT,--				REFERENCES dbo.Resources([Id]),	-- Fixed in the case of unallocated expense
 	
-	[CurrencySource]					SMALLINT			NOT NULL DEFAULT 2,
+	[CurrencySource]				SMALLINT			NOT NULL DEFAULT 2,
 	[CurrencyId]						NCHAR (3),--		REFERENCES dbo.Currencies([Id]),	-- Fixed in the case of unallocated expense
 	
-	[MonetaryValueSource]				SMALLINT			NOT NULL DEFAULT 1,
-	[QuantitySource]					SMALLINT			NOT NULL DEFAULT 1,
-	[ExternalReferenceSource]			SMALLINT			NOT NULL DEFAULT 2,
-	[AdditionalReferenceSource]			SMALLINT			NOT NULL DEFAULT 2,
-	[RelatedAgentSource]				SMALLINT			NOT NULL DEFAULT 2,
-	[RelatedAmountSource]				SMALLINT			NOT NULL DEFAULT 2,
-	[DueDateSource]						SMALLINT			NOT NULL DEFAULT 1
+	[MonetaryValueSource]		SMALLINT			NOT NULL DEFAULT 1,
+	[QuantitySource]			SMALLINT			NOT NULL DEFAULT 1,
+	[ExternalReferenceSource]	SMALLINT			NOT NULL DEFAULT 2,
+	[AdditionalReferenceSource]	SMALLINT			NOT NULL DEFAULT 2,
+	[RelatedAgentSource]		SMALLINT			NOT NULL DEFAULT 2,
+	[RelatedAmountSource]		SMALLINT			NOT NULL DEFAULT 2,
+	[DueDateSource]				SMALLINT			NOT NULL DEFAULT 1
 );
 
 DECLARE @LineDefinitionColumns TABLE (
-	[LineDefinitionId]					NVARCHAR (50),
-	[SortIndex]							TINYINT,
-	[ColumnName]						NVARCHAR (50),
-	[Label]								NVARCHAR (50),
-	[Label2]							NVARCHAR (50),
-	[Label3]							NVARCHAR (50)
+	[LineDefinitionId]			NVARCHAR (50),
+	[SortIndex]					TINYINT,
+	[ColumnName]				NVARCHAR (50),
+	[Label]						NVARCHAR (50),
+	[Label2]					NVARCHAR (50),
+	[Label3]					NVARCHAR (50)
 );
 
 
@@ -97,7 +97,7 @@ INSERT @LineDefinitions(
 [Id],					[TitleSingular],		[TitlePlural]) VALUES
 (N'PurchaseInvoice',	N'Purchase Invoice',	N'Purchase Invoices');
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentRelationDefinitionId],[AgentSource],[ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
+([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionId],[AgentSource],[ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
 (N'PurchaseInvoice',	0,			0,				N'TaxPayable',		N'TaxAgency',				3,				-1,					-1,					1,				-1,					6,					6),
 (N'PurchaseInvoice',	1,			4,				N'Accrual',			N'Supplier',				2,				-1,					-1,					2,				-1,					-1,					-1),
 (N'PurchaseInvoice',	2,			4,				N'Payable',			N'Supplier',				2,				-1,					-1,					8,				-1,					-1,					-1);
@@ -114,12 +114,12 @@ INSERT INTO @LineDefinitionColumns
 ;
 -- NB: requisitions could be for payment towards something approved. Or it could be for a new purchase
 -- when it is for a new purchase, the document must have two tabs: payment details, and purchase details
--- AgentRelationDefinition is filtered by AccountType.AgentRelationDefinitionList
+-- AgentDefinition is filtered by AccountType.AgentDefinitionList
 INSERT @LineDefinitions(
 [Id],				[TitleSingular],	[TitlePlural]) VALUES
 (N'CashPayment',	N'Payment',			N'Payments')
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentRelationDefinitionId], [ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
+([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionId], [ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
 (N'CashPayment',		0,			4,				N'Cash',			N'PettyCashCustody',		-1,					1,				1,						-1,					-1,						-1);
 INSERT INTO @LineDefinitionColumns
 ([LineDefinitionId], [SortIndex], [ColumnName],								[Label]) VALUES
@@ -128,7 +128,7 @@ INSERT INTO @LineDefinitionColumns
 (N'CashPayment',		2,			N'Entry[1].CurrencyId',					N'Pay Currency'),
 (N'CashPayment',		3,			N'Entry[1].AdditionalReference',		N'Beneficiary'),
 (N'CashPayment',		4,			N'Entry[1].EntryType',					N'Purpose'),
-(N'CashPayment',		5,			N'Entry[1].AgentRelationDefinitionId',	N'Payment From'),
+(N'CashPayment',		5,			N'Entry[1].AgentDefinitionId',	N'Payment From'),
 (N'CashPayment',		6,			N'Entry[1].AgentId',					N'Bank/Cashier'),
 (N'CashPayment',		7,			N'Entry[1].ExternalReference',			N'Check #/Receipt #'),
 (N'CashPayment',		8,			N'Entry[1].DueDate',					N'Check Date')
@@ -139,7 +139,7 @@ INSERT @LineDefinitions(
 [Id],					[TitleSingular],	[TitlePlural]) VALUES
 (N'PettyCashPayment',	N'Petty Cash Payment',		N'Petty Cash Payments')
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentRelationDefinitionSource], [ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
+([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionSource], [ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
 (N'PettyCashPayment',		0,			4,				N'Cash',			1,								-1,					1,					1,				-1,					-1,						-1);
 INSERT INTO @LineDefinitionColumns
 ([LineDefinitionId], [SortIndex], [ColumnName],								[Label]) VALUES
@@ -157,7 +157,7 @@ INSERT @LineDefinitions(
 [Id],				[TitleSingular],	[TitlePlural]) VALUES
 (N'TaxWithholding',	N'Tax Withholding',	N'Tax Withholdings');
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentRelationDefinitionId],[AgentSource],[ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
+([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionId],[AgentSource],[ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
 (N'TaxWithholding',	0,			0,				N'Payable',				N'Supplier',				3,				-1,					-1,					1,				-1,					6,					6),
 (N'TaxWithholding',	1,			4,				N'Payable',				N'TaxAgency',				2,				-1,					-1,					2,				-1,					-1,					-1);
 INSERT INTO @LineDefinitionColumns

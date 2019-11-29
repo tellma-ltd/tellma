@@ -9,7 +9,7 @@
 	[TitlePlural]						NVARCHAR (255) NOT NULL,
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
-	[AgentRelationDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
+	[AgentDefinitionId]					NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
 	[ResourceType]						NVARCHAR (255),
 	[Script]							NVARCHAR (MAX) -- to store SQL code that populates the line
 );

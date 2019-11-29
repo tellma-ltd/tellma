@@ -35,7 +35,7 @@ RETURN
 		J.[Direction],
 		J.[AccountId],
 		J.[AccountTypeId],
-		J.[AgentRelationDefinitionId],
+		J.[AgentDefinitionId],
 		J.[ResourceTypeId],
 		J.[AgentId],
 		J.[EntryTypeId],

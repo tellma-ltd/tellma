@@ -20,7 +20,7 @@
 	[SortKey]					DECIMAL (9,4),
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT 3, -- For presentation purposes
-	[AgentRelationDefinitionId]	NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
+	[AgentDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
 
 	[State]						NVARCHAR (50)			DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
 	[MainMenuIcon]				NVARCHAR (50),

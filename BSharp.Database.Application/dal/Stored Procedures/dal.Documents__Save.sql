@@ -70,7 +70,7 @@ BEGIN
 				L.[Id],
 				DI.Id AS DocumentId,
 				L.[DefinitionId], 
-				L.[AgentRelationDefinitionId],
+				L.[AgentDefinitionId],
 				L.[AgentId],
 				L.[ResourceId],
 				L.[Amount],
@@ -82,19 +82,19 @@ BEGIN
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED THEN
 			UPDATE SET
-				t.[DefinitionId]			= s.[DefinitionId],
-				t.[AgentRelationDefinitionId]	= s.[AgentRelationDefinitionId],
-				t.[AgentId]						= s.[AgentId],
-				t.[ResourceId]					= s.[ResourceId],
-				t.[Amount]						= s.[Amount],
-				t.[Memo]						= s.[Memo],
-				t.[ExternalReference]			= s.[ExternalReference],
-				t.[AdditionalReference]			= s.[AdditionalReference],
-				t.[ModifiedAt]					= @Now,
-				t.[ModifiedById]				= @UserId
+				t.[DefinitionId]		= s.[DefinitionId],
+				t.[AgentDefinitionId]	= s.[AgentDefinitionId],
+				t.[AgentId]				= s.[AgentId],
+				t.[ResourceId]			= s.[ResourceId],
+				t.[Amount]				= s.[Amount],
+				t.[Memo]				= s.[Memo],
+				t.[ExternalReference]	= s.[ExternalReference],
+				t.[AdditionalReference]	= s.[AdditionalReference],
+				t.[ModifiedAt]			= @Now,
+				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([DocumentId], [DefinitionId], [SortKey],
-				[AgentRelationDefinitionId],
+				[AgentDefinitionId],
 				[AgentId],
 				[ResourceId],
 				[Amount],
@@ -103,7 +103,7 @@ BEGIN
 				[AdditionalReference]
 			)
 			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index],
-				s.[AgentRelationDefinitionId],
+				s.[AgentDefinitionId],
 				s.[AgentId],
 				s.[ResourceId],
 				s.[Amount],
@@ -125,7 +125,7 @@ BEGIN
 	USING (
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], 
-			[ResponsibilityCenterId], [CurrencyId], [AgentRelationDefinitionId], [AgentId], [ResourceId], [EntryTypeId], --[BatchCode], 
+			[ResponsibilityCenterId], [CurrencyId], [AgentDefinitionId], [AgentId], [ResourceId], [EntryTypeId], --[BatchCode], 
 			[DueDate],
 			[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
 			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAgentName], E.[RelatedAmount]
@@ -141,7 +141,7 @@ BEGIN
 			t.[AccountId]				= s.[AccountId],
 			t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
 			t.[CurrencyId]				= s.[CurrencyId],
-			t.[AgentRelationDefinitionId]=s.[AgentRelationDefinitionId],
+			t.[AgentDefinitionId]		= s.[AgentDefinitionId],
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[EntryTypeId]				= s.[EntryTypeId],
@@ -163,13 +163,13 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], 
-				[ResponsibilityCenterId], [CurrencyId], [AgentRelationDefinitionId], [AgentId], [ResourceId], [EntryTypeId], --[BatchCode], 
+				[ResponsibilityCenterId], [CurrencyId], [AgentDefinitionId], [AgentId], [ResourceId], [EntryTypeId], --[BatchCode], 
 				[DueDate],
 				[MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
 				[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount]
 				)
 		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId], 
-				s.[ResponsibilityCenterId], s.[CurrencyId], s.[AgentRelationDefinitionId], s.[AgentId], s.[ResourceId], s.[EntryTypeId], --s.[BatchCode], 
+				s.[ResponsibilityCenterId], s.[CurrencyId], s.[AgentDefinitionId], s.[AgentId], s.[ResourceId], s.[EntryTypeId], --s.[BatchCode], 
 				s.[DueDate],
 				s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
 				s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentName], s.[RelatedAgentId], s.[RelatedAmount]

@@ -10,7 +10,7 @@
 	[ReviewedAt]				DATETIMEOFFSET(7),
 
 	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_DocumentLines__CurrencyId] REFERENCES dbo.Currencies([Id]),
-	[AgentRelationDefinitionId] NVARCHAR (50)		REFERENCES dbo.AgentRelationDefinitions([Id]),
+	[AgentDefinitionId]			NVARCHAR (50)		REFERENCES dbo.AgentRelationDefinitions([Id]),
 	[AgentId]					INT					REFERENCES dbo.Agents([Id]), -- useful for storing the conversion agent in conversion transactions
 	[ResourceId]				INT					REFERENCES dbo.Resources([Id]),
 	[Amount]					MONEY,

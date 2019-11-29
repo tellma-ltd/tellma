@@ -1,4 +1,4 @@
-﻿	INSERT INTO dbo.AgentRelationDefinitions
+﻿	INSERT INTO dbo.AgentDefinitions
 	([Id],				[SingularLabel],	[PluralLabel],	[Prefix]) VALUES
 	(N'cost-units',		N'Cost Unit',		N'Cost Units',	N'CU'),
 	(N'cost-centers',	N'Cost Center',		N'Cost Centers',N'CC'),

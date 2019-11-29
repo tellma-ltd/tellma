@@ -7,7 +7,7 @@
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
 	[AccountTypeId]				NVARCHAR (50),
-	[AgentRelationDefinitionId]	NVARCHAR (50),
+	[AgentDefinitionId]			NVARCHAR (50),
 	[ResourceTypeId]			NVARCHAR (50),
 	[IsCurrent]					BIT,
 	[AgentId]					INT,

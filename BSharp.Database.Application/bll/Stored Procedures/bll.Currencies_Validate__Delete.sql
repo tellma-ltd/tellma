@@ -4,7 +4,7 @@
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-
+	-- TODO: we check if the corrsponding resources are used in entries or accounts. if they are, we return an error
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
     SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',

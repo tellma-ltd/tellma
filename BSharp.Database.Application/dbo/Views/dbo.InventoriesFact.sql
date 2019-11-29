@@ -13,7 +13,7 @@ RETURN
 		J.[DocumentDate],
 		J.[Id],
 		J.[Direction],
-		J.[AgentRelationDefinitionId],
+		J.[AgentDefinitionId],
 		J.[AgentId],
 		J.[ResourceId],
 		J.[Count],

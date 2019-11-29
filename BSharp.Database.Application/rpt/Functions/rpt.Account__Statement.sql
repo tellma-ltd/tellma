@@ -1,7 +1,7 @@
 ﻿CREATE FUNCTION  [rpt].[Account__Statement] (
 -- SELECT * FROM [rpt].[Account__Statement](104, '01.01.2015', '01.01.2020')
 	@AccountId INT,
-	@AgentRelationDefinitionId NVARCHAR (50),
+	@AgentDefinitionId NVARCHAR (50),
 	@AgentId INT,
 	@ResourceId INT,
 	@fromDate Date = '01.01.2000', 

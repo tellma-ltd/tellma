@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[AgentRelations] (
 	[Id]						INT					CONSTRAINT [PK_AgentRelations] PRIMARY KEY IDENTITY,
-	[OperatingSegmentId]		INT					NOT NULL CONSTRAINT [FK_AgentRelations__ResponsibilityCenterId] REFERENCES dbo.[ResponsibilityCenters]([Id]),
+	[OperatingSegmentId]		INT					NOT NULL CONSTRAINT [FK_AgentRelations__OperatingSegmentId] REFERENCES dbo.[ResponsibilityCenters]([Id]),
 	[DefinitionId]				NVARCHAR(50)		NOT NULL CONSTRAINT [FK_AgentRelations__DefinitionId] REFERENCES [dbo].[AgentRelationDefinitions]([Id]),
 	[AgentId]					INT					NOT NULL CONSTRAINT [FK_AgentRelations__AgentId] REFERENCES [dbo].[Agents] ([Id]) ON DELETE CASCADE,
 	[StartDate]					DATE				DEFAULT (CONVERT (date, SYSDATETIME())),
@@ -85,5 +85,5 @@ WSI
 */
 );
 GO
-CREATE UNIQUE INDEX [IX_AgentRelations__OperatingSegmentId_AgentRelationDefinitionId_AgentId] ON dbo.AgentRelations([OperatingSegmentId], [DefinitionId], [AgentId]);
+CREATE UNIQUE INDEX [IX_AgentRelations__OperatingSegmentId_DefinitionId_AgentId] ON dbo.AgentRelations([OperatingSegmentId], [DefinitionId], [AgentId]);
 GO

@@ -9,7 +9,7 @@ AS
     JOIN [dbo].[Roles] R ON P.RoleId = R.Id
     JOIN [dbo].[RoleMemberships] RM ON R.Id = RM.[RoleId]
     WHERE R.[IsActive] = 1 
-    AND RM.[AgentId] = @UserId
+    AND RM.[UserId] = @UserId
     UNION
     SELECT [ViewId], [Action], [Criteria], [Mask] 
     FROM [dbo].[Permissions] P

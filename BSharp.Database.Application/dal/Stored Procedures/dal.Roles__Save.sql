@@ -12,9 +12,9 @@ BEGIN
 
 	-- This should include all User Ids whose permissions may have been modified
 	INSERT INTO @ModifiedUserIds ([Id]) SELECT DISTINCT X.[Id] FROM (
-			SELECT [AgentId] AS [Id] FROM [dbo].[RoleMemberships] WHERE [RoleId] IN (SELECT [Id] FROM @Entities)
+			SELECT [UserId] AS [Id] FROM [dbo].[RoleMemberships] WHERE [RoleId] IN (SELECT [Id] FROM @Entities)
 			UNION 
-			SELECT [AgentId] AS [Id] FROM @Members
+			SELECT [UserId] AS [Id] FROM @Members
 		) AS X;
 
 
@@ -55,18 +55,18 @@ BEGIN
 	)
 	MERGE INTO BE AS t
 	USING (
-		SELECT L.[Index], L.[Id], H.[Id] AS [RoleId], [AgentId], [Memo]
+		SELECT L.[Index], L.[Id], H.[Id] AS [RoleId], [UserId], [Memo]
 		FROM @Members L
 		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.Id = s.Id
 	WHEN MATCHED THEN
 		UPDATE SET 
-			t.[AgentId]		= s.[AgentId], 
+			t.[UserId]		= s.[UserId], 
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[AgentId],	[Memo])
-		VALUES (s.[RoleId], s.[AgentId], s.[Memo])
+		INSERT ([RoleId],	[UserId],	[Memo])
+		VALUES (s.[RoleId], s.[UserId], s.[Memo])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

@@ -7,9 +7,5 @@ SELECT
 IsActive As [Active ?], TaxIdentificationNumber As TIN
 --, Gender
 FROM [dbo].[Agents]
-WHERE [Id] IN (
-	SELECT [AgentId]
-	FROM dbo.[AgentRelations]
-	WHERE [DefinitionId] = N'employees'
-	AND [IsActive] = 1
-);
+WHERE [DefinitionId] = N'employees'
+AND [IsActive] = 1;

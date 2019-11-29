@@ -41,15 +41,15 @@ WHERE LDE.ResourceSource = 2 AND E.ResourceId = L.ResourceId
 -- When using manual line, Copy information from Account to entries
 UPDATE E 
 SET
-	E.[AccountTypeId]				= A.[AccountTypeId],
-	E.[AgentRelationDefinitionId]	= A.[AgentRelationDefinitionId],
-	E.[ResourceTypeId]				= COALESCE(A.[ResourceTypeId], E.[ResourceTypeId]),
-	E.[IsCurrent]					= COALESCE(A.[IsCurrent], E.[IsCurrent]),
-	E.[AgentId]						= COALESCE(A.[AgentId], E.[AgentId]),
-	E.[ResourceId]					= COALESCE(A.[AgentId], E.[AgentId]),
-	E.[ResponsibilityCenterId]		= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
-	E.[AccountDescriptorId]			= COALESCE(A.[DescriptorId], E.[AccountDescriptorId]),
-	E.[EntryTypeId]					= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
+	E.[AccountTypeId]			= A.[AccountTypeId],
+	E.[AgentDefinitionId]		= A.[AgentDefinitionId],
+	E.[ResourceTypeId]			= COALESCE(A.[ResourceTypeId], E.[ResourceTypeId]),
+	E.[IsCurrent]				= COALESCE(A.[IsCurrent], E.[IsCurrent]),
+	E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
+	E.[ResourceId]				= COALESCE(A.[AgentId], E.[AgentId]),
+	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
+	E.[AccountDescriptorId]		= COALESCE(A.[DescriptorId], E.[AccountDescriptorId]),
+	E.[EntryTypeId]				= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
 FROM @FilledEntries E JOIN @FilledLines L ON E.DocumentLineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE L.DefinitionId = N'ManualLine'; -- Entered by user

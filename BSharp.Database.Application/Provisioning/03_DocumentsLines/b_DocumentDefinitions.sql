@@ -10,7 +10,7 @@
 	-- UI Specs
 	[Prefix]					NVARCHAR (5)	NOT NULL,
 	[CodeWidth]					TINYINT			DEFAULT (3), -- For presentation purposes
-	[AgentRelationDefinitionId]	NVARCHAR (50)
+	[AgentDefinitionId]			NVARCHAR (50)
 );
 INSERT @DocumentDefinitions ([Id], [Prefix]) VALUES
 	-- The list includes the following transaction types, and their variant flavours depending on country and industry:
@@ -63,10 +63,10 @@ WHEN NOT MATCHED BY SOURCE THEN
 WHEN NOT MATCHED BY TARGET THEN
     INSERT (
 		[Id], [IsSourceDocument], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
-		[Prefix], [CodeWidth], [AgentRelationDefinitionId]
+		[Prefix], [CodeWidth], [AgentDefinitionId]
 	) VALUES (
 		s.[Id], s.[IsSourceDocument], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
-		s.[Prefix], s.[CodeWidth], s.[AgentRelationDefinitionId]
+		s.[Prefix], s.[CodeWidth], s.[AgentDefinitionId]
 	);
 
 DECLARE @DocumentDefinitionsLineDefinitions TABLE(

@@ -47,7 +47,7 @@ SET NOCOUNT ON;
 			WHERE W.ToState = @ToState
 			AND WS.[ProxyRoleId] NOT IN (
 				SELECT [RoleId] FROM dbo.RoleMemberships
-				WHERE [AgentId] = @UserId
+				WHERE [UserId] = @UserId
 			)
 		);
 	END

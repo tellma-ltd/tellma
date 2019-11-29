@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 				[Code], 
 				--[PartyReference],
 				[AccountTypeId],
-				[AgentRelationDefinitionId],
+				[AgentDefinitionId],
 				[ResourceTypeId],
 				[IsCurrent],
 				[AgentId],
@@ -35,7 +35,6 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET 
-
 				t.[AccountClassificationId]	= s.[AccountClassificationId], 
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
@@ -43,7 +42,7 @@ SET NOCOUNT ON;
 				t.[Code]					= s.[Code],
 				--t.[PartyReference]			= s.[PartyReference],
 				t.[AccountTypeId]			= s.[AccountTypeId],
-				t.[AgentRelationDefinitionId]=s.[AgentRelationDefinitionId],
+				t.[AgentDefinitionId]		= s.[AgentDefinitionId],
 				t.[ResourceTypeId]			= s.[ResourceTypeId],
 				t.[IsCurrent]				= s.[IsCurrent],
 				t.[AgentId]					= s.[AgentId],
@@ -60,7 +59,7 @@ SET NOCOUNT ON;
 				[Code], 
 				--[PartyReference],
 				[AccountTypeId],
-				[AgentRelationDefinitionId],
+				[AgentDefinitionId],
 				[ResourceTypeId],
 				[IsCurrent],
 				[AgentId],
@@ -74,7 +73,7 @@ SET NOCOUNT ON;
 				s.[Code], 
 				--s.[PartyReference],
 				s.[AccountTypeId],
-				s.[AgentRelationDefinitionId],
+				s.[AgentDefinitionId],
 				s.[ResourceTypeId],
 				s.[IsCurrent],
 				s.[AgentId],

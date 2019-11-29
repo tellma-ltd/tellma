@@ -13,7 +13,7 @@ INSERT INTO dbo.Roles([Name], [Name2]) VALUES
 SELECT @Accountant = [Id] FROM dbo.[Roles] WHERE [Name] = N'Accountant';
 SELECT @Comptroller = [Id] FROM dbo.[Roles] WHERE [Name] = N'Comptroller';
 
-INSERT INTO dbo.RoleMemberships([AgentId], [RoleId]) VALUES
+INSERT INTO dbo.RoleMemberships([UserId], [RoleId]) VALUES
 (@UserId, @Accountant),
 (@UserId, @Comptroller);
 

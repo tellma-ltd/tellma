@@ -14,7 +14,7 @@
 	[CurrencyId]					NCHAR (3),
 	[MonetaryValue]					DECIMAL, -- such as when dealing with a check, or when the unit price is fixed (rare)
 	[CountUnitId]					INT,
-	[Count]							DECIMAL, -- if count is not null, this value is forced in Entries
+	[Count]							DECIMAL				DEFAULT 1, -- if count is not null, this value is forced in Entries
 	[MassUnitId]					INT,
 	[Mass]							DECIMAL, -- makes sense when DescriptorId is not null, so we are referring to a specific instance, or when every unit has the same mass
 	[VolumeUnitId]					INT,

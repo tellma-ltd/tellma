@@ -6,8 +6,8 @@
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountId]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
 
-	[AccountTypeId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
-	[AgentRelationDefinitionId]	NVARCHAR (50)	REFERENCES dbo.AgentRelationDefinitions([Id]),
+	[AccountTypeId]				NVARCHAR (50)	NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
+	[AgentDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
 	[ResourceTypeId]			NVARCHAR (50),
 	[IsCurrent]					BIT,
 

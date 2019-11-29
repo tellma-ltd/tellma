@@ -11,7 +11,8 @@ CREATE TABLE [dbo].[Resources] (
 	[DefinitionId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Resources__DefinitionId] REFERENCES [dbo].[ResourceDefinitions] ([Id]),	
 	-- to cater for user custom classifications for reporting purposes
 	[ResourceClassificationId]		INT					CONSTRAINT [FK_Resources__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
-	[Name]							NVARCHAR (255)		NOT NULL CONSTRAINT [CK_Resources__ResourceDefinitionId_Name] UNIQUE ([DefinitionId],[Name]),
+	[Name]							NVARCHAR (255)		NOT NULL,
+	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_DescriptorId] UNIQUE ([DefinitionId],[Name],[DescriptorId]),
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
 	[DescriptorId]					NVARCHAR (10), -- When not null, all measures (count, monetary value, mass, volumne, etc) must be fixed
@@ -22,7 +23,7 @@ CREATE TABLE [dbo].[Resources] (
 	[Code]							NVARCHAR (255),
 
 	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Count]							DECIMAL, -- if count is not null, this value is forced in Entries
+	[Count]							DECIMAL				DEFAULT 1,
 	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	[MonetaryValue]					DECIMAL, -- if [MonetaryValue] is not null, this value is forced in Entries
 	[MassUnitId]					INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
@@ -64,8 +65,8 @@ CREATE TABLE [dbo].[Resources] (
 	--[INT1]							INT,			-- Engine Capacity
 	--[INT2]							INT,
 -- Examples for Steel finished goods are: Thickness and width. For cars: make and model.
-	[Lookup1Id]						INT					CONSTRAINT [FK_Resources__Lookup1Id] FOREIGN KEY ([Lookup1Id]) REFERENCES [dbo].[Lookups] ([Id]),
-	[Lookup2Id]						INT					CONSTRAINT [FK_Resources__Lookup2Id] FOREIGN KEY ([Lookup2Id]) REFERENCES [dbo].[Lookups] ([Id]),
+	[Lookup1Id]						INT					CONSTRAINT [FK_Resources__Lookup1Id] REFERENCES [dbo].[Lookups] ([Id]),
+	[Lookup2Id]						INT					CONSTRAINT [FK_Resources__Lookup2Id] REFERENCES [dbo].[Lookups] ([Id]),
 	--[Lookup3Id]						INT					CONSTRAINT [FK_Resources__Lookup3Id] FOREIGN KEY ([Lookup3Id]) REFERENCES [dbo].[Lookups] ([Id]),
 	--[Lookup4Id]						INT					CONSTRAINT [FK_Resources__Lookup4Id] FOREIGN KEY ([Lookup4Id]) REFERENCES [dbo].[Lookups] ([Id]),
 	--[Lookup5Id]						INT					CONSTRAINT [FK_Resources__Lookup5Id] FOREIGN KEY ([Lookup5Id]) REFERENCES [dbo].[Lookups] ([Id]),

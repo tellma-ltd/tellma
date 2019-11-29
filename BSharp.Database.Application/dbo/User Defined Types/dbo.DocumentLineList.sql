@@ -4,7 +4,7 @@
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				NVARCHAR (255)	NOT NULL,
 	[CurrencyId]				NCHAR (3),
-	[AgentRelationDefinitionId] NVARCHAR (50),
+	[AgentDefinitionId]			NVARCHAR (50),
 	[AgentId]					INT,
 	[ResourceId]				INT,
 	[Amount]					MONEY,
