@@ -109,10 +109,6 @@ SET NOCOUNT ON;
 	JOIN @IndexedIds II ON A.Id = II.[Id]
 	JOIN @ImageIds L ON II.[Index] = L.[Index]
 
-	-- To trigger clients to refresh cached settings
-	UPDATE [dbo].[Users] SET [UserSettingsVersion] = NEWID()
-	WHERE [Id] IN (SELECT [Id] FROM @IndexedIds)
-
 	IF @ReturnIds = 1
 	SELECT * FROM @IndexedIds;
 END

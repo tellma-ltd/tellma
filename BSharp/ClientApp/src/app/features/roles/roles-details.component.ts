@@ -8,7 +8,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { DefinitionsForClient } from '~/app/data/dto/definitions-for-client';
-import { VIEWS_BUILT_IN, ACTIONS, Action } from '~/app/data/views';
+import { VIEWS_BUILT_IN, ACTIONS } from '~/app/data/views';
 import { metadata_Lookup } from '~/app/data/entities/lookup';
 import { metadata_Resource } from '~/app/data/entities/resource';
 import { metadata_ResourceClassification } from '~/app/data/entities/resource-classification';
@@ -44,7 +44,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   private _viewsForSelector: SelectorChoice[] = null;
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
-  public expand = 'Permissions,Members/Agent';
+  public expand = 'Permissions,Members/User';
 
   create = () => {
     const result = new RoleForSave();

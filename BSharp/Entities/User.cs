@@ -10,6 +10,10 @@ namespace BSharp.Entities
     [StrongEntity]
     public class UserForSave<TRoleMembership> : EntityWithKey<int>, IValidatableObject
     {
+        [NotMapped]
+        [Display(Name = "Image")]
+        public byte[] Image { get; set; }
+
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
