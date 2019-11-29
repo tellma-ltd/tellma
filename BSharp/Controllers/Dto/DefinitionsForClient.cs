@@ -23,6 +23,11 @@ namespace BSharp.Controllers.Dto
         public Dictionary<string, ResourceDefinitionForClient> Resources { get; set; }
 
         /// <summary>
+        /// Mapping from agent definition Id to agent definition
+        /// </summary>
+        public Dictionary<string, AgentDefinitionForClient> Agents { get; set; }
+
+        /// <summary>
         /// Mapping from resource definition Id to resource definition
         /// </summary>
         public Dictionary<string, AccountDefinitionForClient> Accounts { get; set; }
@@ -259,6 +264,11 @@ namespace BSharp.Controllers.Dto
         public byte Lookup5_Visibility { get; set; }
         public int? Lookup5_DefaultValue { get; set; }
         public string Lookup5_DefinitionId { get; set; }
+    }
+
+    public class AgentDefinitionForClient : MasterDetailDefinitionForClient
+    {
+        // TODO
     }
 
     public class LookupDefinitionForClient : MasterDetailDefinitionForClient

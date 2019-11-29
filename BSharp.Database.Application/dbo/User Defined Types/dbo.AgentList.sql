@@ -26,7 +26,6 @@
 --	[TitleId]					TINYINT,		-- LKT
 --	[Gender]					TINYINT,		-- ISO/IEC 5218. 0=unknown, 1=Male, 2=Female, 9=N/A
 --	[ResidentialAddress]		NVARCHAR (1024), -- in the country language
-	[ImageId]					NVARCHAR (50),
 ----	--	Social
 --	[MaritalStatus]				TINYINT,		-- LKT
 --	[NumberOfChildren]			TINYINT,

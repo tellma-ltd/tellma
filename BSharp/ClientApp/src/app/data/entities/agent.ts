@@ -1,10 +1,12 @@
 // tslint:disable:variable-name
+// tslint:disable:max-line-length
 import { EntityWithKey } from './base/entity-with-key';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
-import { supportedCultures } from '../supported-cultures';
+import { DefinitionsForClient } from '../dto/definitions-for-client';
+import { GENERIC } from './base/constants';
 
 export class AgentForSave extends EntityWithKey {
 
@@ -12,14 +14,13 @@ export class AgentForSave extends EntityWithKey {
   Name2: string;
   Name3: string;
   Code: string;
-  AgentType: string;
   IsRelated: boolean;
   TaxIdentificationNumber: string;
-  PreferredLanguage: string;
   Image: string;
 }
 
 export class Agent extends AgentForSave {
+  DefinitionId: string;
   ImageId: string;
   IsActive: boolean;
   CreatedAt: string;
@@ -28,34 +29,40 @@ export class Agent extends AgentForSave {
   ModifiedById: number | string;
 }
 
-// export const Agent_AgentType = {
-//   'Individual': 'Agent_AgentType_Individual',
-//   'Organization': 'Agent_AgentType_Organization',
-//   'System': 'Agent_AgentType_System'
-// };
-
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
-let _cache: EntityDescriptor;
+let _definitions: DefinitionsForClient;
+let _cache: { [defId: string]: EntityDescriptor } = {};
+let _definitionIds: string[];
 
-export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
+export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (ws.settings !== _settings) {
-    const companyLanguages = [ws.settings.PrimaryLanguageId];
-    if (ws.settings.SecondaryLanguageId) {
-      companyLanguages.push(ws.settings.SecondaryLanguageId);
-    }
-    if (ws.settings.TernaryLanguageId) {
-      companyLanguages.push(ws.settings.TernaryLanguageId);
-    }
+  // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
+  if (ws.settings !== _settings || ws.definitions !== _definitions) {
     _settings = ws.settings;
-    _cache = {
+    _definitions = ws.definitions;
+    _definitionIds = null;
+
+    // clear the cache
+    _cache = {};
+  }
+
+  const key = definitionId || GENERIC; // undefined
+  if (!_cache[key]) {
+    if (!_definitionIds) {
+      _definitionIds = Object.keys(ws.definitions.Agents);
+    }
+
+    const definedDefinitionId = !!definitionId && definitionId !== GENERIC;
+    const entityDesc: EntityDescriptor = {
       collection: 'Agent',
-      titleSingular: () => trx.instant('Agent'),
-      titlePlural:  () => trx.instant('Agents'),
+      definitionId,
+      definitionIds: _definitionIds,
+      titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Agents[definitionId], 'TitleSingular') || trx.instant('Agent'),
+      titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Agents[definitionId], 'TitlePlural') || trx.instant('Agents'),
       select: _select,
-      apiEndpoint: 'agents',
-      screenUrl: 'agents',
+      apiEndpoint: definedDefinitionId ? `agents/${definitionId}` : 'agents',
+      screenUrl: definedDefinitionId ? `agents/${definitionId}` : 'agents',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
@@ -64,27 +71,13 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, _: st
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
-     //   User: { control: 'navigation', label: () => trx.instant('Agent_User'), type: 'User', foreignKeyName: 'Id' },
-        AgentType: {
-          control: 'choice',
-          label: () => trx.instant('Agent_AgentType'),
-          choices: ['Individual', 'Organization', 'System'],
-          format: (c: string) => {
-            switch (c) {
-              case 'Individual': return trx.instant('Agent_AgentType_Individual');
-              case 'Organization': return trx.instant('Agent_AgentType_Organization');
-              case 'System': return trx.instant('Agent_AgentType_System');
-              default: return c;
-            }
-          }
-        },
         TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Agent_TaxIdentificationNumber') },
-        PreferredLanguage: {
-          control: 'choice',
-          label: () => trx.instant('Agent_PreferredLanguage'),
-          choices: companyLanguages,
-          format: (c: string) => supportedCultures[c]
-        },
+        // PreferredLanguage: {
+        //   control: 'choice',
+        //   label: () => trx.instant('Agent_PreferredLanguage'),
+        //   choices: companyLanguages,
+        //   format: (c: string) => supportedCultures[c]
+        // },
         IsRelated: { control: 'boolean', label: () => trx.instant('Agent_IsRelated') },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
@@ -95,13 +88,26 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, _: st
     };
 
     if (!ws.settings.SecondaryLanguageId) {
-      delete _cache.properties.Name2;
+      delete entityDesc.properties.Name2;
     }
 
     if (!ws.settings.TernaryLanguageId) {
-      delete _cache.properties.Name3;
+      delete entityDesc.properties.Name3;
     }
+    // Adjust according to definitions
+    const definition = _definitions.Agents[definitionId];
+    if (!definition) {
+      if (definitionId !== GENERIC) {
+        // Programmer mistake
+        console.error(`defintionId '${definitionId}' doesn't exist`);
+      }
+    } else {
+
+      // TODO: Definition customizations
+    }
+
+    _cache[key] = entityDesc;
   }
 
-  return _cache;
+  return _cache[key];
 }

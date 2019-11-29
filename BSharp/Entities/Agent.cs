@@ -28,14 +28,6 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "Agent_AgentType")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(30, ErrorMessage = nameof(StringLengthAttribute))]
-        [ChoiceList(new object[] { "Individual", "Organization", "System" },
-            new string[] { "Agent_AgentType_Individual", "Agent_AgentType_Organization", "Agent_AgentType_System" })]
-        [AlwaysAccessible]
-        public string AgentType { get; set; }
-
         [Display(Name = "Agent_IsRelated")]
         [Required]
         [AlwaysAccessible]
@@ -45,11 +37,6 @@ namespace BSharp.Entities
         [StringLength(30, ErrorMessage = nameof(StringLengthAttribute))]
         public string TaxIdentificationNumber { get; set; }
 
-        [Display(Name = "Agent_PreferredLanguage")]
-        [Culture]
-        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
-        public string PreferredLanguage { get; set; }
-
         [NotMapped]
         [Display(Name = "Image")]
         public byte[] Image { get; set; }
@@ -57,6 +44,8 @@ namespace BSharp.Entities
 
     public class Agent : AgentForSave
     {
+        public string DefinitionId { get; set; }
+
         public string ImageId { get; set; }
 
         [Display(Name = "IsActive")]

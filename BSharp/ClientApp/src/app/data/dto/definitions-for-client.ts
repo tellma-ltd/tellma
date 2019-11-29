@@ -4,6 +4,7 @@ import { ReportOrderDirection, Aggregation, ReportType, ChartType } from '../ent
 export class DefinitionsForClient {
     Documents: { [definitionId: string]: DocumentDefinitionForClient };
     Lines: { [definitionId: string]: LineDefinitionForClient };
+    Agents: { [definitionId: string]: AgentDefinitionForClient };
     Resources: { [definitionId: string]: ResourceDefinitionForClient };
     Accounts: { [definitionId: string]: AccountDefinitionForClient };
     Lookups: { [definitionId: string]: LookupDefinitionForClient };
@@ -226,6 +227,10 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
 }
 
 export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {
+    Bla: string;
+}
+
+export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClient {
     Bla: string;
 }
 

@@ -622,8 +622,8 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     baseEntityDescriptor.select.forEach(e => resultPaths[e] = true);
 
     // (2) append the definitoinId if any, it must always be loaded
-    if (!!baseEntityDescriptor.selectForDefinition) {
-      resultPaths[baseEntityDescriptor.selectForDefinition] = true;
+    if (!!baseEntityDescriptor.definitionIds) {
+      resultPaths.DefinitionId = true;
     }
 
     // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')

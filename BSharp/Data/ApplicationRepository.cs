@@ -710,9 +710,11 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             return Query<Agent>().FromSql($"(SELECT * FROM [map].[Agents]() WHERE [AgentType] = @Type)", null, relationParameter);
         }
 
-        public Query<Agent> Agents__AsQuery(List<AgentForSave> entities)
+        public Query<Agent> Agents__AsQuery(string definitionId, List<AgentForSave> entities)
         {
             // Parameters
+            SqlParameter definitionParameter = new SqlParameter("@DefinitionId", definitionId);
+
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
@@ -722,10 +724,36 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
             // Query
             var query = Query<Agent>();
-            return query.FromSql($"[map].[{nameof(Agents__AsQuery)}] (@Entities)", null, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(Agents__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
-        public async Task<List<int>> Agents__Save(List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(string definitionId, List<AgentForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[AgentList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Save)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task<List<int>> Agents__Save(string definitionId, List<AgentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -747,6 +775,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                     SqlDbType = SqlDbType.Structured
                 };
 
+                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add(imageIdsTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
@@ -787,31 +816,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             return sortedResult.ToList();
         }
 
-        public async Task<IEnumerable<ValidationError>> Agents_Validate__Save(List<AgentForSave> entities, int top)
-        {
-            var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
-                {
-                    TypeName = $"[dbo].[AgentList]",
-                    SqlDbType = SqlDbType.Structured
-                };
-
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add("@Top", top);
-
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Agents_Validate__Save)}]";
-
-                // Execute
-                return await RepositoryUtilities.LoadErrors(cmd);
-            }
-        }
-
         public async Task Agents__Delete(IEnumerable<int> ids)
         {
             var conn = await GetConnectionAsync();
@@ -843,7 +847,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> Agents_Validate__Delete(string definitionId, List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -856,6 +860,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                     SqlDbType = SqlDbType.Structured
                 };
 
+                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@Top", top);
 

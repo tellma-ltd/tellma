@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
 import { Agent, AgentForSave, metadata_Agent } from '~/app/data/entities/agent';
@@ -6,20 +6,33 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { supportedCultures } from '~/app/data/supported-cultures';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import { Router, ActivatedRoute, Params, ParamMap } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
   selector: 'b-agents-details',
   templateUrl: './agents-details.component.html'
 })
-export class AgentsDetailsComponent extends DetailsBaseComponent {
+export class AgentsDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private _languageChoices: SelectorChoice[];
   private _agentTypeChoices: SelectorChoice[];
-  private agentsApi = this.api.agentsApi(this.notifyDestruct$); // for intellisense
+  private agentsApi = this.api.agentsApi('', this.notifyDestruct$); // for intellisense
+  private _definitionId: string;
+
+
+  @Input()
+  public set definitionId(t: string) {
+    if (this._definitionId !== t) {
+      this._definitionId = t;
+      this.agentsApi = this.api.agentsApi(t, this.notifyDestruct$);
+    }
+  }
+
+  public get definitionId(): string {
+    return this._definitionId;
+  }
 
   public expand = 'User';
 
@@ -32,40 +45,44 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
     } else if (this.ws.isTernaryLanguage) {
       result.Name3 = this.initialText;
     }
-    result.AgentType = 'Individual';
     result.IsRelated = false;
-    result.PreferredLanguage = this.ws.settings.PrimaryLanguageId;
+
+// TODO Set defaults from definition
+
     return result;
   }
 
-  constructor(private workspace: WorkspaceService, private api: ApiService,
-              private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private workspace: WorkspaceService, private api: ApiService,
+    private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
     super();
   }
 
-  get languageChoices(): SelectorChoice[] {
+  ngOnInit() {
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      // This triggers changes on the screen
 
-    if (!this._languageChoices) {
-      this._languageChoices = [{ name: () => this.ws.settings.PrimaryLanguageName, value: this.ws.settings.PrimaryLanguageId }];
-      if (!!this.ws.settings.SecondaryLanguageId) {
-        this._languageChoices.push({
-          name: () => this.ws.settings.SecondaryLanguageName,
-          value: this.ws.settings.SecondaryLanguageId
-        });
-      }
-      if (!!this.ws.settings.TernaryLanguageId) {
-        this._languageChoices.push({
-          name: () => this.ws.settings.TernaryLanguageName,
-          value: this.ws.settings.TernaryLanguageId
-        });
-      }
-    }
+      if (this.isScreenMode) {
 
-    return this._languageChoices;
+        const definitionId = params.get('definitionId');
+
+        if (!definitionId || !this.workspace.current.definitions.Agents[definitionId]) {
+          this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
+        }
+
+        if (this.definitionId !== definitionId) {
+          this.definitionId = definitionId;
+        }
+      }
+    });
   }
 
-  public languageLookup(value: string) {
-    return supportedCultures[value];
+  get viewId(): string {
+    return `agents/${this.definitionId}`;
+  }
+
+  public get d(): AgentDefinitionForClient {
+    return this.ws.definitions.Agents[this.definitionId];
   }
 
   get agentTypeChoices(): SelectorChoice[] {
@@ -105,7 +122,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: Agent) => !!model && !model.IsActive;
   public showDeactivate = (model: Agent) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: Agent) => this.ws.canDo('agents', 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Agent) => this.ws.canDo(this.viewId, 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: Agent) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
@@ -121,10 +138,20 @@ export class AgentsDetailsComponent extends DetailsBaseComponent {
   public createUser(model: Agent): void {
     if (!!model && !!model.Id) {
       const params: Params = {
-        agent_id : model.Id
+        agent_id: model.Id
       };
 
-      this.router.navigate(['../../users/new', params], { relativeTo : this.route });
+      this.router.navigate(['../../users/new', params], { relativeTo: this.route });
     }
+  }
+
+  public get masterCrumb(): string {
+    const definitionId = this.definitionId;
+    const definition = this.workspace.current.definitions.Agents[definitionId];
+    if (!definition) {
+      this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
+    }
+
+    return this.ws.getMultilingualValueImmediate(definition, 'TitlePlural');
   }
 }

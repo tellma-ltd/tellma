@@ -102,16 +102,6 @@ export interface EntityDescriptor {
     screenUrl: string;
 
     /**
-     * The select atoms that will make the definitionFunc succeed.
-     */
-    selectForDefinition?: string;
-
-    /**
-     * Given an entity, retrieves the definition Id
-     */
-    definitionFunc?: (e: Entity) => string;
-
-    /**
      * A function that returns a display string representing the entity.
      */
     format: (item: Entity) => string;

@@ -1,5 +1,5 @@
-<b-details collection="Agent" [createFunc]="create" [expand]="expand" [mode]="mode" [idString]="idString"
-  [masterCrumb]="'Agents' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+<b-details collection="Agent" [definition]="definitionId" [createFunc]="create" [expand]="expand" [mode]="mode" [idString]="idString"
+  [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -69,31 +69,10 @@
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
-  <!-- Agent Type -->
-  <b-form-group class="b-form-group" [label]="'Agent_AgentType' | translate"
-    [serverErrors]="model?.serverErrors?.AgentType">
-    <div *ngIf="!isEdit">
-      <b-restricted [metadata]="model?.EntityMetadata?.AgentType"> {{ agentTypeLookup(model?.AgentType) | translate }}
-      </b-restricted>
-    </div>
-    <b-selector *ngIf="isEdit" [(ngModel)]="model.AgentType" [choices]="agentTypeChoices" required></b-selector>
-  </b-form-group>
-
   <!-- Tax Identification Number -->
   <b-form-group class="b-form-group" [label]="'Agent_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
     <div *ngIf="!isEdit">{{ model?.TaxIdentificationNumber }}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-  </b-form-group>
-
-  <!-- Preferred Language -->
-  <b-form-group class="b-form-group" [label]="'Agent_PreferredLanguage' | translate"
-    [serverErrors]="model?.serverErrors?.PreferredLanguage">
-    <div *ngIf="!isEdit">
-      <b-restricted [metadata]="model?.EntityMetadata?.PreferredLanguage">
-        {{ languageLookup(model?.PreferredLanguage) | translate }}
-      </b-restricted>
-    </div>
-    <b-selector *ngIf="isEdit" [(ngModel)]="model.PreferredLanguage" [choices]="languageChoices" required></b-selector>
   </b-form-group>
 
   <!-- Is Related -->

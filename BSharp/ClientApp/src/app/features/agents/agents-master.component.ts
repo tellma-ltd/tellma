@@ -8,6 +8,7 @@ import { MasterBaseComponent } from '~/app/shared/master-base/master-base.compon
 import { metadata_Agent } from '~/app/data/entities/agent';
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
   selector: 'b-agents-master',
@@ -15,21 +16,58 @@ import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
 })
 export class AgentsMasterComponent extends MasterBaseComponent implements OnInit {
 
+  private agentsApi = this.api.agentsApi('', this.notifyDestruct$); // for intellisense
 
-  private agentsApi = this.api.agentsApi(this.notifyDestruct$); // for intellisense
+  private _definitionId: string;
+
+  @Input()
+  filterDefault: string;
+
+  @Input()
+  public set definitionId(t: string) {
+    if (this._definitionId !== t) {
+      this._definitionId = t;
+      this.agentsApi = this.api.agentsApi(t, this.notifyDestruct$);
+    }
+  }
+
+  public get definitionId(): string {
+    return this._definitionId;
+  }
+
 
   public tableColumnPaths: string[];
   public filterDefinition: any;
   public expand = '';
 
-  @Input()
-  filterDefault: string;
 
-  constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
+  constructor(
+    private workspace: WorkspaceService, private api: ApiService, private router: Router,
+    private route: ActivatedRoute, private translate: TranslateService) {
     super();
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      // This triggers changes on the screen
+
+      if (this.isScreenMode) {
+
+        const definitionId = params.get('definitionId');
+
+        if (!definitionId || !this.workspace.current.definitions.Agents[definitionId]) {
+          this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
+        }
+
+        if (this.definitionId !== definitionId) {
+          this.definitionId = definitionId;
+        }
+      }
+    });
+  }
+
+  get viewId(): string {
+    return `agents/${this.definitionId}`;
   }
 
   public get c() {
@@ -58,13 +96,28 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo('agents', 'IsActive', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.viewId, 'IsActive', null);
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
-  public agentTypeLookup(value: string): string {
-    const descriptor = metadata_Agent(this.ws, this.translate, null).properties.AgentType as ChoicePropDescriptor;
-    return descriptor.format(value);
+  public get masterCrumb(): string {
+    const definitionId = this.definitionId;
+    const definition = this.workspace.current.definitions.Agents[definitionId];
+    if (!definition) {
+      return '???';
+    }
+
+    return this.ws.getMultilingualValueImmediate(definition, 'TitlePlural');
+  }
+
+  public get summary(): string {
+    const definitionId = this.definitionId;
+    const definition = this.workspace.current.definitions.Agents[definitionId];
+    if (!definition) {
+      return '???';
+    }
+
+    return this.ws.getMultilingualValueImmediate(definition, 'TitleSingular');
   }
 }

@@ -49,6 +49,7 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
             _definitionIds = Object.keys(ws.definitions.Lookups);
         }
 
+        const definedDefinitionId = !!definitionId && definitionId !== GENERIC;
         const entityDesc: EntityDescriptor = {
             collection: 'Lookup',
             definitionId,
@@ -56,12 +57,10 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
             titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitleSingular'),
             titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitlePlural'),
             select: _select,
-            apiEndpoint: 'lookups/' + (definitionId || ''),
-            screenUrl: !!definitionId ? 'lookups/' + definitionId : null,
+            apiEndpoint: definedDefinitionId ? `lookups/${definitionId}` : 'lookups',
+            screenUrl: definedDefinitionId ? `lookups/${definitionId}` : 'lookups',
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
-            definitionFunc: (e: Lookup) => e.DefinitionId,
-            selectForDefinition: 'DefinitionId',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },

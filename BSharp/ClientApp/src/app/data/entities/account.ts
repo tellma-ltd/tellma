@@ -55,6 +55,7 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, def
             _definitionIds = Object.keys(ws.definitions.Accounts);
         }
 
+        const definedDefinitionId = !!definitionId && definitionId !== GENERIC;
         const entityDesc: EntityDescriptor = {
             collection: 'Account',
             definitionId,
@@ -62,12 +63,10 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, def
             titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Accounts[definitionId], 'TitleSingular') || trx.instant('Account'),
             titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Accounts[definitionId], 'TitlePlural') || trx.instant('Accounts'),
             select: _select,
-            apiEndpoint: 'accounts/' + (definitionId || ''),
-            screenUrl: !!definitionId ? 'accounts/' + definitionId : null,
+            apiEndpoint: definedDefinitionId ? `accounts/${definitionId}` : 'accounts',
+            screenUrl: definedDefinitionId ? `accounts/${definitionId}` : 'accounts',
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
-            definitionFunc: (e: Account) => e.DefinitionId,
-            selectForDefinition: 'DefinitionId',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AccountTypeId: { control: 'text', label: () => trx.instant('Account_Type') },

@@ -468,8 +468,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     baseEntityDescriptor.select.forEach(e => resultPaths[e] = true);
 
     // (2) append the definitoinId if any, it must always be loaded
-    if (!!baseEntityDescriptor.selectForDefinition) {
-      resultPaths[baseEntityDescriptor.selectForDefinition] = true;
+    if (!!baseEntityDescriptor.definitionIds) {
+      resultPaths.DefinitionId = true;
     }
 
     // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
@@ -1527,6 +1527,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   - Show validation on the remaining fields
   - Add the remaining parameter controls, especially the details pickers
   - The gauge chart displays total sum even when the aggregation is avg, max or min
+  - Special handling for Lookups where the definitionId is required
 
   [Dimension Properties Steps]
   - Add field to ReportDimensionDefinition  (C#)

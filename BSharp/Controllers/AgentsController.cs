@@ -7,6 +7,7 @@ using BSharp.Services.BlobStorage;
 using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
@@ -21,28 +22,39 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/" + BASE_ADDRESS)]
+    [Route("api/" + BASE_ADDRESS + "{definitionId}")]
     [ApplicationApi]
     public class AgentsController : CrudControllerBase<AgentForSave, Agent, int>
     {
-        public const string BASE_ADDRESS = "agents";
+        public const string BASE_ADDRESS = "agents/";
 
         private readonly ILogger<AgentsController> _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
         private readonly ITenantIdAccessor _tenantIdAccessor;
         private readonly IBlobService _blobService;
+        private readonly IDefinitionsCache _definitionsCache;
+        private readonly IModelMetadataProvider _modelMetadataProvider;
 
-        private string ViewId => BASE_ADDRESS;
+        private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ??
+            throw new BadRequestException("URI must be of the form 'api/" + BASE_ADDRESS + "{definitionId}'");
+        private AgentDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Agents?
+            .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
+
+        private string ViewId => $"{BASE_ADDRESS}{DefinitionId}";
 
         public AgentsController(ILogger<AgentsController> logger, IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService) : base(logger, localizer)
+            ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
+            IDefinitionsCache definitionsCache,
+            IModelMetadataProvider modelMetadataProvider) : base(logger, localizer)
         {
             _logger = logger;
             _localizer = localizer;
             _repo = repo;
             _tenantIdAccessor = tenantIdAccessor;
             _blobService = blobService;
+            _definitionsCache = definitionsCache;
+            _modelMetadataProvider = modelMetadataProvider;
         }
 
         [HttpGet("of-relation/{relation}")]
@@ -149,10 +161,10 @@ namespace BSharp.Controllers
             return $"{tenantId}/Agents/{guid}";
         }
 
-
         protected override IRepository GetRepository()
         {
-            return _repo;
+            string filter = $"{nameof(Agent.DefinitionId)} {Ops.eq} '{DefinitionId}'";
+            return new FilteredRepository<Agent>(_repo, filter);
         }
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
@@ -162,30 +174,18 @@ namespace BSharp.Controllers
 
         protected override Query<Agent> GetAsQuery(List<AgentForSave> entities)
         {
-            return _repo.Agents__AsQuery(entities);
+            return _repo.Agents__AsQuery(DefinitionId, entities);
         }
 
         protected override Query<Agent> Search(Query<Agent> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
         {
-            string search = args.Search;
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.Replace("'", "''"); // escape quotes by repeating them
-
-                var name = nameof(Agent.Name);
-                var name2 = nameof(Agent.Name2);
-                var name3 = nameof(Agent.Name3);
-                var code = nameof(Agent.Code);
-
-                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
-                query = query.Filter(FilterExpression.Parse(filterString));
-            }
-
-            return query;
+            return AgentControllerUtil.SearchImpl(query, args, filteredPermissions);
         }
 
         protected override async Task SaveValidateAsync(List<AgentForSave> entities)
         {
+            // TODO: Add definition validation and defaults here
+
             // No need to invoke SQL if the model state is full of errors
             if (ModelState.HasReachedMaxErrors)
             {
@@ -194,7 +194,7 @@ namespace BSharp.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Agents_Validate__Save(entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.Agents_Validate__Save(DefinitionId, entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -288,6 +288,7 @@ namespace BSharp.Controllers
 
             // Save the agents
             var ids = await _repo.Agents__Save(
+                DefinitionId,
                 entities: entities,
                 imageIds: imageIds,
                 returnIds: returnIds);
@@ -311,7 +312,7 @@ namespace BSharp.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.Agents_Validate__Delete(ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.Agents_Validate__Delete(DefinitionId, ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -348,6 +349,83 @@ namespace BSharp.Controllers
             {
                 throw new BadRequestException(_localizer["Error_CannotDelete0AlreadyInUse", _localizer["Agent"]]);
             }
+        }
+    }
+
+
+    [Route("api/" + AgentsController.BASE_ADDRESS)]
+    [ApplicationApi]
+    public class AgentsGenericController : FactWithIdControllerBase<Agent, int>
+    {
+        private readonly ApplicationRepository _repo;
+
+        public AgentsGenericController(
+            ILogger<AgentsGenericController> logger,
+            IStringLocalizer<Strings> localizer,
+            ApplicationRepository repo) : base(logger, localizer)
+        {
+            _repo = repo;
+        }
+
+        protected override IRepository GetRepository()
+        {
+            return _repo;
+        }
+
+        protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
+        {
+            // Get all permissions pertaining to agents
+            string prefix = AgentsController.BASE_ADDRESS;
+            var permissions = await _repo.GenericUserPermissions(action, prefix);
+
+            // Massage the permissions by adding definitionId = definitionId as an extra clause 
+            // (since the controller will not filter the results per any specific definition Id)
+            foreach (var permission in permissions.Where(e => e.ViewId != "all"))
+            {
+                string definitionId = permission.ViewId.Remove(0, prefix.Length).Replace("'", "''");
+                string definitionPredicate = $"{nameof(Agent.DefinitionId)} {Ops.eq} '{definitionId}'";
+                if (!string.IsNullOrWhiteSpace(permission.Criteria))
+                {
+                    permission.Criteria = $"{definitionPredicate} and ({permission.Criteria})";
+                }
+                else
+                {
+                    permission.Criteria = definitionPredicate;
+                }
+            }
+
+            // Return the massaged permissions
+            return permissions;
+        }
+
+        protected override Query<Agent> Search(Query<Agent> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        {
+            return AgentControllerUtil.SearchImpl(query, args, filteredPermissions);
+        }
+    }
+
+    internal class AgentControllerUtil
+    {
+        /// <summary>
+        /// This is needed in both the generic and specific controllers, so we move it out here
+        /// </summary>
+        public static Query<Agent> SearchImpl(Query<Agent> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
+        {
+            string search = args.Search;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Replace("'", "''"); // escape quotes by repeating them
+
+                var name = nameof(Agent.Name);
+                var name2 = nameof(Agent.Name2);
+                var name3 = nameof(Agent.Name3);
+                var code = nameof(Agent.Code);
+
+                var filterString = $"{name} {Ops.contains} '{search}' or {name2} {Ops.contains} '{search}' or {name3} {Ops.contains} '{search}' or {code} {Ops.contains} '{search}'";
+                query = query.Filter(FilterExpression.Parse(filterString));
+            }
+
+            return query;
         }
     }
 }

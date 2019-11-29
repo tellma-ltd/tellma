@@ -107,12 +107,13 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   get chosenItemDefinition(): string {
-    const func = this.entityDescriptor().definitionFunc;
-    return !!func ? func(this.workspace.current[this.collection][this.chosenItem]) : null;
+    const defIds = this.entityDescriptor().definitionIds;
+    const item = this.workspace.current[this.collection][this.chosenItem];
+    return !!defIds ? item.DefinitionId : null;
   }
 
   get definitionProperty(): string {
-    return this.entityDescriptor().selectForDefinition;
+    return 'DefinitionId';
   }
 
   ngOnInit() {

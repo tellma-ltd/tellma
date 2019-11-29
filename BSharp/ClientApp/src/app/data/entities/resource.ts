@@ -60,6 +60,8 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
         if (!_definitionIds) {
             _definitionIds = Object.keys(ws.definitions.Resources);
         }
+
+        const definedDefinitionId = !!definitionId && definitionId !== GENERIC;
         const entityDesc: EntityDescriptor = {
             collection: 'Resource',
             definitionId,
@@ -67,12 +69,10 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
             titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitleSingular') || trx.instant('Resource'),
             titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Resources[definitionId], 'TitlePlural') || trx.instant('Resources'),
             select: _select,
-            apiEndpoint: 'resources/' + (definitionId || ''),
-            screenUrl: !!definitionId ? 'resources/' + definitionId : null,
-            orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
-            definitionFunc: (e: Resource) => e.DefinitionId,
+            apiEndpoint: definedDefinitionId ? `resources/${definitionId}` : 'resources',
+            screenUrl: definedDefinitionId ? `resources/${definitionId}` : 'resources',
+                  orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
-            selectForDefinition: 'DefinitionId',
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },

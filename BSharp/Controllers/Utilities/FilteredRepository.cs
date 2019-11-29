@@ -12,10 +12,10 @@ namespace BSharp.Controllers.Utilities
     /// <typeparam name="TFiltered">The type of filter to apply the query to</typeparam>
     public class FilteredRepository<TFiltered> : IRepository where TFiltered : Entity
     {
-        private readonly ApplicationRepository _repo;
+        private readonly IRepository _repo;
         private readonly FilterExpression _filter;
 
-        public FilteredRepository(ApplicationRepository repo, string filter)
+        public FilteredRepository(IRepository repo, string filter)
         {
             _repo = repo;
             _filter = FilterExpression.Parse(filter);

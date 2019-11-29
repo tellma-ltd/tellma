@@ -124,17 +124,17 @@ const routes: Routes = [
 
       // Agents
       {
-        path: 'agents',
+        path: 'agents/:definitionId',
         component: AgentsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'agents/import',
+        path: 'agents/:definitionId/import',
         component: AgentsImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'agents/:id',
+        path: 'agents/:definitionId/:id',
         component: AgentsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },

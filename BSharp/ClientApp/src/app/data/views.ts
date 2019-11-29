@@ -56,15 +56,6 @@ export const VIEWS_BUILT_IN: { [viewId: string]: ViewInfo } = {
             li('IsActive')
         ]
     },
-    'agents': {
-        name: 'Agents',
-        read: true,
-        update: true,
-        delete: true,
-        actions: [
-            li('IsActive')
-        ]
-    },
     'users': {
         name: 'Users',
         read: true,

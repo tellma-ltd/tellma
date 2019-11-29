@@ -254,14 +254,14 @@ namespace BSharp.Controllers
 
     // Generic API, allows reading all resources
 
-    [Route("api/resources")]
+    [Route("api/" + ResourcesController.BASE_ADDRESS)]
     [ApplicationApi]
     public class ResourcesGenericController : FactWithIdControllerBase<Resource, int>
     {
         private readonly ApplicationRepository _repo;
 
         public ResourcesGenericController(
-            ILogger<ResourcesController> logger,
+            ILogger<ResourcesGenericController> logger,
             IStringLocalizer<Strings> localizer,
             ApplicationRepository repo) : base(logger, localizer)
         {

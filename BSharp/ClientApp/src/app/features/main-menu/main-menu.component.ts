@@ -67,7 +67,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     Administration: {
       background: 'b-blue',
       items: [
-        { label: 'Agents', icon: 'users', link: '../agents', viewId: 'agents', sortKey: 50 },
         { label: 'Users', icon: 'users', link: '../users', viewId: 'users', sortKey: 100 },
         { label: 'Roles', icon: 'tasks', link: '../roles', viewId: 'roles', sortKey: 200 },
         { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units', sortKey: 300 },
@@ -117,6 +116,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       // add custom screens from definitions
       this.addDefinitions(menu, this.workspace.current.definitions.Lookups, 'lookups');
       this.addDefinitions(menu, this.workspace.current.definitions.Accounts, 'accounts');
+      this.addDefinitions(menu, this.workspace.current.definitions.Agents, 'agents');
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
       this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resource-classifications',

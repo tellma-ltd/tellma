@@ -170,7 +170,7 @@ namespace BSharp.Controllers
             var info = await _appRepo.GetTenantInfoAsync();
 
             // Use the recipient's preferred Language
-            CultureInfo culture = new CultureInfo(recipient.PreferredLanguage);
+            CultureInfo culture = CultureInfo.CurrentUICulture; // new CultureInfo(recipient.PreferredLanguage); // TODO: Use the user's preferred language
             var localizer = _localizer.WithCulture(culture);
 
             // Prepare the parameters
@@ -362,7 +362,8 @@ namespace BSharp.Controllers
             {
                 var userIds = usersToInvite.Select(e => e.User.Id).ToArray();
                 var agents = await _appRepo.Agents
-                    .Select($"{nameof(Agent.Id)},{nameof(Agent.Name)},{nameof(Agent.Name2)},{nameof(Agent.Name3)},{nameof(Agent.PreferredLanguage)}")
+                    // .Select($"{nameof(Agent.Id)},{nameof(Agent.Name)},{nameof(Agent.Name2)},{nameof(Agent.Name3)},{nameof(Agent.PreferredLanguage)}")
+                    .Select($"{nameof(Agent.Id)},{nameof(Agent.Name)},{nameof(Agent.Name2)},{nameof(Agent.Name3)}")
                     .FilterByIds(userIds)
                     .ToListAsync();
 

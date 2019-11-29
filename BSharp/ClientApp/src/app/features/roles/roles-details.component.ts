@@ -14,6 +14,7 @@ import { metadata_Resource } from '~/app/data/entities/resource';
 import { metadata_ResourceClassification } from '~/app/data/entities/resource-classification';
 import { metadata_Account } from '~/app/data/entities/account';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { metadata_Agent } from '~/app/data/entities/agent';
 
 interface ConcreteViewInfo {
   name: () => string;
@@ -292,6 +293,25 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
           };
         } else {
           console.error(`Could not find account definitionId '${definitionId}'`);
+        }
+      }
+
+      const agents = this.ws.definitions.Agents;
+      for (const definitionId of Object.keys(agents)) {
+        const entityDesc = metadata_Agent(this.ws, this.translate, definitionId);
+        if (!!entityDesc) {
+          this._viewsDb[entityDesc.apiEndpoint] = {
+            name: entityDesc.titlePlural,
+            actions: {
+              All: { supportsCriteria: false, supportsMask: false },
+              Read: { supportsCriteria: true, supportsMask: true },
+              Update: { supportsCriteria: true, supportsMask: true },
+              Delete: { supportsCriteria: true, supportsMask: false },
+              IsActive: { supportsCriteria: true, supportsMask: false },
+            }
+          };
+        } else {
+          console.error(`Could not find agent definitionId '${definitionId}'`);
         }
       }
 

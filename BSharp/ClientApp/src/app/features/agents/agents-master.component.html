@@ -1,16 +1,11 @@
-<b-master collection="Agent" [mode]="mode" [masterCrumb]="'Agents' | translate" [tileTemplate]="tile"
-  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,AgentType,IsRelated"
+<b-master collection="Agent" [definition]="definitionId" [mode]="mode" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsRelated"
   selectForTiles="Code,ImageId" [filterDefault]="filterDefault" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
-            ],
-            'AgentType' : [
-              { template: individual, expression: 'AgentType eq \'Individual\''},
-              { template: organization, expression: 'AgentType eq \'Organization\''},
-              { template: system, expression: 'AgentType eq \'System\''}
             ]
           }">
 </b-master>
@@ -37,13 +32,13 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ 'Agent' | translate }}
+    {{ summary }}
   </ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
   <span class="text-truncate">
-    <b-auto-cell collection="Agent" [entity]="c[id]"></b-auto-cell>
+    <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="c[id]"></b-auto-cell>
   </span>
 </ng-template>
 
@@ -53,7 +48,3 @@
 
 <!-- Filter Options -->
 <ng-template #createdByMe> {{ 'CreatedByMe' | translate }} </ng-template>
-
-<ng-template #individual> {{ agentTypeLookup('Individual') | translate }}</ng-template>
-<ng-template #organization> {{ agentTypeLookup('Organization') | translate }}</ng-template>
-<ng-template #system> {{ agentTypeLookup('System') | translate }}</ng-template>

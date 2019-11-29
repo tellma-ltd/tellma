@@ -20,11 +20,14 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
 
         public readonly string _baseAddress = "agents";
+        public readonly string _definitionId = "organizations";
 
-        public string Url => $"/api/{_baseAddress}";
-        private string ViewId => _baseAddress;
+        public string ViewId => $"{_baseAddress}/{_definitionId}"; // For permissions
+        public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic resources
+        public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific resource definition
 
-        [Fact(DisplayName = "01 Getting all agents before creating any returns a 200 OK singleton collection")]
+
+        [Fact(DisplayName = "01 Getting all organization agents before creating any returns a 200 OK singleton collection")]
         public async Task Test02()
         {
             await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id lt 100000");
@@ -46,7 +49,28 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Single(responseData.Result);
         }
 
-        [Fact(DisplayName = "02 Getting a non-existent agent id returns a 404 Not Found")]
+
+        [Fact(DisplayName = "02 Getting all generic agents before creating any returns a 200 OK singleton collection")]
+        public async Task Test025()
+        {
+            // Call the API
+            var response = await Client.GetAsync(GenericlUrl);
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
+
+            // Assert the result is 200 OK
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            // Confirm the result is a well formed response
+            var responseData = await response.Content.ReadAsAsync<GetResponse<Agent>>();
+
+            // Assert the result makes sense
+            Assert.Equal("Agent", responseData.CollectionName);
+
+            Assert.Equal(1, responseData.TotalCount);
+            Assert.Single(responseData.Result);
+        }
+
+        [Fact(DisplayName = "03 Getting a non-existent agent id returns a 404 Not Found")]
         public async Task Test03()
         {
             int nonExistentId = 500;
@@ -56,7 +80,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact(DisplayName = "03 Saving two well-formed AgentForSave returns a 200 OK result")]
+        [Fact(DisplayName = "04 Saving two well-formed AgentForSave returns a 200 OK result")]
         public async Task Test04()
         {
             // Prepare a well formed entity
@@ -66,8 +90,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name2 = "جون ويك",
                 Code = "JW",
                 TaxIdentificationNumber = "13345",
-                PreferredLanguage = "en",
-                AgentType = "Individual",
                 IsRelated = false
             };
 
@@ -77,8 +99,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name2 = "جيسن بورن",
                 Code = "JB",
                 TaxIdentificationNumber = "13346",
-                PreferredLanguage = "en",
-                AgentType = "Individual",
                 IsRelated = false
             };
 
@@ -107,8 +127,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Name3, responseDto.Name3);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
             Assert.Equal(dtoForSave.TaxIdentificationNumber, responseDto.TaxIdentificationNumber);
-            Assert.Equal(dtoForSave.PreferredLanguage, responseDto.PreferredLanguage);
-            Assert.Equal(dtoForSave.AgentType, responseDto.AgentType);
 
 
             var responseDto2 = responseData.Result.LastOrDefault();
@@ -118,14 +136,12 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave2.Name3, responseDto2.Name3);
             Assert.Equal(dtoForSave2.Code, responseDto2.Code);
             Assert.Equal(dtoForSave2.TaxIdentificationNumber, responseDto2.TaxIdentificationNumber);
-            Assert.Equal(dtoForSave2.PreferredLanguage, responseDto2.PreferredLanguage);
-            Assert.Equal(dtoForSave2.AgentType, responseDto2.AgentType);
 
             Shared.Set("Agent_JohnWick", responseDto);
             Shared.Set("Agent_JasonBourne", responseDto2);
         }
 
-        [Fact(DisplayName = "04 Getting the Id of the AgentForSave just saved returns a 200 OK result")]
+        [Fact(DisplayName = "05 Getting the Id of the AgentForSave just saved returns a 200 OK result")]
         public async Task Test05()
         {
             // Query the API for the Id that was just returned from the Save
@@ -145,11 +161,9 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Equal(entity.Name2, responseDto.Name2);
             Assert.Equal(entity.Code, responseDto.Code);
-            Assert.Equal(entity.PreferredLanguage, responseDto.PreferredLanguage);
-            Assert.Equal(entity.AgentType, responseDto.AgentType);
         }
 
-        [Fact(DisplayName = "05 Saving an AgentForSave with an existing code returns a 422 Unprocessable Entity")]
+        [Fact(DisplayName = "06 Saving an AgentForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test06()
         {
             // Prepare a unit with the same code 'kg' as one that has been saved already
@@ -159,8 +173,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "JW",
-                    PreferredLanguage = "en",
-                    AgentType = "Individual",
                     IsRelated = false
                 }
             };
@@ -184,7 +196,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Contains("already used", message.ToLower());
         }
 
-        [Fact(DisplayName = "06 Saving an AgentForSave trims string fields with trailing or leading spaces")]
+        [Fact(DisplayName = "07 Saving an AgentForSave trims string fields with trailing or leading spaces")]
         public async Task Test07()
         {
             // Prepare a DTO for save, that contains leading and 
@@ -194,8 +206,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name = "  Matilda", // Leading space
                 Name2 = "ماتيلدا",
                 Code = "MA  ", // Trailing space
-                PreferredLanguage = "en",
-                AgentType = "Individual",
                 IsRelated = false,
             };
 
@@ -218,7 +228,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Shared.Set("Agent_Matilda", responseDto);
         }
 
-        [Fact(DisplayName = "07 Deleting an existing agent Id returns a 200 OK")]
+        [Fact(DisplayName = "08 Deleting an existing agent Id returns a 200 OK")]
         public async Task Test08()
         {
             await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
@@ -239,7 +249,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "08 Getting an Id that was just deleted returns a 404 Not Found")]
+        [Fact(DisplayName = "09 Getting an Id that was just deleted returns a 404 Not Found")]
         public async Task Test09()
         {
             // Get the Id
@@ -254,7 +264,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
 
-        [Fact(DisplayName = "09 Deactivating an active agent returns a 200 OK inactive entity")]
+        [Fact(DisplayName = "10 Deactivating an active agent returns a 200 OK inactive entity")]
         public async Task Test10()
         {
             await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
@@ -279,7 +289,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.False(responseDto.IsActive, "The Agent was not deactivated");
         }
 
-        [Fact(DisplayName = "10 Activating an inactive agent returns a 200 OK active entity")]
+        [Fact(DisplayName = "11 Activating an inactive agent returns a 200 OK active entity")]
         public async Task Test11()
         {
             // Get the Id
@@ -302,7 +312,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.True(responseDto.IsActive, "The Agent was not activated");
         }
 
-        [Fact(DisplayName = "11 Using Select argument works as expected")]
+        [Fact(DisplayName = "12 Using Select argument works as expected")]
         public async Task Test12()
         {
             // Get the Id
@@ -323,8 +333,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Null(responseDto.Name2);
             Assert.Null(responseDto.Code);
-            Assert.Null(responseDto.AgentType);
-            Assert.Null(responseDto.PreferredLanguage);
         }
     }
 }

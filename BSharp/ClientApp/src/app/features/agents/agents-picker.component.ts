@@ -11,6 +11,9 @@ import { DetailsPickerComponent } from '~/app/shared/details-picker/details-pick
 export class AgentsPickerComponent implements ControlValueAccessor {
 
   @Input()
+  definitionIds: string[];
+
+  @Input()
   filter: string;
 
   @HostBinding('class.w-100')

@@ -199,6 +199,34 @@ namespace BSharp.Controllers
                         //}
                     },
 
+                    Agents = new Dictionary<string, AgentDefinitionForClient>
+                    {
+                        ["individuals"] = new AgentDefinitionForClient
+                        {
+                            TitlePlural = "Individuals",
+                            TitlePlural2 = "أفراد",
+                            TitlePlural3 = "个人",
+                            TitleSingular = "Individual",
+                            TitleSingular2 = "فرد",
+                            TitleSingular3 = "个人",
+                            MainMenuIcon = "clipboard",
+                            MainMenuSection = "Financials",
+                            MainMenuSortKey = 3m,
+                        },
+                        ["organizations"] = new AgentDefinitionForClient
+                        {
+                            TitlePlural = "Organizations",
+                            TitlePlural2 = "مؤسسات",
+                            TitlePlural3 = "组织机构",
+                            TitleSingular = "Organization",
+                            TitleSingular2 = "مؤسسة",
+                            TitleSingular3 = "组织",
+                            MainMenuIcon = "clipboard",
+                            MainMenuSection = "Financials",
+                            MainMenuSortKey = 4m,
+                        }
+                    },
+
                     Resources = new Dictionary<string, ResourceDefinitionForClient>
                     {
                         ["raw-materials"] = new ResourceDefinitionForClient
