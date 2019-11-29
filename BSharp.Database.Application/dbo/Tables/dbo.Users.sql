@@ -1,8 +1,12 @@
 ﻿CREATE TABLE [dbo].[Users] (
 	[Id]					INT					CONSTRAINT [PK_Users] PRIMARY KEY IDENTITY,--CONSTRAINT [FK_Users__Id] REFERENCES [dbo].[Agents] ([Id]),
 	[ExternalId]			NVARCHAR (450),
+	[Name]					NVARCHAR (255)		NOT NULL,
+	[Name2]					NVARCHAR (255),
+	[Name3]					NVARCHAR (255),
 	[Email]					NVARCHAR (255)		NOT NULL UNIQUE, -- Required
-
+	[ImageId]				NVARCHAR (50),
+	[PreferredLanguage]		NCHAR (2),
 	[LastAccess]			DATETIMEOFFSET(7),
 	[PermissionsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT ('aafc6590-cadf-45fe-8c4a-045f4d6f73b1'),
 	[UserSettingsVersion]	UNIQUEIDENTIFIER	NOT NULL DEFAULT ('aafc6590-cadf-45fe-8c4a-045f4d6f73b2'),
@@ -13,6 +17,7 @@
 	[SortKey]				DECIMAL (9,4),
 
 	-- ??
+	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Users__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

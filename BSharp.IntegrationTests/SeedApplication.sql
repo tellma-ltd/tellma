@@ -6,7 +6,7 @@ SELECT @RoleId = [Id] FROM [dbo].[Roles] WHERE [Name] = 'Administrator';
 
 EXEC sp_set_session_context 'UserId', @UserId;
 
--- Cleanup, Central accounts before lookup accounts
+-- Cleanup, Central records before lookup records
 
 DELETE FROM [dbo].[Permissions];
 DELETE FROM [dbo].[RoleMemberships];
@@ -15,7 +15,7 @@ DELETE FROM [dbo].[Accounts];
 
 DELETE FROM [dbo].[Roles] WHERE [Id] <> @RoleId;
 DELETE FROM [dbo].[Users] WHERE [Id] <> @UserId;
-DELETE FROM [dbo].[Agents] WHERE [Id]<> @UserId;
+DELETE FROM [dbo].[Agents];
 DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[Currencies];
 DELETE FROM [dbo].[ResourceTypes] WHERE [Id] NOT IN (N'CashAndCashEquivalents');
@@ -31,19 +31,19 @@ DELETE FROM [dbo].[ResponsibilityCenters];
 -- Populate
 
 INSERT INTO [dbo].[Permissions] ([RoleId], [ViewId], [Action])
-VALUES (@RoleId, N'agents', N'All'),
+VALUES
 (@RoleId, N'users', N'All'),
-(@RoleId, N'roles', N'All'),
-(@RoleId, N'views', N'All')
+(@RoleId, N'roles', N'All')
 
 
-INSERT INTO [dbo].[RoleMemberships] ([AgentId], [RoleId])
+INSERT INTO [dbo].[RoleMemberships] ([UserId], [RoleId])
 VALUES (@UserId, @RoleId)
 
 INSERT INTO [dbo].[ResourceDefinitions] ([Id], [TitlePlural], [TitleSingular])
 VALUES (N'monetary-resources', N'Monetary Resources', N'Monetary Resource'), 
 (N'raw-materials', N'Raw Materials', N'Raw Material');
 
+-- Resource Types
 DECLARE @ResourceTypes AS TABLE (
 	[Id]					NVARCHAR (255)		PRIMARY KEY NONCLUSTERED,
 	[Name]					NVARCHAR (255)		NOT NULL,
@@ -77,6 +77,9 @@ WHEN NOT MATCHED BY TARGET THEN
     INSERT ([Id],	[IsAssignable],		[Name],	[Name2],	[Name3],	[IsActive],	[Node])
     VALUES (s.[Id], s.[IsAssignable], s.[Name], s.[Name2], s.[Name3], s.[IsActive], s.[Node]);
 
+
+
+-- Currencies
 DECLARE @Currencies CurrencyList;
 INSERT INTO @Currencies([Index], [Id], [Name], [Name2], [E]) VALUES
 (0, N'USD', N'US Dollar',N'دولار أمريكي', 2),

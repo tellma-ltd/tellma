@@ -44,7 +44,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         protected async Task GrantPermissionToSecurityAdministrator(string viewId, string level, string criteria)
         {
             // Query the API for the Id that was just returned from the Save
-            var getResponse = await Client.GetAsync($"/api/roles/{1}?expand=Permissions,Members/Agent");
+            var getResponse = await Client.GetAsync($"/api/roles/{1}?expand=Permissions,Members/User");
             if (getResponse.StatusCode != HttpStatusCode.OK)
             {
                 Output.WriteLine(await getResponse.Content.ReadAsStringAsync());
@@ -60,7 +60,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             });
 
             var dtosForSave = new List<Role> { role };
-            var postResponse = await Client.PostAsJsonAsync($"/api/roles?expand=Permissions,Members/Agent", dtosForSave);
+            var postResponse = await Client.PostAsJsonAsync($"/api/roles?expand=Permissions,Members/User", dtosForSave);
             if (postResponse.StatusCode != HttpStatusCode.OK)
             {
                 Output.WriteLine(await postResponse.Content.ReadAsStringAsync());

@@ -10,6 +10,22 @@ namespace BSharp.Entities
     [StrongEntity]
     public class UserForSave<TRoleMembership> : EntityWithKey<int>, IValidatableObject
     {
+        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Name { get; set; }
+
+        [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Name2 { get; set; }
+
+        [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Name3 { get; set; }
+
         [Display(Name = "User_Email")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [EmailAddress(ErrorMessage = nameof(EmailAddressAttribute))]
@@ -18,7 +34,7 @@ namespace BSharp.Entities
         public string Email { get; set; }
 
         [Display(Name = "User_Roles")]
-        [ForeignKey(nameof(RoleMembership.AgentId))]
+        [ForeignKey(nameof(RoleMembership.UserId))]
         public List<TRoleMembership> Roles { get; set; }
 
         public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -41,22 +57,6 @@ namespace BSharp.Entities
 
     public class User : UserForSave<RoleMembership>
     {
-        [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string Name { get; set; }
-
-        [MultilingualDisplay(Name = "Name", Language = Language.Secondary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string Name2 { get; set; }
-
-        [MultilingualDisplay(Name = "Name", Language = Language.Ternary)]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string Name3 { get; set; }
-
         public string ImageId { get; set; }
 
         public string ExternalId { get; set; }

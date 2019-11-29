@@ -55,12 +55,12 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test03()
         {
             int chiefOfStaffId = Shared.Get<Role>("Role_ChiefOfStaff").Id;
-            int johnWickId = Shared.Get<Agent>("Agent_JohnWick").Id;
 
             // Prepare a well formed entity
             var dtoForSave = new UserForSave
             {
-                Id = johnWickId,
+                Name = "Ahmad Akra",
+                Name2 = "أحمد عكره",
                 Email = "ahmad.akra@banan-it.com",
                 Roles = new List<RoleMembershipForSave>
                 {
@@ -89,8 +89,9 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             var responseDto = responseData.Result.FirstOrDefault();
             Assert.NotNull(responseDto?.Id);
+            Assert.Equal(dtoForSave.Name, responseDto.Name);
+            Assert.Equal(dtoForSave.Name2, responseDto.Name2);
             Assert.Equal(dtoForSave.Email, responseDto.Email);
-            Assert.Equal(dtoForSave.Id, responseDto.Id);
             Assert.Collection(responseDto.Roles,
                     p =>
                     {
@@ -120,6 +121,8 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             var responseDto = getByIdResponse.Result;
             Assert.NotNull(responseDto?.Id);
+            Assert.Equal(entity.Name, responseDto.Name);
+            Assert.Equal(entity.Name2, responseDto.Name2);
             Assert.Equal(entity.Email, responseDto.Email);
             Assert.Equal(entity.Id, responseDto.Id);
             Assert.Collection(responseDto.Roles,
@@ -141,6 +144,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var dtoForSave = new UserForSave
             {
                 Id = jasonId,
+                Name = "Abdullah Ulber",
                 Email = "abdullah-ulber", // Wrong email
                 Roles = new List<RoleMembershipForSave>
                 {

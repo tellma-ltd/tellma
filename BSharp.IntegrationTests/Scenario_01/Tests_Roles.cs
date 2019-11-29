@@ -82,7 +82,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 {
                     new RoleMembershipForSave
                     {
-                        AgentId = johnWickId,
+                        UserId = johnWickId,
                         Memo = "So Good"
                     }
                 }
@@ -109,7 +109,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it
             var dtosForSave = new List<RoleForSave> { dtoForSave, dtoForSave2 };
-            var response = await Client.PostAsJsonAsync($"{Url}?expand=Permissions,Members/Agent", dtosForSave);
+            var response = await Client.PostAsJsonAsync($"{Url}?expand=Permissions,Members/User", dtosForSave);
 
             // Assert that the response status code is a happy 200 OK
             Output.WriteLine(await response.Content.ReadAsStringAsync());
@@ -147,7 +147,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Members,
                     m =>
                     {
-                        Assert.Equal(dtoForSave.Members[0].AgentId, m.AgentId);
+                        Assert.Equal(dtoForSave.Members[0].UserId, m.UserId);
                         Assert.Equal(dtoForSave.Members[0].Memo, m.Memo);
                         Assert.NotEqual(0, m.Id);
                     }
@@ -180,7 +180,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the API for the Id that was just returned from the Save
             var entity = Shared.Get<Role>("Role_SalesManager");
             var id = entity.Id;
-            var response = await Client.GetAsync($"{Url}/{id}?expand=Permissions,Members/Agent");
+            var response = await Client.GetAsync($"{Url}/{id}?expand=Permissions,Members/User");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -214,7 +214,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Collection(responseDto.Members,
                     m =>
                     {
-                        Assert.Equal(entity.Members[0].AgentId, m.AgentId);
+                        Assert.Equal(entity.Members[0].UserId, m.UserId);
                         Assert.Equal(entity.Members[0].Memo, m.Memo);
                         Assert.NotEqual(0, m.Id);
                     }
@@ -266,7 +266,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         {
             // Get the entity we just saved
             var id = Shared.Get<Role>("Role_SalesManager").Id;
-            var response1 = await Client.GetAsync($"{Url}/{id}?expand=Permissions,Members/Agent");
+            var response1 = await Client.GetAsync($"{Url}/{id}?expand=Permissions,Members/User");
             var dto = (await response1.Content.ReadAsAsync<GetByIdResponse<Role>>()).Result;
 
             // Modify it slightly
@@ -277,7 +277,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Save it and get the result back
             var dtosForSave = new List<Role> { dto };
-            var response2 = await Client.PostAsJsonAsync($"{Url}?expand=Permissions,Members/Agent", dtosForSave);
+            var response2 = await Client.PostAsJsonAsync($"{Url}?expand=Permissions,Members/User", dtosForSave);
             Output.WriteLine(await response2.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
             var dto2 = (await response2.Content.ReadAsAsync<EntitiesResponse<Role>>()).Result.FirstOrDefault();

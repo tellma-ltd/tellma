@@ -32,17 +32,16 @@ BEGIN
         @TernaryLanguageSymbol NVARCHAR(255);
 
     SELECT
-        @UserId				= U.[Id],
-        @Name				= A.[Name],
-        @Name2				= A.[Name2],
-        @Name3				= A.[Name3],
-        @ExternalId			= U.[ExternalId],
-        @Email				= U.[Email],
-        @PermissionsVersion = U.[PermissionsVersion],
-        @UserSettingsVersion = U.[UserSettingsVersion]
-    FROM [dbo].[Users] U
-	JOIN [dbo].[Agents] A ON U.[Id] = A.[Id]
-    WHERE A.[IsActive] = 1
+        @UserId				= [Id],
+        @Name				= [Name],
+        @Name2				= [Name2],
+        @Name3				= [Name3],
+        @ExternalId			= [ExternalId],
+        @Email				= [Email],
+        @PermissionsVersion = [PermissionsVersion],
+        @UserSettingsVersion = [UserSettingsVersion]
+    FROM [dbo].[Users]
+    WHERE [IsActive] = 1
 	AND ([ExternalId] = @ExternalUserId OR [Email] = @UserEmail);
 
     -- Set LastAccess (Works only when @UserId IS NOT NULL)

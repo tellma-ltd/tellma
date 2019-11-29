@@ -4,8 +4,8 @@ BEGIN
 	--VALUES (N'Banan IT', N'organizations', IDENT_CURRENT('dbo.Agents'), IDENT_CURRENT('dbo.Agents'));
 
 	INSERT INTO [dbo].[Users]
-	([Email],					CreatedById,	ModifiedById) VALUES
-	(@DeployEmail,	IDENT_CURRENT('[dbo].[Users]'),	IDENT_CURRENT('[dbo].[Users]'));
+	([Name],			[Email],		CreatedById,					ModifiedById					) VALUES
+	(N'Administrator',	@DeployEmail,	IDENT_CURRENT('[dbo].[Users]'),	IDENT_CURRENT('[dbo].[Users]')	);
 
 	SET @AdminUserId = SCOPE_IDENTITY();
 

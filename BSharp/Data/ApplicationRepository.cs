@@ -991,7 +991,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             {
                 e.Roles?.ForEach(r =>
                 {
-                    r.AgentId = e.Id;
+                    r.UserId = e.Id;
                 });
             });
 
@@ -1032,7 +1032,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             {
                 e.Roles?.ForEach(r =>
                 {
-                    r.AgentId = e.Id;
+                    r.UserId = e.Id;
                 });
             });
 

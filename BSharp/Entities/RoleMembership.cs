@@ -7,7 +7,7 @@ namespace BSharp.Entities
     {
         [Display(Name = "RoleMembership_User")]
         [AlwaysAccessible]
-        public int? AgentId { get; set; }
+        public int? UserId { get; set; }
 
         [Display(Name = "RoleMembership_Role")]
         public int? RoleId { get; set; }
@@ -25,8 +25,8 @@ namespace BSharp.Entities
         // For Query
 
         [Display(Name = "RoleMembership_User")]
-        [ForeignKey(nameof(AgentId))]
-        public User Agent { get; set; }
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
 
         [Display(Name = "RoleMembership_Role")]
         [ForeignKey(nameof(RoleId))]

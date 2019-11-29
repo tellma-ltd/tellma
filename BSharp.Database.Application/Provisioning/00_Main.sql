@@ -1,5 +1,5 @@
 ﻿BEGIN -- Setup Configuration
-	DECLARE @DeployEmail NVARCHAR(255)				= '$(DeployEmail)';-- N'support@banan-it.com';
+	DECLARE @DeployEmail NVARCHAR(255)				= '$(DeployEmail)';-- N'admin@bsharp.online';
 	DECLARE @ShortCompanyName NVARCHAR(255)			= '$(ShortCompanyName)'; --N'ACME International';
 	DECLARE @PrimaryLanguageId NVARCHAR(255)		= '$(PrimaryLanguageId)'; --N'en';
 	DECLARE @FunctionalCurrencyId NCHAR(3)			= '$(FunctionalCurrency)'; --N'ETB'
