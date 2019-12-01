@@ -138,12 +138,9 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "05 Saving a user with a non existent role Id returns a 422 Unprocessable Entity")]
         public async Task Test05()
         {
-            int jasonId = Shared.Get<Agent>("Agent_JasonBourne").Id;
-
-            // Prepare a unit with the same code as one that has been saved already
+            // Prepare a record with the same code as one that has been saved already
             var dtoForSave = new UserForSave
             {
-                Id = jasonId,
                 Name = "Abdullah Ulber",
                 Email = "abdullah-ulber", // Wrong email
                 Roles = new List<RoleMembershipForSave>
@@ -227,9 +224,53 @@ namespace BSharp.IntegrationTests.Scenario_01
                     }
                 );
         }
-        
-        [Fact(DisplayName = "07 Deleting an existing user Id returns a 200 OK")]
+
+        [Fact(DisplayName = "07 Deactivating an active user returns a 200 OK inactive entity")]
         public async Task Test07()
+        {
+            // Get the Id
+            var id = Shared.Get<User>("Users_AhmadAkra").Id;
+
+            // Call the API
+            var response = await Client.PutAsJsonAsync($"{Url}/deactivate", new List<int>() { id });
+
+            // Assert that the response status code is correct
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            // Confirm that the response content is well formed singleton
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<User>>();
+            Assert.Single(responseData.Result);
+            var responseDto = responseData.Result.Single();
+
+            // Confirm that the entity was deactivated
+            Assert.False(responseDto.IsActive, "The user was not deactivated");
+        }
+
+        [Fact(DisplayName = "08 Activating an inactive user returns a 200 OK active entity")]
+        public async Task Test08()
+        {
+            // Get the Id
+            var id = Shared.Get<User>("Users_AhmadAkra").Id;
+
+            // Call the API
+            var response = await Client.PutAsJsonAsync($"{Url}/activate", new List<int>() { id });
+
+            // Assert that the response status code is correct
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            // Confirm that the response content is well formed singleton
+            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<User>>();
+            Assert.Single(responseData.Result);
+            var responseDto = responseData.Result.Single();
+
+            // Confirm that the entity was activated
+            Assert.True(responseDto.IsActive, "The user was not activated");
+        }
+
+        [Fact(DisplayName = "07 Deleting an existing user Id returns a 200 OK")]
+        public async Task Test09()
         {
             // Get the Id
             var id = Shared.Get<User>("Users_AhmadAkra").Id;
@@ -245,7 +286,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         
         [Fact(DisplayName = "08 Getting an Id that was just deleted returns a 404 Not Found")]
-        public async Task Test08()
+        public async Task Test10()
         {
             // Get the Id
             var id = Shared.Get<User>("Users_AhmadAkra").Id;

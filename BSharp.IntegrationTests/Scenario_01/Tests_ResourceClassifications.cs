@@ -140,7 +140,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "06 Saving a ResourceClassificationForSave with an existing code returns a 422 Unprocessable Entity")]
         public async Task Test06()
         {
-            // Prepare a unit with the same code 'kg' as one that has been saved already
+            // Prepare a record with the same code 'kg' as one that has been saved already
             var list = new List<ResourceClassificationForSave> {
                 new ResourceClassificationForSave
                 {

@@ -171,7 +171,7 @@
 //        [Fact(DisplayName = "08 Saving a ResourceForSave with an existing code returns a 422 Unprocessable Entity")]
 //        public async Task Test08()
 //        {
-//            // Prepare a unit with the same code 'kg' as one that has been saved already
+//            // Prepare a record with the same code 'kg' as one that has been saved already
 //            var list = new List<ResourceForSave> {
 //                new ResourceForSave
 //                {

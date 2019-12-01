@@ -25,6 +25,7 @@ DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[MeasurementUnits];
 DELETE FROM [dbo].[AccountClassifications];
 DELETE FROM [dbo].[ResourceDefinitions];
+DELETE FROM [dbo].[LookupDefinitions];
 DELETE FROM [dbo].[ResponsibilityCenters];
 
 -- Populate
@@ -39,18 +40,21 @@ INSERT INTO [dbo].[RoleMemberships] ([UserId], [RoleId])
 VALUES (@UserId, @RoleId)
 
 
-IF NOT EXISTS(SELECT * FROM dbo.ResourceDefinitions WHERE [Id] = N'Basic')
-INSERT INTO dbo.ResourceDefinitions (
-	[Id],	[TitlePlural],	[TitleSingular]) VALUES
-(N'Basic',	N'Items',		N'Item');
+IF NOT EXISTS(SELECT * FROM [dbo].[LookupDefinitions] WHERE [Id] = N'colors')
+	INSERT INTO [dbo].[LookupDefinitions]([Id])
+	VALUES(N'colors');
+
+IF NOT EXISTS(SELECT * FROM [dbo].[ResourceDefinitions] WHERE [Id] = N'monetary-resources')
+	INSERT INTO [dbo].[ResourceDefinitions]([Id])
+	VALUES(N'monetary-resources');
 
 -- Resource Types
 DECLARE @ResourceClassifications dbo.ResourceClassificationList
 INSERT INTO @ResourceClassifications
-([Code],									[Name],											[Node],		[IsAssignable], [Index]) VALUES
-(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					N'/1/13/',		1,				0),
-	(N'Cash',								N'Cash',										N'/2/1/1/',		1,1),
-	(N'CashEquivalents',					N'Cash equivalents',							N'/2/1/2/',		1,2);
+([Code],									[Name],											[Node],		[IsAssignable], [Index], [ResourceDefinitionId]) VALUES
+(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					N'/1/13/',		1,				0, N'monetary-resources'),
+	(N'Cash',								N'Cash',										N'/2/1/1/',		1,				1, N'monetary-resources'),
+	(N'CashEquivalents',					N'Cash equivalents',							N'/2/1/2/',		1,				2, N'monetary-resources');
 
 DECLARE @ValidationErrorsJson nvarchar(max);
 EXEC [api].[ResourceClassifications__Save]

@@ -56,7 +56,8 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "03 Saving 2 well-formed role for save returns a 200 OK result")]
         public async Task Test03()
         {
-            int johnWickId = Shared.Get<Agent>("Agent_JohnWick").Id;
+            var usersResponse = await (await Client.GetAsync($"/api/users")).Content.ReadAsAsync<GetResponse<User>>();
+            int adminId = usersResponse.Result.FirstOrDefault().Id;
 
             // Prepare a well formed entity
             var dtoForSave = new RoleForSave
@@ -82,7 +83,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 {
                     new RoleMembershipForSave
                     {
-                        UserId = johnWickId,
+                        UserId = adminId,
                         Memo = "So Good"
                     }
                 }
@@ -224,7 +225,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         //[Fact(DisplayName = "Saving a role with an inactive view Id returns a 422 Unprocessable Entity")]
         //public async Task Test05()
         //{
-        //    // Prepare a unit with the same code as one that has been saved already
+        //    // Prepare a record with the same code as one that has been saved already
         //    var dtoForSave = new RoleForSave
         //    {
         //        Name = "HR Manager",

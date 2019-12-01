@@ -682,7 +682,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
             // IF new and in screen mode, navigate to the Id just returned
             if (this.isNew) {
-              this.router.navigate(['..', s.detailsId], { relativeTo: this.route });
+              this.router.navigate(['..', s.detailsId], { relativeTo: this.route, replaceUrl: true });
             }
           }
         },
