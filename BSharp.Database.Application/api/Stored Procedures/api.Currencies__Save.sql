@@ -1,6 +1,5 @@
-﻿CREATE PROCEDURE [api].[Lookups__Save]
-	@DefinitionId NVARCHAR (50),
-	@Entities [LookupList] READONLY,
+﻿CREATE PROCEDURE [api].[Currencies__Save]
+	@Entities [CurrencyList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -9,8 +8,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[Lookups_Validate__Save]
-		@DefinitionId = @DefinitionId,
+	EXEC [bll].[Currencies_Validate__Save]
 		@Entities = @Entities;
 
 	SELECT @ValidationErrorsJson = 
@@ -23,7 +21,6 @@ SET NOCOUNT ON;
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	EXEC [dal].[Lookups__Save]
-		@DefinitionId = @DefinitionId,
+	EXEC [dal].[Currencies__Save]
 		@Entities = @Entities
 END;
