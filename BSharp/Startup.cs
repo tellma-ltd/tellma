@@ -178,15 +178,15 @@ namespace BSharp
                     string error = ConfigurationError ?? GlobalError;
                     if (error != null)
                     {
-                    // This means the application was not configured correctly and should not be running
-                    // We cut the pipeline short and report the error message in plain text
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                        // This means the application was not configured correctly and should not be running
+                        // We cut the pipeline short and report the error message in plain text
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
                         await context.Response.WriteAsync(error);
                     }
                     else
                     {
-                    // All is good, continue the normal pipeline
-                    await next.Invoke();
+                        // All is good, continue the normal pipeline
+                        await next.Invoke();
                     }
                 });
 
@@ -207,14 +207,14 @@ namespace BSharp
                 var defaultCulture = GlobalOptions.Localization?.DefaultCulture ?? "en-GB";
                 app.UseRequestLocalization(opt =>
                 {
-                // When no culture is specified in the request, use these
-                opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUiCulture);
+                    // When no culture is specified in the request, use these
+                    opt.DefaultRequestCulture = new RequestCulture(defaultCulture, defaultUiCulture);
 
-                // Formatting numbers, dates, etc.
-                opt.AddSupportedCultures(defaultCulture);
+                    // Formatting numbers, dates, etc.
+                    opt.AddSupportedCultures(defaultCulture);
 
-                // UI strings that we have localized
-                opt.AddSupportedUICultures(SUPPORTED_CULTURES);
+                    // UI strings that we have localized
+                    opt.AddSupportedUICultures(SUPPORTED_CULTURES);
                 });
 
                 app.UseHttpsRedirection();

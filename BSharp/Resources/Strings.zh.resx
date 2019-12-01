@@ -130,18 +130,6 @@
   <data name="Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
-  <data name="Agent_AgentType" xml:space="preserve">
-    <value>代理类型</value>
-  </data>
-  <data name="Agent_AgentType_Individual" xml:space="preserve">
-    <value>个人</value>
-  </data>
-  <data name="Agent_AgentType_Organization" xml:space="preserve">
-    <value>组织</value>
-  </data>
-  <data name="Agent_AgentType_System" xml:space="preserve">
-    <value>系统</value>
-  </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>性别</value>
   </data>
@@ -153,9 +141,6 @@
   </data>
   <data name="Agent_IsRelated" xml:space="preserve">
     <value>相关的</value>
-  </data>
-  <data name="Agent_PreferredLanguage" xml:space="preserve">
-    <value>首选语言</value>
   </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>税号</value>
@@ -1413,6 +1398,9 @@
   </data>
   <data name="User_New" xml:space="preserve">
     <value>邀请</value>
+  </data>
+  <data name="User_PreferredLanguage" xml:space="preserve">
+    <value>首选语言</value>
   </data>
   <data name="User_Roles" xml:space="preserve">
     <value>角色</value>

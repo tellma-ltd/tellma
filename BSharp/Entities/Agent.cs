@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class AgentForSave : EntityWithKey<int>
+    public class AgentForSave : EntityWithKey<int>, IEntityWithImageForSave
     {
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -42,7 +42,7 @@ namespace BSharp.Entities
         public byte[] Image { get; set; }
     }
 
-    public class Agent : AgentForSave
+    public class Agent : AgentForSave, IEntityWithImage
     {
         public string DefinitionId { get; set; }
 

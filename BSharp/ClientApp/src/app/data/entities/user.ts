@@ -5,17 +5,21 @@ import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from '../dto/settings-for-client';
+import { supportedCultures } from '../supported-cultures';
 
 export class UserForSave<TRoleMembership = RoleMembershipForSave> extends EntityForSave {
+  Name: string;
+  Name2: string;
+  Name3: string;
   Email: string;
+  PreferredLanguage: string;
+  Image: string;
   Roles: TRoleMembership[];
 }
 
 export class User extends UserForSave<RoleMembership> {
-  Name: string;
-  Name2: string;
-  Name3: string;
   ImageId: string;
+  IsActive: boolean;
   ExternalId: string;
   LastAccess: string;
   CreatedAt: string;
@@ -31,6 +35,13 @@ let _cache: EntityDescriptor;
 export function metadata_User(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
   if (ws.settings !== _settings) {
+    const companyLanguages = [ws.settings.PrimaryLanguageId];
+    if (ws.settings.SecondaryLanguageId) {
+      companyLanguages.push(ws.settings.SecondaryLanguageId);
+    }
+    if (ws.settings.TernaryLanguageId) {
+      companyLanguages.push(ws.settings.TernaryLanguageId);
+    }
     _settings = ws.settings;
     _cache = {
       collection: 'User',
@@ -47,7 +58,13 @@ export function metadata_User(ws: TenantWorkspace, trx: TranslateService, defini
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Email: { control: 'text', label: () => trx.instant('User_Email') },
-        Agent: { control: 'navigation', label: () => trx.instant('User_Agent'), type: 'Agent', foreignKeyName: 'Id' },
+        PreferredLanguage: {
+          control: 'choice',
+          label: () => trx.instant('User_PreferredLanguage'),
+          choices: companyLanguages,
+          format: (c: string) => supportedCultures[c]
+        },
+        // Agent: { control: 'navigation', label: () => trx.instant('User_Agent'), type: 'Agent', foreignKeyName: 'Id' },
         State: {
           control: 'state',
           label: () => trx.instant('State'),
@@ -68,6 +85,7 @@ export function metadata_User(ws: TenantWorkspace, trx: TranslateService, defini
           }
         },
         LastAccess: { control: 'datetime', label: () => trx.instant('User_LastActivity') },
+        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
         CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
         ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },

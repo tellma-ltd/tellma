@@ -1,15 +1,16 @@
-<b-details [expand]="expand" [idString]="idString" collection="User"
-  [createFunc]="create" [cloneFunc]="clone" [mode]="mode" [masterCrumb]="'Users' | translate"
-  [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [isInactive]="isInactive"
+<b-details [expand]="expand" [idString]="idString" collection="User" [createFunc]="create" [cloneFunc]="clone"
+  [mode]="mode" [masterCrumb]="'Users' | translate" [detailsCrumb]="detailsCrumb" [documentTemplate]="document"
   [documentHeaderTemplate]="documentHeader" [actions]="[
-            { template: invite, action: onInvite, showAction: showInvite, canAction: canInvite, actionTooltip: inviteTooltip }
+            { template: invite, action: onInvite, showAction: showInvite, canAction: canInvite, actionTooltip: inviteTooltip },
+            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
 
 </b-details>
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
-  <span>{{ model?.Email }}</span>
+  <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit">
@@ -29,49 +30,82 @@
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
-  <!-- Header Email -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Email">
-    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ model?.Email }}</h2>
-    <b-text-editor *ngIf="isEdit" [focusIf]="!model.Id" [(ngModel)]="model.Email" [disabled]="!isNew"
-      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('User_Email' | translate) + '...'" required email>
+  <!-- Header Name -->
+  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Name">
+    <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
+
+    <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.primaryPostfix + '...'" required>
+    </b-text-editor>
+
+    <b-text-editor *ngIf="isEdit && ws.isSecondaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name2"
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.secondaryPostfix + '...'">
+    </b-text-editor>
+
+    <b-text-editor *ngIf="isEdit && ws.isTernaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name3"
+      [ngModelOptions]="{ updateOn: 'blur' }" [placeholder]="('Name' | translate) + ws.ternaryPostfix + '...'">
     </b-text-editor>
   </b-form-group>
 
-  <!-- Agent -->
-  <b-form-group class="b-form-group" [label]="'User_Agent' | translate" [serverErrors]="model?.serverErrors?.Id">
-    <b-restricted [metadata]="model?.EntityMetadata?.Agent" *ngIf="!isEdit">
-      <b-view-link link="../../agents" [itemId]="model?.Id">
-        {{ ws.getMultilingualValue('Agent', model?.Id, 'Name') }}
-      </b-view-link>
+  <!-- Image -->
+  <div class="col-12 col-md-4 b-details-image-container">
+    <b-restricted [metadata]="model?.EntityMetadata?.ImageId">
+      <div class="border">
+        <b-image *ngIf="!!model" [src]="model.Id ? 'users/' + model.Id + '/image' : null" [imageId]="model?.ImageId"
+          [(ngModel)]="model.Image" [isEdit]="isEdit"></b-image>
+      </div>
     </b-restricted>
-    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.Id" collection="Agent"
-      [masterTemplate]="agentMaster" [detailsTemplate]="agentDetails" required [disabled]="!isNew"
-      filter="User/Id eq null">
-    </b-details-picker>
+  </div>
 
-    <!-- The Agents Details Modal -->
-    <ng-template #agentDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
-      <div class="modal-body">
-        <b-agents-details mode="popup" [initialText]="initialText" (cancel)="modal.close(false);"
-          (saved)="modal.close(true); update($event);" [idString]="idString">
-        </b-agents-details>
-      </div>
-    </ng-template>
+  <!-- Name -->
+  <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
+    [serverErrors]="model?.serverErrors?.Name">
+    <div *ngIf="!isEdit">{{ model?.Name }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name" [ngModelOptions]="{ updateOn: 'blur' }" required>
+    </b-text-editor>
+  </b-form-group>
 
-    <!-- The Agents Master Modal -->
-    <ng-template #agentMaster let-modal="modal" let-update="update" let-create="create" let-filter="filter">
-      <div class="modal-body">
-        <b-agents-master mode="popup" (cancel)="modal.close(false);" (choose)="modal.close(true); update($event);"
-          (create)="modal.close(false); create()" [filterDefault]="filter">
-        </b-agents-master>
-      </div>
-    </ng-template>
+  <!-- Name2 -->
+  <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
+    [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
+    <div *ngIf="!isEdit">{{ model?.Name2 }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name2" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  </b-form-group>
+
+  <!-- Name3 -->
+  <b-form-group class="b-form-group" *ngIf="!ws.isTernaryLanguage && ws.settings.TernaryLanguageId"
+    [label]="('Name' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Name3">
+    <div *ngIf="!isEdit">{{ model?.Name3 }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Name3" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  </b-form-group>
+
+  <!-- Email -->
+  <b-form-group class="b-form-group" [label]="'User_Email' | translate" [serverErrors]="model?.serverErrors?.Email">
+    <div *ngIf="!isEdit">{{ model?.Email }}</div>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Email" [ngModelOptions]="{ updateOn: 'blur' }" required email
+      [disabled]="!isNew"></b-text-editor>
+  </b-form-group>
+
+  <!-- Preferred Language -->
+  <b-form-group class="b-form-group" [label]="'User_PreferredLanguage' | translate"
+    [serverErrors]="model?.serverErrors?.PreferredLanguage">
+    <div *ngIf="!isEdit">
+      <b-restricted [metadata]="model?.EntityMetadata?.PreferredLanguage">
+        {{ languageLookup(model?.PreferredLanguage) | translate }}
+      </b-restricted>
+    </div>
+    <b-selector *ngIf="isEdit" [(ngModel)]="model.PreferredLanguage" [choices]="languageChoices" required></b-selector>
   </b-form-group>
 
   <!-- Last Activity -->
   <b-form-group class="b-form-group" [label]="'User_LastActivity' | translate" *ngIf="!isEdit">
     <b-auto-cell collection="User" [entity]="model" path="LastAccess">
     </b-auto-cell>
+  </b-form-group>
+
+  <!-- Is Active -->
+  <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
+    <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
   </b-form-group>
 
   <!-- Email Notice -->
@@ -112,10 +146,12 @@
             </b-details-picker>
 
             <!-- The Role Details Modal -->
-            <ng-template #roleDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
+            <ng-template #roleDetails let-modal="modal" let-update="update" let-initialText="initialText"
+              let-idString="idString">
               <div class="modal-body">
-                <b-roles-details mode="popup" [initialText]="initialText" (cancel)="modal.close(false);" [idString]="idString"
-                  (saved)="modal.close(true); update($event);" [showMembers]="false" [showIsPublic]="false">
+                <b-roles-details mode="popup" [initialText]="initialText" (cancel)="modal.close(false);"
+                  [idString]="idString" (saved)="modal.close(true); update($event);" [showMembers]="false"
+                  [showIsPublic]="false">
                 </b-roles-details>
               </div>
             </ng-template>

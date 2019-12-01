@@ -169,22 +169,22 @@
         </span></ng-template>
       <ng-template ngbTabContent>
         <b-restricted [metadata]="model?.EntityMetadata?.Members" [class.p-4]="model?.EntityMetadata?.Members === 1">
-          <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['AgentId', 'Memo']"
+          <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['UserId', 'Memo']"
             [columnTemplates]="{
-            'AgentId' : { headerTemplate : header_AgentId, rowTemplate : row_AgentId, weight : 1 },
+            'UserId' : { headerTemplate : header_UserId, rowTemplate : row_UserId, weight : 1 },
             'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
           }">
           </b-table>
         </b-restricted>
 
-        <!-- Agent -->
-        <ng-template #header_AgentId>{{ 'RoleMembership_User' | translate }}</ng-template>
-        <ng-template #row_AgentId let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.AgentId">
-            <b-view-link *ngIf="!isEdit" link="../../users" [itemId]="item?.AgentId">
-              {{ getMultilingualValue(ws.User[item.AgentId], 'Name', ws) }}
+        <!-- User -->
+        <ng-template #header_UserId>{{ 'RoleMembership_User' | translate }}</ng-template>
+        <ng-template #row_UserId let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.UserId">
+            <b-view-link *ngIf="!isEdit" link="../../users" [itemId]="item?.UserId">
+              {{ getMultilingualValue(ws.User[item.UserId], 'Name', ws) }}
             </b-view-link>
-            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.AgentId" (ngModelChange)="update(item)"
+            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.UserId" (ngModelChange)="update(item)"
               [masterTemplate]="usersMaster" [detailsTemplate]="usersDetails" collection="User">
             </b-details-picker>
 

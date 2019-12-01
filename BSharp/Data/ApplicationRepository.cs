@@ -764,7 +764,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                 DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
                 var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
                 {
-                    TypeName = $"[dbo].[AgentList]",
+                    TypeName = $"[dbo].[{nameof(Agent)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
@@ -1026,7 +1026,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             }
         }
 
-        public async Task<(IEnumerable<string> newEmails, IEnumerable<string> oldEmails)> Users__Save(List<UserForSave> entities)
+        public async Task<List<int>> Users__Save(List<UserForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
         {
             entities.ForEach(e =>
             {
@@ -1036,8 +1036,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                 });
             });
 
-            var newEmails = new List<string>();
-            var oldEmails = new List<string>();
+            var result = new List<IndexedId>();
 
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1050,6 +1049,13 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                     SqlDbType = SqlDbType.Structured
                 };
 
+                DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
+                var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
+                {
+                    TypeName = $"[dbo].[IndexedImageIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
                 DataTable rolesTable = RepositoryUtilities.DataTableWithHeaderIndex(entities, e => e.Roles);
                 var rolesTvp = new SqlParameter("@Roles", rolesTable)
                 {
@@ -1058,7 +1064,9 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                 };
 
                 cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add(imageIdsTvp);
                 cmd.Parameters.Add(rolesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -1069,20 +1077,24 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                 {
                     while (await reader.ReadAsync())
                     {
-                        newEmails.Add(reader.GetString(0));
-                    }
-
-                    await reader.NextResultAsync();
-
-                    while (await reader.ReadAsync())
-                    {
-                        oldEmails.Add(reader.GetString(0));
+                        int i = 0;
+                        result.Add(new IndexedId
+                        {
+                            Index = reader.GetInt32(i++),
+                            Id = reader.GetInt32(i++)
+                        });
                     }
                 }
             }
 
-            // Return result
-            return (newEmails, oldEmails);
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
         }
 
         public async Task<IEnumerable<ValidationError>> Users_Validate__Delete(List<int> ids, int top)
@@ -1151,6 +1163,32 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
             return deletedEmails;
         }
+
+        public async Task Users__Activate(List<int> ids, bool isActive)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Users__Activate)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
 
         #endregion
 

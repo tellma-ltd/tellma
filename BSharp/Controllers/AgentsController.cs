@@ -119,42 +119,6 @@ namespace BSharp.Controllers
             }
         }
 
-        [HttpGet("{id}/image")]
-        public async Task<ActionResult> GetImage(int id)
-        {
-            return await ControllerUtilities.InvokeActionImpl(async () =>
-            {
-                string imageId;
-                if (id == _repo.GetUserInfo().UserId)
-                {
-                    // A user can always view their own image, so we bypass read permissions
-                    Agent me = await _repo.Agents.Filter("Id eq me").Select(nameof(Agent.ImageId)).FirstOrDefaultAsync();
-                    imageId = me.ImageId;
-                }
-                else
-                {
-                    // GetByIdImplAsync() enforces read permissions
-                    var agentResponse = await GetByIdImplAsync(id, new GetByIdArguments { Select = nameof(Agent.ImageId) });
-                    imageId = agentResponse.Result.ImageId;
-                }
-
-                // Get the blob name
-                if (imageId != null)
-                {
-                    // Get the bytes
-                    string blobName = BlobName(imageId);
-                    var imageBytes = await _blobService.LoadBlob(blobName);
-
-                    Response.Headers.Add("x-image-id", imageId);
-                    return File(imageBytes, "image/jpeg");
-                }
-                else
-                {
-                    return NotFound("This user does not have a picture");
-                }
-            }, _logger);
-        }
-
         private string BlobName(string guid)
         {
             int tenantId = _tenantIdAccessor.GetTenantId();
@@ -202,89 +166,7 @@ namespace BSharp.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<AgentForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            var blobsToDelete = new List<string>();
-            var blobsToSave = new List<(string, byte[])>();
-            var imageIds = new List<IndexedImageId>(); // For the repository
-
-            var idsWithNewImages = entities
-                .Where(e => e.Image != null && e.Id != 0)
-                .Select(e => e.Id)
-                .ToArray();
-
-            if (idsWithNewImages.Any())
-            {
-                // Get old image Ids that should be deleted from Blob storage
-                var dbEntitiesWithNewImages = await _repo.Agents
-                    .Select(nameof(Agent.ImageId))
-                    .Filter($"{nameof(Agent.ImageId)} ne null")
-                    .FilterByIds(idsWithNewImages)
-                    .ToListAsync();
-
-                blobsToDelete = dbEntitiesWithNewImages
-                    .Select(e => BlobName(e.ImageId))
-                    .ToList();
-            }
-
-            // Get new image Ids and bytes that should be added to blob storage
-            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
-            {
-                byte[] imageBytes = entity.Image;
-                if (imageBytes != null)
-                {
-                    if (imageBytes.Length == 0) // This means delete the image
-                    {
-                        if (entity.Id != 0)
-                        {
-                            // Specify that ImageId should be set to NULL
-                            imageIds.Add(new IndexedImageId
-                            {
-                                Index = index,
-                                ImageId = null
-                            });
-                        }
-                    }
-                    else
-                    {
-                        // Specify that ImageId should be set to a new GUID
-                        string imageId = Guid.NewGuid().ToString();
-                        imageIds.Add(new IndexedImageId
-                        {
-                            Index = index,
-                            ImageId = imageId
-                        });
-
-                        // Below we process the new image bytes
-                        // We make the image smaller and turn it into JPEG
-                        using (var image = Image.Load(imageBytes))
-                        {
-                            // Resize to 128x128px
-                            image.Mutate(c => c.Resize(new ResizeOptions
-                            {
-                                // 'Max' mode maintains the aspect ratio and keeps the entire image
-                                Mode = ResizeMode.Max,
-                                Size = new Size(128),
-                                Position = AnchorPositionMode.Center
-                            }));
-
-                            // Some image formats that support transparent regions
-                            // these regions will turn black in JPEG format unless we do this
-                            image.Mutate(c => c.BackgroundColor(Rgba32.White)); ;
-
-                            // Save as JPEG
-                            var memoryStream = new MemoryStream();
-                            image.SaveAsJpeg(memoryStream);
-                            imageBytes = memoryStream.ToArray();
-
-                            // Note: JPEG is the format of choice for photography.
-                            // It provides better quality at a lower size for photographs
-                            // which is what most of these pictures are expected to be
-                        }
-
-                        // Add it to blobs to create
-                        blobsToSave.Add((BlobName(imageId), imageBytes));
-                    }
-                }
-            }
+            var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<Agent, AgentForSave>(_repo, entities, BlobName);
 
             // Save the agents
             var ids = await _repo.Agents__Save(
@@ -351,7 +233,6 @@ namespace BSharp.Controllers
             }
         }
     }
-
 
     [Route("api/" + AgentsController.BASE_ADDRESS)]
     [ApplicationApi]
