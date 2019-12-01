@@ -1,17 +1,16 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-		[Id],			[TitlePlural],		[TitleSingular],	[DescriptorIdLabel]) VALUES
-	(N'fixed-assets',	N'Fixed Assets',	N'Fixed Assets',	N'Used By');
-	
+		[Id],					[TitlePlural],				[TitleSingular],	[DescriptorIdLabel]) VALUES
+	(N'general-fixed-assets',	N'General fixed assets',	N'Geneal fixed asset',	N'Used By');
+	UPDATE dbo.ResourceClassifications SET ResourceDefinitionId = N'general-fixed-assets' WHERE [Id] = dbo.fn_RCCode__Id(N'FixturesAndFittings');
+
 	DECLARE @FixedAssets dbo.ResourceList;
 	INSERT INTO @FixedAssets ([Index],
-		[ResourceClassificationId],								[Name],				[TimeUnitId],				[DescriptorId]) VALUES
-	(0, dbo.fn_RCCode__Id(N'CommunicationAndNetworkEquipment'),	N'Asus Router',		dbo.fn_UnitName__Id(N'Yr'),	NULL),
-	(1, dbo.fn_RCCode__Id(N'OfficeEquipment'),					N'HP Deskjet',		dbo.fn_UnitName__Id(N'Yr'),	NULL),
-	(2, dbo.fn_RCCode__Id( N'FixturesAndFittings'),				N'Office Chair',	dbo.fn_UnitName__Id(N'Yr'), N'MA'),
-	(3, dbo.fn_RCCode__Id(N'FixturesAndFittings'),				N'Office Chair',	dbo.fn_UnitName__Id(N'Yr'), N'AA');
+		[OperatingSegmentId],	[ResourceClassificationId],		[Name],			[TimeUnitId],				[DescriptorId]) VALUES
+	(0, @OS_BananIT, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'MA'),
+	(1, @OS_BananIT, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'AA');
 
 	EXEC [api].[Resources__Save]
-		@DefinitionId = N'fixed-assets',
+		@DefinitionId = N'general-fixed-assets',
 		@Entities = @FixedAssets,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -22,9 +21,9 @@
 	END;
 	IF @DebugResources = 1 
 	BEGIN
-		SELECT  N'fixed-assets' AS [Resource Definition]
+		SELECT  N'general-fixed-assets' AS [Resource Definition]
 		DECLARE @FixedAssetsIds dbo.IdList;
-		INSERT INTO @FixedAssetsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'fixed-assets';
+		INSERT INTO @FixedAssetsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'general-fixed-assets';
 
 		SELECT [Name] AS 'Fixed Asset', [DescriptorId] AS N'Used By', [TimeUnit] AS 'Usage In' -- Custodian/Location, etc.... from DLE
 		FROM rpt.Resources(@FixedAssetsIds);

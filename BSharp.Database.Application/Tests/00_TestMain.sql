@@ -79,9 +79,9 @@ BEGIN TRY
 		:r ..\Samples\02_Agents\04_Employees.sql
 
 		:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
-		--:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql
-		--:r ..\Samples\03_Resources\a3_PPE_machineries.sqlm
-		--:r ..\Samples\03_Resources\a4_PPE_general-fixed-assets.sql
+		:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql
+		:r ..\Samples\03_Resources\a3_PPE_machineries.sql
+		:r ..\Samples\03_Resources\a4_PPE_general-fixed-assets.sql
 		--:r ..\Samples\03_Resources\b_Inventories_raw-materials.sql
 		--:r ..\Samples\03_Resources\d1_FG_vehicles.sql
 		--:r ..\Samples\03_Resources\d2_FG_steel-products.sql

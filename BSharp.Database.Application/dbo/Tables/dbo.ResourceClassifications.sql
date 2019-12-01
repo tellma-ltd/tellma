@@ -18,3 +18,4 @@
 	[ParentNode]			AS [Node].GetAncestor(1)
 );
 GO
+CREATE UNIQUE INDEX [IX_ResourceClassifications__Id_ResourceDefinitionId] ON [dbo].[ResourceClassifications] ([Id], [ResourceDefinitionId]);

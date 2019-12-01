@@ -12,25 +12,36 @@
 			N'Optional', N'Operating System', N'operating-systems'
 		);
 	
-		INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'computer-equipment'
-						[Name],				[IsLeaf],	[Node]) VALUES
-		(N'it-equipment',	N'Computers',		0,			N'/1/'),
-		(N'it-equipment',	N'Servers',			1,			N'/1/1/'),
-		(N'it-equipment',	N'Desktops',		1,			N'/1/2/'),
-		(N'it-equipment',	N'Laptops',			1,			N'/1/3/'),
-		(N'it-equipment',	N'Mobiles',			1,			N'/2/'),
-		(N'it-equipment',	N'Printers',		0,			N'/3/'),
-		(N'it-equipment',	N'Routers',			1,			N'/4/');
+	DECLARE @ITEquipmentDescendants ResourceClassificationList;
+	INSERT INTO @ITEquipmentDescendants ([Index],
+		[Code],					[Name],			[Node],			[IsAssignable], [ResourceDefinitionId]) VALUES
+	--N'ComputerEquipment',						N'/1/1/6/'
+	(0, N'ComputersExtension',	N'Computers',	N'/1/1/6/1/',	1,				N'it-equipment'),
+	(1, N'ServersExtension',	N'Servers',		N'/1/1/6/2/',	1,				N'it-equipment'),
+	(2, N'DesktopsExtension',	N'Desktops',	N'/1/1/6/3/',	1,				N'it-equipment'),
+	(3, N'LaptopsExtension',	N'Laptops',		N'/1/1/6/4/',	1,				N'it-equipment'),
+	--(N'CommunicationAndNetworkEquipment',		N'/1/1/7/'
+	(4, N'MobilesExtension',	N'Mobiles',		N'/1/1/7/1/',	1,				N'it-equipment'),
+	(5, N'PrintersExtension',	N'Printers',	N'/1/1/7/2/',	1,				N'it-equipment'),
+	--N'NetworkInfrastructure',					N'/1/1/8/'
+	(6, N'RoutersExtension',	N'Routers',		N'/1/1/8/1/',	1,				N'it-equipment');
+	
+	EXEC [api].[ResourceClassifications__Save]
+		@Entities = @ITEquipmentDescendants,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Resource Classifications: Inserting'
+		GOTO Err_Label;
+	END;		
 
 	DECLARE @ITEquipment dbo.ResourceList;
-	INSERT INTO @ITEquipment ([Index],
-		[ResourceClassificationId],		[Name],			[TimeUnitId],				[Lookup1Id],											[Lookup2Id]) VALUES
--- N'ComputerEquipment',	
-	(0,dbo.fn_RCCode__Id(N'Servers'),	N'VH-GMT-01',	dbo.fn_UnitName__Id(N'Yr'),	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Dell'),	dbo.fn_Lookup(N'operating-systems', N'Windows Server 2017')),
--- N'CommunicationAndNetworkEquipment',	
-	(1,dbo.fn_RCCode__Id(N'Printers'),	N'HP-Deskject',	dbo.fn_UnitName__Id(N'Yr'),	dbo.fn_Lookup(N'it-equipment-manufacturers', N'HP'),	NULL),
--- N'NetworkInfrastructure',
-	(2,dbo.fn_RCCode__Id(N'Routers'),	N'ASUS Router',	dbo.fn_UnitName__Id(N'Yr'), dbo.fn_Lookup(N'it-equipment-manufacturers', N'Apple'),	dbo.fn_Lookup(N'operating-systems', N'iOS 13'));
+	INSERT INTO @ITEquipment ([Index], [OperatingSegmentId],
+		[ResourceClassificationId],							[Name],			[TimeUnitId],				[DescriptorId], [Lookup1Id],											[Lookup2Id]) VALUES
+	(0,@OS_BananIT,dbo.fn_RCCode__Id(N'ServersExtension'),	N'Dell ML 200',	dbo.fn_UnitName__Id(N'Yr'),	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Dell'),	dbo.fn_Lookup(N'operating-systems', N'Windows Server 2017')),
+	(1,@OS_BananIT,dbo.fn_RCCode__Id(N'PrintersExtension'),	N'HP Deskject',	dbo.fn_UnitName__Id(N'Yr'),	N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'HP'),	NULL),
+	(2,@OS_BananIT,dbo.fn_RCCode__Id(N'RoutersExtension'),	N'ASUS Router',	dbo.fn_UnitName__Id(N'Yr'), N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Apple'),	dbo.fn_Lookup(N'operating-systems', N'iOS 13'));
 	
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'it-equipment',
