@@ -283,7 +283,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
-
         
         [Fact(DisplayName = "08 Getting an Id that was just deleted returns a 404 Not Found")]
         public async Task Test10()
