@@ -15,7 +15,7 @@
 -- Major properties: NULL means it is not defined.
 	[AccountTypeId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Accounts__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
 	[AgentDefinitionId]				NVARCHAR (50),
-	[ResourceTypeId]				NVARCHAR (50),
+	[ResourceClassificationId]		INT					NOT NULL CONSTRAINT [FK_Accounts__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[IsCurrent]						BIT,
 -- Minor properties: range of values is restricted by defining a major property. For example, if AccountTypeId = N'Payable', then responsibility center
 -- must be an operating segment. 
@@ -27,7 +27,7 @@
 	[ResponsibilityCenterId]		INT					CONSTRAINT [FK_Accounts__ResponsibilityCenterId] REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 	[DescriptorId]					NVARCHAR (10)		CONSTRAINT [FK_Accounts__DescriptorId] REFERENCES dbo.AccountDescriptors([Id]), -- to resolve Uniqueness Constraint
 -- Entry Property
-	[EntryTypeId]					NVARCHAR (255),
+	[EntryClassificationId]			INT					CONSTRAINT [FK_Accounts__EntryClassificationId] REFERENCES dbo.[EntryClassifications],
 	-- To transfer an entry from requested to authorized, we need an evidence that the responsible center manager has authorized it.
 	[IsDeprecated]					BIT					NOT NULL DEFAULT 0,
 	-- Audit details
@@ -38,13 +38,14 @@
 );
 GO
 --CREATE UNIQUE INDEX [IX_Accounts__Id_AccountDefinitionId] ON dbo.Accounts([Id], [AccountTypeId]);
-CREATE UNIQUE INDEX [IX_Accounts__Id_AccountDefinitionId] ON dbo.Accounts(
+CREATE UNIQUE INDEX [IX_Accounts__Id_AccountTypeId_AgentDefinitionId_] ON dbo.Accounts(
 			[AccountTypeId],
 			[AgentDefinitionId],
-			[ResourceTypeId],
+			[ResourceClassificationId],
 			[IsCurrent],
 			[AgentId],
 			[ResourceId],
 			[ResponsibilityCenterId],
-			[DescriptorId]
+			[DescriptorId],
+			[EntryClassificationId]
 );

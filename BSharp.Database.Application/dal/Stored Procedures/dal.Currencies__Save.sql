@@ -4,6 +4,7 @@ AS
 SET NOCOUNT ON;
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @Cash INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [Code] = N'Cash');
 
 	MERGE INTO [dbo].[Currencies] AS t
 	USING (
@@ -34,7 +35,7 @@ SET NOCOUNT ON;
 			[Id], [Name], [Name2], [Name3],
 			[Description], [Description2], [Description3]
 		FROM @Entities 
-	) AS s ON (t.[Code] = s.Id) AND (t.[DefinitionId] = N'monetary-resources')
+	) AS s ON (t.[Code] = s.Id) AND (t.[ResourceClassificationId] = @Cash) AND (t.[DefinitionId] = N'monetary-resources')
 	WHEN MATCHED 
 	THEN
 		UPDATE SET 
@@ -48,5 +49,5 @@ SET NOCOUNT ON;
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([Code], [DefinitionId],	[ResourceTypeId],			[Name], [Name2], [Name3], [Description], [Description2], [Description3], [CurrencyId])
-		VALUES (s.[Id],  N'monetary-resources',	N'CashAndCashEquivalents',	s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[Id]);
+		INSERT ([Code], [DefinitionId],			[ResourceClassificationId],	[Name], [Name2], [Name3], [Description], [Description2], [Description3], [CurrencyId])
+		VALUES (s.[Id],  N'monetary-resources',	@Cash,					s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[Id]);

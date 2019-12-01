@@ -124,12 +124,13 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Index], E.[Id], LI.Id AS [DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], 
-			[ResponsibilityCenterId], [CurrencyId], [AgentDefinitionId], [AgentId], [ResourceId], [EntryTypeId], --[BatchCode], 
-			[DueDate],
-			[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
-			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAgentName], E.[RelatedAmount]
-				
+			E.[Index], E.[Id], LI.Id AS [DocumentLineId], E.[EntryNumber], E.[SortKey], E.[Direction], E.[AccountId],
+			E.[AccountTypeId], E.[AgentDefinitionId], E.[ResourceClassificationId], E.[IsCurrent],
+			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId], E.[AccountDescriptorId], E.[ResourceDescriptorId],
+			E.[CurrencyId], E.[EntryClassificationId], --[BatchCode], 
+			E.[DueDate], E.[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
+			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAgentName], E.[RelatedAmount],
+			E.[Time1], E.[Time2]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[DocumentLineIndex] = LI.[Index]
@@ -139,13 +140,17 @@ BEGIN
 			t.[SortKey]					= s.[Index],
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
-			t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
-			t.[CurrencyId]				= s.[CurrencyId],
+			t.[AccountTypeId]			= s.[AccountTypeId],
 			t.[AgentDefinitionId]		= s.[AgentDefinitionId],
+			t.[ResourceClassificationId]= s.[ResourceClassificationId],
+			t.[IsCurrent]				= s.[IsCurrent],
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
-			t.[EntryTypeId]				= s.[EntryTypeId],
-		--	t.[ResourceDescriptorId]				= s.[BatchCode],
+			t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
+			t.[AccountDescriptorId]		= s.[AccountDescriptorId],
+			t.[ResourceDescriptorId]	= s.[ResourceDescriptorId],
+			t.[CurrencyId]				= s.[CurrencyId],
+			t.[EntryClassificationId]	= s.[EntryClassificationId],
 			t.[DueDate]					= s.[DueDate],
 			t.[MonetaryValue]			= s.[MonetaryValue],
 			t.[Count]					= s.[Count],
@@ -158,22 +163,27 @@ BEGIN
 			t.[RelatedAgentId]			= s.[RelatedAgentId],
 			t.[RelatedAgentName]		= s.[RelatedAgentName],
 			t.[RelatedAmount]			= s.[RelatedAmount],
-	
+			t.[Time1]					= s.[Time1],
+			t.[Time2]					= s.[Time2],	
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId], 
-				[ResponsibilityCenterId], [CurrencyId], [AgentDefinitionId], [AgentId], [ResourceId], [EntryTypeId], --[BatchCode], 
-				[DueDate],
-				[MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
-				[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount]
-				)
-		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId], 
-				s.[ResponsibilityCenterId], s.[CurrencyId], s.[AgentDefinitionId], s.[AgentId], s.[ResourceId], s.[EntryTypeId], --s.[BatchCode], 
-				s.[DueDate],
-				s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
-				s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentName], s.[RelatedAgentId], s.[RelatedAmount]
-				)
+		INSERT ([EntryNumber], [SortKey], [Direction], [AccountId],
+			[AccountTypeId], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent],
+			[AgentId], [ResourceId], [ResponsibilityCenterId], [AccountDescriptorId], [ResourceDescriptorId],
+			[CurrencyId], [EntryClassificationId], --[BatchCode], 
+			[DueDate], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
+			[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount],
+			[Time1], [Time2]
+		)
+		VALUES (s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId],
+			s.[AccountTypeId], s.[AgentDefinitionId], s.[ResourceClassificationId], s.[IsCurrent],
+			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId], s.[AccountDescriptorId], s.[ResourceDescriptorId],
+			s.[CurrencyId], s.[EntryClassificationId], --[BatchCode], 
+			s.[DueDate], s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
+			s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentId], s.[RelatedAgentName], s.[RelatedAmount],
+			s.[Time1], s.[Time2]
+		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 

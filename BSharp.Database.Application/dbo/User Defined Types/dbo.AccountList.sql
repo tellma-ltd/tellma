@@ -10,7 +10,7 @@
 
 	[AccountTypeId]					NVARCHAR (50)		NOT NULL,
 	[AgentDefinitionId]				NVARCHAR (50),
-	[ResourceTypeId]				NVARCHAR (50),
+	[ResourceClassificationId]		INT,
 	[IsCurrent]						BIT,
 -- Minor properties: range of values is restricted by defining a major property. For example, if AccountTypeId = N'Payable', then responsibility center
 -- must be an operating segment. 
@@ -23,5 +23,5 @@
 	[ResponsibilityCenterId]		INT,
 	[DescriptorId]					NVARCHAR (10),
 --
-	[EntryTypeId]					NVARCHAR (255)
+	[EntryClassificationId]			INT
 );

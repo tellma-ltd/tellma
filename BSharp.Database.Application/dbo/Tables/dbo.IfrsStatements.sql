@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[IfrsStatements]
 (
-	[Id]				INT				PRIMARY KEY IDENTITY,
+	[Id]				INT							CONSTRAINT [PK_IfrsStatements] PRIMARY KEY IDENTITY,
 	[IfrsRole]			NCHAR(6)		NOT NULL	CONSTRAINT [CK_IfrsStatements__IfrsRole] CHECK([IfrsRole] IN (N'210000')),
 	[ParentId]			INT,
 	[IfrsConceptId]		NVARCHAR(255)	NOT NULL, -- if a parent has a classification, the children possible classifications get filtered

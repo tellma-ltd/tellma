@@ -23,7 +23,7 @@ AS
 		E.[AccountId],		
 		E.[AccountTypeId],
 		E.[AgentDefinitionId],
-		E.[ResourceTypeId],
+		E.[ResourceClassificationId],
 		E.[IsCurrent],		
 		E.[CurrencyId],
 		E.[AgentId],
@@ -32,7 +32,7 @@ AS
 		E.[AccountDescriptorId],
 		E.[ResourceDescriptorId],
 		E.[DueDate],		
-		E.[EntryTypeId],
+		E.[EntryClassificationId],
 		E.[MonetaryValue], -- normalization is already done in the Value and stored in the entry
 		E.[Count], -- we can normalize every measure, but just showing a proof of concept
 		E.[Mass],

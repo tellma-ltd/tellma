@@ -16,7 +16,7 @@ RETURN
 		[DocumentDefinitionId],
 		[SerialNumber],
 		[Direction],
-		[EntryTypeId],
+		[EntryClassificationId],
 		[ResourceId],
 		[MonetaryValue],
 		[CurrencyId],

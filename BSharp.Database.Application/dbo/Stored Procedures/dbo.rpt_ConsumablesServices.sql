@@ -5,7 +5,7 @@ AS
 BEGIN
 	WITH ExpenseJournal AS (
 		SELECT
-			J.[AgentId], J.[EntryTypeId], CO.[Name], CO.[Name2], CO.[Name3],
+			CO.[Id], CO.[Name], CO.[Name2], CO.[Name3], CO.[CostObjectType],
 			SUM(J.[Direction] * J.[Value]) AS [Expense]
 		FROM [dbo].[fi_Journal](@fromDate, @toDate) J
 		JOIN dbo.[Agents] CO ON J.[AgentId] = CO.Id AND J.[AgentDefinitionId] = CO.[DefinitionId]
@@ -18,12 +18,12 @@ BEGIN
 			N'Service', -- this should have zero expense after re-allocation
 			N'Shared' -- should have zero expense after re-allocation
 		)
-		GROUP BY J.[AgentId], J.[EntryTypeId], CO.[Name], CO.[Name2], CO.[Name3]
+		GROUP BY CO.[Id], CO.[Name], CO.[Name2], CO.[Name3], CO.[CostObjectType]
 	)
 	SELECT * FROM ExpenseJournal
 	PIVOT (
 		SUM([Expense])
-		FOR [EntryTypeId] IN (
+		FOR [CostObjectType] IN (
 			[CostUnit], --[CostCenter], 
 			[Production], [SellingAndDistribution], [Administration], [Service], [Shared]
 		)

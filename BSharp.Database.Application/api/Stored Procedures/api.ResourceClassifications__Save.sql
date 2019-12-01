@@ -1,5 +1,4 @@
 ﻿CREATE PROCEDURE [api].[ResourceClassifications__Save]
-	@DefinitionId NVARCHAR(50),
 	@Entities [ResourceClassificationList] READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -23,6 +22,5 @@ SET NOCOUNT ON;
 		RETURN;
 
 	EXEC [dal].[ResourceClassifications__Save]
-		@DefinitionId= @DefinitionId,
 		@Entities = @Entities;
 END;

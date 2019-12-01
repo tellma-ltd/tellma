@@ -56,24 +56,22 @@ SET NOCOUNT ON;
 	SELECT
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
-		N'Error_TheAccountType0RequiresAnEntryType', A.[AccountTypeId]
+		N'Error_TheAccountType0RequiresAnEntryClassification', A.[AccountTypeId]
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE (E.[EntryTypeId] IS NULL)
-	AND A.[AccountTypeId] IN (
-		SELECT [ResourceTypeId] FROM dbo.[ResourceTypesEntryTypes]
-	);
+	WHERE (E.[EntryClassificationId] IS NULL)
+	AND A.[AccountTypeId] IN (N'NonFinancialAsset', 'Cash', 'Capital', 'OtherEquity','OperatingExpense');
 
 	-- Invalid Entry Type Id
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
-		N'Error_IncompatibleResourceType0AndEntryType1',
-		E.[ResourceTypeId], E.[EntryTypeId]
+		N'Error_IncompatibleResourceClassification0AndEntryClassification1',
+		E.[ResourceClassificationId], E.[EntryClassificationId]
 	FROM @Entries E
-	LEFT JOIN dbo.[ResourceTypesEntryTypes] RE ON (E.[ResourceTypeId] = RE.[ResourceTypeId]) AND (E.EntryTypeId = RE.EntryTypeId)
-	WHERE (E.EntryTypeId IS NOT NULL AND RE.EntryTypeId IS NULL);
+	LEFT JOIN dbo.[ResourceClassificationsEntryClassifications] RE ON (E.[ResourceClassificationId] = RE.[ResourceClassificationId]) AND (E.[EntryClassificationId] = RE.[EntryClassificationId])
+	WHERE (E.[EntryClassificationId] IS NOT NULL AND RE.[EntryClassificationId] IS NULL);
 
 	-- RelatedAgent is required for selected account definition, 
 	--INSERT INTO @ValidationErrors([Key], [ErrorName])

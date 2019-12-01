@@ -102,8 +102,8 @@
     <Build Include="dbo\Tables\dbo.Users.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignments.sql" />
     <Build Include="dbo\Tables\dbo.DocumentLines.sql" />
-    <Build Include="dbo\Tables\dbo.IfrsAccountClassifications.sql" />
-    <Build Include="dbo\Tables\dbo.IfrsEntryClassifications.sql" />
+    <Build Include="dbo\Tables\dbo.zIfrsAccountClassifications.sql" />
+    <Build Include="dbo\Tables\dbo.zIfrsEntryClassifications.sql" />
     <Build Include="dbo\Tables\dbo.Reconciliation.sql" />
     <Build Include="dbo\Tables\dbo.Resources.sql" />
     <Build Include="dbo\Tables\dbo.Settings.sql" />
@@ -129,7 +129,6 @@
     <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Functions\dbo.fe_Responsibility__FirstSibling.sql" />
-    <Build Include="dbo\Tables\dbo.ResourceTypesEntryTypes.sql" />
     <Build Include="dbo\User Defined Types\dbo.VType.sql" />
     <None Include="Tests\00_TestMain.sql" />
     <None Include="Tests\04_IfrsDisclosures.sql" />
@@ -375,23 +374,19 @@
     <Build Include="api\Stored Procedures\api.Accounts__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Save.sql" />
-    <Build Include="dbo\Tables\dbo.ResourceTypes.sql" />
-    <Build Include="dal\Stored Procedures\dal.ResourceTypes__Activate.sql" />
     <Build Include="dal\Stored Procedures\dal.Accounts__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Delete.sql" />
     <Build Include="Mapping\Accounts.sql" />
     <Build Include="Mapping\Accounts__AsQuery.sql" />
-    <Build Include="Mapping\ResourceTypes.sql" />
     <Build Include="api\Stored Procedures\api.Views__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.DocumentLines_Validate__Unsign.sql" />
     <Build Include="dal\Stored Procedures\dal.DocumentLines__Unsign.sql" />
     <Build Include="dal\Stored Procedures\dal.Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.EntryTypes.sql" />
+    <Build Include="dbo\Tables\dbo.EntryClassifications.sql" />
     <None Include="Provisioning\01_AccountsEntries\zOld_AccountTypes.sql" />
     <None Include="Provisioning\01_AccountsEntries\x_AccountClassifications.sql" />
-    <Build Include="Mapping\map.EntryTypes.sql" />
-    <Build Include="dal\Stored Procedures\dal.EntryTypes__Activate.sql" />
+    <Build Include="Mapping\EntryClassifications.sql" />
     <Build Include="dbo\Functions\dbo.fn_Lookup.sql" />
     <Build Include="dbo\Functions\dbo.fn_UnitName__Id.sql" />
     <Build Include="dbo\Functions\dbo.fn_ResourceName__Id.sql" />
@@ -404,7 +399,6 @@
     <Build Include="dal\Stored Procedures\dal.LookupDefinitions__UpdateState.sql" />
     <Build Include="Mapping\LookupDefinitions.sql" />
     <Build Include="Mapping\LookupDefinitions__AsQuery.sql" />
-    <Build Include="dbo\Functions\dbo.fn_RCName__Id.sql" />
     <Build Include="rpt\Functions\rpt.AccountClassificationGLAccount__Statement.sql" />
     <Build Include="rpt\Functions\rpt.Accounts__TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
@@ -425,7 +419,6 @@
     <Build Include="api\Stored Procedures\api.ResponsibilityCenters__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.ResponsibilityCenters__Save.sql" />
     <None Include="Samples\00_Setup\a_RolesMemberships.sql" />
-    <None Include="Samples\00_Setup\c_ResourceTypes.sql" />
     <None Include="Samples\03_Resources\a1_PPE_motor-vehicles.sql" />
     <None Include="Samples\03_Resources\a2_PPE_it-equipment.sql" />
     <None Include="Samples\03_Resources\a3_PPE_machineries.sql" />
@@ -457,11 +450,18 @@
     <None Include="Samples\01_Basic\a_Currencies.sql" />
     <None Include="Samples\01_Basic\b_MeasurementUnits.sql" />
     <None Include="Samples\01_Basic\c_Lookups.sql" />
-    <None Include="Samples\00_Setup\d_EntryTypes.sql" />
-    <None Include="Samples\00_Setup\e_ResourceTypesEntryTypes.sql" />
+    <None Include="Samples\00_Setup\d_EntryClassifications.sql" />
     <None Include="Samples\01_Basic\h_Workflows.sql" />
     <Build Include="dbo\Tables\dbo.AgentDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountDescriptors.sql" />
+    <Build Include="dbo\Tables\dbo.ResourceClassificationsEntryClassifications.sql" />
+    <Build Include="dal\Stored Procedures\dal.EntryClassifications__Activate.sql" />
+    <Build Include="bll\Stored Procedures\bll.EntryClassifications_Validate__Save.sql" />
+    <Build Include="api\Stored Procedures\api.EntryClassifications__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.EntryClassificationList.sql" />
+    <Build Include="dal\Stored Procedures\dal.EntryClassifications__Save.sql" />
+    <Build Include="Mapping\EntryClassifications__AsQuery.sql" />
+    <Build Include="dbo\Functions\dbo.fn_RCCode__Id.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -486,6 +486,8 @@
     <None Include="IntegrationTests.publish.publish.xml" />
     <None Include="dbo\Tables\Readme.txt" />
     <None Include="Samples\02_Agents\05_Banks.sql" />
+    <None Include="Samples\00_Setup\c_ResourceClassifications.sql" />
+    <None Include="Samples\00_Setup\e_ResourceClassificationsEntryClassifications.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

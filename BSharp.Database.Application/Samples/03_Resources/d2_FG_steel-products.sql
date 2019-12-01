@@ -1,8 +1,8 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-		[Id],				[TitlePlural],			[TitleSingular],	[ResourceTypeParentList]) VALUES
-	( N'steel-products',	N'Steel Products',		N'Steel products',	N'FinishedGoods');
+		[Id],				[TitlePlural],			[TitleSingular]) VALUES
+	( N'steel-products',	N'Steel Products',		N'Steel products');
 
-	INSERT INTO dbo.ResourceClassifications ([DefinitionId], -- N'steel-products'
+	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'steel-products'
 						[Name],	[IsLeaf],	[Node]) VALUES
 	(N'steel-products',	N'D',		1,			N'/1/'),
 	(N'steel-products',	N'HSP',		0,			N'/2/'),
@@ -19,13 +19,14 @@
 
 	DECLARE @SteelProducts dbo.ResourceList;
 	INSERT INTO @SteelProducts ([Index],
-	[ResourceTypeId],	[ResourceClassificationId], [Name],				[Code],				[MassUnitId],				[CountUnitId]) VALUES
-	(0, N'FinishedGoods',dbo.fn_RCName__Id(N'CHS'), N'CHS-76X2.0',		N'CHS76X2.0',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(1, N'FinishedGoods',dbo.fn_RCName__Id(N'CHS'),	N'CHS-200x3.8',		N'CHS200x3.8',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(2, N'FinishedGoods',dbo.fn_RCName__Id(N'RHS'), N'RHS-120x80x2.8',	N'RHS120x80x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(3, N'FinishedGoods',dbo.fn_RCName__Id(N'RHS'),	N'RHS-30x20x2.8',	N'RHS30x20x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(4, N'FinishedGoods',dbo.fn_RCName__Id(N'L'),	N'L-38x1.1',		N'L38x1.1',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
-	(5, N'FinishedGoods',dbo.fn_RCName__Id(N'L'),	N'L-38x1.2',		N'L38x1.2',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'));
+	--N'FinishedGoods'
+		[ResourceClassificationId], [Name],				[Code],				[MassUnitId],				[CountUnitId]) VALUES
+	(0,	dbo.fn_RCCode__Id(N'CHS'),	N'CHS-76X2.0',		N'CHS76X2.0',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(1, dbo.fn_RCCode__Id(N'CHS'),	N'CHS-200x3.8',		N'CHS200x3.8',		dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(2, dbo.fn_RCCode__Id(N'RHS'),	 N'RHS-120x80x2.8',	N'RHS120x80x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(3, dbo.fn_RCCode__Id(N'RHS'),	N'RHS-30x20x2.8',	N'RHS30x20x2.8',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(4, dbo.fn_RCCode__Id(N'L'),	N'L-38x1.1',		N'L38x1.1',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs')),
+	(5, dbo.fn_RCCode__Id(N'L'),	N'L-38x1.2',		N'L38x1.2',			dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'));
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'steel-products',
@@ -43,6 +44,6 @@ BEGIN
 	DECLARE @SteelProductsIds dbo.IdList;
 	INSERT INTO @SteelProductsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'steel-products';
 
-	SELECT ResourceTypeId, [Name] AS 'Steel Prooduct', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
+	SELECT [Name] AS 'Steel Prooduct', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
 	FROM rpt.Resources(@SteelProductsIds);
 END

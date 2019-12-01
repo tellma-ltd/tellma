@@ -20,7 +20,7 @@ RETURN
 			DL.[SortKey],
 			DL.[DefinitionId] AS LineDefinitionId,
 			DLE.[Direction],
-			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryTypeId], 
+			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryClassificationId], 
 			R.[Name] AS [Resource],
 			CAST(DLE.[Value] AS MONEY) AS [Value],
 			-- TODO: Add other unittypes
@@ -52,7 +52,7 @@ RETURN
 		(CASE WHEN [SortKey] = 1 THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
 		CAST([SortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineDefinitionId],
-		[EntryNumber], [Account], [EntryTypeId],[Resource],
+		[EntryNumber], [Account], [EntryClassificationId],[Resource],
 		[Direction], [Value], [MonetaryValue], [Currency], [Mass], [MassUnit]
 	FROM Docs;
 GO

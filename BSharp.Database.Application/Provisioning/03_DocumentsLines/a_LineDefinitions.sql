@@ -8,7 +8,6 @@ DECLARE @LineDefinitions TABLE (
 	[TitlePlural2]						NVARCHAR (255),
 	[TitlePlural3]						NVARCHAR (255),
 	[AgentDefinitionId]					NVARCHAR (50),--	REFERENCES dbo.AgentDefinitions([Id]),
-	[ResourceType]						NVARCHAR (255),
 	[Script]							NVARCHAR (MAX)
 );
 
@@ -28,20 +27,17 @@ DECLARE @LineDefinitionEntries TABLE (
 	[AgentDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, --  -1: n/a, 0:set from line def, 3: from account
 	[AgentDefinitionId]			NVARCHAR (50),
 
-	[ResourceTypeSource]		SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
-	[ResourceType]				NVARCHAR (50),
+	[ResourceClassificationSource]	SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
+	[ResourceClassificationCode]NVARCHAR (255),
 
 	[LiquiditySource]			SMALLINT			NOT NULL DEFAULT -1, -- -1: n/a, 0:set from line def, 3: from account
 	[IsCurrent]					BIT,
 
-	
-
-
 	-- Concluded from Agent. User will not figure out
 --	[AgentRelatedness]			SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
 
-	[EntryTypeSource]			SMALLINT			NOT NULL DEFAULT 0,
-	[EntryTypeId]				NVARCHAR (255),
+	[EntryClassificationSource]	SMALLINT			NOT NULL DEFAULT 0,
+	[EntryClassificationCode]	NVARCHAR (255),
 
 	[RelatedAgentDefinitionSource]SMALLINT			NOT NULL DEFAULT -1, --  -1: n/a, 0:set from line def, 3: from account
 	[RelatedAgentDefinitionId]	NVARCHAR (50),
@@ -97,7 +93,7 @@ INSERT @LineDefinitions(
 [Id],					[TitleSingular],		[TitlePlural]) VALUES
 (N'PurchaseInvoice',	N'Purchase Invoice',	N'Purchase Invoices');
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionId],[AgentSource],[ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
+([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionId],[AgentSource],[ResourceSource], [EntryClassificationSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
 (N'PurchaseInvoice',	0,			0,				N'TaxPayable',		N'TaxAgency',				3,				-1,					-1,					1,				-1,					6,					6),
 (N'PurchaseInvoice',	1,			4,				N'Accrual',			N'Supplier',				2,				-1,					-1,					2,				-1,					-1,					-1),
 (N'PurchaseInvoice',	2,			4,				N'Payable',			N'Supplier',				2,				-1,					-1,					8,				-1,					-1,					-1);
@@ -127,7 +123,7 @@ INSERT INTO @LineDefinitionColumns
 (N'CashPayment',		1,			N'Entry[1].MonetaryAmount',				N'Pay Amount'), 
 (N'CashPayment',		2,			N'Entry[1].CurrencyId',					N'Pay Currency'),
 (N'CashPayment',		3,			N'Entry[1].AdditionalReference',		N'Beneficiary'),
-(N'CashPayment',		4,			N'Entry[1].EntryType',					N'Purpose'),
+(N'CashPayment',		4,			N'Entry[1].EntryClassification',		N'Purpose'),
 (N'CashPayment',		5,			N'Entry[1].AgentDefinitionId',	N'Payment From'),
 (N'CashPayment',		6,			N'Entry[1].AgentId',					N'Bank/Cashier'),
 (N'CashPayment',		7,			N'Entry[1].ExternalReference',			N'Check #/Receipt #'),
@@ -139,7 +135,7 @@ INSERT @LineDefinitions(
 [Id],					[TitleSingular],	[TitlePlural]) VALUES
 (N'PettyCashPayment',	N'Petty Cash Payment',		N'Petty Cash Payments')
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionSource], [ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
+([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionSource], [ResourceSource], [EntryClassificationSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
 (N'PettyCashPayment',		0,			4,				N'Cash',			1,								-1,					1,					1,				-1,					-1,						-1);
 INSERT INTO @LineDefinitionColumns
 ([LineDefinitionId], [SortIndex], [ColumnName],								[Label]) VALUES
@@ -147,7 +143,7 @@ INSERT INTO @LineDefinitionColumns
 (N'PettyCashPayment',		1,		N'Entry[1].MonetaryAmount',				N'Pay Amount'), 
 (N'PettyCashPayment',		2,		N'Entry[1].CurrencyId',					N'Pay Currency'),
 (N'PettyCashPayment',		3,		N'Entry[1].AdditionalReference',		N'Beneficiary'),
-(N'PettyCashPayment',		4,		N'Entry[1].EntryType',					N'Purpose'),
+(N'PettyCashPayment',		4,		N'Entry[1].EntryClassification',					N'Purpose'),
 (N'CashPayment',			5,		N'Entry[1].AgentId',					N'Cashier'), -- TODO: Read it from document
 (N'PettyCashPayment',		6,		N'Entry[1].ExternalReference',			N'Receipt #')
 ;
@@ -157,7 +153,7 @@ INSERT @LineDefinitions(
 [Id],				[TitleSingular],	[TitlePlural]) VALUES
 (N'TaxWithholding',	N'Tax Withholding',	N'Tax Withholdings');
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionId],[AgentSource],[ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
+([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionId],[AgentSource],[ResourceSource], [EntryClassificationSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
 (N'TaxWithholding',	0,			0,				N'Payable',				N'Supplier',				3,				-1,					-1,					1,				-1,					6,					6),
 (N'TaxWithholding',	1,			4,				N'Payable',				N'TaxAgency',				2,				-1,					-1,					2,				-1,					-1,					-1);
 INSERT INTO @LineDefinitionColumns

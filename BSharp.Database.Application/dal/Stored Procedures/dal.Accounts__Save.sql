@@ -23,13 +23,13 @@ SET NOCOUNT ON;
 				--[PartyReference],
 				[AccountTypeId],
 				[AgentDefinitionId],
-				[ResourceTypeId],
+				[ResourceClassificationId],
 				[IsCurrent],
 				[AgentId],
 				[ResourceId],
 				[ResponsibilityCenterId],
 				[DescriptorId],
-				[EntryTypeId]
+				[EntryClassificationId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -43,13 +43,13 @@ SET NOCOUNT ON;
 				--t.[PartyReference]			= s.[PartyReference],
 				t.[AccountTypeId]			= s.[AccountTypeId],
 				t.[AgentDefinitionId]		= s.[AgentDefinitionId],
-				t.[ResourceTypeId]			= s.[ResourceTypeId],
+				t.[ResourceClassificationId]= s.[ResourceClassificationId],
 				t.[IsCurrent]				= s.[IsCurrent],
 				t.[AgentId]					= s.[AgentId],
 				t.[ResourceId]				= s.[ResourceId],
 				t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
 				t.[DescriptorId]			= s.[DescriptorId],
-				t.[EntryTypeId]				= s.[EntryTypeId],
+				t.[EntryClassificationId]	= s.[EntryClassificationId],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
@@ -60,13 +60,13 @@ SET NOCOUNT ON;
 				--[PartyReference],
 				[AccountTypeId],
 				[AgentDefinitionId],
-				[ResourceTypeId],
+				[ResourceClassificationId],
 				[IsCurrent],
 				[AgentId],
 				[ResourceId],
 				[ResponsibilityCenterId],
 				[DescriptorId],
-				[EntryTypeId])
+				[EntryClassificationId])
 			VALUES (
 				s.[AccountClassificationId], 
 				s.[Name], s.[Name2], s.[Name3], 
@@ -74,13 +74,13 @@ SET NOCOUNT ON;
 				--s.[PartyReference],
 				s.[AccountTypeId],
 				s.[AgentDefinitionId],
-				s.[ResourceTypeId],
+				s.[ResourceClassificationId],
 				s.[IsCurrent],
 				s.[AgentId],
 				s.[ResourceId],
 				s.[ResponsibilityCenterId],
 				s.[DescriptorId],
-				s.[EntryTypeId])
+				s.[EntryClassificationId])
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 

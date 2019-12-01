@@ -1,5 +1,4 @@
 ﻿CREATE PROCEDURE [bll].[ResourceClassifications_Validate__Save]
-	@DefinitionId NVARCHAR(50),
 	@Entities [dbo].[ResourceClassificationList] READONLY,
 	@Top INT = 10
 AS

@@ -12,7 +12,7 @@ BEGIN
 		[DocumentDefinitionId],
 		[SerialNumber],
 		[Direction], -- direction will 
-		[EntryTypeId],
+		[EntryClassificationId],
 		[MonetaryValue],
 		[Value],
 		[VoucherNumericReference] As [CPV_CRV_Ref],

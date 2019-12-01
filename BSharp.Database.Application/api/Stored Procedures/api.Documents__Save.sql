@@ -20,17 +20,17 @@ BEGIN
 	SELECT [Index], [DocumentIndex], [Id], [LineDefinitionId] FROM @WideLines
 
 	INSERT INTO @AllEntries(
-			[Index], [DocumentLineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction], [AccountId], [EntryTypeId], [ExternalReference], [AdditionalReference])
-	SELECT	[Index], [DocumentLineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction], [AccountId], [EntryTypeId], [ExternalReference], [AdditionalReference]
+			[Index], [DocumentLineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [ExternalReference], [AdditionalReference])
+	SELECT	[Index], [DocumentLineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [ExternalReference], [AdditionalReference]
 	FROM @Entries
 	UNION
-	SELECT 3*[Index] + 1, [Index],		[DocumentIndex], [Id],		1,			[Direction1],[AccountId1],[EntryTypeId1],[ExternalReference1],[AdditionalReference1]
+	SELECT 3*[Index] + 1, [Index],		[DocumentIndex], [Id],		1,			[Direction1],[AccountId1],[EntryClassificationId1],[ExternalReference1],[AdditionalReference1]
 	FROM @WideLines
 	UNION
-	SELECT 3*[Index] + 2, [Index],		[DocumentIndex], [Id],		2,			[Direction2],[AccountId2],[EntryTypeId2],[ExternalReference2],[AdditionalReference2]
+	SELECT 3*[Index] + 2, [Index],		[DocumentIndex], [Id],		2,			[Direction2],[AccountId2],[EntryClassificationId2],[ExternalReference2],[AdditionalReference2]
 	FROM @WideLines
 	UNION
-	SELECT 3*[Index] + 3, [Index],		[DocumentIndex], [Id],		3,			[Direction3],[AccountId3],[EntryTypeId3],[ExternalReference3],[AdditionalReference3]
+	SELECT 3*[Index] + 3, [Index],		[DocumentIndex], [Id],		3,			[Direction3],[AccountId3],[EntryClassificationId3],[ExternalReference3],[AdditionalReference3]
 	FROM @WideLines
 
 	-- using line definition Id, the entries wil be filled

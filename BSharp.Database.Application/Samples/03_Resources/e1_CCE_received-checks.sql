@@ -1,6 +1,6 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-	[Id],					[TitlePlural],		[TitleSingular],	[ResourceTypeParentList]) VALUES
-	( N'received-checks',	N'Received Checks',	N'Received Check',	N'CashEquivalents');
+	[Id],					[TitlePlural],		[TitleSingular]) VALUES
+	( N'received-checks',	N'Received Checks',	N'Received Check');
 
 DECLARE @ReceivedChecks [dbo].ResourceList;
 
@@ -27,6 +27,6 @@ BEGIN
 	DECLARE @ReceivedChecksIds dbo.IdList;
 	INSERT INTO @ReceivedChecksIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'received-checks';
 	
-	SELECT ResourceTypeId, [Name] AS 'Received Check', MonetaryValue AS [Amount]
+	SELECT [Name] AS 'Received Check', MonetaryValue AS [Amount]
 	FROM rpt.Resources(@ReceivedChecksIds);
 END

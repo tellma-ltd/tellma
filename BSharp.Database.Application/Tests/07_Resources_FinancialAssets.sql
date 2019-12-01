@@ -1,4 +1,4 @@
-﻿	INSERT INTO dbo.ResourceClassifications ([DefinitionId], -- N'financial-assets
+﻿	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'financial-assets
 							[Name],													[IsLeaf],	[Node]) VALUES
 	(N'financial-assets',	N'financial assets at fair value through profit or loss',1,			N'/1/'),
 	(N'financial-assets',	N'held-to-maturity investments',						1,			N'/2/'),

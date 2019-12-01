@@ -53,7 +53,7 @@ BEGIN -- Inserting
 		;
 
 	INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],		[EntryTypeId],						[Value]) VALUES
+				[AccountId],		[EntryClassificationId],						[Value]) VALUES
 	(0, 0, 0,1,+1,@CBEUSD,			N'ProceedsFromIssuingShares', 		4700000),--
 	(1, 1, 0,1,+1,@CBEUSD,			N'ProceedsFromIssuingShares', 		2350),
 	(2, 2, 0,1,-1,@CapitalMA,		N'IssueOfEquity',					2351175),
@@ -63,7 +63,7 @@ BEGIN -- Inserting
 	(5, 5, 1,1,-1,@CBEUSD,			N'InternalCashTransferExtension',	1175000);
 
 	--INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
-	--			[AccountId],		[EntryTypeId],						[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryValue]) VALUES
+	--			[AccountId],		[EntryClassificationId],						[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryValue]) VALUES
 	--(6, 6, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),--
 	--(7, 7, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, NULL),--
 	--(8, 8, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),

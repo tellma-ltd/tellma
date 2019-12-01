@@ -1,8 +1,9 @@
 ﻿CREATE TABLE [dbo].[Plans] (
-	[Id]					INT				PRIMARY KEY,
+	[Id]					INT				CONSTRAINT [PK_Plans] PRIMARY KEY,
 	[Activity]				NVARCHAR(255), -- Sale, Production, Consumption, 
 	[FromDate]				DATE			NOT NULL,
-	[ToDate]				DATE			NOT NULL, CONSTRAINT [CK_Plans__FromDate_ToDate] CHECK ([FromDate] >= [ToDate]),
+	[ToDate]				DATE			NOT NULL,
+	CONSTRAINT [CK_Plans__FromDate_ToDate] CHECK ([FromDate] >= [ToDate]),
 	[CostObjectId]			INT				NOT NULL CONSTRAINT [FK_Plans__CostObjectId] REFERENCES [dbo].[Agents] ([Id]),
 	[ResourceLookup1Id]		INT,			-- UDL 
 	[ResourceLookup2Id]		INT,			-- UDL 

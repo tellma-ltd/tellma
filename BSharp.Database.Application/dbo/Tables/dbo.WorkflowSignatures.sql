@@ -1,8 +1,8 @@
 ﻿CREATE TABLE [dbo].[WorkflowSignatures] (
-	[Id]			INT					PRIMARY KEY IDENTITY,
-	[WorkflowId]	INT					NOT NULL CONSTRAINT [FK_WorkflowSignatories__WorkflowId] FOREIGN KEY ([WorkflowId]) REFERENCES [dbo].[Workflows] ([Id]) ON DELETE CASCADE,
+	[Id]			INT					CONSTRAINT [PK_WorkflowSignatories] PRIMARY KEY IDENTITY,
+	[WorkflowId]	INT					NOT NULL CONSTRAINT [FK_WorkflowSignatories__WorkflowId] REFERENCES [dbo].[Workflows] ([Id]) ON DELETE CASCADE,
 	-- All roles are needed to get to next positive state, one is enough to get to negative state
-	[RoleId]		INT					NOT NULL CONSTRAINT [FK_WorkflowSignatories__RoleId] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[Roles] ([Id]),
+	[RoleId]		INT					NOT NULL CONSTRAINT [FK_WorkflowSignatories__RoleId] REFERENCES [dbo].[Roles] ([Id]),
 	[Criteria]		NVARCHAR(1024), -- when evaluated to true, the role signature becomes required
 	[ProxyRoleId]	INT,			-- If a transition has a proxy role, an agent with that proxy role can sign on behalf.
 	--[SavedAt]			AS [ValidFrom] AT TIME ZONE 'UTC',

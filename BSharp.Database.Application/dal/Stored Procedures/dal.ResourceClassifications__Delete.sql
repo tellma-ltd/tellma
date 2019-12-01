@@ -2,20 +2,18 @@
 	@Ids [IdList] READONLY
 AS
 	IF NOT EXISTS(SELECT * FROM @Ids) RETURN;
-
-	-- Delete the entites, after setting Parent Id of children to NULL
-	UPDATE [dbo].[ResourceClassifications]
-	SET [ParentId] = NULL
-	WHERE [ParentId] IN (SELECT [Id] FROM @Ids);
+	
 
 	DELETE FROM [dbo].[ResourceClassifications]
 	WHERE [Id] IN (SELECT [Id] FROM @Ids);
 
+	-- TODO: needs testing, it is not working after deleting ParentId
+	-- OR, we may simply prevent using Delete and use Delete With Descendants only
 	-- reorganize the nodes
 	WITH Children ([Id], [ParentId], [Num]) AS (
 		SELECT E.[Id], E2.[Id] As ParentId, ROW_NUMBER() OVER (PARTITION BY E2.[Id] ORDER BY E2.[Id])
 		FROM [dbo].[ResourceClassifications] E
-		LEFT JOIN [dbo].[ResourceClassifications] E2 ON E.[ParentId] = E2.[Id]
+		LEFT JOIN [dbo].[ResourceClassifications] E2 ON E.[ParentNode] = E2.[Node]
 	),
 	Paths ([Node], [Id]) AS (  
 		-- This section provides the value for the roots of the hierarchy  

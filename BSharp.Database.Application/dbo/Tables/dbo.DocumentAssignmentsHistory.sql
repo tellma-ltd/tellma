@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[DocumentAssignmentsHistory] (
 -- To be filled by a trigger on table DocumentsAssignments
-	[Id]			INT					PRIMARY KEY,
+	[Id]			INT					CONSTRAINT [PK_DocumentAssignmentsHistory] PRIMARY KEY,
 	[DocumentId]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignmentsHistory__DocumentId] FOREIGN KEY ([DocumentId]) REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
 	[AssigneeId]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignmentsHistory__AssigneeId] FOREIGN KEY ([AssigneeId]) REFERENCES [dbo].[Users] ([Id]),
 	[Comment]		NVARCHAR (1024),
