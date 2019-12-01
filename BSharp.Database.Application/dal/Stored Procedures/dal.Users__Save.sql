@@ -18,7 +18,7 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].[Users] AS t
 		USING (
-			SELECT [Index], [Id], [Email], [Name], [Name2], [Name3]
+			SELECT [Index], [Id], [Email], [Name], [Name2], [Name3], [PreferredLanguage]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED 
@@ -29,13 +29,14 @@ SET NOCOUNT ON;
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
+				t.[PreferredLanguage]	= s.[PreferredLanguage],
 				t.[PermissionsVersion]	= NEWID(), -- To trigger clients to refresh cached permissions
 				t.[UserSettingsVersion] = NEWID(), -- To trigger clients to refresh cached user settings
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([Name], [Name2], [Name3], [Email])
-			VALUES (s.[Name], s.[Name2], s.[Name3], s.[Email])
+			INSERT ([Name], [Name2], [Name3], [Email], [PreferredLanguage])
+			VALUES (s.[Name], s.[Name2], s.[Name3], s.[Email], s.[PreferredLanguage])
 		OUTPUT s.[Index], INSERTED.[Id]
 	) AS x
 	OPTION (RECOMPILE);
@@ -43,13 +44,13 @@ SET NOCOUNT ON;
 	-- Role Memberships
 	WITH BE AS (
 		SELECT * FROM [dbo].[RoleMemberships]
-		WHERE [UserId] IN (SELECT [Id] FROM @Entities)
+		WHERE [UserId] IN (SELECT [Id] FROM @IndexedIds)
 	)
 	MERGE INTO BE AS t
 	USING (
-		SELECT L.[Id], [UserId], [RoleId], [Memo]
+		SELECT L.[Index], L.[Id], H.[Id] AS [UserId], [RoleId], [Memo]
 		FROM @Roles L
-		JOIN @Entities H ON L.[UserId] = H.[Id]
+		JOIN @IndexedIds H ON L.[HeaderIndex] = H.[Index]
 	) AS s ON t.[Id] = s.[Id]
 	WHEN MATCHED THEN
 		UPDATE SET 

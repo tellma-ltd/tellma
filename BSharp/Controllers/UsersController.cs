@@ -4,6 +4,7 @@ using BSharp.Data;
 using BSharp.Data.Queries;
 using BSharp.Entities;
 using BSharp.Services.ApiAuthentication;
+using BSharp.Services.BlobStorage;
 using BSharp.Services.Email;
 using BSharp.Services.EmbeddedIdentityServer;
 using BSharp.Services.MultiTenancy;
@@ -33,7 +34,8 @@ namespace BSharp.Controllers
 
         private readonly ApplicationRepository _appRepo;
         private readonly AdminRepository _adminRepo;
-        private readonly ITenantIdAccessor _tenantIdProvider;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
+        private readonly IBlobService _blobService;
         private readonly IModelMetadataProvider _metadataProvider;
         private readonly ILogger _logger;
         private readonly IEmailSender _emailSender;
@@ -58,11 +60,13 @@ namespace BSharp.Controllers
             IEmailSender emailSender,
             EmailTemplatesProvider emailTemplates,
             IStringLocalizer<Strings> localizer,
-            ITenantIdAccessor tenantIdProvider) : base(logger, localizer)
+            ITenantIdAccessor tenantIdAccessor,
+            IBlobService blobService) : base(logger, localizer)
         {
             _appRepo = appRepo;
             _adminRepo = adminRepo;
-            _tenantIdProvider = tenantIdProvider;
+            _tenantIdAccessor = tenantIdAccessor;
+            _blobService = blobService;
             _metadataProvider = metadataProvider;
             _logger = logger;
             _emailSender = emailSender;
@@ -131,10 +135,10 @@ namespace BSharp.Controllers
                 }
 
                 // Check if the user has permission
-                await base.CheckActionPermissions("ResendInvitationEmail", id);
+                await CheckActionPermissions("ResendInvitationEmail", id);
 
                 // Load the user
-                var user = await _appRepo.Users.Expand(nameof(Entities.User.Agent)).FilterByIds(id).FirstOrDefaultAsync();
+                var user = await _appRepo.Users.FilterByIds(id).FirstOrDefaultAsync();
                 if (user == null)
                 {
                     throw new NotFoundException<int>(id);
@@ -157,20 +161,113 @@ namespace BSharp.Controllers
                     throw new BadRequestException(_localizer["Error_User0HasAlreadyAcceptedTheInvitation", user.Email]);
                 }
 
-                var (subject, htmlMessage) = await MakeInvitationEmailAsync(idUser, user.Agent);
+                var (subject, htmlMessage) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
                 await _emailSender.SendEmailAsync(toEmail, subject, htmlMessage);
                 return base.Ok();
 
             }, _logger);
         }
 
-        private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, Agent recipient)
+        [HttpGet("{id}/image")]
+        public async Task<ActionResult> GetImage(int id)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                string imageId;
+                if (id == _appRepo.GetUserInfo().UserId)
+                {
+                    // A user can always view their own image, so we bypass read permissions
+                    User me = await _appRepo.Users.Filter("Id eq me").Select(nameof(Entities.User.ImageId)).FirstOrDefaultAsync();
+                    imageId = me.ImageId;
+                }
+                else
+                {
+                    // GetByIdImplAsync() enforces read permissions
+                    var userResponse = await GetByIdImplAsync(id, new GetByIdArguments { Select = nameof(Entities.User.ImageId) });
+                    imageId = userResponse.Result.ImageId;
+                }
+
+                // Get the blob name
+                if (imageId != null)
+                {
+                    // Get the bytes
+                    string blobName = BlobName(imageId);
+                    var imageBytes = await _blobService.LoadBlob(blobName);
+
+                    Response.Headers.Add("x-image-id", imageId);
+                    return File(imageBytes, "image/jpeg");
+                }
+                else
+                {
+                    return NotFound("This user does not have a picture");
+                }
+            }, _logger);
+        }
+
+
+        [HttpPut("activate")]
+        public async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
+        {
+            bool returnEntities = args.ReturnEntities ?? false;
+
+            return await ControllerUtilities.InvokeActionImpl(() =>
+                Activate(ids: ids,
+                    returnEntities: returnEntities,
+                    expand: args.Expand,
+                    isActive: true)
+            , _logger);
+        }
+
+        [HttpPut("deactivate")]
+        public async Task<ActionResult<EntitiesResponse<User>>> Deactivate([FromBody] List<int> ids, [FromQuery] DeactivateArguments args)
+        {
+            bool returnEntities = args.ReturnEntities ?? false;
+
+            return await ControllerUtilities.InvokeActionImpl(() =>
+                Activate(ids: ids,
+                    returnEntities: returnEntities,
+                    expand: args.Expand,
+                    isActive: false)
+            , _logger);
+        }
+
+        private async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        {
+            // Parse parameters
+            var expandExp = ExpandExpression.Parse(expand);
+            var idsArray = ids.ToArray();
+
+            // Check user permissions
+            await CheckActionPermissions("IsActive", idsArray);
+
+            // Execute and return
+            using (var trx = ControllerUtilities.CreateTransaction())
+            {
+                await _appRepo.Users__Activate(ids, isActive);
+
+                if (returnEntities)
+                {
+                    var response = await GetByIdListAsync(idsArray, expandExp);
+
+                    trx.Complete();
+                    return Ok(response);
+                }
+                else
+                {
+                    trx.Complete();
+                    return Ok();
+                }
+            }
+        }
+
+        private async Task<(string Subject, string Body)> MakeInvitationEmailAsync(EmbeddedIdentityServerUser identityRecipient, string name, string name2, string name3, string preferredLang)
         {
             // Load the info
             var info = await _appRepo.GetTenantInfoAsync();
 
             // Use the recipient's preferred Language
-            CultureInfo culture = CultureInfo.CurrentUICulture; // new CultureInfo(recipient.PreferredLanguage); // TODO: Use the user's preferred language
+            CultureInfo culture = string.IsNullOrWhiteSpace(preferredLang) ? 
+                CultureInfo.CurrentUICulture : new CultureInfo(preferredLang); 
             var localizer = _localizer.WithCulture(culture);
 
             // Prepare the parameters
@@ -183,9 +280,9 @@ namespace BSharp.Controllers
                 info.ShortCompanyName;
 
             string nameOfRecipient =
-                info.SecondaryLanguageId == culture.Name ? recipient.Name2 ?? recipient.Name :
-                info.TernaryLanguageId == culture.Name ? recipient.Name3 ?? recipient.Name :
-                recipient.Name;
+                info.SecondaryLanguageId == name ? name2 ?? name :
+                info.TernaryLanguageId == name ? name3 ?? name :
+                name;
 
             string callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
@@ -348,39 +445,43 @@ namespace BSharp.Controllers
                 }
             }
 
-            // Step (3): Save the users in the app database
-            var (newEmails, oldEmails) = await _appRepo.Users__Save(entities);
+            // Step (3): Extract the images
+            var (blobsToDelete, blobsToSave, imageIds) = await ImageUtilities.ExtractImages<User, UserForSave>(_appRepo, entities, BlobName);
 
-            // Step (4) Same the emails in the admin database
-            var tenantId = _tenantIdProvider.GetTenantId();
+            // Step (4): Save the users in the app database
+            var ids = await _appRepo.Users__Save(entities, imageIds, returnIds);
+
+            // Step (5): Delete old images from the blob storage
+            if (blobsToDelete.Any())
+            {
+                await _blobService.DeleteBlobsAsync(blobsToDelete);
+            }
+
+            // Step (6): Save new images to the blob storage
+            if (blobsToSave.Any())
+            {
+                await _blobService.SaveBlobsAsync(blobsToSave);
+            }
+
+            // Step (7) Same the emails in the admin database
+            var tenantId = _tenantIdAccessor.GetTenantId();
             _adminTrxScope = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
             _adminRepo.EnlistTransaction(Transaction.Current);
+            var oldEmails = new List<string>(); // Emails are readonly after the first save
+            var newEmails = entities.Where(e => e.Id == 0).Select(e => e.Email);
             await _adminRepo.GlobalUsers__Save(newEmails, oldEmails, tenantId);
 
-            // Step (5): Send the invitation emails
-            if (usersToInvite.Any()) // This will be empty if email is disabled
+            // Step (8): Send the invitation emails
+            if (usersToInvite.Any()) // This will be empty if embedded identity is disabled or if email is disabled
             {
                 var userIds = usersToInvite.Select(e => e.User.Id).ToArray();
-                var agents = await _appRepo.Agents
-                    // .Select($"{nameof(Agent.Id)},{nameof(Agent.Name)},{nameof(Agent.Name2)},{nameof(Agent.Name3)},{nameof(Agent.PreferredLanguage)}")
-                    .Select($"{nameof(Agent.Id)},{nameof(Agent.Name)},{nameof(Agent.Name2)},{nameof(Agent.Name3)}")
-                    .FilterByIds(userIds)
-                    .ToListAsync();
-
-                var agentsDic = agents.ToDictionary(e => e.Id);
                 var tos = new List<string>();
                 var subjects = new List<string>();
                 var substitutions = new List<Dictionary<string, string>>();
                 foreach (var (idUser, user) in usersToInvite)
                 {
-                    if (!agentsDic.TryGetValue(user.Id, out Agent agent))
-                    {
-                        // Programmer mistake
-                        throw new InvalidOperationException($"User with id {user.Id} was saved but its corresponding Agent was not found");
-                    }
-
                     // Add the email sender parameters
-                    var (subject, body) = await MakeInvitationEmailAsync(idUser, agent);
+                    var (subject, body) = await MakeInvitationEmailAsync(idUser, user.Name, user.Name2, user.Name3, user.PreferredLanguage);
                     tos.Add(idUser.Email);
                     subjects.Add(subject);
                     substitutions.Add(new Dictionary<string, string> { { "-message-", body } });
@@ -394,10 +495,8 @@ namespace BSharp.Controllers
                     );
             }
 
-            // Return the same Ids that came
-            return entities
-                .Select(e => e.Id)
-                .ToList();
+            // Return the new Ids
+            return ids;
         }
 
         protected override Task OnSaveCompleted()
@@ -464,7 +563,7 @@ namespace BSharp.Controllers
                     using (var adminTrx = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew))
                     {
                         var newEmails = new List<string>();
-                        var tenantId = _tenantIdProvider.GetTenantId();
+                        var tenantId = _tenantIdAccessor.GetTenantId();
 
                         await _adminRepo.GlobalUsers__Save(newEmails, oldEmails, tenantId);
 
@@ -487,6 +586,12 @@ namespace BSharp.Controllers
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
             return _appRepo.UserPermissions(action, ViewId);
+        }
+
+        private string BlobName(string guid)
+        {
+            int tenantId = _tenantIdAccessor.GetTenantId();
+            return $"{tenantId}/Users/{guid}";
         }
     }
 }

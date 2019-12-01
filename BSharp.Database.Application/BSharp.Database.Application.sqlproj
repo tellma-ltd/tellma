@@ -462,6 +462,7 @@
     <None Include="Samples\01_Basic\h_Workflows.sql" />
     <Build Include="dbo\Tables\dbo.AgentDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountDescriptors.sql" />
+    <Build Include="dal\Stored Procedures\dal.Users__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -483,7 +484,6 @@
     <None Include="Samples\00_Setup\b_AgentDefinitions.sql" />
     <None Include="Samples\00_Setup\z_LookupDefinitions.sql" />
     <None Include="Samples\00_Setup\f_AccountTypes.sql" />
-    <None Include="IntegrationTests.publish.publish.xml" />
     <None Include="dbo\Tables\Readme.txt" />
     <None Include="Samples\02_Agents\05_Banks.sql" />
   </ItemGroup>

@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class UserForSave<TRoleMembership> : EntityWithKey<int>, IValidatableObject
+    public class UserForSave<TRoleMembership> : EntityWithKey<int>, IEntityWithImageForSave
     {
         [NotMapped]
         [Display(Name = "Image")]
@@ -37,29 +37,18 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Email { get; set; }
 
+        [Display(Name = "User_PreferredLanguage")]
+        [StringLength(2, ErrorMessage = nameof(StringLengthAttribute))]
+        public string PreferredLanguage { get; set; }
+
         [Display(Name = "User_Roles")]
         [ForeignKey(nameof(RoleMembership.UserId))]
         public List<TRoleMembership> Roles { get; set; }
-
-        public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            base.Validate(validationContext);
-
-            if (Id == 0)
-            {
-                // User is in a 0..1-1 relationship with Agents. So the User's Id is required
-                var localizer = validationContext.GetRequiredService<IStringLocalizer<Strings>>();
-                var errorMessage = localizer["RequiredAttribute", localizer["User_Agent"]];
-                var memberNames = new string[] { nameof(Id) };
-
-                yield return new ValidationResult(errorMessage, memberNames);
-            }
-        }
     }
 
     public class UserForSave : UserForSave<RoleMembershipForSave> { }
 
-    public class User : UserForSave<RoleMembership>
+    public class User : UserForSave<RoleMembership>, IEntityWithImage
     {
         public string ImageId { get; set; }
 
@@ -70,6 +59,10 @@ namespace BSharp.Entities
 
         [Display(Name = "User_LastActivity")]
         public DateTimeOffset? LastAccess { get; set; }
+
+        [Display(Name = "IsActive")]
+        [AlwaysAccessible]
+        public bool? IsActive { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -85,9 +78,9 @@ namespace BSharp.Entities
 
         // For Query
 
-        [Display(Name = "User_Agent")]
-        [ForeignKey(nameof(Id))]
-        public Agent Agent { get; set; }
+        //[Display(Name = "User_Agent")]
+        //[ForeignKey(nameof(Id))]
+        //public Agent Agent { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
