@@ -27,13 +27,13 @@ BEGIN
 	),
 	Movements AS (
 		SELECT
-			J.ResourceId, J.[EntryTypeId],
+			J.ResourceId, J.[EntryClassificationId],
 			SUM(J.[Count] * J.[Direction]) AS [Count],
 			SUM(J.[Value] * J.[Direction]) AS [Value],
 			SUM(J.[Time] * J.[Direction]) AS [ServiceLife]
 		FROM [dbo].[fi_Journal](@fromDate, @toDate) J
 		WHERE J.AccountId IN (SELECT Id FROM FixedAssetAccounts)
-		GROUP BY J.ResourceId, J.[EntryTypeId]
+		GROUP BY J.ResourceId, J.[EntryClassificationId]
 	),
 	FixedAssetRegsiter AS (
 		SELECT 

@@ -1,18 +1,18 @@
 ﻿	-- We look at the specialized Excel files in the IT department, and we define add Resource definitions accordingly
 		INSERT INTO dbo.ResourceDefinitions (
-			[Id],			[TitlePlural],		[TitleSingular],	[ResourceTypeParentList],
+			[Id],			[TitlePlural],		[TitleSingular],
 			[ResourceClassificationVisibility], [TimeUnitVisibility], [CurrencyVisibility],
 			[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId],
 			[Lookup2Visibility], [Lookup2Label], [Lookup2DefinitionId]
 		) VALUES (
 			N'it-equipment',	N'IT Equipment',	N'IT Equipment',
-			N'ComputerEquipment, CommunicationAndNetworkEquipment, NetworkInfrastructure',
+	--		N'ComputerEquipment, CommunicationAndNetworkEquipment, NetworkInfrastructure',
 			N'Required', N'Required', N'Optional',
 			N'Optional', N'Manufacturer', N'it-equipment-manufacturers',
 			N'Optional', N'Operating System', N'operating-systems'
 		);
 	
-		INSERT INTO dbo.ResourceClassifications ([DefinitionId], -- N'computer-equipment'
+		INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'computer-equipment'
 						[Name],				[IsLeaf],	[Node]) VALUES
 		(N'it-equipment',	N'Computers',		0,			N'/1/'),
 		(N'it-equipment',	N'Servers',			1,			N'/1/1/'),
@@ -24,14 +24,13 @@
 
 	DECLARE @ITEquipment dbo.ResourceList;
 	INSERT INTO @ITEquipment ([Index],
-	[ResourceTypeId],			[ResourceClassificationId],					[Name],			[TimeUnitId],				[Lookup1Id],
-																														[Lookup2Id]) VALUES
-	(0, N'ComputerEquipment',	dbo.fn_RCName__Id(N'Servers'),				N'VH-GMT-01',	dbo.fn_UnitName__Id(N'Yr'),	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Dell'),
-																														dbo.fn_Lookup(N'operating-systems', N'Windows Server 2017')),
-	(1, N'CommunicationAndNetworkEquipment',dbo.fn_RCName__Id(N'Printers'),	N'HP-Deskject',	dbo.fn_UnitName__Id(N'Yr'),	dbo.fn_Lookup(N'it-equipment-manufacturers', N'HP'),
-																														NULL),
-	(2, N'NetworkInfrastructure',dbo.fn_RCName__Id(N'Routers'),				N'ASUS Router',	dbo.fn_UnitName__Id(N'Yr'),dbo.fn_Lookup(N'it-equipment-manufacturers', N'Apple'),
-																														dbo.fn_Lookup(N'operating-systems', N'iOS 13'));
+		[ResourceClassificationId],		[Name],			[TimeUnitId],				[Lookup1Id],											[Lookup2Id]) VALUES
+-- N'ComputerEquipment',	
+	(0,dbo.fn_RCCode__Id(N'Servers'),	N'VH-GMT-01',	dbo.fn_UnitName__Id(N'Yr'),	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Dell'),	dbo.fn_Lookup(N'operating-systems', N'Windows Server 2017')),
+-- N'CommunicationAndNetworkEquipment',	
+	(1,dbo.fn_RCCode__Id(N'Printers'),	N'HP-Deskject',	dbo.fn_UnitName__Id(N'Yr'),	dbo.fn_Lookup(N'it-equipment-manufacturers', N'HP'),	NULL),
+-- N'NetworkInfrastructure',
+	(2,dbo.fn_RCCode__Id(N'Routers'),	N'ASUS Router',	dbo.fn_UnitName__Id(N'Yr'), dbo.fn_Lookup(N'it-equipment-manufacturers', N'Apple'),	dbo.fn_Lookup(N'operating-systems', N'iOS 13'));
 	
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'it-equipment',
@@ -51,7 +50,7 @@
 		DECLARE @ITEquipmentIds dbo.IdList;
 		INSERT INTO @ITEquipmentIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'it-equipment';
 
-		SELECT ResourceTypeId, Classification, [Name] AS 'IT Equipment', [TimeUnit] AS 'Usage In',
+		SELECT [Classification], [Name] AS 'IT Equipment', [TimeUnit] AS 'Usage In',
 			[Lookup1] AS 'Manufacturer', [Lookup2] AS 'Operating System'
 		FROM rpt.Resources(@ITEquipmentIds);
 	END

@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Reconciliation] (
-	[Id]			INT PRIMARY KEY,
+	[Id]			INT					CONSTRAINT [PK_Reconciliation] PRIMARY KEY,
 	[EntryId1]		INT					NOT NULL,
 	[EntryId2]		INT					NOT NULL,
 	[Amount]		MONEY				NOT NULL CONSTRAINT [CK_Reconciliation__Amount] CHECK ([Amount] <> 0),

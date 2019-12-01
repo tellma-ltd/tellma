@@ -22,7 +22,7 @@ BEGIN
 			DL.[State] AS [LineState],
 			DLE.SortKey,
 			DLE.[Direction],
-			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryTypeId],
+			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryClassificationId],
 			--CAST(DLE.[Value] AS MONEY) AS 
 			DLE.[Value]
 		FROM dbo.Documents D
@@ -55,7 +55,7 @@ BEGIN
 		CAST([LineSortKey] AS TINYINT) AS [SortKey],
 		[LineId], [LineDefinitionId],
 		[EntryNumber] AS [E/N], 
-		[Account], [EntryTypeId],-- [Direction], 
+		[Account], [EntryClassificationId],-- [Direction], 
 		FORMAT([Direction] * [Value], '##,#.00;-;-', 'en-us') AS Debit,
 		FORMAT(-[Direction] * [Value], '##,#.00;-;-', 'en-us') AS Credit,
 		[LineState]

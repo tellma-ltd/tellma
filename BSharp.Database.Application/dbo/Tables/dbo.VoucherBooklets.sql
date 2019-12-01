@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[VoucherBooklets] (
 -- This is relevant when the document type is a copy, not a source document.
 -- Note that, in steel production: CTS, HSP, and SM are considered 3 different voucher types not 3 booklets.
-	[Id]				INT				PRIMARY KEY,
+	[Id]				INT				CONSTRAINT [PK_VoucherBooklets] PRIMARY KEY,
 	[VoucherTypeId]		INT				CONSTRAINT [FK_VoucherBooklets__VoucherTypeId] REFERENCES [dbo].[VoucherTypes] ([Id]) ON UPDATE CASCADE, 
 	[Name]				NVARCHAR (255)	NOT NULL, -- Default : Voucher Type : StringPrefix + RangeStarts - StringPrefix + RangeEnds
 	[Name2]				NVARCHAR (255),
@@ -12,8 +12,8 @@
 	[RangeEnds]			INT				DEFAULT 2147483647,
 	[IsActive]			BIT				DEFAULT 1,
 	[CreatedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_VoucherBooklets__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_VoucherBooklets__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_VoucherBooklets__ModifiedById]  FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id])
+	[ModifiedById]		INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_VoucherBooklets__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO;

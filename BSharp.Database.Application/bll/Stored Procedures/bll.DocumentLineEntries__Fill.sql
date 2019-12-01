@@ -43,13 +43,13 @@ UPDATE E
 SET
 	E.[AccountTypeId]			= A.[AccountTypeId],
 	E.[AgentDefinitionId]		= A.[AgentDefinitionId],
-	E.[ResourceTypeId]			= COALESCE(A.[ResourceTypeId], E.[ResourceTypeId]),
+	E.[ResourceClassificationId]= COALESCE(A.[ResourceClassificationId], E.[ResourceClassificationId]),
 	E.[IsCurrent]				= COALESCE(A.[IsCurrent], E.[IsCurrent]),
 	E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
 	E.[ResourceId]				= COALESCE(A.[AgentId], E.[AgentId]),
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
 	E.[AccountDescriptorId]		= COALESCE(A.[DescriptorId], E.[AccountDescriptorId]),
-	E.[EntryTypeId]				= COALESCE(A.[EntryTypeId], E.[EntryTypeId])
+	E.[EntryClassificationId]	= COALESCE(A.[EntryClassificationId], E.[EntryClassificationId])
 FROM @FilledEntries E JOIN @FilledLines L ON E.DocumentLineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE L.DefinitionId = N'ManualLine'; -- Entered by user

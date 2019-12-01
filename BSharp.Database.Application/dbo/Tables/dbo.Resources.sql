@@ -5,12 +5,10 @@ CREATE TABLE [dbo].[Resources] (
 -- Resource can be seen as the true leaf level of Resource Classifications.
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
 	[OperatingSegmentId]			INT					CONSTRAINT [FK_Resources__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
-	-- Inspired by IFRS, with additions to simplify application logic
-	[ResourceTypeId]				NVARCHAR (255)		NOT NULL CONSTRAINT [FK_Resources__ResourceTypeId] REFERENCES [dbo].[ResourceTypes] ([Id]),
 	-- to define labels and control visibilities of dynamic properties
 	[DefinitionId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Resources__DefinitionId] REFERENCES [dbo].[ResourceDefinitions] ([Id]),	
-	-- to cater for user custom classifications for reporting purposes
-	[ResourceClassificationId]		INT					CONSTRAINT [FK_Resources__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
+	-- Inspired by IFRS, with additions to simplify application logic, to cater for user custom classifications for reporting purposes
+	[ResourceClassificationId]		INT					NOT NULL CONSTRAINT [FK_Resources__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[Name]							NVARCHAR (255)		NOT NULL,
 	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_DescriptorId] UNIQUE ([DefinitionId],[Name],[DescriptorId]),
 	[Name2]							NVARCHAR (255),

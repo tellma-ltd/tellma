@@ -38,7 +38,7 @@ BEGIN -- Inserting
 
 	WITH GritwiLines AS (
 		SELECT
-			SortKey, LineId, [DefinitionId], EntryNumber, Account, [EntryTypeId], [Resource], Direction, Quantity, [Unit], [Value]
+			SortKey, LineId, [DefinitionId], EntryNumber, Account, [EntryClassificationId], [Resource], Direction, Quantity, [Unit], [Value]
 		FROM rpt.Documents(@D41Ids)
 		WHERE [DefinitionId] = N'GoodReceiptInTransitWithInvoice'
 	)
@@ -50,12 +50,12 @@ BEGIN -- Inserting
 	) L2 ON L2.LineId = L1.LineId;
 
 	WITH CompactLines AS (
-		SELECT [AccountId], [EntryTypeId], [ResourceId],
+		SELECT [AccountId], [EntryClassificationId], [ResourceId],
 			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
 			SUM([Direction] * [Mass]) AS [Mass],
 			SUM([Direction] * [Value]) AS [Value]
 		FROM DocumentLineEntries
-		GROUP BY [AccountId], [EntryTypeId], [ResourceId]
+		GROUP BY [AccountId], [EntryClassificationId], [ResourceId]
 	)
 	SELECT A.[Name] AS [Account], IEC.Label AS [Note], R.[Name] AS [Resource],
 	-- TODO: add other unit types, and currency
@@ -67,7 +67,7 @@ BEGIN -- Inserting
 	JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
 	JOIN dbo.MeasurementUnits MUM ON R.MassUnitId = MUM.Id
 	JOIN dbo.[AccountClassifications] A ON CL.[AccountId] = A.[Id]
-	JOIN dbo.EntryTypes IEC ON CL.[EntryTypeId] = IEC.Id
+	JOIN dbo.[EntryClassifications] IEC ON CL.[EntryClassificationId] = IEC.[Code]
 	WHERE CL.[Quantity] <> 0 --OR CL.[MonetaryValue] <> 0 OR CL.[Mass] <> 0 
 	OR CL.[Value] <> 0;
 

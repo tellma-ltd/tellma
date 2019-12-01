@@ -5,7 +5,7 @@ SELECT * FROM [rpt].[sp_TrialBalance] ( @fromDate = '01.01.2015', @toDate = '01.
 	@fromDate Date = '01.01.2000', 
 	@toDate Date = '01.01.2020',
 	@ByResource bit = 1,
-	@ByEntryType bit = 1,
+	@ByEntryClassification bit = 1,
 	@PrintQuery bit = 0
 AS
 BEGIN
@@ -19,7 +19,7 @@ BEGIN
 		SET @Query = @Query + N'
 			R.[Name] As Resource,
 			--T.[Amount], MU.[Name] As UOM,'
-	IF (@ByEntryType = 1)
+	IF (@ByEntryClassification = 1)
 		SET @Query = @Query + N'
 			T.EntryTypeId As IfrsNote,'
 	SET @Query = @Query + N'
@@ -30,7 +30,7 @@ BEGIN
 		(
 			SELECT AccountId, '
 	IF (@ByResource = 1) SET @Query = @Query + N'ResourceId, '
-	IF (@ByEntryType = 1) SET @Query = @Query + N'EntryTypeId, '
+	IF (@ByEntryClassification = 1) SET @Query = @Query + N'EntryClassificationId, '
 	SET @Query = @Query + N'
 			CAST(SUM([Direction] * [MonetaryValue]) AS money) AS [MonetaryValue],
 			CAST(SUM([Direction] * [Mass]) AS money) AS [Mass],
@@ -43,7 +43,7 @@ BEGIN
 			FROM [dbo].[fi_Journal](@fromDate, @toDate)
 			GROUP BY AccountId'
 	IF (@ByResource = 1) SET @Query = @Query + N', ResourceId'
-	IF (@ByEntryType = 1) SET @Query = @Query + N', EntryTypeId'
+	IF (@ByEntryClassification = 1) SET @Query = @Query + N', EntryClassificationId'
 	SET @Query = @Query + N'		
 			HAVING
 				SUM([Direction] * [MonetaryValue]) <> 0 OR

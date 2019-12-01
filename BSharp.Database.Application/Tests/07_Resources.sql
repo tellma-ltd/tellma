@@ -36,7 +36,7 @@ BEGIN -- Inserting
 				REPLICATE(N'    ', RC.[Node].GetLevel() - 1) + RC.[Name] AS [Name],
 				RC.[Code], RC.[IsActive], RC.[IsLeaf]
 		FROM dbo.ResourceClassifications RC
-		RIGHT JOIN dbo.ResourceDefinitions RD ON RC.[DefinitionId] = RD.Id
+		RIGHT JOIN dbo.ResourceDefinitions RD ON RC.[ResourceDefinitionId] = RD.Id
 		ORDER BY RD.[SortKey], [ResourceDefinitionId], [Node];
 		INSERT INTO @R2Ids SELECT [Id] FROM dbo.Resources;
 		EXEC rpt.[sp_Resources] @R2Ids;
@@ -89,7 +89,7 @@ END
 --		[CurrencyId], [MassUnitId], [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 --	)
 --	SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
---		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
+--		[Id], [UnitId], [ResourceClassificationId], [Name], [Code], [SystemCode],
 --		[CurrencyId], [MassUnitId], [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 --	FROM [dbo].Resources
 --	WHERE [Name] IN (N'Toyota Camry 2018')
@@ -126,7 +126,7 @@ END
 --		[CurrencyId], [MassUnitId]	, [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 --	)
 --	SELECT ROW_NUMBER() OVER (ORDER BY [Id]),
---		[Id], [UnitId], [ResourceType], [Name], [Code], [SystemCode],
+--		[Id], [UnitId], [ResourceClassificationId], [Name], [Code], [SystemCode],
 --		[CurrencyId], [MassUnitId]	, [VolumeUnitId], [AreaUnitId], [LengthUnitId], [TimeUnitId], [CountUnitId]
 --	FROM [dbo].Resources
 --	WHERE [Name] LIKE N'Fake%';

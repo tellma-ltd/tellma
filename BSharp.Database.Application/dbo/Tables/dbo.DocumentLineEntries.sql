@@ -8,22 +8,23 @@
 
 	[AccountTypeId]				NVARCHAR (50)	NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
 	[AgentDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
-	[ResourceTypeId]			NVARCHAR (50),
+	[ResourceClassificationId]	INT				CONSTRAINT [FK_DocumentLineEntries__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[IsCurrent]					BIT,
 
-	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
 	[ResourceId]				INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__ResourceId] REFERENCES dbo.Resources([Id]),
 	[ResponsibilityCenterId]	INT				REFERENCES dbo.ResponsibilityCenters([Id]),
 	[AccountDescriptorId]		NVARCHAR (10),--	CONSTRAINT [FK_DocumentLineEntriess__AccountDescriptorId] REFERENCES dbo.AccountDescriptors([Id]), -- to resolve Uniqueness Constraint
 	
 	[ResourceDescriptorId]		NVARCHAR (10),
-	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings	
+	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
 	
 	-- Entry Type is used to tag entries in a manner that does not affect the account balance
 	-- However, consider the case of acc depreciation. We want to map to a different GL. In that case, we set some account definition
 	-- to enforce a certain entry classification
-	[EntryTypeId]				NVARCHAR(255)	CONSTRAINT [FK_DocumentLineEntries__EntryTypes]	FOREIGN KEY ([EntryTypeId]) REFERENCES [dbo].[EntryTypes] ([Id]),
+	[EntryClassificationId]		INT				CONSTRAINT [FK_DocumentLineEntries__EntryClassificationId] REFERENCES [dbo].[EntryClassifications] ([Id]),
+	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings	
+
 -- Revenues Account: The customer
 -- COGS: The customer (could be unnamed)
 -- Expense Accounts other than COS: The consumer.
@@ -36,20 +37,17 @@
 	--[ResourceInstanceId]		INT				CONSTRAINT [FK_DocumentLineEntries__ResourcePInstanceId] FOREIGN KEY ([ResourceInstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
 	--[Memo]						NVARCHAR (255),
-	
 	[MonetaryValue]				MONEY			NOT NULL DEFAULT 0,
-
 -- Tracking additive measures, the data type is to be decided by AA
 	[Count]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
 	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
-	
+	[Volume]					DECIMAL (18,2)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
 	[Time]						DECIMAL (18,2)	NOT NULL DEFAULT 0, -- ServiceTimeUnit
-	[Volume]					DECIMAL (18,2)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
-
+	
 	[Value]						VTYPE			NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- The following are sort of dynamic properties that capture information for reporting purposes
-	[ExternalReference]			NVARCHAR (255),
-	[AdditionalReference]		NVARCHAR (255),
+	[ExternalReference]			NVARCHAR (50),
+	[AdditionalReference]		NVARCHAR (50),
 	[RelatedAgentId]			INT,
 	[RelatedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
 	[RelatedAmount]				MONEY,		-- e.g., amount subject to tax
@@ -67,5 +65,5 @@ CREATE INDEX [IX_DocumentLineEntries__DocumentLineId] ON [dbo].[DocumentLineEntr
 GO
 CREATE INDEX [IX_DocumentLineEntries__AccountId] ON [dbo].[DocumentLineEntries]([AccountId]);
 GO
-CREATE INDEX [IX_DocumentLineEntries__EntryTypeId] ON [dbo].[DocumentLineEntries]([EntryTypeId]);
+CREATE INDEX [IX_DocumentLineEntries__EntryClassificationId] ON [dbo].[DocumentLineEntries]([EntryClassificationId]);
 GO

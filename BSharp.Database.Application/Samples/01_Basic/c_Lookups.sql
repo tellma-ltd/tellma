@@ -1,37 +1,38 @@
 ﻿INSERT INTO dbo.Lookups
-([DefinitionId], [Name]) VALUES
-(N'body-colors',		N'Black'),
-(N'body-colors',		N'White'),
-(N'body-colors',		N'Silver'),
-(N'body-colors',		N'Navy Blue');
+([DefinitionId],		[Name],			[SortKey]) VALUES
+(N'body-colors',		N'Black',		1),
+(N'body-colors',		N'White',		2),
+(N'body-colors',		N'Silver',		3),
+(N'body-colors',		N'Navy Blue',	4);
 
 INSERT INTO dbo.Lookups
-([DefinitionId], [Name]) VALUES
-(N'vehicle-makes',		N'Toyota'),
-(N'vehicle-makes',		N'Mercedes'),
-(N'vehicle-makes',		N'Honda'),
-(N'vehicle-makes',		N'BMW');
+([DefinitionId],		[Name],		[SortKey]) VALUES
+(N'vehicle-makes',		N'Toyota',	1),
+(N'vehicle-makes',		N'Mercedes',2),
+(N'vehicle-makes',		N'Honda',	3),
+(N'vehicle-makes',		N'BMW',		4);
 
 INSERT INTO dbo.Lookups
-([DefinitionId], [Name]) VALUES
-(N'steel-thicknesses',	N'0.3'),
-(N'steel-thicknesses',	N'0.4'),
-(N'steel-thicknesses',	N'0.7'),
-(N'steel-thicknesses',	N'1.2');
+([DefinitionId],		[Name],	[SortKey]) VALUES
+(N'steel-thicknesses',	N'0.3',	1),
+(N'steel-thicknesses',	N'0.4',	2),
+(N'steel-thicknesses',	N'0.7',	3),
+(N'steel-thicknesses',	N'1.2',	4);
 
 INSERT INTO dbo.Lookups
-([DefinitionId],				[Name]) VALUES
-(N'it-equipment-manufacturers',		N'Dell'),
-(N'it-equipment-manufacturers',		N'HP'),
-(N'it-equipment-manufacturers',		N'Apple'),
-(N'it-equipment-manufacturers',		N'Microsoft');
+([DefinitionId],				[Name],		[SortKey]) VALUES
+(N'it-equipment-manufacturers',	N'Dell',	1),
+(N'it-equipment-manufacturers',	N'HP',		2),
+(N'it-equipment-manufacturers',	N'Apple',	3),
+(N'it-equipment-manufacturers',	N'Microsoft',4);
 
 INSERT INTO dbo.Lookups
-([DefinitionId],				[Name]) VALUES
-(N'operating-systems',		N'Windows 10'),
-(N'operating-systems',		N'Windows Server 2017'),
-(N'operating-systems',		N'iOS 13'),
-(N'operating-systems',		N'Windows XP');
+([DefinitionId],		[Name],					[SortKey]) VALUES
+(N'operating-systems',	N'Windows XP',			1),
+(N'operating-systems',	N'Windows 10',			2),
+(N'operating-systems',	N'Windows Server 2017',	3),
+(N'operating-systems',	N'iOS 13',				4);
+;
 
 IF @DebugLookups = 1
 	SELECT * FROM map.Lookups();

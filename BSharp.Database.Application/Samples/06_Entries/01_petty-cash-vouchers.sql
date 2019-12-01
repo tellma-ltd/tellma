@@ -128,8 +128,8 @@ BEGIN
 		AND [AccountTypeId] IN (SELECT [Id] FROM PPEAccountTypes);
 
 		INSERT INTO @CashPurchasesLineEntries([Index], 
-			[DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction], [AccountId], [EntryTypeId], [Time], [Value])
-		SELECT 0, DL.[Index], DL.DocumentIndex, LD.[EntryNumber], LD.[Direction], @A00, LD.[EntryTypeId], 5, 150000
+			[DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [Time], [Value])
+		SELECT 0, DL.[Index], DL.DocumentIndex, LD.[EntryNumber], LD.[Direction], @A00, LD.[EntryClassificationId], 5, 150000
 		FROM @CashPurchasesLines DL
 		JOIN dbo.LineDefinitions LD ON DL.LineDefinitionId = LD.[Id]
 

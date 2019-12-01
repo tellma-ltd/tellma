@@ -34,7 +34,7 @@ RETURN
 		V.[AccountId],		
 		V.[AccountTypeId],
 		V.[AgentDefinitionId],
-		V.[ResourceTypeId],
+		V.[ResourceClassificationId],
 		V.[IsCurrent],		
 		V.[CurrencyId],
 		V.[AgentId],
@@ -43,7 +43,7 @@ RETURN
 		V.[AccountDescriptorId],
 		V.[ResourceDescriptorId],
 		V.[DueDate],		
-		V.[EntryTypeId],
+		V.[EntryClassificationId],
 		V.[MonetaryValue], -- normalization is already done in the Value and stored in the entry
 		R.[CountUnitId],
 		V.[Count], -- we can normalize every measure, but just showing a proof of concept

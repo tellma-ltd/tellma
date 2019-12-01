@@ -6,10 +6,10 @@
 	@VolumeUnitId INT
 AS
 BEGIN
-	WITH FinishedGoodsResourceTypes AS (
-		SELECT Id FROM dbo.[ResourceTypes]
+	WITH FinishedGoodsResourceClassifications AS (
+		SELECT Id FROM dbo.[ResourceClassifications]
 		WHERE [Node].IsDescendantOf(
-			(SELECT [Node] FROM dbo.[ResourceTypes] WHERE Id = N'Goods')
+			(SELECT [Node] FROM dbo.[ResourceClassifications] WHERE [Code] = N'FinishedGoods')
 		) = 1
 	),
 	UnitConversionRates([Id], [ConversionRate]) AS (
@@ -31,9 +31,9 @@ BEGIN
 		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
-		WHERE J.[EntryTypeId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
+		WHERE J.[EntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension
 		-- TODO: we need a way to separate finished goods from the rest
-		AND R.ResourceTypeId IN (SELECT [Id] FROM FinishedGoodsResourceTypes)
+		AND R.ResourceClassificationId IN (SELECT [Id] FROM FinishedGoodsResourceClassifications)
 		GROUP BY J.[AgentId], R.[Lookup1Id]
 	),
 	PlannedDetails([ResourceLookup1Id], [Mass], [MassUnitId], [Count], [CountUnitId]) AS (

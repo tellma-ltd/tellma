@@ -1,10 +1,10 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-	[Id],		[TitlePlural],	[TitleSingular],[ResourceTypeParentList], [Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
-	(N'skds',	N'SKDs',		N'SKD',			N'FinishedGoods',			N'Required',		N'Body Color',	N'body-colors');
+	[Id],		[TitlePlural],	[TitleSingular], [Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
+	(N'skds',	N'SKDs',		N'SKD',			N'Required',		N'Body Color',	N'body-colors');
 	
 DECLARE @SKDs [dbo].ResourceList;
 
-	INSERT INTO dbo.ResourceClassifications ([DefinitionId], -- N'vehicles'
+	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'vehicles'
 				[Name],		[IsLeaf],	[Node]) VALUES
 	(N'skds',	N'Cars',	1,			N'/1/'),
 	(N'skds',	N'Sedan',	1,			N'/1/1/'),
@@ -13,11 +13,12 @@ DECLARE @SKDs [dbo].ResourceList;
 	(N'skds',	N'Trucks',	0,			N'/2/');
 
 	INSERT INTO @SKDs ([Index],
-		[ResourceTypeId],	[ResourceClassificationId],	[Code],	[Name],									[Description] ) VALUES
-	(0, N'Vehicles',		dbo.fn_RCName__Id(N'Sedan'),N'101',	N'Toyota Camry 2018 Red/White/Leather',	N'Red/White/Leather'),
-	(1, N'Vehicles',		dbo.fn_RCName__Id(N'Sedan'),N'102',	N'Toyota Camry 2018 Black/Black/Wool',	N'Black/Black/Wool'),
-	(3, N'Vehicles',		dbo.fn_RCName__Id(N'Sedan'),N'199',	N'Fake',				NULL),--1
-	(4, N'Vehicles',		dbo.fn_RCName__Id(N'Sedan'),N'201',	N'Toyota Yaris 2018 Red/White/Leather',	N'Red/White/Leather');--1
+		[ResourceClassificationId],	[DescriptorId],	[Name],									[Description] ) VALUES
+		-- N'Vehicles'
+	(0, dbo.fn_RCCode__Id(N'Sedan'),N'101',			N'Toyota Camry 2018 Red/White/Leather',	N'Red/White/Leather'),
+	(1, dbo.fn_RCCode__Id(N'Sedan'),N'102',			N'Toyota Camry 2018 Black/Black/Wool',	N'Black/Black/Wool'),
+	(3, dbo.fn_RCCode__Id(N'Sedan'),N'199',			N'Fake',				NULL),--1
+	(4, dbo.fn_RCCode__Id(N'Sedan'),N'201',			N'Toyota Yaris 2018 Red/White/Leather',	N'Red/White/Leather');--1
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'skds',
@@ -35,6 +36,6 @@ DECLARE @SKDs [dbo].ResourceList;
 		DECLARE @SKDIds dbo.IdList;
 		INSERT INTO @SKDIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'skds';
 
-		SELECT ResourceTypeId, [Name] AS 'SKD', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
+		SELECT ResourceClassificationId, [Name] AS 'SKD', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
 		FROM rpt.Resources(@SKDIds);
 	END

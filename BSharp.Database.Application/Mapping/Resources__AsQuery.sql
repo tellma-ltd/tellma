@@ -9,7 +9,6 @@ RETURN (
 	SELECT 
 		[Index] AS [Id],
 		[OperatingSegmentId],
-		[ResourceTypeId],
 		@DefinitionId AS [ResourceDefinitionId],
 		[Name],
 		[Name2],

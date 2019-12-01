@@ -8,7 +8,7 @@
 	
 	[Direction1]				SMALLINT		NOT NULL DEFAULT +1,
 	[AccountId1]				INT,
-	[EntryTypeId1]				NVARCHAR (255),
+	[EntryClassificationId1]	INT,
 	[MonetaryAmount1]			MONEY,
 	[ResponsibilityCenterId1]	INT,
 	[ExternalReference1]		NVARCHAR (255),
@@ -20,7 +20,7 @@
 
 	[Direction2]				SMALLINT,
 	[AccountId2]				INT,
-	[EntryTypeId2]				NVARCHAR (255),
+	[EntryClassificationId2]	INT,
 	[MonetaryAmount2]			MONEY,
 	[ExternalReference2]		NVARCHAR (255),
 	[AdditionalReference2]		NVARCHAR (255),
@@ -29,7 +29,7 @@
 
 	[Direction3]				SMALLINT		NOT NULL DEFAULT -1,
 	[AccountId3]				INT,
-	[EntryTypeId3]				NVARCHAR (255),
+	[EntryClassificationId3]	INT,
 	[MonetaryAmount3]			MONEY,
 	[ExternalReference3]		NVARCHAR (255),
 	[AdditionalReference3]		NVARCHAR (255),

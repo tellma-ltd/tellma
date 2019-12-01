@@ -7,7 +7,6 @@
 	MeasurementUnits
 	IfrsEntryClassifications
 	IfrsAccountClassifications -- screen shows list of accounts
-	AgentRelationTypes
 	JobTitles
 	Titles, MaritalStatuses, Tribes, Regions, EducationLevels, EducationSublevels, OrganizationTypes, 
 -- Critical screens for making a journal entry
@@ -22,13 +21,12 @@ BEGIN -- reset Identities
 	DBCC CHECKIDENT ('[dbo].[Accounts]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[AccountClassifications]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Agents]', RESEED, 2) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[AgentRelations]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Documents]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[DocumentLines]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[DocumentLineEntries]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[MeasurementUnits]', RESEED, 100) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Permissions]', RESEED, 0) WITH NO_INFOMSGS;
-	DBCC CHECKIDENT ('[dbo].[ResourceClassifications]', RESEED, 1) WITH NO_INFOMSGS;
+	DBCC CHECKIDENT ('[dbo].[ResourceClassifications]', RESEED, 0) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Resources]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[Roles]', RESEED, 1) WITH NO_INFOMSGS;
 	DBCC CHECKIDENT ('[dbo].[RoleMemberships]', RESEED, 1) WITH NO_INFOMSGS;
@@ -37,12 +35,13 @@ BEGIN -- reset Identities
 
 	-- Just for debugging convenience. Even though we are roling the transaction, the identities are changing
 	DECLARE @ValidationErrorsJson nvarchar(max);
-	DECLARE @DebugRoles bit = 0, @DebugResourceTypes bit = 0, @DebugEntryTypes bit = 0, @DebugResourceTypesEntryTypes bit = 0, @DebugAccountTypes bit = 0;
-	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0;
-	DECLARE @DebugLookups bit = 0;
-	DECLARE @DebugResources bit = 1, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
-	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 1, @DebugShareholders bit = 0, @DebugBanks bit = 0;
+	DECLARE @DebugRoles bit = 0, @DebugResourceClassifications bit = 0,
+			@DebugEntryClassifications bit = 0, @DebugResourceClassificationsEntryClassifications bit = 0, @DebugAccountTypes bit = 0,
+			@DebugLookupDefinitions bit = 0;
+	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0, @DebugLookups bit = 0;
 	DECLARE @DebugResponsibilityCenters bit = 0;
+	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0, @DebugBanks bit = 0;
+	DECLARE @DebugResources bit = 1, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
 	DECLARE @LookupsSelect bit = 0;
@@ -61,12 +60,12 @@ BEGIN -- reset Identities
 END
 
 BEGIN TRY
-	BEGIN TRANSACTION	
+	BEGIN TRANSACTION
 		:r ..\Samples\00_Setup\a_RolesMemberships.sql
 		:r ..\Samples\00_Setup\b_AgentDefinitions.sql
-		:r ..\Samples\00_Setup\c_ResourceTypes.sql
-		:r ..\Samples\00_Setup\d_EntryTypes.sql
-		:r ..\Samples\00_Setup\e_ResourceTypesEntryTypes.sql
+		:r ..\Samples\00_Setup\c_ResourceClassifications.sql
+		:r ..\Samples\00_Setup\d_EntryClassifications.sql
+		:r ..\Samples\00_Setup\e_ResourceClassificationsEntryClassifications.sql
 		:r ..\Samples\00_Setup\f_AccountTypes.sql
 		:r ..\Samples\00_Setup\z_LookupDefinitions.sql
 
@@ -79,7 +78,7 @@ BEGIN TRY
 		:r ..\Samples\02_Agents\03_Customers.sql
 		:r ..\Samples\02_Agents\04_Employees.sql
 
-		--:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
+		:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
 		--:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql
 		--:r ..\Samples\03_Resources\a3_PPE_machineries.sqlm
 		--:r ..\Samples\03_Resources\a4_PPE_general-fixed-assets.sql
