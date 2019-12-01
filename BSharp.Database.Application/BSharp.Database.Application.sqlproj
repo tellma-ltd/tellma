@@ -463,6 +463,8 @@
     <Build Include="dal\Stored Procedures\dal.EntryClassifications__Save.sql" />
     <Build Include="Mapping\EntryClassifications__AsQuery.sql" />
     <Build Include="dbo\Functions\dbo.fn_RCCode__Id.sql" />
+    <Build Include="api\Stored Procedures\api.Currencies__Save.sql" />
+    <Build Include="api\Stored Procedures\api.Currencies__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

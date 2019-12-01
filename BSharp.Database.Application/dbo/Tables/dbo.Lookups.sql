@@ -13,4 +13,4 @@
 	[ModifiedById]		INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Lookups__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
-CREATE UNIQUE CLUSTERED INDEX  [IX_Lookups__SortKey] ON [dbo].[Lookups]([DefinitionId], [SortKey])	-- Sort code for reporting purposes
+CREATE CLUSTERED INDEX  [IX_Lookups__SortKey] ON [dbo].[Lookups]([DefinitionId], [SortKey])	-- Sort code for reporting purposes
