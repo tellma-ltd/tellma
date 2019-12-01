@@ -34,16 +34,19 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "IsLeaf")]
+        [Display(Name = "IsAssignable")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
-        public bool? IsLeaf { get; set; }
+        public string ResourceDefinitionId { get; set; }
+
+        [Display(Name = "IsAssignable")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [AlwaysAccessible]
+        public bool? IsAssignable { get; set; }
     }
 
     public class ResourceClassification : ResourceClassificationForSave
     {
-        public string DefinitionId { get; set; }
-
         [AlwaysAccessible]
         public short? Level { get; set; }
 

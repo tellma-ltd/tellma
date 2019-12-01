@@ -23,7 +23,7 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
-        [Display(Name = "AccountType_IsAssignable")]
+        [Display(Name = "IsAssignable")]
         [AlwaysAccessible]
         public bool? IsAssignable { get; set; }
 

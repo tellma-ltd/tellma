@@ -80,7 +80,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name2 = "صفائح المعدن",
                 Code = "SM",
                 ParentId = null,
-                IsLeaf = true
+                IsAssignable = true
             };
 
             // Save it
@@ -107,7 +107,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
             Assert.Equal(dtoForSave.ParentId, responseDto.ParentId);
-            Assert.Equal(dtoForSave.IsLeaf, responseDto.IsLeaf);
+            Assert.Equal(dtoForSave.IsAssignable, responseDto.IsAssignable);
 
 
             Shared.Set("ResourceClassification_SM", responseDto);
@@ -147,7 +147,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "SM",
-                    IsLeaf = true
+                    IsAssignable = true
                 }
             };
 
@@ -181,7 +181,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name2 = "مقطع أجوف",
                 Code = "HS  ", // Trailing space
                 ParentId = null,
-                IsLeaf = false
+                IsAssignable = false
             };
 
             // Call the API
