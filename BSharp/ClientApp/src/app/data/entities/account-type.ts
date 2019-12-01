@@ -70,7 +70,7 @@ export function metadata_AccountType(ws: TenantWorkspace, trx: TranslateService,
           alignment: 'right'
         },
 
-        IsAssignable: { control: 'boolean', label: () => trx.instant('AccountType_IsAssignable'),
+        IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable'),
          format: (b) => !!b ? '✓' : '✗' },
         // format: (b) => !!b ? '✔️' : '❌' },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
