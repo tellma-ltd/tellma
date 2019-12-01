@@ -8,7 +8,7 @@
 	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0, @DebugBanks bit = 0;
 	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
-	DECLARE @DebugPettyCashVouchers bit = 0;
+	DECLARE @DebugPettyCashVouchers bit = 1;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
 	EXEC sp_set_session_context 'Debug', 1;
@@ -40,6 +40,11 @@
 		:r .\02_Agents\04_Employees.sql
 
 		:r .\03_Resources\a1_PPE_motor-vehicles.sql
+		:r .\03_Resources\a2_PPE_it-equipment.sql
+		:r .\03_Resources\a3_PPE_machineries.sql
+		:r .\03_Resources\a4_PPE_general-fixed-assets.sql
+		:r .\03_Resources\b_Inventories_raw-materials.sql
+		:r .\03_Resources\d1_FG_vehicles.sql
 
 RETURN;
 ERR_LABEL:

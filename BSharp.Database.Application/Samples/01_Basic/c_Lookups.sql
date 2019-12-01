@@ -17,7 +17,9 @@ INSERT INTO dbo.Lookups
 (N'steel-thicknesses',	N'0.3',	1),
 (N'steel-thicknesses',	N'0.4',	2),
 (N'steel-thicknesses',	N'0.7',	3),
-(N'steel-thicknesses',	N'1.2',	4);
+(N'steel-thicknesses',	N'1.2',	4),
+(N'steel-thicknesses',	N'1.4',	5),
+(N'steel-thicknesses',	N'1.9',	6);
 
 INSERT INTO dbo.Lookups
 ([DefinitionId],				[Name],		[SortKey]) VALUES

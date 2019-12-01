@@ -4,13 +4,13 @@
 			@MesfinWolde int;;
 	INSERT INTO @employees
 	([Index],	[Name],				[StartDate],	[Code],	[BasicSalary], [TransportationAllowance], [OvertimeRate], [OperatingSegmentId]) VALUES
-	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1',	7000,			1750,						0,				@OS_BananIT),
-	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2',	7000,			0,							0,				@OS_BananIT),
-	(2,			N'Yisak Fikadu',	'2019.09.01',	N'E3',	4700,			0,							28.25,			@OS_BananIT),
-	(3,			N'Badege Kebede',	'2019.09.01',	N'E4',	4700,			0,							28.25,			@OS_WSI),
-	(4,			N'Tizita Nigussie',	'2019.09.01',	N'E5',	4700,			0,							28.25,			@OS_WSI),
-	(5,			N'Ashenafi Fantahun','2019.09.01',	N'E6',	4700,			0,							28.25,			@OS_WSI),
-	(6,			N'Mesfin Wolde',	'2019.09.01',	N'E7',	4700,			0,							28.25,			@OS_WSI)
+	(0,			N'Mohamad Akra',	'2017.10.01',	N'E1',	7000,			1750,						0,				@OS_IT),
+	(1,			N'Ahmad Akra',		'2017.10.01',	N'E2',	7000,			0,							0,				@OS_IT),
+	(2,			N'Yisak Fikadu',	'2019.09.01',	N'E3',	4700,			0,							28.25,			@OS_IT),
+	(3,			N'Badege Kebede',	'2019.09.01',	N'E4',	4700,			0,							28.25,			@OS_Steel),
+	(4,			N'Tizita Nigussie',	'2019.09.01',	N'E5',	4700,			0,							28.25,			@OS_Steel),
+	(5,			N'Ashenafi Fantahun','2019.09.01',	N'E6',	4700,			0,							28.25,			@OS_Steel),
+	(6,			N'Mesfin Wolde',	'2019.09.01',	N'E7',	4700,			0,							28.25,			@OS_Steel)
 	;
 
 	EXEC [api].[Agents__Save]
@@ -41,8 +41,8 @@
 
 	UPDATE dbo.ResponsibilityCenters
 	SET ManagerId = CASE 
-		WHEN [Id] = @OS_BananIT			THEN @MohamadAkra
-		WHEN [Id] = @OS_WSI				THEN @BadegeKebede
+		WHEN [Id] = @OS_IT			THEN @MohamadAkra
+		WHEN [Id] = @OS_Steel				THEN @BadegeKebede
 		WHEN [Id] = @RC_ExecutiveOffice	THEN @BadegeKebede
 		WHEN [Id] = @RC_Finance			THEN @TizitaNigussie
 		WHEN [Id] = @RC_Finance			THEN @TizitaNigussie

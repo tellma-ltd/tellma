@@ -21,12 +21,12 @@ WSI
 	Coffee
 */
 DECLARE @ResponsibilityCenters dbo.ResponsibilityCenterList;
-DECLARE @OS_WSI INT, @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@RC_Production INT, @RC_Finance INT,
-		@RC_SalesAG INT, @RC_SalesBole INT, @OS_BananIT INT;
+DECLARE @OS_Steel INT, @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@RC_Production INT, @RC_Finance INT,
+		@RC_SalesAG INT, @RC_SalesBole INT, @OS_IT INT, @OS_CarAssembly INT;
 
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 	[Name],							[Code], [ResponsibilityTypeId], [IsOperatingSegment], [ParentIndex]) VALUES
-(0,0,N'Walia Steel Industry, PLC',	N'1',	N'Investment',				1,					NULL),
+(0,0,N'Steel Manufacturing',		N'1',	N'Investment',				1,					NULL),
 (1,1,N'Executive Office',			N'10',	N'Cost',					0,					0),
 (2,1,N'Finance',					N'12',	N'Cost',					0,					0),
 (3,0,N'Marketing & Sales',			N'13',	N'Revenue',					0,					0),
@@ -38,7 +38,8 @@ INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 (9,0,N'Technical',					N'17',	N'Cost',					0,					0),
 (10,1,N'Production',				N'171',	N'Cost',					0,					9),
 (11,1,N'Maintenance',				N'172',	N'Cost',					0,					9),
-(12,1,N'Banan IT, PLC',				N'2',	N'Investment',				1,					NULL)
+(12,1,N'IT Services',				N'2',	N'Investment',				1,					NULL),
+(13,1,N'Car Assembly',				N'3',	N'Investment',				1,					NULL)
 ;
 	EXEC [api].[ResponsibilityCenters__Save]
 		@Entities = @ResponsibilityCenters,
@@ -51,11 +52,12 @@ INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
 	END;
 	IF @DebugResponsibilityCenters = 1
 		SELECT * FROM [dbo].ResponsibilityCenters;
-SELECT @OS_WSI = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'1';
+SELECT @OS_Steel = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'1';
 SELECT @RC_ExecutiveOffice = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'10';
 SELECT @RC_SalesAG =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'141';
 SELECT @RC_SalesBole = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'142';
 SELECT @RC_HR = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'15';
 SELECT @RC_Materials =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'16';
 SELECT @RC_Production =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'171';
-SELECT @OS_BananIT = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'2';
+SELECT @OS_IT = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'2';
+SELECT @OS_CarAssembly = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'3';

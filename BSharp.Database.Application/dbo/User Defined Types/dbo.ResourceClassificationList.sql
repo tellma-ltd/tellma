@@ -7,5 +7,5 @@
 	[Name3]					NVARCHAR (255),
 	[Path]					NVARCHAR (255),
 	[ResourceDefinitionId]	NVARCHAR (50)	DEFAULT N'monetary-resources', -- Basic shows only the name and the primary measurement unit type
-	[IsAssignable]			BIT
+	[IsAssignable]			BIT				DEFAULT 1
 );

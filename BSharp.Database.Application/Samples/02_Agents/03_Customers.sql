@@ -3,10 +3,10 @@
 		
 	INSERT INTO @Customers
 	([Index],	[Name],						[StartDate], [OperatingSegmentId]) VALUES
-	(0,			N'Best Paint Industry',		'2017.09.15', @OS_BananIT),
-	(1,			N'Best Plastic Industry',	'2017.10.25', @OS_BananIT),
-	(2,			N'Walia Steel Industry, plc','2018.01.05', @OS_BananIT),
-	(3,			N'Yangfan Motors, PLC',		'2017.10.25', @OS_BananIT);
+	(0,			N'Best Paint Industry',		'2017.09.15', @OS_IT),
+	(1,			N'Best Plastic Industry',	'2017.10.25', @OS_IT),
+	(2,			N'Walia Steel Industry, plc','2018.01.05', @OS_IT),
+	(3,			N'Yangfan Motors, PLC',		'2017.10.25', @OS_IT);
 
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'customers',
