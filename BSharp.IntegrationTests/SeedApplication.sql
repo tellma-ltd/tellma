@@ -18,12 +18,11 @@ DELETE FROM [dbo].[Users] WHERE [Id] <> @UserId;
 DELETE FROM [dbo].[Agents];
 DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[Currencies];
-DELETE FROM [dbo].[ResourceTypes] WHERE [Id] NOT IN (N'CashAndCashEquivalents');
+--DELETE FROM [dbo].[ResourceClassifications] WHERE [Code] NOT IN (N'CashAndCashEquivalents');
 
 DELETE FROM [dbo].[ResourceClassifications];
 DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[MeasurementUnits];
-DELETE FROM [dbo].[ResourceClassifications];
 DELETE FROM [dbo].[AccountClassifications];
 DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[ResponsibilityCenters];
@@ -39,44 +38,24 @@ VALUES
 INSERT INTO [dbo].[RoleMemberships] ([UserId], [RoleId])
 VALUES (@UserId, @RoleId)
 
-INSERT INTO [dbo].[ResourceDefinitions] ([Id], [TitlePlural], [TitleSingular])
-VALUES (N'monetary-resources', N'Monetary Resources', N'Monetary Resource'), 
-(N'raw-materials', N'Raw Materials', N'Raw Material');
+
+IF NOT EXISTS(SELECT * FROM dbo.ResourceDefinitions WHERE [Id] = N'Basic')
+INSERT INTO dbo.ResourceDefinitions (
+	[Id],	[TitlePlural],	[TitleSingular]) VALUES
+(N'Basic',	N'Items',		N'Item');
 
 -- Resource Types
-DECLARE @ResourceTypes AS TABLE (
-	[Id]					NVARCHAR (255)		PRIMARY KEY NONCLUSTERED,
-	[Name]					NVARCHAR (255)		NOT NULL,
-	[Name2]					NVARCHAR (255),
-	[Name3]					NVARCHAR (255),
-	[IsAssignable]			BIT					NOT NULL DEFAULT 1,
-	[IsActive]				BIT					NOT NULL DEFAULT 1,
-	[Node]					HIERARCHYID			NOT NULL
-);
-INSERT INTO @ResourceTypes
-([Id],										[Name],											[Node],			[IsAssignable], [IsActive]) VALUES
-(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					N'/1/13/',		1,				1);
+DECLARE @ResourceClassifications dbo.ResourceClassificationList
+INSERT INTO @ResourceClassifications
+([Code],									[Name],											[Node],		[IsAssignable], [Index]) VALUES
+(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					N'/1/13/',		1,				0),
+	(N'Cash',								N'Cash',										N'/2/1/1/',		1,1),
+	(N'CashEquivalents',					N'Cash equivalents',							N'/2/1/2/',		1,2);
 
-MERGE [dbo].[ResourceTypes] AS t
-USING (
-		SELECT [Id], [IsAssignable], [Name], [Name2], [Name3], [IsActive], [Node]
-		FROM @ResourceTypes
-) AS s
-ON s.[Id] = t.[Id]
-WHEN MATCHED
-THEN
-	UPDATE SET
-		t.[IsAssignable]	=	s.[IsAssignable],
-		t.[Name]			=	s.[Name],
-		t.[Name2]			=	s.[Name2],
-		t.[Name3]			=	s.[Name3],
-		t.[Node]			=	s.[Node]
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE -- to delete Ifrs Resource Classifications extension concepts we added erroneously
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Id],	[IsAssignable],		[Name],	[Name2],	[Name3],	[IsActive],	[Node])
-    VALUES (s.[Id], s.[IsAssignable], s.[Name], s.[Name2], s.[Name3], s.[IsActive], s.[Node]);
-
+DECLARE @ValidationErrorsJson nvarchar(max);
+EXEC [api].[ResourceClassifications__Save]
+	@Entities = @ResourceClassifications,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 
 -- Currencies
