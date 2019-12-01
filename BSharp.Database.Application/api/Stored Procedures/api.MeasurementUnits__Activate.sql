@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [api].[MeasurementUnits__Activate]
 	@IndexedIds [dbo].[IndexedIdList] READONLY,
-	@IsActive BIT
+	@IsActive BIT,
+	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 SET NOCOUNT ON;
 	DECLARE @Ids dbo.IdList;

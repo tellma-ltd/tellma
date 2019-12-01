@@ -7,7 +7,7 @@ SET NOCOUNT ON;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Currencies_Validate__Delete]
-		@IndexedIds = @IndexedIds;
+		@Ids = @IndexedIds;
 
 	SELECT @ValidationErrorsJson = 
 	(

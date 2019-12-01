@@ -465,6 +465,7 @@
     <Build Include="dbo\Functions\dbo.fn_RCCode__Id.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Save.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.Currencies__Activate.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
