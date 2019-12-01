@@ -5,7 +5,7 @@ INSERT INTO dbo.ResourceDefinitions (
 	
 DECLARE @ResourceClassifications dbo.ResourceClassificationList
 INSERT INTO @ResourceClassifications
-([Code],									[Name],											[Node],		[IsAssignable], [Index]) VALUES
+([Code],									[Name],											[Path],		[IsAssignable], [Index]) VALUES
 -- Non financial resources
 (N'NonFinancialAssets',						N'Non financial assets',						N'/1/',			0,0),
 (N'PropertyPlantAndEquipment',				N'Property, plant and equipment',				N'/1/1/',		0,1),

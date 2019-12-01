@@ -14,7 +14,7 @@
 	
 	DECLARE @ITEquipmentDescendants ResourceClassificationList;
 	INSERT INTO @ITEquipmentDescendants ([Index],
-		[Code],					[Name],			[Node],			[IsAssignable], [ResourceDefinitionId]) VALUES
+		[Code],					[Name],			[Path],			[IsAssignable], [ResourceDefinitionId]) VALUES
 	--N'ComputerEquipment',						N'/1/1/6/'
 	(0, N'ComputersExtension',	N'Computers',	N'/1/1/6/1/',	1,				N'it-equipment'),
 	(1, N'ServersExtension',	N'Servers',		N'/1/1/6/2/',	1,				N'it-equipment'),

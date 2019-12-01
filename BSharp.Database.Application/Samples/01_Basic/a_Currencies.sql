@@ -16,19 +16,20 @@ BEGIN
 	Print 'Currencies: Inserting'
 	GOTO Err_Label;
 END;						
-
-DECLARE @ActiveCurrencies StringList;
-INSERT INTO @ActiveCurrencies VALUES 
-(@FunctionalCurrencyId),
-(N'USD');
-
-EXEC dal.Currencies__Activate
-	@Ids = @ActiveCurrencies,
-	@IsActive = 1;
-
 EXEC master.sys.sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;
 
-DECLARE @DeletedCurrencies IndexedStringList
+DECLARE @ActiveCurrencies IndexedStringList;
+INSERT INTO @ActiveCurrencies([Index], [Id]) VALUES 
+(0,N'GBP'),
+(1,N'AED'),
+(2,N'JPY');
+
+EXEC api.Currencies__Activate
+	@IndexedIds = @ActiveCurrencies,
+	@IsActive = 0,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+DECLARE @DeletedCurrencies IndexedStringList;
 INSERT INTO @DeletedCurrencies
 ([Index],	[Id]) VALUES 
 (0,			N'GBP'), 

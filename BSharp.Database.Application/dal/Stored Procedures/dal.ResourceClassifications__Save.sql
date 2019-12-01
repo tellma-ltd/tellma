@@ -15,7 +15,7 @@ SET NOCOUNT ON;
 		USING (
 			SELECT
 				E.[Index], E.[Id], E.[Code],
-				E.[Name], E.[Name2], E.[Name3], E.[Node], E.[ResourceDefinitionId], E.[IsAssignable]
+				E.[Name], E.[Name2], E.[Name3], E.[Path], E.[ResourceDefinitionId], E.[IsAssignable]
 			FROM @Entities E
 		) AS s ON (t.[Code] = s.[Code])
 		WHEN MATCHED 
@@ -24,14 +24,14 @@ SET NOCOUNT ON;
 				t.[Name]				= s.[Name],
 				t.[Name2]				= s.[Name2],
 				t.[Name3]				= s.[Name3],
-				t.[Node]				= s.[Node],
+				t.[Node]				= s.[Path],
 				t.[ResourceDefinitionId]= s.[ResourceDefinitionId],
 				t.[IsAssignable]		= s.[IsAssignable],				
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([Code], [Name],	[Name2], [Name3], [Node], [ResourceDefinitionId], [IsAssignable])
-			VALUES (s.[Code], s.[Name], s.[Name2], s.[Name3], s.[Node], s.[ResourceDefinitionId], s.[IsAssignable])
+			VALUES (s.[Code], s.[Name], s.[Name2], s.[Name3], s.[Path], s.[ResourceDefinitionId], s.[IsAssignable])
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 

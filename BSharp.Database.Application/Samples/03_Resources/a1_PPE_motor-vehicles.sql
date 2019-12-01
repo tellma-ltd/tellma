@@ -5,7 +5,7 @@
 	
 	DECLARE @MotorVehicleDescendants ResourceClassificationList;
 	INSERT INTO @MotorVehicleDescendants ([Index],
-		[Code],					[Name],			[Node],			[IsAssignable], [ResourceDefinitionId]) VALUES
+		[Code],					[Name],			[Path],			[IsAssignable], [ResourceDefinitionId]) VALUES
 	(0, N'CarsExtension',		N'Cars',		N'/1/1/3/3/1/',	1,				N'motor-vehicles'),
 	(1, N'MinivansExtension',	N'Minivans',	N'/1/1/3/3/2/',	1,				N'motor-vehicles');
 

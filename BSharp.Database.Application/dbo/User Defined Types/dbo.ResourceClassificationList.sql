@@ -5,7 +5,7 @@
 	[Name]					NVARCHAR (255)	NOT NULL,
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
-	[Node]					NVARCHAR(50),
-	[ResourceDefinitionId]	NVARCHAR (50)	DEFAULT N'monetary-resources', -- TODO: Remove (Ahmad Akra)
+	[Path]					NVARCHAR (255),
+	[ResourceDefinitionId]	NVARCHAR (50)	DEFAULT N'monetary-resources', -- Basic shows only the name and the primary measurement unit type
 	[IsAssignable]			BIT
 );
