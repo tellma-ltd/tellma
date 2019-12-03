@@ -41,7 +41,7 @@ BEGIN -- reset Identities
 	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0, @DebugLookups bit = 0;
 	DECLARE @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0, @DebugBanks bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 1, @DebugAccounts bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
 	DECLARE @LookupsSelect bit = 0;
@@ -89,7 +89,7 @@ BEGIN TRY
 		--:r ..\Samples\03_Resources\h_PL_employee-benefits.sql
 
 		:r ..\Samples\05_Accounts\b_AccountClassifications.sql
-		--:r ..\Samples\05_Accounts\c_gl-accounts.sql
+		:r ..\Samples\05_Accounts\c_gl-accounts.sql
 		--:r .\05_Accounts\02_tax-accounts.sql
 		--:r .\00_Security\02_Workflows.sql		
 

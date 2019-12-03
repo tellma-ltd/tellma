@@ -52,4 +52,10 @@ SELECT @Revenue_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'4';
 SELECT @Expenses_AC = [Id] FROM dbo.[AccountClassifications] WHERE Code = N'5';
 
 IF @DebugAccountClassifications = 1
-	SELECT * FROM [map].[AccountClassifications]();
+	SELECT
+		AC.Id,
+		SPACE(5 * (AC.[Node].GetLevel() - 1)) +  AC.[Name] As [Name],
+		[Code],
+		AC.[Node].ToString() As [Node],
+		(SELECT COUNT(*) FROM [AccountClassifications] WHERE [ParentNode] = AC.[Node]) AS [ChildCount]
+	FROM dbo.[AccountClassifications] AC

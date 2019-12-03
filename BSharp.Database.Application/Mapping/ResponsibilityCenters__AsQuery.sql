@@ -6,7 +6,7 @@ AS
 RETURN (
 	SELECT 
 		ISNULL(E.Id, 0) AS Id, 
-		E.ResponsibilityTypeId,
+		E.[ResponsibilityType],
 		E.IsLeaf,
 		E.IsOperatingSegment,
 		E.Name, 
