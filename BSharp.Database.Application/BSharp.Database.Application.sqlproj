@@ -137,7 +137,6 @@
     <None Include="Tests\07_Resources.sql" />
     <None Include="Tests\73_Places.sql" />
     <None Include="Tests\30_HRCycle.sql" />
-    <None Include="Tests\40_PurchasingCycle.sql" />
     <None Include="Tests\50_ProductionCycle.sql" />
     <None Include="Tests\60_SalesCycle.sql" />
     <None Include="Tests\21_Financing.sql" />

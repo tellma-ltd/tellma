@@ -133,4 +133,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ContractType]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="aabb3bf8-622e-420a-9215-3a9fbbc35da1" ChangeDateTime="12/03/2019 19:45:44">
+    <Property Name="ElementName" Value="[dbo].[AgentDefinitions].[JobTitleVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[AgentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[JobVisibility]" />
+  </Operation>
 </Operations>
