@@ -57,11 +57,30 @@ namespace BSharp.Controllers
             _modelMetadataProvider = modelMetadataProvider;
         }
 
-        [HttpGet("of-relation/{relation}")]
-        public async Task<ActionResult<GetResponse<Agent>>> GetAgentsOfRelation([FromRoute] string relation, [FromQuery] GetArguments args)
+        [HttpGet("{id}/image")]
+        public async Task<ActionResult> GetImage(int id)
         {
-            var queryOverride = _repo.Agents_OfRelation(relation);
-            return await GetInnerAsync(args, queryOverride);
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // GetByIdImplAsync() enforces read permissions
+                var response = await GetByIdImplAsync(id, new GetByIdArguments { Select = nameof(Agent.ImageId) });
+                string imageId = response.Result.ImageId;
+
+                // Get the blob name
+                if (imageId != null)
+                {
+                    // Get the bytes
+                    string blobName = BlobName(imageId);
+                    var imageBytes = await _blobService.LoadBlob(blobName);
+
+                    Response.Headers.Add("x-image-id", imageId);
+                    return File(imageBytes, "image/jpeg");
+                }
+                else
+                {
+                    return NotFound("This agent does not have a picture");
+                }
+            }, _logger);
         }
 
         [HttpPut("activate")]

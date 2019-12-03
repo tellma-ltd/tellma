@@ -1,5 +1,5 @@
-<b-details collection="Agent" [definition]="definitionId" [createFunc]="create" [expand]="expand" [mode]="mode" [idString]="idString"
-  [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+<b-details collection="Agent" [definition]="definitionId" [createFunc]="create" [expand]="expand" [mode]="mode"
+  [idString]="idString" [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -35,8 +35,8 @@
   <div class="col-12 col-md-4 b-details-image-container">
     <b-restricted [metadata]="model?.EntityMetadata?.ImageId">
       <div class="border">
-        <b-image *ngIf="!!model" [src]="model.Id ? 'agents/' + model.Id + '/image' : null" [imageId]="model?.ImageId"
-          [(ngModel)]="model.Image" [isEdit]="isEdit"></b-image>
+        <b-image *ngIf="!!model" [src]="model.Id ? 'agents/' + definitionId + '/' + model.Id + '/image' : null"
+          [imageId]="model?.ImageId" [(ngModel)]="model.Image" [isEdit]="isEdit"></b-image>
       </div>
     </b-restricted>
   </div>
@@ -70,18 +70,90 @@
   </b-form-group>
 
   <!-- Tax Identification Number -->
-  <b-form-group class="b-form-group" [label]="'Agent_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
-    <div *ngIf="!isEdit">{{ model?.TaxIdentificationNumber }}</div>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+  <b-form-group class="b-form-group" *ngIf="!!p.TaxIdentificationNumber" [label]="p['TaxIdentificationNumber'].label()"
+    [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
+    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TaxIdentificationNumber">
+      <div>{{ model?.TaxIdentificationNumber }}</div>
+    </b-restricted>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber" [ngModelOptions]="{ updateOn: 'blur' }">
+    </b-text-editor>
+  </b-form-group>
+
+  <!-- Operating Segment -->
+  <b-form-group class="b-form-group" *ngIf="!!p.OperatingSegmentId" [label]="p['OperatingSegment'].label()"
+    [serverErrors]="model?.serverErrors?.OperatingSegmentId">
+    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OperatingSegment">
+      <b-view-link *ngIf="!isEdit" link="../../../responsibility-centers" [itemId]="model?.OperatingSegmentId">
+        <b-auto-cell collection="Agent" [entity]="model" path="OperatingSegment">
+        </b-auto-cell>
+      </b-view-link>
+    </b-restricted>
+    <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.OperatingSegmentId"
+      filter="IsOperatingSegment eq true" [required]="d['OperatingSegmentVisibility'] === 'Required'">
+    </b-responsibility-centers-picker>
+  </b-form-group>
+
+  <!-- Start Date -->
+  <b-form-group class="b-form-group" *ngIf="!!p.StartDate" [label]="p['StartDate'].label()"
+    [serverErrors]="model?.serverErrors?.StartDate">
+    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.StartDate">
+      <b-auto-cell collection="Agent" [entity]="model" path="StartDate">
+      </b-auto-cell>
+    </b-restricted>
+    <b-date-picker *ngIf="isEdit" [(ngModel)]="model.StartDate" [ngModelOptions]="{ updateOn: 'blur' }">
+    </b-date-picker>
+  </b-form-group>
+
+  <!-- Basic Salary -->
+  <b-form-group class="b-form-group" *ngIf="!!p.BasicSalary" [label]="p['BasicSalary'].label()"
+    [serverErrors]="model?.serverErrors?.BasicSalary">
+    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BasicSalary">
+      <b-auto-cell collection="Agent" [entity]="model" path="BasicSalary">
+      </b-auto-cell>
+    </b-restricted>
+    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BasicSalary" [ngModelOptions]="{ updateOn: 'blur' }">
+    </b-decimal-editor>
+  </b-form-group>
+
+  <!-- Transportation Allowance -->
+  <b-form-group class="b-form-group" *ngIf="!!p.TransportationAllowance" [label]="p['TransportationAllowance'].label()"
+    [serverErrors]="model?.serverErrors?.TransportationAllowance">
+    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TransportationAllowance">
+      <b-auto-cell collection="Agent" [entity]="model" path="TransportationAllowance">
+      </b-auto-cell>
+    </b-restricted>
+    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.TransportationAllowance"
+      [ngModelOptions]="{ updateOn: 'blur' }">
+    </b-decimal-editor>
+  </b-form-group>
+
+  <!-- Overtime Rate -->
+  <b-form-group class="b-form-group" *ngIf="!!p.OvertimeRate" [label]="p['OvertimeRate'].label()"
+    [serverErrors]="model?.serverErrors?.OvertimeRate">
+    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OvertimeRate">
+      <b-auto-cell collection="Agent" [entity]="model" path="OvertimeRate">
+      </b-auto-cell>
+    </b-restricted>
+    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.OvertimeRate" [ngModelOptions]="{ updateOn: 'blur' }">
+    </b-decimal-editor>
+  </b-form-group>
+
+  <!-- Bank Account Number -->
+  <b-form-group class="b-form-group" *ngIf="!!p.BankAccountNumber" [label]="p['BankAccountNumber'].label()"
+    [serverErrors]="model?.serverErrors?.BankAccountNumber">
+    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BankAccountNumber">
+      <div>{{ model?.BankAccountNumber }}</div>
+    </b-restricted>
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BankAccountNumber" [ngModelOptions]="{ updateOn: 'blur' }">
+    </b-text-editor>
   </b-form-group>
 
   <!-- Is Related -->
   <b-form-group class="b-form-group" [label]="'Agent_IsRelated' | translate"
     [serverErrors]="model?.serverErrors?.IsRelated">
-    <div *ngIf="!isEdit">
-      <b-restricted [metadata]="model?.EntityMetadata?.IsRelated"> {{ (model?.IsRelated ? 'Yes' : 'No') | translate }}
-      </b-restricted>
-    </div>
+    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsRelated">
+      {{ (model?.IsRelated ? 'Yes' : 'No') | translate }}
+    </b-restricted>
     <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
       <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsRelated" id="isRelated">
       <label class="custom-control-label b-pointer" for="isRelated">&zwnj;</label>
@@ -91,17 +163,6 @@
   <!-- Is Active -->
   <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
     <div>{{ (!model ? '' : model.IsActive ? 'Active' : 'Inactive') | translate }}</div>
-  </b-form-group>
-
-  <!-- User -->
-  <b-form-group class="b-form-group" [label]="'Agent_User' | translate" *ngIf="!isEdit">
-    <b-restricted [metadata]="model?.EntityMetadata?.User">
-      <b-view-link link="../../users" [itemId]="model?.Id" *ngIf="showUser(model)">
-        {{ ws.get('User', model?.Id)?.Email }}
-      </b-view-link>
-      <button class="btn btn-link p-0 font-weight-normal font-italic" *ngIf="!showUser(model)"
-        (click)="createUser(model)">{{ 'CreateUser' | translate }}</button>
-    </b-restricted>
   </b-form-group>
 </ng-template>
 

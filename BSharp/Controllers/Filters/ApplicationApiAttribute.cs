@@ -201,29 +201,41 @@ namespace BSharp.Controllers
 
                     Agents = new Dictionary<string, AgentDefinitionForClient>
                     {
-                        ["individuals"] = new AgentDefinitionForClient
+                        ["customers"] = new AgentDefinitionForClient
                         {
-                            TitlePlural = "Individuals",
-                            TitlePlural2 = "أفراد",
+                            TitlePlural = "Customers",
+                            TitlePlural2 = "عملاء",
                             TitlePlural3 = "个人",
-                            TitleSingular = "Individual",
+                            TitleSingular = "Customer",
                             TitleSingular2 = "فرد",
                             TitleSingular3 = "个人",
                             MainMenuIcon = "clipboard",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 3m,
                         },
-                        ["organizations"] = new AgentDefinitionForClient
+                        ["employees"] = new AgentDefinitionForClient
                         {
-                            TitlePlural = "Organizations",
-                            TitlePlural2 = "مؤسسات",
+                            TitlePlural = "Employees",
+                            TitlePlural2 = "موظفون",
                             TitlePlural3 = "组织机构",
-                            TitleSingular = "Organization",
+                            TitleSingular = "Employee",
                             TitleSingular2 = "مؤسسة",
                             TitleSingular3 = "组织",
                             MainMenuIcon = "clipboard",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 4m,
+                        },
+                        ["suppliers"] = new AgentDefinitionForClient
+                        {
+                            TitlePlural = "Suppliers",
+                            TitlePlural2 = "موردون",
+                            TitlePlural3 = "组织机构",
+                            TitleSingular = "Supplier",
+                            TitleSingular2 = "مورد",
+                            TitleSingular3 = "组织",
+                            MainMenuIcon = "clipboard",
+                            MainMenuSection = "Financials",
+                            MainMenuSortKey = 5m,
                         }
                     },
 
