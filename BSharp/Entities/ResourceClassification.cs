@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class ResourceClassificationForSave : EntityWithKey<int>
+    public class ResourceClassificationForSave : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -45,7 +45,7 @@ namespace BSharp.Entities
         public bool? IsAssignable { get; set; }
     }
 
-    public class ResourceClassification : ResourceClassificationForSave
+    public class ResourceClassification : ResourceClassificationForSave, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public short? Level { get; set; }

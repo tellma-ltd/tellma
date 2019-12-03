@@ -37,6 +37,33 @@ namespace BSharp.Entities
         [StringLength(30, ErrorMessage = nameof(StringLengthAttribute))]
         public string TaxIdentificationNumber { get; set; }
 
+        [Display(Name = "OperatingSegment")]
+        public int? OperatingSegmentId { get; set; }
+
+        [Display(Name = "Agent_StartDate")]
+        public DateTime? StartDate { get; set; }
+
+        [Display(Name = "Agent_Job")]
+        public int? JobId { get; set; }
+
+        [Display(Name = "Agent_BasicSalary")]
+        public decimal? BasicSalary { get; set; }
+
+        [Display(Name = "Agent_TransportationAllowance")]
+        public decimal? TransportationAllowance { get; set; }
+
+        [Display(Name = "Agent_OvertimeRate")]
+        public decimal? OvertimeRate { get; set; }
+
+        [Display(Name = "Agent_BankAccountNumber")]
+        [StringLength(34, ErrorMessage = nameof(StringLengthAttribute))]
+        public string BankAccountNumber { get; set; }
+
+        // TODO: Deal with these two
+        public string CostObjectType { get; set; } // TODO: Deal with this
+        public int? UserId { get; set; } // TODO: Remove
+
+
         [NotMapped]
         [Display(Name = "Image")]
         public byte[] Image { get; set; }
@@ -66,9 +93,14 @@ namespace BSharp.Entities
 
         // For Query
 
-        [Display(Name = "Agent_User")]
-        [ForeignKey(nameof(Id))]
-        public User User { get; set; }
+        // TODO 
+        // [Display(Name = "Agent_Job")]
+        // [ForeignKey(nameof(JobId))]
+        // public Job Job { get; set; }
+
+        [Display(Name = "OperatingSegment")]
+        [ForeignKey(nameof(OperatingSegmentId))]
+        public ResponsibilityCenter OperatingSegment { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

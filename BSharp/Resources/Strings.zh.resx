@@ -127,6 +127,12 @@
   <data name="Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
+  <data name="Agent_BankAccountNumber" xml:space="preserve">
+    <value>银行帐号</value>
+  </data>
+  <data name="Agent_BasicSalary" xml:space="preserve">
+    <value>基础工资</value>
+  </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>性别</value>
   </data>
@@ -139,6 +145,15 @@
   <data name="Agent_IsRelated" xml:space="preserve">
     <value>相关的</value>
   </data>
+  <data name="Agent_Job" xml:space="preserve">
+    <value>工作</value>
+  </data>
+  <data name="Agent_OvertimeRate" xml:space="preserve">
+    <value>加班费</value>
+  </data>
+  <data name="Agent_StartDate" xml:space="preserve">
+    <value>开始日期</value>
+  </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>税号</value>
   </data>
@@ -147,6 +162,9 @@
   </data>
   <data name="Agent_Title" xml:space="preserve">
     <value>标题</value>
+  </data>
+  <data name="Agent_TransportationAllowance" xml:space="preserve">
+    <value>交通补贴</value>
   </data>
   <data name="Agent_User" xml:space="preserve">
     <value>用户</value>
@@ -819,6 +837,9 @@
   </data>
   <data name="No" xml:space="preserve">
     <value>没有</value>
+  </data>
+  <data name="OperatingSegment" xml:space="preserve">
+    <value>经营分部</value>
   </data>
   <data name="Or" xml:space="preserve">
     <value>要么</value>

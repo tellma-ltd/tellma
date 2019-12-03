@@ -16,6 +16,13 @@ export class AgentForSave extends EntityWithKey {
   Code: string;
   IsRelated: boolean;
   TaxIdentificationNumber: string;
+  OperatingSegmentId: number;
+  StartDate: string;
+  JobId: number;
+  BasicSalary: number;
+  TransportationAllowance: number;
+  OvertimeRate: number;
+  BankAccountNumber: number;
   Image: string;
 }
 
@@ -72,12 +79,14 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
         TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Agent_TaxIdentificationNumber') },
-        // PreferredLanguage: {
-        //   control: 'choice',
-        //   label: () => trx.instant('Agent_PreferredLanguage'),
-        //   choices: companyLanguages,
-        //   format: (c: string) => supportedCultures[c]
-        // },
+        OperatingSegmentId: { control: 'number', label: () => `${trx.instant('OperatingSegment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        OperatingSegment: { control: 'navigation', label: () => trx.instant('OperatingSegment'), type: 'ResponsibilityCenter', foreignKeyName: 'OperatingSegmentId' },
+        StartDate: { control: 'date', label: () => trx.instant('Agent_StartDate') },
+        JobId: { control: 'number', label: () => `${trx.instant('Agent_Job')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        BasicSalary: { control: 'number', label: () => trx.instant('Agent_BasicSalary'), minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        TransportationAllowance: { control: 'number', label: () => trx.instant('Agent_TransportationAllowance'), minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        OvertimeRate: { control: 'number', label: () => trx.instant('Agent_OvertimeRate'), minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
+        BankAccountNumber: { control: 'text', label: () => trx.instant('Agent_BankAccountNumber') },
         IsRelated: { control: 'boolean', label: () => trx.instant('Agent_IsRelated') },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },

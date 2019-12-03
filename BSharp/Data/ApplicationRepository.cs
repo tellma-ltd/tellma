@@ -703,13 +703,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
         #region Agents
 
-        public Query<Agent> Agents_OfRelation(string relation)
-        {
-            // TODO: implement properly, this is just a test
-            var relationParameter = new SqlParameter("Type", relation);
-            return Query<Agent>().FromSql($"(SELECT * FROM [map].[Agents]() WHERE [AgentType] = @Type)", null, relationParameter);
-        }
-
         public Query<Agent> Agents__AsQuery(string definitionId, List<AgentForSave> entities)
         {
             // Parameters

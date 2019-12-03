@@ -6,9 +6,8 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { PropDescriptor } from '~/app/data/entities/base/metadata';
 import { Router, ActivatedRoute, Params, ParamMap } from '@angular/router';
-import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
@@ -17,7 +16,6 @@ import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client'
 })
 export class AgentsDetailsComponent extends DetailsBaseComponent implements OnInit {
 
-  private _agentTypeChoices: SelectorChoice[];
   private agentsApi = this.api.agentsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
 
@@ -34,7 +32,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return this._definitionId;
   }
 
-  public expand = 'User';
+  public expand = 'OperatingSegment';
 
   create = () => {
     const result = new AgentForSave();
@@ -85,22 +83,8 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return this.ws.definitions.Agents[this.definitionId];
   }
 
-  get agentTypeChoices(): SelectorChoice[] {
-    if (!this._agentTypeChoices) {
-      const descriptor = metadata_Agent(this.ws, this.translate, null).properties.AgentType as ChoicePropDescriptor;
-      this._agentTypeChoices = descriptor.choices.map(c => ({ name: () => descriptor.format(c), value: c }));
-    }
-
-    return this._agentTypeChoices;
-  }
-
-  public agentTypeLookup(value: string): string {
-    if (!value) {
-      return '';
-    }
-
-    const descriptor = metadata_Agent(this.ws, this.translate, null).properties.AgentType as ChoicePropDescriptor;
-    return descriptor.format(value);
+  public get p(): { [prop: string]: PropDescriptor } {
+    return metadata_Agent(this.ws, this.translate, this.definitionId).properties;
   }
 
   public onActivate = (model: Agent): void => {
@@ -129,20 +113,6 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
   public get ws() {
     return this.workspace.current;
-  }
-
-  public showUser(model: Agent): boolean {
-    return !!model && !!this.workspace.current.get('User', model.Id);
-  }
-
-  public createUser(model: Agent): void {
-    if (!!model && !!model.Id) {
-      const params: Params = {
-        agent_id: model.Id
-      };
-
-      this.router.navigate(['../../users/new', params], { relativeTo: this.route });
-    }
   }
 
   public get masterCrumb(): string {

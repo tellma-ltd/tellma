@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BSharp.Entities
 {
     [StrongEntity]
-    public class ResponsibilityCenterForSave : EntityWithKey<int>
+    public class ResponsibilityCenterForSave : EntityWithKey<int>, ITreeEntityForSave<int>
     {
         [NotMapped]
         public int? ParentIndex { get; set; }
@@ -60,7 +60,7 @@ namespace BSharp.Entities
         public bool? IsLeaf { get; set; } = true;
     }
 
-    public class ResponsibilityCenter : ResponsibilityCenterForSave
+    public class ResponsibilityCenter : ResponsibilityCenterForSave, ITreeEntity<int>
     {
         [AlwaysAccessible]
         public short? Level { get; set; }

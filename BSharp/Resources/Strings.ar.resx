@@ -127,6 +127,12 @@
   <data name="Agent" xml:space="preserve">
     <value>ذمة</value>
   </data>
+  <data name="Agent_BankAccountNumber" xml:space="preserve">
+    <value>رقم حساب البنك</value>
+  </data>
+  <data name="Agent_BasicSalary" xml:space="preserve">
+    <value>الراتب الأساسي</value>
+  </data>
   <data name="Agent_Gender" xml:space="preserve">
     <value>الجنس</value>
   </data>
@@ -139,6 +145,15 @@
   <data name="Agent_IsRelated" xml:space="preserve">
     <value>ذو علاقة</value>
   </data>
+  <data name="Agent_Job" xml:space="preserve">
+    <value>الوظيفة</value>
+  </data>
+  <data name="Agent_OvertimeRate" xml:space="preserve">
+    <value>أجر العمل الإضافي</value>
+  </data>
+  <data name="Agent_StartDate" xml:space="preserve">
+    <value>تاريخ البدأ</value>
+  </data>
   <data name="Agent_TaxIdentificationNumber" xml:space="preserve">
     <value>رقم السجل الضريبي</value>
   </data>
@@ -147,6 +162,9 @@
   </data>
   <data name="Agent_Title" xml:space="preserve">
     <value>اللقب</value>
+  </data>
+  <data name="Agent_TransportationAllowance" xml:space="preserve">
+    <value>علاوة الترحيل</value>
   </data>
   <data name="Agent_User" xml:space="preserve">
     <value>المستخدم</value>
@@ -819,6 +837,9 @@
   </data>
   <data name="No" xml:space="preserve">
     <value>لا</value>
+  </data>
+  <data name="OperatingSegment" xml:space="preserve">
+    <value>قطاع التشغيل</value>
   </data>
   <data name="Or" xml:space="preserve">
     <value>أو</value>
