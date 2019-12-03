@@ -63,6 +63,7 @@ import { ReportDefinitionsImportComponent } from './report-definitions/report-de
 import { ResponsibilityCentersMasterComponent } from './responsibility-centers/responsibility-centers-master.component';
 import { ResponsibilityCentersDetailsComponent } from './responsibility-centers/responsibility-centers-details.component';
 import { ResponsibilityCentersPickerComponent } from './responsibility-centers/responsibility-centers-picker.component';
+import { ResourceClassificationsPickerComponent } from './resource-classifications/resource-classifications-picker.component';
 
 const routes: Routes = [
   {
@@ -153,17 +154,17 @@ const routes: Routes = [
 
       // Resource Classifications
       {
-        path: 'resource-classifications/:definitionId',
+        path: 'resource-classifications',
         component: ResourceClassificationsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'resource-classifications/:definitionId/import',
+        path: 'resource-classifications/import',
         component: ResourceClassificationsImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'resource-classifications/:definitionId/:id',
+        path: 'resource-classifications/:id',
         component: ResourceClassificationsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
@@ -375,7 +376,8 @@ const routes: Routes = [
     ReportDefinitionsImportComponent,
     ResponsibilityCentersMasterComponent,
     ResponsibilityCentersDetailsComponent,
-    ResponsibilityCentersPickerComponent
+    ResponsibilityCentersPickerComponent,
+    ResourceClassificationsPickerComponent
   ],
   imports: [
     SharedModule,

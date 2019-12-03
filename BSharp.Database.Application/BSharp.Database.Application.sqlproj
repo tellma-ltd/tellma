@@ -469,7 +469,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
-    <None Include="BSharp.publish.xml" />
     <None Include="Provisioning\90_IfrsConcepts.sql" />
     <None Include="Provisioning\91_IfrsDisclosures.sql" />
     <None Include="Tests\72_ResourceClassifications.sql" />
@@ -477,7 +476,6 @@
     <None Include="Tests\12_Purchasing.sql" />
     <None Include="Tests\14_Sales.sql" />
     <None Include="IntegrationTests.publish.xml" />
-    <None Include="BSharp.Database.Application.publish.xml" />
     <None Include="Tests\07_Resources_FinancialLiabilities.sql" />
     <None Include="Tests\07_Resources_FinancialAssets.sql" />
     <None Include="Tests\07_Resources_ProductionSupplies.sql" />

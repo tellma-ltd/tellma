@@ -14,52 +14,21 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
   selector: 'b-resource-classifications-details',
   templateUrl: './resource-classifications-details.component.html'
 })
-export class ResourceClassificationsDetailsComponent extends DetailsBaseComponent implements OnInit {
+export class ResourceClassificationsDetailsComponent extends DetailsBaseComponent {
 
-  private resourceClassificationsApi = this.api.resourceClassificationsApi('', this.notifyDestruct$); // for intellisense
-  private _definitionId: string;
-
-  @Input()
-  public set definitionId(t: string) {
-    if (this._definitionId !== t) {
-      this._definitionId = t;
-      this.resourceClassificationsApi = this.api.resourceClassificationsApi(t, this.notifyDestruct$);
-    }
-  }
-
-  public get definitionId(): string {
-    return this._definitionId;
-  }
+  private resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Parent';
 
   constructor(
-    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
-    private router: Router, private route: ActivatedRoute) {
+    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
-  }
 
-  ngOnInit() {
-    this.route.paramMap.subscribe((params: ParamMap) => {
-      // This triggers changes on the screen
-
-      if (this.isScreenMode) {
-
-        const definitionId = params.get('definitionId');
-
-        if (!definitionId || !this.workspace.current.definitions.Resources[definitionId]) {
-          this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
-        }
-
-        if (this.definitionId !== definitionId) {
-          this.definitionId = definitionId;
-        }
-      }
-    });
+    this.resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$);
   }
 
   get viewId(): string {
-    return `resources/${this.definitionId}`;
+    return `resource-classifications`;
   }
 
   create = () => {
@@ -72,7 +41,7 @@ export class ResourceClassificationsDetailsComponent extends DetailsBaseComponen
       result.Name3 = this.initialText;
     }
 
-    result.IsLeaf = false;
+    result.IsAssignable = true;
     return result;
   }
 
@@ -105,7 +74,7 @@ export class ResourceClassificationsDetailsComponent extends DetailsBaseComponen
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    const entityDesc = metadata_ResourceClassification(this.ws, this.translate, this.definitionId);
+    const entityDesc = metadata_ResourceClassification(this.ws, this.translate, null);
     return !!entityDesc ? entityDesc.titlePlural() : '???';
   }
 }

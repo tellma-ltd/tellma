@@ -13,20 +13,17 @@ using System.Threading.Tasks;
 
 namespace BSharp.Controllers
 {
-    [Route("api/" + BASE_ADDRESS + "{definitionId}")]
+    [Route("api/" + BASE_ADDRESS)]
     [ApplicationApi]
     public class ResourceClassificationsController : CrudTreeControllerBase<ResourceClassificationForSave, ResourceClassification, int>
     {
-        public const string BASE_ADDRESS = "resource-classifications/";
+        public const string BASE_ADDRESS = "resource-classifications";
 
         private readonly ApplicationRepository _repo;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
 
-        private string DefinitionId => RouteData.Values["definitionId"]?.ToString() ??
-            throw new BadRequestException("URI must be of the form 'api/resource-classifications/{definitionId}'");
-
-        private string ViewId => $"{BASE_ADDRESS}{DefinitionId}";
+        private string ViewId => BASE_ADDRESS;
 
         public ResourceClassificationsController(
             ILogger<ResourceClassificationsController> logger,
@@ -100,8 +97,7 @@ namespace BSharp.Controllers
 
         protected override IRepository GetRepository()
         {
-            string filter = $"{nameof(ResourceClassification.DefinitionId)} eq '{DefinitionId}'";
-            return new FilteredRepository<ResourceClassification>(_repo, filter);
+            return _repo;
         }
 
         protected override Query<ResourceClassification> Search(Query<ResourceClassification> query, GetArguments args, IEnumerable<AbstractPermission> filteredPermissions)
@@ -150,7 +146,7 @@ namespace BSharp.Controllers
 
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ResourceClassifications_Validate__Save(DefinitionId, entities, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceClassifications_Validate__Save(entities, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -158,14 +154,14 @@ namespace BSharp.Controllers
 
         protected override async Task<List<int>> SaveExecuteAsync(List<ResourceClassificationForSave> entities, ExpandExpression expand, bool returnIds)
         {
-            return await _repo.ResourceClassifications__Save(DefinitionId, entities, returnIds: returnIds);
+            return await _repo.ResourceClassifications__Save(entities, returnIds: returnIds);
         }
 
         protected override async Task DeleteValidateAsync(List<int> ids)
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ResourceClassifications_Validate__Delete(DefinitionId, ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceClassifications_Validate__Delete(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -187,7 +183,7 @@ namespace BSharp.Controllers
         {
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
-            var sqlErrors = await _repo.ResourceClassifications_Validate__DeleteWithDescendants(DefinitionId, ids, top: remainingErrorCount);
+            var sqlErrors = await _repo.ResourceClassifications_Validate__DeleteWithDescendants(ids, top: remainingErrorCount);
 
             // Add errors to model state
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
@@ -207,7 +203,7 @@ namespace BSharp.Controllers
 
         protected override Query<ResourceClassification> GetAsQuery(List<ResourceClassificationForSave> entities)
         {
-            return _repo.ResourceClassifications__AsQuery(DefinitionId, entities);
+            return _repo.ResourceClassifications__AsQuery(entities);
         }
     }
 }

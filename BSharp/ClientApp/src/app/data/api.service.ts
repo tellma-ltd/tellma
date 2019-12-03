@@ -84,10 +84,10 @@ export class ApiService {
     };
   }
 
-  public resourceClassificationsApi(definitionId: string, cancellationToken$: Observable<void>) {
+  public resourceClassificationsApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<ResourceClassification>(`resource-classifications/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<ResourceClassification>(`resource-classifications/${definitionId}`, cancellationToken$)
+      activate: this.activateFactory<ResourceClassification>(`resource-classifications`, cancellationToken$),
+      deactivate: this.deactivateFactory<ResourceClassification>(`resource-classifications`, cancellationToken$)
     };
   }
 

@@ -1431,14 +1431,12 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
         #region ResourceClassifications
 
-        public Query<ResourceClassification> ResourceClassifications__AsQuery(string definitionId, List<ResourceClassificationForSave> entities)
+        public Query<ResourceClassification> ResourceClassifications__AsQuery(List<ResourceClassificationForSave> entities)
         {
             // This method returns the provided entities as a Query that can be selected, filtered etc...
             // The Ids in the result are always the indices of the original collection, even when the entity has a string key
 
             // Parameters
-            SqlParameter definitionParameter = new SqlParameter("@DefinitionId", definitionId);
-
             DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
             SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
             {
@@ -1448,10 +1446,10 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
 
             // Query
             var query = Query<ResourceClassification>();
-            return query.FromSql($"[map].[{nameof(ResourceClassifications__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
+            return query.FromSql($"[map].[{nameof(ResourceClassifications__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
-        public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__Save(string definitionId, List<ResourceClassificationForSave> entities, int top)
+        public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__Save(List<ResourceClassificationForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1464,7 +1462,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                     SqlDbType = SqlDbType.Structured
                 };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@Top", top);
 
@@ -1477,7 +1474,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             }
         }
 
-        public async Task<List<int>> ResourceClassifications__Save(string definitionId, List<ResourceClassificationForSave> entities, bool returnIds)
+        public async Task<List<int>> ResourceClassifications__Save(List<ResourceClassificationForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -1491,7 +1488,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                     SqlDbType = SqlDbType.Structured
                 };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(entitiesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
@@ -1554,7 +1550,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__Delete(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__Delete(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1567,7 +1563,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                     SqlDbType = SqlDbType.Structured
                 };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@Top", top);
 
@@ -1611,7 +1606,7 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
             }
         }
 
-        public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__DeleteWithDescendants(string definitionId, List<int> ids, int top)
+        public async Task<IEnumerable<ValidationError>> ResourceClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
@@ -1624,7 +1619,6 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
                     SqlDbType = SqlDbType.Structured
                 };
 
-                cmd.Parameters.Add("@DefinitionId", definitionId);
                 cmd.Parameters.Add(idsTvp);
                 cmd.Parameters.Add("@Top", top);
 

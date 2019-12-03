@@ -1,6 +1,5 @@
-<b-details collection="ResourceClassification" [definition]="definitionId" [idString]="idString" [createFunc]="create"
-  [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb"
-  [documentTemplate]="document" [actions]="[
+<b-details collection="ResourceClassification" [idString]="idString" [createFunc]="create" [expand]="expand"
+  [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
@@ -55,51 +54,27 @@
   </b-form-group>
 
   <!-- Code -->
-  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
-    <div *ngIf="!isEdit">{{model?.Code}}</div>
+  <b-form-group class="b-form-group text-truncate" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Code">
+    <div *ngIf="!isEdit" [title]="model?.Code">{{model?.Code}}</div>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
   </b-form-group>
 
   <!-- Parent -->
   <b-form-group class="b-form-group" [label]="'TreeParent' | translate" [serverErrors]="model?.serverErrors?.ParentId">
     <b-restricted [metadata]="model?.EntityMetadata?.Parent">
-      <b-view-link *ngIf="!isEdit" [link]="'../../../resource-classifications/' + definitionId"
-        [itemId]="model?.ParentId">{{
+      <b-view-link *ngIf="!isEdit" link="../../resource-classifications" [itemId]="model?.ParentId">{{
         ws.getMultilingualValue('ResourceClassification', model?.ParentId, 'Name') }}</b-view-link>
     </b-restricted>
-    <b-details-picker *ngIf="isEdit" [(ngModel)]="model.ParentId" [definitionIds]="[definitionId]"
-      collection="ResourceClassification" [masterTemplate]="resourceClassificationsMaster"
-      [detailsTemplate]="resourceClassificationsDetail">
-    </b-details-picker>
-
-    <!-- The Resource Classifications Details Modal -->
-    <ng-template #resourceClassificationsDetail let-modal="modal" let-update="update" let-initialText="initialText"
-      let-definitionId="definitionId" let-idString="idString">
-      <div class="modal-body">
-        <b-resource-classifications-details mode="popup" [initialText]="initialText" [idString]="idString"
-          [definitionId]="definitionId" (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
-        </b-resource-classifications-details>
-      </div>
-    </ng-template>
-
-    <!-- The Resource Classifications Master Modal -->
-    <ng-template #resourceClassificationsMaster let-modal="modal" let-update="update" let-create="create"
-      let-definitionId="definitionId">
-      <div class="modal-body">
-        <b-resource-classifications-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId"
-          (choose)="modal.close(true); update($event); " (create)="modal.close(false); create()">
-        </b-resource-classifications-master>
-      </div>
-    </ng-template>
-
+    <b-resource-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ParentId">
+    </b-resource-classifications-picker>
   </b-form-group>
 
-  <!-- Is Leaf -->
-  <b-form-group class="b-form-group" [label]="'IsLeaf' | translate">
-    <div *ngIf="!isEdit">{{ (model?.IsLeaf ? 'Yes' : 'No') | translate }}</div>
+  <!-- Is Assignable -->
+  <b-form-group class="b-form-group" [label]="'IsAssignable' | translate">
+    <div *ngIf="!isEdit">{{ (model?.IsAssignable ? 'Yes' : 'No') | translate }}</div>
     <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
-      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsLeaf" id="isLeaf">
-      <label class="custom-control-label b-pointer" for="isLeaf">&zwnj;</label>
+      <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsAssignable" id="isAssignable">
+      <label class="custom-control-label b-pointer" for="isAssignable">&zwnj;</label>
     </div>
   </b-form-group>
 
