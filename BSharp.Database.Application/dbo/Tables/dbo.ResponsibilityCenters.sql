@@ -17,7 +17,7 @@ WSI
 */
 -- some operations are used in the line corresponding to production event
 	[Id]					INT					CONSTRAINT [PK_ResponsibilityCenters] PRIMARY KEY IDENTITY,
-	[ResponsibilityTypeId]	NVARCHAR (255)		NOT NULL CONSTRAINT [CK_ResponsibilityCenters__ResponsibilityTypeId] CHECK ([ResponsibilityTypeId] IN (
+	[ResponsibilityType]	NVARCHAR (50)		NOT NULL CONSTRAINT [CK_ResponsibilityCenters__ResponsibilityType] CHECK ([ResponsibilityType] IN (
 													N'Investment', N'Profit', N'Revenue', N'Cost')
 												),
 	[IsLeaf]				BIT					NOT NULL DEFAULT 1,
@@ -29,7 +29,7 @@ WSI
 	[ManagerId]				INT					CONSTRAINT [FK_ResponsibilityCenters__ManagerId] REFERENCES dbo.Agents([Id]),
 
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
-	 -- Only leaves can have data. Parents are represented by an extra leaf.
+	 -- TODO: bll. Only leaves can have data. Parents are represented by an extra leaf.
 	[ParentId]				INT					CONSTRAINT [FK_ResponsibilityCenters__ParentId] REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 	[Code]					NVARCHAR (255),
 
