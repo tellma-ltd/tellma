@@ -2,10 +2,10 @@
 	DECLARE @BananIT int, @Regus int, @NocJimma INT, @Toyota INT;
 	INSERT INTO @Suppliers
 	([Index], [Name],								[StartDate],	[OperatingSegmentId], [TaxIdentificationNumber]) VALUES
-	(0,		N'Banan Information technologies, plc',	'2017.09.15',	@OS_WSI,				NULL),
-	(1,		N'Regus',								'2018.01.05',	@OS_BananIT,			N'4544287'),
-	(2,		N'Noc Jimma Ber Service Station',		'2018.03.11',	@OS_WSI,				NULL),
-	(3,		N'Toyota, Ethiopia',					'2019.03.19',	@OS_WSI,				NULL);
+	(0,		N'Banan Information technologies, plc',	'2017.09.15',	@OS_Steel,				NULL),
+	(1,		N'Regus',								'2018.01.05',	@OS_IT,			N'4544287'),
+	(2,		N'Noc Jimma Ber Service Station',		'2018.03.11',	@OS_Steel,				NULL),
+	(3,		N'Toyota, Ethiopia',					'2019.03.19',	@OS_Steel,				NULL);
 
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'suppliers',

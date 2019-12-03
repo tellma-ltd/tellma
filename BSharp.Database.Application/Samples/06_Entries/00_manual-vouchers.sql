@@ -4,11 +4,11 @@
 BEGIN -- Inserting
 	INSERT INTO @D
 	([Index],	[DocumentDate], [Memo],									[OperatingSegmentId]) VALUES
-	(0,			'2018.01.01',	N'Capital investment',					@OS_BananIT),
-	(1,			'2018.01.01',	N'Exchange of $50000',					@OS_BananIT),
-	(2,			'2018.01.05',	N'Vehicles purchase receipt on account',@OS_BananIT),
-	(3,			'2018.01.06',	N'Putting one vehicle into use',		@OS_BananIT),
-	(4,			'2018.01.25',	N'Office Rental Q1',					@OS_BananIT);
+	(0,			'2018.01.01',	N'Capital investment',					@OS_IT),
+	(1,			'2018.01.01',	N'Exchange of $50000',					@OS_IT),
+	(2,			'2018.01.05',	N'Vehicles purchase receipt on account',@OS_IT),
+	(3,			'2018.01.06',	N'Putting one vehicle into use',		@OS_IT),
+	(4,			'2018.01.25',	N'Office Rental Q1',					@OS_IT);
 /*	
 	(5,			'2018.01.27',	N'Vehicles Invoice payment'),
 	(6,			'2018.01.30',	N'Rental payment'),
