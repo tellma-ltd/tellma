@@ -109,9 +109,6 @@
   <data name="AccountType" xml:space="preserve">
     <value>نوع حساب</value>
   </data>
-  <data name="AccountType_IsAssignable" xml:space="preserve">
-    <value>متاح للاستخدام</value>
-  </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>أنواع حسابات</value>
   </data>
@@ -712,6 +709,9 @@
   <data name="IsActive" xml:space="preserve">
     <value>منشط</value>
   </data>
+  <data name="IsAssignable" xml:space="preserve">
+    <value>متاح للاستخدام</value>
+  </data>
   <data name="IsLeaf" xml:space="preserve">
     <value>بدون فروع</value>
   </data>
@@ -1176,6 +1176,9 @@
   </data>
   <data name="ResourceClassification" xml:space="preserve">
     <value>تصنيف أصل</value>
+  </data>
+  <data name="ResourceClassification_ResourceDefinition" xml:space="preserve">
+    <value>تعريف الموارد</value>
   </data>
   <data name="ResourceClassifications" xml:space="preserve">
     <value>تصنيفات أصول</value>

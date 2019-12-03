@@ -317,26 +317,10 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
 
       const resources = this.ws.definitions.Resources;
       for (const definitionId of Object.keys(resources)) {
-        const entityDesc1 = metadata_Resource(this.ws, this.translate, definitionId);
-        if (!!entityDesc1) {
-          this._viewsDb[entityDesc1.apiEndpoint] = {
-            name: entityDesc1.titlePlural,
-            actions: {
-              All: { supportsCriteria: false, supportsMask: false },
-              Read: { supportsCriteria: true, supportsMask: true },
-              Update: { supportsCriteria: true, supportsMask: true },
-              Delete: { supportsCriteria: true, supportsMask: false },
-              IsActive: { supportsCriteria: true, supportsMask: false },
-            }
-          };
-        } else {
-          console.error(`Could not find resource definitionId '${definitionId}'`);
-        }
-
-        const entityDesc2 = metadata_ResourceClassification(this.ws, this.translate, definitionId);
-        if (!!entityDesc2) {
-          this._viewsDb[entityDesc2.apiEndpoint] = {
-            name: entityDesc2.titlePlural,
+        const entityDesc = metadata_Resource(this.ws, this.translate, definitionId);
+        if (!!entityDesc) {
+          this._viewsDb[entityDesc.apiEndpoint] = {
+            name: entityDesc.titlePlural,
             actions: {
               All: { supportsCriteria: false, supportsMask: false },
               Read: { supportsCriteria: true, supportsMask: true },

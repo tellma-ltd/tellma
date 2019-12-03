@@ -5,23 +5,21 @@ import { EntityDescriptor } from './base/metadata';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
-import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { GENERIC } from './base/constants';
 
 export class ResourceClassificationForSave extends EntityForSave {
+  ParentId: number;
   Name: string;
   Name2: string;
   Name3: string;
   Code: string;
-  ParentId: number;
-  IsLeaf: boolean;
+  ResourceDefinitionId: string;
+  IsAssignable: boolean;
 }
 
 export class ResourceClassification extends ResourceClassificationForSave {
-  DefinitionId: string;
   Level: number;
-  ChildCount: number;
   ActiveChildCount: number;
+  ChildCount: number;
   IsActive: boolean;
   CreatedAt: string;
   CreatedById: number | string;
@@ -31,49 +29,46 @@ export class ResourceClassification extends ResourceClassificationForSave {
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
 let _settings: SettingsForClient;
-let _definitions: DefinitionsForClient;
-let _cache: { [defId: string]: EntityDescriptor } = {};
-let _definitionIds: string[];
+let _cache: EntityDescriptor;
 
-export function metadata_ResourceClassification(ws: TenantWorkspace, trx: TranslateService, definitionId: string): EntityDescriptor {
+export function metadata_ResourceClassification(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
   // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  if (ws.settings !== _settings || ws.definitions !== _definitions) {
+  if (ws.settings !== _settings) {
     _settings = ws.settings;
-    _definitions = ws.definitions;
-    _definitionIds = null;
 
     // clear the cache
-    _cache = {};
+    _cache = null;
   }
 
-  const key = definitionId || GENERIC;
-  if (!_cache[key]) {
+  if (!_cache) {
 
-    if (!_definitionIds) {
-        _definitionIds = Object.keys(ws.definitions.Resources);
-    }
-
-    const definedDefinitionId = !!definitionId && definitionId !== GENERIC;
     const entityDesc: EntityDescriptor = {
       collection: 'MeasurementUnit',
-      definitionId,
-      definitionIds: _definitionIds,
       titleSingular: () => trx.instant('ResourceClassification'),
       titlePlural: () => trx.instant('ResourceClassifications'),
       select: _select,
-      apiEndpoint: definedDefinitionId ? `resource-classifications/${definitionId}` : 'resource-classifications',
-      screenUrl: definedDefinitionId ? `resource-classifications/${definitionId}` : 'resource-classifications',
+      apiEndpoint: 'resource-classifications',
+      screenUrl: 'resource-classifications',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
+
         Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
-        IsLeaf: { control: 'boolean', label: () => trx.instant('IsLeaf') },
+        ResourceDefinitionId: {
+          control: 'text',
+          label: () => `${trx.instant('ResourceClassification_ResourceDefinition')} (${trx.instant('Id')})`
+        },
+        IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
 
         // tree stuff
+        ParentId: {
+          control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`,
+          minDecimalPlaces: 0, maxDecimalPlaces: 0
+        },
         Parent: {
           control: 'navigation', label: () => trx.instant('TreeParent'), type: 'ResourceClassification',
           foreignKeyName: 'ParentId'
@@ -107,25 +102,8 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
       delete entityDesc.properties.Name3;
     }
 
-    const definition = _definitions.Resources[definitionId];
-    if (!definition) {
-      if (definitionId !== GENERIC) {
-        // Programmer mistake
-        console.error(`defintionId '${definitionId}' doesn't exist`);
-      }
-    } else {
-      // Singular will be called "Classification" for short
-      entityDesc.titleSingular = () => trx.instant('Classification') || '???';
-
-      // Plural will be something like "Raw Materials - Classifications"
-      entityDesc.titlePlural = () => {
-        const resourceTitlePlural = ws.getMultilingualValueImmediate(definition, 'TitlePlural');
-        return !!resourceTitlePlural ? `${resourceTitlePlural} - ${trx.instant('Classifications')}` : '???';
-      };
-    }
-
-    _cache[key] = entityDesc;
+    _cache = entityDesc;
   }
 
-  return _cache[key];
+  return _cache;
 }

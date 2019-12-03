@@ -34,7 +34,7 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "IsAssignable")]
+        [Display(Name = "ResourceClassification_ResourceDefinition")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public string ResourceDefinitionId { get; set; }
@@ -91,5 +91,7 @@ namespace BSharp.Entities
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
+
+        // TODO: ResourceDefinition
     }
 }

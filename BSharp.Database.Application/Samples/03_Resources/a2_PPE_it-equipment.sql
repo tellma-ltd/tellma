@@ -11,22 +11,29 @@
 			N'Optional', N'Manufacturer', N'it-equipment-manufacturers',
 			N'Optional', N'Operating System', N'operating-systems'
 		);
-	
-	DECLARE @ITEquipmentDescendants ResourceClassificationList;
+
+			DECLARE @ComputerEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'ComputerEquipment');
+			DECLARE @CommunicationAndNetworkEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'CommunicationAndNetworkEquipment');
+			DECLARE @NetworkInfrastructureId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'NetworkInfrastructure');
+
+
+
+	DECLARE @ITEquipmentDescendants dbo.ResourceClassificationList;
 	INSERT INTO @ITEquipmentDescendants ([Index],
-		[Code],					[Name],			[Path],			[IsAssignable], [ResourceDefinitionId]) VALUES
+		[Code],					[Name],			[ParentId],			[IsAssignable], [ResourceDefinitionId]) VALUES
 	--N'ComputerEquipment',						N'/1/1/6/'
-	(0, N'ComputersExtension',	N'Computers',	N'/1/1/6/1/',	1,				N'it-equipment'),
-	(1, N'ServersExtension',	N'Servers',		N'/1/1/6/2/',	1,				N'it-equipment'),
-	(2, N'DesktopsExtension',	N'Desktops',	N'/1/1/6/3/',	1,				N'it-equipment'),
-	(3, N'LaptopsExtension',	N'Laptops',		N'/1/1/6/4/',	1,				N'it-equipment'),
+	(0, N'ComputersExtension',	N'Computers',	@ComputerEquipmentId,	1,				N'it-equipment'),
+	(1, N'ServersExtension',	N'Servers',		@ComputerEquipmentId,	1,				N'it-equipment'),
+	(2, N'DesktopsExtension',	N'Desktops',	@ComputerEquipmentId,	1,				N'it-equipment'),
+	(3, N'LaptopsExtension',	N'Laptops',		@ComputerEquipmentId,	1,				N'it-equipment'),
 	--(N'CommunicationAndNetworkEquipment',		N'/1/1/7/'
-	(4, N'MobilesExtension',	N'Mobiles',		N'/1/1/7/1/',	1,				N'it-equipment'),
-	(5, N'PrintersExtension',	N'Printers',	N'/1/1/7/2/',	1,				N'it-equipment'),
+	(4, N'MobilesExtension',	N'Mobiles',		@CommunicationAndNetworkEquipmentId,	1,				N'it-equipment'),
+	(5, N'PrintersExtension',	N'Printers',	@CommunicationAndNetworkEquipmentId,	1,				N'it-equipment'),
 	--N'NetworkInfrastructure',					N'/1/1/8/'
-	(6, N'RoutersExtension',	N'Routers',		N'/1/1/8/1/',	1,				N'it-equipment');
+	(6, N'RoutersExtension',	N'Routers',		@NetworkInfrastructureId,	1,				N'it-equipment');
 	
-	EXEC [api].[ResourceClassifications__Save]
+
+EXEC [api].[ResourceClassifications__Save]
 		@Entities = @ITEquipmentDescendants,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

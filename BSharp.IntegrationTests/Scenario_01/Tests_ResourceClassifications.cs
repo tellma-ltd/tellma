@@ -20,10 +20,11 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
 
         public readonly string _baseAddress = "resource-classifications";
-        public readonly string _definitionId = "raw-materials";
 
-        public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific resource definition
-        public string ViewId => $"{_baseAddress}/{_definitionId}"; // For permissions
+        public string Url => $"/api/{_baseAddress}"; // For querying and updating specific resource definition
+        public string ViewId => _baseAddress; // For permissions
+
+        private string _definitionId = "monetary-resources";
 
 
         [Fact(DisplayName = "01 Getting all resource classifications before granting permissions returns a 403 Forbidden response")]
@@ -56,8 +57,8 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Assert the result makes sense
             Assert.Equal("ResourceClassification", responseData.CollectionName);
 
-            Assert.Equal(0, responseData.TotalCount);
-            Assert.Empty(responseData.Result);
+            Assert.Equal(3, responseData.TotalCount);
+            Assert.NotEmpty(responseData.Result);
         }
 
         [Fact(DisplayName = "03 Getting a non-existent resource classification id returns a 404 Not Found")]
@@ -76,6 +77,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Prepare a well formed entity
             var dtoForSave = new ResourceClassificationForSave
             {
+                ResourceDefinitionId = _definitionId,
                 Name = "Sheet Metals",
                 Name2 = "صفائح المعدن",
                 Code = "SM",
@@ -102,7 +104,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var responseDto = responseData.Result.SingleOrDefault();
 
             Assert.NotNull(responseDto?.Id);
-            Assert.Equal(_definitionId, responseDto.DefinitionId);
+            Assert.Equal(_definitionId, responseDto.ResourceDefinitionId);
             Assert.Equal(dtoForSave.Name, responseDto.Name);
             Assert.Equal(dtoForSave.Name2, responseDto.Name2);
             Assert.Equal(dtoForSave.Code, responseDto.Code);
@@ -129,7 +131,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal("ResourceClassification", getByIdResponse.CollectionName);
 
             var responseDto = getByIdResponse.Result;
-            Assert.Equal(_definitionId, responseDto.DefinitionId);
+            Assert.Equal(_definitionId, responseDto.ResourceDefinitionId);
             Assert.Equal(id, responseDto.Id);
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Equal(entity.Name2, responseDto.Name2);
@@ -144,6 +146,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var list = new List<ResourceClassificationForSave> {
                 new ResourceClassificationForSave
                 {
+                    ResourceDefinitionId = _definitionId,
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "SM",
@@ -177,6 +180,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // trailing spaces in some string properties
             var dtoForSave = new ResourceClassificationForSave
             {
+                ResourceDefinitionId = _definitionId,
                 Name = "  Hollow Section", // Leading space
                 Name2 = "مقطع أجوف",
                 Code = "HS  ", // Trailing space

@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[ResourceClassifications] (
 	[Id]					INT					CONSTRAINT [PK_ResourceClassificatons]  PRIMARY KEY NONCLUSTERED IDENTITY,
+	[ParentId]				INT,
 	[Code]					NVARCHAR (255)		CONSTRAINT [IX_ResourceClassifications__Code] UNIQUE NONCLUSTERED,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),

@@ -115,6 +115,15 @@ export const VIEWS_BUILT_IN: { [viewId: string]: ViewInfo } = {
             li('IsActive', false)
         ]
     },
+    'resource-classifications': {
+        name: 'ResourceClassifications',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [
+            li('IsActive', false)
+        ]
+    },
 
     'settings': {
         name: 'Settings',

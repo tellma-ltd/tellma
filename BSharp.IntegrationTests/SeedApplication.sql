@@ -51,10 +51,10 @@ IF NOT EXISTS(SELECT * FROM [dbo].[ResourceDefinitions] WHERE [Id] = N'monetary-
 -- Resource Types
 DECLARE @ResourceClassifications dbo.ResourceClassificationList
 INSERT INTO @ResourceClassifications
-([Code],									[Name],											[Node],		[IsAssignable], [Index], [ResourceDefinitionId]) VALUES
-(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					N'/1/13/',		1,				0, N'monetary-resources'),
-	(N'Cash',								N'Cash',										N'/2/1/1/',		1,				1, N'monetary-resources'),
-	(N'CashEquivalents',					N'Cash equivalents',							N'/2/1/2/',		1,				2, N'monetary-resources');
+([Code],									[Name],											[ParentIndex],		[IsAssignable], [Index], [ResourceDefinitionId]) VALUES
+(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					NULL,		1,				0, N'monetary-resources'),
+	(N'Cash',								N'Cash',										0,		1,				1, N'monetary-resources'),
+	(N'CashEquivalents',					N'Cash equivalents',							0,		1,				2, N'monetary-resources');
 
 DECLARE @ValidationErrorsJson nvarchar(max);
 EXEC [api].[ResourceClassifications__Save]

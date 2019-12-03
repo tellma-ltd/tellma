@@ -3,9 +3,9 @@ INSERT INTO dbo.ResourceDefinitions (
 	[Id],	[TitlePlural],	[TitleSingular]) VALUES
 (N'Basic',	N'Items',		N'Item');
 	
-DECLARE @ResourceClassifications dbo.ResourceClassificationList
-INSERT INTO @ResourceClassifications
-([Code],										[Name],											[Path],		[IsAssignable], [Index]) VALUES
+DECLARE @ResourceClassificationsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT, [Index] INT)
+INSERT INTO @ResourceClassificationsTemp
+([Code],									[Name],											[Node],		[IsAssignable], [Index]) VALUES
 -- Non financial resources
 (N'NonFinancialAssets',							N'Non financial assets',						N'/1/',			0,0),
 	(N'PropertyPlantAndEquipment',				N'Property, plant and equipment',				N'/1/1/',		0,1),
@@ -124,6 +124,12 @@ INSERT INTO @ResourceClassifications
 --(N'InsuranceContractsIssuedThatAreLiabilities',	N'Insurance contracts issued that are liabilities',	N'/2/4/',1),
 --(N'ReinsuranceContractsHeldThatAreLiabilities',	N'Reinsurance contracts held that are liabilities',	N'/2/5/',1),
 
+
+DECLARE @ResourceClassifications dbo.ResourceClassificationList
+
+INSERT INTO @ResourceClassifications ([Code], [Name], [ParentIndex], [IsAssignable], [Index])
+SELECT [Code], [Name], (SELECT [Index] FROM @ResourceClassificationsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index]
+FROM @ResourceClassificationsTemp RC
 				
 EXEC [api].[ResourceClassifications__Save]
 	@Entities = @ResourceClassifications,

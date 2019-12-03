@@ -109,9 +109,6 @@
   <data name="AccountType" xml:space="preserve">
     <value>Account Type</value>
   </data>
-  <data name="AccountType_IsAssignable" xml:space="preserve">
-    <value>Is Assignable</value>
-  </data>
   <data name="AccountTypes" xml:space="preserve">
     <value>Account Types</value>
   </data>
@@ -712,6 +709,9 @@
   <data name="IsActive" xml:space="preserve">
     <value>Is Active</value>
   </data>
+  <data name="IsAssignable" xml:space="preserve">
+    <value>Is Assignable</value>
+  </data>
   <data name="IsLeaf" xml:space="preserve">
     <value>Is Leaf</value>
   </data>
@@ -1176,6 +1176,9 @@
   </data>
   <data name="ResourceClassification" xml:space="preserve">
     <value>Resource Classification</value>
+  </data>
+  <data name="ResourceClassification_ResourceDefinition" xml:space="preserve">
+    <value>Resource Definition</value>
   </data>
   <data name="ResourceClassifications" xml:space="preserve">
     <value>Resource Classifications</value>

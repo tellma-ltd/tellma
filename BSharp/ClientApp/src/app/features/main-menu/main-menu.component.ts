@@ -72,6 +72,10 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units', sortKey: 300 },
         { label: 'Settings', icon: 'cog', link: '../settings', viewId: 'settings', sortKey: 400 },
         { label: 'ReportDefinitions', icon: 'cog', link: '../report-definitions', viewId: 'report-definitions', sortKey: 500 },
+        {
+          label: 'ResourceClassifications', icon: 'tasks',
+          link: '../resource-classifications', viewId: 'resource-classifications', sortKey: 600
+        },
       ]
     },
     Miscellaneous: { // TODO
@@ -119,9 +123,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.addDefinitions(menu, this.workspace.current.definitions.Agents, 'agents');
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
       this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');
-      this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resource-classifications',
-        d => (this.workspace.current.getMultilingualValueImmediate(d, 'TitlePlural') ||
-          this.translate.instant('Untitled')) + ' - ' + this.translate.instant('Classifications'));
 
       this.addDefinitions(menu, this.workspace.current.definitions.Reports, 'report',
         d => this.workspace.current.getMultilingualValueImmediate(d, 'Title') || this.translate.instant('Untitled'));

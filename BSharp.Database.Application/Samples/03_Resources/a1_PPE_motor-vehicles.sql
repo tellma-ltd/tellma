@@ -3,11 +3,13 @@
 		[Id],			[TitlePlural],		[TitleSingular],	[DescriptorIdLabel],[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
 	(N'motor-vehicles',	N'Motor Vehicles',	N'Motor Vehicle',	N'Plate #',			N'Required',		N'Make',		N'vehicle-makes');
 	
+	DECLARE @ParentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'MotorVehicles');
+	 
 	DECLARE @MotorVehicleDescendants ResourceClassificationList;
 	INSERT INTO @MotorVehicleDescendants ([Index],
-		[Code],					[Name],			[Path],			[IsAssignable], [ResourceDefinitionId]) VALUES
-	(0, N'CarsExtension',		N'Cars',		N'/1/1/3/3/1/',	1,				N'motor-vehicles'),
-	(1, N'MinivansExtension',	N'Minivans',	N'/1/1/3/3/2/',	1,				N'motor-vehicles');
+		[Code],					[Name],			[ParentId],	[IsAssignable], [ResourceDefinitionId]) VALUES
+	(0, N'CarsExtension',		N'Cars',		@ParentId,	1,				N'motor-vehicles'),
+	(1, N'MinivansExtension',	N'Minivans',	@ParentId,	1,				N'motor-vehicles');
 
 	EXEC [api].[ResourceClassifications__Save]
 		@Entities = @MotorVehicleDescendants,

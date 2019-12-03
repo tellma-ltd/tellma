@@ -12,6 +12,9 @@ export class MasterBaseComponent implements OnDestroy {
   // and complements a b-master in the root of its HTML template
 
   @Input()
+  showCreate = true; // For details pickers
+
+  @Input()
   public mode: 'screen' | 'popup' = 'screen';
 
   @Output()
