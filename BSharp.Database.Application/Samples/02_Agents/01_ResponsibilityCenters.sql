@@ -25,7 +25,7 @@ DECLARE @OS_Steel INT, @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@
 		@RC_SalesAG INT, @RC_SalesBole INT, @OS_IT INT, @OS_CarAssembly INT;
 
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-	[Name],							[Code], [ResponsibilityTypeId], [IsOperatingSegment], [ParentIndex]) VALUES
+	[Name],							[Code], [ResponsibilityType], [IsOperatingSegment], [ParentIndex]) VALUES
 (0,0,N'Steel Manufacturing',		N'1',	N'Investment',				1,					NULL),
 (1,1,N'Executive Office',			N'10',	N'Cost',					0,					0),
 (2,1,N'Finance',					N'12',	N'Cost',					0,					0),

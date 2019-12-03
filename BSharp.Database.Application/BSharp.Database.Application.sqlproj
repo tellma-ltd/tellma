@@ -432,9 +432,8 @@
     <None Include="Samples\02_Agents\03_Customers.sql" />
     <None Include="Samples\02_Agents\04_Employees.sql" />
     <None Include="Samples\02_Agents\01_ResponsibilityCenters.sql" />
-    <None Include="Samples\05_Accounts\b_AccountClassifications.sql" />
-    <None Include="Samples\05_Accounts\c_gl-accounts.sql" />
-    <None Include="Samples\05_Accounts\d_tax-accounts.sql" />
+    <None Include="Samples\05_Accounts\a_AccountClassifications.sql" />
+    <None Include="Samples\05_Accounts\b_BasicAccounts.sql" />
     <None Include="Samples\06_Entries\00_manual-vouchers.sql" />
     <None Include="Samples\06_Entries\01_petty-cash-vouchers.sql" />
     <None Include="Samples\FillSampleData.sql" />
@@ -466,6 +465,7 @@
     <Build Include="api\Stored Procedures\api.Currencies__Save.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Activate.sql" />
+    <Build Include="dbo\User Defined Types\dbo.AccountTypeList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

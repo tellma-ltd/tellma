@@ -41,7 +41,7 @@ WHERE LDE.ResourceSource = 2 AND E.ResourceId = L.ResourceId
 -- When using manual line, Copy information from Account to entries
 UPDATE E 
 SET
-	E.[AccountTypeId]			= A.[AccountTypeId],
+	E.[ContractType]			= A.[ContractType],
 	E.[AgentDefinitionId]		= A.[AgentDefinitionId],
 	E.[ResourceClassificationId]= COALESCE(A.[ResourceClassificationId], E.[ResourceClassificationId]),
 	E.[IsCurrent]				= COALESCE(A.[IsCurrent], E.[IsCurrent]),
@@ -52,7 +52,7 @@ SET
 	E.[EntryClassificationId]	= COALESCE(A.[EntryClassificationId], E.[EntryClassificationId])
 FROM @FilledEntries E JOIN @FilledLines L ON E.DocumentLineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
-WHERE L.DefinitionId = N'ManualLine'; -- Entered by user
+WHERE L.DefinitionId = N'ManualLine' AND A.[IsSmart] = 1; -- Entered by user
 
 -- for all lines, Get currency and descriptor from Resources if available.
 UPDATE E 

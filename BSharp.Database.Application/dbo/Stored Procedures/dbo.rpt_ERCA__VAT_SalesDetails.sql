@@ -10,7 +10,7 @@ BEGIN
 		N'' As [Description]
 	FROM dbo.[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN dbo.Agents A ON J.[RelatedAgentId] = A.Id
-	WHERE J.[AccountTypeId] = N'CurrentValueAddedTaxPayables'
+	WHERE J.[ContractType] = N'CurrentValueAddedTaxPayables'
 	AND J.Direction = -1
 END
 GO;

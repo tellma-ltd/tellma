@@ -45,7 +45,12 @@
 		:r .\03_Resources\a4_PPE_general-fixed-assets.sql
 		:r .\03_Resources\b_Inventories_raw-materials.sql
 		:r .\03_Resources\d1_FG_vehicles.sql
+		--:r .\03_Resources\d2_FG_steel-products.sql
+		--:r .\03_Resources\e1_CCE_received-checks.sql
+		--:r .\03_Resources\h_PL_employee-benefits.sql
 
+		:r .\05_Accounts\a_AccountClassifications.sql
+		:r .\05_Accounts\b_BasicAccounts.sql
 RETURN;
 ERR_LABEL:
 	SELECT * FROM OpenJson(@ValidationErrorsJson)
