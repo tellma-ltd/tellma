@@ -120,7 +120,7 @@
     <Property Name="NewName" Value="[fn_RCCode__Id]" />
   </Operation>
   <Operation Name="Rename Refactor" Key="33488d64-53c9-4e36-96f8-e3382ee0fb66" ChangeDateTime="12/03/2019 08:23:22">
-    <Property Name="ElementName" Value="[dbo].[ResponsibilityCenters].[ResponsibilityTypeId]" />
+    <Property Name="ElementName" Value="[dbo].[ResponsibilityCenters].[ResponsibilityType]" />
     <Property Name="ElementType" Value="SqlSimpleColumn" />
     <Property Name="ParentElementName" Value="[dbo].[ResponsibilityCenters]" />
     <Property Name="ParentElementType" Value="SqlTable" />

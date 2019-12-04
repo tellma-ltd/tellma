@@ -23,6 +23,7 @@ export class AgentForSave extends EntityWithKey {
   TransportationAllowance: number;
   OvertimeRate: number;
   BankAccountNumber: number;
+  UserId: number;
   Image: string;
 }
 
@@ -87,6 +88,8 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
         TransportationAllowance: { control: 'number', label: () => trx.instant('Agent_TransportationAllowance'), minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
         OvertimeRate: { control: 'number', label: () => trx.instant('Agent_OvertimeRate'), minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
         BankAccountNumber: { control: 'text', label: () => trx.instant('Agent_BankAccountNumber') },
+        UserId: { control: 'number', label: () => `${trx.instant('Agent_User')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        User: { control: 'navigation', label: () => trx.instant('Agent_User'), type: 'User', foreignKeyName: 'UserId' },
         IsRelated: { control: 'boolean', label: () => trx.instant('Agent_IsRelated') },
         IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
         CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
@@ -112,7 +115,21 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
       }
     } else {
 
-      // TODO: Definition customizations
+      // properties whose label is overridden by the definition
+      const simpleLabelProps = ['StartDate'];
+      for (const propName of simpleLabelProps) {
+        const propDesc = entityDesc.properties[propName];
+        const defaultLabel = propDesc.label;
+        propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
+      }
+
+      // properties whose visibility is overridden by the definition
+      const simpleVisibilityProps = ['TaxIdentificationNumber', 'StartDate', 'Job', 'BasicSalary', 'TransportationAllowance', 'OvertimeRate', 'BankAccountNumber'];
+      for (const propName of simpleVisibilityProps) {
+        if (!definition[propName + 'Visibility']) {
+          delete entityDesc.properties[propName];
+        }
+      }
     }
 
     _cache[key] = entityDesc;

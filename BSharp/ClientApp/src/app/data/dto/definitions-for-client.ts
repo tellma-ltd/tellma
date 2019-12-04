@@ -231,6 +231,14 @@ export interface LookupDefinitionForClient extends MasterDetailsDefinitionForCli
 }
 
 export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClient {
-    Bla: string;
+    TaxIdentificationNumberVisibility?: string;
+    StartDateVisibility?: string;
+    StartDateLabel?: string;
+    StartDateLabel2?: string;
+    StartDateLabel3?: string;
+    JobVisibility?: string;
+    BasicSalaryVisibility?: string;
+    TransportationAllowanceVisibility?: string;
+    OvertimeRateVisibility?: string;
+    BankAccountNumberVisibility?: string;
 }
-

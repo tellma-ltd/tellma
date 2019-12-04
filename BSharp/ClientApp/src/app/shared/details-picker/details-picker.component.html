@@ -57,7 +57,7 @@
 
 <ng-template #masterWrapperTemplate let-modal>
   <ng-container
-    *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal, filter: filter, definitionId: definitionId }">
+    *ngTemplateOutlet="masterTemplate;context: { create: onCreateFromKeyDown, update: onUpdate, modal: modal, filter: queryFilter, definitionId: definitionId }">
   </ng-container>
 </ng-template>
 
@@ -75,9 +75,9 @@
   <!-- body -->
   <div class="modal-body">
     <div class="mb-2"> {{ 'CreateOptionsMessage' | translate }} </div>
-    <div class="d-inline-block" *ngFor="let definitionId of definitionIds; let i= index" [placement]="placement"
+    <div class="d-inline-block" *ngFor="let definitionId of createOptions; let i= index" [placement]="placement"
       [ngbTooltip]="createFromOptionsTooltip(definitionId)">
-      <button class="btn btn-primary m-1" (click)="modal.close(definitionId)" ngbAutofocus
+      <button class="btn btn-primary m-1" (click)="modal.close(definitionId)"
         [disabled]="!canCreateFromOptions(definitionId)">
         {{ optionName(definitionId) }}
       </button>

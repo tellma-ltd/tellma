@@ -329,7 +329,7 @@
               <!-- Checkboxes -->
               <th class="b-multiselect-th">
                 <div class="mx-2">
-                  <div class="custom-control custom-checkbox b-labelless-checkbox" *ngIf="isScreenMode">
+                  <div class="custom-control custom-checkbox b-labelless-checkbox" *ngIf="showCheckboxes">
                     <input type="checkbox" class="custom-control-input" id="checkAll" [ngModel]="areAllChecked"
                       (ngModelChange)="onCheckAll()" [disabled]="!canCheckAll">
                     <label class="custom-control-label b-pointer" for="checkAll">&zwnj;</label>
@@ -448,7 +448,7 @@
         <ng-template #checkboxesColumn let-id="id">
 
           <!-- In screen mode, this column contains the multiselect checkboxes -->
-          <td *ngIf="isScreenMode">
+          <td *ngIf="showCheckboxes">
             <div class="mx-2">
 
               <!-- checkbox -->
@@ -460,7 +460,7 @@
           </td>
 
           <!-- In popup mode, this column is merely a clickable margin -->
-          <td class="b-pointer" (click)="onSelect(id)" *ngIf="!isScreenMode">
+          <td class="b-pointer" (click)="onSelect(id)" *ngIf="!showCheckboxes">
 
           </td>
         </ng-template>

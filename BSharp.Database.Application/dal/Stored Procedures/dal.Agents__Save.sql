@@ -33,7 +33,8 @@ SET NOCOUNT ON;
 				[TransportationAllowance],
 				[OvertimeRate],
 				[BankAccountNumber],
-				[CostObjectType]
+				[CostObjectType],
+				[UserId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
 		WHEN MATCHED
@@ -92,6 +93,7 @@ SET NOCOUNT ON;
 				t.[OvertimeRate]			= s.[OvertimeRate],
 				t.[BankAccountNumber]		= s.[BankAccountNumber],
 				t.[CostObjectType]			= s.[CostObjectType],
+				t.[UserId]					= s.[UserId],
 
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -113,7 +115,8 @@ SET NOCOUNT ON;
 				[TransportationAllowance],
 				[OvertimeRate],
 				[BankAccountNumber],
-				[CostObjectType]
+				[CostObjectType],
+				[UserId]
 				)
 			VALUES (s.[OperatingSegmentId],
 				s.[DefinitionId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[IsRelated], 
@@ -131,7 +134,8 @@ SET NOCOUNT ON;
 				s.[TransportationAllowance],
 				s.[OvertimeRate],
 				s.[BankAccountNumber],
-				s.[CostObjectType]
+				s.[CostObjectType],
+				s.[UserId]
 				)
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;

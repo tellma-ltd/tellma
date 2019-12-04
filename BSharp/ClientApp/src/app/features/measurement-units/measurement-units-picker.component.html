@@ -13,7 +13,7 @@
 </ng-template>
 
 <!-- The Measurement Unit Master Modal -->
-<ng-template #measurementUnitsMaster let-modal="modal" let-update="update" let-create="create">
+<ng-template #measurementUnitsMaster let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
         <b-measurement-units-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
             (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">

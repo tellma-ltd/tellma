@@ -75,7 +75,8 @@
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TaxIdentificationNumber">
       <div>{{ model?.TaxIdentificationNumber }}</div>
     </b-restricted>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber" [ngModelOptions]="{ updateOn: 'blur' }">
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="d['TaxIdentificationNumberVisibility'] === 'Required'">
     </b-text-editor>
   </b-form-group>
 
@@ -84,12 +85,12 @@
     [serverErrors]="model?.serverErrors?.OperatingSegmentId">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OperatingSegment">
       <b-view-link *ngIf="!isEdit" link="../../../responsibility-centers" [itemId]="model?.OperatingSegmentId">
-        <b-auto-cell collection="Agent" [entity]="model" path="OperatingSegment">
+        <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="OperatingSegment">
         </b-auto-cell>
       </b-view-link>
     </b-restricted>
     <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.OperatingSegmentId"
-      filter="IsOperatingSegment eq true" [required]="d['OperatingSegmentVisibility'] === 'Required'">
+      filter="IsOperatingSegment eq true">
     </b-responsibility-centers-picker>
   </b-form-group>
 
@@ -97,10 +98,11 @@
   <b-form-group class="b-form-group" *ngIf="!!p.StartDate" [label]="p['StartDate'].label()"
     [serverErrors]="model?.serverErrors?.StartDate">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.StartDate">
-      <b-auto-cell collection="Agent" [entity]="model" path="StartDate">
+      <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="StartDate">
       </b-auto-cell>
     </b-restricted>
-    <b-date-picker *ngIf="isEdit" [(ngModel)]="model.StartDate" [ngModelOptions]="{ updateOn: 'blur' }">
+    <b-date-picker *ngIf="isEdit" [(ngModel)]="model.StartDate" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="d['StartDateVisibility'] === 'Required'">
     </b-date-picker>
   </b-form-group>
 
@@ -108,10 +110,11 @@
   <b-form-group class="b-form-group" *ngIf="!!p.BasicSalary" [label]="p['BasicSalary'].label()"
     [serverErrors]="model?.serverErrors?.BasicSalary">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BasicSalary">
-      <b-auto-cell collection="Agent" [entity]="model" path="BasicSalary">
+      <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="BasicSalary">
       </b-auto-cell>
     </b-restricted>
-    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BasicSalary" [ngModelOptions]="{ updateOn: 'blur' }">
+    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BasicSalary" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="d['BasicSalaryVisibility'] === 'Required'">
     </b-decimal-editor>
   </b-form-group>
 
@@ -119,11 +122,11 @@
   <b-form-group class="b-form-group" *ngIf="!!p.TransportationAllowance" [label]="p['TransportationAllowance'].label()"
     [serverErrors]="model?.serverErrors?.TransportationAllowance">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TransportationAllowance">
-      <b-auto-cell collection="Agent" [entity]="model" path="TransportationAllowance">
+      <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="TransportationAllowance">
       </b-auto-cell>
     </b-restricted>
-    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.TransportationAllowance"
-      [ngModelOptions]="{ updateOn: 'blur' }">
+    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.TransportationAllowance" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="d['TransportationAllowanceVisibility'] === 'Required'">
     </b-decimal-editor>
   </b-form-group>
 
@@ -131,10 +134,11 @@
   <b-form-group class="b-form-group" *ngIf="!!p.OvertimeRate" [label]="p['OvertimeRate'].label()"
     [serverErrors]="model?.serverErrors?.OvertimeRate">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OvertimeRate">
-      <b-auto-cell collection="Agent" [entity]="model" path="OvertimeRate">
+      <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="OvertimeRate">
       </b-auto-cell>
     </b-restricted>
-    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.OvertimeRate" [ngModelOptions]="{ updateOn: 'blur' }">
+    <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.OvertimeRate" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="d['OvertimeRateVisibility'] === 'Required'">
     </b-decimal-editor>
   </b-form-group>
 
@@ -144,8 +148,23 @@
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BankAccountNumber">
       <div>{{ model?.BankAccountNumber }}</div>
     </b-restricted>
-    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BankAccountNumber" [ngModelOptions]="{ updateOn: 'blur' }">
+    <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BankAccountNumber" [ngModelOptions]="{ updateOn: 'blur' }"
+      [required]="d['BankAccountNumberVisibility'] === 'Required'">
     </b-text-editor>
+  </b-form-group>
+
+  
+  <!-- User -->
+  <b-form-group class="b-form-group" *ngIf="!!p.UserId" [label]="p['User'].label()"
+    [serverErrors]="model?.serverErrors?.UserId">
+    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.User">
+      <b-view-link *ngIf="!isEdit" link="../../../users" [itemId]="model?.UserId">
+        <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="User">
+        </b-auto-cell>
+      </b-view-link>
+    </b-restricted>
+    <b-users-picker *ngIf="isEdit" [(ngModel)]="model.UserId">
+    </b-users-picker>
   </b-form-group>
 
   <!-- Is Related -->

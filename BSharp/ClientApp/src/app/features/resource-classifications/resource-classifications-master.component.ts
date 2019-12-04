@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
@@ -6,7 +6,6 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
-import { ParamMap, ActivatedRoute, Router } from '@angular/router';
 import { metadata_ResourceClassification } from '~/app/data/entities/resource-classification';
 
 @Component({
@@ -16,7 +15,6 @@ import { metadata_ResourceClassification } from '~/app/data/entities/resource-cl
 export class ResourceClassificationsMasterComponent extends MasterBaseComponent {
 
   private resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$); // for intellisense
-  private _definitionId: string;
 
   public expand = '';
 

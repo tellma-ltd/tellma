@@ -1,6 +1,10 @@
 import { Component, Input, HostBinding, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DetailsPickerComponent } from '~/app/shared/details-picker/details-picker.component';
+import { metadata_Agent } from '~/app/data/entities/agent';
+import { WorkspaceService } from '~/app/data/workspace.service';
+import { TranslateService } from '@ngx-translate/core';
+import { GENERIC } from '~/app/data/entities/base/constants';
 
 @Component({
   selector: 'b-agents-picker',
@@ -22,6 +26,9 @@ export class AgentsPickerComponent implements ControlValueAccessor {
   @ViewChild(DetailsPickerComponent, { static: true })
   picker: DetailsPickerComponent;
 
+  constructor(private workspace: WorkspaceService, private translate: TranslateService) {
+  }
+
   writeValue(obj: any): void {
     this.picker.writeValue(obj);
   }
@@ -34,4 +41,9 @@ export class AgentsPickerComponent implements ControlValueAccessor {
   setDisabledState?(isDisabled: boolean): void {
     this.picker.setDisabledState(isDisabled);
   }
+
+  // public getDefinitionIds(): string[] {
+  //   return (!!this.definitionIds && this.definitionIds.length > 0) ? this.definitionIds :
+  //     metadata_Agent(this.workspace.current, this.translate, GENERIC).definitionIds;
+  // }
 }

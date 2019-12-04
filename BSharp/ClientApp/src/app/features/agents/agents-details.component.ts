@@ -32,7 +32,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return this._definitionId;
   }
 
-  public expand = 'OperatingSegment';
+  public expand = 'OperatingSegment,User';
 
   create = () => {
     const result = new AgentForSave();

@@ -19,9 +19,6 @@ export class MeasurementUnitsMasterComponent extends MasterBaseComponent {
 
   public expand = '';
 
-  @Input()
-  filter: string;
-
   constructor(private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
     this.measurementUnitsApi = this.api.measurementUnitsApi(this.notifyDestruct$);

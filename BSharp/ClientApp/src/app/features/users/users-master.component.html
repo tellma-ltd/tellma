@@ -1,4 +1,4 @@
-<b-master collection="User"  [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile"
+<b-master collection="User"  [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile" [showCreateButton]="showCreate"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Email,State,LastAccess"
   selectForTiles="ImageId,State,Email" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },

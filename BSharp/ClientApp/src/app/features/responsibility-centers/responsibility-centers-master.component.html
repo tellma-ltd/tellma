@@ -1,18 +1,18 @@
 <b-master collection="ResponsibilityCenter" [mode]="mode" [enableTreeView]="true"
     [masterCrumb]="'ResponsibilityCenters' | translate" [tileTemplate]="tile" [filterDefault]="filter"
     [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-    selectDefault="Code,ResponsibilityTypeId" selectForTiles="Code, ResponsibilityTypeId" [multiselectActions]="[
+    selectDefault="Code,ResponsibilityType" selectForTiles="Code, ResponsibilityType" [multiselectActions]="[
           { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
           { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
-            'ResponsibilityTypeId' : [
-                { template: investment, expression: 'ResponsibilityTypeId eq \'Investment\''},
-                { template: profit, expression: 'ResponsibilityTypeId eq \'Profit\''},
-                { template: revenue, expression: 'ResponsibilityTypeId eq \'Revenue\''},
-                { template: cost, expression: 'ResponsibilityTypeId eq \'Cost\''}
+            'ResponsibilityType' : [
+                { template: investment, expression: 'ResponsibilityType eq \'Investment\''},
+                { template: profit, expression: 'ResponsibilityType eq \'Profit\''},
+                { template: revenue, expression: 'ResponsibilityType eq \'Revenue\''},
+                { template: cost, expression: 'ResponsibilityType eq \'Cost\''}
             ]
           }">
 </b-master>

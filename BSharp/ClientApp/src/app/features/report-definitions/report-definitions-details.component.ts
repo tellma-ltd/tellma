@@ -112,6 +112,45 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     return result;
   }
 
+  clone: (item: ReportDefinition) => ReportDefinition = (item: ReportDefinition) => {
+    if (!!item) {
+      const clone = JSON.parse(JSON.stringify(item)) as ReportDefinition;
+      clone.Id = null;
+
+      if (!!clone.Select) {
+        clone.Select.forEach(e => {
+          e.Id = null;
+        });
+      }
+      if (!!clone.Parameters) {
+        clone.Parameters.forEach(e => {
+          e.Id = null;
+        });
+      }
+      if (!!clone.Rows) {
+        clone.Rows.forEach(e => {
+          e.Id = null;
+        });
+      }
+      if (!!clone.Columns) {
+        clone.Columns.forEach(e => {
+          e.Id = null;
+        });
+      }
+      if (!!clone.Measures) {
+        clone.Measures.forEach(e => {
+          e.Id = null;
+        });
+      }
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
+  }
+
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
     private route: ActivatedRoute, private modalService: NgbModal) {

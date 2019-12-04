@@ -23,7 +23,7 @@ namespace BSharp.Entities
                 "ResponsibilityCenter_ResponsibilityType_Profit",
                 "ResponsibilityCenter_ResponsibilityType_Revenue",
                 "ResponsibilityCenter_ResponsibilityType_Cost" })]
-        public string ResponsibilityTypeId { get; set; }
+        public string ResponsibilityType { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]

@@ -13,9 +13,9 @@
 </ng-template>
 
 <!-- The Resource Master Modal -->
-<ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId">
+<ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId" let-filter="filter">
     <div class="modal-body">
-        <b-resources-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId"
+        <b-resources-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
             (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
         </b-resources-master>
     </div>

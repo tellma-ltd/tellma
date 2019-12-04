@@ -176,13 +176,11 @@ namespace BSharp.Controllers.Dto
         public byte MassUnit_Visibility { get; set; }
         public int? MassUnit_DefaultValue { get; set; }
 
-
         public string VolumeUnit_Label { get; set; }
         public string VolumeUnit_Label2 { get; set; }
         public string VolumeUnit_Label3 { get; set; }
         public byte VolumeUnit_Visibility { get; set; }
         public int? VolumeUnit_DefaultValue { get; set; }
-
 
         public string AreaUnit_Label { get; set; }
         public string AreaUnit_Label2 { get; set; }
@@ -190,13 +188,11 @@ namespace BSharp.Controllers.Dto
         public byte AreaUnit_Visibility { get; set; }
         public int? AreaUnit_DefaultValue { get; set; }
 
-
         public string LengthUnit_Label { get; set; }
         public string LengthUnit_Label2 { get; set; }
         public string LengthUnit_Label3 { get; set; }
         public byte LengthUnit_Visibility { get; set; }
         public int? LengthUnit_DefaultValue { get; set; }
-
 
         public string TimeUnit_Label { get; set; }
         public string TimeUnit_Label2 { get; set; }
@@ -204,13 +200,11 @@ namespace BSharp.Controllers.Dto
         public byte TimeUnit_Visibility { get; set; }
         public int? TimeUnit_DefaultValue { get; set; }
 
-
         public string CountUnit_Label { get; set; }
         public string CountUnit_Label2 { get; set; }
         public string CountUnit_Label3 { get; set; }
         public byte CountUnit_Visibility { get; set; }
         public int? CountUnit_DefaultValue { get; set; }
-
 
         public string Memo_Label { get; set; }
         public string Memo_Label2 { get; set; }
@@ -268,7 +262,16 @@ namespace BSharp.Controllers.Dto
 
     public class AgentDefinitionForClient : MasterDetailDefinitionForClient
     {
-        // TODO
+        public string TaxIdentificationNumberVisibility { get; set; }
+        public string StartDateVisibility { get; set; }
+        public string StartDateLabel { get; set; }
+        public string StartDateLabel2 { get; set; }
+        public string StartDateLabel3 { get; set; }
+        public string JobVisibility { get; set; }
+        public string BasicSalaryVisibility { get; set; }
+        public string TransportationAllowanceVisibility { get; set; }   
+        public string OvertimeRateVisibility { get; set; }
+        public string BankAccountNumberVisibility { get; set; }
     }
 
     public class LookupDefinitionForClient : MasterDetailDefinitionForClient
@@ -276,11 +279,17 @@ namespace BSharp.Controllers.Dto
 
     }
 
-    public static class Visibility
+    public static class VisibilityOld
     {
         public const byte Hidden = 0;
         public const byte Visible = 1;
         public const byte Required = 2;
+    }
+
+    public static class Visibility
+    {
+        public const string Optional = "Optional";
+        public const string Required = "Required";
     }
 
     public static class AccountVisibility

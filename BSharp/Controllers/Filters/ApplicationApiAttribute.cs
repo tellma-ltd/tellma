@@ -212,6 +212,11 @@ namespace BSharp.Controllers
                             MainMenuIcon = "clipboard",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 3m,
+
+                            TaxIdentificationNumberVisibility = Visibility.Optional,
+                            StartDateVisibility = Visibility.Optional,
+                            StartDateLabel = "Birth Date",
+                            StartDateLabel2 = "تاريخ الميلاد",
                         },
                         ["employees"] = new AgentDefinitionForClient
                         {
@@ -224,6 +229,16 @@ namespace BSharp.Controllers
                             MainMenuIcon = "clipboard",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 4m,
+
+                            TaxIdentificationNumberVisibility = Visibility.Optional,
+                            StartDateVisibility = Visibility.Optional,
+                            StartDateLabel = "Birth Date",
+                            StartDateLabel2 = "تاريخ الميلاد",
+                            JobVisibility = Visibility.Optional,
+                            BasicSalaryVisibility = Visibility.Optional,
+                            TransportationAllowanceVisibility = Visibility.Optional,
+                            OvertimeRateVisibility = Visibility.Optional,
+                            BankAccountNumberVisibility = Visibility.Optional,
                         },
                         ["suppliers"] = new AgentDefinitionForClient
                         {
@@ -236,6 +251,9 @@ namespace BSharp.Controllers
                             MainMenuIcon = "clipboard",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 5m,
+
+                            TaxIdentificationNumberVisibility = Visibility.Required,
+                            BankAccountNumberVisibility = Visibility.Optional,
                         }
                     },
 
@@ -255,16 +273,16 @@ namespace BSharp.Controllers
 
                             Lookup1_Label = "Thickness",
                             Lookup1_Label2 = "السماكة",
-                            Lookup1_Visibility = Visibility.Visible,
+                            Lookup1_Visibility = VisibilityOld.Visible,
                             Lookup1_DefinitionId = "thicknesses",
 
-                            MassUnit_Visibility = Visibility.Visible,
-                            VolumeUnit_Visibility = Visibility.Visible,
-                            AreaUnit_Visibility = Visibility.Visible,
-                            LengthUnit_Visibility = Visibility.Visible,
-                            TimeUnit_Visibility = Visibility.Visible,
-                            CountUnit_Visibility = Visibility.Visible,
-                            Memo_Visibility = Visibility.Visible,
+                            MassUnit_Visibility = VisibilityOld.Visible,
+                            VolumeUnit_Visibility = VisibilityOld.Visible,
+                            AreaUnit_Visibility = VisibilityOld.Visible,
+                            LengthUnit_Visibility = VisibilityOld.Visible,
+                            TimeUnit_Visibility = VisibilityOld.Visible,
+                            CountUnit_Visibility = VisibilityOld.Visible,
+                            Memo_Visibility = VisibilityOld.Visible,
                             Memo_DefaultValue = "My default memo",
                         },
                         ["finished-goods"] = new ResourceDefinitionForClient
@@ -280,7 +298,7 @@ namespace BSharp.Controllers
                             MainMenuSortKey = 204m,
                             Lookup1_Label = "Color",
                             Lookup1_Label2 = "اللون",
-                            Lookup1_Visibility = Visibility.Visible,
+                            Lookup1_Visibility = VisibilityOld.Visible,
                             Lookup1_DefinitionId = "colors"
                         }
                     },

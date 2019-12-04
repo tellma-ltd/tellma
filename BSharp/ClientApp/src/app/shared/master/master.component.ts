@@ -941,7 +941,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   get showImport(): boolean {
-    return !this.isPopupMode && this.showImportButton;
+    return !this.isPopupMode && this.showImportButton && !this.missingDefinitionId;
   }
 
   get showExport(): boolean {
@@ -1021,16 +1021,25 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     this.router.navigate(['.', 'import'], { relativeTo: this.route });
   }
 
+  private get missingDefinitionId(): boolean {
+    return !!this.entityDescriptor.definitionIds && !this.definition;
+  }
+
   onSelect(id: number | string) {
     if (this.isPopupMode) {
       this.choose.emit(id);
     } else {
-      this.router.navigate(['.', id], { relativeTo: this.route });
+      if (this.missingDefinitionId) {
+        const definitionId = this.workspace.current[this.collection][id].DefinitionId;
+        this.router.navigate(['.', definitionId, id], { relativeTo: this.route });
+      } else {
+        this.router.navigate(['.', id], { relativeTo: this.route });
+      }
     }
   }
 
   get showCreate() {
-    return this.showCreateButton;
+    return this.showCreateButton && (this.isPopupMode || !this.missingDefinitionId);
   }
 
   get canCreatePermissions(): boolean {
@@ -1244,6 +1253,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   // Multiselect-related stuff
+
+  public get showCheckboxes(): boolean {
+    return this.isScreenMode && !this.missingDefinitionId;
+  }
+
   public get canCheckAll(): boolean {
     return this.displayedIds.length > 0;
   }

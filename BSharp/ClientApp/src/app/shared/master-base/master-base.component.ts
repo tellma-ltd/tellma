@@ -17,6 +17,9 @@ export class MasterBaseComponent implements OnDestroy {
   @Input()
   public mode: 'screen' | 'popup' = 'screen';
 
+  @Input()
+  filter: string;
+
   @Output()
   choose = new EventEmitter<number | string>();
 

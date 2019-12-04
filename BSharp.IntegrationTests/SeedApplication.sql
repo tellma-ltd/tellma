@@ -43,6 +43,11 @@ VALUES (@UserId, @RoleId)
 IF NOT EXISTS(SELECT * FROM [dbo].[LookupDefinitions] WHERE [Id] = N'colors')
 	INSERT INTO [dbo].[LookupDefinitions]([Id])
 	VALUES(N'colors');
+	
+
+IF NOT EXISTS(SELECT * FROM [dbo].[AgentDefinitions] WHERE [Id] = N'customers')
+	INSERT INTO [dbo].[AgentDefinitions]([Id])
+	VALUES(N'customers');
 
 IF NOT EXISTS(SELECT * FROM [dbo].[ResourceDefinitions] WHERE [Id] = N'monetary-resources')
 	INSERT INTO [dbo].[ResourceDefinitions]([Id])

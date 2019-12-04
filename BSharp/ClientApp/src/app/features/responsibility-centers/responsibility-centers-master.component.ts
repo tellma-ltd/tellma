@@ -14,9 +14,6 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ResponsibilityCentersMasterComponent extends MasterBaseComponent {
 
-  @Input()
-  filter: string;
-
   private responsibilityCenterApi = this.api.responsibilityCenterApi(this.notifyDestruct$); // for intellisense
 
   public expand = '';

@@ -1,0 +1,21 @@
+<b-details-picker [filter]="filter" collection="User" [masterTemplate]="usersMaster"
+    [detailsTemplate]="showCreate ? usersDetail : null">
+</b-details-picker>
+
+<!-- The Details Modal -->
+<ng-template #usersDetail let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
+    <div class="modal-body">
+        <b-users-details mode="popup" [initialText]="initialText" [idString]="idString" (cancel)="modal.close(false);"
+            (saved)="modal.close(true); update($event);" [showRoles]="showRoles">
+        </b-users-details>
+    </div>
+</ng-template>
+
+<!-- The Master Modal -->
+<ng-template #usersMaster let-modal="modal" let-update="update" let-create="create" let-filter="filter">
+    <div class="modal-body">
+        <b-users-master mode="popup" (cancel)="modal.close(false);" [showCreate]="showCreate" [filter]="filter"
+            (choose)="modal.close(true); update($event); " (create)="modal.close(false); create()">
+        </b-users-master>
+    </div>
+</ng-template>
