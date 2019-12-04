@@ -4,8 +4,10 @@
 -- Trade Debtors: migrated to DefinitionId = N'trade-debtors-accounts', and to Account classification Trade debtors
 -- Trade Creditors: same story 
 	[Id]							INT					CONSTRAINT [PK_Accounts] PRIMARY KEY IDENTITY,
+	[ResponsibilityCenterId]		INT					CONSTRAINT [FK_Accounts__ResponsibilityCenterId] REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 	[AccountClassificationId]		INT					CONSTRAINT [FK_Accounts__AccountClassificationId] 
 														REFERENCES [dbo].[AccountClassifications] ([Id]) ON DELETE CASCADE,
+	[IsSmart]						BIT					NOT NULL DEFAULT 0,
 	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
@@ -14,8 +16,25 @@
 
 -- Major properties: NULL means it is not defined.
 	[AccountTypeId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Accounts__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
+	[ContractType]					NVARCHAR (50) CONSTRAINT [CK_Accounts__ContractType] CHECK ( [ContractType] IN (
+										N'OnHand',
+										N'OnDemand',
+										N'InTransit',
+										N'Receivable',--/PrepaidExpense
+										N'Deposit',
+										N'Loan',
+										N'AccruedIncome',
+										N'Equity',
+										N'AccruedExpense',
+										N'Payable',--/UnearnedRevenue
+										N'Retention',
+										N'Borrowing',
+										N'Revenue',
+										N'Expense'
+									)),
 	[AgentDefinitionId]				NVARCHAR (50),
-	[ResourceClassificationId]		INT					NOT NULL CONSTRAINT [FK_Accounts__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
+	[ResourceClassificationId]		INT					CONSTRAINT [FK_Accounts__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
+	CONSTRAINT [CK_Accounts__IsSmart_ResourceClassificationId] CHECK ([IsSmart] = 0 OR [ResourceClassificationId] IS NOT NULL AND [ContractType] IS NOT NULL),
 	[IsCurrent]						BIT,
 -- Minor properties: range of values is restricted by defining a major property. For example, if AccountTypeId = N'Payable', then responsibility center
 -- must be an operating segment. 
@@ -24,7 +43,6 @@
 --	b) if the type itself is not null, then it is to be defined in entries.
 	[AgentId]						INT					CONSTRAINT [FK_Accounts__AgentId] REFERENCES [dbo].[Agents] ([Id]),
 	[ResourceId]					INT					CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
-	[ResponsibilityCenterId]		INT					CONSTRAINT [FK_Accounts__ResponsibilityCenterId] REFERENCES [dbo].[ResponsibilityCenters] ([Id]),
 	[DescriptorId]					NVARCHAR (10)		CONSTRAINT [FK_Accounts__DescriptorId] REFERENCES dbo.AccountDescriptors([Id]), -- to resolve Uniqueness Constraint
 -- Entry Property
 	[EntryClassificationId]			INT					CONSTRAINT [FK_Accounts__EntryClassificationId] REFERENCES dbo.[EntryClassifications],
@@ -38,7 +56,7 @@
 );
 GO
 --CREATE UNIQUE INDEX [IX_Accounts__Id_AccountDefinitionId] ON dbo.Accounts([Id], [AccountTypeId]);
-CREATE UNIQUE INDEX [IX_Accounts__Id_AccountTypeId_AgentDefinitionId_] ON dbo.Accounts(
+CREATE UNIQUE INDEX [IX_Accounts__Id_AccountTypeId_AgentDefinitionId_ResourceClassificationId] ON dbo.Accounts(
 			[AccountTypeId],
 			[AgentDefinitionId],
 			[ResourceClassificationId],
@@ -48,4 +66,4 @@ CREATE UNIQUE INDEX [IX_Accounts__Id_AccountTypeId_AgentDefinitionId_] ON dbo.Ac
 			[ResponsibilityCenterId],
 			[DescriptorId],
 			[EntryClassificationId]
-);
+) WHERE [IsSmart] = 1;

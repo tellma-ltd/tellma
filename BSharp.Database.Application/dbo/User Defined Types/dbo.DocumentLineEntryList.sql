@@ -6,7 +6,22 @@
 	[EntryNumber]				INT					NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT,
 	[AccountId]					INT,
-	[AccountTypeId]				NVARCHAR (50),
+	[ContractType]				NVARCHAR (50) CHECK ( [ContractType] IN (
+										N'OnHand',
+										N'OnDemand',
+										N'InTransit',
+										N'Receivable',--/PrepaidExpense
+										N'Deposit',
+										N'Loan',
+										N'AccruedIncome',
+										N'Equity',
+										N'AccruedExpense',
+										N'Payable',--/UnearnedRevenue
+										N'Retention',
+										N'Borrowing',
+										N'Revenue',
+										N'Expense'
+									)),
 	[AgentDefinitionId]			NVARCHAR (50),
 	[ResourceClassificationId]	INT,
 	[IsCurrent]					BIT,

@@ -15,6 +15,7 @@ SET NOCOUNT ON;
 		USING (
 			SELECT
 				E.[Index], E.[Id], E.[ParentId],
+				-- TODO: use index and last node number to add a tree that is pre-sorted
 				hierarchyid::Parse('/' + CAST(-ABS(CHECKSUM(NewId()) % 2147483648) AS VARCHAR(30)) + '/') AS [Node],
 				E.[Name], E.[Name2], E.[Name3], E.[Code], E.[ResourceDefinitionId], E.[IsAssignable]
 			FROM @Entities E
@@ -68,8 +69,6 @@ SET NOCOUNT ON;
 	MERGE INTO [dbo].[ResourceClassifications] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
-
-
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

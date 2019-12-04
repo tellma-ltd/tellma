@@ -1,13 +1,17 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
 		[Id],			[TitlePlural],		[TitleSingular],	[DescriptorIdLabel], [DescriptorIdVisibility]) VALUES
 	( N'raw-materials',	N'Raw Materials',	N'Raw Material',	N'Roll #',			N'Optional');
-
-	DECLARE @RawMaterialsDescendants ResourceClassificationList;
-	INSERT INTO @RawMaterialsDescendants ([Index],
-		[Code],					[Name],			[Path],			[IsAssignable], [ResourceDefinitionId]) VALUES
+	DECLARE @RawMaterialsDescendantsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT DEFAULT 1, [Index] INT, [ResourceDefinitionId] NVARCHAR (50))
+	INSERT INTO @RawMaterialsDescendantsTemp ([Index],
+		[Code],					[Name],			[Node],			[IsAssignable], [ResourceDefinitionId]) VALUES
 --		(N'RawMaterials',					N'Raw materials',								N'/1/11/1/1/',	1,29),
 	(0, N'HotRollExtension',	N'Hot Roll',	N'/1/11/1/1/1/',	1,				N'raw-materials'),
 	(1, N'ColdRollExtension',	N'Cold Roll',	N'/1/11/1/1/2/',	1,				N'raw-materials');
+	
+	DECLARE @RawMaterialsDescendants ResourceClassificationList;
+	INSERT INTO @RawMaterialsDescendants ([Code], [Name], [ParentIndex], [IsAssignable], [Index], [ResourceDefinitionId])
+	SELECT [Code], [Name], (SELECT [Index] FROM @RawMaterialsDescendantsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index], [ResourceDefinitionId]
+	FROM @RawMaterialsDescendantsTemp RC
 
 	EXEC [api].[ResourceClassifications__Save]
 		@Entities = @RawMaterialsDescendants,
@@ -21,9 +25,9 @@
 	
 	DECLARE @RawMaterials dbo.ResourceList;
 	INSERT INTO @RawMaterials ([Index], [OperatingSegmentId],
-		[ResourceClassificationId],						[Name],				[Code],			[DescriptorId], [MassUnitId],			[CountUnitId],				[Lookup1Id]) VALUES
+		[ResourceClassificationId],						[Name],					[Code],			[DescriptorId], [MassUnitId],			[CountUnitId],				[Lookup1Id]) VALUES
 	(0, @OS_Steel, dbo.fn_RCCode__Id(N'HotRollExtension'),N'HR 1000MMx1.9MM',	N'HR1000x1.9',	N'1001',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'),dbo.fn_Lookup(N'steel-thicknesses', N'1.9')),
-	(1, @OS_Steel, dbo.fn_RCCode__Id(N'ColdRollExtension'),N'CR 1000MMx1.4MM',N'CR1000x1.4',	N'1002',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'),dbo.fn_Lookup(N'steel-thicknesses', N'1.4'));
+	(1, @OS_Steel, dbo.fn_RCCode__Id(N'ColdRollExtension'),N'CR 1000MMx1.4MM',	N'CR1000x1.4',	N'1002',	dbo.fn_UnitName__Id(N'Kg'),	dbo.fn_UnitName__Id(N'pcs'),dbo.fn_Lookup(N'steel-thicknesses', N'1.4'));
 	-- For RM, we use the descriptor - if any - in Entries
 
 	EXEC [api].[Resources__Save]

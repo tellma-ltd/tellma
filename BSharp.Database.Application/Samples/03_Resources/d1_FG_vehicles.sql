@@ -2,9 +2,10 @@
 	[Id],		[TitlePlural],	[TitleSingular], [Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId], [DescriptorIdVisibility]) VALUES
 	(N'skds',	N'SKDs',		N'SKD',			N'Required',			N'Body Color',	N'body-colors',		N'Required');
 	
-	DECLARE @FGVehiclesDescendants ResourceClassificationList;
-	INSERT INTO @FGVehiclesDescendants ([Index], -- N'vehicles'
-	[Code],						[Name],		[Path],			[ResourceDefinitionId]) VALUES
+	DECLARE @FGVehiclesDescendantsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT DEFAULT 1, [Index] INT, [ResourceDefinitionId] NVARCHAR (50))
+
+	INSERT INTO @FGVehiclesDescendantsTemp ([Index], -- N'vehicles'
+	[Code],						[Name],		[Node],			[ResourceDefinitionId]) VALUES
 --	N'FinishedGoods',					N'/1/11/5/'
 	(0,N'FGCarsExtension',		N'Cars',	N'/1/11/5/1/',	N'skds'),
 	(1,N'FGSedanExtension',		N'Sedan',	N'/1/11/5/1/1/',N'skds'),
@@ -12,7 +13,13 @@
 	(3,N'FGSportsExtension',	N'Sports',	N'/1/11/5/1/3/',N'skds'),
 	(4,N'FGTrucksExtension',	N'Trucks',	N'/1/11/5/2/',	N'skds');
 
-	UPDATE @FGVehiclesDescendants SET IsAssignable = 0 WHERE [Index] = 0;
+	UPDATE @FGVehiclesDescendantsTemp SET IsAssignable = 0 WHERE [Index] = 0;
+
+	DECLARE @FGVehiclesDescendants ResourceClassificationList;
+
+	INSERT INTO @FGVehiclesDescendants ([Code], [Name], [ParentIndex], [IsAssignable], [Index], [ResourceDefinitionId])
+	SELECT [Code], [Name], (SELECT [Index] FROM @FGVehiclesDescendantsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index], [ResourceDefinitionId]
+	FROM @FGVehiclesDescendantsTemp RC
 
 	EXEC [api].[ResourceClassifications__Save]
 	@Entities = @FGVehiclesDescendants,

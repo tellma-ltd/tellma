@@ -32,7 +32,7 @@ RETURN
 		V.[Direction],
 		A.[AccountClassificationId],
 		V.[AccountId],		
-		V.[AccountTypeId],
+		V.[ContractType],
 		V.[AgentDefinitionId],
 		V.[ResourceClassificationId],
 		V.[IsCurrent],		

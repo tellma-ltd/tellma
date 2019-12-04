@@ -21,7 +21,7 @@ AS
 		E.[EntryNumber],
 		E.[Direction],
 		E.[AccountId],		
-		E.[AccountTypeId],
+		E.[ContractType],
 		E.[AgentDefinitionId],
 		E.[ResourceClassificationId],
 		E.[IsCurrent],		

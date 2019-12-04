@@ -6,17 +6,10 @@ AS
 BEGIN
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
-	DECLARE @FilledAccounts [dbo].[AccountList];
-
-	INSERT INTO @FilledAccounts
-	SELECT * FROM @Entities;
-	--EXEC bll.Accounts__Fill
-	--	@DefinitionId = @DefinitionId,
-	--	@Accounts = @Accounts;
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Accounts_Validate__Save]
-		@Entities = @FilledAccounts;
+		@Entities = @Entities;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -29,6 +22,6 @@ SET NOCOUNT ON;
 		RETURN;
 
 	EXEC [dal].[Accounts__Save]
-		@Entities = @FilledAccounts,
+		@Entities = @Entities,
 		@ReturnIds = @ReturnIds;
 END;

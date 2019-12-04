@@ -6,7 +6,22 @@
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountId]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
 
-	[AccountTypeId]				NVARCHAR (50)	NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
+	[ContractType]				NVARCHAR (50)	CONSTRAINT [CK_DocumentLineEntries__ContractType] CHECK ( [ContractType] IN (
+										N'OnHand',
+										N'OnDemand',
+										N'InTransit',
+										N'Receivable',--/PrepaidExpense
+										N'Deposit',
+										N'Loan',
+										N'AccruedIncome',
+										N'Equity',
+										N'AccruedExpense',
+										N'Payable',--/UnearnedRevenue
+										N'Retention',
+										N'Borrowing',
+										N'Revenue',
+										N'Expense'
+									)),
 	[AgentDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
 	[ResourceClassificationId]	INT				CONSTRAINT [FK_DocumentLineEntries__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[IsCurrent]					BIT,
