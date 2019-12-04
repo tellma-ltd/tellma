@@ -12,7 +12,7 @@
 	(5,			N'Ashenafi Fantahun','2019.09.01',	N'E6',	4700,			0,							28.25,			@OS_Steel),
 	(6,			N'Mesfin Wolde',	'2019.09.01',	N'E7',	4700,			0,							28.25,			@OS_Steel)
 	;
-
+	UPDATE @employees SET UserId = @UserId WHERE [Index] = 0;
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'employees',
 		@Entities = @employees,

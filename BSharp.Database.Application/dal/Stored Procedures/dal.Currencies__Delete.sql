@@ -2,7 +2,7 @@
 	@Ids [dbo].[StringList] READONLY
 AS
 	DELETE FROM [dbo].[Resources] 
-	WHERE [DefinitionId] = 'monetary-resources'
+	WHERE [DefinitionId] = 'currencies'
 	AND ResourceClassificationId = dbo.fn_RCCOde__Id(N'Cash')
 	AND [CurrencyId] IN (SELECT Id FROM @Ids);
 

@@ -51,8 +51,8 @@ BEGIN -- Inserting
 	(14,		4,				N'ManualLine'),
 	(15,		4,				N'ManualLine')
 		;
-	DECLARE @R_ETB INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'ETB' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'monetary-resources')
-	DECLARE @R_USD INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'USD' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'monetary-resources')
+	DECLARE @R_ETB INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'ETB' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
+	DECLARE @R_USD INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'USD' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
 	
 	INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],		[EntryClassificationId],		[ResourceId],	[MonetaryValue],[Value]) VALUES
@@ -98,7 +98,7 @@ BEGIN -- Inserting
 	EXEC [api].[DocumentLines__Sign]
 		@IndexedIds = @DocLinesIndexedIds,
 		@ToState = N'Reviewed',
-		@AgentId = @UserId,
+		@AgentId = @MohamadAkra,
 		@RoleId = @Accountant, -- we allow selecting the role manually,
 		@SignedAt = @Now,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -109,14 +109,14 @@ BEGIN -- Inserting
 		GOTO Err_Label;
 	END;
 
---	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
---	INSERT INTO @DocsIndexedIds([Index], [Id])
---	-- TODO: fill index using ROWNUMBER
---	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
+	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
+	INSERT INTO @DocsIndexedIds([Index], [Id])
+	-- TODO: fill index using ROWNUMBER
+	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
 
---	EXEC [api].[Documents__File]
---		@IndexedIds = @DocsIndexedIds,
---		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	EXEC [api].[Documents__File]
+		@IndexedIds = @DocsIndexedIds,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @DebugManualVouchers = 1
 	BEGIN
@@ -126,12 +126,13 @@ BEGIN -- Inserting
 END
 IF @DebugReports = 1
 BEGIN
-	SELECT AC.[Code], AC.[Name] AS Classification,
+	SELECT AC.[Code], AC.[Name] AS [Classification],
+		A.[Name] AS [Account],
 		Format(Opening, '##,#.00;(##,#.00);-', 'en-us') AS Opening,
 		Format(Debit, '##,#.00;-;-', 'en-us') AS Debit,
 		Format(Credit, '##,#.00;-;-', 'en-us') AS Credit,
 		Format(Closing , '##,#.00;(##,#.00);-', 'en-us') AS Closing
-	FROM [rpt].[Accounts__TrialBalance] ('2018.01.02','2019.01.01') JS
+	FROM [rpt].[Accounts__TrialBalance] ('2017.01.02','2019.01.01') JS
 	JOIN dbo.Accounts A ON JS.AccountId = A.Id
 	LEFT JOIN dbo.AccountClassifications AC ON JS.AccountClassificationId = AC.Id
 	ORDER BY AC.[Code], A.[Code]

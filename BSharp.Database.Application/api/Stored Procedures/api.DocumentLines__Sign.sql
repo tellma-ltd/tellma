@@ -36,9 +36,11 @@ BEGIN
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 
-	IF @RoleId NOT IN (SELECT RoleId FROM dbo.RoleMemberships WHERE [UserId] = @AgentId)
+	IF @RoleId NOT IN (
+		SELECT RoleId FROM dbo.RoleMemberships 
+		WHERE [UserId] = (SELECT UserId FROM dbo.Agents WHERE Id = @AgentId)
+	)
 	BEGIN
-		
 		RAISERROR(N'Error_IncompatibleAgentRole', 16, 1);
 		RETURN
 	END

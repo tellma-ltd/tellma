@@ -14,11 +14,11 @@ SET NOCOUNT ON;
 	-- conservation of volume
 
 	-- If signing on behalf of Agent
-	IF @AgentId <> @UserId
+	IF (SELECT UserId FROM dbo.Agents WHERE [Id] = @AgentId) <> @UserId
 	BEGIN
 		-- If there is no proxy role, then Agent must sign in person
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT
+		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_DocumentLineCannotBeSignedOnBehalOfAgent0',
 			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
@@ -33,10 +33,10 @@ SET NOCOUNT ON;
 
 		-- if there is a proxy role, then User must have this role
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-		SELECT
+		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 			N'Error_User0LacksPermissionToSignDocumentLineOnBehalOfAgent1',
-			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @UserId),
+			(SELECT [Name] FROM dbo.Users WHERE [Id] = @UserId),
 			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
 		FROM @Ids 
 		WHERE [Id] IN (
@@ -53,7 +53,7 @@ SET NOCOUNT ON;
 	END
 	-- verify that the line definition has a workflow transition from its current state to @ToState
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_NoDirectTransitionFromState0ToState1',
 		DL.[State],
@@ -65,7 +65,7 @@ SET NOCOUNT ON;
 
 	-- cannot sign lines unless the document is active. Document can be active, posted/filed	,
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT DISTINCT
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_DocumentLineDoesNotBelongToActiveDocument'
 	FROM @Ids FE
@@ -75,7 +75,7 @@ SET NOCOUNT ON;
 
 	-- No inactive account
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheAccount0IsDeprecated',
 		A.[Name]
@@ -122,7 +122,7 @@ SET NOCOUNT ON;
 	)
 	-- TODO: to be rewritten for each unit of measure. Also localize!
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + ISNULL(CAST([Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheResource0Account1Shortage2',
 		R.[Name], A.[Name], D.[Mass] -- 

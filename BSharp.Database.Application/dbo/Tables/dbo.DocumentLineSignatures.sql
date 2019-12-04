@@ -13,15 +13,15 @@
 	-- For a source document, SignedAt = Now(). For a copy, it is manually entered.
 	[SignedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	-- For a source document, ActorId is the userId. Else, it is editable.
-	[AgentId]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineSignatures__AgentId] FOREIGN KEY ([AgentId]) REFERENCES [dbo].[Agents] ([Id]),
+	[AgentId]					INT					CONSTRAINT [FK_DocumentLineSignatures__AgentId] REFERENCES [dbo].[Agents] ([Id]),
 	-- Role Id is selected from a choice list of the actor's roles of the actor that are compatible with workflow
 	[RoleId]					INT					NOT NULL,
 
 	[CreatedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentSignatures__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]				INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentSignatures__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	
 	[RevokedAt]					DATETIMEOFFSET(7),
-	[RevokedById]				INT					CONSTRAINT [FK_DocumentSignatures__RevokedById] FOREIGN KEY ([RevokedById]) REFERENCES [dbo].[Users] ([Id])
+	[RevokedById]				INT					CONSTRAINT [FK_DocumentSignatures__RevokedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
 CREATE INDEX [IX_DocumentSignatures__DocumentLineId] ON [dbo].[DocumentLineSignatures]([DocumentLineId]);

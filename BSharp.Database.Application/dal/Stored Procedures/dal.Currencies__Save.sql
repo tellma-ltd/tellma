@@ -35,7 +35,7 @@ SET NOCOUNT ON;
 			[Id], [Name], [Name2], [Name3],
 			[Description], [Description2], [Description3]
 		FROM @Entities 
-	) AS s ON (t.[Code] = s.Id) AND (t.[ResourceClassificationId] = @Cash) AND (t.[DefinitionId] = N'monetary-resources')
+	) AS s ON (t.[Code] = s.Id) AND (t.[ResourceClassificationId] = @Cash) AND (t.[DefinitionId] = N'currencies')
 	WHEN MATCHED 
 	THEN
 		UPDATE SET 
@@ -50,4 +50,4 @@ SET NOCOUNT ON;
 			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([Code], [DefinitionId],	[ResourceClassificationId],	[Name], [Name2], [Name3],		[Description], [Description2],	[Description3],	[Count],[CurrencyId])
-		VALUES (s.[Id],  N'monetary-resources',	@Cash,			s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], 1,		s.[Id]);
+		VALUES (s.[Id],  N'currencies',	@Cash,			s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], 1,		s.[Id]);

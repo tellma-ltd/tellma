@@ -42,7 +42,7 @@ BEGIN -- reset Identities
 	DECLARE @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0, @DebugBanks bit = 0;
 	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
-	DECLARE @DebugManualVouchers bit = 1, @DebugReports bit = 0;
+	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugPettyCashVouchers bit = 1;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
@@ -78,12 +78,12 @@ BEGIN TRY
 		:r ..\Samples\02_Agents\03_Customers.sql
 		:r ..\Samples\02_Agents\04_Employees.sql
 
-		--:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
-		--:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql
-		--:r ..\Samples\03_Resources\a3_PPE_machineries.sql
-		--:r ..\Samples\03_Resources\a4_PPE_general-fixed-assets.sql
-		--:r ..\Samples\03_Resources\b_Inventories_raw-materials.sql
-		--:r ..\Samples\03_Resources\d1_FG_vehicles.sql
+		:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
+		:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql
+		:r ..\Samples\03_Resources\a3_PPE_machineries.sql
+		:r ..\Samples\03_Resources\a4_PPE_general-fixed-assets.sql
+		:r ..\Samples\03_Resources\b_Inventories_raw-materials.sql
+		:r ..\Samples\03_Resources\d1_FG_vehicles.sql
 		--:r ..\Samples\03_Resources\d2_FG_steel-products.sql
 		--:r ..\Samples\03_Resources\e1_CCE_received-checks.sql
 		--:r ..\Samples\03_Resources\h_PL_employee-benefits.sql

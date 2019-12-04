@@ -7,7 +7,7 @@ AS
 	SELECT DISTINCT CurrencyId FROM dbo.Resources
 	WHERE [Id] IN (SELECT [Id] FROM @Ids)
 	AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash')
-	AND DefinitionId = N'monetary-resources';
+	AND DefinitionId = N'currencies';
 
 	DELETE FROM [dbo].Resources 
 	WHERE Id IN (SELECT Id FROM @Ids);
