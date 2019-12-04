@@ -1,9 +1,9 @@
-<b-details-picker [filter]="filter" [masterTemplate]="measurementUnitsMaster"
-    [detailsTemplate]="measurementUnitsDetails" collection="MeasurementUnit">
+<b-details-picker [filter]="filter" [masterTemplate]="master"
+    [detailsTemplate]="showCreate ? details : null" collection="MeasurementUnit">
 </b-details-picker>
 
 <!-- The Measurement Unit Details Modal -->
-<ng-template #measurementUnitsDetails let-modal="modal" let-update="update" let-initialText="initialText"
+<ng-template #details let-modal="modal" let-update="update" let-initialText="initialText"
     let-idString="idString">
     <div class="modal-body">
         <b-measurement-units-details mode="popup" [initialText]="initialText" [idString]="idString"
@@ -13,10 +13,10 @@
 </ng-template>
 
 <!-- The Measurement Unit Master Modal -->
-<ng-template #measurementUnitsMaster let-modal="modal" let-update="update" let-create="create">
+<ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
         <b-measurement-units-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
-            (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
+            (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()" [showCreate]="showCreate">
         </b-measurement-units-master>
     </div>
 </ng-template>

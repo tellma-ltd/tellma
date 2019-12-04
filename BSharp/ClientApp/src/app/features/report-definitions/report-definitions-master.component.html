@@ -1,4 +1,4 @@
-<b-master collection="ReportDefinition" [mode]="mode" [masterCrumb]="'ReportDefinitions' | translate"
+<b-master collection="ReportDefinition" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter" [masterCrumb]="'ReportDefinitions' | translate"
     [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
     selectDefault="State,Type" selectForTiles="Title,Title2,Title3,Description,Description2,Description3" theme="dark"
     [inactiveFilter]="'State ne \'Archived\''" [multiselectActions]="[

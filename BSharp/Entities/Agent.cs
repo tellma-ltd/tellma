@@ -59,10 +59,10 @@ namespace BSharp.Entities
         [StringLength(34, ErrorMessage = nameof(StringLengthAttribute))]
         public string BankAccountNumber { get; set; }
 
-        // TODO: Deal with these two
         public string CostObjectType { get; set; } // TODO: Deal with this
-        public int? UserId { get; set; } // TODO: Remove
 
+        [Display(Name = "Agent_User")]
+        public int? UserId { get; set; }
 
         [NotMapped]
         [Display(Name = "Image")]
@@ -101,6 +101,10 @@ namespace BSharp.Entities
         [Display(Name = "OperatingSegment")]
         [ForeignKey(nameof(OperatingSegmentId))]
         public ResponsibilityCenter OperatingSegment { get; set; }
+
+        [Display(Name = "Agent_User")]
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

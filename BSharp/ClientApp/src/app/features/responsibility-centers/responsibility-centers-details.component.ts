@@ -50,14 +50,14 @@ export class ResponsibilityCentersDetailsComponent extends DetailsBaseComponent 
   get responsibilityTypeChoices(): SelectorChoice[] {
 
     const descriptor = metadata_ResponsibilityCenter(this.ws, this.translate, null)
-      .properties.ResponsibilityTypeId as ChoicePropDescriptor;
+      .properties.ResponsibilityType as ChoicePropDescriptor;
 
     return getChoices(descriptor);
   }
 
   public responsibilityTypeLookup(value: string): string {
     const descriptor = metadata_ResponsibilityCenter(this.ws, this.translate, null)
-      .properties.ResponsibilityTypeId as ChoicePropDescriptor;
+      .properties.ResponsibilityType as ChoicePropDescriptor;
 
     return descriptor.format(value);
   }

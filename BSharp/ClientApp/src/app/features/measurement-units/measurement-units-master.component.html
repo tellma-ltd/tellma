@@ -1,12 +1,10 @@
-<b-master collection="MeasurementUnit" [mode]="mode"
-  [masterCrumb]="'MeasurementUnits' | translate" [tileTemplate]="tile" [filterDefault]="filter"
-  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive" selectForTiles="Code,Name,Name2,Name3"
-  [multiselectActions]="[
+<b-master collection="MeasurementUnit" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+  [masterCrumb]="'MeasurementUnits' | translate" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive"
+  selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
             { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-          ]"
-  [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
@@ -34,8 +32,8 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ 'MeasurementUnit' | translate }}
-  </ng-template>
+  {{ 'MeasurementUnit' | translate }}
+</ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">

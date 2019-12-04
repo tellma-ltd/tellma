@@ -265,7 +265,7 @@ namespace BSharp.Controllers
 
                         if (definition != null)
                         {
-                            if (visibiilityFunc(definition) >= Visibility.Visible)
+                            if (visibiilityFunc(definition) >= VisibilityOld.Visible)
                             {
                                 result = _tenantInfoAccessor.GetCurrentInfo().Localize(
                                     s1Func(definition),

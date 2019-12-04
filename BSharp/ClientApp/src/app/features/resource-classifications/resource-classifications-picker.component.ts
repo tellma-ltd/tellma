@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, HostBinding, ViewChild } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
-import { DetailsPickerComponent } from '~/app/shared/details-picker/details-picker.component';
+import { Component } from '@angular/core';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { PickerBaseComponent } from '~/app/shared/picker-base/picker-base.component';
 
 @Component({
   selector: 'b-resource-classifications-picker',
@@ -8,31 +8,6 @@ import { DetailsPickerComponent } from '~/app/shared/details-picker/details-pick
   styles: [],
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: ResourceClassificationsPickerComponent }]
 })
-export class ResourceClassificationsPickerComponent implements ControlValueAccessor {
-
-  @Input()
-  showCreate = true;
-
-  @Input()
-  filter: string;
-
-  @HostBinding('class.w-100')
-  w100 = true;
-
-  @ViewChild(DetailsPickerComponent, { static: true })
-  picker: DetailsPickerComponent;
-
-  writeValue(obj: any): void {
-    this.picker.writeValue(obj);
-  }
-  registerOnChange(fn: any): void {
-    this.picker.registerOnChange(fn);
-  }
-  registerOnTouched(fn: any): void {
-    this.picker.registerOnTouched(fn);
-  }
-  setDisabledState?(isDisabled: boolean): void {
-    this.picker.setDisabledState(isDisabled);
-  }
+export class ResourceClassificationsPickerComponent extends PickerBaseComponent {
 
 }

@@ -1,6 +1,6 @@
 ﻿
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-	[Name],							[Code], [ResponsibilityTypeId], [IsOperatingSegment], [ManagerId], [ParentIndex]) VALUES
+	[Name],							[Code], [ResponsibilityType], [IsOperatingSegment], [ManagerId], [ParentIndex]) VALUES
 (3,0,N'Marketing & Sales',			N'13',	N'Revenue',					0,					@Ashenafi,			0),
 (4,1,N'Sales Dept Mgmt Office',		N'140',	N'Cost',					0,					@Ashenafi,			3);
 

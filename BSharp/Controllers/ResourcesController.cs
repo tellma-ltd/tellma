@@ -189,7 +189,7 @@ namespace BSharp.Controllers
 
         private void ValidateIfRequired<TKey>(List<ResourceForSave> entities, Expression<Func<ResourceForSave, TKey>> selector, byte visibility)
         {
-            if (visibility == Visibility.Required && !ModelState.HasReachedMaxErrors)
+            if (visibility == VisibilityOld.Required && !ModelState.HasReachedMaxErrors)
             {
                 Func<ResourceForSave, TKey> getPropValue = selector.Compile(); // The function to access the property value
 

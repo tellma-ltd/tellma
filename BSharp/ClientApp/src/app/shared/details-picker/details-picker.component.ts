@@ -33,7 +33,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   expand: string;
 
   @Input()
-  select = null;
+  select: string = null;
 
   @Input()
   filter: string;
@@ -91,7 +91,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   @Input()
   formatter: (item: any) => string = (item: any) => {
-    const definition = !!this.definitionIds && this.definitionIds.length === 1 ? this.definitionIds[0] : null;
+    const definition = this.definitionIdsSingleOrDefault;
     return metadata[this.collection](this.workspace.current, this.translate, definition).format(item);
   }
 
@@ -108,12 +108,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   get chosenItemDefinition(): string {
     const defIds = this.entityDescriptor().definitionIds;
-    const item = this.workspace.current[this.collection][this.chosenItem];
-    return !!defIds ? item.DefinitionId : null;
-  }
-
-  get definitionProperty(): string {
-    return 'DefinitionId';
+    return !!defIds ? this.workspace.current[this.collection][this.chosenItem].DefinitionId : null;
   }
 
   ngOnInit() {
@@ -126,26 +121,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.subscriptions.add(this.notifyFetchUnloadedItem$.pipe(
       exhaustMap((id) => this.doFetchUnloadedItem(id))
     ).subscribe());
-
-    // adds a definition filter if we have more than a single definitionId
-    const queryFilter: () => string = () => {
-      if (this.definitionIds.length > 1) {
-
-        const definitionProperty = this.definitionProperty || 'DefinitionId'; // to make sure mistakes go down with a bang
-        const definitionfilter = this.definitionIds
-          .map(e => `${definitionProperty} eq '${e.replace('\'', '\'\'')}'`)
-          .reduce((e1, e2) => `${e1} or ${e2}`);
-
-        if (!!this.filter) {
-          return `${definitionfilter} and ${this.filter}`;
-
-        } else {
-          return definitionfilter;
-        }
-      } else {
-        return this.filter;
-      }
-    };
 
     // // this.apiEndpoint(this.definitionId)
 
@@ -191,7 +166,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
             top: this.SEARCH_PAGE_SIZE,
             skip: 0,
             expand: this.expand,
-            filter: queryFilter(),
+            filter: this.queryFilter,
             select: this.select
           }).pipe(
             tap(() => this.status = SearchStatus.showResults),
@@ -249,8 +224,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return !!coll ? metadata[coll](this.workspace.current, this.translate, definitionId) : null;
   }
 
-  apiEndpoint(definition: string): string {
-    const meta = this.entityDescriptor(definition);
+  apiEndpoint(definitionId: string): string {
+    const meta = this.entityDescriptor(definitionId);
     return !!meta ? meta.apiEndpoint : null;
   }
 
@@ -324,7 +299,29 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.input.nativeElement.value = display;
   }
 
+  private get isDefinitioned(): boolean {
+    return !!this.entityDescriptor().definitionIds;
+  }
+
+  private get allDefinitionIds(): string[] {
+    // If the api is definitioned, and definitionIds was not supplied, this method
+    // Returns the full list of definitionIds form the definitions
+    if (this.isDefinitioned) { // Definitioned API
+      if (!this.definitionIds || this.definitionIds.length === 0) { // The definitionId were not specified
+        return this.entityDescriptor().definitionIds;
+      }
+    }
+
+    return this.definitionIds;
+  }
+
+  private get definitionIdsSingleOrDefault() {
+    const defIds = this.allDefinitionIds;
+    return !!defIds && defIds.length === 1 ? defIds[0] : null;
+  }
+
   ///////////////// Implementation of ControlValueAccessor
+
   private onChange = (_: any) => { };
   private onTouched = () => { };
 
@@ -358,6 +355,27 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   ////////////////// UI Bindings
+
+  public get queryFilter(): string {
+    // IF this is a definitioned API and the definition id is ambigious
+    // then we add the definitions to the filter
+    if (this.isDefinitioned && !this.definitionIdsSingleOrDefault && !!this.definitionIds) {
+
+      const definitionfilter = this.definitionIds
+        .map(e => `DefinitionId eq '${e.replace('\'', '\'\'')}'`)
+        .reduce((e1, e2) => `${e1} or ${e2}`);
+
+      if (!!this.filter) {
+        return `${definitionfilter} and ${this.filter}`;
+
+      } else {
+        return definitionfilter;
+      }
+    } else {
+      return this.filter;
+    }
+  }
+
   get searchResults(): (string | number)[] {
     return this._searchResults;
   }
@@ -437,9 +455,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     const key: string = event.key;
     if (Key[key]) {
       let offset = 0;
-      // if (this.showEditSelected) {
-      //   offset = offset + 1;
-      // }
       if (this.showCreateNew && this.canCreateNew) {
         offset = offset + 1;
       }
@@ -509,71 +524,72 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     }
   }
 
-  onFocus(item: any) {
+  public onFocus(item: any) {
     this.chooseItem(item);
   }
 
-  // get indexEditSelected(): number {
-  //   return this.searchResults ? this.searchResults.length : 0;
-  // }
+  // Create New
 
-  // get highlightEditSelected(): boolean {
-  //   return this.indexEditSelected === this.highlightedIndex;
-  // }
-
-  // get indexCreateNew(): number {
-  //   const base = this.indexEditSelected;
-  //   const offset = this.showEditSelected ? 1 : 0;
-  //   return base + offset;
-  // }
-
-  get indexCreateNew(): number {
+  public get indexCreateNew(): number {
     return this.searchResults ? this.searchResults.length : 0;
   }
 
-  get showCreateNew(): boolean {
+  public get showCreateNew(): boolean {
     return !!this.detailsTemplate && (this.showNoItemsFound || this.showResults);
   }
 
-  get highlightCreateNew(): boolean {
+  public get highlightCreateNew(): boolean {
     return this.indexCreateNew === this.highlightedIndex && this.canCreateNew;
   }
 
-  get canCreateNewPermissions(): boolean {
-    let definitionId = null;
-    if (!!this.definitionIds && this.definitionIds.length === 1) {
-      definitionId = this.definitionIds[0];
+  private hasCreatePermissions = (definitionId: string): boolean => {
+    // This returns false if the API is definitioned, but definitionId was not supplied
+    const viewId = this.apiEndpoint(definitionId);
+    return this.workspace.current.canCreate(viewId);
+  }
+
+  private get canCreateNewInner(): boolean {
+    if (this.isDefinitioned) {
+      const defId = this.definitionIdsSingleOrDefault;
+      if (!!defId) {
+        return this.hasCreatePermissions(defId);
+      } else {
+        // The definition can't be uniquely determined, so return true
+        return true;
+      }
+    } else {
+      return this.hasCreatePermissions(null);
     }
-
-    return this.canCreatePermissions(definitionId);
   }
 
-  get canCreateNew(): boolean {
-    return this.canCreateNewPermissions;
+  public get canCreateNew(): boolean {
+    return this.canCreateNewInner;
   }
 
-  get canEdit(): boolean {
-    return this.canEditPermissions;
+  public get createNewTooltip(): string {
+    return this.canCreateNewInner ? '' :
+      this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
-  get createNewTooltip(): string {
-    return this.canCreateNewPermissions ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+  // Edit Selected
+
+  private get hasEditPermissions(): boolean {
+    return this.canUpdatePermissions(this.chosenItemDefinition);
   }
 
-  get canEditPermissions(): boolean {
-    return !!this.definitionIds && (this.definitionIds.length !== 1 ||
-      (this.canUpdatePermissions(this.definitionIds[0])));
+  public get canEdit(): boolean {
+    return this.hasEditPermissions;
   }
 
-  get showMagnifier(): boolean {
+  public get showMagnifier(): boolean {
     return !!this.masterTemplate;
   }
 
-  get showEditSelected(): boolean {
+  public get showEditSelected(): boolean {
     return !!this.detailsTemplate && !!this.chosenItem;
   }
 
-  get disableEditSelected(): boolean {
+  public get disableEditSelected(): boolean {
     return !this.canUpdatePermissions(this.chosenItemDefinition);
   }
 
@@ -617,25 +633,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.openEditModalInner();
   }
 
-  private get definitionIdsSingleOrDefault() {
-    return !!this.definitionIds && this.definitionIds.length === 1 ? this.definitionIds[0] : null;
-  }
-
   public openSearchModal = () => {
-    // If there are multiple definitions ask the user
-    if (!!this.definitionIds && this.definitionIds.length > 1) {
-      this.modalService.open(this.masterOptionsTemplate)
-        .result.then(
-          (definitionId) => {
-            this.openSearchModalInner(definitionId);
-          },
-          (_: any) => {
-          }
-        );
-    } else {
-      // If there is one definition or none, open the modal right away
-      this.openSearchModalInner(this.definitionIdsSingleOrDefault);
-    }
+    this.openSearchModalInner(this.definitionIdsSingleOrDefault);
   }
 
   private openSearchModalInner(definitionId?: string) {
@@ -648,23 +647,27 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.modalService.open(this.masterWrapperTemplate, { windowClass: 'b-master-modal' })
 
       // this guarantees that the input will be focused again when the modal closes
-      .result.then(this.onFocusInput, () => { console.log('yo'); });
+      .result.then(this.onFocusInput, this.onFocusInput);
   }
 
   private openCreateModal = () => {
-    if (!!this.definitionIds && this.definitionIds.length > 1) {
-      this.modalService.open(this.detailsOptionsTemplate)
-        .result.then(
-          (definitionId) => {
-            if (!this.canCreateFromOptions(definitionId)) {
-              return;
+    if (this.isDefinitioned && !this.definitionIdsSingleOrDefault) {
+      // Without the setTimeout it misbehaves when createFromFocus,
+      // applying the Enter press on the modal itself
+      setTimeout(() => {
+        this.modalService.open(this.detailsOptionsTemplate)
+          .result.then(
+            (definitionId) => {
+              if (!this.canCreateFromOptions(definitionId)) {
+                return;
+              }
+              this.openCreateModalInner(definitionId);
+            },
+            (_: any) => {
             }
-            this.openCreateModalInner(definitionId);
-          },
-          (_: any) => {
+          );
+      }, 0);
 
-          }
-        );
     } else {
       // get the first one or null
       this.openCreateModalInner(this.definitionIdsSingleOrDefault);
@@ -685,9 +688,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private openEditModalInner = () => {
     if (!!this.collection && !!this.workspace.current[this.collection] && !!this.workspace.current[this.collection][this.chosenItem]) {
       this._idString = this.chosenItem.toString();
-      if (!!this.definitionProperty) {
-        this._definitionId = this.chosenItemDefinition;
-      }
+      this._definitionId = this.chosenItemDefinition;
+
       if (!!this._idString) {
         this.modalService.open(this.detailsWrapperTemplate, { windowClass: 'b-details-modal' })
 
@@ -709,38 +711,36 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     return this._definitionId;
   }
 
-  public canCreatePermissions = (definitionId: string): boolean => {
-    const viewId = this.apiEndpoint(definitionId);
-    return this.workspace.current.canCreate(viewId);
-  }
-
   public canUpdatePermissions = (definitionId: string): boolean => {
     const viewId = this.apiEndpoint(definitionId);
     return this.workspace.current.canUpdate(viewId, null);
   }
 
   public canCreateFromOptions = (definitionId: string): boolean => {
-    return this.canCreatePermissions(definitionId);
+    return this.hasCreatePermissions(definitionId);
   }
 
   public createFromOptionsTooltip = (definitionId: string): string => {
-    return this.canCreatePermissions(definitionId) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
+    return this.hasCreatePermissions(definitionId) ? '' : this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions');
   }
 
   public optionName(definitionId: string) {
-    return this.entityDescriptor(definitionId).titlePlural;
+    return this.entityDescriptor(definitionId).titleSingular();
   }
 
-  get idString(): string {
+  public get idString(): string {
     return this._idString;
   }
 
-  get editSelectedLeftMargin(): string {
+  public get editSelectedLeftMargin(): string {
     return this.workspace.ws.isRtl ? null : '-24px';
   }
 
-  get editSelectedRightMargin(): string {
+  public get editSelectedRightMargin(): string {
     return this.workspace.ws.isRtl ? '-24px' : null;
   }
 
+  public get createOptions(): string[] {
+    return this.allDefinitionIds;
+  }
 }

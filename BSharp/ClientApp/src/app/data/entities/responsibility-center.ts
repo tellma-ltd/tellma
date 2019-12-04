@@ -59,7 +59,7 @@ export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: Translat
                     control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`,
                     minDecimalPlaces: 0, maxDecimalPlaces: 0
                 },
-                ResponsibilityTypeId: {
+                ResponsibilityType: {
                     control: 'choice',
                     label: () => trx.instant('ResponsibilityCenter_ResponsibilityType'),
                     choices: ['Investment', 'Profit', 'Revenue', 'Cost'],

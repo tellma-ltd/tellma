@@ -1,7 +1,8 @@
-<b-master collection="AccountType" [mode]="mode" [masterCrumb]="'AccountTypes' | translate" [showCreateButton]="false" [showImportButton]="false" [showDeleteButton]="false"
-  [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="IsAssignable,IsActive" selectForTiles="Name,Name2,Name3" [enableTreeView]="true"
-  [multiselectActions]="[
+<b-master collection="AccountType" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
+  [masterCrumb]="'AccountTypes' | translate" [showImportButton]="false"
+  [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="IsAssignable,IsActive" selectForTiles="Name,Name2,Name3"
+  [enableTreeView]="true" [multiselectActions]="[
             { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate">

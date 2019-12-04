@@ -63,13 +63,13 @@
 
     <!-- Responsibility Type -->
     <b-form-group class="b-form-group" [label]="'ResponsibilityCenter_ResponsibilityType' | translate"
-        [serverErrors]="model?.serverErrors?.ResponsibilityTypeId">
+        [serverErrors]="model?.serverErrors?.ResponsibilityType">
         <div *ngIf="!isEdit">
-            <b-restricted [metadata]="model?.EntityMetadata?.ResponsibilityTypeId">
-                {{ responsibilityTypeLookup(model?.ResponsibilityTypeId) | translate }}
+            <b-restricted [metadata]="model?.EntityMetadata?.ResponsibilityType">
+                {{ responsibilityTypeLookup(model?.ResponsibilityType) | translate }}
             </b-restricted>
         </div>
-        <b-selector *ngIf="isEdit" [(ngModel)]="model.ResponsibilityTypeId" [choices]="responsibilityTypeChoices"
+        <b-selector *ngIf="isEdit" [(ngModel)]="model.ResponsibilityType" [choices]="responsibilityTypeChoices"
             required></b-selector>
     </b-form-group>
 
@@ -77,7 +77,8 @@
     <b-form-group class="b-form-group" [label]="'ResponsibilityCenter_Manager' | translate"
         [serverErrors]="model?.serverErrors?.ManagerId">
         <b-restricted [metadata]="model?.EntityMetadata?.ManagerId">
-            <b-view-link *ngIf="!isEdit" link="../../agents" [itemId]="model?.ManagerId">{{
+            <b-view-link *ngIf="!isEdit" [link]="'../../agents/' + ws.get('Agent', model?.ManagerId)?.DefinitionId"
+                [itemId]="model?.ManagerId">{{
                     ws.getMultilingualValue('Agent', model?.ManagerId, 'Name') }}</b-view-link>
         </b-restricted>
         <b-agents-picker *ngIf="isEdit" [(ngModel)]="model.ManagerId"></b-agents-picker>

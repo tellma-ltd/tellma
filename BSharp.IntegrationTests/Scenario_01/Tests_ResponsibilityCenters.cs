@@ -75,7 +75,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Prepare a well formed entity
             var dtoForSaveParent = new ResponsibilityCenterForSave
             {
-                ResponsibilityTypeId = "Cost",
+                ResponsibilityType = "Cost",
                 Name = "Walia Steel Industry",
                 Name2 = "واليا الحديد",
                 Code = "110",
@@ -86,7 +86,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Prepare a well formed entity
             var dtoForSaveChild = new ResponsibilityCenterForSave
             {
-                ResponsibilityTypeId = "Investment",
+                ResponsibilityType = "Investment",
                 Name = "Best Paint",
                 Name2 = "بست بينت",
                 Code = "1101",
@@ -164,7 +164,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var list = new List<ResponsibilityCenterForSave> {
                 new ResponsibilityCenterForSave
                 {
-                    ResponsibilityTypeId = "Profit",
+                    ResponsibilityType = "Profit",
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "110",
@@ -199,7 +199,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // trailing spaces in some string properties
             var dtoForSave = new ResponsibilityCenterForSave
             {
-                ResponsibilityTypeId = "Profit",
+                ResponsibilityType = "Profit",
                 Name = "  Best Plastic", // Leading space
                 Name2 = "بست بلاستيك",
                 Code = "1102  ", // Trailing space

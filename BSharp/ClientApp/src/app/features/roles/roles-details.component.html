@@ -108,9 +108,6 @@
             <div *ngIf="!isEdit">
               {{ permissionViewLookup(item.ViewId) }}
             </div>
-            <!-- <b-details-picker *ngIf="isEdit" [(ngModel)]="item.ViewId"
-              (ngModelChange)="update(item); onPermissionChanged(item);" collection="View" expand="Actions">
-            </b-details-picker> -->
             <b-selector *ngIf="isEdit" [choices]="permissionViewChoices" [(ngModel)]="item.ViewId" [required]="!item.PH"
               (ngModelChange)="update(item); onPermissionChanged(item);"></b-selector>
           </b-form-group>
@@ -169,8 +166,7 @@
         </span></ng-template>
       <ng-template ngbTabContent>
         <b-restricted [metadata]="model?.EntityMetadata?.Members" [class.p-4]="model?.EntityMetadata?.Members === 1">
-          <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['UserId', 'Memo']"
-            [columnTemplates]="{
+          <b-table [dataSource]="model?.Members" [isEdit]="isEdit" [columnPaths]="['UserId', 'Memo']" [columnTemplates]="{
             'UserId' : { headerTemplate : header_UserId, rowTemplate : row_UserId, weight : 1 },
             'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 1 }
           }">
@@ -184,27 +180,8 @@
             <b-view-link *ngIf="!isEdit" link="../../users" [itemId]="item?.UserId">
               {{ getMultilingualValue(ws.User[item.UserId], 'Name', ws) }}
             </b-view-link>
-            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.UserId" (ngModelChange)="update(item)"
-              [masterTemplate]="usersMaster" [detailsTemplate]="usersDetails" collection="User">
-            </b-details-picker>
-
-            <!-- The User Details Modal -->
-            <ng-template #usersDetails let-modal="modal" let-update="update" let-initialText="initialText" let-idString="idString">
-              <div class="modal-body">
-                <b-users-details mode="popup" [initialText]="initialText" (cancel)="modal.close(false);" [idString]="idString"
-                  (saved)="modal.close(true); update($event);" [showRoles]="false">
-                </b-users-details>
-              </div>
-            </ng-template>
-
-            <!-- The Users Master Modal -->
-            <ng-template #usersMaster let-modal="modal" let-update="update" let-create="create">
-              <div class="modal-body">
-                <b-users-master mode="popup" (cancel)="modal.close(false);"
-                  (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
-                </b-users-master>
-              </div>
-            </ng-template>
+            <b-users-picker *ngIf="isEdit" [(ngModel)]="item.UserId" (ngModelChange)="update(item)" [showRoles]="false">
+            </b-users-picker>
           </b-form-group>
         </ng-template>
 

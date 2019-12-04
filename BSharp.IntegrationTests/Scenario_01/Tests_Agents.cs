@@ -20,7 +20,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         }
 
         public readonly string _baseAddress = "agents";
-        public readonly string _definitionId = "organizations";
+        public readonly string _definitionId = "customers";
 
         public string ViewId => $"{_baseAddress}/{_definitionId}"; // For permissions
         public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic resources

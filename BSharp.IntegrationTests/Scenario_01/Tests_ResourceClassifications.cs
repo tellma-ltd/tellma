@@ -64,7 +64,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "03 Getting a non-existent resource classification id returns a 404 Not Found")]
         public async Task Test03()
         {
-            int nonExistentId = 1;
+            int nonExistentId = 0;
             var response = await Client.GetAsync($"{Url}/{nonExistentId}");
 
             Output.WriteLine(await response.Content.ReadAsStringAsync());

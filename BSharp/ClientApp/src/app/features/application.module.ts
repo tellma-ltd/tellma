@@ -64,6 +64,8 @@ import { ResponsibilityCentersMasterComponent } from './responsibility-centers/r
 import { ResponsibilityCentersDetailsComponent } from './responsibility-centers/responsibility-centers-details.component';
 import { ResponsibilityCentersPickerComponent } from './responsibility-centers/responsibility-centers-picker.component';
 import { ResourceClassificationsPickerComponent } from './resource-classifications/resource-classifications-picker.component';
+import { UsersPickerComponent } from './users/users-picker.component';
+import { RolesPickerComponent } from './roles/roles-picker.component';
 
 const routes: Routes = [
   {
@@ -124,6 +126,11 @@ const routes: Routes = [
       },
 
       // Agents
+      {
+        path: 'agents',
+        component: AgentsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
       {
         path: 'agents/:definitionId',
         component: AgentsMasterComponent,
@@ -377,7 +384,9 @@ const routes: Routes = [
     ResponsibilityCentersMasterComponent,
     ResponsibilityCentersDetailsComponent,
     ResponsibilityCentersPickerComponent,
-    ResourceClassificationsPickerComponent
+    ResourceClassificationsPickerComponent,
+    UsersPickerComponent,
+    RolesPickerComponent
   ],
   imports: [
     SharedModule,

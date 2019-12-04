@@ -1,10 +1,6 @@
-<b-master collection="ResourceClassification" [mode]="mode"
-  [enableTreeView]="true" [masterCrumb]="masterCrumb"
-  [tileTemplate]="tile"  [showCreateButton]="showCreate"
-  [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="Code,IsActive" selectForTiles="Code"
-  [multiselectActions]="[
+<b-master collection="ResourceClassification" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+  [enableTreeView]="true" [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsActive" selectForTiles="Code" [multiselectActions]="[
           { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
           { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
@@ -26,12 +22,12 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ 'Classification' | translate }}
-  </ng-template>
+  {{ 'Classification' | translate }}
+</ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
-    <span class="text-truncate">{{ ws.getMultilingualValue('ResourceClassification', id, 'Name') }}</span>
+  <span class="text-truncate">{{ ws.getMultilingualValue('ResourceClassification', id, 'Name') }}</span>
 </ng-template>
 
 <!-- Multiselect Actions -->

@@ -1,6 +1,8 @@
-<b-master collection="Account" [definition]="definitionId" [mode]="mode"
-  [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="Code,IsDeprecated" inactiveFilter="IsDeprecated eq false" selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
+<b-master collection="Account" [definition]="definitionId" [mode]="mode" [showCreateButton]="showCreate"
+  [filterDefault]="filter" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="Code,IsDeprecated" inactiveFilter="IsDeprecated eq false" selectForTiles="Code,Name,Name2,Name3"
+  [multiselectActions]="[
               { template: activate, action: onActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
               { template: deprecate, action: onDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
           ]" [includeInactiveLabel]="'IncludeDeprecated' | translate" [filterDefinition]="{
@@ -23,8 +25,8 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ summary }}
-  </ng-template>
+  {{ summary }}
+</ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
