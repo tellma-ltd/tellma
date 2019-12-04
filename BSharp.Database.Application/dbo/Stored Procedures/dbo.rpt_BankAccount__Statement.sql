@@ -7,7 +7,7 @@ AS
 BEGIN
 	SELECT 	
 		[Id],
-		[DocumentLineId],
+		[LineId],
 		[DocumentDate],
 		[DocumentDefinitionId],
 		[SerialNumber],

@@ -7,6 +7,6 @@
 	[Name2]					NVARCHAR (255),
 	[Name3]					NVARCHAR (255),
 	[Code]					NVARCHAR (255)	NOT NULL UNIQUE,
-	[ResourceDefinitionId]	NVARCHAR (50)	DEFAULT N'monetary-resources', -- Basic shows only the name and the primary measurement unit type
+	[ResourceDefinitionId]	NVARCHAR (50)	DEFAULT N'currencies', -- Basic shows only the name and the primary measurement unit type
 	[IsAssignable]			BIT				DEFAULT 1
 );

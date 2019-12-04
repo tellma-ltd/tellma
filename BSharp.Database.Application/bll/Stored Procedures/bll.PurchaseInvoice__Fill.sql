@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[PurchaseInvoice__Fill]
 	@Documents [dbo].[DocumentList] READONLY,
-	@Lines [dbo].[DocumentLineList] READONLY, 
-	@Entries [dbo].[DocumentLineEntryList] READONLY
+	@Lines [dbo].[LineList] READONLY, 
+	@Entries [dbo].EntryList READONLY
 AS
 SET NOCOUNT ON;
 

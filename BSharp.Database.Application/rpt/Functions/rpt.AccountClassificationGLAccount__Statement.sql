@@ -10,7 +10,7 @@ AS
 RETURN
 	SELECT 	
 		[Id],
-		[DocumentLineId],
+		[LineId],
 		[DocumentDate],
 		[DocumentDefinitionId],
 		[SerialNumber],

@@ -23,6 +23,6 @@ END
 SELECT @AdminUserId = [Id] FROM dbo.[Users] WHERE [Email] = @DeployEmail;
 EXEC master.sys.sp_set_session_context 'UserId', @AdminUserId;
 
-IF NOT EXISTS(SELECT * FROM dbo.ResourceDefinitions WHERE [Id] = N'monetary-resources')
+IF NOT EXISTS(SELECT * FROM dbo.ResourceDefinitions WHERE [Id] = N'currencies')
 	INSERT INTO dbo.ResourceDefinitions([Id])
-	VALUES(N'monetary-resources');
+	VALUES(N'currencies');

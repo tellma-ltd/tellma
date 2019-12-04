@@ -3,9 +3,9 @@
 AS
 BEGIN
 -- Assuming payable accounts have been opened already
-	DECLARE	@Documents [dbo].DocumentList, @Lines [dbo].[DocumentLineList], @Entries [dbo].[DocumentLineEntryList];
+	DECLARE	@Documents [dbo].DocumentList, @Lines [dbo].[LineList], @Entries [dbo].EntryList;
 	DECLARE @SalariesAccrualsTaxableAccountDef NVARCHAR (50), @SalariesAccrualsNonTaxableAccountDef NVARCHAR (50), @EmployeesPayableAccountDef NVARCHAR (50);
-	--WITH EmployeesAccruals([Index], [DocumentLineIndex], [EntryNumber], [AccountId], [AccruedValue], [Time]) AS (
+	--WITH EmployeesAccruals([Index], [LineIndex], [EntryNumber], [AccountId], [AccruedValue], [Time]) AS (
 	--	SELECT
 	--		ROW_NUMBER() OVER (ORDER BY A.[AgentId], A.[ResourceId]),
 	--		A.[AgentId],
@@ -13,7 +13,7 @@ BEGIN
 	--		DLE.[AccountId],
 	--		-SUM([Direction] * [Value]),
 	--		-SUM([Direction] * [Time])
-	--	FROM dbo.DocumentLineEntries DLE
+	--	FROM dbo.Entries DLE
 	--	JOIN dbo.Accounts A ON DLE.AccountId = A.[Id]
 	--	WHERE A.[AccountDefinitionId] IN (@SalariesAccrualsTaxableAccountDef, @SalariesAccrualsNonTaxableAccountDef)
 	--	GROUP BY DLE.[AccountId], A.[AgentId], A.[ResourceId]
@@ -25,7 +25,7 @@ BEGIN
 	--	JOIN dbo.Accounts A ON EA.AccountId = A.Id
 	--	GROUP BY A.[AgentId]
 	--),
-	--EmployeeIncomeTaxes([Index], [DocumentLineIndex], [EntryNumber], [AccountId], [IncomeTax], [EmployeeId], [TaxableIncome]) AS (
+	--EmployeeIncomeTaxes([Index], [LineIndex], [EntryNumber], [AccountId], [IncomeTax], [EmployeeId], [TaxableIncome]) AS (
 	--	SELECT
 	--		ROW_NUMBER() OVER (ORDER BY A.[AgentId]) + (SELECT MAX([Index]) FROM EmployeesAccruals),
 	--		A.[AgentId],
@@ -42,7 +42,7 @@ BEGIN
 	--),
 	---- TODO: Deduct any ther taxes/deductions
 	---- TODO: Deduct loans
-	--EmployeesPayable([Index], [DocumentLineIndex], [EntryNumber], [AccountId], [NetPayable]) AS (
+	--EmployeesPayable([Index], [LineIndex], [EntryNumber], [AccountId], [NetPayable]) AS (
 	--	SELECT
 	--		ROW_NUMBER() OVER (ORDER BY E.EmployeeId) + (SELECT MAX([Index]) FROM EmployeeIncomeTaxes),
 	--		E.[EmployeeId],
@@ -58,23 +58,23 @@ BEGIN
 	--)
 	---- We reverse the accrual effect
 	---- TODO: How to handle boundary cases when Payable willl be positive
-	--INSERT INTO @Entries([Index],[DocumentLineIndex], [EntryNumber], [Direction],[AccountId], [Value], [Time])
-	--SELECT				[Index],[DocumentLineIndex], [EntryNumber], SIGN([AccruedValue]), [AccountId], ABS([AccruedValue]), [Time]
+	--INSERT INTO @Entries([Index],[LineIndex], [EntryNumber], [Direction],[AccountId], [Value], [Time])
+	--SELECT				[Index],[LineIndex], [EntryNumber], SIGN([AccruedValue]), [AccountId], ABS([AccruedValue]), [Time]
 	--FROM EmployeesAccruals
 	--UNION
 	---- Add the income tax. TODO: Add related agent and related amount for simpler declaration
-	--SELECT				[Index], [DocumentLineIndex], [EntryNumber], -1,		[AccountId], [IncomeTax], 0
+	--SELECT				[Index], [LineIndex], [EntryNumber], -1,		[AccountId], [IncomeTax], 0
 	--FROM EmployeeIncomeTaxes
 	---- Add the payable
 	--UNION
-	--SELECT				[Index], [DocumentLineIndex], [EntryNumber], -1,		[AccountId], [NetPayable], 0
+	--SELECT				[Index], [LineIndex], [EntryNumber], -1,		[AccountId], [NetPayable], 0
 	--FROM EmployeesPayable
 	--;
 	   
 	--INSERT INTO @Lines ([Index], [DocumentIndex])
-	--SELECT	[DocumentLineIndex], 0
+	--SELECT	[LineIndex], 0
 	--FROM @Entries
-	--GROUP BY [DocumentLineIndex];
+	--GROUP BY [LineIndex];
 
 	--INSERT INTO @Documents([DocumentDate]) VALUES(DEFAULT);
 	--SELECT * FROM @Documents; SELECT *,  N'PaysheetLine' AS [LineDefinitionId] FROM @Lines; SELECT * FROM @Entries;

@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Save]
 	@Documents [dbo].[DocumentList] READONLY,
-	@Lines [dbo].[DocumentLineList] READONLY, 
-	@Entries [dbo].[DocumentLineEntryList] READONLY,
+	@Lines [dbo].[LineList] READONLY, 
+	@Entries [dbo].EntryList READONLY,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -20,8 +20,8 @@ SET NOCOUNT ON;
 	-- (FE Check) If Resource = functional currency, the value must match the money amount
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
-		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].Amount' + CAST([EntryNumber] AS NVARCHAR(255)),
+		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST([LineIndex] AS NVARCHAR (255)) + '].Amount' + CAST([EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheAmount0DoesNotMatchTheValue1',
 		[MonetaryValue],
 		[Value]
@@ -54,8 +54,8 @@ SET NOCOUNT ON;
 	-- Entry Type Id is missing when required
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
-		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST([DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
 		N'Error_TheAccountType0RequiresAnEntryClassification', A.[AccountTypeId]
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
@@ -65,8 +65,8 @@ SET NOCOUNT ON;
 	-- Invalid Entry Type Id
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
 		N'Error_IncompatibleResourceClassification0AndEntryClassification1',
 		RC.[Code] AS [ResourceClassification], EC.[Code] AS [EntryClassification]
 	FROM @Entries E
@@ -78,8 +78,8 @@ SET NOCOUNT ON;
 	-- RelatedAgent is required for selected account definition, 
 	--INSERT INTO @ValidationErrors([Key], [ErrorName])
 	--SELECT
-	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-	--		CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+	--	'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+	--		CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
 	--	N'Error_TheRelatedAgentIsNotSpecified'
 	--FROM @Entries E
 	--JOIN dbo.[Accounts] A On E.AccountId = A.Id
@@ -92,8 +92,8 @@ SET NOCOUNT ON;
 	-- No expired Ifrs Note
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].IfrsEntryClassificationId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].IfrsEntryClassificationId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheIfrsEntryClassificationId0HasExpired',
 		IC.[Label]
 	FROM @Entries E
@@ -105,8 +105,8 @@ SET NOCOUNT ON;
 	-- External Reference is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].ExternalReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].ExternalReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheReferenceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
@@ -118,8 +118,8 @@ SET NOCOUNT ON;
 	-- Additional Reference is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].RelatedReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].RelatedReference' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheRelatedReferenceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id
@@ -133,8 +133,8 @@ SET NOCOUNT ON;
 	-- RelatedResource is required for selected account and direction, 
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
-		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
-			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].RelatedResourceId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
+		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].RelatedResourceId' + CAST(E.[EntryNumber] AS NVARCHAR(255)),
 		N'Error_TheRelatedResourceIsNotSpecified'
 	FROM @Entries E
 	JOIN dbo.[Accounts] A On E.AccountId = A.Id

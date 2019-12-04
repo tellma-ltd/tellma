@@ -16,7 +16,7 @@ SET NOCOUNT ON;
 	FROM @Ids 
 	WHERE [Id] NOT IN (
 		SELECT DISTINCT [DocumentId] 
-		FROM dbo.DocumentLines
+		FROM dbo.[Lines]
 	);
 
 	-- All lines must be in their final states.
@@ -24,7 +24,7 @@ SET NOCOUNT ON;
 	WITH DocumentsLineDefinitions AS
 	(
 		SELECT DISTINCT DL.[DefinitionId] FROM 
-		dbo.DocumentLines DL
+		dbo.[Lines] DL
 		JOIN @Ids D ON DL.DocumentId = D.[Id]
 	),
 	WorkflowsFinalStateIds AS
@@ -41,12 +41,12 @@ SET NOCOUNT ON;
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].DocumentLines[' +
+		'[' + CAST([Index] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(DL.[Id] AS NVARCHAR (255)) + ']',
 		N'Error_State2IsNotFinal',
 		DL.[State]
 	FROM @Ids D
-	JOIN dbo.DocumentLines DL ON DL.[DocumentId] = D.[Id]
+	JOIN dbo.[Lines] DL ON DL.[DocumentId] = D.[Id]
 	JOIN WorkflowsFinalStates WFS ON DL.[DefinitionId] = WFS.[LineDefinitionId]
 	WHERE DL.[State] NOT IN (N'Void', N'Rejected', N'Failed', N'Invalid', WFS.FinalState)
 
@@ -57,8 +57,8 @@ SET NOCOUNT ON;
 		N'Error_TransactionHasDebitCreditDifference0',
 		SUM([Direction] * [Value])
 	FROM @Ids FE
-	JOIN dbo.[DocumentLines] DL ON FE.[Id] = DL.[DocumentId]
-	JOIN dbo.[DocumentLineEntries] DLE ON DL.[Id] = DLE.[DocumentLineId]
+	JOIN dbo.[Lines] DL ON FE.[Id] = DL.[DocumentId]
+	JOIN dbo.[Entries] DLE ON DL.[Id] = DLE.[LineId]
 	WHERE DL.[State] = N'Reviewed'
 	GROUP BY FE.[Index]
 	HAVING SUM([Direction] * [Value]) <> 0;

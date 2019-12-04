@@ -1,5 +1,5 @@
-﻿DECLARE @D41 [dbo].[DocumentList], @L41 [dbo].DocumentLineList, @E41 [dbo].DocumentLineEntryList;
-DECLARE @D42 [dbo].[DocumentList], @L42 [dbo].DocumentLineList, @E42 [dbo].DocumentLineEntryList;
+﻿DECLARE @D41 [dbo].[DocumentList], @L41 [dbo].LineList, @E41 [dbo].EntryList;
+DECLARE @D42 [dbo].[DocumentList], @L42 [dbo].LineList, @E42 [dbo].EntryList;
 DECLARE @D41Ids dbo.[IdList], @D42Ids dbo.[IdList], @D43Ids dbo.[IdList];
 
 BEGIN -- Inserting
@@ -14,7 +14,7 @@ BEGIN -- Inserting
 		(N'CashIssue', 1);
 
 	INSERT INTO @E41 (--DocumentIndex DEFAULT 0
-[DocumentLineIndex], [Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MonetaryValue],[Mass], [Value]) VALUES
+[LineIndex], [Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MonetaryValue],[Mass], [Value]) VALUES
 		(0,				0, 1,				+1,			@ESL,	N'InventoryPurchaseExtension', 				@HR1000x1_9,	0,			500000, 0),
 		(0,				1, 2,				-1,			@Vimeks,	NULL,									@USD,		100000,			0,		0),
 		(1,				2, 1,				+1,			@ESL,	N'InventoryPurchaseExtension',				@CR1000x1_4,	0,			500000, 0),
@@ -54,7 +54,7 @@ BEGIN -- Inserting
 			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
 			SUM([Direction] * [Mass]) AS [Mass],
 			SUM([Direction] * [Value]) AS [Value]
-		FROM DocumentLineEntries
+		FROM [Entries]
 		GROUP BY [AccountId], [EntryClassificationId], [ResourceId]
 	)
 	SELECT A.[Name] AS [Account], IEC.Label AS [Note], R.[Name] AS [Resource],
@@ -83,13 +83,13 @@ BEGIN -- Updating document and deleting lines/entries
 
 	INSERT INTO @L42([Id], [DocumentId], [DocumentIndex], [LineDefinitionId], [ScalingFactor], [SortKey])
 	SELECT DL.[Id], DL.[DocumentId], D42.[Index], DL.[LineDefinitionId], [ScalingFactor], [SortKey]
-	FROM dbo.DocumentLines DL
+	FROM dbo.Lines DL
 	JOIN @D42 D42 ON D42.[Id] = DL.[DocumentId];
 
-	INSERT INTO @E42([Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value])
+	INSERT INTO @E42([Id], [LineId], [DocumentIndex], [LineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value])
 	SELECT DLE.[Id], L42.[Id], L42.DocumentIndex, L42.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value]
-	FROM dbo.DocumentLineEntries DLE
-	JOIN @L42 L42 ON L42.[Id] = DLE.[DocumentLineId];
+	FROM dbo.Entries DLE
+	JOIN @L42 L42 ON L42.[Id] = DLE.[LineId];
 
 	--SELECT * FROM @D42; SELECT * FROM @L42; SELECT * FROM @E42;
 
@@ -120,7 +120,7 @@ BEGIN -- signing
 	DECLARE @DocsToSign [dbo].[IndexedIdList]
 	INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Active';
 
-	EXEC [api].[DocumentLines__Sign]
+	EXEC [api].[Lines__Sign]
 		@DocsIndexedIds = @DocsToSign, @ToState = N'Reviewed', @ReasonDetails = N'seems ok',
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

@@ -1,5 +1,5 @@
-﻿DECLARE @D21 [dbo].[DocumentList], @L21 [dbo].DocumentLineList, @E21 [dbo].DocumentLineEntryList;
-DECLARE @D22 [dbo].[DocumentList], @L22 [dbo].DocumentLineList, @E22 [dbo].DocumentLineEntryList;
+﻿DECLARE @D21 [dbo].[DocumentList], @L21 [dbo].LineList, @E21 [dbo].EntryList;
+DECLARE @D22 [dbo].[DocumentList], @L22 [dbo].LineList, @E22 [dbo].EntryList;
 DECLARE @D21Ids dbo.[IdList], @D22Ids dbo.[IdList], @D23Ids dbo.[IdList];
 
 BEGIN -- Inserting
@@ -11,7 +11,7 @@ BEGIN -- Inserting
 		(0,0,	N'GoodReceiptWithInvoice',	1),
 		(1,0,	N'GoodReceiptWithInvoice',	2),
 		(2,0,	N'CashIssue',				1);
-	INSERT INTO @E21 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber],
+	INSERT INTO @E21 ([Index], [LineIndex], [DocumentIndex], [EntryNumber],
 					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MonetaryValue],[Mass], [Value]) VALUES
 		(0,0,0,1,	+1,			@ESL,			N'InventoryPurchaseExtension', 		@HR1000x1_9,	0,			500000, 0),
 		(1,0,0,2,	-1,			@VimeksAccount,	NULL,								@USD,		100000,			0,		0),
@@ -28,7 +28,7 @@ BEGIN -- Inserting
 		(3,1,	 N'GoodReceiptWithInvoice', 1),
 		(4,1,	 N'GoodReceiptWithInvoice', 2);
 
-	INSERT INTO @E21 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber],
+	INSERT INTO @E21 ([Index], [LineIndex], [DocumentIndex], [EntryNumber],
 					[Direction], [AccountId], [IfrsEntryClassificationId],			[ResourceId], [MonetaryValue],[Volume], [Value]) VALUES
 		(6,3,1,1,	+1,			@fuelHR,		N'TransportationExpense', 			@Oil,			0,			20,		0),
 		(7,3,1,2,	-1,			@NocJimmaAccount,	NULL,							@ETB,		430.6,			0,		0),
@@ -77,7 +77,7 @@ BEGIN -- Inserting
 			SUM([Direction] * [MonetaryValue]) AS [MonetaryValue],
 			SUM([Direction] * [Mass]) AS [Mass],
 			SUM([Direction] * [Value]) AS [Value]
-		FROM DocumentLineEntries
+		FROM [Entries]
 		GROUP BY [AccountId], [EntryClassificationId], [ResourceId]
 	)
 	SELECT A.[Name] AS [Account], IEC.Label AS [Note], R.[Name] AS [Resource],
@@ -106,13 +106,13 @@ BEGIN -- Updating document and deleting lines/entries
 
 	INSERT INTO @L22([Id], [DocumentId], [DocumentIndex], [LineTypeId], [ScalingFactor], [SortKey])
 	SELECT DL.[Id], DL.[DocumentId], D22.[Index], DL.[LineTypeId], [ScalingFactor], [SortKey]
-	FROM dbo.DocumentLines DL
+	FROM dbo.Lines DL
 	JOIN @D22 D22 ON D22.[Id] = DL.[DocumentId];
 
-	INSERT INTO @E22([Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value])
+	INSERT INTO @E22([Id], [LineId], [DocumentIndex], [LineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value])
 	SELECT DLE.[Id], L22.[Id], L22.DocumentIndex, L22.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value]
-	FROM dbo.DocumentLineEntries DLE
-	JOIN @L22 L22 ON L22.[Id] = DLE.[DocumentLineId];
+	FROM dbo.Entries DLE
+	JOIN @L22 L22 ON L22.[Id] = DLE.[LineId];
 
 	--SELECT * FROM @D22; SELECT * FROM @L22; SELECT * FROM @E22;
 
@@ -143,7 +143,7 @@ BEGIN -- signing
 	DECLARE @DocsToSign [dbo].[IndexedIdList]
 	INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Active';
 
-	EXEC [api].[DocumentLines__Sign]
+	EXEC [api].[Lines__Sign]
 		@DocsIndexedIds = @DocsToSign, @ToState = N'Reviewed', @ReasonDetails = N'seems ok',
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

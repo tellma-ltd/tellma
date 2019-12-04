@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[DocumentLines_Validate__Sign]
+﻿CREATE PROCEDURE [bll].[Lines_Validate__Sign]
 	@Ids dbo.[IndexedIdList] READONLY,
 	@AgentId INT,
 	@RoleId INT,
@@ -14,18 +14,18 @@ SET NOCOUNT ON;
 	-- conservation of volume
 
 	-- If signing on behalf of Agent
-	IF @AgentId <> @UserId
+	IF (SELECT UserId FROM dbo.Agents WHERE [Id] = @AgentId) <> @UserId
 	BEGIN
 		-- If there is no proxy role, then Agent must sign in person
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-		SELECT
+		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-			N'Error_DocumentLineCannotBeSignedOnBehalOfAgent0',
+			N'Error_LineCannotBeSignedOnBehalOfAgent0',
 			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
 		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT DL.[Id] 
-			FROM dbo.DocumentLines DL
+			FROM dbo.[Lines] DL
 			JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId]
 			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 			WHERE W.ToState = @ToState AND WS.[ProxyRoleId] IS NULL
@@ -33,15 +33,15 @@ SET NOCOUNT ON;
 
 		-- if there is a proxy role, then User must have this role
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-		SELECT
+		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-			N'Error_User0LacksPermissionToSignDocumentLineOnBehalOfAgent1',
-			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @UserId),
+			N'Error_User0LacksPermissionToSignLineOnBehalOfAgent1',
+			(SELECT [Name] FROM dbo.Users WHERE [Id] = @UserId),
 			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
 		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT DL.[Id] 
-			FROM dbo.DocumentLines DL
+			FROM dbo.[Lines] DL
 			JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId]
 			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 			WHERE W.ToState = @ToState
@@ -53,34 +53,34 @@ SET NOCOUNT ON;
 	END
 	-- verify that the line definition has a workflow transition from its current state to @ToState
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_NoDirectTransitionFromState0ToState1',
 		DL.[State],
 		@ToState
 	FROM @Ids FE
-	JOIN dbo.DocumentLines DL ON FE.[Id] = DL.[Id]
+	JOIN dbo.[Lines] DL ON FE.[Id] = DL.[Id]
 	LEFT JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId] AND W.[FromState] = DL.[State]
 	WHERE W.ToState <> @ToState
 
 	-- cannot sign lines unless the document is active. Document can be active, posted/filed	,
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT DISTINCT
+	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_DocumentLineDoesNotBelongToActiveDocument'
+		N'Error_LineDoesNotBelongToActiveDocument'
 	FROM @Ids FE
-	JOIN dbo.DocumentLines DL ON FE.[Id] = DL.[Id]
+	JOIN dbo.[Lines] DL ON FE.[Id] = DL.[Id]
 	JOIN dbo.Documents D ON DL.[DocumentId] = D.[Id]
 	WHERE D.[State] <> 'Active'
 
 	-- No inactive account
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheAccount0IsDeprecated',
 		A.[Name]
 	FROM @Ids FE
-	JOIN dbo.[DocumentLineEntries] DLE ON FE.[Id] = DLE.[DocumentLineId]
+	JOIN dbo.[Entries] DLE ON FE.[Id] = DLE.[LineId]
 	JOIN dbo.[Accounts] A ON A.[Id] = DLE.[AccountId]
 	WHERE (A.[IsDeprecated] = 1);
 
@@ -96,7 +96,7 @@ SET NOCOUNT ON;
 			SUM(DLE.[Direction] * DLE.[Volume]) AS [Volume], 
 			SUM(DLE.[Direction] * DLE.[Count]) AS [Count]
 		FROM @Ids FE
-		JOIN dbo.[DocumentLineEntries] DLE ON FE.[Id] = DLE.[DocumentLineId]
+		JOIN dbo.[Entries] DLE ON FE.[Id] = DLE.[LineId]
 		WHERE DLE.AccountId IN (SELECT [Id] FROM InventoryAccounts)
 		GROUP BY DLE.AccountId
 		HAVING SUM(DLE.[Direction] * DLE.[Mass]) < 0
@@ -122,7 +122,7 @@ SET NOCOUNT ON;
 	)
 	-- TODO: to be rewritten for each unit of measure. Also localize!
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + ISNULL(CAST([Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheResource0Account1Shortage2',
 		R.[Name], A.[Name], D.[Mass] -- 

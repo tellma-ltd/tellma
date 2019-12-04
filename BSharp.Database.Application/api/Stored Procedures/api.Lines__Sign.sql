@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [api].[DocumentLines__Sign]
+﻿CREATE PROCEDURE [api].[Lines__Sign]
 	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ToState NVARCHAR(30),
 	@ReasonId INT = NULL,
@@ -36,16 +36,18 @@ BEGIN
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 
-	IF @RoleId NOT IN (SELECT RoleId FROM dbo.RoleMemberships WHERE [UserId] = @AgentId)
+	IF @RoleId NOT IN (
+		SELECT RoleId FROM dbo.RoleMemberships 
+		WHERE [UserId] = (SELECT UserId FROM dbo.Agents WHERE Id = @AgentId)
+	)
 	BEGIN
-		
 		RAISERROR(N'Error_IncompatibleAgentRole', 16, 1);
 		RETURN
 	END
 	
 	-- Validate that the agent is not violating any business logic attempting to move the relevant lines to State @ToState
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[DocumentLines_Validate__Sign]
+	EXEC [bll].[Lines_Validate__Sign]
 		@Ids = @IndexedIds,
 		@AgentId = @AgentId,
 		@RoleId = @RoleId,
@@ -62,7 +64,7 @@ SET NOCOUNT ON;
 		RETURN;
 
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[DocumentLines__Sign]
+	EXEC [dal].[Lines__Sign]
 		@Ids = @Ids,
 		@ToState = @ToState,
 		@ReasonId = @ReasonId,
@@ -73,7 +75,7 @@ SET NOCOUNT ON;
 
 	-- Determine which of the selected Lines are reacdy for state change
 	DECLARE @ReadyIds dbo.IdList;
-	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_ReadyDocumentLines](@Ids, @ToState);
+	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_Lines__Ready](@Ids, @ToState);
 
-	EXEC dal.DocumentLines_State__Update @Ids = @ReadyIds, @ToState = @ToState;
+	EXEC dal.[Lines_State__Update] @Ids = @ReadyIds, @ToState = @ToState;
 END;

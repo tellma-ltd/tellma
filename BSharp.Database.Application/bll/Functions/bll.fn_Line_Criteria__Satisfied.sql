@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [bll].[fn_DocumentLine_Criteria__Satisfied] (
+﻿CREATE FUNCTION [bll].[fn_Line_Criteria__Satisfied] (
 	@Id INT,
 	@Criteria NVARCHAR(1024)
 )

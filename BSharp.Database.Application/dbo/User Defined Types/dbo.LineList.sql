@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[DocumentLineList] AS TABLE (
+﻿CREATE TYPE [dbo].[LineList] AS TABLE (
 	[Index]						INT				PRIMARY KEY,
 	[DocumentIndex]				INT				NOT NULL DEFAULT 0,
 	[Id]						INT				NOT NULL DEFAULT 0,

@@ -62,7 +62,7 @@ BEGIN --================  LEAVES =======================--
 	(@LIdx + 1, @DIdx, @LineType, @WSI, @Finance,	@TizitaNigussie, @ETB,			1000,		1000);
 END;
 EXEC [api].[Documents__Save]
-	@Documents = @DSave, @DocumentLineTypes = @DLTSave,
+	@Documents = @DSave, @LineTypes = @DLTSave,
 	@Lines = @LSave, @Entries = @ESave,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
 	@ResultJson = @ResultJson OUTPUT;

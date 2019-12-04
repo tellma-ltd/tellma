@@ -1,7 +1,7 @@
 ﻿	CREATE FUNCTION [rpt].[fi_JournalSummary] (
 	--TODO: make the filtering of these parameters from NormalizedJournal
 	@OperatingSegmentId INT,
-	@AccountTypeId NVARCHAR(1024) = NULL,
+	@AccountTypeId NVARCHAR(50) = NULL,
 	@AgentDefinitionId NVARCHAR(50),
 	@ResourceClassificationCode NVARCHAR (255),
 	@FromDate Date = '01.01.2019',

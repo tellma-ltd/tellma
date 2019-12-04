@@ -16,8 +16,8 @@ SET NOCOUNT ON;
 	--		SUM(DLE.[Direction] * DLE.[Mass]),
 	--		ISNULL(R.[Name], N''), ISNULL(AG.[Name], N'')
 	--	-- TODO: Add the remaining units
-	--	FROM dbo.DocumentLineEntries DLE
-	--	JOIN dbo.DocumentLines DL ON DLE.[DocumentLineId] = DL.[Id]
+	--	FROM dbo.Entries DLE
+	--	JOIN dbo.Lines DL ON DLE.[LineId] = DL.[Id]
 	--	JOIN dbo.Documents D ON DL.[DocumentId] = D.[Id]
 	--	JOIN dbo.Accounts A ON DLE.AccountId = A.Id
 	--	JOIN @Ids I ON I.[Id] = A.[AccountClassificationId]
