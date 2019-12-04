@@ -256,18 +256,6 @@
   <data name="CurrentPassword" xml:space="preserve">
     <value>كلمة المرور الحالية</value>
   </data>
-  <data name="Custodies" xml:space="preserve">
-    <value>عُهد</value>
-  </data>
-  <data name="Custody" xml:space="preserve">
-    <value>عهدة</value>
-  </data>
-  <data name="Custody_Address" xml:space="preserve">
-    <value>العنوان</value>
-  </data>
-  <data name="Custody_CustodyType" xml:space="preserve">
-    <value>نوع العهدة</value>
-  </data>
   <data name="Data" xml:space="preserve">
     <value>البيانات</value>
   </data>
@@ -1156,8 +1144,17 @@
   <data name="Resource" xml:space="preserve">
     <value>مورد</value>
   </data>
+  <data name="Resource_AvailableSince" xml:space="preserve">
+    <value>متاح من</value>
+  </data>
+  <data name="Resource_AvailableTill" xml:space="preserve">
+    <value>متاح إلى</value>
+  </data>
   <data name="Resource_Classification" xml:space="preserve">
     <value>التصنيف</value>
+  </data>
+  <data name="Resource_Count" xml:space="preserve">
+    <value>العدد</value>
   </data>
   <data name="Resource_CountUnit" xml:space="preserve">
     <value>وحدة قياس العدد</value>
@@ -1165,8 +1162,8 @@
   <data name="Resource_Currency" xml:space="preserve">
     <value>العملة</value>
   </data>
-  <data name="Resource_CustomsReference" xml:space="preserve">
-    <value>الرقم الجمركي</value>
+  <data name="Resource_Identifier" xml:space="preserve">
+    <value>رقم التعريف</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>الصفة 1</value>
@@ -1183,14 +1180,23 @@
   <data name="Resource_Lookup5" xml:space="preserve">
     <value>الصفة 5</value>
   </data>
+  <data name="Resource_Mass" xml:space="preserve">
+    <value>الوزن</value>
+  </data>
   <data name="Resource_MassUnit" xml:space="preserve">
     <value>وحدة قياس الوزن</value>
+  </data>
+  <data name="Resource_MonetaryValue" xml:space="preserve">
+    <value>القيمة النقدية</value>
+  </data>
+  <data name="Resource_Time" xml:space="preserve">
+    <value>الزمن</value>
   </data>
   <data name="Resource_TimeUnit" xml:space="preserve">
     <value>وحدة قياس الزمن</value>
   </data>
-  <data name="Resource_Type" xml:space="preserve">
-    <value>النوع</value>
+  <data name="Resource_Volume" xml:space="preserve">
+    <value>الحجم</value>
   </data>
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>وحدة قياس الحجم</value>

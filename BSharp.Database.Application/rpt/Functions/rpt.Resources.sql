@@ -8,7 +8,7 @@ RETURN
 		C.[Name] AS [Currency], R.[MonetaryValue],
 		[Mass], MM.[Name] AS [MassUnit], [Volume], MV.[Name] AS [VolumeUnit],
 		[Time], MT.[Name] AS [TimeUnit], [Count], MC.[Name] AS [CountUnit],
-		R.[AvailableSince], R.[AvailableTill], R.DescriptorId,--		R.Text1,
+		R.[AvailableSince], R.[AvailableTill], R.[Identifier],--		R.Text1,
 		LK1.[Name] AS Lookup1, LK2.[Name] AS Lookup2--, LK3.[Name] AS Lookup3, LK4.[Name] AS Lookup4, LK5.[Name] AS Lookup5
 	FROM dbo.Resources R
 	JOIN dbo.ResourceClassifications RC ON R.[ResourceClassificationId] = RC.[Id]

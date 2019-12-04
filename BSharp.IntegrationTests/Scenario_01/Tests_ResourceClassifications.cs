@@ -24,7 +24,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public string Url => $"/api/{_baseAddress}"; // For querying and updating specific resource definition
         public string ViewId => _baseAddress; // For permissions
 
-        private string _definitionId = "monetary-resources";
+        private string _definitionId = "currencies";
 
 
         [Fact(DisplayName = "01 Getting all resource classifications before granting permissions returns a 403 Forbidden response")]

@@ -22,7 +22,7 @@ SET NOCOUNT ON;
 				[Name], 
 				[Name2], 
 				[Name3],
-				[DescriptorId],
+				[Identifier],
 				[Code], 
 
 				[CurrencyId],
@@ -76,7 +76,7 @@ SET NOCOUNT ON;
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
 				t.[Name3]					= s.[Name3],
-				t.[DescriptorId]			= s.[DescriptorId],
+				t.[Identifier]			= s.[Identifier],
 				t.[Code]					= s.[Code],
 
 				t.[CurrencyId]				= s.[CurrencyId],
@@ -120,7 +120,7 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([OperatingSegmentId], [DefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], [DescriptorId], [Code],
+			INSERT ([OperatingSegmentId], [DefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], [Identifier], [Code],
 				[CurrencyId],
 				[MonetaryValue],
 				[CountUnitId],
@@ -161,7 +161,7 @@ SET NOCOUNT ON;
 				--[Text1],					
 				--[Text2]			
 				)
-			VALUES (s.[OperatingSegmentId], s.[DefinitionId], s.[ResourceClassificationId], s.[Name], s.[Name2], s.[Name3], s.[DescriptorId], s.[Code],
+			VALUES (s.[OperatingSegmentId], s.[DefinitionId], s.[ResourceClassificationId], s.[Name], s.[Name2], s.[Name3], s.[Identifier], s.[Code],
 				s.[CurrencyId],
 				s.[MonetaryValue],
 				s.[CountUnitId],

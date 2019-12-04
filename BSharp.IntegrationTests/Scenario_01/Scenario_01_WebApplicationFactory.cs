@@ -112,6 +112,13 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // This extremely long-lived access token (life time of 6 years) was specifically generated for the integration tests
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_token}");
+
+            //// Version headers
+            //client.DefaultRequestHeaders.Add("x-definitions-version", $"???");
+            //client.DefaultRequestHeaders.Add("x-global-settings-version", $"???");
+            //client.DefaultRequestHeaders.Add("x-permissions-version", $"???");
+            //client.DefaultRequestHeaders.Add("x-settings-version", $"???");
+            //client.DefaultRequestHeaders.Add("x-user-settings-version", $"???");
         }
 
         protected override void Dispose(bool disposing)

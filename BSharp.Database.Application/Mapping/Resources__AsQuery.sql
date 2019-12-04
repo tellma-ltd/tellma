@@ -13,7 +13,7 @@ RETURN (
 		[Name],
 		[Name2],
 		[Name3],
-		[DescriptorId],
+		[Identifier],
 		[Code],
 		[ResourceClassificationId],
 		[CountUnitId],

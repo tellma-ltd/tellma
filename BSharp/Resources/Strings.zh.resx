@@ -256,18 +256,6 @@
   <data name="CurrentPassword" xml:space="preserve">
     <value>当前密码</value>
   </data>
-  <data name="Custodies" xml:space="preserve">
-    <value>Custodies</value>
-  </data>
-  <data name="Custody" xml:space="preserve">
-    <value>保管</value>
-  </data>
-  <data name="Custody_Address" xml:space="preserve">
-    <value>地址</value>
-  </data>
-  <data name="Custody_CustodyType" xml:space="preserve">
-    <value>托管型</value>
-  </data>
   <data name="Data" xml:space="preserve">
     <value>数据</value>
   </data>
@@ -1156,8 +1144,17 @@
   <data name="Resource" xml:space="preserve">
     <value>资源</value>
   </data>
+  <data name="Resource_AvailableSince" xml:space="preserve">
+    <value>由于可用</value>
+  </data>
+  <data name="Resource_AvailableTill" xml:space="preserve">
+    <value>可直到</value>
+  </data>
   <data name="Resource_Classification" xml:space="preserve">
     <value>分类</value>
+  </data>
+  <data name="Resource_Count" xml:space="preserve">
+    <value>计数</value>
   </data>
   <data name="Resource_CountUnit" xml:space="preserve">
     <value>计数单元</value>
@@ -1165,8 +1162,8 @@
   <data name="Resource_Currency" xml:space="preserve">
     <value>货币</value>
   </data>
-  <data name="Resource_CustomsReference" xml:space="preserve">
-    <value>海关参考</value>
+  <data name="Resource_Identifier" xml:space="preserve">
+    <value>识别码</value>
   </data>
   <data name="Resource_Lookup1" xml:space="preserve">
     <value>资源查找1</value>
@@ -1183,14 +1180,23 @@
   <data name="Resource_Lookup5" xml:space="preserve">
     <value>资源查找5</value>
   </data>
+  <data name="Resource_Mass" xml:space="preserve">
+    <value>块</value>
+  </data>
   <data name="Resource_MassUnit" xml:space="preserve">
     <value>质量单位</value>
+  </data>
+  <data name="Resource_MonetaryValue" xml:space="preserve">
+    <value>货币价值</value>
+  </data>
+  <data name="Resource_Time" xml:space="preserve">
+    <value>时间</value>
   </data>
   <data name="Resource_TimeUnit" xml:space="preserve">
     <value>时间单位</value>
   </data>
-  <data name="Resource_Type" xml:space="preserve">
-    <value>类型</value>
+  <data name="Resource_Volume" xml:space="preserve">
+    <value>体积</value>
   </data>
   <data name="Resource_VolumeUnit" xml:space="preserve">
     <value>体积单位</value>

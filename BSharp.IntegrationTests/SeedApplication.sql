@@ -49,17 +49,19 @@ IF NOT EXISTS(SELECT * FROM [dbo].[AgentDefinitions] WHERE [Id] = N'customers')
 	INSERT INTO [dbo].[AgentDefinitions]([Id])
 	VALUES(N'customers');
 
-IF NOT EXISTS(SELECT * FROM [dbo].[ResourceDefinitions] WHERE [Id] = N'monetary-resources')
+IF NOT EXISTS(SELECT * FROM [dbo].[ResourceDefinitions] WHERE [Id] = N'currencies')
 	INSERT INTO [dbo].[ResourceDefinitions]([Id])
-	VALUES(N'monetary-resources');
+	VALUES(N'currencies');
+
+UPDATE Settings SET DefinitionsVersion = NEWID(), SettingsVersion = NEWID();
 
 -- Resource Types
 DECLARE @ResourceClassifications dbo.ResourceClassificationList
 INSERT INTO @ResourceClassifications
 ([Code],									[Name],											[ParentIndex],		[IsAssignable], [Index], [ResourceDefinitionId]) VALUES
-(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					NULL,		1,				0, N'monetary-resources'),
-	(N'Cash',								N'Cash',										0,		1,				1, N'monetary-resources'),
-	(N'CashEquivalents',					N'Cash equivalents',							0,		1,				2, N'monetary-resources');
+(N'CashAndCashEquivalents',					N'Cash and cash equivalents',					NULL,				1,				0,			N'currencies'),
+	(N'Cash',								N'Cash',										0,					1,				1,			N'currencies'),
+	(N'CashEquivalents',					N'Cash equivalents',							0,					1,				2,			N'currencies');
 
 DECLARE @ValidationErrorsJson nvarchar(max);
 EXEC [api].[ResourceClassifications__Save]

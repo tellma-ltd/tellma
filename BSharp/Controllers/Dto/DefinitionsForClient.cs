@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BSharp.Controllers.Dto
 {
@@ -136,128 +137,159 @@ namespace BSharp.Controllers.Dto
 
     public class AccountDefinitionForClient : MasterDetailDefinitionForClient
     {
-        public string ResponsibilityCenter_Label { get; set; }
-        public string ResponsibilityCenter_Label2 { get; set; }
-        public string ResponsibilityCenter_Label3 { get; set; }
-        public string ResponsibilityCenter_Visibility { get; set; }
-        public int? ResponsibilityCenter_DefaultValue { get; set; }
+        public string ResponsibilityCenterLabel { get; set; }
+        public string ResponsibilityCenterLabel2 { get; set; }
+        public string ResponsibilityCenterLabel3 { get; set; }
+        public string ResponsibilityCenterVisibility { get; set; }
+        public int? ResponsibilityCenterDefaultValue { get; set; }
 
-        public string Custodian_Label { get; set; }
-        public string Custodian_Label2 { get; set; }
-        public string Custodian_Label3 { get; set; }
-        public string Custodian_Visibility { get; set; }
-        public int? Custodian_DefaultValue { get; set; }
+        public string CustodianLabel { get; set; }
+        public string CustodianLabel2 { get; set; }
+        public string CustodianLabel3 { get; set; }
+        public string CustodianVisibility { get; set; }
+        public int? CustodianDefaultValue { get; set; }
 
-        public string Resource_Label { get; set; }
-        public string Resource_Label2 { get; set; }
-        public string Resource_Label3 { get; set; }
-        public string Resource_Visibility { get; set; }
-        public int? Resource_DefaultValue { get; set; }
+        public string ResourceLabel { get; set; }
+        public string ResourceLabel2 { get; set; }
+        public string ResourceLabel3 { get; set; }
+        public string ResourceVisibility { get; set; }
+        public int? ResourceDefaultValue { get; set; }
         public string Resource_DefinitionList { get; set; }
 
-        public string Location_Label { get; set; }
-        public string Location_Label2 { get; set; }
-        public string Location_Label3 { get; set; }
-        public string Location_Visibility { get; set; }
-        public int? Location_DefaultValue { get; set; }
+        public string LocationLabel { get; set; }
+        public string LocationLabel2 { get; set; }
+        public string LocationLabel3 { get; set; }
+        public string LocationVisibility { get; set; }
+        public int? LocationDefaultValue { get; set; }
         public string Location_DefinitionList { get; set; }
 
-        public string PartyReference_Label { get; set; }
-        public string PartyReference_Label2 { get; set; }
-        public string PartyReference_Label3 { get; set; }
-        public string PartyReference_Visibility { get; set; }
+        public string PartyReferenceLabel { get; set; }
+        public string PartyReferenceLabel2 { get; set; }
+        public string PartyReferenceLabel3 { get; set; }
+        public string PartyReferenceVisibility { get; set; }
     }
 
     public class ResourceDefinitionForClient : MasterDetailDefinitionForClient
     {
-        public string MassUnit_Label { get; set; }
-        public string MassUnit_Label2 { get; set; }
-        public string MassUnit_Label3 { get; set; }
-        public byte MassUnit_Visibility { get; set; }
-        public int? MassUnit_DefaultValue { get; set; }
+        public string IdentifierLabel { get; set; }
+        public string IdentifierLabel2 { get; set; }
+        public string IdentifierLabel3 { get; set; }
+        public string IdentifierVisibility { get; set; }
+        public string IdentifierDefaultValue { get; set; }
 
-        public string VolumeUnit_Label { get; set; }
-        public string VolumeUnit_Label2 { get; set; }
-        public string VolumeUnit_Label3 { get; set; }
-        public byte VolumeUnit_Visibility { get; set; }
-        public int? VolumeUnit_DefaultValue { get; set; }
+        public string CurrencyLabel { get; set; }
+        public string CurrencyLabel2 { get; set; }
+        public string CurrencyLabel3 { get; set; }
+        public string CurrencyVisibility { get; set; }
+        public string CurrencyDefaultValue { get; set; }
 
-        public string AreaUnit_Label { get; set; }
-        public string AreaUnit_Label2 { get; set; }
-        public string AreaUnit_Label3 { get; set; }
-        public byte AreaUnit_Visibility { get; set; }
-        public int? AreaUnit_DefaultValue { get; set; }
+        public string MonetaryValueLabel { get; set; }
+        public string MonetaryValueLabel2 { get; set; }
+        public string MonetaryValueLabel3 { get; set; }
+        public string MonetaryValueVisibility { get; set; }
+        public int? MonetaryValueDefaultValue { get; set; }
 
-        public string LengthUnit_Label { get; set; }
-        public string LengthUnit_Label2 { get; set; }
-        public string LengthUnit_Label3 { get; set; }
-        public byte LengthUnit_Visibility { get; set; }
-        public int? LengthUnit_DefaultValue { get; set; }
+        public string CountUnitLabel { get; set; }
+        public string CountUnitLabel2 { get; set; }
+        public string CountUnitLabel3 { get; set; }
+        public string CountUnitVisibility { get; set; }
+        public int? CountUnitDefaultValue { get; set; }
 
-        public string TimeUnit_Label { get; set; }
-        public string TimeUnit_Label2 { get; set; }
-        public string TimeUnit_Label3 { get; set; }
-        public byte TimeUnit_Visibility { get; set; }
-        public int? TimeUnit_DefaultValue { get; set; }
+        public string CountLabel { get; set; }
+        public string CountLabel2 { get; set; }
+        public string CountLabel3 { get; set; }
+        public string CountVisibility { get; set; }
+        public int? CountDefaultValue { get; set; }
 
-        public string CountUnit_Label { get; set; }
-        public string CountUnit_Label2 { get; set; }
-        public string CountUnit_Label3 { get; set; }
-        public byte CountUnit_Visibility { get; set; }
-        public int? CountUnit_DefaultValue { get; set; }
+        public string MassUnitLabel { get; set; }
+        public string MassUnitLabel2 { get; set; }
+        public string MassUnitLabel3 { get; set; }
+        public string MassUnitVisibility { get; set; }
+        public int? MassUnitDefaultValue { get; set; }
 
-        public string Memo_Label { get; set; }
-        public string Memo_Label2 { get; set; }
-        public string Memo_Label3 { get; set; }
-        public byte Memo_Visibility { get; set; }
-        public string Memo_DefaultValue { get; set; }
+        public string MassLabel { get; set; }
+        public string MassLabel2 { get; set; }
+        public string MassLabel3 { get; set; }
+        public string MassVisibility { get; set; }
+        public int? MassDefaultValue { get; set; }
 
-        public string CustomsReference_Label { get; set; }
-        public string CustomsReference_Label2 { get; set; }
-        public string CustomsReference_Label3 { get; set; }
-        public byte CustomsReference_Visibility { get; set; }
-        public string CustomsReference_DefaultValue { get; set; }
+        public string VolumeUnitLabel { get; set; }
+        public string VolumeUnitLabel2 { get; set; }
+        public string VolumeUnitLabel3 { get; set; }
+        public string VolumeUnitVisibility { get; set; }
+        public int? VolumeUnitDefaultValue { get; set; }
 
+        public string VolumeLabel { get; set; }
+        public string VolumeLabel2 { get; set; }
+        public string VolumeLabel3 { get; set; }
+        public string VolumeVisibility { get; set; }
+        public int? VolumeDefaultValue { get; set; }
+
+        public string TimeUnitLabel { get; set; }
+        public string TimeUnitLabel2 { get; set; }
+        public string TimeUnitLabel3 { get; set; }
+        public string TimeUnitVisibility { get; set; }
+        public int? TimeUnitDefaultValue { get; set; }
+
+        public string TimeLabel { get; set; }
+        public string TimeLabel2 { get; set; }
+        public string TimeLabel3 { get; set; }
+        public string TimeVisibility { get; set; }
+        public int? TimeDefaultValue { get; set; }
+
+        public string DescriptionVisibility { get; set; }
+
+        public string AvailableSinceLabel { get; set; }
+        public string AvailableSinceLabel2 { get; set; }
+        public string AvailableSinceLabel3 { get; set; }
+        public string AvailableSinceVisibility { get; set; }
+        public DateTime? AvailableSinceDefaultValue { get; set; }
+
+        public string AvailableTillLabel { get; set; }
+        public string AvailableTillLabel2 { get; set; }
+        public string AvailableTillLabel3 { get; set; }
+        public string AvailableTillVisibility { get; set; }
+        public DateTime? AvailableTillDefaultValue { get; set; }
 
         // Lookup 1
-        public string Lookup1_Label { get; set; }
-        public string Lookup1_Label2 { get; set; }
-        public string Lookup1_Label3 { get; set; }
-        public byte Lookup1_Visibility { get; set; } // 0, 1, 2 (not visible, visible, visible and required)
-        public int? Lookup1_DefaultValue { get; set; }
-        public string Lookup1_DefinitionId { get; set; }
+        public string Lookup1Label { get; set; }
+        public string Lookup1Label2 { get; set; }
+        public string Lookup1Label3 { get; set; }
+        public string Lookup1Visibility { get; set; } // 0, 1, 2 (not visible, visible, visible and required)
+        public int? Lookup1DefaultValue { get; set; }
+        public string Lookup1DefinitionId { get; set; }
 
         // Lookup 2
-        public string Lookup2_Label { get; set; }
-        public string Lookup2_Label2 { get; set; }
-        public string Lookup2_Label3 { get; set; }
-        public byte Lookup2_Visibility { get; set; }
-        public int? Lookup2_DefaultValue { get; set; }
-        public string Lookup2_DefinitionId { get; set; }
+        public string Lookup2Label { get; set; }
+        public string Lookup2Label2 { get; set; }
+        public string Lookup2Label3 { get; set; }
+        public string Lookup2Visibility { get; set; }
+        public int? Lookup2DefaultValue { get; set; }
+        public string Lookup2DefinitionId { get; set; }
 
-        // Lookup 3
-        public string Lookup3_Label { get; set; }
-        public string Lookup3_Label2 { get; set; }
-        public string Lookup3_Label3 { get; set; }
-        public byte Lookup3_Visibility { get; set; }
-        public int? Lookup3_DefaultValue { get; set; }
-        public string Lookup3_DefinitionId { get; set; }
+        //// Lookup 3
+        //public string Lookup3Label { get; set; }
+        //public string Lookup3Label2 { get; set; }
+        //public string Lookup3Label3 { get; set; }
+        //public string Lookup3Visibility { get; set; }
+        //public int? Lookup3DefaultValue { get; set; }
+        //public string Lookup3DefinitionId { get; set; }
 
-        // Lookup 4
-        public string Lookup4_Label { get; set; }
-        public string Lookup4_Label2 { get; set; }
-        public string Lookup4_Label3 { get; set; }
-        public byte Lookup4_Visibility { get; set; }
-        public int? Lookup4_DefaultValue { get; set; }
-        public string Lookup4_DefinitionId { get; set; }
+        //// Lookup 4
+        //public string Lookup4Label { get; set; }
+        //public string Lookup4Label2 { get; set; }
+        //public string Lookup4Label3 { get; set; }
+        //public string Lookup4Visibility { get; set; }
+        //public int? Lookup4DefaultValue { get; set; }
+        //public string Lookup4DefinitionId { get; set; }
 
-        // Lookup 5
-        public string Lookup5_Label { get; set; }
-        public string Lookup5_Label2 { get; set; }
-        public string Lookup5_Label3 { get; set; }
-        public byte Lookup5_Visibility { get; set; }
-        public int? Lookup5_DefaultValue { get; set; }
-        public string Lookup5_DefinitionId { get; set; }
+        //// Lookup 5
+        //public string Lookup5Label { get; set; }
+        //public string Lookup5Label2 { get; set; }
+        //public string Lookup5Label3 { get; set; }
+        //public string Lookup5Visibility { get; set; }
+        //public int? Lookup5DefaultValue { get; set; }
+        //public string Lookup5DefinitionId { get; set; }
     }
 
     public class AgentDefinitionForClient : MasterDetailDefinitionForClient
@@ -310,6 +342,5 @@ namespace BSharp.Controllers.Dto
     {
         public const string Asc = "asc";
         public const string Desc = "desc";
-
     }
 }

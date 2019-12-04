@@ -33,7 +33,7 @@
 
 	DECLARE @SKDs [dbo].ResourceList;
 	INSERT INTO @SKDs ([Index], 
-		[OperatingSegmentId],	[ResourceClassificationId],		[DescriptorId],	[Name],											[Lookup1Id]) VALUES
+		[OperatingSegmentId],	[ResourceClassificationId],		[Identifier],	[Name],											[Lookup1Id]) VALUES
 		-- N'Vehicles'
 	(0, @OS_CarAssembly, dbo.fn_RCCode__Id(N'FGCarsExtension'),	N'101',			N'Toyota Camry 2018 Navy Blue/White/Leather',	dbo.fn_Lookup(N'body-colors', N'Navy Blue')),
 	(1, @OS_CarAssembly, dbo.fn_RCCode__Id(N'FGCarsExtension'),	N'102',			N'Toyota Camry 2018 Black/Silver/Wool',			dbo.fn_Lookup(N'body-colors', N'Black')),

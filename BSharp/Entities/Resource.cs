@@ -7,6 +7,12 @@ namespace BSharp.Entities
     [StrongEntity]
     public class ResourceForSave : EntityWithKey<int>
     {
+        [Display(Name = "OperatingSegment")]
+        public int? OperatingSegmentId { get; set; }
+
+        [Display(Name = "Resource_Classification")]
+        public int? ResourceClassificationId { get; set; }
+
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -23,36 +29,66 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
+        [Display(Name = "Resource_Identifier")]
+        [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Identifier { get; set; }
+
         [Display(Name = "Code")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "Resource_Type")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        public string ResourceTypeId { get; set; }
-
-        [Display(Name = "Resource_Classification")]
-        public int? ResourceClassificationId { get; set; }
-
         [Display(Name = "Resource_Currency")]
-        public string CurrencyId { get; set; } 
+        public string CurrencyId { get; set; }
 
-        [Display(Name = "Resource_MassUnit")]
-        public int? MassUnitId { get; set; }
-
-        [Display(Name = "Resource_VolumeUnit")]
-        public int? VolumeUnitId { get; set; }
-
-        [Display(Name = "Resource_TimeUnit")]
-        public int? TimeUnitId { get; set; }
+        [Display(Name = "Resource_MonetaryValue")]
+        public decimal? MonetaryValue { get; set; }
 
         [Display(Name = "Resource_CountUnit")]
         public int? CountUnitId { get; set; }
 
-        [Display(Name = "Resource_CustomsReference")]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        public string CustomsReference { get; set; }
+        [Display(Name = "Resource_Count")]
+        public decimal? Count { get; set; }
+
+        [Display(Name = "Resource_MassUnit")]
+        public int? MassUnitId { get; set; }
+
+        [Display(Name = "Resource_Mass")]
+        public decimal? Mass { get; set; }
+
+        [Display(Name = "Resource_VolumeUnit")]
+        public int? VolumeUnitId { get; set; }
+
+        [Display(Name = "Resource_Volume")]
+        public decimal? Volume { get; set; }
+
+        [Display(Name = "Resource_TimeUnit")]
+        public int? TimeUnitId { get; set; }
+
+        [Display(Name = "Resource_Time")]
+        public decimal? Time { get; set; }
+
+        [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
+        [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Description { get; set; }
+
+        [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
+        [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Description2 { get; set; }
+
+        [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
+        [StringLength(2048, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        public string Description3 { get; set; }
+
+        [Display(Name = "Resource_AvailableSince")]
+        public DateTime? AvailableSince { get; set; }
+
+        [Display(Name = "Resource_AvailableTill")]
+        public DateTime? AvailableTill { get; set; }
 
         [Display(Name = "Resource_Lookup1")]
         public int? Lookup1Id { get; set; }
@@ -60,14 +96,14 @@ namespace BSharp.Entities
         [Display(Name = "Resource_Lookup2")]
         public int? Lookup2Id { get; set; }
 
-        [Display(Name = "Resource_Lookup3")]
-        public int? Lookup3Id { get; set; }
+        //[Display(Name = "Resource_Lookup3")]
+        //public int? Lookup3Id { get; set; }
 
-        [Display(Name = "Resource_Lookup4")]
-        public int? Lookup4Id { get; set; }
+        //[Display(Name = "Resource_Lookup4")]
+        //public int? Lookup4Id { get; set; }
 
-        [Display(Name = "Resource_Lookup5")]
-        public int? Lookup5Id { get; set; }
+        //[Display(Name = "Resource_Lookup5")]
+        //public int? Lookup5Id { get; set; }
     }
 
     public class Resource : ResourceForSave
@@ -92,6 +128,10 @@ namespace BSharp.Entities
 
         // For Query
 
+        [Display(Name = "OperatingSegment")]
+        [ForeignKey(nameof(OperatingSegmentId))]
+        public ResponsibilityCenter OperatingSegment { get; set; }
+
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
@@ -99,10 +139,6 @@ namespace BSharp.Entities
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
-
-        [Display(Name = "Resource_Type")]
-        [ForeignKey(nameof(ResourceTypeId))]
-        public AccountType ResourceType { get; set; }
 
         [Display(Name = "Resource_Classification")]
         [ForeignKey(nameof(ResourceClassificationId))]
@@ -136,16 +172,16 @@ namespace BSharp.Entities
         [ForeignKey(nameof(Lookup2Id))]
         public Lookup Lookup2 { get; set; }
 
-        [Display(Name = "Resource_Lookup3")]
-        [ForeignKey(nameof(Lookup3Id))]
-        public Lookup Lookup3 { get; set; }
+        //[Display(Name = "Resource_Lookup3")]
+        //[ForeignKey(nameof(Lookup3Id))]
+        //public Lookup Lookup3 { get; set; }
 
-        [Display(Name = "Resource_Lookup4")]
-        [ForeignKey(nameof(Lookup4Id))]
-        public Lookup Lookup4 { get; set; }
+        //[Display(Name = "Resource_Lookup4")]
+        //[ForeignKey(nameof(Lookup4Id))]
+        //public Lookup Lookup4 { get; set; }
 
-        [Display(Name = "Resource_Lookup5")]
-        [ForeignKey(nameof(Lookup5Id))]
-        public Lookup Lookup5 { get; set; }
+        //[Display(Name = "Resource_Lookup5")]
+        //[ForeignKey(nameof(Lookup5Id))]
+        //public Lookup Lookup5 { get; set; }
     }
 }

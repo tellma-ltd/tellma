@@ -6,7 +6,7 @@
 	[Name]							NVARCHAR (255)		NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
-	[DescriptorId]					NVARCHAR (10),
+	[Identifier]					NVARCHAR (10),
 	--[BatchCode]						NVARCHAR (10), -- when not null, measures need not be known per unit. 
 	[Code]							NVARCHAR (255),
 
@@ -15,7 +15,7 @@
 	[CountUnitId]					INT,
 	[Count]							DECIMAL				DEFAULT 1, -- if count is not null, this value is forced in Entries
 	[MassUnitId]					INT,
-	[Mass]							DECIMAL, -- makes sense when DescriptorId is not null, so we are referring to a specific instance, or when every unit has the same mass
+	[Mass]							DECIMAL, -- makes sense when Identifier is not null, so we are referring to a specific instance, or when every unit has the same mass
 	[VolumeUnitId]					INT,
 	[Volume]						DECIMAL,
 	[TimeUnitId]					INT,

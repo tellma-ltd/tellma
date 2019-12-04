@@ -127,17 +127,17 @@ namespace BSharp.Controllers
             var definition = Definition();
 
             // Set default values
-            SetDefaultValue(entities, e => e.ResourceId, definition.Resource_DefaultValue);
-            SetDefaultValue(entities, e => e.CustodianId, definition.Custodian_DefaultValue);
-            SetDefaultValue(entities, e => e.ResponsibilityCenterId, definition.ResponsibilityCenter_DefaultValue);
-            SetDefaultValue(entities, e => e.LocationId, definition.Location_DefaultValue);
+            SetDefaultValue(entities, e => e.ResourceId, definition.ResourceDefaultValue);
+            SetDefaultValue(entities, e => e.CustodianId, definition.CustodianDefaultValue);
+            SetDefaultValue(entities, e => e.ResponsibilityCenterId, definition.ResponsibilityCenterDefaultValue);
+            SetDefaultValue(entities, e => e.LocationId, definition.LocationDefaultValue);
 
             // Validate required stuff
-            ValidateIfRequired(entities, e => e.PartyReference, definition.PartyReference_Visibility);
-            ValidateIfRequired(entities, e => e.ResourceId, definition.Resource_Visibility);
-            ValidateIfRequired(entities, e => e.CustodianId, definition.Custodian_Visibility);
-            ValidateIfRequired(entities, e => e.ResponsibilityCenterId, definition.ResponsibilityCenter_Visibility);
-            ValidateIfRequired(entities, e => e.LocationId, definition.Location_Visibility);
+            ValidateIfRequired(entities, e => e.PartyReference, definition.PartyReferenceVisibility);
+            ValidateIfRequired(entities, e => e.ResourceId, definition.ResourceVisibility);
+            ValidateIfRequired(entities, e => e.CustodianId, definition.CustodianVisibility);
+            ValidateIfRequired(entities, e => e.ResponsibilityCenterId, definition.ResponsibilityCenterVisibility);
+            ValidateIfRequired(entities, e => e.LocationId, definition.LocationVisibility);
 
             // No need to invoke SQL if the model state is full of errors
             if (ModelState.HasReachedMaxErrors)

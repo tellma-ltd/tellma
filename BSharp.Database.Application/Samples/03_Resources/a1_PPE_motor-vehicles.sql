@@ -23,7 +23,7 @@
 
 	DECLARE @MotorVehicles dbo.ResourceList;
 	INSERT INTO @MotorVehicles ([Index], [OperatingSegmentId],
-				[ResourceClassificationId],				[Name],			[AvailableSince],	[Lookup1Id],									[DescriptorId], [CountUnitId],				[Count]) VALUES
+				[ResourceClassificationId],				[Name],			[AvailableSince],	[Lookup1Id],									[Identifier], [CountUnitId],				[Count]) VALUES
 	(0, @OS_Steel, dbo.fn_RCCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'AA 78172',	dbo.fn_UnitName__Id(N'ea'), 1),--1
 	(1, @OS_Steel, dbo.fn_RCCode__Id(N'CarsExtension'),	N'Prius 2018',	N'2017.10.01',		dbo.fn_Lookup(N'vehicle-makes', N'Toyota'),		N'BX54662',		dbo.fn_UnitName__Id(N'ea'), 1),--1
 	(2, @OS_Steel, dbo.fn_RCCode__Id(N'MinivansExtension'),N'Minivan 2019',N'2018.12.01' ,	dbo.fn_Lookup(N'vehicle-makes', N'Mercedes'),	N'AA100000',	dbo.fn_UnitName__Id(N'ea'), 1),
@@ -49,7 +49,7 @@
 		INSERT INTO @MotorVehiclesIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'motor-vehicles';
 
 		SELECT [DefinitionId], [Id], [Classification], [Name] AS 'Vehcile', [Currency] AS 'Price In',--	[LengthUnit] AS 'Usage In',	
-		[AvailableSince] AS 'Production Date', [Lookup1] AS N'Make', [DescriptorId] AS 'Plate #', [OperatingSegment]
+		[AvailableSince] AS 'Production Date', [Lookup1] AS N'Make', [Identifier] AS 'Plate #', [OperatingSegment]
 		FROM rpt.Resources(@MotorVehiclesIds);
 
 		--Select * from resources;

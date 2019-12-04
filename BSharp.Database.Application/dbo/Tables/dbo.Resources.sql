@@ -10,10 +10,10 @@ CREATE TABLE [dbo].[Resources] (
 	[ResourceClassificationId]		INT					NOT NULL,
 	CONSTRAINT [FK_Resources__ResourceClassificationId_DefinitionId] FOREIGN KEY ([ResourceClassificationId], [DefinitionId]) REFERENCES [dbo].[ResourceClassifications] ([Id], [ResourceDefinitionId]),
 	[Name]							NVARCHAR (255)		NOT NULL,
-	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_DescriptorId] UNIQUE ([DefinitionId],[Name],[DescriptorId]),
+	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_DescriptorId] UNIQUE ([DefinitionId],[Name],[Identifier]),
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
-	[DescriptorId]					NVARCHAR (10), -- When not null, all measures (count, monetary value, mass, volumne, etc) must be fixed
+	[Identifier]					NVARCHAR (10), -- When not null, all measures (count, monetary value, mass, volumne, etc) must be fixed
 	--[BatchCode]						NVARCHAR (10), -- when not null, measures need not be known per unit. 
 	-- if inactive, it is not to be referenced in subsequent documents anymore.
 	[IsActive]						BIT					NOT NULL DEFAULT 1,
@@ -87,13 +87,13 @@ CREATE TABLE [dbo].[Resources] (
 );
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name_DescriptorId]
-  ON [dbo].[Resources]([DefinitionId], [Name], [DescriptorId]);
+  ON [dbo].[Resources]([DefinitionId], [Name], [Identifier]);
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name2_DescriptorId]
-  ON [dbo].[Resources]([DefinitionId], [Name2], [DescriptorId]) WHERE [Name2] IS NOT NULL;
+  ON [dbo].[Resources]([DefinitionId], [Name2], [Identifier]) WHERE [Name2] IS NOT NULL;
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name3_DescriptorId]
-  ON [dbo].[Resources]([DefinitionId], [Name3], [DescriptorId]) WHERE [Name3] IS NOT NULL;
+  ON [dbo].[Resources]([DefinitionId], [Name3], [Identifier]) WHERE [Name3] IS NOT NULL;
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__ResourceDefinitionId_Code]
   ON [dbo].[Resources]([DefinitionId], [Code]) WHERE [Code] IS NOT NULL;

@@ -58,7 +58,7 @@ WHERE L.DefinitionId = N'ManualLine' AND A.[IsSmart] = 1; -- Entered by user
 UPDATE E 
 SET
 	E.[CurrencyId]			 = 	COALESCE(R.[CurrencyId], E.[CurrencyId]),
-	E.[ResourceDescriptorId] =  COALESCE(R.[DescriptorId], E.[ResourceDescriptorId])
+	E.[ResourceDescriptorId] =  COALESCE(R.[Identifier], E.[ResourceDescriptorId])
 FROM @FilledEntries E JOIN @FilledLines L ON E.DocumentLineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 --select 6 as step, E.* from @FilledEntries E
