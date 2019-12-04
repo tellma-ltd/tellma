@@ -9,7 +9,7 @@ BEGIN
 		A.TaxIdentificationNumber As TIN, 
 		J.ExternalReference As [Invoice #], J.[AdditionalReference] As [Cash M/C #],
 		SUM(J.[MonetaryValue]) AS VAT, SUM(J.[RelatedAmount]) AS [Taxable Amount],
-		J.DocumentDate As [Invoice Date], J.[DocumentLineId]
+		J.DocumentDate As [Invoice Date], J.[LineId]
 	FROM dbo.[fi_Journal](@fromDate, @toDate) J
 	LEFT JOIN dbo.Agents A ON J.[RelatedAgentId] = A.Id
 	WHERE J.[AccountId]  = @AccountId
@@ -18,6 +18,6 @@ BEGIN
 		A.[Name],
 		A.TaxIdentificationNumber,
 		J.ExternalReference, J.[AdditionalReference],
-		J.DocumentDate,	J.[DocumentLineId]
+		J.DocumentDate,	J.[LineId]
 END;
 GO;

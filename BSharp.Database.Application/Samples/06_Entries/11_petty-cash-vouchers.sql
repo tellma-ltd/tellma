@@ -1,6 +1,6 @@
 ﻿DECLARE @PettyCashVouchers dbo.DocumentList;
-DECLARE @CashPurchasesLines dbo.DocumentLineList, @CashPurchasesLineEntries dbo.DocumentLineEntryList;
-DECLARE @PettyCashVouchersWideLines [dbo].[DocumentWideLineList];
+DECLARE @CashPurchasesLines dbo.LineList, @CashPurchasesLineEntries dbo.EntryList;
+DECLARE @PettyCashVouchersWideLines [dbo].[WideLineList];
 
 /*
 Use Case 1: Accountant learns - say by email - that a user purchased a fixed asset, and paid for it from cash
@@ -128,7 +128,7 @@ BEGIN
 		AND [AccountTypeId] IN (SELECT [Id] FROM PPEAccountTypes);
 
 		INSERT INTO @CashPurchasesLineEntries([Index], 
-			[DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [Time], [Value])
+			[LineIndex], [DocumentIndex], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [Time], [Value])
 		SELECT 0, DL.[Index], DL.DocumentIndex, LD.[EntryNumber], LD.[Direction], @A00, LD.[EntryClassificationId], 5, 150000
 		FROM @CashPurchasesLines DL
 		JOIN dbo.LineDefinitions LD ON DL.LineDefinitionId = LD.[Id]

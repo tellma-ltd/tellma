@@ -1,8 +1,8 @@
 ﻿CREATE PROCEDURE [dal].[Documents__Save]
 	@DefinitionId NVARCHAR(255),
 	@Documents [dbo].[DocumentList] READONLY,
-	@Lines [dbo].[DocumentLineList] READONLY, 
-	@Entries [dbo].[DocumentLineEntryList] READONLY,
+	@Lines [dbo].[LineList] READONLY, 
+	@Entries [dbo].EntryList READONLY,
 	@ReturnIds BIT = 0
 AS
 BEGIN
@@ -56,7 +56,7 @@ BEGIN
 	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
 
 	WITH BL AS (
-		SELECT * FROM dbo.[DocumentLines]
+		SELECT * FROM dbo.[Lines]
 		WHERE DocumentId IN (SELECT [Id] FROM @DocumentsIndexedIds)
 	)
 	INSERT INTO @LinesIndexedIds([Index], [Id])
@@ -118,13 +118,13 @@ BEGIN
 	WHERE [Index] IS NOT NULL;
 
 	WITH BE AS (
-		SELECT * FROM dbo.[DocumentLineEntries]
-		WHERE [DocumentLineId] IN (SELECT [Id] FROM @LinesIndexedIds)
+		SELECT * FROM dbo.[Entries]
+		WHERE [LineId] IN (SELECT [Id] FROM @LinesIndexedIds)
 	)
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Index], E.[Id], LI.Id AS [DocumentLineId], E.[EntryNumber], E.[SortKey], E.[Direction], E.[AccountId],
+			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[SortKey], E.[Direction], E.[AccountId],
 			E.[ContractType], E.[AgentDefinitionId], E.[ResourceClassificationId], E.[IsCurrent],
 			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId], E.[AccountDescriptorId], E.[ResourceDescriptorId],
 			E.[CurrencyId], E.[EntryClassificationId], --[BatchCode], 
@@ -133,7 +133,7 @@ BEGIN
 			E.[Time1], E.[Time2]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
-		JOIN @LinesIndexedIds LI ON E.[DocumentLineIndex] = LI.[Index]
+		JOIN @LinesIndexedIds LI ON E.[LineIndex] = LI.[Index]
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET
@@ -168,7 +168,7 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId],
+		INSERT ([LineId], [EntryNumber], [SortKey], [Direction], [AccountId],
 			[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent],
 			[AgentId], [ResourceId], [ResponsibilityCenterId], [AccountDescriptorId], [ResourceDescriptorId],
 			[CurrencyId], [EntryClassificationId], --[BatchCode], 
@@ -176,7 +176,7 @@ BEGIN
 			[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount],
 			[Time1], [Time2]
 		)
-		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId],
+		VALUES (s.[LineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId],
 			s.[ContractType], s.[AgentDefinitionId], s.[ResourceClassificationId], s.[IsCurrent],
 			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId], s.[AccountDescriptorId], s.[ResourceDescriptorId],
 			s.[CurrencyId], s.[EntryClassificationId], --[BatchCode], 

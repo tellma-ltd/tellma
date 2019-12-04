@@ -33,8 +33,8 @@ RETURN
 		LEFT JOIN dbo.VoucherBooklets VB ON D.VoucherBookletId = VB.Id
 		LEFT JOIN dbo.DocumentAssignments DA ON D.[Id] = DA.[DocumentId]
 		LEFT JOIN dbo.Agents AG ON DA.AssigneeId = AG.Id
-		LEFT JOIN dbo.DocumentLines DL ON D.[Id] = DL.[DocumentId]
-		LEFT JOIN dbo.DocumentLineEntries DLE ON DL.[Id] = DLE.[DocumentLineId]
+		LEFT JOIN dbo.[Lines] DL ON D.[Id] = DL.[DocumentId]
+		LEFT JOIN dbo.[Entries] DLE ON DL.[Id] = DLE.[LineId]
 		JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
 		JOIN dbo.Resources R ON DLE.[ResourceId] = R.[Id]
 		JOIN dbo.Currencies C ON DLE.[CurrencyId] = C.[Id]

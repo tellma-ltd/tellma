@@ -30,16 +30,16 @@ WITH Docs AS (
 		LEFT JOIN dbo.VoucherBooklets VB ON D.VoucherBookletId = VB.Id
 		LEFT JOIN dbo.DocumentAssignments DA ON D.[Id] = DA.[DocumentId]
 		LEFT JOIN dbo.Agents AG ON DA.AssigneeId = AG.Id
-		LEFT JOIN dbo.DocumentLines DL ON D.[Id] = DL.[DocumentId]
-		LEFT JOIN dbo.DocumentLineEntries DLE ON DL.[Id] = DLE.[DocumentLineId]
+		LEFT JOIN dbo.[Lines] DL ON D.[Id] = DL.[DocumentId]
+		LEFT JOIN dbo.[Entries] DLE ON DL.[Id] = DLE.[LineId]
 		LEFT JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @DIds)
 	)-- select * from Docs
 	,
 	DocsFirst AS (
-		SELECT DL.DocumentId, MIN(DLE.DocumentLineId) AS [LineId]
-		FROM DocumentLineEntries DLE
-		LEFT JOIN dbo.DocumentLines DL ON DLE.DocumentLineId = DL.Id
+		SELECT DL.DocumentId, MIN(DLE.[LineId]) AS [LineId]
+		FROM [Entries] DLE
+		LEFT JOIN dbo.[Lines] DL ON DLE.[LineId] = DL.Id
 		WHERE DL.DocumentId IN (SELECT [Id] FROM @DIds)
 		GROUP BY DL.DocumentId
 	)

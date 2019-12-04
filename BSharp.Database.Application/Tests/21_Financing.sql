@@ -16,7 +16,7 @@ VALUES
 (@LIdx + 2, @DIdx, @LineType,	@AhmadAkra,		1000,	2350000,	100000,		@USD,			@CBEUSD,	N'LT101');
 
 EXEC [api].[Documents__Save]
-	@Documents = @DSave, @DocumentLineTypes = @DLTSave,
+	@Documents = @DSave, @LineTypes = @DLTSave,
 	@Lines = @LSave, @Entries = @ESave,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
 	@ResultJson = @ResultJson OUTPUT;

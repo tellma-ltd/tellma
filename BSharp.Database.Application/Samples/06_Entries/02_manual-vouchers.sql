@@ -1,4 +1,4 @@
-﻿DECLARE @D [dbo].[DocumentList], @L [dbo].DocumentLineList, @E [dbo].DocumentLineEntryList, @DIds dbo.IdList;
+﻿DECLARE @D [dbo].[DocumentList], @L [dbo].LineList, @E [dbo].EntryList, @DIds dbo.IdList;
 
 --DECLARE @date1 date = '2017.02.01', @date2 date = '2022.02.01', @date3 datetime = '2023.02.01';
 BEGIN -- Inserting
@@ -54,7 +54,7 @@ BEGIN -- Inserting
 	DECLARE @R_ETB INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'ETB' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
 	DECLARE @R_USD INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'USD' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
 	
-	INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],		[EntryClassificationId],		[ResourceId],	[MonetaryValue],[Value]) VALUES
 	(0, 0, 0,1,+1,@CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,			200000,			4700000),--
 	(1, 1, 0,1,+1,@CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,			100,			2350),
@@ -64,7 +64,7 @@ BEGIN -- Inserting
 	(4, 4, 1,1,+1,@CBEETB,			@InternalCashTransferExtension, @R_ETB,			1175000,		1175000),
 	(5, 5, 1,1,-1,@CBEUSD,			@InternalCashTransferExtension,	@R_USD,			50000,			1175000);
 
-	--INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
+	--INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 	--			[AccountId],		[EntryClassificationId],		[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryValue]) VALUES
 	--(6, 6, 2,1,+1,@PPEWarehouse,	@InventoryPurchaseExtension, 	600000,		N'C-14209',			NULL, NULL, NULL),--
 	--(7, 7, 2,1,+1,@VATInput,		NULL, 							90000,		N'C-14209',			N'FS010102', @Lifan, NULL),--
@@ -92,10 +92,10 @@ BEGIN -- Inserting
 	DECLARE @DocLinesIndexedIds dbo.[IndexedIdList];
 	INSERT INTO @DocLinesIndexedIds([Index], [Id])
 	-- TODO: fill index using ROWNUMBER
-	SELECT [Id], [Id] FROM dbo.DocumentLines WHERE [State] = N'Draft';
+	SELECT [Id], [Id] FROM dbo.[Lines] WHERE [State] = N'Draft';
 
 --	IF (1=0)
-	EXEC [api].[DocumentLines__Sign]
+	EXEC [api].[Lines__Sign]
 		@IndexedIds = @DocLinesIndexedIds,
 		@ToState = N'Reviewed',
 		@AgentId = @MohamadAkra,
@@ -162,13 +162,13 @@ END
 
 --	INSERT INTO @L12([Index], [DocumentIndex],					[Id], [DocumentId], [LineDefinitionId], [ScalingFactor], [SortKey])
 --	SELECT ROW_NUMBER() OVER(ORDER BY DL.[Id]), D12.[Index], DL.[Id], DL.[DocumentId],  DL.[LineDefinitionId], [ScalingFactor], [SortKey]
---	FROM dbo.DocumentLines DL
+--	FROM dbo.Lines DL
 --	JOIN @D12 D12 ON D12.[Id] = DL.[DocumentId];
 
---	INSERT INTO @E12([Index], [Id], [DocumentLineId], [DocumentIndex], [DocumentLineIndex],				[EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value])
+--	INSERT INTO @E12([Index], [Id], [LineId], [DocumentIndex], [LineIndex],				[EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value])
 --	SELECT ROW_NUMBER() OVER (ORDER BY DLE.[Id]), DLE.[Id], L12.[Id], L12.DocumentIndex, L12.[Index],	[EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [AgentId], [ResponsibilityCenterId], [ResourceId], [Quantity], [Count], [MonetaryValue], [Value]
---	FROM dbo.DocumentLineEntries DLE
---	JOIN @L12 L12 ON L12.[Id] = DLE.[DocumentLineId];
+--	FROM dbo.Entries DLE
+--	JOIN @L12 L12 ON L12.[Id] = DLE.[LineId];
 
 --	UPDATE @E12 SET [Count] = [Count] / 2, [Value] = [Value] / 2 WHERE [Index] = 1;
 --	UPDATE @E12 SET [Count] = [Count] * 1.5, [Value] = [Value] * 1.5 + 1175000 WHERE [Index] = 2;
@@ -195,7 +195,7 @@ END
 --	DECLARE @DocsToSign [dbo].[IndexedIdList]
 --	INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Active';
 
---	EXEC [api].[DocumentLines__Sign]
+--	EXEC [api].[Lines__Sign]
 --		@DocsIndexedIds = @DocsToSign, @ToState = N'Reviewed', @ReasonDetails = N'seems ok',
 --		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

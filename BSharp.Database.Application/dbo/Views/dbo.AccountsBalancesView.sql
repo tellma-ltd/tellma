@@ -8,8 +8,8 @@ AS
 		SUM([Direction] * [Count]) AS [Count],
 		SUM([Direction] * [Time]) AS [Time],
 		SUM([Direction] * [Value]) AS [Value]
-	FROM dbo.[DocumentLineEntries] DLE
-	JOIN dbo.[DocumentLines] DL ON DLE.[DocumentLineId] = DL.[Id]
+	FROM dbo.[Entries] DLE
+	JOIN dbo.[Lines] DL ON DLE.[LineId] = DL.[Id]
 	JOIN dbo.[Documents] D ON DL.[DocumentId] = D.[Id]
 	JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 	WHERE D.[State] = N'Filed'

@@ -25,7 +25,7 @@ RETURN
 	)
 	SELECT
 		J.[Id],
-		J.[DocumentLineId],
+		J.[LineId],
 		J.[DocumentId],
 		J.[DocumentDate],
 		J.[SerialNumber],

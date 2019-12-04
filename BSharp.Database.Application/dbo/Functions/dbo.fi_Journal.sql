@@ -12,7 +12,7 @@ RETURN
 	)
 	SELECT
 		V.[Id],
-		V.[DocumentLineId],
+		V.[LineId],
 		V.[DocumentId],
 		V.[DocumentDefinitionId],
 		V.[SerialNumber],

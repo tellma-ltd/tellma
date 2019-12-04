@@ -1,28 +1,28 @@
-﻿CREATE PROCEDURE [bll].[DocumentLines_Ready__Select]
-	@DocumentLinesIds [dbo].[IdList] READONLY,
-	@ConditionalSignatures [dbo].[DocumentLineRoleList] READONLY,
+﻿CREATE PROCEDURE [bll].[Lines_Ready__Select]
+	@LinesIds [dbo].[IdList] READONLY,
+	@ConditionalSignatures [dbo].[LineRoleList] READONLY,
 	@ToState NVARCHAR(30)
 AS
 WITH
 RequiredSignatures AS (
 	SELECT DL.[Id], WS.[RoleId]
-	FROM dbo.[DocumentLines] DL
+	FROM dbo.[Lines] DL
 	JOIN dbo.[Workflows] W ON DL.[DefinitionId] = W.[LineDefinitionId]
 	JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.[WorkflowId]
-	WHERE DL.[Id] IN (SELECT [Id] FROM @DocumentLinesIds)
+	WHERE DL.[Id] IN (SELECT [Id] FROM @LinesIds)
 	AND W.[ToState] = @ToState
 	AND WS.[Criteria] IS NULL
 	--AND WS.[RevokedById] IS NULL
 	--AND W.[RevokedById] IS NULL
 	UNION
-	SELECT [DocumentLineId], [RoleId]
+	SELECT [LineId], [RoleId]
 	FROM @ConditionalSignatures
 ),
 AvailableSignatures AS (
 	SELECT DL.[Id], DS.[RoleId]
-	FROM dbo.[DocumentLines] DL
-	JOIN dbo.[DocumentLineSignatures] DS ON DL.[Id] = DS.[DocumentLineId]
-	WHERE DL.[Id] IN (SELECT [Id] FROM @DocumentLinesIds)
+	FROM dbo.[Lines] DL
+	JOIN dbo.[LineSignatures] DS ON DL.[Id] = DS.[LineId]
+	WHERE DL.[Id] IN (SELECT [Id] FROM @LinesIds)
 	AND DS.[ToState] = @ToState
 	AND DS.RevokedById IS NULL
 	INTERSECT 
@@ -42,8 +42,8 @@ RequiredSignaturedCount AS (
 	FROM AvailableSignaturesCount A
 	JOIN RequiredSignaturedCount R ON A.[Id] = R.[Id] AND A.[Count] = R.[Count]
 	UNION 
-	SELECT [Id]	FROM dbo.DocumentLines
-	WHERE [Id] IN (SELECT [Id] FROM @DocumentLinesIds)
+	SELECT [Id]	FROM dbo.[Lines]
+	WHERE [Id] IN (SELECT [Id] FROM @LinesIds)
 	AND [DefinitionId] NOT IN (
 		SELECT [LineDefinitionId] FROM dbo.Workflows
 	)

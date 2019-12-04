@@ -6,7 +6,7 @@ INSERT INTO @LM2 ([Index], [DocumentIndex],
 			[LineTypeId],				[SortKey]) VALUES
 	(11,4, N'ManualLine',	1),
 	(12,4, N'ManualLine',	2);
-INSERT INTO @EM2 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
+INSERT INTO @EM2 ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],		[IfrsEntryClassificationId],	[Value],[ResourceId], [Time], [ResponsibilityCenterId], [AgentId]) VALUES
 	(12,11,4,1,+1,@SalariesAdmin,			N'WagesAndSalaries',	7000,	NULL,			 0,		@SalesOpsAG,			NULL),
 	(13,11,4,2,-1,@SalariesAccrualsTaxable,	NULL,					1500,	@Transportation, 0,		NULL,					@Mestawet),
@@ -35,13 +35,13 @@ INSERT INTO @EM2 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], 
 		SELECT ROW_NUMBER() OVER (ORDER BY [AgentId], [ResourceId], [AccountId]) AS [Index],
 			ROW_NUMBER() OVER (PARTITION BY [AgentId] ORDER BY [ResourceId], [AccountId]) AS [EntryNumber],
 		[AccountId], -SUM([Direction] * [Value]) AS ValueBalance, SUM([Direction] * [Time]) AS TimeBalance, [ResourceId], [AgentId]
-		FROM dbo.DocumentLineEntries
+		FROM dbo.[Entries]
 		WHERE [AccountId] IN (@SalariesAccrualsTaxable, @SalariesAccrualsNonTaxable)
 		GROUP BY [AccountId], [ResourceId], [AgentId]
 		HAVING SUM([Value]) <> 0
 	),
 	LineIndices AS (
-		SELECT ROW_NUMBER() OVER (ORDER BY [AgentId]) AS [DocumentLineIndex], [AgentId]
+		SELECT ROW_NUMBER() OVER (ORDER BY [AgentId]) AS [LineIndex], [AgentId]
 		FROM EmployeesAccruals
 		GROUP BY [AgentId]
 	),
@@ -55,13 +55,13 @@ INSERT INTO @EM2 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], 
 		SELECT [AgentId], [bll].[fn_EmployeeIncomeTax]([AgentId], [TaxableAmount]) AS [EmployeeIncomeTax]
 		FROM EmployeesTaxableIncomes
 	)
-	INSERT INTO @EM3([Index], [DocumentLineIndex], [EntryNumber], [Direction],[AccountId], [Value], [ResourceId], [AgentId], [Time])
-	SELECT [Index], [DocumentLineIndex], [EntryNumber],
+	INSERT INTO @EM3([Index], [LineIndex], [EntryNumber], [Direction],[AccountId], [Value], [ResourceId], [AgentId], [Time])
+	SELECT [Index], [LineIndex], [EntryNumber],
 		CAST(SIGN([ValueBalance]) AS SMALLINT) AS [Direction], [AccountId], CAST(ABS([ValueBalance]) AS MONEY) AS [ValueBalance], [ResourceId], E.[AgentId], CAST([TimeBalance] AS MONEY) AS [TimeBalance]
 	FROM EmployeesAccruals E 
 	JOIN LineIndices L ON E.AgentId = L.AgentId
 	UNION
-	SELECT EA.[Index], L.[DocumentLineIndex], EA.[EntryNumber], -1 AS [Direction], @EmployeesIncomeTaxPayable, [EmployeeIncomeTax], NULL, NULL, 0
+	SELECT EA.[Index], L.[LineIndex], EA.[EntryNumber], -1 AS [Direction], @EmployeesIncomeTaxPayable, [EmployeeIncomeTax], NULL, NULL, 0
 	FROM EmployeeIncomeTaxes EIT 
 	JOIN LineIndices L ON EIT.AgentId = L.AgentId
 	JOIN (
@@ -70,10 +70,10 @@ INSERT INTO @EM2 ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], 
 		GROUP BY [AgentId]
 	) EA ON EIT.AgentId = EA.[AgentId]
 	   
-	INSERT INTO @LM3 ([Index], [DocumentIndex],	[LineTypeId],[SortKey])
-	SELECT	[DocumentLineIndex], 0 AS [DocumentIndex], N'ManualLine', [DocumentLineIndex] 
+	INSERT INTO @LM3 ([Index], [DocumentIndex],	[LineDefinitionId],[SortKey])
+	SELECT	[LineIndex], 0 AS [DocumentIndex], N'ManualLine', [LineIndex] 
 	FROM @EM2
-	GROUP BY [DocumentLineIndex]
+	GROUP BY [LineIndex]
 	;
 	--SELECT * FROM @DM2; SELECT * FROM @LM2; SELECT * FROM @EM2;
 	EXEC [api].[Documents__Save]

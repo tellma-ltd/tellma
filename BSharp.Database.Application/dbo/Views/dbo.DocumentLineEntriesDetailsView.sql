@@ -2,7 +2,7 @@
 AS
 	SELECT
 		E.[Id],
-		E.[DocumentLineId],
+		E.[LineId],
 		L.[DocumentId],
 		D.[DefinitionId] As DocumentDefinitionId,
 		D.[SerialNumber],
@@ -50,8 +50,8 @@ AS
 		E.[ModifiedAt],
 		E.[ModifiedById]
 	FROM 
-		[dbo].[DocumentLineEntries] E
-		JOIN [dbo].[DocumentLines] L ON E.[DocumentLineId] = L.Id
+		[dbo].[Entries] E
+		JOIN [dbo].[Lines] L ON E.[LineId] = L.Id
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 	WHERE

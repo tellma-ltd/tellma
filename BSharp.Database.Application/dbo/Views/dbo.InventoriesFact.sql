@@ -7,7 +7,7 @@ AS
 RETURN
 -- TODO: rewrite to use JournalSummary instead
 	SELECT
-		J.[DocumentLineId],
+		J.[LineId],
 		J.[DocumentDefinitionId],
 		J.[SerialNumber],
 		J.[DocumentDate],

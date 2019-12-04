@@ -1,12 +1,12 @@
-﻿CREATE TABLE [dbo].[DocumentLineEntries] (
+﻿CREATE TABLE [dbo].[Entries] (
 --	These are for transactions only. If there are entries from requests or inquiries, etc=> other tables
-	[Id]						INT				CONSTRAINT [PK_DocumentLineEntries] PRIMARY KEY IDENTITY,
-	[DocumentLineId]			INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__DocumentLineId] FOREIGN KEY ([DocumentLineId])	REFERENCES [dbo].[DocumentLines] ([Id]) ON DELETE CASCADE,
+	[Id]						INT				CONSTRAINT [PK_Entries] PRIMARY KEY IDENTITY,
+	[LineId]					INT				NOT NULL CONSTRAINT [FK_Entries__LineId] REFERENCES [dbo].[Lines] ([Id]) ON DELETE CASCADE,
 	[EntryNumber]				INT				NOT NULL DEFAULT 1,
-	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_DocumentLineEntries__Direction]	CHECK ([Direction] IN (-1, 1)),
-	[AccountId]					INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__AccountId]	FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Accounts] ([Id]),
+	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
+	[AccountId]					INT				NOT NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
 
-	[ContractType]				NVARCHAR (50)	CONSTRAINT [CK_DocumentLineEntries__ContractType] CHECK ( [ContractType] IN (
+	[ContractType]				NVARCHAR (50)	CONSTRAINT [CK_Entries__ContractType] CHECK ( [ContractType] IN (
 										N'OnHand',
 										N'OnDemand',
 										N'InTransit',
@@ -23,13 +23,13 @@
 										N'Expense'
 									)),
 	[AgentDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
-	[ResourceClassificationId]	INT				CONSTRAINT [FK_DocumentLineEntries__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
+	[ResourceClassificationId]	INT				CONSTRAINT [FK_Entries__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[IsCurrent]					BIT,
 
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
-	[ResourceId]				INT				NOT NULL CONSTRAINT [FK_DocumentLineEntries__ResourceId] REFERENCES dbo.Resources([Id]),
+	[ResourceId]				INT				NOT NULL CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.Resources([Id]),
 	[ResponsibilityCenterId]	INT				REFERENCES dbo.ResponsibilityCenters([Id]),
-	[AccountDescriptorId]		NVARCHAR (10),--	CONSTRAINT [FK_DocumentLineEntriess__AccountDescriptorId] REFERENCES dbo.AccountDescriptors([Id]), -- to resolve Uniqueness Constraint
+	[AccountDescriptorId]		NVARCHAR (10),--	CONSTRAINT [FK_Entriess__AccountDescriptorId] REFERENCES dbo.AccountDescriptors([Id]), -- to resolve Uniqueness Constraint
 	
 	[ResourceDescriptorId]		NVARCHAR (10),
 	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
@@ -37,7 +37,7 @@
 	-- Entry Type is used to tag entries in a manner that does not affect the account balance
 	-- However, consider the case of acc depreciation. We want to map to a different GL. In that case, we set some account definition
 	-- to enforce a certain entry classification
-	[EntryClassificationId]		INT				CONSTRAINT [FK_DocumentLineEntries__EntryClassificationId] REFERENCES [dbo].[EntryClassifications] ([Id]),
+	[EntryClassificationId]		INT				CONSTRAINT [FK_Entries__EntryClassificationId] REFERENCES [dbo].[EntryClassifications] ([Id]),
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings	
 
 -- Revenues Account: The customer
@@ -49,7 +49,7 @@
 -- Resource is defined as
 --	The good/service sold for revenues and direct expenses
 --	The good/service consumed for indirect expenses
-	--[ResourceInstanceId]		INT				CONSTRAINT [FK_DocumentLineEntries__ResourcePInstanceId] FOREIGN KEY ([ResourceInstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),
+	--[ResourceInstanceId]		INT				CONSTRAINT [FK_Entries__ResourcePInstanceId] FOREIGN KEY ([ResourceInstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
 	--[Memo]						NVARCHAR (255),
 	[MonetaryValue]				MONEY			NOT NULL DEFAULT 0,
@@ -71,14 +71,14 @@
 	[SortKey]					INT,
 -- for auditing
 	[CreatedAt]					DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Entries__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]				DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[ModifiedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentLineEntries__ModifiedById]  FOREIGN KEY ([ModifiedById]) REFERENCES [dbo].[Users] ([Id]),	
+	[ModifiedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Entries__ModifiedById] REFERENCES [dbo].[Users] ([Id]),	
 );
 GO
-CREATE INDEX [IX_DocumentLineEntries__DocumentLineId] ON [dbo].[DocumentLineEntries]([DocumentLineId]);
+CREATE INDEX [IX_Entries__LineId] ON [dbo].[Entries]([LineId]);
 GO
-CREATE INDEX [IX_DocumentLineEntries__AccountId] ON [dbo].[DocumentLineEntries]([AccountId]);
+CREATE INDEX [IX_Entries__AccountId] ON [dbo].[Entries]([AccountId]);
 GO
-CREATE INDEX [IX_DocumentLineEntries__EntryClassificationId] ON [dbo].[DocumentLineEntries]([EntryClassificationId]);
+CREATE INDEX [IX_Entries__EntryClassificationId] ON [dbo].[Entries]([EntryClassificationId]);
 GO

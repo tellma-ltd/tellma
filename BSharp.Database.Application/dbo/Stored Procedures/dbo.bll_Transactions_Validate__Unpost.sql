@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[bll_Transactions_Validate__Unpost]
--- TODO: replace with bll.DocumentLines_Validate__Unsign
+-- TODO: replace with bll.Lines_Validate__Unsign
 	@Entities [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
@@ -29,7 +29,7 @@ SET NOCOUNT ON;
 		N'Error_Account0IsInactive',
 		A.[Name]
 	FROM @Entities FE
-	JOIN dbo.[DocumentLineEntries] E ON FE.[Id] = E.[DocumentLineId]
+	JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
 	JOIN dbo.[AccountClassifications] A ON E.[AccountId] = A.[Id]
 	WHERE (A.[IsDeprecated] = 1);
 

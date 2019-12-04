@@ -6,7 +6,7 @@
 AS
 -- TODO: required testing
 BEGIN
-	DECLARE	@Documents [dbo].DocumentList, @Lines [dbo].[DocumentLineList], @Entries [dbo].[DocumentLineEntryList];
+	DECLARE	@Documents [dbo].DocumentList, @Lines [dbo].[LineList], @Entries [dbo].EntryList;
 	DECLARE @SalariesAccrualsTaxable INT, @SalariesAccrualsNonTaxable INT, @EmployeesIncomeTaxPayable INT;
 	WITH 
 	ExchangeVarianceAccounts AS 
@@ -26,15 +26,15 @@ BEGIN
 		SELECT [AccountId], ABS(ValueBalance - FXBalance) AS [Value], SIGN(ValueBalance - FXBalance) AS [Direction]
 		FROM ExchangeVarianceEntries
 	)
-	INSERT INTO @Entries([Index], [DocumentLineIndex], [EntryNumber], [Direction],[AccountId], [Value])
+	INSERT INTO @Entries([Index], [LineIndex], [EntryNumber], [Direction],[AccountId], [Value])
 	SELECT [Index], [Index], 1,
 		CAST(SIGN([ValueBalance]) AS SMALLINT) AS [Direction], E.[AccountId], CAST(ABS([ValueBalance]) AS MONEY) AS [ValueBalance]
 	FROM ExchangeVarianceEntries E 
 
 	INSERT INTO @Lines ([Index], [DocumentIndex])
-	SELECT	[DocumentLineIndex], 0 AS [DocumentIndex]
+	SELECT	[LineIndex], 0 AS [DocumentIndex]
 	FROM @Entries
-	GROUP BY [DocumentLineIndex];
+	GROUP BY [LineIndex];
 
 	INSERT INTO @Documents([DocumentDate]) VALUES(@DocumentDate);
 	SELECT * FROM @Documents; SELECT *, N'ManualLine' As [LineDefinitionId] FROM @Lines; SELECT * FROM @Entries;

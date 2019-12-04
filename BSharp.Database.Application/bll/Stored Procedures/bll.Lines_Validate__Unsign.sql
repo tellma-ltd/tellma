@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[DocumentLines_Validate__Unsign]
+﻿CREATE PROCEDURE [bll].[Lines_Validate__Unsign]
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
@@ -12,7 +12,7 @@ SET NOCOUNT ON;
 		N'Error_TheDocumentIsIn0State',
 		BE.[State]
 	FROM @Ids FE
-	JOIN [dbo].[DocumentLines] DL ON FE.[Id] = DL.[Id]
+	JOIN [dbo].[Lines] DL ON FE.[Id] = DL.[Id]
 	JOIN [dbo].[Documents] BE ON DL.[DocumentId] = BE.[Id]
 	WHERE (BE.[State] <> N'Active');
 

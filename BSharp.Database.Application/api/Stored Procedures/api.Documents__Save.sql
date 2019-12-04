@@ -2,17 +2,17 @@
 	@DefinitionId NVARCHAR(255),
 	@Documents [dbo].[DocumentList] READONLY,
 	@WideLines dbo.[DocumentWideLineList] READONLY,
-	@Lines [dbo].[DocumentLineList] READONLY, 
-	@Entries [dbo].[DocumentLineEntryList] READONLY,
+	@Lines [dbo].[LineList] READONLY, 
+	@Entries [dbo].EntryList READONLY,
 	@ReturnIds BIT = 0,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 BEGIN
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	DECLARE @AllLines dbo.DocumentLineList;
-	DECLARE @AllEntries dbo.DocumentLineEntryList;
-	DECLARE @FilledAllEntries [dbo].[DocumentLineEntryList];
+	DECLARE @AllLines dbo.[LineList];
+	DECLARE @AllEntries dbo.EntryList;
+	DECLARE @FilledAllEntries [dbo].EntryList;
 
 	INSERT INTO @AllLines([Index], [DocumentIndex], [Id], [DefinitionId])
 	SELECT [Index], [DocumentIndex], [Id], [DefinitionId] FROM @Lines
@@ -22,7 +22,7 @@ BEGIN
 	INSERT INTO @AllEntries SELECT * FROM @Entries;
 	INSERT INTO @AllEntries
 	(
-			[Index], [DocumentLineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [ExternalReference], [AdditionalReference])
+			[Index], [LineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [ExternalReference], [AdditionalReference])
 	SELECT 3*[Index] + 1, [Index],		[DocumentIndex], [Id],		1,			[Direction1],[AccountId1],[EntryClassificationId1],[ExternalReference1],[AdditionalReference1]
 	FROM @WideLines
 	UNION
@@ -34,7 +34,7 @@ BEGIN
 
 	-- using line definition Id, the entries wil be filled
 	INSERT INTO @FilledAllEntries
-	EXEC bll.DocumentLineEntries__Fill
+	EXEC bll.[Entries__Fill]
 		@Documents = @Documents,
 		@Lines = @AllLines,
 		@Entries = @AllEntries;
