@@ -85,9 +85,13 @@ Follow the steps below to setup the solution for the first time.
 
 ## Running The App
 ### To Run The Application
+- Make sure you pull the latest version of the code from GitHub
+- Make sure the latest version of the database is deployed to `[BSharp.101]`
 - Start the backend server: Debug -> Start without debugging (Make sure BSharp is the startup project)
 - Start the frontend server: Open the command line inside "(SolutionDir)/BSharp/ClientApp/" and run: `ng serve -o`
 
 ### To Run The Tests
+- Make sure you pull the latest version of the code from GitHub
+- Make sure the latest version of the database is deployed to `[BSharp.IntegrationTests.101]`
 - Start the backend server: Debug -> Start without debugging (Make sure BSharp is the startup project)
 - Right Click BSharp.IntegrationTests -> Run Tests
