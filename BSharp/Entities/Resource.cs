@@ -11,6 +11,7 @@ namespace BSharp.Entities
         public int? OperatingSegmentId { get; set; }
 
         [Display(Name = "Resource_Classification")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         public int? ResourceClassificationId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]

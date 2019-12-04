@@ -68,9 +68,6 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Assert the result makes sense
             Assert.Equal("Resource", responseData.CollectionName);
-
-            Assert.Equal(0, responseData.TotalCount);
-            Assert.Empty(responseData.Result);
         }
 
         [Fact(DisplayName = "04 Getting all resources before creating any returns a 200 OK empty collection")]
@@ -88,9 +85,6 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Assert the result makes sense
             Assert.Equal("Resource", responseData.CollectionName);
-
-            Assert.Equal(0, responseData.TotalCount);
-            Assert.Empty(responseData.Result);
         }
 
         [Fact(DisplayName = "05 Getting a non-existent specific resource id returns a 404 Not Found")]
@@ -109,10 +103,10 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Prepare a well formed entity
             var dtoForSave = new ResourceForSave
             {
+                ResourceClassificationId = Shared.Get<ResourceClassification>("ResourceClassification_SM").Id,
                 Name = "HR 1000x0.8",
                 Name2 = "HR 1000x0.8",
                 Code = "HR 1000x0.8",
-                ResourceClassificationId = Shared.Get<ResourceClassification>("ResourceClassification_SM").Id,
                 MassUnitId = Shared.Get<MeasurementUnit>("MeasurementUnit_kg").Id,
             };
 
@@ -175,6 +169,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var list = new List<ResourceForSave> {
                 new ResourceForSave
                 {
+                ResourceClassificationId = Shared.Get<ResourceClassification>("ResourceClassification_SM").Id,
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "HR 1000x0.8",
@@ -207,6 +202,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // trailing spaces in some string properties
             var dtoForSave = new ResourceForSave
             {
+                ResourceClassificationId = Shared.Get<ResourceClassification>("ResourceClassification_SM").Id,
                 Name = "  HR 1000x0.9", // Leading space
                 Name2 = "HR 1000x0.9",
                 Code = "0HR 1000x0.9  ", // Trailing space
