@@ -19,6 +19,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{236B8C4D-A593-4FF0-A768-8424E39A3F40}"
 	ProjectSection(SolutionItems) = preProject
 		.filenesting.json = .filenesting.json
+		Readme.txt = Readme.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Translations", "Translations", "{F74551DD-8EB5-403C-956F-1BD1D271DF28}"
