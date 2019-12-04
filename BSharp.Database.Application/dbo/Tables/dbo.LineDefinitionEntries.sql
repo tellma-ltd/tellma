@@ -11,7 +11,7 @@
 	[AccountId]							INT, -- invisible, except in 
 
 	[AccountTypeSource]					SMALLINT			NOT NULL DEFAULT 2, -- 0:set from line def, 3: from account
-	[AccountTypeId]						NVARCHAR (50)	REFERENCES dbo.[AccountTypes]([Id]), -- 
+	[ContractType]						NVARCHAR (50)	REFERENCES dbo.[AccountTypes]([Id]), -- 
 
 	[AgentDefinitionSource]				SMALLINT			NOT NULL DEFAULT 2, --  -1: n/a, 0:set from line def, 3: from account
 	[AgentDefinitionId]					NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),

@@ -49,7 +49,7 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	WHERE (BE.[State] <> N'Active')
 
-	-- TODO: For the cases below, add the condition that Ifrs Entry Classification is enforced
+	-- TODO: For the cases below, add the condition that Entry Classification is enforced
 
 	-- Entry Type Id is missing when required
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -59,8 +59,8 @@ SET NOCOUNT ON;
 		N'Error_TheAccountType0RequiresAnEntryClassification', A.[AccountTypeId]
 	FROM @Entries E
 	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	WHERE (E.[EntryClassificationId] IS NULL)
-	AND A.[AccountTypeId] IN (N'NonFinancialAsset', 'Cash', 'Capital', 'OtherEquity','OperatingExpense');
+	JOIN dbo.AccountTypes [AT] ON A.[AccountTypeId] = [AT].[Id]
+	WHERE (E.[EntryClassificationId] IS NULL) AND [AT].EntryClassificationParentCode IS NOT NULL;
 
 	-- Invalid Entry Type Id
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
@@ -68,10 +68,12 @@ SET NOCOUNT ON;
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].DocumentLines[' +
 			CAST(E.[DocumentLineIndex] AS NVARCHAR (255)) + '].DocumentLineEntries[' + CAST([Index] AS NVARCHAR(255)) + ']',
 		N'Error_IncompatibleResourceClassification0AndEntryClassification1',
-		E.[ResourceClassificationId], E.[EntryClassificationId]
+		RC.[Code] AS [ResourceClassification], EC.[Code] AS [EntryClassification]
 	FROM @Entries E
-	LEFT JOIN dbo.[ResourceClassificationsEntryClassifications] RE ON (E.[ResourceClassificationId] = RE.[ResourceClassificationId]) AND (E.[EntryClassificationId] = RE.[EntryClassificationId])
-	WHERE (E.[EntryClassificationId] IS NOT NULL AND RE.[EntryClassificationId] IS NULL);
+	JOIN dbo.ResourceClassifications RC ON E.ResourceClassificationId = RC.[Id]
+	JOIN dbo.EntryClassifications EC ON E.EntryClassificationId = EC.[Id]
+	LEFT JOIN dbo.[ResourceClassificationsEntryClassifications] RCEC ON (E.[ResourceClassificationId] = RCEC.[ResourceClassificationId]) AND (E.[EntryClassificationId] = RCEC.[EntryClassificationId])
+	WHERE (E.[EntryClassificationId] IS NOT NULL AND RCEC.[EntryClassificationId] IS NULL);
 
 	-- RelatedAgent is required for selected account definition, 
 	--INSERT INTO @ValidationErrors([Key], [ErrorName])

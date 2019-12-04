@@ -49,5 +49,5 @@ SET NOCOUNT ON;
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([Code], [DefinitionId],			[ResourceClassificationId],	[Name], [Name2], [Name3], [Description], [Description2], [Description3], [CurrencyId])
-		VALUES (s.[Id],  N'monetary-resources',	@Cash,					s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[Id]);
+		INSERT ([Code], [DefinitionId],	[ResourceClassificationId],	[Name], [Name2], [Name3],		[Description], [Description2],	[Description3],	[Count],[CurrencyId])
+		VALUES (s.[Id],  N'monetary-resources',	@Cash,			s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], 1,		s.[Id]);

@@ -168,7 +168,7 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([EntryNumber], [SortKey], [Direction], [AccountId],
+		INSERT ([DocumentLineId], [EntryNumber], [SortKey], [Direction], [AccountId],
 			[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent],
 			[AgentId], [ResourceId], [ResponsibilityCenterId], [AccountDescriptorId], [ResourceDescriptorId],
 			[CurrencyId], [EntryClassificationId], --[BatchCode], 
@@ -176,7 +176,7 @@ BEGIN
 			[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount],
 			[Time1], [Time2]
 		)
-		VALUES (s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId],
+		VALUES (s.[DocumentLineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId],
 			s.[ContractType], s.[AgentDefinitionId], s.[ResourceClassificationId], s.[IsCurrent],
 			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId], s.[AccountDescriptorId], s.[ResourceDescriptorId],
 			s.[CurrencyId], s.[EntryClassificationId], --[BatchCode], 

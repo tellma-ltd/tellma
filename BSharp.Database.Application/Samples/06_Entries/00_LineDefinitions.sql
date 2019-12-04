@@ -1,5 +1,4 @@
-﻿
-DECLARE @LineDefinitions TABLE (
+﻿DECLARE @LineDefinitions TABLE (
 	[Id]								NVARCHAR (50)			PRIMARY KEY,
 	[TitleSingular]						NVARCHAR (255) NOT NULL,
 	[TitleSingular2]					NVARCHAR (255),
@@ -22,7 +21,7 @@ DECLARE @LineDefinitionEntries TABLE (
 	-- Account Group Properties
 	[AccountId]					INT, -- invisible, except in 
 
-	[AccountTypeId]				NVARCHAR (50), -- if account is entered by user, all the group properties get set.
+	[ContractType]				NVARCHAR (50), -- if account is entered by user, all the group properties get set.
 
 	[AgentDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, --  -1: n/a, 0:set from line def, 3: from account
 	[AgentDefinitionId]			NVARCHAR (50),
@@ -49,8 +48,8 @@ DECLARE @LineDefinitionEntries TABLE (
 	[ResourceSource]			SMALLINT			NOT NULL DEFAULT 1,
 	[ResourceId]				INT,--				REFERENCES dbo.Resources([Id]),	-- Fixed in the case of unallocated expense
 	
-	[CurrencySource]				SMALLINT			NOT NULL DEFAULT 2,
-	[CurrencyId]						NCHAR (3),--		REFERENCES dbo.Currencies([Id]),	-- Fixed in the case of unallocated expense
+	[CurrencySource]			SMALLINT			NOT NULL DEFAULT 2,
+	[CurrencyId]				NCHAR (3),--		REFERENCES dbo.Currencies([Id]),	-- Fixed in the case of unallocated expense
 	
 	[MonetaryValueSource]		SMALLINT			NOT NULL DEFAULT 1,
 	[QuantitySource]			SMALLINT			NOT NULL DEFAULT 1,
@@ -69,7 +68,6 @@ DECLARE @LineDefinitionColumns TABLE (
 	[Label2]					NVARCHAR (50),
 	[Label3]					NVARCHAR (50)
 );
-
 
 -- The behavior of the manual line is driven by the account.
 INSERT @LineDefinitions([Id], [TitleSingular], [TitlePlural]) VALUES (N'ManualLine', N'Adjustment', N'Adjustments');
@@ -204,9 +202,9 @@ ON s.[LineDefinitionId] = t.[LineDefinitionId] AND s.[EntryNumber] = t.[EntryNum
 WHEN MATCHED THEN
 	UPDATE SET
 		t.[Direction]		= s.[Direction],
-		t.[AccountTypeList]	= s.[AccountTypeList]
+		t.[ContractType]	= s.[ContractType]
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([LineDefinitionId], [EntryNumber],		[Direction], [AccountTypeList])
-    VALUES (s.[LineDefinitionId], s.[EntryNumber], s.[Direction], s.[AccountTypeList]);
+    INSERT ([LineDefinitionId], [EntryNumber],		[Direction], [ContractType])
+    VALUES (s.[LineDefinitionId], s.[EntryNumber], s.[Direction], s.[ContractType]);

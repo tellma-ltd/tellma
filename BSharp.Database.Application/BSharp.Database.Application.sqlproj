@@ -84,7 +84,6 @@
     <Folder Include="rpt\Stored Procedures" />
     <Folder Include="bll\Functions" />
     <Folder Include="Mapping" />
-    <Folder Include="Provisioning\01_AccountsEntries" />
     <Folder Include="Provisioning\00_Setup" />
     <Folder Include="Provisioning\03_DocumentsLines" />
     <Folder Include="Samples" />
@@ -383,8 +382,6 @@
     <Build Include="dal\Stored Procedures\dal.Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.EntryClassifications.sql" />
-    <None Include="Provisioning\01_AccountsEntries\zOld_AccountTypes.sql" />
-    <None Include="Provisioning\01_AccountsEntries\x_AccountClassifications.sql" />
     <Build Include="Mapping\EntryClassifications.sql" />
     <Build Include="dbo\Functions\dbo.fn_Lookup.sql" />
     <Build Include="dbo\Functions\dbo.fn_UnitName__Id.sql" />
@@ -410,9 +407,7 @@
     <Build Include="dbo\Functions\dbo.fn_State__StateId.sql" />
     <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
     <Build Include="bll\Functions\bll.fi_ReadyDocumentLines.sql" />
-    <None Include="Provisioning\03_DocumentsLines\a_LineDefinitions.sql" />
     <None Include="Provisioning\03_DocumentsLines\b_DELETE_LineDefinitionEntries.sql" />
-    <None Include="Provisioning\03_DocumentsLines\b_DocumentDefinitions.sql" />
     <Build Include="bll\Stored Procedures\bll.PurchaseInvoice__Fill.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
     <Build Include="api\Stored Procedures\api.ResponsibilityCenters__Save.sql" />
@@ -433,8 +428,8 @@
     <None Include="Samples\02_Agents\01_ResponsibilityCenters.sql" />
     <None Include="Samples\05_Accounts\a_AccountClassifications.sql" />
     <None Include="Samples\05_Accounts\b_BasicAccounts.sql" />
-    <None Include="Samples\06_Entries\00_manual-vouchers.sql" />
-    <None Include="Samples\06_Entries\01_petty-cash-vouchers.sql" />
+    <None Include="Samples\06_Entries\02_manual-vouchers.sql" />
+    <None Include="Samples\06_Entries\11_petty-cash-vouchers.sql" />
     <None Include="Samples\FillSampleData.sql" />
     <Build Include="api\Stored Procedures\api.Roles__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.ResponsibilityCenters_Validate__Save.sql" />
@@ -465,6 +460,8 @@
     <Build Include="api\Stored Procedures\api.Currencies__Delete.sql" />
     <Build Include="api\Stored Procedures\api.Currencies__Activate.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountTypeList.sql" />
+    <None Include="Samples\06_Entries\00_LineDefinitions.sql" />
+    <None Include="Samples\06_Entries\01_DocumentDefinitions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

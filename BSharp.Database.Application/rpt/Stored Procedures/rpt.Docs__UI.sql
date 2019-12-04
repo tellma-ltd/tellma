@@ -2,7 +2,7 @@
 	@DIds dbo.IdList READONLY
 AS
 BEGIN
-	WITH Docs AS (
+WITH Docs AS (
 		SELECT 	
 			CAST(D.[Id] AS NVARCHAR(30)) AS [Id],
 			CAST(D.[DocumentDate] AS NVARCHAR(30)) AS [DocumentDate],
@@ -14,15 +14,15 @@ BEGIN
 			ISNULL(VB.[StringPrefix], '') +
 			ISNULL(CAST(D.[VoucherNumericReference] AS NVARCHAR(30)), '') AS [VoucherRef],
 			AG.[Name] AS [AssignedTo],
-			D.[SortKey] As [DocumentSortKey],
+			--D.[SortKey] As [DocumentSortKey],
 			D.[Memo],
 			DL.[Id] As [LineId],
-			DL.[SortKey] AS [LineSortKey],
 			DL.[DefinitionId] AS LineDefinitionId,
 			DL.[State] AS [LineState],
 			DLE.SortKey,
 			DLE.[Direction],
-			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryClassificationId],
+			DLE.[EntryNumber], A.[Name] AS [Account],
+			DLE.[CurrencyId], DLE.[MonetaryValue], DLE.[EntryClassificationId],
 			--CAST(DLE.[Value] AS MONEY) AS 
 			DLE.[Value]
 		FROM dbo.Documents D
@@ -34,32 +34,36 @@ BEGIN
 		LEFT JOIN dbo.DocumentLineEntries DLE ON DL.[Id] = DLE.[DocumentLineId]
 		LEFT JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @DIds)
-	),
+	)-- select * from Docs
+	,
 	DocsFirst AS (
-		SELECT DL.DocumentId, MIN(DLE.SortKey) AS SortKey
+		SELECT DL.DocumentId, MIN(DLE.DocumentLineId) AS [LineId]
 		FROM DocumentLineEntries DLE
-		JOIN dbo.DocumentLines DL ON DLE.DocumentLineId = DL.Id
+		LEFT JOIN dbo.DocumentLines DL ON DLE.DocumentLineId = DL.Id
 		WHERE DL.DocumentId IN (SELECT [Id] FROM @DIds)
 		GROUP BY DL.DocumentId
 	)
 	SELECT 
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [Id] ELSE '' END) AS [Id],
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [DocumentDate] ELSE '' END) AS [DocumentDate],
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentDefinitionId],
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [S/N] ELSE '' END) AS [S/N],
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [State] ELSE '' END) AS [State],
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [VoucherRef] ELSE '' END) AS [V. Ref],
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [Memo] ELSE '' END) AS [Memo],
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
-		(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN CAST([DocumentSortKey] AS TINYINT) ELSE '' END) AS [DSortKey],
-		CAST([LineSortKey] AS TINYINT) AS [SortKey],
-		[LineId], [LineDefinitionId],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN Docs.[Id] ELSE '' END) AS [Id],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [DocumentDate] ELSE '' END) AS [DocumentDate],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [DocumentDefinitionId] ELSE '' END) AS [DocumentDefinitionId],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [S/N] ELSE '' END) AS [S/N],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [State] ELSE '' END) AS [State],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [VoucherRef] ELSE '' END) AS [V. Ref],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [Memo] ELSE '' END) AS [Memo],
+		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN [AssignedTo] ELSE '' END) AS [AssignedTo],
+	--	(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN CAST([DocumentSortKey] AS TINYINT) ELSE '' END) AS [DSortKey],
+		Docs.[LineId], [LineDefinitionId],
 		[EntryNumber] AS [E/N], 
-		[Account], [EntryClassificationId],-- [Direction], 
+		[Account], [CurrencyId],
+		FORMAT([Direction] * [MonetaryValue], '##,#;(##,#);-', 'en-us') AS [MonetaryValue],
+		EC.[Name] AS [EntryClassification],-- [Direction], 
 		FORMAT([Direction] * [Value], '##,#.00;-;-', 'en-us') AS Debit,
 		FORMAT(-[Direction] * [Value], '##,#.00;-;-', 'en-us') AS Credit,
 		[LineState]
 	FROM Docs
 	LEFT JOIN DocsFirst ON Docs.Id = DocsFirst.DocumentId
-	ORDER BY [DocumentSortKey], [LineSortKey];
+	LEFT JOIN dbo.EntryClassifications EC ON [EntryClassificationId] = EC.[Id]
+	ORDER BY Docs.[LineId];
+
 END

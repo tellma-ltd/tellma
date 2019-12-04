@@ -19,11 +19,10 @@ BEGIN
 	UNION
 	SELECT [Index], [DocumentIndex], [Id], [LineDefinitionId] FROM @WideLines
 
-	INSERT INTO @AllEntries(
+	INSERT INTO @AllEntries SELECT * FROM @Entries;
+	INSERT INTO @AllEntries
+	(
 			[Index], [DocumentLineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [ExternalReference], [AdditionalReference])
-	SELECT	[Index], [DocumentLineIndex], [DocumentIndex], [Id], [EntryNumber], [Direction], [AccountId], [EntryClassificationId], [ExternalReference], [AdditionalReference]
-	FROM @Entries
-	UNION
 	SELECT 3*[Index] + 1, [Index],		[DocumentIndex], [Id],		1,			[Direction1],[AccountId1],[EntryClassificationId1],[ExternalReference1],[AdditionalReference1]
 	FROM @WideLines
 	UNION
@@ -39,7 +38,7 @@ BEGIN
 		@Documents = @Documents,
 		@Lines = @AllLines,
 		@Entries = @AllEntries;
-
+			
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Save]
 		@Documents = @Documents,

@@ -12,7 +12,8 @@
 	[CodeWidth]					TINYINT			DEFAULT (3), -- For presentation purposes
 	[AgentDefinitionId]			NVARCHAR (50)
 );
-INSERT @DocumentDefinitions ([Id], [Prefix]) VALUES
+INSERT @DocumentDefinitions
+	
 	-- The list includes the following transaction types, and their variant flavours depending on country and industry:
 	-- lease-in agreement, lease-in receipt, lease-in invoice
 	-- cash sale w/invoice, sales agreement (w/invoice, w/collection, w/issue), cash collection (w/invoice), G/S issue (w/invoice), sales invoice
@@ -21,39 +22,39 @@ INSERT @DocumentDefinitions ([Id], [Prefix]) VALUES
 	-- production, maintenance
 	-- payroll, paysheet (w/loan deduction), loan issue, penalty, overtime, paid leave, unpaid leave
 	-- manual journal, depreciation,  
-	(N'manual-journals', N'JV'),
-	(N'petty-cash-vouchers',N'PCV'),
-
+	([Id],						[TitleSingular],			[TitlePlural],				[Prefix]) VALUES
+	(N'manual-journals',		N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
+	(N'petty-cash-vouchers',	NULL,						NULL,						N'PCV');
 ---------------------------------------------
 
-	(N'et-sales-witholding-tax-vouchers', N'WT'), -- (N'et-customers-tax-withholdings'), (N'receivable-credit'), (N'cash-issue')
+	--(N'et-sales-witholding-tax-vouchers', N'WT'), -- (N'et-customers-tax-withholdings'), (N'receivable-credit'), (N'cash-issue')
 
-	(N'cash-payment-vouchers', N'CPV'), -- (N'cash-issue'), (N'manual-line')
-	(N'cash-receipt-vouchers', N'CRV'), -- (N'cash-receipt')
+	--(N'cash-payment-vouchers', NULL, NULL, N'CPV'), -- (N'cash-issue'), (N'manual-line')
+	--(N'cash-receipt-vouchers', NULL, NULL, N'CRV'), -- (N'cash-receipt')
 
 
-	-- posts if customer account balance stays >= 0, if changes or refund, use negative
-	(N'sales-cash', N'CSI'), -- (N'customers-issue-goods-with-invoice'), (N'customers-issue-services-with-invoice'), (N'cash-receipt')
-	-- posts if customer account balance stays >= customer account credit line
-	(N'sales-credit', N'CRSI'), 
+	---- posts if customer account balance stays >= 0, if changes or refund, use negative
+	--(N'sales-cash', NULL, NULL, N'CSI'), -- (N'customers-issue-goods-with-invoice'), (N'customers-issue-services-with-invoice'), (N'cash-receipt')
+	---- posts if customer account balance stays >= customer account credit line
+	--(N'sales-credit', NULL, NULL, N'CRSI'), 
 	
-	(N'goods-received-notes', N'GRN'), -- Header: Supplier account, Lines: goods received (warehouse)
-	(N'goods-received-issued-vouchers', N'GRIV'), -- Header: Supplier account, Lines: goods & responsibility center
-	(N'raw-materials-issue-vouchers', N'RMIV'), -- Header: RM Warehouse account, Lines: Materials & destination warehouse
-	(N'finished-products-receipt-notes', N'FPRN'), -- Header: Supplier account, Lines: goods received & warehouse
+	--(N'goods-received-notes', NULL, NULL, N'GRN'), -- Header: Supplier account, Lines: goods received (warehouse)
+	--(N'goods-received-issued-vouchers', NULL, NULL, N'GRIV'), -- Header: Supplier account, Lines: goods & responsibility center
+	--(N'raw-materials-issue-vouchers', NULL, NULL, N'RMIV'), -- Header: RM Warehouse account, Lines: Materials & destination warehouse
+	--(N'finished-products-receipt-notes', NULL, NULL, N'FPRN'), -- Header: Supplier account, Lines: goods received & warehouse
 
-	(N'equity-issues', N'EI'),	--	(N'equity-issues-foreign'),
-	(N'employees-overtime', N'OT'),	--	(N'employee-overtime'),
-	(N'employees-deductions', N'ED'),	--	(N'et-employees-unpaid-absences'),(N'et-employees-penalties'), (N'employees-loans-dues');
-	(N'employees-leaves-hourly', N'LH'),
-	(N'employees-leaves-daily', N'LD'),
-	(N'salaries', N'MS'),				--	(N'salaries')
-	(N'payroll-payments', N'PP'),		--	(N'employees'), (N'employees-income-tax') 
+	--(N'equity-issues', NULL, NULL, N'EI'),	--	(N'equity-issues-foreign'),
+	--(N'employees-overtime', NULL, NULL, N'OT'),	--	(N'employee-overtime'),
+	--(N'employees-deductions', NULL, NULL, N'ED'),	--	(N'et-employees-unpaid-absences'),(N'et-employees-penalties'), (N'employees-loans-dues');
+	--(N'employees-leaves-hourly', NULL, NULL, N'LH'),
+	--(N'employees-leaves-daily', NULL, NULL, N'LD'),
+	--(N'salaries', NULL, NULL, N'MS'),				--	(N'salaries')
+	--(N'payroll-payments', NULL, NULL, N'PP'),		--	(N'employees'), (N'employees-income-tax') 
 	
-	(N'purchasing-domestic', N'PD'), --
-	(N'purchasing-international', N'PI'), -- 
+	--(N'purchasing-domestic', NULL, NULL, N'PD'), --
+	--(N'purchasing-international', NULL, NULL, N'PI'), -- 
 	
-	(N'production-events', N'PRD');
+	--(N'production-events', NULL, NULL, N'PRD');
 
 MERGE [dbo].[DocumentDefinitions] AS t
 USING @DocumentDefinitions AS s

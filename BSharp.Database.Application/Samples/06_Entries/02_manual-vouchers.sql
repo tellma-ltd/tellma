@@ -29,7 +29,7 @@ BEGIN -- Inserting
 */	
 
 	INSERT INTO @L
-	([Index], [DocumentIndex], [LineDefinitionId]) VALUES
+	([Index], [DocumentIndex], [DefinitionId]) VALUES
 	(0,			0,				N'ManualLine'),
 	(1,			0,				N'ManualLine'),
 	(2,			0,				N'ManualLine'),
@@ -51,34 +51,33 @@ BEGIN -- Inserting
 	(14,		4,				N'ManualLine'),
 	(15,		4,				N'ManualLine')
 		;
-
+	DECLARE @R_ETB INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'ETB' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'monetary-resources')
+	DECLARE @R_USD INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'USD' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'monetary-resources')
+	
 	INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],		[EntryClassificationId],						[Value]) VALUES
-	(0, 0, 0,1,+1,@CBEUSD,			N'ProceedsFromIssuingShares', 		4700000),--
-	(1, 1, 0,1,+1,@CBEUSD,			N'ProceedsFromIssuingShares', 		2350),
-	(2, 2, 0,1,-1,@CapitalMA,		N'IssueOfEquity',					2351175),
-	(3, 3, 0,1,-1,@CapitalAA,		N'IssueOfEquity',					2351175),
+				[AccountId],		[EntryClassificationId],		[ResourceId],	[MonetaryValue],[Value]) VALUES
+	(0, 0, 0,1,+1,@CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,			200000,			4700000),--
+	(1, 1, 0,1,+1,@CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,			100,			2350),
+	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					@R_ETB,			2351175,		2351175),
+	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					@R_ETB,			2351175,		2351175),
 		
-	(4, 4, 1,1,+1,@CBEETB,			N'InternalCashTransferExtension', 	1175000),
-	(5, 5, 1,1,-1,@CBEUSD,			N'InternalCashTransferExtension',	1175000);
+	(4, 4, 1,1,+1,@CBEETB,			@InternalCashTransferExtension, @R_ETB,			1175000,		1175000),
+	(5, 5, 1,1,-1,@CBEUSD,			@InternalCashTransferExtension,	@R_USD,			50000,			1175000);
 
 	--INSERT INTO @E ([Index], [DocumentLineIndex], [DocumentIndex], [EntryNumber], [Direction],
-	--			[AccountId],		[EntryClassificationId],						[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryValue]) VALUES
-	--(6, 6, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),--
-	--(7, 7, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, NULL),--
-	--(8, 8, 2,1,+1,@PPEWarehouse,	N'InventoryPurchaseExtension', 		600000,		N'C-14209',			NULL, NULL, NULL),
-	--(9, 9, 2,1,+1,@VATInput,		NULL, 								90000,		N'C-14209',			N'FS010102', @Lifan, 600000),
-	--(10,10,2,1,-1,@ToyotaAccount,	NULL,								1380000,	NULL,				NULL, NULL, NULL),
-
-	--(11,11,3,1,+1,@PPEVehicles,		N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment',
-	--																	600000,		NULL,				NULL, NULL, NULL),
-	--(12,12,3,1,-1,@PPEWarehouse,	N'InventoryReclassifiedAsPropertyPlantAndEquipment',
-	--																	600000,		NULL,				NULL, NULL, NULL),
-	--(13,13,4,1,+1,@VATInput,		NULL,								2250,		N'C-25301',			N'BP188954', @Regus, 15000),
-	--(14,14,4,1,+1,@PrepaidRental,	NULL,								15000,		N'C-25301',			NULL, NULL, NULL),
-	--(15,15,4,1,-1,@RegusAccount,	NULL, 								17250,		N'C-25301',			NULL, NULL, NULL);
+	--			[AccountId],		[EntryClassificationId],		[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryValue]) VALUES
+	--(6, 6, 2,1,+1,@PPEWarehouse,	@InventoryPurchaseExtension, 	600000,		N'C-14209',			NULL, NULL, NULL),--
+	--(7, 7, 2,1,+1,@VATInput,		NULL, 							90000,		N'C-14209',			N'FS010102', @Lifan, NULL),--
+	--(8, 8, 2,1,+1,@PPEWarehouse,	@InventoryPurchaseExtension, 	600000,		N'C-14209',			NULL, NULL, NULL),
+	--(9, 9, 2,1,+1,@VATInput,		NULL, 							90000,		N'C-14209',			N'FS010102', @Lifan, 600000),
+	--(10,10,2,1,-1,@ToyotaAccount,	NULL,							1380000,	NULL,				NULL, NULL, NULL),
+	--(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,					600000,		NULL,				NULL, NULL, NULL),
+	--(12,12,3,1,-1,@PPEWarehouse,	@InvReclassifiedAsPPE,			600000,		NULL,				NULL, NULL, NULL),
+	--(13,13,4,1,+1,@VATInput,		NULL,							2250,		N'C-25301',			N'BP188954', @Regus, 15000),
+	--(14,14,4,1,+1,@PrepaidRental,	NULL,							15000,		N'C-25301',			NULL, NULL, NULL),
+	--(15,15,4,1,-1,@RegusAccount,	NULL, 							17250,		N'C-25301',			NULL, NULL, NULL);
 	--; 
-
+	
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'manual-journals',
 		@Documents = @D, @Lines = @L, @Entries = @E,
@@ -110,14 +109,14 @@ BEGIN -- Inserting
 		GOTO Err_Label;
 	END;
 
-	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
-	INSERT INTO @DocsIndexedIds([Index], [Id])
-	-- TODO: fill index using ROWNUMBER
-	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
+--	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
+--	INSERT INTO @DocsIndexedIds([Index], [Id])
+--	-- TODO: fill index using ROWNUMBER
+--	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
 
-	EXEC [api].[Documents__File]
-		@IndexedIds = @DocsIndexedIds,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+--	EXEC [api].[Documents__File]
+--		@IndexedIds = @DocsIndexedIds,
+--		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @DebugManualVouchers = 1
 	BEGIN
