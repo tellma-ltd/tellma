@@ -141,29 +141,9 @@
               ws.getMultilingualValue('Role',
               item.RoleId, 'Name') }}</b-view-link>
             </b-restricted>
-            <b-details-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)"
-              [masterTemplate]="roleMaster" [detailsTemplate]="roleDetails" collection="Role">
-            </b-details-picker>
-
-            <!-- The Role Details Modal -->
-            <ng-template #roleDetails let-modal="modal" let-update="update" let-initialText="initialText"
-              let-idString="idString">
-              <div class="modal-body">
-                <b-roles-details mode="popup" [initialText]="initialText" (cancel)="modal.close(false);"
-                  [idString]="idString" (saved)="modal.close(true); update($event);" [showMembers]="false"
-                  [showIsPublic]="false">
-                </b-roles-details>
-              </div>
-            </ng-template>
-
-            <!-- The Role Master Modal -->
-            <ng-template #roleMaster let-modal="modal" let-update="update" let-create="create">
-              <div class="modal-body">
-                <b-roles-master mode="popup" (cancel)="modal.close(false);"
-                  (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
-                </b-roles-master>
-              </div>
-            </ng-template>
+            <b-roles-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)"
+              [showMembers]="false">
+            </b-roles-picker>
           </b-form-group>
         </ng-template>
 

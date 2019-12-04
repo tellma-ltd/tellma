@@ -1,10 +1,10 @@
-<b-master collection="User"  [mode]="mode" [masterCrumb]="'Users' | translate" [tileTemplate]="tile" [showCreateButton]="showCreate"
-  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Email,State,LastAccess"
+<b-master collection="User" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+  [masterCrumb]="'Users' | translate" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Email,State,LastAccess"
   selectForTiles="ImageId,State,Email" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-          ]"
-  [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'CreatedById eq me'}
             ],
@@ -43,8 +43,8 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ 'User' | translate }}
-  </ng-template>
+  {{ 'User' | translate }}
+</ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">

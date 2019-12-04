@@ -89,6 +89,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
 import { AutoCellComponent } from './auto-cell/auto-cell.component';
 import { AutoLabelComponent } from './auto-label/auto-label.component';
 import { LabelPipe } from './label/label.pipe';
+import { PickerBaseComponent } from './picker-base/picker-base.component';
 
 @NgModule({
   declarations: [
@@ -114,7 +115,8 @@ import { LabelPipe } from './label/label.pipe';
     RestrictedComponent,
     AutoCellComponent,
     AutoLabelComponent,
-    LabelPipe
+    LabelPipe,
+    PickerBaseComponent
   ],
   imports: [
     CommonModule,

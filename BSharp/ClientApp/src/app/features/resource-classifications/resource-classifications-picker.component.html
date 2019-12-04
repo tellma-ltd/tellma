@@ -1,9 +1,9 @@
 <b-details-picker [filter]="filter" collection="ResourceClassification"
-    [masterTemplate]="resourceClassificationsMaster" [detailsTemplate]="showCreate ? resourceClassificationsDetail : null">
+    [masterTemplate]="master" [detailsTemplate]="showCreate ? details : null">
 </b-details-picker>
 
 <!-- The Resource Classifications Details Modal -->
-<ng-template #resourceClassificationsDetail let-modal="modal" let-update="update" let-initialText="initialText"
+<ng-template #details let-modal="modal" let-update="update" let-initialText="initialText"
     let-idString="idString">
     <div class="modal-body">
         <b-resource-classifications-details mode="popup" [initialText]="initialText" [idString]="idString"
@@ -13,7 +13,7 @@
 </ng-template>
 
 <!-- The Resource Classifications Master Modal -->
-<ng-template #resourceClassificationsMaster let-modal="modal" let-update="update" let-create="create" let-filter="filter">
+<ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
         <b-resource-classifications-master mode="popup" (cancel)="modal.close(false);" [showCreate]="showCreate" [filter]="filter"
             (choose)="modal.close(true); update($event); " (create)="modal.close(false); create()">

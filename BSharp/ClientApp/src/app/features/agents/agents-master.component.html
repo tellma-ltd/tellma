@@ -1,6 +1,7 @@
-<b-master collection="Agent" [definition]="definitionId" [mode]="mode" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
-  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsRelated"
-  selectForTiles="Code,ImageId" [filterDefault]="filter" [multiselectActions]="[
+<b-master collection="Agent" [definition]="definitionId" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="Code,IsRelated" selectForTiles="Code,ImageId"
+  [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
@@ -15,7 +16,8 @@
   <div class="d-flex">
     <ng-container *ngIf="c[id].EntityMetadata?.ImageId === 2">
       <div class="border b-dp-wrapper2">
-        <b-image [src]="'agents/' + c[id].DefinitionId + '/' + c[id].Id + '/image'" [imageId]="c[id].ImageId" [size]="42"></b-image>
+        <b-image [src]="'agents/' + c[id].DefinitionId + '/' + c[id].Id + '/image'" [imageId]="c[id].ImageId"
+          [size]="42"></b-image>
       </div>
       &nbsp;&nbsp;&nbsp;
     </ng-container>
@@ -32,8 +34,8 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ summary }}
-  </ng-template>
+  {{ summary }}
+</ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">

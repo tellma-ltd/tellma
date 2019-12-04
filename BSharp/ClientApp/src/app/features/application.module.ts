@@ -65,6 +65,7 @@ import { ResponsibilityCentersDetailsComponent } from './responsibility-centers/
 import { ResponsibilityCentersPickerComponent } from './responsibility-centers/responsibility-centers-picker.component';
 import { ResourceClassificationsPickerComponent } from './resource-classifications/resource-classifications-picker.component';
 import { UsersPickerComponent } from './users/users-picker.component';
+import { RolesPickerComponent } from './roles/roles-picker.component';
 
 const routes: Routes = [
   {
@@ -384,7 +385,8 @@ const routes: Routes = [
     ResponsibilityCentersDetailsComponent,
     ResponsibilityCentersPickerComponent,
     ResourceClassificationsPickerComponent,
-    UsersPickerComponent
+    UsersPickerComponent,
+    RolesPickerComponent
   ],
   imports: [
     SharedModule,

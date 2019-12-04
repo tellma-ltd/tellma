@@ -1,12 +1,9 @@
-<b-master collection="Role" [mode]="mode"
-  [masterCrumb]="'Roles' | translate" [tileTemplate]="tile"
-  [tableSummaryColumnTemplate]="summaryColumn" selectForTiles="Code"
-  selectDefault="Code,IsPublic,IsActive" [tableSummaryHeaderTemplate]="summaryHeader"
-  [multiselectActions]="[
+<b-master collection="Role" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter" [masterCrumb]="'Roles' | translate" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" selectForTiles="Code" selectDefault="Code,IsPublic,IsActive"
+  [tableSummaryHeaderTemplate]="summaryHeader" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
   { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-          ]"
-  [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
+          ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
               { template: createdByMe, expression: 'SavedById eq me'}
             ],
@@ -29,12 +26,12 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ 'Role' | translate }}
-  </ng-template>
+  {{ 'Role' | translate }}
+</ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">
-    <span class="text-truncate">{{ ws.getMultilingualValue('Role', id, 'Name') }}</span>
+  <span class="text-truncate">{{ ws.getMultilingualValue('Role', id, 'Name') }}</span>
 </ng-template>
 
 <!-- Multiselect Actions -->

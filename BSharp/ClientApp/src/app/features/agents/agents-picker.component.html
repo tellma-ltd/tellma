@@ -1,4 +1,4 @@
-<b-details-picker [masterTemplate]="master" [detailsTemplate]="details" collection="Agent" [definitionIds]="definitionIds" [filter]="filter">
+<b-details-picker [masterTemplate]="master" [detailsTemplate]="showCreate ? details : null" collection="Agent" [definitionIds]="definitionIds" [filter]="filter">
 </b-details-picker>
 
 <!-- The Agent Details Modal -->
@@ -14,7 +14,7 @@ let-idString="idString" let-definitionId="definitionId">
 <!-- The Agent Master Modal -->
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId" let-filter="filter">
 <div class="modal-body">
-    <b-agents-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
+    <b-agents-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter" [showCreate]="showCreate"
         (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
     </b-agents-master>
 </div>

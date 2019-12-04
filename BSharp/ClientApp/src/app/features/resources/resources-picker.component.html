@@ -1,4 +1,4 @@
-<b-details-picker [masterTemplate]="master" [detailsTemplate]="details" [filter]="filter"
+<b-details-picker [masterTemplate]="master" [detailsTemplate]="showCreate ? details : null" [filter]="filter"
     [definitionIds]="definitionIds" collection="Resource">
 </b-details-picker>
 
@@ -16,7 +16,7 @@
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId" let-filter="filter">
     <div class="modal-body">
         <b-resources-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
-            (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
+            (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()" [showCreate]="showCreate">
         </b-resources-master>
     </div>
 </ng-template>

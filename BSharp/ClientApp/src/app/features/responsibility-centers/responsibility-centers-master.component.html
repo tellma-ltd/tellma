@@ -1,5 +1,5 @@
-<b-master collection="ResponsibilityCenter" [mode]="mode" [enableTreeView]="true"
-    [masterCrumb]="'ResponsibilityCenters' | translate" [tileTemplate]="tile" [filterDefault]="filter"
+<b-master collection="ResponsibilityCenter" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter" [enableTreeView]="true"
+    [masterCrumb]="'ResponsibilityCenters' | translate" [tileTemplate]="tile"
     [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
     selectDefault="Code,ResponsibilityType" selectForTiles="Code, ResponsibilityType" [multiselectActions]="[
           { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
