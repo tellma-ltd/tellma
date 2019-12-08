@@ -349,4 +349,39 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[Identifier]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d33bfc22-f837-4621-99d4-6e50e72f7550" ChangeDateTime="12/05/2019 12:21:24">
+    <Property Name="ElementName" Value="[dbo].[Accounts].[DescriptorId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Accounts]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[Identifier]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8acf268d-3743-40b9-93d8-a0931093f4d5" ChangeDateTime="12/05/2019 12:22:07">
+    <Property Name="ElementName" Value="[dbo].[AccountDescriptors]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[AccountIdentifiers]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bc78f15a-8843-46c0-8260-de0d2aba6e5c" ChangeDateTime="12/05/2019 12:23:56">
+    <Property Name="ElementName" Value="[dbo].[DocumentWideLineList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[WideLineList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="0fb005a0-536a-40a3-8162-14b84272b71c" ChangeDateTime="12/05/2019 12:24:50">
+    <Property Name="ElementName" Value="[dbo].[Entries].[ResourceDescriptorId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ResourceIdentifier]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6ab49117-3d52-46a8-b305-cade729fce12" ChangeDateTime="12/05/2019 12:25:09">
+    <Property Name="ElementName" Value="[dbo].[Entries].[AccountDescriptorId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Entries]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[AccountIdentifier]" />
+  </Operation>
 </Operations>

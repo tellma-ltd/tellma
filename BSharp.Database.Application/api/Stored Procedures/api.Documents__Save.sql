@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [api].[Documents__Save]
 	@DefinitionId NVARCHAR(255),
 	@Documents [dbo].[DocumentList] READONLY,
-	@WideLines dbo.[DocumentWideLineList] READONLY,
+	@WideLines dbo.[WideLineList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY,
 	@ReturnIds BIT = 0,

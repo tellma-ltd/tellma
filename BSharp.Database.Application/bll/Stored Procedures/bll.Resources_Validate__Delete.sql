@@ -36,8 +36,8 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Resources] R ON R.[CurrencyId] = C.CurrencyId
 	WHERE R.[Id] NOT IN (SELECT Id FROM @Ids);
 
-	-- TODO: If the resource is a monetary resource, make sure the currency is not used in accounts
+	-- TODO: If the resource is a currency, make sure the currency is not used in accounts
 
-	-- TODO: If the resource is a monetary resource, make sure the currency is not used in entries
+	-- TODO: If the resource is a currency, make sure the currency is not used in entries
 
 	SELECT TOP(@Top) * FROM @ValidationErrors;

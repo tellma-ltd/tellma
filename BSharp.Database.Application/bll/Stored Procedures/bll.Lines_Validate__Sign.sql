@@ -9,7 +9,7 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
 	-- TODO:
-	-- Not allowed to cause negative fixed asset life
+	-- Not allowed to cause negative fixed asset life among states >= completed, if neg is not allowed.
 	-- Conservation of mass
 	-- conservation of volume
 
@@ -24,9 +24,9 @@ SET NOCOUNT ON;
 			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
 		FROM @Ids 
 		WHERE [Id] IN (
-			SELECT DL.[Id] 
-			FROM dbo.[Lines] DL
-			JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId]
+			SELECT L.[Id] 
+			FROM dbo.[Lines] L
+			JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId]
 			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 			WHERE W.ToState = @ToState AND WS.[ProxyRoleId] IS NULL
 		);
@@ -40,9 +40,9 @@ SET NOCOUNT ON;
 			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
 		FROM @Ids 
 		WHERE [Id] IN (
-			SELECT DL.[Id] 
-			FROM dbo.[Lines] DL
-			JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId]
+			SELECT L.[Id] 
+			FROM dbo.[Lines] L
+			JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId]
 			JOIN dbo.WorkflowSignatures WS ON W.[Id] = WS.[WorkflowId]
 			WHERE W.ToState = @ToState
 			AND WS.[ProxyRoleId] NOT IN (
@@ -56,11 +56,11 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_NoDirectTransitionFromState0ToState1',
-		DL.[State],
+		L.[State],
 		@ToState
 	FROM @Ids FE
-	JOIN dbo.[Lines] DL ON FE.[Id] = DL.[Id]
-	LEFT JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId] AND W.[FromState] = DL.[State]
+	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
+	LEFT JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[FromState] = L.[State]
 	WHERE W.ToState <> @ToState
 
 	-- cannot sign lines unless the document is active. Document can be active, posted/filed	,
@@ -69,8 +69,8 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_LineDoesNotBelongToActiveDocument'
 	FROM @Ids FE
-	JOIN dbo.[Lines] DL ON FE.[Id] = DL.[Id]
-	JOIN dbo.Documents D ON DL.[DocumentId] = D.[Id]
+	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
+	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE D.[State] <> 'Active'
 
 	-- No inactive account
@@ -80,45 +80,83 @@ SET NOCOUNT ON;
 		N'Error_TheAccount0IsDeprecated',
 		A.[Name]
 	FROM @Ids FE
-	JOIN dbo.[Entries] DLE ON FE.[Id] = DLE.[LineId]
-	JOIN dbo.[Accounts] A ON A.[Id] = DLE.[AccountId]
+	JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
+	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
 	WHERE (A.[IsDeprecated] = 1);
 
-	-- Not allowed to cause negative inventory balance
+	-- Not allowed to cause negative balance in conservative accounts
+	DECLARE @NonFinancialResourceClassificationNode HIERARCHYID = 
+		(SELECT [Node] FROM dbo.ResourceClassifications WHERE Code = N'NonFinancialAssets');
 	WITH
-	InventoryAccounts AS (
+	ConservativeAccounts AS (
 		SELECT [Id] FROM dbo.[Accounts] A
-		WHERE A.[AccountTypeId] = N'Inventory'
+		WHERE A.[ContractType] = N'OnHand'
+		AND A.ResourceClassificationId IN (
+			SELECT [Id] FROM dbo.ResourceClassifications
+			WHERE [Node].IsDescendantOf(@NonFinancialResourceClassificationNode) = 1
+		)
 	),
 	CurrentDocLines AS (
-		SELECT MAX(FE.[Index]) AS [Index], DLE.AccountId,
-			SUM(DLE.[Direction] * DLE.[Mass]) AS [Mass], 
-			SUM(DLE.[Direction] * DLE.[Volume]) AS [Volume], 
-			SUM(DLE.[Direction] * DLE.[Count]) AS [Count]
+		SELECT MAX(FE.[Index]) AS [Index],
+			E.AccountId,
+			E.ResourceId,
+			E.AgentId,
+			E.DueDate,
+			E.[AccountIdentifier],
+			E.[ResourceIdentifier],
+			SUM(E.[Direction] * E.[Count]) AS [Count],
+			SUM(E.[Direction] * E.[Mass]) AS [Mass], 
+			SUM(E.[Direction] * E.[Volume]) AS [Volume] 
+			
 		FROM @Ids FE
-		JOIN dbo.[Entries] DLE ON FE.[Id] = DLE.[LineId]
-		WHERE DLE.AccountId IN (SELECT [Id] FROM InventoryAccounts)
-		GROUP BY DLE.AccountId
-		HAVING SUM(DLE.[Direction] * DLE.[Mass]) < 0
-		OR SUM(DLE.[Direction] * DLE.[Volume]) < 0
-		OR SUM(DLE.[Direction] * DLE.[Count]) < 0
+		JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
+		WHERE E.AccountId IN (SELECT [Id] FROM ConservativeAccounts)
+		GROUP BY
+			E.AccountId,
+			E.ResourceId,
+			E.AgentId,
+			E.DueDate,
+			E.[AccountIdentifier],
+			E.[ResourceIdentifier]
+		HAVING SUM(E.[Direction] * E.[Mass]) < 0
+		OR SUM(E.[Direction] * E.[Volume]) < 0
+		OR SUM(E.[Direction] * E.[Count]) < 0
 	),
 	ReviewedDocLines AS (
-		SELECT DLE.AccountId,
-			SUM(DLE.[Direction] * DLE.[Mass]) AS [Mass], 
-			SUM(DLE.[Direction] * DLE.[Volume]) AS [Volume], 
-			SUM(DLE.[Direction] * DLE.[Count]) AS [Count]
-		FROM dbo.DocumentLineEntriesDetailsView DLE
-		JOIN CurrentDocLines C ON DLE.AccountId = C.AccountId 
-		GROUP BY DLE.AccountId
+		SELECT
+			E.AccountId,
+			E.ResourceId,
+			E.AgentId,
+			E.DueDate,
+			E.[AccountIdentifier],
+			E.[ResourceIdentifier],
+			SUM(E.[Direction] * E.[Mass]) AS [Mass], 
+			SUM(E.[Direction] * E.[Volume]) AS [Volume], 
+			SUM(E.[Direction] * E.[Count]) AS [Count]
+		FROM dbo.DocumentLineEntriesDetailsView E
+		JOIN CurrentDocLines C ON E.AccountId = C.AccountId 
+		GROUP BY
+			E.AccountId,
+			E.ResourceId,
+			E.AgentId,
+			E.[DueDate],
+			E.[AccountIdentifier],
+			E.[ResourceIdentifier]
 	),
 	OffendingEntries AS (
 		SELECT C.[Index], C.AccountId, (C.[Mass] + P.[Mass]) AS [Mass]
 		FROM CurrentDocLines C
-		JOIN ReviewedDocLines P ON C.AccountId = P.AccountId
-		WHERE (C.[Mass] + P.[Mass]) < 0
-		OR (C.[Volume] + P.[Volume]) < 0
-		OR (C.[Count] + P.[Count]) < 0
+		JOIN ReviewedDocLines P ON
+			C.AccountId = P.AccountId
+		AND (C.ResourceId = P.ResourceId)
+		AND (C.AgentId = P.AgentId)
+		AND (C.[DueDate] = P.[DueDate] OR (C.[DueDate] IS NULL AND P.[DueDate] IS NULL))
+		AND (C.[AccountIdentifier] = P.[AccountIdentifier] OR (C.[AccountIdentifier] IS NULL AND P.[AccountIdentifier] IS NULL))
+		AND (C.[ResourceIdentifier] = P.[ResourceIdentifier] OR (C.[ResourceIdentifier] IS NULL AND P.[ResourceIdentifier] IS NULL))
+		WHERE
+			(C.[Count] + P.[Count]) < 0
+		OR	(C.[Mass] + P.[Mass]) < 0
+		OR	(C.[Volume] + P.[Volume]) < 0
 	)
 	-- TODO: to be rewritten for each unit of measure. Also localize!
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])

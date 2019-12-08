@@ -1,4 +1,4 @@
-﻿CREATE TYPE [dbo].[DocumentWideLineList] AS TABLE (
+﻿CREATE TYPE [dbo].[WideLineList] AS TABLE (
 	[Index]						INT				PRIMARY KEY,
 	[DocumentIndex]				INT				NOT NULL,
 	[Id]						INT				NOT NULL DEFAULT 0,

@@ -5,7 +5,7 @@ AS
 			[AccountId],
 			[AgentId],
 			[ResourceId],
-			[ResourceDescriptorId],
+			[ResourceIdentifier],
 			[DueDate],
 			SUM([Count]) AS [Count],
 			SUM([Mass]) AS [Mass],
@@ -17,7 +17,7 @@ AS
 			[AccountId],
 			[AgentId],
 			[ResourceId],
-			[ResourceDescriptorId],
+			[ResourceIdentifier],
 			[DueDate]
 	HAVING
 			SUM([Count]) < 0 OR SUM([Mass]) < 0 OR SUM([Volume]) < 0 
