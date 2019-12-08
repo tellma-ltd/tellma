@@ -51,16 +51,16 @@ SET NOCOUNT ON;
 
 	-- TODO: For the cases below, add the condition that Entry Classification is enforced
 
-	-- Missing Entry Classification for given Account Type
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
-		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
-		N'Error_TheAccountType0RequiresAnEntryClassification', A.[AccountTypeId]
-	FROM @Entries E
-	JOIN dbo.Accounts A ON E.AccountId = A.Id
-	JOIN dbo.AccountTypes [AT] ON A.[AccountTypeId] = [AT].[Id]
-	WHERE (E.[EntryClassificationId] IS NULL) AND [AT].EntryClassificationParentCode IS NOT NULL;
+	-- TODO: Missing Entry Classification for given Account Type
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	--SELECT
+	--	'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+	--		CAST([LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+	--	N'Error_TheAccountType0RequiresAnEntryClassification', A.[AccountTypeId]
+	--FROM @Entries E
+	--JOIN dbo.Accounts A ON E.AccountId = A.Id
+	--JOIN dbo.AccountTypes [AT] ON A.[AccountTypeId] = [AT].[Id]
+	--WHERE (E.[EntryClassificationId] IS NULL) AND [AT].EntryClassificationParentCode IS NOT NULL;
 
 	-- Invalid Entry Classification for resource classification
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
