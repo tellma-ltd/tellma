@@ -363,6 +363,7 @@
   "Settings": "Settings",
   "Settings_BrandColor": "Brand Color",
   "Settings_BrandColorDescription": "The color of the navigation bar at the top of the user interface",
+  "Settings_FunctionalCurrency": "Functional Currency",
   "Settings_LanguageSymbolDescription": "This symbol distinguishes the language of bilingual fields",
   "Settings_PrimaryLanguage": "Primary Language",
   "Settings_PrimaryLanguageDescription": "Data entry is required using this language",

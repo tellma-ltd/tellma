@@ -16,10 +16,14 @@ namespace BSharp.Entities
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string ShortCompanyName2 { get; set; }
 
-
         [MultilingualDisplay(Name = "Settings_ShortCompanyName", Language = Language.Ternary)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string ShortCompanyName3 { get; set; }
+
+        [Display(Name = "Settings_FunctionalCurrency")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
+        public string FunctionalCurrencyId { get; set; }
 
         [Display(Name = "Settings_PrimaryLanguage")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
@@ -70,17 +74,22 @@ namespace BSharp.Entities
         public DateTimeOffset CreatedAt { get; set; }
 
         [Display(Name = "CreatedBy")]
-        public int CreatedById { get; set; }
+        public int? CreatedById { get; set; }
 
         [Display(Name = "ModifiedAt")]
         public DateTimeOffset ModifiedAt { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        public int ModifiedById { get; set; }
+        public int? ModifiedById { get; set; }
 
         // For Query
 
+        [Display(Name = "Settings_FunctionalCurrency")]
+        [ForeignKey(nameof(FunctionalCurrencyId))]
+        public Currency FunctionalCurrency { get; set; }
+
         [Display(Name = "CreatedBy")]
+        [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
 
         [Display(Name = "ModifiedBy")]

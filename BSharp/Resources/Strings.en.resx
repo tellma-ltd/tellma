@@ -1276,6 +1276,9 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>Brand Color</value>
   </data>
+  <data name="Settings_FunctionalCurrency" xml:space="preserve">
+    <value>Functional Currency</value>
+  </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>Primary Language</value>
   </data>

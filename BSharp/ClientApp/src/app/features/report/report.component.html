@@ -24,7 +24,8 @@
                         <!-- Decimal -->
                         <b-decimal-editor *ngSwitchCase="'number'" [(ngModel)]="arguments[p.key]"
                             [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
-                            (ngModelChange)="onArgumentChange()" [decimalPlaces]="p.desc.maxDecimalPlaces">
+                            (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="p.desc.minDecimalPlaces"
+                            [maxDecimalPlaces]="p.desc.maxDecimalPlaces">
                         </b-decimal-editor>
 
                         <!-- Date -->
@@ -97,13 +98,14 @@
                         {{ 'Data' | translate }}
                     </button>
                     <div class="dropdown-menu shadow" ngbDropdownMenu aria-labelledby="action">
-                            <button type="button" class="dropdown-item btn-light" (click)="onExport()"
+                        <button type="button" class="dropdown-item btn-light" (click)="onExport()"
                             [disabled]="!canExport">
                             {{ 'Export' | translate }}
                         </button>
-                        <button type="button" *ngIf="description" class="dropdown-item btn-light" (click)="modalService.open(descModal)">
-                        {{ 'Description' | translate }}
-                    </button>
+                        <button type="button" *ngIf="description" class="dropdown-item btn-light"
+                            (click)="modalService.open(descModal)">
+                            {{ 'Description' | translate }}
+                        </button>
                     </div>
                 </div>
             </div>

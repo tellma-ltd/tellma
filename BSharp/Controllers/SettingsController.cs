@@ -175,7 +175,11 @@ namespace BSharp.Controllers
 
         private async Task<DataWithVersion<SettingsForClient>> GetForClientImpl()
         {
-            Settings settings = await _repo.Settings.OrderBy("PrimaryLanguageId").FirstOrDefaultAsync();
+            Settings settings = await _repo.Settings
+                .Expand(nameof(Settings.FunctionalCurrency))
+                .OrderBy(nameof(Settings.FunctionalCurrencyId))
+                .FirstOrDefaultAsync();
+
             if (settings == null)
             {
                 // This should never happen
@@ -193,7 +197,8 @@ namespace BSharp.Controllers
                     forClientProp.SetValue(settingsForClient, value);
                 }
             }
-            
+
+            settingsForClient.FunctionalCurrencyDecimals = settings.FunctionalCurrency.E ?? 0;
             settingsForClient.PrimaryLanguageName = GetCultureDisplayName(settingsForClient.PrimaryLanguageId);
             settingsForClient.SecondaryLanguageName = GetCultureDisplayName(settingsForClient.SecondaryLanguageId);
             settingsForClient.TernaryLanguageName = GetCultureDisplayName(settingsForClient.TernaryLanguageId);

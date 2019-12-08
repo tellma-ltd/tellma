@@ -15,25 +15,25 @@ If no legacy system, we ask the user about the statement he prefers, and we use 
 	[Description]						NVARCHAR (1024),
 	[Description2]						NVARCHAR (1024),
 	[Description3]						NVARCHAR (1024),
-	[ContractType]						NVARCHAR (50) CONSTRAINT [CK_AccountTypes__ContractType] CHECK ( [ContractType] IN (
-											N'OnHand',
-											N'OnDemand',
-											N'InTransit',
-											N'Receivable',--/PrepaidExpense
-											N'Deposit',
-											N'Loan',
-											N'AccruedIncome',
-											N'Equity',
-											N'AccruedExpense',
-											N'Payable',--/UnearnedRevenue
-											N'Retention',
-											N'Borrowing',
-											N'Revenue',
-											N'Expense'
-										)),
-	[IsCurrent]							BIT,
-	[AgentDefinitionList]				NVARCHAR (1024),
-	[IsRelated]							BIT,
-	[ResourceClassificationParentCode]	NVARCHAR (255),
-	[EntryClassificationParentCode]		NVARCHAR (255)
+	--[ContractType]						NVARCHAR (50) CONSTRAINT [CK_AccountTypes__ContractType] CHECK ( [ContractType] IN (
+	--										N'OnHand',
+	--										N'OnDemand',
+	--										N'InTransit',
+	--										N'Receivable',--/PrepaidExpense
+	--										N'Deposit',
+	--										N'Loan',
+	--										N'AccruedIncome',
+	--										N'Equity',
+	--										N'AccruedExpense',
+	--										N'Payable',--/UnearnedRevenue
+	--										N'Retention',
+	--										N'Borrowing',
+	--										N'Revenue',
+	--										N'Expense'
+	--									)),
+	--[IsCurrent]							BIT,
+	--[AgentDefinitionList]				NVARCHAR (1024),
+	--[IsRelated]							BIT,
+	--[ResourceClassificationParentCode]	NVARCHAR (255),
+	--[EntryClassificationParentCode]		NVARCHAR (255)
 );

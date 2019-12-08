@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, Input, HostBinding } from '@angular/core';
+import { Component, ViewChild, ElementRef, Input, HostBinding, OnChanges, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -6,13 +6,16 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   templateUrl: './decimal-editor.component.html',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: DecimalEditorComponent }]
 })
-export class DecimalEditorComponent implements ControlValueAccessor {
+export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
 
   @Input()
   textAlignment: 'left' | 'right' = null;
 
   @Input()
-  decimalPlaces: number = null;
+  maxDecimalPlaces: number = null;
+
+  @Input()
+  minDecimalPlaces: number = null;
 
   @ViewChild('input', { static: true })
   input: ElementRef;
@@ -46,6 +49,13 @@ export class DecimalEditorComponent implements ControlValueAccessor {
     this.isDisabled = isDisabled;
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!!changes.maxDecimalPlaces && !changes.maxDecimalPlaces.isFirstChange()
+      || !!changes.minDecimalPlaces && !changes.minDecimalPlaces.isFirstChange()) {
+      this.input.nativeElement.value = this.format(this.input.nativeElement.value);
+    }
+  }
+
 
   ///////////////// Helper methods: Copied from the Internet and modified
   ///////////////// Credit goes to https://bit.ly/2BV9oy3
@@ -70,10 +80,19 @@ export class DecimalEditorComponent implements ControlValueAccessor {
     let [integer, fraction = ''] = (value || '0').toString()
       .split(this.decimalSeparator);
 
-    let fractionSize = this.decimalPlaces;
-    if (fractionSize === null) {
-      fractionSize = fraction.length;
+    let min = this.minDecimalPlaces;
+    if (min === null) {
+      min = fraction.length;
     }
+
+    let max = Math.max(this.maxDecimalPlaces, min);
+    if (max === null) {
+      max = fraction.length;
+    }
+
+    let fractionSize = fraction.length;
+    fractionSize = Math.max(min, fractionSize);
+    fractionSize = Math.min(max, fractionSize);
 
     fraction = fractionSize > 0
       ? this.decimalSeparator + (fraction + this.padding).substring(0, fractionSize)
@@ -91,7 +110,7 @@ export class DecimalEditorComponent implements ControlValueAccessor {
 
     integer = integer.replace(new RegExp(this.thousandsSeparator, 'g'), '');
 
-    let fractionSize = this.decimalPlaces;
+    let fractionSize = this.maxDecimalPlaces;
     if (fractionSize === null) {
       fractionSize = fraction.length;
     }
