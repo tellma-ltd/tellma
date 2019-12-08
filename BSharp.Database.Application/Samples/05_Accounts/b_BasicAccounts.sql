@@ -7,19 +7,19 @@ INSERT INTO @GLAccounts([Index],
 (3,N'Inventory',					@Inventories_AC,			N'TF1903950009',					N'1209'), -- Merchandise in transit, for given LC
 (4,N'Inventory',					@Inventories_AC,			N'PPE Warehouse',					N'1210'),
 (5,N'FixedAssets',					@NonCurrentAssets_AC,		N'PPE - Vehicles',					N'1301'),
-(6,N'AccountsPayable',				@Liabilities_AC,			N'Vimeks',							N'2101'),
-(7,N'EquityDoesntClose',			@Equity_AC,					N'Capital - MA',					N'3101'),
-(8,N'EquityDoesntClose',			@Equity_AC,					N'Capital - AA',					N'3102'),
+(6,N'OtherCurrentAssets',			@Debtors_AC,				N'Prepaid Rental',					N'1401'),
+(7,N'AccountsReceivable',			@Debtors_AC,				N'VAT Input',						N'1501'),
+(8,N'AccountsPayable',				@Liabilities_AC,			N'Vimeks',							N'2101'),
 (9,N'AccountsPayable',				@Liabilities_AC,			N'Noc Jimma',						N'2102'),
 (10,N'AccountsPayable',				@Liabilities_AC,			N'Toyota',							N'2103'),
 (11,N'AccountsPayable',				@Liabilities_AC,			N'Regus',							N'2104'),
-(12,N'AccountsPayable',				@Debtors_AC,				N'Prepaid Rental',					N'1501'),
-(13,N'OtherCurrentAssets',			@Debtors_AC,				N'VAT Input',						N'1401'),
-(14,N'OtherCurrentLiabilities',		@Liabilities_AC,			N'VAT Output',						N'2401'),
-(15,N'AccountsPayable',				@Liabilities_AC,			N'Salaries Accruals, taxable',		N'2501'),
-(16,N'AccountsPayable',				@Liabilities_AC,			N'Salaries Accruals, non taxable',	N'2502'),
-(17,N'AccountsPayable',				@Liabilities_AC,			N'Employees payable',				N'2503'),
-(18,N'OtherCurrentLiabilities',		@Liabilities_AC,			N'Employees Income Tax payable',	N'2504'),
+(12,N'AccountsPayable',				@Liabilities_AC,			N'Salaries Accruals, taxable',		N'2501'),
+(13,N'AccountsPayable',				@Liabilities_AC,			N'Salaries Accruals, non taxable',	N'2502'),
+(14,N'AccountsPayable',				@Liabilities_AC,			N'Employees payable',				N'2503'),
+(15,N'OtherCurrentLiabilities',		@Liabilities_AC,			N'VAT Output',						N'2601'),
+(16,N'OtherCurrentLiabilities',		@Liabilities_AC,			N'Employees Income Tax payable',	N'2602'),
+(17,N'EquityDoesntClose',			@Equity_AC,					N'Capital - MA',					N'3101'),
+(18,N'EquityDoesntClose',			@Equity_AC,					N'Capital - AA',					N'3102'),
 (19,N'Expenses',					@Expenses_AC,				N'fuel - HR',						N'5101'),
 (20,N'Expenses',					@Expenses_AC,				N'fuel - Sales - admin - AG',		N'5102'),
 (21,N'CostofSales',					@Expenses_AC,				N'fuel - Production',				N'5103'),
@@ -46,6 +46,9 @@ SELECT @CBELC = [Id] FROM dbo.[Accounts] WHERE Code = N'1201';
 SELECT @ESL = [Id] FROM dbo.[Accounts] WHERE Code = N'1209';
 SELECT @PPEWarehouse = [Id] FROM dbo.[Accounts] WHERE Code = N'1210';
 SELECT @PPEVehicles = [Id] FROM dbo.[Accounts] WHERE Code = N'1301'; 
+SELECT @PrepaidRental = [Id] FROM dbo.[Accounts] WHERE Code = N'1401';
+SELECT @VATInput = [Id] FROM dbo.[Accounts] WHERE Code = N'1501';
+
 SELECT @VimeksAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2101';
 SELECT @CapitalMA = [Id] FROM dbo.[Accounts] WHERE Code = N'3101';
 SELECT @CapitalAA = [Id] FROM dbo.[Accounts] WHERE Code = N'3102';
@@ -53,13 +56,11 @@ SELECT @CapitalAA = [Id] FROM dbo.[Accounts] WHERE Code = N'3102';
 SELECT @NocJimmaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2102';
 SELECT @ToyotaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2103';
 SELECT @RegusAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2104';
-SELECT @PrepaidRental = [Id] FROM dbo.[Accounts] WHERE Code = N'1501';
-
-
 SELECT @SalariesAccrualsTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2501';
 SELECT @SalariesAccrualsNonTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2502';
 SELECT @EmployeesPayable = [Id] FROM dbo.[Accounts] WHERE Code = N'2503';
-SELECT @EmployeesIncomeTaxPayable = [Id] FROM dbo.[Accounts] WHERE Code = N'2504'
+SELECT @VATOutput = [Id] FROM dbo.[Accounts] WHERE Code = N'2601';
+SELECT @EmployeesIncomeTaxPayable = [Id] FROM dbo.[Accounts] WHERE Code = N'2602';
 
 SELECT @fuelHR = [Id] FROM dbo.[Accounts] WHERE Code = N'5101';
 SELECT @fuelSalesAdminAG = [Id] FROM dbo.[Accounts] WHERE Code = N'5102';

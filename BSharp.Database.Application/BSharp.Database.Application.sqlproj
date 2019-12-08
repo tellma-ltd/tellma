@@ -124,7 +124,7 @@
     <Build Include="dbo\User Defined Types\dbo.StringList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.DocumentWideLineList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.WideLineList.sql" />
     <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Stored Procedures\dbo.dal_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Functions\dbo.fe_Responsibility__FirstSibling.sql" />
@@ -446,7 +446,7 @@
     <None Include="Samples\00_Setup\d_EntryClassifications.sql" />
     <None Include="Samples\01_Basic\h_Workflows.sql" />
     <Build Include="dbo\Tables\dbo.AgentDefinitions.sql" />
-    <Build Include="dbo\Tables\dbo.AccountDescriptors.sql" />
+    <Build Include="dbo\Tables\dbo.AccountIdentifier.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__Activate.sql" />
     <Build Include="dbo\Tables\dbo.ResourceClassificationsEntryClassifications.sql" />
     <Build Include="dal\Stored Procedures\dal.EntryClassifications__Activate.sql" />
@@ -462,6 +462,7 @@
     <Build Include="dbo\User Defined Types\dbo.AccountTypeList.sql" />
     <None Include="Samples\06_Entries\00_LineDefinitions.sql" />
     <None Include="Samples\06_Entries\01_DocumentDefinitions.sql" />
+    <Build Include="bll\Functions\bll.fn_Prefix_CodeWidth_SN__Code.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

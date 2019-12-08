@@ -21,7 +21,7 @@ RETURN (
 		[AgentId],
 		[ResourceId],
 		[ResponsibilityCenterId],
-		[DescriptorId],
+		[Identifier],
 		[EntryClassificationId],
 		CAST(0 AS BIT) AS [IsDeprecated],
 		CAST(1 AS BIT) AS [IsActive],

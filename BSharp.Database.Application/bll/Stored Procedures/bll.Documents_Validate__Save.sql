@@ -51,7 +51,7 @@ SET NOCOUNT ON;
 
 	-- TODO: For the cases below, add the condition that Entry Classification is enforced
 
-	-- Entry Type Id is missing when required
+	-- Missing Entry Classification for given Account Type
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
@@ -62,7 +62,7 @@ SET NOCOUNT ON;
 	JOIN dbo.AccountTypes [AT] ON A.[AccountTypeId] = [AT].[Id]
 	WHERE (E.[EntryClassificationId] IS NULL) AND [AT].EntryClassificationParentCode IS NOT NULL;
 
-	-- Invalid Entry Type Id
+	-- Invalid Entry Classification for resource classification
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +

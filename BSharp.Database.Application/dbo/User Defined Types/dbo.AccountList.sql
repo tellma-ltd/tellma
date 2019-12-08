@@ -36,7 +36,7 @@
 --	b) if the type itself is not null, then it is to be defined in entries.
 	[AgentId]						INT,
 	[ResourceId]					INT,
-	[DescriptorId]					NVARCHAR (10),
+	[Identifier]					NVARCHAR (10),
 --
 	[EntryClassificationId]			INT,
 	CHECK ([IsSmart] = 0 OR [ResourceClassificationId] IS NOT NULL AND [ContractType] IS NOT NULL)

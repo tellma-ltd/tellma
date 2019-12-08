@@ -48,7 +48,7 @@ SET
 	E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
 	E.[ResourceId]				= COALESCE(A.[AgentId], E.[AgentId]),
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
-	E.[AccountDescriptorId]		= COALESCE(A.[DescriptorId], E.[AccountDescriptorId]),
+	E.[AccountDescriptorId]		= COALESCE(A.[Identifier], E.[AccountDescriptorId]),
 	E.[EntryClassificationId]	= COALESCE(A.[EntryClassificationId], E.[EntryClassificationId])
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id

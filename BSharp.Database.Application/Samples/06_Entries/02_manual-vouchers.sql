@@ -55,28 +55,30 @@ BEGIN -- Inserting
 	DECLARE @R_USD INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'USD' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
 	
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],		[EntryClassificationId],		[ResourceId],	[MonetaryValue],[Value]) VALUES
-	(0, 0, 0,1,+1,@CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,			200000,			4700000),--
-	(1, 1, 0,1,+1,@CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,			100,			2350),
-	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					@R_ETB,			2351175,		2351175),
-	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					@R_ETB,			2351175,		2351175),
+				[AccountId],		[EntryClassificationId],	[ResourceId],[MonetaryValue],[Value]) VALUES
+	(0, 0, 0,1,+1,@CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,		200000,			4700000),--
+	(1, 1, 0,1,+1,@CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,		100,			2350),
+	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					@R_ETB,		2351175,		2351175),
+	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					@R_ETB,		2351175,		2351175),
 		
-	(4, 4, 1,1,+1,@CBEETB,			@InternalCashTransferExtension, @R_ETB,			1175000,		1175000),
-	(5, 5, 1,1,-1,@CBEUSD,			@InternalCashTransferExtension,	@R_USD,			50000,			1175000);
+	(4, 4, 1,1,+1,@CBEETB,			@InternalCashTransferExtension, @R_ETB,		1175000,		1175000),
+	(5, 5, 1,1,-1,@CBEUSD,			@InternalCashTransferExtension,	@R_USD,		50000,			1175000);
 
-	--INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
-	--			[AccountId],		[EntryClassificationId],		[Value],	[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedMonetaryValue]) VALUES
-	--(6, 6, 2,1,+1,@PPEWarehouse,	@InventoryPurchaseExtension, 	600000,		N'C-14209',			NULL, NULL, NULL),--
-	--(7, 7, 2,1,+1,@VATInput,		NULL, 							90000,		N'C-14209',			N'FS010102', @Lifan, NULL),--
-	--(8, 8, 2,1,+1,@PPEWarehouse,	@InventoryPurchaseExtension, 	600000,		N'C-14209',			NULL, NULL, NULL),
-	--(9, 9, 2,1,+1,@VATInput,		NULL, 							90000,		N'C-14209',			N'FS010102', @Lifan, 600000),
-	--(10,10,2,1,-1,@ToyotaAccount,	NULL,							1380000,	NULL,				NULL, NULL, NULL),
-	--(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,					600000,		NULL,				NULL, NULL, NULL),
-	--(12,12,3,1,-1,@PPEWarehouse,	@InvReclassifiedAsPPE,			600000,		NULL,				NULL, NULL, NULL),
-	--(13,13,4,1,+1,@VATInput,		NULL,							2250,		N'C-25301',			N'BP188954', @Regus, 15000),
-	--(14,14,4,1,+1,@PrepaidRental,	NULL,							15000,		N'C-25301',			NULL, NULL, NULL),
-	--(15,15,4,1,-1,@RegusAccount,	NULL, 							17250,		N'C-25301',			NULL, NULL, NULL);
-	--; 
+	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
+				[AccountId],	[EntryClassificationId],[ResourceId],[MonetaryValue], [ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAmount]) VALUES
+	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,@R_ETB,		600000,			N'C-14209',			NULL,					NULL,			NULL),--
+	(7, 7, 2,1,+1,@VATInput,	NULL, 						@R_ETB,		90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),--
+	(8, 8, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,@R_ETB,		600000,			N'C-14209',			NULL,					NULL,			NULL),
+	(9, 9, 2,1,+1,@VATInput,	NULL, 						@R_ETB,		90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),
+	(10,10,2,1,-1,@ToyotaAccount,NULL,						@R_ETB,		1380000,		N'C-14209',			NULL,					NULL,			NULL),
+
+	(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,				@R_ETB,		600000,			NULL,				NULL, NULL, NULL),
+	(12,12,3,1,-1,@PPEWarehouse,@InvReclassifiedAsPPE,		@R_ETB,		600000,			NULL,				NULL, NULL, NULL),
+	
+	(13,13,4,1,+1,@VATInput,	NULL,						@R_ETB,		2250,			N'C-25301',			N'BP188954',			@Regus,			15000),
+	(14,14,4,1,+1,@PrepaidRental,NULL,						@R_ETB,		15000,			N'C-25301',			NULL,					NULL,			NULL),
+	(15,15,4,1,-1,@RegusAccount,NULL, 						@R_ETB,		17250,			N'C-25301',			NULL,					NULL,			NULL);
+	; 
 	
 	EXEC [api].[Documents__Save]
 		@DefinitionId = N'manual-journals',
@@ -94,7 +96,7 @@ BEGIN -- Inserting
 	-- TODO: fill index using ROWNUMBER
 	SELECT [Id], [Id] FROM dbo.[Lines] WHERE [State] = N'Draft';
 
---	IF (1=0)
+	--IF (1=0)
 	EXEC [api].[Lines__Sign]
 		@IndexedIds = @DocLinesIndexedIds,
 		@ToState = N'Reviewed',
@@ -114,6 +116,7 @@ BEGIN -- Inserting
 	-- TODO: fill index using ROWNUMBER
 	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
 
+	IF (1=0)
 	EXEC [api].[Documents__File]
 		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -132,7 +135,7 @@ BEGIN
 		Format(Debit, '##,#.00;-;-', 'en-us') AS Debit,
 		Format(Credit, '##,#.00;-;-', 'en-us') AS Credit,
 		Format(Closing , '##,#.00;(##,#.00);-', 'en-us') AS Closing
-	FROM [rpt].[Accounts__TrialBalance] ('2017.01.02','2019.01.01') JS
+	FROM [rpt].[Accounts__TrialBalance] ('2018.01.02','2019.01.01') JS
 	JOIN dbo.Accounts A ON JS.AccountId = A.Id
 	LEFT JOIN dbo.AccountClassifications AC ON JS.AccountClassificationId = AC.Id
 	ORDER BY AC.[Code], A.[Code]
@@ -144,7 +147,7 @@ BEGIN
 		FORMAT(SUM(J.[Value]), '##,#.00;(##,#.00);-', 'en-us') AS VAT,
 		FORMAT(SUM(J.[RelatedAmount]), '##,#.00;(##,#.00);-', 'en-us') AS [Taxable Amount],
 		J.DocumentDate As [Invoice Date]
-	FROM [dbo].[fi_Journal]('2018.01.01','2019.01.01') J
+	FROM [dbo].[fi_Journal]('2018.01.02','2019.01.01') J
 	LEFT JOIN [dbo].[Agents] A ON J.[RelatedAgentId] = A.Id
 	WHERE J.[AccountId] = @VATInput
 	GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;

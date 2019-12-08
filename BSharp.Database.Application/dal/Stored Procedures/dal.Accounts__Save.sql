@@ -28,7 +28,7 @@ SET NOCOUNT ON;
 				[AgentId],
 				[ResourceId],
 				[ResponsibilityCenterId],
-				[DescriptorId],
+				[Identifier],
 				[EntryClassificationId]
 			FROM @Entities 
 		) AS s ON (t.Id = s.Id)
@@ -48,7 +48,7 @@ SET NOCOUNT ON;
 				t.[AgentId]					= s.[AgentId],
 				t.[ResourceId]				= s.[ResourceId],
 				t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
-				t.[DescriptorId]			= s.[DescriptorId],
+				t.[Identifier]			= s.[Identifier],
 				t.[EntryClassificationId]	= s.[EntryClassificationId],
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
@@ -65,7 +65,7 @@ SET NOCOUNT ON;
 				[AgentId],
 				[ResourceId],
 				[ResponsibilityCenterId],
-				[DescriptorId],
+				[Identifier],
 				[EntryClassificationId])
 			VALUES (
 				s.[AccountClassificationId], 
@@ -79,7 +79,7 @@ SET NOCOUNT ON;
 				s.[AgentId],
 				s.[ResourceId],
 				s.[ResponsibilityCenterId],
-				s.[DescriptorId],
+				s.[Identifier],
 				s.[EntryClassificationId])
 			OUTPUT s.[Index], inserted.[Id]
 	) AS x;

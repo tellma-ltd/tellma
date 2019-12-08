@@ -29,9 +29,9 @@
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
 	[ResourceId]				INT				NOT NULL CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.Resources([Id]),
 	[ResponsibilityCenterId]	INT				REFERENCES dbo.ResponsibilityCenters([Id]),
-	[AccountDescriptorId]		NVARCHAR (10),--	CONSTRAINT [FK_Entriess__AccountDescriptorId] REFERENCES dbo.AccountDescriptors([Id]), -- to resolve Uniqueness Constraint
+	[AccountIdentifier]			NVARCHAR (10)	CONSTRAINT [FK_Entriess__AccountIdentifier] REFERENCES dbo.AccountIdentifiers([Id]), -- to resolve Uniqueness Constraint
 	
-	[ResourceDescriptorId]		NVARCHAR (10),
+	[ResourceIdentifier]		NVARCHAR (10),
 	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
 	
 	-- Entry Type is used to tag entries in a manner that does not affect the account balance

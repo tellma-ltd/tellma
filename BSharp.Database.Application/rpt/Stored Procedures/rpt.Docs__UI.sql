@@ -7,41 +7,39 @@ WITH Docs AS (
 			CAST(D.[Id] AS NVARCHAR(30)) AS [Id],
 			CAST(D.[DocumentDate] AS NVARCHAR(30)) AS [DocumentDate],
 			D.[DefinitionId] AS DocumentDefinitionId,
-			DT.Prefix + 
-			REPLICATE(N'0', DT.[CodeWidth] - 1 - FLOOR(LOG10(D.SerialNumber))) +
-			CAST(D.SerialNumber AS NVARCHAR(30)) AS [S/N],
+			[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
 			D.[State],
 			ISNULL(VB.[StringPrefix], '') +
 			ISNULL(CAST(D.[VoucherNumericReference] AS NVARCHAR(30)), '') AS [VoucherRef],
-			AG.[Name] AS [AssignedTo],
+			U.[Name] AS [AssignedTo],
 			--D.[SortKey] As [DocumentSortKey],
 			D.[Memo],
-			DL.[Id] As [LineId],
-			DL.[DefinitionId] AS LineDefinitionId,
-			DL.[State] AS [LineState],
-			DLE.SortKey,
-			DLE.[Direction],
-			DLE.[EntryNumber], A.[Name] AS [Account],
-			DLE.[CurrencyId], DLE.[MonetaryValue], DLE.[EntryClassificationId],
-			--CAST(DLE.[Value] AS MONEY) AS 
-			DLE.[Value]
+			L.[Id] As [LineId],
+			L.[DefinitionId] AS LineDefinitionId,
+			L.[State] AS [LineState],
+			E.SortKey,
+			E.[Direction],
+			E.[EntryNumber], A.[Name] AS [Account],
+			E.[CurrencyId], E.[MonetaryValue], E.[EntryClassificationId],
+			--CAST(E.[Value] AS MONEY) AS 
+			E.[Value]
 		FROM dbo.Documents D
-		JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
+		JOIN dbo.[DocumentDefinitions] DD ON D.[DefinitionId] = DD.[Id]
 		LEFT JOIN dbo.VoucherBooklets VB ON D.VoucherBookletId = VB.Id
 		LEFT JOIN dbo.DocumentAssignments DA ON D.[Id] = DA.[DocumentId]
-		LEFT JOIN dbo.Agents AG ON DA.AssigneeId = AG.Id
-		LEFT JOIN dbo.[Lines] DL ON D.[Id] = DL.[DocumentId]
-		LEFT JOIN dbo.[Entries] DLE ON DL.[Id] = DLE.[LineId]
-		LEFT JOIN dbo.[Accounts] A ON DLE.AccountId = A.[Id]
+		LEFT JOIN dbo.[Users] U ON DA.AssigneeId = U.Id
+		LEFT JOIN dbo.[Lines] L ON D.[Id] = L.[DocumentId]
+		LEFT JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
+		LEFT JOIN dbo.[Accounts] A ON E.AccountId = A.[Id]
 		WHERE D.[Id] IN (SELECT [Id] FROM @DIds)
 	)-- select * from Docs
 	,
 	DocsFirst AS (
-		SELECT DL.DocumentId, MIN(DLE.[LineId]) AS [LineId]
-		FROM [Entries] DLE
-		LEFT JOIN dbo.[Lines] DL ON DLE.[LineId] = DL.Id
-		WHERE DL.DocumentId IN (SELECT [Id] FROM @DIds)
-		GROUP BY DL.DocumentId
+		SELECT L.DocumentId, MIN(E.[LineId]) AS [LineId]
+		FROM [Entries] E
+		LEFT JOIN dbo.[Lines] L ON E.[LineId] = L.Id
+		WHERE L.DocumentId IN (SELECT [Id] FROM @DIds)
+		GROUP BY L.DocumentId
 	)
 	SELECT 
 		(CASE WHEN Docs.[LineId] = DocsFirst.LineId THEN Docs.[Id] ELSE '' END) AS [Id],
@@ -65,5 +63,4 @@ WITH Docs AS (
 	LEFT JOIN DocsFirst ON Docs.Id = DocsFirst.DocumentId
 	LEFT JOIN dbo.EntryClassifications EC ON [EntryClassificationId] = EC.[Id]
 	ORDER BY Docs.[LineId];
-
-END
+END;

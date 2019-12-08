@@ -43,7 +43,7 @@
 --	b) if the type itself is not null, then it is to be defined in entries.
 	[AgentId]						INT					CONSTRAINT [FK_Accounts__AgentId] REFERENCES [dbo].[Agents] ([Id]),
 	[ResourceId]					INT					CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
-	[DescriptorId]					NVARCHAR (10)		CONSTRAINT [FK_Accounts__DescriptorId] REFERENCES dbo.AccountDescriptors([Id]), -- to resolve Uniqueness Constraint
+	[Identifier]					NVARCHAR (10)		CONSTRAINT [FK_Accounts__Identifier] REFERENCES dbo.[AccountIdentifiers]([Id]), -- to resolve Uniqueness Constraint
 -- Entry Property
 	[EntryClassificationId]			INT					CONSTRAINT [FK_Accounts__EntryClassificationId] REFERENCES dbo.[EntryClassifications],
 	-- To transfer an entry from requested to authorized, we need an evidence that the responsible center manager has authorized it.
@@ -64,6 +64,6 @@ CREATE UNIQUE INDEX [IX_Accounts__Id_AccountTypeId_AgentDefinitionId_ResourceCla
 			[AgentId],
 			[ResourceId],
 			[ResponsibilityCenterId],
-			[DescriptorId],
+			[Identifier],
 			[EntryClassificationId]
 ) WHERE [IsSmart] = 1;
