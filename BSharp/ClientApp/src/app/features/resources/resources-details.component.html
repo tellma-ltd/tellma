@@ -121,10 +121,11 @@
     <b-form-group *ngIf="MonetaryValue_isVisible" class="b-form-group" [label]="MonetaryValue_label"
         [serverErrors]="model?.serverErrors?.MonetaryValue">
         <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
-            <div>{{ model?.MonetaryValue | number:'1.2-2' }}</div>
+            <div>{{ model?.MonetaryValue | number:'1.' + MonetaryValue_decimals(model) + '-' + MonetaryValue_decimals(model) }}</div>
         </b-restricted>
         <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="MonetaryValue_isRequired" [decimalPlaces]="2">
+            [required]="MonetaryValue_isRequired" [minDecimalPlaces]="MonetaryValue_decimals(model)"
+            [maxDecimalPlaces]="MonetaryValue_decimals(model)">
         </b-decimal-editor>
     </b-form-group>
 
@@ -145,10 +146,10 @@
     <b-form-group *ngIf="Count_isVisible" class="b-form-group" [label]="Count_label"
         [serverErrors]="model?.serverErrors?.Count">
         <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Count">
-            <div>{{ model?.Count | number:'1.2-2' }}</div>
+            <div>{{ model?.Count | number:'1.0-4' }}</div>
         </b-restricted>
         <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Count" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Count_isRequired" [decimalPlaces]="2">
+            [required]="Count_isRequired" [maxDecimalPlaces]="4">
         </b-decimal-editor>
     </b-form-group>
 
@@ -169,10 +170,10 @@
     <b-form-group *ngIf="Mass_isVisible" class="b-form-group" [label]="Mass_label"
         [serverErrors]="model?.serverErrors?.Mass">
         <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Mass">
-            <div>{{ model?.Mass | number:'1.2-2' }}</div>
+            <div>{{ model?.Mass | number:'1.0-4' }}</div>
         </b-restricted>
         <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Mass" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Mass_isRequired" [decimalPlaces]="2">
+            [required]="Mass_isRequired" [maxDecimalPlaces]="4">
         </b-decimal-editor>
     </b-form-group>
 
@@ -193,10 +194,10 @@
     <b-form-group *ngIf="Volume_isVisible" class="b-form-group" [label]="Volume_label"
         [serverErrors]="model?.serverErrors?.Volume">
         <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Volume">
-            <div>{{ model?.Volume | number:'1.2-2' }}</div>
+            <div>{{ model?.Volume | number:'1.0-4' }}</div>
         </b-restricted>
         <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Volume" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Volume_isRequired" [decimalPlaces]="2">
+            [required]="Volume_isRequired" [maxDecimalPlaces]="4">
         </b-decimal-editor>
     </b-form-group>
 
@@ -217,10 +218,10 @@
     <b-form-group *ngIf="Time_isVisible" class="b-form-group" [label]="Time_label"
         [serverErrors]="model?.serverErrors?.Time">
         <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time">
-            <div>{{ model?.Time | number:'1.2-2' }}</div>
+            <div>{{ model?.Time | number:'1.0-4' }}</div>
         </b-restricted>
         <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Time" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="Time_isRequired" [decimalPlaces]="2">
+            [required]="Time_isRequired" [maxDecimalPlaces]="4">
         </b-decimal-editor>
     </b-form-group>
 

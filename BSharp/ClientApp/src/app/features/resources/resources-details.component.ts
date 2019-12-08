@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { ResourceForSave, Resource } from '~/app/data/entities/resource';
 import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { Currency } from '~/app/data/entities/currency';
 
 @Component({
   selector: 'b-resources-details',
@@ -188,6 +189,11 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return !!this.definition.MonetaryValueLabel ?
       this.ws.getMultilingualValueImmediate(this.definition, 'MonetaryValueLabel') :
       this.translate.instant('Resource_MonetaryValue');
+  }
+
+  public MonetaryValue_decimals(model: Resource): number {
+    const currency = this.ws.get('Currency', model.CurrencyId) as Currency;
+    return !!currency ? currency.E : 0;
   }
 
   public get CountUnit_isVisible(): boolean {
