@@ -11,7 +11,22 @@
 	[AccountId]							INT, -- invisible, except in 
 
 	[AccountTypeSource]					SMALLINT			NOT NULL DEFAULT 2, -- 0:set from line def, 3: from account
-	[ContractType]						NVARCHAR (50)	REFERENCES dbo.[AccountTypes]([Id]), -- 
+	[ContractType]						NVARCHAR (50)		CONSTRAINT [CK_LineDefinitionEntries__ContractType] CHECK ( [ContractType] IN (
+										N'OnHand',
+										N'OnDemand',
+										N'InTransit',
+										N'Receivable',--/PrepaidExpense
+										N'Deposit',
+										N'Loan',
+										N'AccruedIncome',
+										N'Equity',
+										N'AccruedExpense',
+										N'Payable',--/UnearnedRevenue
+										N'Retention',
+										N'Borrowing',
+										N'Revenue',
+										N'Expense'
+									)),
 
 	[AgentDefinitionSource]				SMALLINT			NOT NULL DEFAULT 2, --  -1: n/a, 0:set from line def, 3: from account
 	[AgentDefinitionId]					NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),

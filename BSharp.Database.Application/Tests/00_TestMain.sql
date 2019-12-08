@@ -52,9 +52,11 @@ BEGIN -- reset Identities
 	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = N'admin@bsharp.online';-- '$(DeployEmail)';
 	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
 
-	DECLARE @FunctionalCurrencyId NCHAR(3);
+	DECLARE @FunctionalCurrencyId NCHAR(3), @FunctionalResourceId INT;
 	SELECT @FunctionalCurrencyId = [FunctionalCurrencyId] FROM dbo.Settings;
 	EXEC sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;--, @read_only = 1;
+	SELECT @FunctionalResourceId = [Id] FROM dbo.Resources WHERE DefinitionId = N'currencies' AND CurrencyId = @FunctionalCurrencyId;
+	EXEC sp_set_session_context 'FunctionalResourceId', @FunctionalResourceId;--, @read_only = 1;
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 END
