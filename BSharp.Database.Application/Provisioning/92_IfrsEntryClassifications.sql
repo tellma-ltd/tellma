@@ -170,7 +170,7 @@ INSERT INTO @IfrsEntryClassifications([IfrsType], IsActive, [ForDebit], [ForCred
 ,('Regulatory', 1, 1, 1, '/8/2/', 'AcquisitionsThroughBusinessCombinationsOtherProvisions', 'Acquisitions through business combinations, other provisions')
 ,('Regulatory', 1, 1, 1, '/8/3/', 'ProvisionUsedOtherProvisions', 'Provision used, other provisions')
 ,('Regulatory', 1, 1, 1, '/8/4/', 'UnusedProvisionReversedOtherProvisions', 'Unused provision reversed, other provisions')
-,('Regulatory', 1, 1, 1, '/8/5/', 'IncreaseDecreaseThroughTimeValueOfMoneyAdjustmentOtherProvisions', 'Increase through adjustments arising from passage of time, other provisions')
+,('Regulatory', 1, 1, 1, '/8/5/', 'IncreaseDecreaseThroughTimeValueOfDECIMAL (19,4)AdjustmentOtherProvisions', 'Increase through adjustments arising from passage of time, other provisions')
 ,('Regulatory', 1, 1, 1, '/8/6/', 'IncreaseDecreaseThroughChangeInDiscountRateOtherProvisions', 'Increase (decrease) through change in discount rate, other provisions')
 ,('Regulatory', 1, 1, 1, '/8/7/', 'IncreaseDecreaseThroughNetExchangeDifferencesOtherProvisions', 'Increase (decrease) through net exchange differences, other provisions')
 ,('Regulatory', 1, 1, 1, '/8/8/', 'DecreaseThroughLossOfControlOfSubsidiaryOtherProvisions', 'Decrease through loss of control of subsidiary, other provisions')

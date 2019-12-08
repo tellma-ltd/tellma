@@ -22,11 +22,11 @@ RETURN
 			DLE.[Direction],
 			DLE.[EntryNumber], A.[Name] AS [Account], DLE.[EntryClassificationId], 
 			R.[Name] AS [Resource],
-			CAST(DLE.[Value] AS MONEY) AS [Value],
+			CAST(DLE.[Value] AS DECIMAL (19,4)) AS [Value],
 			-- TODO: Add other unittypes
-			CAST(DLE.[MonetaryValue] AS MONEY) AS [MonetaryValue],
+			CAST(DLE.[MonetaryValue] AS DECIMAL (19,4)) AS [MonetaryValue],
 			C.[Name] AS Currency,
-			CAST(DLE.[Mass] AS MONEY) AS [Mass],
+			CAST(DLE.[Mass] AS DECIMAL (19,4)) AS [Mass],
 			MUM.[Name] AS [MassUnit]
 		FROM dbo.Documents D
 		JOIN dbo.[DocumentDefinitions] DD ON D.[DefinitionId] = DD.[Id]

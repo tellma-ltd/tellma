@@ -48,17 +48,17 @@ SET
 	E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
 	E.[ResourceId]				= COALESCE(A.[AgentId], E.[AgentId]),
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
-	E.[AccountDescriptorId]		= COALESCE(A.[Identifier], E.[AccountDescriptorId]),
+	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
 	E.[EntryClassificationId]	= COALESCE(A.[EntryClassificationId], E.[EntryClassificationId])
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE L.DefinitionId = N'ManualLine' AND A.[IsSmart] = 1; -- Entered by user
 --select 5 as step, E.* from @FilledEntries E
--- for all lines, Get currency and descriptor from Resources if available.
+-- for all lines, Get currency and identifier from Resources if available.
 UPDATE E 
 SET
 	E.[CurrencyId]			 = 	COALESCE(R.[CurrencyId], E.[CurrencyId]),
-	E.[ResourceDescriptorId] =  COALESCE(R.[Identifier], E.[ResourceDescriptorId])
+	E.[ResourceIdentifier] =  COALESCE(R.[Identifier], E.[ResourceIdentifier])
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 --select 6 as step, E.* from @FilledEntries E

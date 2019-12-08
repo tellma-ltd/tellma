@@ -1,7 +1,7 @@
 ﻿CREATE FUNCTION [bll].[fn_EmployeeIncomeTax]
 (
 	@EmployeeId INT,
-	@TaxableIncome MONEY
+	@TaxableIncome DECIMAL (19,4)
 )
 RETURNS INT
 AS

@@ -1,5 +1,5 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-	[Id],		[TitlePlural],	[TitleSingular], [Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId], [DescriptorIdVisibility]) VALUES
+	[Id],		[TitlePlural],	[TitleSingular], [Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId], [IdentifierVisibility]) VALUES
 	(N'skds',	N'SKDs',		N'SKD',			N'Required',			N'Body Color',	N'body-colors',		N'Required');
 	
 	DECLARE @FGVehiclesDescendantsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT DEFAULT 1, [Index] INT, [ResourceDefinitionId] NVARCHAR (50))

@@ -1,5 +1,5 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-		[Id],					[TitlePlural],				[TitleSingular],	[DescriptorIdLabel]) VALUES
+		[Id],					[TitlePlural],				[TitleSingular],	[IdentifierLabel]) VALUES
 	(N'general-fixed-assets',	N'General fixed assets',	N'Geneal fixed asset',	N'Used By');
 	UPDATE dbo.ResourceClassifications SET ResourceDefinitionId = N'general-fixed-assets' WHERE [Id] = dbo.fn_RCCode__Id(N'FixturesAndFittings');
 

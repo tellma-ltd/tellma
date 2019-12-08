@@ -161,7 +161,7 @@ INSERT INTO @EntryClassifications([IsAssignable], [Index], [ForDebit], [ForCredi
 ,(1, 157, 1, 1, '/8/2/', 'AcquisitionsThroughBusinessCombinationsOtherProvisions', 'Acquisitions through business combinations, other provisions')
 ,(1, 158, 1, 1, '/8/3/', 'ProvisionUsedOtherProvisions', 'Provision used, other provisions')
 ,(1, 159, 1, 1, '/8/4/', 'UnusedProvisionReversedOtherProvisions', 'Unused provision reversed, other provisions')
-,(1, 160, 1, 1, '/8/5/', 'IncreaseDecreaseThroughTimeValueOfMoneyAdjustmentOtherProvisions', 'Increase through adjustments arising from passage of time, other provisions')
+,(1, 160, 1, 1, '/8/5/', 'IncreaseDecreaseThroughTimeValueOfDECIMAL (19,4)AdjustmentOtherProvisions', 'Increase through adjustments arising from passage of time, other provisions')
 ,(1, 161, 1, 1, '/8/6/', 'IncreaseDecreaseThroughChangeInDiscountRateOtherProvisions', 'Increase (decrease) through change in discount rate, other provisions')
 ,(1, 162, 1, 1, '/8/7/', 'IncreaseDecreaseThroughNetExchangeDifferencesOtherProvisions', 'Increase (decrease) through net exchange differences, other provisions')
 ,(1, 163, 1, 1, '/8/8/', 'DecreaseThroughLossOfControlOfSubsidiaryOtherProvisions', 'Decrease through loss of control of subsidiary, other provisions')

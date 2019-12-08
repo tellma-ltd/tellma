@@ -1,5 +1,5 @@
 ﻿CREATE TYPE [dbo].[AgentBalanceList] AS TABLE --- used in bll.[fi_EmployeesIncomeTaxes]
 (
 	AgentId INT, 
-	Balance MONEY
+	Balance DECIMAL (19,4)
 )

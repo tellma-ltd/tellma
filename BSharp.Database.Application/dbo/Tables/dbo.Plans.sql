@@ -11,7 +11,7 @@
 	[ResourceLookup4Id]		INT,			-- UDL 
 		--[DailyProduction]			DECIMAL,
 	--[Quantity]					VTYPE				NOT NULL DEFAULT 0, -- measure on which the value is based. If it is MassMeasure then [Mass] must equal [ValueMeasure] and so on.
-	[MonetaryValue]			MONEY			NOT NULL DEFAULT 0, -- Amount in foreign Currency 
+	[MonetaryValue]			DECIMAL (19,4)			NOT NULL DEFAULT 0, -- Amount in foreign Currency 
 	[CurrencyId]			INT,
 	[Count]					DECIMAL			NOT NULL DEFAULT 0, -- CountUnit
 	[CountUnitId]			INT,

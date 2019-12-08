@@ -10,7 +10,7 @@ CREATE TABLE [dbo].[Resources] (
 	[ResourceClassificationId]		INT					NOT NULL,
 	CONSTRAINT [FK_Resources__ResourceClassificationId_DefinitionId] FOREIGN KEY ([ResourceClassificationId], [DefinitionId]) REFERENCES [dbo].[ResourceClassifications] ([Id], [ResourceDefinitionId]),
 	[Name]							NVARCHAR (255)		NOT NULL,
-	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_DescriptorId] UNIQUE ([DefinitionId],[Name],[Identifier]),
+	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_Identifier] UNIQUE ([DefinitionId],[Name],[Identifier]),
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
 	[Identifier]					NVARCHAR (10), -- When not null, all measures (count, monetary value, mass, volumne, etc) must be fixed
@@ -21,15 +21,15 @@ CREATE TABLE [dbo].[Resources] (
 	[Code]							NVARCHAR (255),
 
 	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Count]							DECIMAL				DEFAULT 1,
+	[Count]							Decimal (19,4)		DEFAULT 1,
 	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
-	[MonetaryValue]					DECIMAL, -- if [MonetaryValue] is not null, this value is forced in Entries
+	[MonetaryValue]					Decimal (19,4), -- if [MonetaryValue] is not null, this value is forced in Entries
 	[MassUnitId]					INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Mass]							DECIMAL,
+	[Mass]							Decimal (19,4),
 	[VolumeUnitId]					INT					CONSTRAINT [FK_Resources__VolumeUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Volume]						DECIMAL,
+	[Volume]						Decimal (19,4),
 	[TimeUnitId]					INT					CONSTRAINT [FK_Resources__TimeUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
-	[Time]							DECIMAL,
+	[Time]							Decimal (19,4),
 
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
@@ -41,7 +41,7 @@ CREATE TABLE [dbo].[Resources] (
 
 	--[PreferredSupplierId]			INT,-- FK, Table Agents, specially for purchasing
 	-- The following properties are user-defined, used for reporting
-	[AvailableSince]				DATE, -- such as first availability date. makes sense with non-null descriptor
+	[AvailableSince]				DATE, -- such as first availability date. makes sense with non-null identifier
 	[AvailableTill]					DATE, -- such as first discontinuity date
 	--[UniqueReference1]				NVARCHAR(50), -- such as VIN, UPC, EPC, etc...
 	--[UniqueReference2]				NVARCHAR(50), -- such as Engine number
@@ -58,8 +58,8 @@ CREATE TABLE [dbo].[Resources] (
 	--[Agent2Id]						INT					CONSTRAINT [FK_Resources__Agent2Id] FOREIGN KEY ([Agent2Id]) REFERENCES [dbo].[Agents] ([Id]),
 	--[Date1]							DATE,			-- Registration Date
 	--[Date2]							DATE,			-- Oil change date
-	--[Decimal1]						DECIMAL,
-	--[Decimal2]						DECIMAL,
+	--[DECIMAL1]						DECIMAL,
+	--[DECIMAL2]						DECIMAL,
 	--[INT1]							INT,			-- Engine Capacity
 	--[INT2]							INT,
 -- Examples for Steel finished goods are: Thickness and width. For cars: make and model.
@@ -68,8 +68,8 @@ CREATE TABLE [dbo].[Resources] (
 	--[Lookup3Id]						INT					CONSTRAINT [FK_Resources__Lookup3Id] FOREIGN KEY ([Lookup3Id]) REFERENCES [dbo].[Lookups] ([Id]),
 	--[Lookup4Id]						INT					CONSTRAINT [FK_Resources__Lookup4Id] FOREIGN KEY ([Lookup4Id]) REFERENCES [dbo].[Lookups] ([Id]),
 	--[Lookup5Id]						INT					CONSTRAINT [FK_Resources__Lookup5Id] FOREIGN KEY ([Lookup5Id]) REFERENCES [dbo].[Lookups] ([Id]),
---	[Money1]						MONEY,
---	[Money2]						MONEY,
+--	[DECIMAL (19,4)1]						DECIMAL (19,4),
+--	[DECIMAL (19,4)2]						DECIMAL (19,4),
 ----  for additional information
 --	[Text1]							NVARCHAR (255),
 --	[Text2]							NVARCHAR (255), 
@@ -86,13 +86,13 @@ CREATE TABLE [dbo].[Resources] (
 	[ModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),
 );
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name_DescriptorId]
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name_Identifier]
   ON [dbo].[Resources]([DefinitionId], [Name], [Identifier]);
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name2_DescriptorId]
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name2_Identifier]
   ON [dbo].[Resources]([DefinitionId], [Name2], [Identifier]) WHERE [Name2] IS NOT NULL;
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name3_DescriptorId]
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__DefinitionId_Name3_Identifier]
   ON [dbo].[Resources]([DefinitionId], [Name3], [Identifier]) WHERE [Name3] IS NOT NULL;
 GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Resources__ResourceDefinitionId_Code]

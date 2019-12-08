@@ -4,20 +4,20 @@
 
 	DECLARE @DocumentId int = 0, @State NVARCHAR (255), @DocumentType NVARCHAR (255), @SerialNumber int, @Mode NVARCHAR (255), @ResponsibleAgent int;
 	DECLARE @LineNumber int = 0, @DocumentOffset int = 0;
-	DECLARE @EntryNumber int = 0, @Operation int, @Memo NVARCHAR (255), @Reference NVARCHAR (255), @Account NVARCHAR (255), @Custody int, @Resource int, @Direction smallint, @Amount money, @Value money, @Note NVARCHAR (255);
+	DECLARE @EntryNumber int = 0, @Operation int, @Memo NVARCHAR (255), @Reference NVARCHAR (255), @Account NVARCHAR (255), @Custody int, @Resource int, @Direction smallint, @Amount DECIMAL (19,4), @Value DECIMAL (19,4), @Note NVARCHAR (255);
 	DECLARE @Documents DocumentList, @Lines LineList, @Entries EntryList, @ValidationMessage nvarchar(1024);
 	
 	-- List of Concepts
 	DECLARE @EventDateTime datetimeoffset(7), @Supplier int, @Customer int, @Employee int, @Shareholder int, @Investment int, @Debtor int, @Creditor int;
 	DECLARE @ReceivingWarehouse int, @IssuingWarehouse int, @ReceivingCashier int, @IssuingCashier int;
 
-	DECLARE @item int, @Quantity money, @PriceVATExclusive money, @VAT money, @LineTotal money, @CashReceiptNumber NVARCHAR (255);
-	DECLARE @Payment money, @AmountWithheld money, @WithholdingNumber NVARCHAR (255), @TaxableAmount money, @Warehouse int, @InvoiceDate datetimeoffset(7), @TypeOfTransaction NVARCHAR (255);
-	DECLARE @SalaryAmount money, @Attendance money, @Department int, @EmployeeTaxableIncome money, @EmployeeIncomeTax money;
+	DECLARE @item int, @Quantity DECIMAL (19,4), @PriceVATExclusive DECIMAL (19,4), @VAT DECIMAL (19,4), @LineTotal DECIMAL (19,4), @CashReceiptNumber NVARCHAR (255);
+	DECLARE @Payment DECIMAL (19,4), @AmountWithheld DECIMAL (19,4), @WithholdingNumber NVARCHAR (255), @TaxableAmount DECIMAL (19,4), @Warehouse int, @InvoiceDate datetimeoffset(7), @TypeOfTransaction NVARCHAR (255);
+	DECLARE @SalaryAmount DECIMAL (19,4), @Attendance DECIMAL (19,4), @Department int, @EmployeeTaxableIncome DECIMAL (19,4), @EmployeeIncomeTax DECIMAL (19,4);
 
 	DECLARE @MonthStarts datetimeoffset(7), @MonthEnds datetimeoffset(7), @StartDatetime datetimeoffset(7), @EndDatetime datetimeoffset(7);
 	
-	DECLARE @Organization int, @Currency int, @Date datetimeoffset(7), @BasicSalary money, @TransportationAllowance money, @NumberOfDays money;
+	DECLARE @Organization int, @Currency int, @Date datetimeoffset(7), @BasicSalary DECIMAL (19,4), @TransportationAllowance DECIMAL (19,4), @NumberOfDays DECIMAL (19,4);
 
 	DECLARE @Cashier int, @ExpenseType NVARCHAR (255), @InvoiceNumber NVARCHAR (255), @MachineNumber NVARCHAR (255);
 END

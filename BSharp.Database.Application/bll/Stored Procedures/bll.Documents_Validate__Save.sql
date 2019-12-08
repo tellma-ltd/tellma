@@ -17,7 +17,7 @@ SET NOCOUNT ON;
 	FROM @Documents
 	WHERE ([DocumentDate] > DATEADD(DAY, 1, @Now)) -- More accurately, FE.[DocumentDate] > CONVERT(DATE, SWITCHOFFSET(@Now, user_time_zone)) 
 
-	-- (FE Check) If Resource = functional currency, the value must match the money amount
+	-- (FE Check) If Resource = functional currency, the value must match the DECIMAL (19,4) amount
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
 		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +

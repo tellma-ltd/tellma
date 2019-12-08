@@ -21,7 +21,7 @@ WITH Docs AS (
 			E.[Direction],
 			E.[EntryNumber], A.[Name] AS [Account],
 			E.[CurrencyId], E.[MonetaryValue], E.[EntryClassificationId],
-			--CAST(E.[Value] AS MONEY) AS 
+			--CAST(E.[Value] AS DECIMAL (19,4)) AS 
 			E.[Value]
 		FROM dbo.Documents D
 		JOIN dbo.[DocumentDefinitions] DD ON D.[DefinitionId] = DD.[Id]

@@ -52,12 +52,12 @@
 	--[ResourceInstanceId]		INT				CONSTRAINT [FK_Entries__ResourcePInstanceId] FOREIGN KEY ([ResourceInstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
 	--[Memo]						NVARCHAR (255),
-	[MonetaryValue]				MONEY			NOT NULL DEFAULT 0,
+	[MonetaryValue]				DECIMAL (19,4)			NOT NULL DEFAULT 0,
 -- Tracking additive measures, the data type is to be decided by AA
-	[Count]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
-	[Mass]						DECIMAL (18,2)	NOT NULL DEFAULT 0,
-	[Volume]					DECIMAL (18,2)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
-	[Time]						DECIMAL (18,2)	NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[Count]						DECIMAL (19,4)	NOT NULL DEFAULT 0,
+	[Mass]						DECIMAL (19,4)	NOT NULL DEFAULT 0,
+	[Volume]					DECIMAL (19,4)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
+	[Time]						DECIMAL (19,4)	NOT NULL DEFAULT 0, -- ServiceTimeUnit
 	
 	[Value]						VTYPE			NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- The following are sort of dynamic properties that capture information for reporting purposes
@@ -65,7 +65,7 @@
 	[AdditionalReference]		NVARCHAR (50),
 	[RelatedAgentId]			INT,
 	[RelatedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
-	[RelatedAmount]				MONEY,		-- e.g., amount subject to tax
+	[RelatedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0),	-- to time
 	[SortKey]					INT,

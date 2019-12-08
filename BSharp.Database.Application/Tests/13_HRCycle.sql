@@ -57,7 +57,7 @@ INSERT INTO @EM2 ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Directi
 	)
 	INSERT INTO @EM3([Index], [LineIndex], [EntryNumber], [Direction],[AccountId], [Value], [ResourceId], [AgentId], [Time])
 	SELECT [Index], [LineIndex], [EntryNumber],
-		CAST(SIGN([ValueBalance]) AS SMALLINT) AS [Direction], [AccountId], CAST(ABS([ValueBalance]) AS MONEY) AS [ValueBalance], [ResourceId], E.[AgentId], CAST([TimeBalance] AS MONEY) AS [TimeBalance]
+		CAST(SIGN([ValueBalance]) AS SMALLINT) AS [Direction], [AccountId], CAST(ABS([ValueBalance]) AS DECIMAL (19,4)) AS [ValueBalance], [ResourceId], E.[AgentId], CAST([TimeBalance] AS DECIMAL (19,4)) AS [TimeBalance]
 	FROM EmployeesAccruals E 
 	JOIN LineIndices L ON E.AgentId = L.AgentId
 	UNION

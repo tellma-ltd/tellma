@@ -14,7 +14,7 @@ Note that accountant would be signing on behalf of user who received the PPE
 ----------------------------------------
 Use Case 2: Accountant receives from supplier an invoice with a Good Delivery Note. Accountant must prepare a check.
 Accountant can add the GRN and sign on behalf of user, or forward it to (responsible to authorize and user to sign)
-Then, accountant can prepare the cash payment, and forward to (responsible to authorize) and sign on behalf of suplier that the money was received
+Then, accountant can prepare the cash payment, and forward to (responsible to authorize) and sign on behalf of suplier that the DECIMAL (19,4) was received
 Then, accountant can file the document (to prevent any changes). Note that whatever lines were marked completed are taken into consideration for the balances.
 Requirements: accountant enters the resource, etc.
 ----------------------------------------
@@ -28,7 +28,7 @@ These are accounting concepts that require knowledge. So, while we allow the use
 Petty Cash Purchases Tab
 ------------------------
 Invoice Date, Description, Total Amount, VAT included, Supplier,			Invoice Number, Item,				Quantity,		Custodian,		Location,		Responsibility Center
-RelatedDate1, Memo,		MoneyAmount3,	MoneyAmount2, RelatedAgent2/3, ExternalRef1/3, RelatedResource1, RelatedQuantity1, RelatedAgent1, RelatedLocation1, ResponsibilityCenter1
+RelatedDate1, Memo,		DECIMAL (19,4)Amount3,	DECIMAL (19,4)Amount2, RelatedAgent2/3, ExternalRef1/3, RelatedResource1, RelatedQuantity1, RelatedAgent1, RelatedLocation1, ResponsibilityCenter1
 Accountant is responsible for Account 1: either select it or add new.
 System suggests Account2: using VAT Account type. If there is none, accountant must define. If there is more than 1, accountant must specify.
 System suggests Account3: using cash-on-hand account type, and custodian.

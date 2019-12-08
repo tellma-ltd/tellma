@@ -11,15 +11,15 @@
 	[Code]							NVARCHAR (255),
 
 	[CurrencyId]					NCHAR (3),
-	[MonetaryValue]					DECIMAL, -- such as when dealing with a check, or when the unit price is fixed (rare)
+	[MonetaryValue]					Decimal (19,4), -- such as when dealing with a check, or when the unit price is fixed (rare)
 	[CountUnitId]					INT,
-	[Count]							DECIMAL				DEFAULT 1, -- if count is not null, this value is forced in Entries
+	[Count]							Decimal (19,4)		DEFAULT 1, -- if count is not null, this value is forced in Entries
 	[MassUnitId]					INT,
-	[Mass]							DECIMAL, -- makes sense when Identifier is not null, so we are referring to a specific instance, or when every unit has the same mass
+	[Mass]							Decimal (19,4), -- makes sense when Identifier is not null, so we are referring to a specific instance, or when every unit has the same mass
 	[VolumeUnitId]					INT,
-	[Volume]						DECIMAL,
+	[Volume]						Decimal (19,4),
 	[TimeUnitId]					INT,
-	[Time]							DECIMAL, -- when resource refers to a service, which is time based, and where the time is recorded here
+	[Time]							Decimal (19,4), -- when resource refers to a service, which is time based, and where the time is recorded here
 
 	[Description]					NVARCHAR (2048),
 	[Description2]					NVARCHAR (2048),
@@ -46,8 +46,8 @@
 	--[Agent2Id]						INT,			
 	--[Date1]							DATE,			
 	--[Date2]							DATE,			
-	--[Decimal1]						DECIMAL,
-	--[Decimal2]						DECIMAL,
+	--[DECIMAL1]						DECIMAL,
+	--[DECIMAL2]						DECIMAL,
 	--[INT1]							INT,			-- Engine Capacity
 	--[INT2]							INT,
 
@@ -56,8 +56,8 @@
 	--[Lookup3Id]						INT,
 	--[Lookup4Id]						INT,
 	--[Lookup5Id]						INT,			
-	--[Money1]						MONEY,
-	--[Money2]						MONEY,
+	--[DECIMAL (19,4)1]						DECIMAL (19,4),
+	--[DECIMAL (19,4)2]						DECIMAL (19,4),
 	--[Text1]							NVARCHAR (255), 
 	--[Text2]							NVARCHAR (255), 
 

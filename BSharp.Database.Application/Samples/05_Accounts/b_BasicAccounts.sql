@@ -3,7 +3,7 @@ INSERT INTO @GLAccounts([Index],
 	[AccountTypeId],				[AccountClassificationId],	[Name],								[Code]) VALUES
 (0,N'Cash',							@BankAndCash_AC,			N'CBE - USD',						N'1101'),
 (1,N'Cash',							@BankAndCash_AC,			N'CBE - ETB',						N'1102'),
-(2,N'OtherCurrentLiabilities',		@BankAndCash_AC,			N'CBE - LC',						N'1201'), -- reserved money to pay for LC when needed
+(2,N'OtherCurrentLiabilities',		@BankAndCash_AC,			N'CBE - LC',						N'1201'), -- reserved DECIMAL (19,4) to pay for LC when needed
 (3,N'Inventory',					@Inventories_AC,			N'TF1903950009',					N'1209'), -- Merchandise in transit, for given LC
 (4,N'Inventory',					@Inventories_AC,			N'PPE Warehouse',					N'1210'),
 (5,N'FixedAssets',					@NonCurrentAssets_AC,		N'PPE - Vehicles',					N'1301'),

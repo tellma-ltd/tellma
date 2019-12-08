@@ -55,13 +55,13 @@
 	--[CustomerRating]			INT,			-- user defined list
 	--[ShippingAddress]			NVARCHAR (255), -- default, the full list is in a separate table
 	--[BillingAddress]			NVARCHAR (255),
-	--[CreditLine]				MONEY				DEFAULT 0,
+	--[CreditLine]				DECIMAL (19,4)				DEFAULT 0,
 --	employees
 	[JobId]						INT, -- FK to table Jobs
-	[BasicSalary]				MONEY,
-	[TransportationAllowance]	MONEY,
---	[HardshipAllowance]			MONEY,
-	[OvertimeRate]				MONEY,
+	[BasicSalary]				DECIMAL (19,4),
+	[TransportationAllowance]	DECIMAL (19,4),
+--	[HardshipAllowance]			DECIMAL (19,4),
+	[OvertimeRate]				DECIMAL (19,4),
 	[BankAccountNumber]			NVARCHAR (34),
 --	suppliers
 	--[SupplierRating]			INT,			-- user defined list

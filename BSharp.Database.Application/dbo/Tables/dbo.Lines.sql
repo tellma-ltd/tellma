@@ -13,7 +13,7 @@
 	[AgentDefinitionId]			NVARCHAR (50)		CONSTRAINT [FK_Lines__AgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 	[AgentId]					INT					CONSTRAINT [FK_Lines__AgentId] REFERENCES dbo.Agents([Id]), -- useful for storing the conversion agent in conversion transactions
 	[ResourceId]				INT					CONSTRAINT [FK_Lines__ResourceId] REFERENCES dbo.Resources([Id]),
-	[Amount]					MONEY,
+	[Amount]					DECIMAL (19,4),
 -- Additional information to satisfy reporting requirements
 	[Memo]						NVARCHAR (255), -- a textual description for statements and reports
 	[ExternalReference]			NVARCHAR (50),

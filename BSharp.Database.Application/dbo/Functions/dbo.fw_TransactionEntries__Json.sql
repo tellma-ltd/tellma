@@ -19,7 +19,7 @@ RETURN
 			[AgentAccountId]		INT,
 			[ResourceId]			INT,
 			[Direction]				SMALLINT,
-			[MoneyAmount]			MONEY,
+			[DECIMAL (19,4)Amount]			DECIMAL (19,4),
 			[Mass]					DECIMAL,
 			[Volume]				DECIMAL,
 			[Count]					DECIMAL,
@@ -33,5 +33,5 @@ RETURN
 			[RelatedReference]		NVARCHAR (255),
 			[RelatedAgentId]		INT,
 			[RelatedResourceId]		INT,
-			[RelatedAmount]			MONEY
+			[RelatedAmount]			DECIMAL (19,4)
 		) c;

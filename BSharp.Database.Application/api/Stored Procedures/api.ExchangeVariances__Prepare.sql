@@ -28,7 +28,7 @@ BEGIN
 	)
 	INSERT INTO @Entries([Index], [LineIndex], [EntryNumber], [Direction],[AccountId], [Value])
 	SELECT [Index], [Index], 1,
-		CAST(SIGN([ValueBalance]) AS SMALLINT) AS [Direction], E.[AccountId], CAST(ABS([ValueBalance]) AS MONEY) AS [ValueBalance]
+		CAST(SIGN([ValueBalance]) AS SMALLINT) AS [Direction], E.[AccountId], CAST(ABS([ValueBalance]) AS DECIMAL (19,4)) AS [ValueBalance]
 	FROM ExchangeVarianceEntries E 
 
 	INSERT INTO @Lines ([Index], [DocumentIndex])

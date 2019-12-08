@@ -14,19 +14,20 @@ DECLARE @LineDefinitionEntries TABLE (
 	[LineDefinitionId]			NVARCHAR (50),
 	[EntryNumber]				INT,
 	[Direction]					SMALLINT,
-	-- Source = -1 (n/a), 0 (get from line def), 1 (get from Entry), 2 (get from line), 3 (from account), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
+	-- Source = -1 (n/a), 0 (get from line def), 1 (get from line), 2 (get from entry), 4-7 (from other entry data), 8 (from balancing), 9 (from bll script)
 	-- 4: from resource/agent/currency etc./5 from (Resource, Account Type), 6: from Counter/Contra/Related in Line, 7:
 	-- Account is invisible in a tab, unless the source specifies it is entered by user. or in Manual line
 	
 	-- Account Group Properties
-	[AccountId]					INT, -- invisible, except in 
+	[AccountId]					INT, -- invisible, except in manual voucher
 
-	[ContractType]				NVARCHAR (50), -- if account is entered by user, all the group properties get set.
+	[ContractType]				NVARCHAR (50),		--CONSTRAINT [CK_LineDefinitionEntries__ContractType]
+	CHECK ([LineDefinitionId] = N'ManualLine' OR ContractType IS NOT NULL),
 
-	[AgentDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, --  -1: n/a, 0:set from line def, 3: from account
+	[AgentDefinitionSource]		SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a, 0:set from line def, 1: set from line 2: from entry
 	[AgentDefinitionId]			NVARCHAR (50),
 
-	[ResourceClassificationSource]	SMALLINT			NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
+	[ResourceClassificationSource]	SMALLINT		NOT NULL DEFAULT 0, -- -1: n/a,  0:set from line def, 3: from account
 	[ResourceClassificationCode]NVARCHAR (255),
 
 	[LiquiditySource]			SMALLINT			NOT NULL DEFAULT -1, -- -1: n/a, 0:set from line def, 3: from account
@@ -59,7 +60,6 @@ DECLARE @LineDefinitionEntries TABLE (
 	[RelatedAmountSource]		SMALLINT			NOT NULL DEFAULT 2,
 	[DueDateSource]				SMALLINT			NOT NULL DEFAULT 1
 );
-
 DECLARE @LineDefinitionColumns TABLE (
 	[LineDefinitionId]			NVARCHAR (50),
 	[SortIndex]					TINYINT,
@@ -67,8 +67,8 @@ DECLARE @LineDefinitionColumns TABLE (
 	[Label]						NVARCHAR (50),
 	[Label2]					NVARCHAR (50),
 	[Label3]					NVARCHAR (50)
-);
-
+)
+;
 -- The behavior of the manual line is driven by the account.
 INSERT @LineDefinitions([Id], [TitleSingular], [TitlePlural]) VALUES (N'ManualLine', N'Adjustment', N'Adjustments');
 -- There is a special case, where 
@@ -76,7 +76,6 @@ INSERT @LineDefinitions([Id], [TitleSingular], [TitlePlural]) VALUES (N'ManualLi
 -- IF [Direction] = 1 THEN [Debit] = [Direction] * SIGN([MonetaryAmount]), [Credit] = 0
 -- IF [Direction] = -1 THEN [Debit] = 0, [Credit] = - [Direction] * SIGN([MonetaryAmount])
 -- NB: Debit & Credit Cannot be both non-zero. If both are zero, we set direction to +1.
-
 INSERT INTO @LineDefinitionColumns
 ([LineDefinitionId], [SortIndex],	[ColumnName],				[Label]) VALUES
 (N'ManualLine',			0,			N'Line.Memo',				N'Memo'), -- only if it appears,
@@ -86,15 +85,14 @@ INSERT INTO @LineDefinitionColumns
 (N'ManualLine',			4,			N'Entry[0].MonetaryAmount',	N'Credit'),
 (N'ManualLine',			5,			N'Entry[0].Dynamic',		N'Properties')
 ;
-/*
 INSERT @LineDefinitions(
 [Id],					[TitleSingular],		[TitlePlural]) VALUES
 (N'PurchaseInvoice',	N'Purchase Invoice',	N'Purchase Invoices');
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionId],[AgentSource],[ResourceSource], [EntryClassificationSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
-(N'PurchaseInvoice',	0,			0,				N'TaxPayable',		N'TaxAgency',				3,				-1,					-1,					1,				-1,					6,					6),
-(N'PurchaseInvoice',	1,			4,				N'Accrual',			N'Supplier',				2,				-1,					-1,					2,				-1,					-1,					-1),
-(N'PurchaseInvoice',	2,			4,				N'Payable',			N'Supplier',				2,				-1,					-1,					8,				-1,					-1,					-1);
+([LineDefinitionId], [EntryNumber],[Direction],	[ContractType], [AgentDefinitionId],[AgentSource],[ResourceSource], [EntryClassificationSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
+(N'PurchaseInvoice',	0,			-1,			N'Payable',		N'tax-agencies',		3,				-1,					-1,					1,				-1,					6,					6),
+(N'PurchaseInvoice',	1,			+1,			N'Accrual',		N'suppliers',			2,				-1,					-1,					2,				-1,					-1,					-1),
+(N'PurchaseInvoice',	2,			-1,			N'Payable',		N'suppliers',			2,				-1,					-1,					8,				-1,					-1,					-1);
 INSERT INTO @LineDefinitionColumns
 ([LineDefinitionId], [SortIndex], [ColumnName],					[Label]) VALUES
 (N'PurchaseInvoice',	0,			N'Line.Description',		N'Description'), 
@@ -109,6 +107,7 @@ INSERT INTO @LineDefinitionColumns
 -- NB: requisitions could be for payment towards something approved. Or it could be for a new purchase
 -- when it is for a new purchase, the document must have two tabs: payment details, and purchase details
 -- AgentDefinition is filtered by AccountType.AgentDefinitionList
+/*
 INSERT @LineDefinitions(
 [Id],				[TitleSingular],	[TitlePlural]) VALUES
 (N'CashPayment',	N'Payment',			N'Payments')

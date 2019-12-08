@@ -7,7 +7,7 @@
 	[AgentDefinitionId]			NVARCHAR (50),
 	[AgentId]					INT,
 	[ResourceId]				INT,
-	[Amount]					MONEY,
+	[Amount]					DECIMAL (19,4),
 
 -- Additional information to satisfy reporting requirements
 -- While Voucher Number referes to the source document, this refers to any other identifying string 
@@ -18,6 +18,6 @@
 
 	--[RelatedResourceId]		INT, -- Good, Service, Labor, Machine usage
 	--[RelatedAgentId]		INT,
-	--[RelatedQuantity]		MONEY ,			-- used in Tax accounts, to store the quantiy of taxable item
-	--[RelatedMoneyAmount]	MONEY 				NOT NULL DEFAULT 0 -- e.g., amount subject to tax
+	--[RelatedQuantity]		DECIMAL (19,4) ,			-- used in Tax accounts, to store the quantiy of taxable item
+	--[RelatedDECIMAL (19,4)Amount]	DECIMAL (19,4) 				NOT NULL DEFAULT 0 -- e.g., amount subject to tax
 );

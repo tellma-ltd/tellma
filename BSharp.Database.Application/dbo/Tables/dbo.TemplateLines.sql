@@ -5,16 +5,16 @@
 	[ValidFrom]				DATETIME2(7)		NOT NULL DEFAULT (CONVERT (date, SYSDATETIME())),
 	-- for sales/purchase price lists
 	[ResourceId]			INT,
-	[Quantity]				MONEY				DEFAULT 1,
-	[Price]					MONEY,
+	[Quantity]				DECIMAL (19,4)				DEFAULT 1,
+	[Price]					DECIMAL (19,4),
 	[Currency]				INT,
-	[VAT]					MONEY,
-	[TOT]					MONEY,
+	[VAT]					DECIMAL (19,4),
+	[TOT]					DECIMAL (19,4),
 	-- for employee agreement
 	[AgentId]				INT,
-	[MonthlyBasicSalary]	MONEY,
-	[HourlyOvertimeRate]	MONEY,
-	[DailyPerDiem]			MONEY,
+	[MonthlyBasicSalary]	DECIMAL (19,4),
+	[HourlyOvertimeRate]	DECIMAL (19,4),
+	[DailyPerDiem]			DECIMAL (19,4),
 
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),

@@ -1,5 +1,5 @@
 ﻿	INSERT INTO dbo.ResourceDefinitions (
-		[Id],			[TitlePlural],		[TitleSingular],	[DescriptorIdLabel], [DescriptorIdVisibility]) VALUES
+		[Id],			[TitlePlural],		[TitleSingular],	[IdentifierLabel], [IdentifierVisibility]) VALUES
 	( N'raw-materials',	N'Raw Materials',	N'Raw Material',	N'Roll #',			N'Optional');
 	DECLARE @RawMaterialsDescendantsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT DEFAULT 1, [Index] INT, [ResourceDefinitionId] NVARCHAR (50))
 	INSERT INTO @RawMaterialsDescendantsTemp ([Index],

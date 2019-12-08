@@ -126,7 +126,7 @@ BEGIN
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[SortKey], E.[Direction], E.[AccountId],
 			E.[ContractType], E.[AgentDefinitionId], E.[ResourceClassificationId], E.[IsCurrent],
-			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId], E.[AccountDescriptorId], E.[ResourceDescriptorId],
+			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId], E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[CurrencyId], E.[EntryClassificationId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
 			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAgentName], E.[RelatedAmount],
@@ -147,8 +147,8 @@ BEGIN
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
-			t.[AccountIdentifier]		= s.[AccountDescriptorId],
-			t.[ResourceIdentifier]	= s.[ResourceDescriptorId],
+			t.[AccountIdentifier]		= s.[AccountIdentifier],
+			t.[ResourceIdentifier]		= s.[ResourceIdentifier],
 			t.[CurrencyId]				= s.[CurrencyId],
 			t.[EntryClassificationId]	= s.[EntryClassificationId],
 			t.[DueDate]					= s.[DueDate],
@@ -170,7 +170,7 @@ BEGIN
 	WHEN NOT MATCHED THEN
 		INSERT ([LineId], [EntryNumber], [SortKey], [Direction], [AccountId],
 			[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent],
-			[AgentId], [ResourceId], [ResponsibilityCenterId], [AccountDescriptorId], [ResourceDescriptorId],
+			[AgentId], [ResourceId], [ResponsibilityCenterId], [AccountIdentifier], [ResourceIdentifier],
 			[CurrencyId], [EntryClassificationId], --[BatchCode], 
 			[DueDate], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
 			[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount],
@@ -178,7 +178,7 @@ BEGIN
 		)
 		VALUES (s.[LineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId],
 			s.[ContractType], s.[AgentDefinitionId], s.[ResourceClassificationId], s.[IsCurrent],
-			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId], s.[AccountDescriptorId], s.[ResourceDescriptorId],
+			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId], s.[AccountIdentifier], s.[ResourceIdentifier],
 			s.[CurrencyId], s.[EntryClassificationId], --[BatchCode], 
 			s.[DueDate], s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
 			s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentId], s.[RelatedAgentName], s.[RelatedAmount],

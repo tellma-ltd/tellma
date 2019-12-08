@@ -113,9 +113,9 @@ DECLARE @WideLineTypesSpecifications TABLE (
 	[QuantityEntryNumber1]			INT,
 	--[Quantity1]						VTYPE,
 
-	[MoneyAmountIsVisible1]			BIT				DEFAULT 0,
-	[MoneyAmountExpression1]		NVARCHAR (255),
-	[MoneyAmountEntryNumber1]		INT,
+	[DECIMAL (19,4)AmountIsVisible1]			BIT				DEFAULT 0,
+	[DECIMAL (19,4)AmountExpression1]		NVARCHAR (255),
+	[DECIMAL (19,4)AmountEntryNumber1]		INT,
 
 	[MassIsVisible1]				BIT				DEFAULT 0,
 	[MassExpression1]				NVARCHAR (255),
@@ -164,8 +164,8 @@ DECLARE @WideLineTypesSpecifications TABLE (
 	[RelatedAccountExpression1]		NVARCHAR (255),
 	[RelatedAccountEntryNumber1]		INT,
 		
-	[RelatedQuantity1]				MONEY ,			-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedMoneyAmount1]			MONEY 				NOT NULL DEFAULT 0, -- e.g., amount subject to tax
+	[RelatedQuantity1]				DECIMAL (19,4) ,			-- used in Tax accounts, to store the quantiy of taxable item
+	[RelatedDECIMAL (19,4)Amount1]			DECIMAL (19,4) 				NOT NULL DEFAULT 0, -- e.g., amount subject to tax
 
 	[DirectionIsVisible2]			BIT				NOT NULL DEFAULT 0,
 	[DirectionExpression2]			NVARCHAR (255),
@@ -200,9 +200,9 @@ DECLARE @WideLineTypesSpecifications TABLE (
 	[QuantityEntryNumber2]			INT,
 --	[Quantity2]						VTYPE,
 
-	[MoneyAmountIsVisible2]			BIT				NOT NULL DEFAULT 0,
-	[MoneyAmountExpression2]		NVARCHAR (255),
-	[MoneyAmountEntryNumber2]		INT,
+	[DECIMAL (19,4)AmountIsVisible2]			BIT				NOT NULL DEFAULT 0,
+	[DECIMAL (19,4)AmountExpression2]		NVARCHAR (255),
+	[DECIMAL (19,4)AmountEntryNumber2]		INT,
 
 	[MassIsVisible2]				BIT,
 	[MassExpression2]				NVARCHAR (255),
@@ -251,8 +251,8 @@ DECLARE @WideLineTypesSpecifications TABLE (
 	[RelatedAccountExpression2]		NVARCHAR (255),
 	[RelatedAccountEntryNumber2]		INT,
 
-	[RelatedQuantity2]				MONEY ,			-- used in Tax accounts, to store the quantiy of taxable item
-	[RelatedMoneyAmount2]			MONEY 			NOT NULL DEFAULT 0 -- e.g., amount subject to tax
+	[RelatedQuantity2]				DECIMAL (19,4) ,			-- used in Tax accounts, to store the quantiy of taxable item
+	[RelatedDECIMAL (19,4)Amount2]			DECIMAL (19,4) 			NOT NULL DEFAULT 0 -- e.g., amount subject to tax
 );
 -- ManualLine
 INSERT INTO @WideLineTypesSpecifications (
@@ -262,7 +262,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1],
 	[QuantityIsVisible1], [QuantityExpression1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1],
 	[MassIsVisible1], [MassExpression1],
 	[ValueIsVisible1], [ValueExpression1]
 ) VALUES (
@@ -272,11 +272,11 @@ INSERT INTO @WideLineTypesSpecifications (
 	NULL, N'Specified', -- Ifrs Note, depends on Account
 	1, N'Specified',
 	1, N'Specified',
-	-- additional resource properties (money amount, mass, volume, area, length, ...)
+	-- additional resource properties (DECIMAL (19,4) amount, mass, volume, area, length, ...)
 	-- are either not defined, defined at a rate set by resource, or specified by user.
 	-- if not defined, they will be invisible. If defined at a rate set by resource, they will be readonly
 	-- if specified by user, they will be editable.
-	NULL, N'Specified', -- Money amount, depends on resource
+	NULL, N'Specified', -- DECIMAL (19,4) amount, depends on resource
 	NULL, N'Specified', -- Mass, depends on resource
 	1, N'Specified'
 );
@@ -288,7 +288,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
 	[RelatedAccountIsVisible1], [RelatedAccountExpression1]
@@ -312,7 +312,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[CountIsVisible1], [CountExpression1], [Count1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
@@ -325,7 +325,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	1, N'Specified', -- IfrsNote
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'SpecifiedNew', -- Check details
-	0, N'!Instance.Amount', 1, -- Money Quantity
+	0, N'!Instance.Amount', 1, -- DECIMAL (19,4) Quantity
 	0, N'Constant', 1, -- ONE Check
 	0, N'!Instance.Amount', 1, -- Value
 	1, N'Specified', -- Memo
@@ -340,7 +340,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
 	[RelatedAccountIsVisible1], [RelatedAccountExpression1],
@@ -366,7 +366,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
 	[RelatedAccountIsVisible1], [RelatedAccountExpression1]
@@ -393,7 +393,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
 	[RelatedAccountIsVisible1], [RelatedAccountExpression1],
@@ -406,7 +406,7 @@ VALUES (
 	1, N'Specified', -- IfrsNote
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'Specified', -- Quantity: Amount
-	0, N'!Quantity', 1, -- Money Quantity
+	0, N'!Quantity', 1, -- DECIMAL (19,4) Quantity
 	0, N'!Quantity', 1, -- Value
 	1, N'Specified',
 	1, N'Specified',
@@ -420,7 +420,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
 	[RelatedAccountIsVisible1], [RelatedAccountExpression1],
@@ -447,7 +447,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
 	[RelatedAccountIsVisible1], [RelatedAccountExpression1], [RelatedAccountEntryNumber1],
@@ -457,7 +457,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationId2],
 	[ResourceIdIsVisible2], [ResourceIdExpression2], [ResourceId2],
 	[QuantityIsVisible2], [QuantityExpression2], [QuantityEntryNumber2],
-	[MoneyAmountIsVisible2], [MoneyAmountExpression2], [MoneyAmountEntryNumber2],
+	[DECIMAL (19,4)AmountIsVisible2], [DECIMAL (19,4)AmountExpression2], [DECIMAL (19,4)AmountEntryNumber2],
 	[ValueIsVisible2], [ValueExpression2], [ValueEntryNumber2],
 	[MemoIsVisible2], [MemoExpression2], [MemoEntryNumber2],
 	[RelatedAccountIsVisible2], [RelatedAccountExpression2], [RelatedAccountEntryNumber2]
@@ -469,7 +469,7 @@ VALUES (
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'Specified', -- Quantity
-	0, N'!Quantity', 1, -- Money Amount
+	0, N'!Quantity', 1, -- DECIMAL (19,4) Amount
 	0, N'!Quantity', 1, -- Value
 	1, N'Specified', -- Memo
 	0, N'!Account', 2, -- Related Agent
@@ -492,7 +492,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
 	[RelatedAccountIsVisible1], [RelatedAccountExpression1], [RelatedAccountEntryNumber1],
@@ -502,7 +502,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationId2],
 	[ResourceIdIsVisible2], [ResourceIdExpression2], [ResourceId2],
 	[QuantityIsVisible2], [QuantityExpression2], [QuantityEntryNumber2],
-	[MoneyAmountIsVisible2], [MoneyAmountExpression2], [MoneyAmountEntryNumber2],
+	[DECIMAL (19,4)AmountIsVisible2], [DECIMAL (19,4)AmountExpression2], [DECIMAL (19,4)AmountEntryNumber2],
 	[ValueIsVisible2], [ValueExpression2], [ValueEntryNumber2],
 	[MemoIsVisible2], [MemoExpression2], [MemoEntryNumber2],
 	[RelatedAccountIsVisible2], [RelatedAccountExpression2], [RelatedAccountEntryNumber2]
@@ -537,7 +537,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
 	[RelatedAccountIsVisible1], [RelatedAccountExpression1], [RelatedAccountEntryNumber1],
@@ -548,7 +548,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationId2],
 	[ResourceIdIsVisible2], [ResourceIdExpression2], [ResourceId2],
 	[QuantityIsVisible2], [QuantityExpression2], [QuantityEntryNumber2],
-	[MoneyAmountIsVisible2], [MoneyAmountExpression2], [MoneyAmountEntryNumber2],
+	[DECIMAL (19,4)AmountIsVisible2], [DECIMAL (19,4)AmountExpression2], [DECIMAL (19,4)AmountEntryNumber2],
 	[CountIsVisible2], [CountExpression2], [Count2],
 	[ValueIsVisible2], [ValueExpression2], [ValueEntryNumber2],
 	[MemoIsVisible2], [MemoExpression2], [MemoEntryNumber2],
@@ -586,7 +586,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible1], [IfrsEntryClassificationIdExpression1], [IfrsEntryClassificationId1],
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[CountIsVisible1], [CountExpression1], [Count1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
@@ -597,7 +597,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	[IfrsEntryClassificationIdIsVisible2], [IfrsEntryClassificationIdExpression2], [IfrsEntryClassificationId2],
 	[ResourceIdIsVisible2], [ResourceIdExpression2], [ResourceId2],
 	[QuantityIsVisible2], [QuantityExpression2], [QuantityEntryNumber2],
-	[MoneyAmountIsVisible2], [MoneyAmountExpression2], [MoneyAmountEntryNumber2],
+	[DECIMAL (19,4)AmountIsVisible2], [DECIMAL (19,4)AmountExpression2], [DECIMAL (19,4)AmountEntryNumber2],
 	[ValueIsVisible2], [ValueExpression2], [ValueEntryNumber2],
 	[MemoIsVisible2], [MemoExpression2], [MemoEntryNumber2],
 	[RelatedAccountIsVisible2], [RelatedAccountExpression2], [RelatedAccountEntryNumber2],
@@ -609,7 +609,7 @@ INSERT INTO @WideLineTypesSpecifications (
 	0, N'Constant', N'InternalCashTransfer',-- IfrsNote
 	0, N'Constant', dbo.fn_FunctionalCurrency(),-- Currency
 	1, N'SpecifiedNew',
-	0, N'!Instance.Amount', 1, -- Money Amount
+	0, N'!Instance.Amount', 1, -- DECIMAL (19,4) Amount
 	0, N'Constant', 1, -- Count
 	0, N'!Instance.Amount', 1, -- Value
 	1, N'Specified', -- memo
@@ -635,7 +635,7 @@ INSERT INTO @WideLineTypesSpecifications(
 	[ResourceIdIsVisible1], [ResourceIdExpression1], [ResourceId1],
 	[InstanceIdIsVisible1], [InstanceIdExpression1],
 	[QuantityIsVisible1], [QuantityExpression1], [QuantityEntryNumber1],
-	[MoneyAmountIsVisible1], [MoneyAmountExpression1], [MoneyAmountEntryNumber1],
+	[DECIMAL (19,4)AmountIsVisible1], [DECIMAL (19,4)AmountExpression1], [DECIMAL (19,4)AmountEntryNumber1],
 	[CountIsVisible1], [CountExpression1], [Count1],
 	[ValueIsVisible1], [ValueExpression1], [ValueEntryNumber1],
 	[MemoIsVisible1], [MemoExpression1],
@@ -727,8 +727,8 @@ SELECT
 	[DueDateIsVisible1] AS [DueDateIsVisible], [DueDateExpression1] AS [DueDateExpression],
 	[DueDateEntryNumber1] AS [DueDateEntryNumber], [QuantityIsVisible1] AS [QuantityIsVisible],
 	[QuantityExpression1] AS [QuantityExpression], [QuantityEntryNumber1] AS [QuantityEntryNumber],
-	[MoneyAmountIsVisible1] AS [MoneyAmountIsVisible], [MoneyAmountExpression1] AS [MoneyAmountExpression],
-	[MoneyAmountEntryNumber1] AS [MoneyAmountEntryNumber], [MassIsVisible1] AS [MassIsVisible],
+	[DECIMAL (19,4)AmountIsVisible1] AS [DECIMAL (19,4)AmountIsVisible], [DECIMAL (19,4)AmountExpression1] AS [DECIMAL (19,4)AmountExpression],
+	[DECIMAL (19,4)AmountEntryNumber1] AS [DECIMAL (19,4)AmountEntryNumber], [MassIsVisible1] AS [MassIsVisible],
 	[MassExpression1] AS [MassExpression], [MassEntryNumber1] AS [MassEntryNumber],
 	[VolumeIsVisible1] AS [VolumeIsVisible], [VolumeExpression1] AS [VolumeExpression],
 	[VolumeEntryNumber1] AS [VolumeEntryNumber], [AreaIsVisible1] AS [AreaIsVisible],
@@ -748,7 +748,7 @@ SELECT
 	[AdditionalReferenceEntryNumber1] AS [AdditionalReferenceEntryNumber],
 	[RelatedResourceId1] AS [RelatedResourceId], [RelatedAccountIsVisible1] AS [RelatedAccountIsVisible],
 	[RelatedAccountExpression1] AS [RelatedAccountExpression],[RelatedAccountEntryNumber1] AS [RelatedAccountEntryNumber],
-	[RelatedQuantity1] AS [RelatedQuantity], [RelatedMoneyAmount1] AS [RelatedMoneyAmount]
+	[RelatedQuantity1] AS [RelatedQuantity], [RelatedDECIMAL (19,4)Amount1] AS [RelatedDECIMAL (19,4)Amount]
 FROM @WideLineTypesSpecifications 
 UNION ALL
 SELECT
@@ -759,8 +759,8 @@ SELECT
 	[ResourceIdEntryNumber2], [ResourceId2], [InstanceIdIsVisible2], [InstanceIdExpression2],
 	[InstanceIdEntryNumber2], [BatchCodeIsVisible2], [BatchCodeExpression2], [BatchCodeEntryNumber2],
 	[DueDateIsVisible2], [DueDateExpression2], [DueDateEntryNumber2], [QuantityIsVisible2],
-	[QuantityExpression2], [QuantityEntryNumber2], [MoneyAmountIsVisible2], [MoneyAmountExpression2],
-	[MoneyAmountEntryNumber2], [MassIsVisible2], [MassExpression2], [MassEntryNumber2], [VolumeIsVisible2],
+	[QuantityExpression2], [QuantityEntryNumber2], [DECIMAL (19,4)AmountIsVisible2], [DECIMAL (19,4)AmountExpression2],
+	[DECIMAL (19,4)AmountEntryNumber2], [MassIsVisible2], [MassExpression2], [MassEntryNumber2], [VolumeIsVisible2],
 	[VolumeExpression2], [VolumeEntryNumber2], [AreaIsVisible2], [AreaExpression2], [AreaEntryNumber2],
 	[LengthIsVisible2], [LengthExpression2], [LengthEntryNumber2], [TimeIsVisible2], [TimeExpression2],
 	[TimeEntryNumber2], [CountIsVisible2], [CountExpression2], [CountEntryNumber2], [ValueIsVisible2],
@@ -768,7 +768,7 @@ SELECT
 	[ExternalReferenceIsVisible2], [ExternalReferenceExpression2], [ExternalReferenceEntryNumber2],
 	[AdditionalReferenceIsVisible2], [AdditionalReferenceExpression2], [AdditionalReferenceEntryNumber2],
 	[RelatedResourceId2], [RelatedAccountIsVisible2],	[RelatedAccountExpression2], [RelatedAccountEntryNumber2],
-	[RelatedQuantity2], [RelatedMoneyAmount2]
+	[RelatedQuantity2], [RelatedDECIMAL (19,4)Amount2]
 FROM @WideLineTypesSpecifications
 WHERE [AccountIdExpression2] IS NOT NULL
 ) AS s
@@ -803,9 +803,9 @@ UPDATE SET
 	t.[QuantityIsVisible] = s.[QuantityIsVisible],
 	t.[QuantityExpression] = s.[QuantityExpression],
 	t.[QuantityEntryNumber] = s.[QuantityEntryNumber],
-	t.[MoneyAmountIsVisible] = s.[MoneyAmountIsVisible],
-	t.[MoneyAmountExpression] = s.[MoneyAmountExpression],
-	t.[MoneyAmountEntryNumber] = s.[MoneyAmountEntryNumber],
+	t.[DECIMAL (19,4)AmountIsVisible] = s.[DECIMAL (19,4)AmountIsVisible],
+	t.[DECIMAL (19,4)AmountExpression] = s.[DECIMAL (19,4)AmountExpression],
+	t.[DECIMAL (19,4)AmountEntryNumber] = s.[DECIMAL (19,4)AmountEntryNumber],
 	t.[MassIsVisible] = s.[MassIsVisible],
 	t.[MassExpression] = s.[MassExpression],
 	t.[MassEntryNumber] = s.[MassEntryNumber],
@@ -841,7 +841,7 @@ UPDATE SET
 	t.[RelatedAccountExpression] = s.[RelatedAccountExpression],
 	t.[RelatedAccountEntryNumber] = s.[RelatedAccountEntryNumber],
 	t.[RelatedQuantity] = s.[RelatedQuantity],
-	t.[RelatedMoneyAmount] = s.[RelatedMoneyAmount]
+	t.[RelatedDECIMAL (19,4)Amount] = s.[RelatedDECIMAL (19,4)Amount]
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
@@ -852,8 +852,8 @@ INSERT ([LineDefinitionId], [EntryNumber], [DirectionIsVisible], [DirectionExpre
 	[ResourceIdEntryNumber], [ResourceId], [InstanceIdIsVisible], [InstanceIdExpression],
 	[InstanceIdEntryNumber], [BatchCodeIsVisible], [BatchCodeExpression], [BatchCodeEntryNumber],
 	[DueDateIsVisible], [DueDateExpression], [DueDateEntryNumber], [QuantityIsVisible],
-	[QuantityExpression], [QuantityEntryNumber], [MoneyAmountIsVisible], [MoneyAmountExpression],
-	[MoneyAmountEntryNumber], [MassIsVisible], [MassExpression], [MassEntryNumber], [VolumeIsVisible],
+	[QuantityExpression], [QuantityEntryNumber], [DECIMAL (19,4)AmountIsVisible], [DECIMAL (19,4)AmountExpression],
+	[DECIMAL (19,4)AmountEntryNumber], [MassIsVisible], [MassExpression], [MassEntryNumber], [VolumeIsVisible],
 	[VolumeExpression], [VolumeEntryNumber], [AreaIsVisible], [AreaExpression], [AreaEntryNumber],
 	[LengthIsVisible], [LengthExpression], [LengthEntryNumber], [TimeIsVisible], [TimeExpression],
 	[TimeEntryNumber], [CountIsVisible], [CountExpression], [CountEntryNumber], [ValueIsVisible],
@@ -861,7 +861,7 @@ INSERT ([LineDefinitionId], [EntryNumber], [DirectionIsVisible], [DirectionExpre
 	[ExternalReferenceIsVisible], [ExternalReferenceExpression], [ExternalReferenceEntryNumber],
 	[AdditionalReferenceIsVisible], [AdditionalReferenceExpression], [AdditionalReferenceEntryNumber],
 	[RelatedResourceId], [RelatedAccountIsVisible],	[RelatedAccountExpression], [RelatedAccountEntryNumber],
-	[RelatedQuantity], [RelatedMoneyAmount]
+	[RelatedQuantity], [RelatedDECIMAL (19,4)Amount]
 	)
 VALUES(s.[LineDefinitionId], s.[EntryNumber], s.[DirectionIsVisible], s.[DirectionExpression], s.[DirectionEntryNumber],
 	s.[Direction], s.[AccountIdIsVisible], s.[AccountIdIfrsFilter], s.[AccountIdExpression],
@@ -870,8 +870,8 @@ VALUES(s.[LineDefinitionId], s.[EntryNumber], s.[DirectionIsVisible], s.[Directi
 	s.[ResourceIdEntryNumber], s.[ResourceId], s.[InstanceIdIsVisible], s.[InstanceIdExpression],
 	s.[InstanceIdEntryNumber], s.[BatchCodeIsVisible], s.[BatchCodeExpression], s.[BatchCodeEntryNumber],
 	s.[DueDateIsVisible], s.[DueDateExpression], s.[DueDateEntryNumber], s.[QuantityIsVisible],
-	s.[QuantityExpression], s.[QuantityEntryNumber], s.[MoneyAmountIsVisible], s.[MoneyAmountExpression],
-	s.[MoneyAmountEntryNumber], s.[MassIsVisible], s.[MassExpression], s.[MassEntryNumber], s.[VolumeIsVisible],
+	s.[QuantityExpression], s.[QuantityEntryNumber], s.[DECIMAL (19,4)AmountIsVisible], s.[DECIMAL (19,4)AmountExpression],
+	s.[DECIMAL (19,4)AmountEntryNumber], s.[MassIsVisible], s.[MassExpression], s.[MassEntryNumber], s.[VolumeIsVisible],
 	s.[VolumeExpression], s.[VolumeEntryNumber], s.[AreaIsVisible], s.[AreaExpression], s.[AreaEntryNumber],
 	s.[LengthIsVisible], s.[LengthExpression], s.[LengthEntryNumber], s.[TimeIsVisible], s.[TimeExpression],
 	s.[TimeEntryNumber], s.[CountIsVisible], s.[CountExpression], s.[CountEntryNumber], s.[ValueIsVisible],
@@ -879,5 +879,5 @@ VALUES(s.[LineDefinitionId], s.[EntryNumber], s.[DirectionIsVisible], s.[Directi
 	s.[ExternalReferenceIsVisible], s.[ExternalReferenceExpression], s.[ExternalReferenceEntryNumber],
 	s.[AdditionalReferenceIsVisible], s.[AdditionalReferenceExpression], s.[AdditionalReferenceEntryNumber],
 	s.[RelatedResourceId], s.[RelatedAccountIsVisible],	s.[RelatedAccountExpression], s.[RelatedAccountEntryNumber],
-	s.[RelatedQuantity], s.[RelatedMoneyAmount]
+	s.[RelatedQuantity], s.[RelatedDECIMAL (19,4)Amount]
 );

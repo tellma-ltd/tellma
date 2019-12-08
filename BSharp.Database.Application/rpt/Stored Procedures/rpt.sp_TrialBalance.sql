@@ -32,14 +32,14 @@ BEGIN
 	IF (@ByResource = 1) SET @Query = @Query + N'ResourceId, '
 	IF (@ByEntryClassification = 1) SET @Query = @Query + N'EntryClassificationId, '
 	SET @Query = @Query + N'
-			CAST(SUM([Direction] * [MonetaryValue]) AS money) AS [MonetaryValue],
-			CAST(SUM([Direction] * [Mass]) AS money) AS [Mass],
-			CAST(SUM([Direction] * [Volume]) AS money) AS [Volume],	
-			CAST(SUM([Direction] * [Area]) AS money) AS [Area],
-			CAST(SUM([Direction] * [Length]) AS money) AS [Length],
-			CAST(SUM([Direction] * [Time]) AS money) AS [Time],
-			CAST(SUM([Direction] * [Count]) AS money) AS [Count],	
-			CAST(SUM([Direction] * [Value]) AS money) AS [Value]
+			CAST(SUM([Direction] * [MonetaryValue]) AS DECIMAL (19,4)) AS [MonetaryValue],
+			CAST(SUM([Direction] * [Mass]) AS DECIMAL (19,4)) AS [Mass],
+			CAST(SUM([Direction] * [Volume]) AS DECIMAL (19,4)) AS [Volume],	
+			CAST(SUM([Direction] * [Area]) AS DECIMAL (19,4)) AS [Area],
+			CAST(SUM([Direction] * [Length]) AS DECIMAL (19,4)) AS [Length],
+			CAST(SUM([Direction] * [Time]) AS DECIMAL (19,4)) AS [Time],
+			CAST(SUM([Direction] * [Count]) AS DECIMAL (19,4)) AS [Count],	
+			CAST(SUM([Direction] * [Value]) AS DECIMAL (19,4)) AS [Value]
 			FROM [dbo].[fi_Journal](@fromDate, @toDate)
 			GROUP BY AccountId'
 	IF (@ByResource = 1) SET @Query = @Query + N', ResourceId'

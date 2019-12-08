@@ -1,6 +1,6 @@
 ﻿	-- We look at the specialized Excel files in the General Services department, and we add Resource definitions accordingly
 	INSERT INTO dbo.ResourceDefinitions (
-		[Id],			[TitlePlural],		[TitleSingular],	[DescriptorIdLabel],[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
+		[Id],			[TitlePlural],		[TitleSingular],	[IdentifierLabel],[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
 	(N'motor-vehicles',	N'Motor Vehicles',	N'Motor Vehicle',	N'Plate #',			N'Required',		N'Make',		N'vehicle-makes');
 	
 	DECLARE @ParentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'MotorVehicles');

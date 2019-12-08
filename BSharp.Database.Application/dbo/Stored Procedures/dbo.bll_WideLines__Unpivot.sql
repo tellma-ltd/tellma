@@ -22,7 +22,7 @@ AS
 	--[LineId],
 	1, [Direction1], [AccountId1], [IfrsEntryClassificationId1],
 	[ResourceId1], [InstanceId1], [BatchCode1], [DueDate1],
-	[MoneyAmount1], [Mass1], [Volume1], [Area1], [Length1], [Time1], [Count1], [Value1]
+	[DECIMAL (19,4)Amount1], [Mass1], [Volume1], [Area1], [Length1], [Time1], [Count1], [Value1]
 	FROM @WideLines
 	UNION
 	SELECT
@@ -30,7 +30,7 @@ AS
 --	[LineId], 
 	2, [Direction2], [AccountId2], [IfrsEntryClassificationId2],
 	[ResourceId2], [InstanceId2], [BatchCode2], [DueDate2],
-	[MoneyAmount2], [Mass2], [Volume2], [Area2], [Length2], [Time2], [Count2], [Value2]
+	[DECIMAL (19,4)Amount2], [Mass2], [Volume2], [Area2], [Length2], [Time2], [Count2], [Value2]
 	FROM @WideLines
 
 	-- Assuming there is no circular dependency in the logic (needs a way to test it)

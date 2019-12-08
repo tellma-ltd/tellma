@@ -82,9 +82,9 @@ BEGIN -- Inserting
 	)
 	SELECT A.[Name] AS [Account], IEC.Label AS [Note], R.[Name] AS [Resource],
 	MUM.[Name] AS [MassUnit], MUV.[Name] AS [VolumeUnit],
-	CAST([MonetaryValue] AS MONEY) AS [MoneyAmount],
-	CAST([Mass] AS MONEY) AS [Mass],
-	CAST([Value] AS MONEY) AS [Value]
+	CAST([MonetaryValue] AS DECIMAL (19,4)) AS [DECIMAL (19,4)Amount],
+	CAST([Mass] AS DECIMAL (19,4)) AS [Mass],
+	CAST([Value] AS DECIMAL (19,4)) AS [Value]
 	FROM CompactLines CL
 	LEFT JOIN dbo.Resources R ON CL.[ResourceId] = R.[Id]
 	LEFT JOIN dbo.MeasurementUnits MUM ON R.MassUnitId = MUM.Id
@@ -109,7 +109,7 @@ BEGIN -- Updating document and deleting lines/entries
 	FROM dbo.Lines DL
 	JOIN @D22 D22 ON D22.[Id] = DL.[DocumentId];
 
-	INSERT INTO @E22([Id], [LineId], [DocumentIndex], [LineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MoneyAmount], [Value])
+	INSERT INTO @E22([Id], [LineId], [DocumentIndex], [LineIndex], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [DECIMAL (19,4)Amount], [Value])
 	SELECT DLE.[Id], L22.[Id], L22.DocumentIndex, L22.[Index], [EntryNumber], [Direction], [AccountId], [IfrsEntryClassificationId], [ResourceId], [Count], [MonetaryValue], [Value]
 	FROM dbo.Entries DLE
 	JOIN @L22 L22 ON L22.[Id] = DLE.[LineId];
