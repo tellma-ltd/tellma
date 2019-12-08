@@ -463,6 +463,7 @@
     <None Include="Samples\06_Entries\00_LineDefinitions.sql" />
     <None Include="Samples\06_Entries\01_DocumentDefinitions.sql" />
     <Build Include="bll\Functions\bll.fn_Prefix_CodeWidth_SN__Code.sql" />
+    <Build Include="Mapping\map.AccountTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
