@@ -1528,6 +1528,8 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   - Add the remaining parameter controls, especially the details pickers
   - The gauge chart displays total sum even when the aggregation is avg, max or min
   - Special handling for Lookups where the definitionId is required
+  - Handle the bug in charts with duplicate names
+  - Rename Select to Columns
 
   [Dimension Properties Steps]
   - Add field to ReportDimensionDefinition  (C#)

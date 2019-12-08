@@ -1,10 +1,17 @@
-<b-details collection="Agent" [definition]="definitionId" [createFunc]="create" [expand]="expand" [mode]="mode"
-  [idString]="idString" [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb" [documentTemplate]="document" [actions]="[
+<b-details *ngIf="found;else pageNotFound" collection="Agent" [definition]="definitionId" [createFunc]="create"
+  [expand]="expand" [mode]="mode" [idString]="idString" [masterCrumb]=masterCrumb [detailsCrumb]="detailsCrumb"
+  [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
 
 </b-details>
+
+<!-- If definitionId is invalid -->
+<ng-template #pageNotFound>
+  <b-application-page-not-found>
+  </b-application-page-not-found>
+</ng-template>
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
@@ -36,7 +43,7 @@
     <b-restricted [metadata]="model?.EntityMetadata?.ImageId">
       <div class="border">
         <b-image *ngIf="!!model" [src]="model.Id ? 'agents/' + definitionId + '/' + model.Id + '/image' : null"
-          [imageId]="model?.ImageId" [(ngModel)]="model.Image" [isEdit]="isEdit"></b-image>
+          [imageId]="model?.ImageId" [(ngModel)]="model.Image" [isEdit]="isEdit" icon="camera"></b-image>
       </div>
     </b-restricted>
   </div>
@@ -70,92 +77,86 @@
   </b-form-group>
 
   <!-- Tax Identification Number -->
-  <b-form-group class="b-form-group" *ngIf="!!p.TaxIdentificationNumber" [label]="p['TaxIdentificationNumber'].label()"
-    [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
+  <b-form-group class="b-form-group" *ngIf="TaxIdentificationNumber_isVisible"
+    [label]="'Agent_TaxIdentificationNumber' | translate" [serverErrors]="model?.serverErrors?.TaxIdentificationNumber">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TaxIdentificationNumber">
       <div>{{ model?.TaxIdentificationNumber }}</div>
     </b-restricted>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TaxIdentificationNumber" [ngModelOptions]="{ updateOn: 'blur' }"
-      [required]="d['TaxIdentificationNumberVisibility'] === 'Required'">
+      [required]="TaxIdentificationNumber_isRequired">
     </b-text-editor>
   </b-form-group>
 
   <!-- Operating Segment -->
-  <b-form-group class="b-form-group" *ngIf="!!p.OperatingSegmentId" [label]="p['OperatingSegment'].label()"
+  <b-form-group *ngIf="OperatingSegment_isVisible" class="b-form-group" [label]="OperatingSegment_label"
     [serverErrors]="model?.serverErrors?.OperatingSegmentId">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OperatingSegment">
       <b-view-link *ngIf="!isEdit" link="../../../responsibility-centers" [itemId]="model?.OperatingSegmentId">
-        <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="OperatingSegment">
-        </b-auto-cell>
+        {{ ws.getMultilingualValue('ResponsibilityCenter', model.OperatingSegmentId, 'Name') }}
       </b-view-link>
     </b-restricted>
     <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.OperatingSegmentId"
-      filter="IsOperatingSegment eq true">
+      [filter]="'IsOperatingSegment eq true'">
     </b-responsibility-centers-picker>
   </b-form-group>
 
   <!-- Start Date -->
-  <b-form-group class="b-form-group" *ngIf="!!p.StartDate" [label]="p['StartDate'].label()"
+  <b-form-group class="b-form-group" *ngIf="StartDate_isVisible" [label]="StartDate_label"
     [serverErrors]="model?.serverErrors?.StartDate">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.StartDate">
-      <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="StartDate">
-      </b-auto-cell>
+      <div>{{ model?.AvailableSince | date:'yyyy-MM-dd' }}</div>
     </b-restricted>
     <b-date-picker *ngIf="isEdit" [(ngModel)]="model.StartDate" [ngModelOptions]="{ updateOn: 'blur' }"
-      [required]="d['StartDateVisibility'] === 'Required'">
+      [required]="StartDate_isRequired">
     </b-date-picker>
   </b-form-group>
 
   <!-- Basic Salary -->
-  <b-form-group class="b-form-group" *ngIf="!!p.BasicSalary" [label]="p['BasicSalary'].label()"
+  <b-form-group class="b-form-group" *ngIf="BasicSalary_isVisible" [label]="'Agent_BasicSalary' | translate"
     [serverErrors]="model?.serverErrors?.BasicSalary">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BasicSalary">
-      <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="BasicSalary">
-      </b-auto-cell>
+      <div>{{ model?.BasicSalary | number:'1.2-2' }}</div>
     </b-restricted>
     <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.BasicSalary" [ngModelOptions]="{ updateOn: 'blur' }"
-      [required]="d['BasicSalaryVisibility'] === 'Required'">
+      [required]="BasicSalary_isRequired">
     </b-decimal-editor>
   </b-form-group>
 
   <!-- Transportation Allowance -->
-  <b-form-group class="b-form-group" *ngIf="!!p.TransportationAllowance" [label]="p['TransportationAllowance'].label()"
-    [serverErrors]="model?.serverErrors?.TransportationAllowance">
+  <b-form-group class="b-form-group" *ngIf="TransportationAllowance_isVisible"
+    [label]="'Agent_TransportationAllowance' | translate" [serverErrors]="model?.serverErrors?.TransportationAllowance">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TransportationAllowance">
-      <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="TransportationAllowance">
-      </b-auto-cell>
+      <div>{{ model?.TransportationAllowance | number:'1.2-2' }}</div>
     </b-restricted>
     <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.TransportationAllowance" [ngModelOptions]="{ updateOn: 'blur' }"
-      [required]="d['TransportationAllowanceVisibility'] === 'Required'">
+      [required]="TransportationAllowance_isRequired">
     </b-decimal-editor>
   </b-form-group>
 
   <!-- Overtime Rate -->
-  <b-form-group class="b-form-group" *ngIf="!!p.OvertimeRate" [label]="p['OvertimeRate'].label()"
+  <b-form-group class="b-form-group" *ngIf="OvertimeRate_isVisible" [label]="'Agent_OvertimeRate' | translate"
     [serverErrors]="model?.serverErrors?.OvertimeRate">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OvertimeRate">
-      <b-auto-cell collection="Agent" [definition]="definitionId" [entity]="model" path="OvertimeRate">
-      </b-auto-cell>
+      <div>{{ model?.OvertimeRate | number:'1.2-2' }}</div>
     </b-restricted>
     <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.OvertimeRate" [ngModelOptions]="{ updateOn: 'blur' }"
-      [required]="d['OvertimeRateVisibility'] === 'Required'">
+      [required]="OvertimeRate_isRequired">
     </b-decimal-editor>
   </b-form-group>
 
   <!-- Bank Account Number -->
-  <b-form-group class="b-form-group" *ngIf="!!p.BankAccountNumber" [label]="p['BankAccountNumber'].label()"
+  <b-form-group class="b-form-group" *ngIf="BankAccountNumber_isVisible" [label]="'Agent_BankAccountNumber' | translate"
     [serverErrors]="model?.serverErrors?.BankAccountNumber">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.BankAccountNumber">
       <div>{{ model?.BankAccountNumber }}</div>
     </b-restricted>
     <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BankAccountNumber" [ngModelOptions]="{ updateOn: 'blur' }"
-      [required]="d['BankAccountNumberVisibility'] === 'Required'">
+      [required]="BankAccountNumber_isRequired">
     </b-text-editor>
   </b-form-group>
 
-  
   <!-- User -->
-  <b-form-group class="b-form-group" *ngIf="!!p.UserId" [label]="p['User'].label()"
+  <b-form-group class="b-form-group" [label]="'Agent_User' | translate"
     [serverErrors]="model?.serverErrors?.UserId">
     <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.User">
       <b-view-link *ngIf="!isEdit" link="../../../users" [itemId]="model?.UserId">

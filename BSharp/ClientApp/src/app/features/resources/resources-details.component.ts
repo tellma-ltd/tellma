@@ -6,8 +6,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { ResourceForSave, Resource, metadata_Resource } from '~/app/data/entities/resource';
-import { PropDescriptor, NavigationPropDescriptor } from '~/app/data/entities/base/metadata';
+import { ResourceForSave, Resource } from '~/app/data/entities/resource';
 import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
@@ -23,8 +22,8 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
-      this._definitionId = t;
       this.resourcesApi = this.api.resourcesApi(t, this.notifyDestruct$);
+      this._definitionId = t;
     }
   }
 
@@ -32,12 +31,11 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `ResourceClassification,Currency,MassUnit,VolumeUnit,AreaUnit,LengthUnit,TimeUnit,
-CountUnit,Lookup1,Lookup2,Lookup3,Lookup4`;
+  public expand = `OperatingSegment,ResourceClassification,Currency,CountUnit,MassUnit,VolumeUnit,TimeUnit,Lookup1,Lookup2`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
-    private router: Router, private route: ActivatedRoute) {
+    private route: ActivatedRoute) {
     super();
   }
 
@@ -48,10 +46,6 @@ CountUnit,Lookup1,Lookup2,Lookup3,Lookup4`;
       if (this.isScreenMode) {
 
         const definitionId = params.get('definitionId');
-
-        if (!definitionId || !this.workspace.current.definitions.Resources[definitionId]) {
-          this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
-        }
 
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;
@@ -66,6 +60,14 @@ CountUnit,Lookup1,Lookup2,Lookup3,Lookup4`;
 
   // UI Binding
 
+  private get definition(): ResourceDefinitionForClient {
+    return !!this.definitionId ? this.workspace.current.definitions.Resources[this.definitionId] : null;
+  }
+
+  public get found(): boolean {
+    return !!this.definition;
+  }
+
   create = () => {
     const result = new ResourceForSave();
     if (this.ws.isPrimaryLanguage) {
@@ -76,51 +78,32 @@ CountUnit,Lookup1,Lookup2,Lookup3,Lookup4`;
       result.Name3 = this.initialText;
     }
 
-    const defs = this.d;
+    const defs = this.definition;
 
-    result.MassUnitId = defs.MassUnit_DefaultValue;
-    result.VolumeUnitId = defs.VolumeUnit_DefaultValue;
-    // result.AreaUnitId = defs.AreaUnit_DefaultValue;
-    // result.LengthUnitId = defs.LengthUnit_DefaultValue;
-    result.TimeUnitId = defs.TimeUnit_DefaultValue;
-    result.CountUnitId = defs.CountUnit_DefaultValue;
-    // result.Memo = defs.Memo_DefaultValue;
-    result.CustomsReference = defs.CustomsReference_DefaultValue;
-    result.Lookup1Id = defs.Lookup1_DefaultValue;
-    result.Lookup2Id = defs.Lookup2_DefaultValue;
-    result.Lookup3Id = defs.Lookup3_DefaultValue;
-    result.Lookup4Id = defs.Lookup4_DefaultValue;
-    result.Lookup5Id = defs.Lookup5_DefaultValue;
+    result.Identifier = defs.IdentifierDefaultValue;
+    result.CurrencyId = defs.CurrencyDefaultValue;
+    result.MonetaryValue = defs.MonetaryValueDefaultValue;
+    result.CountUnitId = defs.CountUnitDefaultValue;
+    result.Count = defs.CountDefaultValue;
+    result.MassUnitId = defs.MassUnitDefaultValue;
+    result.Mass = defs.MassDefaultValue;
+    result.VolumeUnitId = defs.VolumeUnitDefaultValue;
+    result.Volume = defs.VolumeDefaultValue;
+    result.TimeUnitId = defs.TimeUnitDefaultValue;
+    result.Time = defs.TimeDefaultValue;
+    result.AvailableSince = defs.AvailableSinceDefaultValue;
+    result.AvailableTill = defs.AvailableTillDefaultValue;
+    result.Lookup1Id = defs.Lookup1DefaultValue;
+    result.Lookup2Id = defs.Lookup2DefaultValue;
+    // result.Lookup3Id = defs.Lookup3DefaultValue;
+    // result.Lookup4Id = defs.Lookup4DefaultValue;
+    // result.Lookup5Id = defs.Lookup5DefaultValue;
 
     return result;
   }
 
   public get ws() {
     return this.workspace.current;
-  }
-
-  public get p(): { [prop: string]: PropDescriptor } {
-    return metadata_Resource(this.ws, this.translate, this.definitionId).properties;
-  }
-
-  public get Lookup1Definition() {
-    return (this.p.Lookup1 as NavigationPropDescriptor).definition;
-  }
-
-  public get Lookup2Definition() {
-    return (this.p.Lookup2 as NavigationPropDescriptor).definition;
-  }
-
-  public get Lookup3Definition() {
-    return (this.p.Lookup3 as NavigationPropDescriptor).definition;
-  }
-
-  public get Lookup4Definition() {
-    return (this.p.Lookup4 as NavigationPropDescriptor).definition;
-  }
-
-  public get d(): ResourceDefinitionForClient {
-    return this.ws.definitions.Resources[this.definitionId];
   }
 
   public onActivate = (model: Resource): void => {
@@ -148,12 +131,258 @@ CountUnit,Lookup1,Lookup2,Lookup3,Lookup4`;
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.Resources[definitionId];
-    if (!definition) {
-      this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
-    }
-
-    return this.ws.getMultilingualValueImmediate(definition, 'TitlePlural');
+    return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
   }
+
+  public get OperatingSegment_isVisible(): boolean {
+    return !!this.definition.OperatingSegmentVisibility;
+  }
+
+  public get OperatingSegment_isRequired(): boolean {
+    return this.definition.OperatingSegmentVisibility === 'Required';
+  }
+
+  public get OperatingSegment_label(): string {
+    return !!this.definition.OperatingSegmentLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'OperatingSegmentLabel') :
+      this.translate.instant('OperatingSegment');
+  }
+
+  public get Identifier_isVisible(): boolean {
+    return !!this.definition.IdentifierVisibility;
+  }
+
+  public get Identifier_isRequired(): boolean {
+    return this.definition.IdentifierVisibility === 'Required';
+  }
+
+  public get Identifier_label(): string {
+    return !!this.definition.IdentifierLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'IdentifierLabel') :
+      this.translate.instant('Resource_Identifier');
+  }
+
+  public get Currency_isVisible(): boolean {
+    return !!this.definition.CurrencyVisibility;
+  }
+
+  public get Currency_isRequired(): boolean {
+    return this.definition.CurrencyVisibility === 'Required';
+  }
+
+  public get Currency_label(): string {
+    return !!this.definition.CurrencyLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'CurrencyLabel') :
+      this.translate.instant('Resource_Currency');
+  }
+
+  public get MonetaryValue_isVisible(): boolean {
+    return !!this.definition.MonetaryValueVisibility;
+  }
+
+  public get MonetaryValue_isRequired(): boolean {
+    return this.definition.MonetaryValueVisibility === 'Required';
+  }
+
+  public get MonetaryValue_label(): string {
+    return !!this.definition.MonetaryValueLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'MonetaryValueLabel') :
+      this.translate.instant('Resource_MonetaryValue');
+  }
+
+  public get CountUnit_isVisible(): boolean {
+    return !!this.definition.CountUnitVisibility;
+  }
+
+  public get CountUnit_isRequired(): boolean {
+    return this.definition.CountUnitVisibility === 'Required';
+  }
+
+  public get CountUnit_label(): string {
+    return !!this.definition.CountUnitLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'CountUnitLabel') :
+      this.translate.instant('Resource_CountUnit');
+  }
+
+  public get Count_isVisible(): boolean {
+    return !!this.definition.CountVisibility;
+  }
+
+  public get Count_isRequired(): boolean {
+    return this.definition.CountVisibility === 'Required';
+  }
+
+  public get Count_label(): string {
+    return !!this.definition.CountLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'CountLabel') :
+      this.translate.instant('Resource_Count');
+  }
+
+  public get MassUnit_isVisible(): boolean {
+    return !!this.definition.MassUnitVisibility;
+  }
+
+  public get MassUnit_isRequired(): boolean {
+    return this.definition.MassUnitVisibility === 'Required';
+  }
+
+  public get MassUnit_label(): string {
+    return !!this.definition.MassUnitLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'MassUnitLabel') :
+      this.translate.instant('Resource_MassUnit');
+  }
+
+  public get Mass_isVisible(): boolean {
+    return !!this.definition.MassVisibility;
+  }
+
+  public get Mass_isRequired(): boolean {
+    return this.definition.MassVisibility === 'Required';
+  }
+
+  public get Mass_label(): string {
+    return !!this.definition.MassLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'MassLabel') :
+      this.translate.instant('Resource_Mass');
+  }
+
+  public get VolumeUnit_isVisible(): boolean {
+    return !!this.definition.VolumeUnitVisibility;
+  }
+
+  public get VolumeUnit_isRequired(): boolean {
+    return this.definition.VolumeUnitVisibility === 'Required';
+  }
+
+  public get VolumeUnit_label(): string {
+    return !!this.definition.VolumeUnitLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'VolumeUnitLabel') :
+      this.translate.instant('Resource_VolumeUnit');
+  }
+
+  public get Volume_isVisible(): boolean {
+    return !!this.definition.VolumeVisibility;
+  }
+
+  public get Volume_isRequired(): boolean {
+    return this.definition.VolumeVisibility === 'Required';
+  }
+
+  public get Volume_label(): string {
+    return !!this.definition.VolumeLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'VolumeLabel') :
+      this.translate.instant('Resource_Volume');
+  }
+
+  public get TimeUnit_isVisible(): boolean {
+    return !!this.definition.TimeUnitVisibility;
+  }
+
+  public get TimeUnit_isRequired(): boolean {
+    return this.definition.TimeUnitVisibility === 'Required';
+  }
+
+  public get TimeUnit_label(): string {
+    return !!this.definition.TimeUnitLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'TimeUnitLabel') :
+      this.translate.instant('Resource_TimeUnit');
+  }
+
+  public get Time_isVisible(): boolean {
+    return !!this.definition.TimeVisibility;
+  }
+
+  public get Time_isRequired(): boolean {
+    return this.definition.TimeVisibility === 'Required';
+  }
+
+  public get Time_label(): string {
+    return !!this.definition.TimeLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'TimeLabel') :
+      this.translate.instant('Resource_Time');
+  }
+
+  public get Description_isVisible(): boolean {
+    return !!this.definition.DescriptionVisibility;
+  }
+
+  public get Description_isRequired(): boolean {
+    return this.definition.DescriptionVisibility === 'Required';
+  }
+
+  public get AvailableSince_isVisible(): boolean {
+    return !!this.definition.AvailableSinceVisibility;
+  }
+
+  public get AvailableSince_isRequired(): boolean {
+    return this.definition.AvailableSinceVisibility === 'Required';
+  }
+
+  public get AvailableSince_label(): string {
+    return !!this.definition.AvailableSinceLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'AvailableSinceLabel') :
+      this.translate.instant('Resource_AvailableSince');
+  }
+
+  public get AvailableTill_isVisible(): boolean {
+    return !!this.definition.AvailableTillVisibility;
+  }
+
+  public get AvailableTill_isRequired(): boolean {
+    return this.definition.AvailableTillVisibility === 'Required';
+  }
+
+  public get AvailableTill_label(): string {
+    return !!this.definition.AvailableTillLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'AvailableTillLabel') :
+      this.translate.instant('Resource_AvailableTill');
+  }
+
+  public get Lookup1_isVisible(): boolean {
+    return !!this.definition.Lookup1Visibility;
+  }
+
+  public get Lookup1_isRequired(): boolean {
+    return this.definition.Lookup1Visibility === 'Required';
+  }
+
+  public get Lookup1_label(): string {
+    return !!this.definition.Lookup1Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup1Label') :
+      this.translate.instant('Resource_Lookup1');
+  }
+
+  public get Lookup1_DefinitionId() {
+    return this.definition.Lookup1DefinitionId;
+  }
+
+  public get Lookup2_isVisible(): boolean {
+    return !!this.definition.Lookup2Visibility;
+  }
+
+  public get Lookup2_isRequired(): boolean {
+    return this.definition.Lookup2Visibility === 'Required';
+  }
+
+  public get Lookup2_label(): string {
+    return !!this.definition.Lookup2Label ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'Lookup2Label') :
+      this.translate.instant('Resource_Lookup2');
+  }
+
+  public get Lookup2_DefinitionId() {
+    return this.definition.Lookup2DefinitionId;
+  }
+
+  // public get Lookup3_DefinitionId() {
+  //   return this.definition.Lookup3DefinitionId;
+  // }
+
+  // public get Lookup4_DefinitionId() {
+  //   return this.definition.Lookup4DefinitionId;
+  // }
+
+  // public get Lookup5_DefinitionId() {
+  //   return this.definition.Lookup5DefinitionId;
+  // }
 }

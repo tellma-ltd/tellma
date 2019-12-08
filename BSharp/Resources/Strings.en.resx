@@ -265,6 +265,9 @@
   <data name="DefaultError" xml:space="preserve">
     <value>An unknown failure has occurred.</value>
   </data>
+  <data name="Definition" xml:space="preserve">
+    <value>Definition</value>
+  </data>
   <data name="Definition_State" xml:space="preserve">
     <value>State</value>
   </data>

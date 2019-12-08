@@ -5,10 +5,9 @@ import { ApiService } from '~/app/data/api.service';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { MasterBaseComponent } from '~/app/shared/master-base/master-base.component';
-import { metadata_Agent } from '~/app/data/entities/agent';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { GENERIC } from '~/app/data/entities/base/constants';
+import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
   selector: 'b-agents-master',
@@ -22,8 +21,8 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
-      this._definitionId = t;
       this.agentsApi = this.api.agentsApi(t, this.notifyDestruct$);
+      this._definitionId = t;
     }
   }
 
@@ -47,10 +46,6 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
         const definitionId = params.get('definitionId');
 
-        if (!!definitionId && !this.workspace.current.definitions.Agents[definitionId]) {
-          this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
-        }
-
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;
         }
@@ -68,6 +63,14 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
 
   public get ws() {
     return this.workspace.current;
+  }
+
+  public get definition(): AgentDefinitionForClient {
+    return !!this.definitionId ? this.workspace.current.definitions.Agents[this.definitionId] : null;
+  }
+
+  public get found(): boolean {
+    return !this.definitionId || !!this.definition;
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
@@ -94,10 +97,14 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    return metadata_Agent(this.ws, this.translate, this.definitionId || GENERIC).titlePlural();
+    return !!this.definition ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural') :
+      this.translate.instant('Agents');
   }
 
   public get summary(): string {
-    return metadata_Agent(this.ws, this.translate, this.definitionId || GENERIC).titleSingular();
+    return !!this.definition ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'TitleSingular') :
+      this.translate.instant('Agent');
   }
 }

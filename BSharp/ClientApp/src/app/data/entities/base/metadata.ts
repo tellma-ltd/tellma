@@ -15,7 +15,6 @@ import { metadata_AccountType } from '../account-type';
 import { metadata_Account } from '../account';
 import { metadata_ReportDefinition } from '../report-definition';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { GENERIC } from './constants';
 import { Entity } from './entity';
 import { metadata_ResponsibilityCenter } from '../responsibility-center';
 
@@ -47,7 +46,7 @@ export function collections(ws: TenantWorkspace, trx: TranslateService) {
     if (!_collections) {
         _collections = Object.keys(metadata).map(key => ({
             value: key,
-            name: metadata[key](ws, trx, GENERIC).titlePlural
+            name: metadata[key](ws, trx, null).titlePlural
         }));
     }
 

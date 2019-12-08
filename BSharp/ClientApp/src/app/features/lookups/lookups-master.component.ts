@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { addToWorkspace } from '~/app/data/util';
 import { tap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+import { LookupDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
   selector: 'b-lookups-master',
@@ -21,8 +22,8 @@ export class LookupsMasterComponent extends MasterBaseComponent implements OnIni
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
-      this._definitionId = t;
       this.lookupsApi = this.api.lookupsApi(t, this.notifyDestruct$);
+      this._definitionId = t;
     }
   }
 
@@ -46,10 +47,6 @@ export class LookupsMasterComponent extends MasterBaseComponent implements OnIni
 
         const definitionId = params.get('definitionId');
 
-        if (!definitionId || !this.workspace.current.definitions.Lookups[definitionId]) {
-          this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
-        }
-
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;
         }
@@ -63,6 +60,14 @@ export class LookupsMasterComponent extends MasterBaseComponent implements OnIni
 
   public get ws() {
     return this.workspace.current;
+  }
+
+  public get definition(): LookupDefinitionForClient {
+    return !!this.definitionId ? this.workspace.current.definitions.Lookups[this.definitionId] : null;
+  }
+
+  public get found(): boolean {
+    return !this.definitionId || !!this.definition;
   }
 
   public onActivate = (ids: (number | string)[]): Observable<any> => {
@@ -89,22 +94,14 @@ export class LookupsMasterComponent extends MasterBaseComponent implements OnIni
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
   public get masterCrumb(): string {
-    const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.Lookups[definitionId];
-    if (!definition) {
-      return '???'; // Programmer mistake
-    }
-
-    return this.ws.getMultilingualValueImmediate(definition, 'TitlePlural');
+    return !!this.definition ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural') :
+      this.translate.instant('Lookups');
   }
 
   public get summary(): string {
-    const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.Lookups[definitionId];
-    if (!definition) {
-      return '???'; // Programmer mistake
-    }
-
-    return this.ws.getMultilingualValueImmediate(definition, 'TitleSingular');
+    return !!this.definition ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'TitleSingular') :
+      this.translate.instant('Lookup');
   }
 }

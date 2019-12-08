@@ -6,7 +6,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor, NavigationPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { GENERIC } from './base/constants';
 
 export class AccountForSave extends EntityWithKey {
     AccountTypeId: string;
@@ -48,14 +47,13 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, def
         _cache = {};
     }
 
-    const key = definitionId || GENERIC; // undefined
+    const key = definitionId || '-'; // undefined
     if (!_cache[key]) {
 
         if (!_definitionIds) {
             _definitionIds = Object.keys(ws.definitions.Accounts);
         }
 
-        const definedDefinitionId = !!definitionId && definitionId !== GENERIC;
         const entityDesc: EntityDescriptor = {
             collection: 'Account',
             definitionId,
@@ -63,8 +61,8 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, def
             titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Accounts[definitionId], 'TitleSingular') || trx.instant('Account'),
             titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Accounts[definitionId], 'TitlePlural') || trx.instant('Accounts'),
             select: _select,
-            apiEndpoint: definedDefinitionId ? `accounts/${definitionId}` : 'accounts',
-            screenUrl: definedDefinitionId ? `accounts/${definitionId}` : 'accounts',
+            apiEndpoint: !!definitionId ? `accounts/${definitionId}` : 'accounts',
+            screenUrl: !!definitionId ? `accounts/${definitionId}` : 'accounts',
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
@@ -107,7 +105,7 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, def
         // Adjust according to definitions
         const definition = _definitions.Accounts[definitionId];
         if (!definition) {
-            if (definitionId !== GENERIC) {
+            if (!!definitionId) {
                 // Programmer mistake
                 console.error(`defintionId '${definitionId}' doesn't exist`);
             }

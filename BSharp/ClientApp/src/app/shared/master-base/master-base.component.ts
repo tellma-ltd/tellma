@@ -35,7 +35,7 @@ export class MasterBaseComponent implements OnDestroy {
   private masterCancel: Subscription;
   public notifyDestruct$ = new Subject<void>();
 
-  @ViewChild(MasterComponent, { static: true })
+  @ViewChild(MasterComponent, { static: false })
   set master(m: MasterComponent) {
     if (this._master !== m) {
 

@@ -66,6 +66,7 @@ import { ResponsibilityCentersPickerComponent } from './responsibility-centers/r
 import { ResourceClassificationsPickerComponent } from './resource-classifications/resource-classifications-picker.component';
 import { UsersPickerComponent } from './users/users-picker.component';
 import { RolesPickerComponent } from './roles/roles-picker.component';
+import { CurrenciesPickerComponent } from './currencies/currencies-picker.component';
 
 const routes: Routes = [
   {
@@ -178,6 +179,11 @@ const routes: Routes = [
 
       // Lookups
       {
+        path: 'lookups',
+        component: LookupsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
         path: 'lookups/:definitionId',
         component: LookupsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
@@ -211,6 +217,11 @@ const routes: Routes = [
       },
 
       // Resources
+      {
+        path: 'resources',
+        component: ResourcesMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
       {
         path: 'resources/:definitionId',
         component: ResourcesMasterComponent,
@@ -386,7 +397,8 @@ const routes: Routes = [
     ResponsibilityCentersPickerComponent,
     ResourceClassificationsPickerComponent,
     UsersPickerComponent,
-    RolesPickerComponent
+    RolesPickerComponent,
+    CurrenciesPickerComponent
   ],
   imports: [
     SharedModule,

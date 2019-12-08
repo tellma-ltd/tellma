@@ -12,7 +12,6 @@ import {
 } from '~/app/data/entities/report-definition';
 import { ActivatedRoute } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
-import { GENERIC } from '~/app/data/entities/base/constants';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -300,13 +299,13 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   }
 
   public showDefinitionIdSelector(model: ReportDefinition): boolean {
-    return !!model && !!model.Collection && !!metadata[model.Collection](this.ws, this.translate, GENERIC).definitionIds;
+    return !!model && !!model.Collection && !!metadata[model.Collection](this.ws, this.translate, null).definitionIds;
   }
 
   public allDefinitionIds(model: ReportDefinition): SelectorChoice[] {
     if (!!model && !!model.Collection) {
       const func = metadata[model.Collection];
-      const desc = func(this.ws, this.translate, GENERIC);
+      const desc = func(this.ws, this.translate, null);
       if (!!desc.definitionIds && !desc.definitionIdsArray) {
         desc.definitionIdsArray = desc.definitionIds
           .map(defId => ({ value: defId, name: func(this.ws, this.translate, defId).titlePlural }));

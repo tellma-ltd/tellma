@@ -34,7 +34,7 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
   private detailsCancel: Subscription;
   public notifyDestruct$ = new Subject<void>();
 
-  @ViewChild(DetailsComponent, { static: true })
+  @ViewChild(DetailsComponent, { static: false })
   set details(v: DetailsComponent) {
     if (this._details !== v) {
 
@@ -51,9 +51,9 @@ export class DetailsBaseComponent implements ICanDeactivate, OnDestroy {
       this._details = v;
 
       // subscribe to new details events
-      if (!!this._details) {
-        this.detailsSave = this._details.saved.subscribe(this.saved);
-        this.detailsCancel = this._details.cancel.subscribe(this.cancel);
+      if (!!v) {
+        this.detailsSave = v.saved.subscribe(this.saved);
+        this.detailsCancel = v.cancel.subscribe(this.cancel);
       }
     }
   }

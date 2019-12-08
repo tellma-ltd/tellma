@@ -213,6 +213,7 @@ namespace BSharp.Controllers
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 3m,
 
+                            OperatingSegmentVisibility = Visibility.Optional,
                             TaxIdentificationNumberVisibility = Visibility.Optional,
                             StartDateVisibility = Visibility.Optional,
                             StartDateLabel = "Birth Date",
@@ -230,6 +231,7 @@ namespace BSharp.Controllers
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 4m,
 
+                            OperatingSegmentVisibility = Visibility.Optional,
                             TaxIdentificationNumberVisibility = Visibility.Optional,
                             StartDateVisibility = Visibility.Optional,
                             StartDateLabel = "Birth Date",
@@ -252,6 +254,7 @@ namespace BSharp.Controllers
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 5m,
 
+                            OperatingSegmentVisibility = Visibility.Optional,
                             TaxIdentificationNumberVisibility = Visibility.Required,
                             BankAccountNumberVisibility = Visibility.Optional,
                         }
@@ -271,15 +274,40 @@ namespace BSharp.Controllers
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 203m,
 
+                            IdentifierVisibility = Visibility.Optional,
+                            IdentifierLabel = "Tag",
+
+                            CurrencyVisibility = Visibility.Optional,
+                            // CurrencyLabel = "My Currency",
+
+                            MonetaryValueVisibility = Visibility.Optional,
+                            MonetaryValueLabel = "Price",
+
+                            MassUnitVisibility = Visibility.Optional,
+                            MassVisibility = Visibility.Optional,
+                            CountUnitVisibility = Visibility.Optional,
+                            CountVisibility = Visibility.Optional,
+                            TimeUnitVisibility = Visibility.Optional,
+                            TimeVisibility = Visibility.Optional,
+                            VolumeUnitVisibility = Visibility.Optional,
+                            VolumeVisibility = Visibility.Optional,
+
+                            OperatingSegmentVisibility = Visibility.Optional,
+                            AvailableSinceVisibility = Visibility.Optional,
+                            AvailableTillVisibility = Visibility.Optional,
+                            DescriptionVisibility = Visibility.Optional,
+
+
                             Lookup1Label = "Thickness",
                             Lookup1Label2 = "السماكة",
                             Lookup1Visibility = Visibility.Optional,
-                            Lookup1DefinitionId = "thicknesses",
+                            Lookup1DefinitionId = "steel-thicknesses",
 
-                            MassUnitVisibility = Visibility.Optional,
-                            VolumeUnitVisibility = Visibility.Optional,
-                            TimeUnitVisibility = Visibility.Optional,
-                            CountUnitVisibility = Visibility.Optional,
+                            Lookup2Label = "Color",
+                            Lookup2Label2 = "اللون",
+                            Lookup2Visibility = Visibility.Optional,
+                            Lookup2DefinitionId = "body-colors",
+
                         },
                         ["finished-goods"] = new ResourceDefinitionForClient
                         {
@@ -305,7 +333,7 @@ namespace BSharp.Controllers
                             TitleSingular2 = "عملة",
                             TitlePlural3 = "完成品",
                             TitleSingular3 = "成品",
-                            MainMenuIcon = "truck",
+                            MainMenuIcon = "euro-sign",
                             MainMenuSection = "Financials",
                             MainMenuSortKey = 205m,
                         }
@@ -350,7 +378,7 @@ namespace BSharp.Controllers
 
                     Lookups = new Dictionary<string, LookupDefinitionForClient>
                     {
-                        ["colors"] = new LookupDefinitionForClient
+                        ["body-colors"] = new LookupDefinitionForClient
                         {
                             TitleSingular = "Color",
                             TitleSingular2 = "لون",
@@ -362,7 +390,7 @@ namespace BSharp.Controllers
                             MainMenuSection = "Administration",
                             MainMenuSortKey = 202m
                         },
-                        ["thicknesses"] = new LookupDefinitionForClient
+                        ["steel-thicknesses"] = new LookupDefinitionForClient
                         {
                             TitleSingular = "Thickness",
                             TitleSingular2 = "سماكة",

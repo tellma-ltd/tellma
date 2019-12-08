@@ -1,13 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { ApiService } from '~/app/data/api.service';
-import { Agent, AgentForSave, metadata_Agent } from '~/app/data/entities/agent';
+import { Agent, AgentForSave } from '~/app/data/entities/agent';
 import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { PropDescriptor } from '~/app/data/entities/base/metadata';
-import { Router, ActivatedRoute, Params, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AgentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 
 @Component({
@@ -23,8 +22,8 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
-      this._definitionId = t;
       this.agentsApi = this.api.agentsApi(t, this.notifyDestruct$);
+      this._definitionId = t;
     }
   }
 
@@ -45,14 +44,14 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     }
     result.IsRelated = false;
 
-// TODO Set defaults from definition
+    // TODO Set defaults from definition
 
     return result;
   }
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
-    private translate: TranslateService, private router: Router, private route: ActivatedRoute) {
+    private translate: TranslateService, private route: ActivatedRoute) {
     super();
   }
 
@@ -63,10 +62,6 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
       if (this.isScreenMode) {
 
         const definitionId = params.get('definitionId');
-
-        if (!definitionId || !this.workspace.current.definitions.Agents[definitionId]) {
-          this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
-        }
 
         if (this.definitionId !== definitionId) {
           this.definitionId = definitionId;
@@ -79,12 +74,14 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return `agents/${this.definitionId}`;
   }
 
-  public get d(): AgentDefinitionForClient {
-    return this.ws.definitions.Agents[this.definitionId];
+  private get definition(): AgentDefinitionForClient {
+    return !!this.definitionId ? this.workspace.current.definitions.Agents[this.definitionId] : null;
   }
 
-  public get p(): { [prop: string]: PropDescriptor } {
-    return metadata_Agent(this.ws, this.translate, this.definitionId).properties;
+  // UI Bindings
+
+  public get found(): boolean {
+    return !!this.definition;
   }
 
   public onActivate = (model: Agent): void => {
@@ -116,12 +113,82 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   }
 
   public get masterCrumb(): string {
-    const definitionId = this.definitionId;
-    const definition = this.workspace.current.definitions.Agents[definitionId];
-    if (!definition) {
-      this.router.navigate(['page-not-found'], { relativeTo: this.route.parent, replaceUrl: true });
-    }
+    return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
+  }
 
-    return this.ws.getMultilingualValueImmediate(definition, 'TitlePlural');
+  public get OperatingSegment_isVisible(): boolean {
+    return !!this.definition.OperatingSegmentVisibility;
+  }
+
+  public get OperatingSegment_isRequired(): boolean {
+    return this.definition.OperatingSegmentVisibility === 'Required';
+  }
+
+  public get OperatingSegment_label(): string {
+    return !!this.definition.OperatingSegmentLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'OperatingSegmentLabel') :
+      this.translate.instant('OperatingSegment');
+  }
+
+  public get TaxIdentificationNumber_isVisible(): boolean {
+    return !!this.definition.TaxIdentificationNumberVisibility;
+  }
+
+  public get TaxIdentificationNumber_isRequired(): boolean {
+    return this.definition.TaxIdentificationNumberVisibility === 'Required';
+  }
+
+  public get StartDate_isVisible(): boolean {
+    return !!this.definition.StartDateVisibility;
+  }
+
+  public get StartDate_isRequired(): boolean {
+    return this.definition.StartDateVisibility === 'Required';
+  }
+
+  public get StartDate_label(): string {
+    return !!this.definition.StartDateLabel ?
+      this.ws.getMultilingualValueImmediate(this.definition, 'StartDateLabel') :
+      this.translate.instant('Agent_StartDate');
+  }
+
+  public get Job_isVisible(): boolean {
+    return !!this.definition.JobVisibility;
+  }
+
+  public get Job_isRequired(): boolean {
+    return this.definition.JobVisibility === 'Required';
+  }
+
+  public get BasicSalary_isVisible(): boolean {
+    return !!this.definition.BasicSalaryVisibility;
+  }
+
+  public get BasicSalary_isRequired(): boolean {
+    return this.definition.BasicSalaryVisibility === 'Required';
+  }
+
+  public get TransportationAllowance_isVisible(): boolean {
+    return !!this.definition.TransportationAllowanceVisibility;
+  }
+
+  public get TransportationAllowance_isRequired(): boolean {
+    return this.definition.TransportationAllowanceVisibility === 'Required';
+  }
+
+  public get OvertimeRate_isVisible(): boolean {
+    return !!this.definition.OvertimeRateVisibility;
+  }
+
+  public get OvertimeRate_isRequired(): boolean {
+    return this.definition.OvertimeRateVisibility === 'Required';
+  }
+
+  public get BankAccountNumber_isVisible(): boolean {
+    return !!this.definition.BankAccountNumberVisibility;
+  }
+
+  public get BankAccountNumber_isRequired(): boolean {
+    return this.definition.BankAccountNumberVisibility === 'Required';
   }
 }

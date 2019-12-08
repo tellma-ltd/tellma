@@ -12,6 +12,7 @@ namespace BSharp.Entities
 
         [Display(Name = "Resource_Classification")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [AlwaysAccessible]
         public int? ResourceClassificationId { get; set; }
 
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]

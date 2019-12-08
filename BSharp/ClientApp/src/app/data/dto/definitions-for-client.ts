@@ -95,135 +95,168 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
 }
 
 export type AccountVisibility = 'None' | 'RequiredInAccounts' | 'RequiredInEntries' | 'OptionalInEntries';
-export type Visibility = 0 | 1 | 2;
+export type Visibility = null | 'Optional' | 'Required';
 
 export interface AccountDefinitionForClient extends MasterDetailsDefinitionForClient {
-    ResponsibilityCenter_Label: string;
-    ResponsibilityCenter_Label2: string;
-    ResponsibilityCenter_Label3: string;
-    ResponsibilityCenter_Visibility: AccountVisibility;
-    ResponsibilityCenter_DefaultValue: number;
+    ResponsibilityCenterLabel: string;
+    ResponsibilityCenterLabel2: string;
+    ResponsibilityCenterLabel3: string;
+    ResponsibilityCenterVisibility: AccountVisibility;
+    ResponsibilityCenterDefaultValue: number;
 
-    Custodian_Label: string;
-    Custodian_Label2: string;
-    Custodian_Label3: string;
-    Custodian_Visibility: AccountVisibility;
-    Custodian_DefaultValue: number;
+    CustodianLabel: string;
+    CustodianLabel2: string;
+    CustodianLabel3: string;
+    CustodianVisibility: AccountVisibility;
+    CustodianDefaultValue: number;
 
-    Resource_Label: string;
-    Resource_Label2: string;
-    Resource_Label3: string;
-    Resource_Visibility: AccountVisibility;
-    Resource_DefaultValue: number;
-
-
-    Location_Label: string;
-    Location_Label2: string;
-    Location_Label3: string;
-    Location_Visibility: AccountVisibility;
-    Location_DefaultValue: number;
+    ResourceLabel: string;
+    ResourceLabel2: string;
+    ResourceLabel3: string;
+    ResourceVisibility: AccountVisibility;
+    ResourceDefaultValue: number;
 
 
-    PartyReference_Label: string;
-    PartyReference_Label2: string;
-    PartyReference_Label3: string;
-    PartyReference_Visibility: AccountVisibility;
+    LocationLabel: string;
+    LocationLabel2: string;
+    LocationLabel3: string;
+    LocationVisibility: AccountVisibility;
+    LocationDefaultValue: number;
+
+
+    PartyReferenceLabel: string;
+    PartyReferenceLabel2: string;
+    PartyReferenceLabel3: string;
+    PartyReferenceVisibility: AccountVisibility;
 
 }
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
-    MassUnit_Label: string;
-    MassUnit_Label2: string;
-    MassUnit_Label3: string;
-    MassUnit_Visibility: Visibility;
-    MassUnit_DefaultValue: number;
+    OperatingSegmentLabel: string;
+    OperatingSegmentLabel2: string;
+    OperatingSegmentLabel3: string;
+    OperatingSegmentVisibility: Visibility;
+    OperatingSegmentDefaultValue: number;
 
+    IdentifierLabel: string;
+    IdentifierLabel2: string;
+    IdentifierLabel3: string;
+    IdentifierVisibility: Visibility;
+    IdentifierDefaultValue: string;
 
-    VolumeUnit_Label: string;
-    VolumeUnit_Label2: string;
-    VolumeUnit_Label3: string;
-    VolumeUnit_Visibility: Visibility;
-    VolumeUnit_DefaultValue: number;
+    CurrencyLabel: string;
+    CurrencyLabel2: string;
+    CurrencyLabel3: string;
+    CurrencyVisibility: Visibility;
+    CurrencyDefaultValue: string;
 
+    MonetaryValueLabel: string;
+    MonetaryValueLabel2: string;
+    MonetaryValueLabel3: string;
+    MonetaryValueVisibility: Visibility;
+    MonetaryValueDefaultValue: number;
 
-    AreaUnit_Label: string;
-    AreaUnit_Label2: string;
-    AreaUnit_Label3: string;
-    AreaUnit_Visibility: Visibility;
-    AreaUnit_DefaultValue: number;
+    CountUnitLabel: string;
+    CountUnitLabel2: string;
+    CountUnitLabel3: string;
+    CountUnitVisibility: Visibility;
+    CountUnitDefaultValue: number;
 
+    CountLabel: string;
+    CountLabel2: string;
+    CountLabel3: string;
+    CountVisibility: Visibility;
+    CountDefaultValue: number;
 
-    LengthUnit_Label: string;
-    LengthUnit_Label2: string;
-    LengthUnit_Label3: string;
-    LengthUnit_Visibility: Visibility;
-    LengthUnit_DefaultValue: number;
+    MassUnitLabel: string;
+    MassUnitLabel2: string;
+    MassUnitLabel3: string;
+    MassUnitVisibility: Visibility;
+    MassUnitDefaultValue: number;
 
+    MassLabel: string;
+    MassLabel2: string;
+    MassLabel3: string;
+    MassVisibility: Visibility;
+    MassDefaultValue: number;
 
-    TimeUnit_Label: string;
-    TimeUnit_Label2: string;
-    TimeUnit_Label3: string;
-    TimeUnit_Visibility: Visibility;
-    TimeUnit_DefaultValue: number;
+    VolumeUnitLabel: string;
+    VolumeUnitLabel2: string;
+    VolumeUnitLabel3: string;
+    VolumeUnitVisibility: Visibility;
+    VolumeUnitDefaultValue: number;
 
+    VolumeLabel: string;
+    VolumeLabel2: string;
+    VolumeLabel3: string;
+    VolumeVisibility: Visibility;
+    VolumeDefaultValue: number;
 
-    CountUnit_Label: string;
-    CountUnit_Label2: string;
-    CountUnit_Label3: string;
-    CountUnit_Visibility: Visibility;
-    CountUnit_DefaultValue: number;
+    TimeUnitLabel: string;
+    TimeUnitLabel2: string;
+    TimeUnitLabel3: string;
+    TimeUnitVisibility: Visibility;
+    TimeUnitDefaultValue: number;
 
-    Memo_Label: string;
-    Memo_Label2: string;
-    Memo_Label3: string;
-    Memo_Visibility: Visibility;
-    Memo_DefaultValue: string;
+    TimeLabel: string;
+    TimeLabel2: string;
+    TimeLabel3: string;
+    TimeVisibility: Visibility;
+    TimeDefaultValue: number;
 
-    CustomsReference_Label: string;
-    CustomsReference_Label2: string;
-    CustomsReference_Label3: string;
-    CustomsReference_Visibility: Visibility;
-    CustomsReference_DefaultValue: string;
+    DescriptionVisibility: Visibility;
+
+    AvailableSinceLabel: string;
+    AvailableSinceLabel2: string;
+    AvailableSinceLabel3: string;
+    AvailableSinceVisibility: Visibility;
+    AvailableSinceDefaultValue: string;
+
+    AvailableTillLabel: string;
+    AvailableTillLabel2: string;
+    AvailableTillLabel3: string;
+    AvailableTillVisibility: Visibility;
+    AvailableTillDefaultValue: string;
 
     // Lookup 1
-    Lookup1_Label: string;
-    Lookup1_Label2: string;
-    Lookup1_Label3: string;
-    Lookup1_Visibility: Visibility;
-    Lookup1_DefaultValue: number;
-    Lookup1_DefinitionId: string;
+    Lookup1Label: string;
+    Lookup1Label2: string;
+    Lookup1Label3: string;
+    Lookup1Visibility: Visibility; // 0, 1, 2 (not visible, visible, visible and required)
+    Lookup1DefaultValue: number;
+    Lookup1DefinitionId: string;
 
     // Lookup 2
-    Lookup2_Label: string;
-    Lookup2_Label2: string;
-    Lookup2_Label3: string;
-    Lookup2_Visibility: Visibility;
-    Lookup2_DefaultValue: number;
-    Lookup2_DefinitionId: string;
+    Lookup2Label: string;
+    Lookup2Label2: string;
+    Lookup2Label3: string;
+    Lookup2Visibility: Visibility;
+    Lookup2DefaultValue: number;
+    Lookup2DefinitionId: string;
 
-    // Lookup 3
-    Lookup3_Label: string;
-    Lookup3_Label2: string;
-    Lookup3_Label3: string;
-    Lookup3_Visibility: Visibility;
-    Lookup3_DefaultValue: number;
-    Lookup3_DefinitionId: string;
+    //// Lookup 3
+    // Lookup3Label: string;
+    // Lookup3Label2: string;
+    // Lookup3Label3: string;
+    // Lookup3Visibility: Visibility;
+    // Lookup3DefaultValue: number;
+    // Lookup3DefinitionId: string;
 
-    // Lookup 4
-    Lookup4_Label: string;
-    Lookup4_Label2: string;
-    Lookup4_Label3: string;
-    Lookup4_Visibility: Visibility;
-    Lookup4_DefaultValue: number;
-    Lookup4_DefinitionId: string;
+    //// Lookup 4
+    // Lookup4Label: string;
+    // Lookup4Label2: string;
+    // Lookup4Label3: string;
+    // Lookup4Visibility: Visibility;
+    // Lookup4DefaultValue: number;
+    // Lookup4DefinitionId: string;
 
-    // Lookup 5
-    Lookup5_Label: string;
-    Lookup5_Label2: string;
-    Lookup5_Label3: string;
-    Lookup5_Visibility: Visibility;
-    Lookup5_DefaultValue: number;
-    Lookup5_DefinitionId: string;
+    //// Lookup 5
+    // Lookup5Label: string;
+    // Lookup5Label2: string;
+    // Lookup5Label3: string;
+    // Lookup5Visibility: Visibility;
+    // Lookup5DefaultValue: number;
+    // Lookup5DefinitionId: string;
 }
 
 export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {
@@ -231,6 +264,12 @@ export interface LookupDefinitionForClient extends MasterDetailsDefinitionForCli
 }
 
 export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClient {
+    OperatingSegmentLabel: string;
+    OperatingSegmentLabel2: string;
+    OperatingSegmentLabel3: string;
+    OperatingSegmentVisibility: Visibility;
+    OperatingSegmentDefaultValue: number;
+
     TaxIdentificationNumberVisibility?: string;
     StartDateVisibility?: string;
     StartDateLabel?: string;

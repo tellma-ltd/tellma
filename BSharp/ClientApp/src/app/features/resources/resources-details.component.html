@@ -1,11 +1,17 @@
-<b-details collection="Resource" [definition]="definitionId" [createFunc]="create" [expand]="expand" [mode]="mode"
-    [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
-    [actions]="[
+<b-details *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [createFunc]="create"
+    [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
+    [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]">
 
 </b-details>
+
+<!-- If definitionId is invalid -->
+<ng-template #pageNotFound>
+    <b-application-page-not-found>
+    </b-application-page-not-found>
+</ng-template>
 
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
@@ -62,210 +68,289 @@
         <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Code" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
     </b-form-group>
 
-    <!-- Classification -->
-    <b-form-group class="b-form-group" [label]="p.ResourceClassification | label"
-        [serverErrors]="model?.serverErrors?.ResourceClassificationId">
-        <b-restricted [metadata]="model?.EntityMetadata?.ResourceClassification">
-            <b-view-link *ngIf="!isEdit" [link]="'../../../resource-classifications'"
-                [itemId]="model?.ResourceClassificationId">{{
-        ws.getMultilingualValue('ResourceClassification', model?.ResourceClassificationId, 'Name') }}</b-view-link>
+    <!-- Identifier -->
+    <b-form-group *ngIf="Identifier_isVisible" class="b-form-group" [label]="Identifier_label"
+        [serverErrors]="model?.serverErrors?.Identifier">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Identifier">
+            <div>{{ model?.Identifier }}</div>
         </b-restricted>
-        <b-resource-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ResourceClassificationId">
-        </b-resource-classifications-picker>
-    </b-form-group>
-
-    <!-- Currency -->
-    <b-form-group class="b-form-group" [label]="p.Currency  | label" *ngIf="!!p.Currency"
-        [serverErrors]="model?.serverErrors?.CurrencyId">
-        <b-view-link *ngIf="!isEdit" link="../../../currencies" [itemId]="model?.CurrencyId">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="Currency">
-            </b-auto-cell>
-        </b-view-link>
-        <b-details-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [masterTemplate]="currenciesMaster"
-            [detailsTemplate]="currenciesDetails" collection="Currency">
-        </b-details-picker>
-
-        <!-- The Currency Details Modal -->
-        <ng-template #currenciesDetails let-modal="modal" let-update="update" let-initialText="initialText"
-            let-idString="idString">
-            <div class="modal-body">
-                <b-currencies-details mode="popup" [idString]="idString" [initialText]="initialText"
-                    (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
-                </b-currencies-details>
-            </div>
-        </ng-template>
-
-        <!-- The Currency Master Modal -->
-        <ng-template #currenciesMaster let-modal="modal" let-update="update" let-create="create">
-            <div class="modal-body">
-                <b-currencies-master mode="popup" (cancel)="modal.close(false);"
-                    (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()">
-                </b-currencies-master>
-            </div>
-        </ng-template>
-    </b-form-group>
-
-    <!-- Mass Unit -->
-    <b-form-group class="b-form-group" [label]="p.MassUnit | label" *ngIf="!!p.MassUnit"
-        [serverErrors]="model?.serverErrors?.MassUnitId">
-        <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.MassUnitId">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="MassUnit">
-            </b-auto-cell>
-        </b-view-link>
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.MassUnitId" filter="UnitType eq 'Mass'"
-            [required]="d.MassUnit_Visibility === 2">
-        </b-measurement-units-picker>
-    </b-form-group>
-
-    <!-- Volume Unit -->
-    <b-form-group class="b-form-group" [label]="p.VolumeUnit | label" *ngIf="!!p.VolumeUnit"
-        [serverErrors]="model?.serverErrors?.VolumeUnitId">
-        <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.VolumeUnitId">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="VolumeUnit">
-            </b-auto-cell>
-        </b-view-link>
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.VolumeUnitId" filter="UnitType eq 'Volume'"
-            [required]="d.VolumeUnit_Visibility === 2">
-        </b-measurement-units-picker>
-    </b-form-group>
-
-    <!-- Area Unit -->
-    <b-form-group class="b-form-group" [label]="p.AreaUnit | label" *ngIf="!!p.AreaUnit"
-        [serverErrors]="model?.serverErrors?.AreaUnitId">
-        <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.AreaUnitId">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="AreaUnit">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.AreaUnitId" filter="UnitType eq 'Area'"
-            [required]="d.AreaUnit_Visibility === 2">
-        </b-measurement-units-picker>
-    </b-form-group>
-
-    <!-- Length Unit -->
-    <b-form-group class="b-form-group" [label]="p.LengthUnit | label" *ngIf="!!p.LengthUnit"
-        [serverErrors]="model?.serverErrors?.LengthUnitId">
-        <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.LengthUnitId">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="LengthUnit">
-            </b-auto-cell>
-        </b-view-link>
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.LengthUnitId" filter="UnitType eq 'Distance'"
-            [required]="d.LengthUnit_Visibility === 2">
-        </b-measurement-units-picker>
-    </b-form-group>
-
-    <!-- Time Unit -->
-    <b-form-group class="b-form-group" [label]="p.TimeUnit | label" *ngIf="!!p.TimeUnit"
-        [serverErrors]="model?.serverErrors?.TimeUnitId">
-        <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.TimeUnitId">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="TimeUnit">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.TimeUnitId" filter="UnitType eq 'Time'"
-            [required]="d.TimeUnit_Visibility === 2">
-        </b-measurement-units-picker>
-    </b-form-group>
-
-    <!-- Count Unit -->
-    <b-form-group class="b-form-group" [label]="p.CountUnit | label" *ngIf="!!p.CountUnit"
-        [serverErrors]="model?.serverErrors?.CountUnitId">
-        <b-view-link *ngIf="!isEdit" link="../../../measurement-units" [itemId]="model?.CountUnitId">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="CountUnit">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.CountUnitId" filter="UnitType eq 'Count'"
-            [required]="d.CountUnit_Visibility === 2">
-        </b-measurement-units-picker>
-    </b-form-group>
-
-    <!-- Resource Lookup 1 -->
-    <b-form-group class="b-form-group" [label]="p.Lookup1 | label" *ngIf="!!p.Lookup1"
-        [serverErrors]="model?.serverErrors?.Lookup1Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../lookups/' + p.Lookup1.definition" [itemId]="model?.Lookup1Id">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="Lookup1">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup1Id" [definitionId]="Lookup1Definition"
-            [required]="d.Lookup1_Visibility === 2">
-        </b-lookups-picker>
-    </b-form-group>
-
-    <!-- Resource Lookup 2 -->
-    <b-form-group class="b-form-group" [label]="p.Lookup2 | label" *ngIf="!!p.Lookup2"
-        [serverErrors]="model?.serverErrors?.Lookup2Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../lookups/' + p.Lookup2.definition" [itemId]="model?.Lookup2Id">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="Lookup2">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup2Id" [definitionId]="Lookup2Definition"
-            [required]="d.Lookup2_Visibility === 2">
-        </b-lookups-picker>
-    </b-form-group>
-
-    <!-- Resource Lookup 3 -->
-    <b-form-group class="b-form-group" [label]="p.Lookup3 | label" *ngIf="!!p.Lookup3"
-        [serverErrors]="model?.serverErrors?.Lookup3Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../lookups/' + p.Lookup3.definition" [itemId]="model?.Lookup3Id">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="Lookup3">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup3Id" [definitionId]="Lookup3Definition"
-            [required]="d.Lookup3_Visibility === 2">
-        </b-lookups-picker>
-    </b-form-group>
-
-    <!-- Resource Lookup 4 -->
-    <b-form-group class="b-form-group" [label]="p.Lookup4 | label" *ngIf="!!p.Lookup4"
-        [serverErrors]="model?.serverErrors?.Lookup4Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../lookups/' + p['Lookup4'].definition" [itemId]="model?.Lookup4Id">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="Lookup4">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup4Id" [definitionId]="Lookup4Definition"
-            [required]="d.Lookup4_Visibility === 2">
-        </b-lookups-picker>
-    </b-form-group>
-
-    <!-- Resource Lookup 5 -->
-    <b-form-group class="b-form-group" [label]="p.Lookup5 | label" *ngIf="!!p.Lookup5"
-        [serverErrors]="model?.serverErrors?.Lookup5Id">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../lookups/' + p['Lookup5'].definition" [itemId]="model?.Lookup5Id">
-            <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="Lookup5">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup5Id" [definitionId]="Lookup5Definition"
-            [required]="d.Lookup5_Visibility === 2">
-        </b-lookups-picker>
-    </b-form-group>
-
-    <!-- Customs Reference -->
-    <b-form-group class="b-form-group" [label]="p.CustomsReference | label" *ngIf="!!p.CustomsReference"
-        [serverErrors]="model?.serverErrors?.CustomsReference">
-        <div *ngIf="!isEdit">{{ model?.CustomsReference }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.CustomsReference" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="d.CustomsReference_Visibility === 2">
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Identifier" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Identifier_isRequired">
         </b-text-editor>
     </b-form-group>
 
-    <!-- Memo -->
-    <b-form-group class="b-form-group" [label]="p.Memo | label" *ngIf="!!p.Memo"
-        [serverErrors]="model?.serverErrors?.Memo">
-        <div *ngIf="!isEdit">{{ model?.Memo }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="d.Memo_Visibility === 2"></b-text-editor>
+    <!-- Classification -->
+    <b-form-group class="b-form-group" [label]="'Resource_Classification' | translate"
+        [serverErrors]="model?.serverErrors?.ResourceClassificationId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.ResourceClassification">
+            <b-view-link link="../../../resource-classifications" [itemId]="model?.ResourceClassificationId">
+                {{ ws.getMultilingualValue('ResourceClassification', model.ResourceClassificationId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-resource-classifications-picker *ngIf="isEdit" [(ngModel)]="model.ResourceClassificationId" [required]="true"
+            [filter]="'ResourceDefinitionId eq \'' + definitionId + '\''">
+        </b-resource-classifications-picker>
+    </b-form-group>
+
+    <!-- Operating Segment -->
+    <b-form-group *ngIf="OperatingSegment_isVisible" class="b-form-group" [label]="OperatingSegment_label"
+        [serverErrors]="model?.serverErrors?.OperatingSegmentId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OperatingSegment">
+            <b-view-link link="../../../responsibility-centers" [itemId]="model?.OperatingSegmentId">
+                {{ ws.getMultilingualValue('ResponsibilityCenter', model.OperatingSegmentId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.OperatingSegmentId"
+            [filter]="'IsOperatingSegment eq true'">
+        </b-responsibility-centers-picker>
+    </b-form-group>
+
+    <!-- Currency -->
+    <b-form-group *ngIf="Currency_isVisible" class="b-form-group" [label]="Currency_label"
+        [serverErrors]="model?.serverErrors?.CurrencyId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
+            <b-view-link link="../../../currencies" [itemId]="model?.CurrencyId">
+                {{ ws.getMultilingualValue('Currency', model.CurrencyId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="Currency_isRequired">
+        </b-currencies-picker>
+    </b-form-group>
+
+    <!-- MonetaryValue -->
+    <b-form-group *ngIf="MonetaryValue_isVisible" class="b-form-group" [label]="MonetaryValue_label"
+        [serverErrors]="model?.serverErrors?.MonetaryValue">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MonetaryValue">
+            <div>{{ model?.MonetaryValue | number:'1.2-2' }}</div>
+        </b-restricted>
+        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.MonetaryValue" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="MonetaryValue_isRequired" [decimalPlaces]="2">
+        </b-decimal-editor>
+    </b-form-group>
+
+    <!-- Count Unit -->
+    <b-form-group *ngIf="CountUnit_isVisible" class="b-form-group" [label]="CountUnit_label"
+        [serverErrors]="model?.serverErrors?.CountUnitId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.CountUnit">
+            <b-view-link link="../../../measurement-units" [itemId]="model?.CountUnitId">
+                {{ ws.getMultilingualValue('MeasurementUnit', model.CountUnitId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.CountUnitId" filter="UnitType eq 'Count'"
+            [required]="CountUnit_isRequired">
+        </b-measurement-units-picker>
+    </b-form-group>
+
+    <!-- Count -->
+    <b-form-group *ngIf="Count_isVisible" class="b-form-group" [label]="Count_label"
+        [serverErrors]="model?.serverErrors?.Count">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Count">
+            <div>{{ model?.Count | number:'1.2-2' }}</div>
+        </b-restricted>
+        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Count" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Count_isRequired" [decimalPlaces]="2">
+        </b-decimal-editor>
+    </b-form-group>
+
+    <!-- Mass Unit -->
+    <b-form-group *ngIf="MassUnit_isVisible" class="b-form-group" [label]="MassUnit_label"
+        [serverErrors]="model?.serverErrors?.MassUnitId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.MassUnit">
+            <b-view-link link="../../../measurement-units" [itemId]="model?.MassUnitId">
+                {{ ws.getMultilingualValue('MeasurementUnit', model.MassUnitId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.MassUnitId" filter="UnitType eq 'Mass'"
+            [required]="MassUnit_isRequired">
+        </b-measurement-units-picker>
+    </b-form-group>
+
+    <!-- Mass -->
+    <b-form-group *ngIf="Mass_isVisible" class="b-form-group" [label]="Mass_label"
+        [serverErrors]="model?.serverErrors?.Mass">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Mass">
+            <div>{{ model?.Mass | number:'1.2-2' }}</div>
+        </b-restricted>
+        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Mass" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Mass_isRequired" [decimalPlaces]="2">
+        </b-decimal-editor>
+    </b-form-group>
+
+    <!-- Volume Unit -->
+    <b-form-group *ngIf="VolumeUnit_isVisible" class="b-form-group" [label]="VolumeUnit_label"
+        [serverErrors]="model?.serverErrors?.VolumeUnitId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.VolumeUnit">
+            <b-view-link link="../../../measurement-units" [itemId]="model?.VolumeUnitId">
+                {{ ws.getMultilingualValue('MeasurementUnit', model.VolumeUnitId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.VolumeUnitId" filter="UnitType eq 'Volume'"
+            [required]="VolumeUnit_isRequired">
+        </b-measurement-units-picker>
+    </b-form-group>
+
+    <!-- Volume -->
+    <b-form-group *ngIf="Volume_isVisible" class="b-form-group" [label]="Volume_label"
+        [serverErrors]="model?.serverErrors?.Volume">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Volume">
+            <div>{{ model?.Volume | number:'1.2-2' }}</div>
+        </b-restricted>
+        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Volume" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Volume_isRequired" [decimalPlaces]="2">
+        </b-decimal-editor>
+    </b-form-group>
+
+    <!-- Time Unit -->
+    <b-form-group *ngIf="TimeUnit_isVisible" class="b-form-group" [label]="TimeUnit_label"
+        [serverErrors]="model?.serverErrors?.TimeUnitId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.TimeUnit">
+            <b-view-link link="../../../measurement-units" [itemId]="model?.TimeUnitId">
+                {{ ws.getMultilingualValue('MeasurementUnit', model.TimeUnitId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-measurement-units-picker *ngIf="isEdit" [(ngModel)]="model.TimeUnitId" filter="UnitType eq 'Time'"
+            [required]="TimeUnit_isRequired">
+        </b-measurement-units-picker>
+    </b-form-group>
+
+    <!-- Time -->
+    <b-form-group *ngIf="Time_isVisible" class="b-form-group" [label]="Time_label"
+        [serverErrors]="model?.serverErrors?.Time">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Time">
+            <div>{{ model?.Time | number:'1.2-2' }}</div>
+        </b-restricted>
+        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="model.Time" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Time_isRequired" [decimalPlaces]="2">
+        </b-decimal-editor>
+    </b-form-group>
+
+    <!-- Lookup 1 -->
+    <b-form-group class="b-form-group" [label]="Lookup1_label" *ngIf="Lookup1_isVisible"
+        [serverErrors]="model?.serverErrors?.Lookup1Id">
+
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup1">
+            <b-view-link [link]="'../../../lookups/' + Lookup1_DefinitionId" [itemId]="model?.Lookup1Id">
+                {{ ws.getMultilingualValue('Lookup', model.Lookup1Id, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup1Id" [definitionId]="Lookup1_DefinitionId"
+            [required]="Lookup1_isRequired">
+        </b-lookups-picker>
+    </b-form-group>
+
+    <!-- Lookup 2 -->
+    <b-form-group class="b-form-group" [label]="Lookup2_label" *ngIf="Lookup2_isVisible"
+        [serverErrors]="model?.serverErrors?.Lookup2Id">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup2">
+            <b-view-link [link]="'../../../lookups/' + Lookup2_DefinitionId" [itemId]="model?.Lookup2Id">
+                {{ ws.getMultilingualValue('Lookup', model.Lookup2Id, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+
+        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup2Id" [definitionId]="Lookup2_DefinitionId"
+            [required]="Lookup2_isRequired">
+        </b-lookups-picker>
+    </b-form-group>
+
+    <!-- Lookup 3 -->
+    <!-- <b-form-group class="b-form-group" [label]="Lookup3_label" *ngIf="Lookup3_isVisible"
+        [serverErrors]="model?.serverErrors?.Lookup3Id">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup3">
+        <b-view-link [link]="'../../../lookups/' + Lookup3_DefinitionId" [itemId]="model?.Lookup3Id">
+            {{ ws.getMultilingualValue('Lookup', model.Lookup3Id, 'Name') }}
+        </b-view-link>
+        </b-restricted>
+
+        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup3Id" [definitionId]="Lookup3_DefinitionId"
+            [required]="Lookup3_isRequired">
+        </b-lookups-picker>
+    </b-form-group> -->
+
+    <!-- Lookup 4 -->
+    <!-- <b-form-group class="b-form-group" [label]="Lookup4_label" *ngIf="Lookup4_isVisible"
+        [serverErrors]="model?.serverErrors?.Lookup4Id">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup4">
+        <b-view-link [link]="'../../../lookups/' + Lookup4_DefinitionId" [itemId]="model?.Lookup4Id">
+            {{ ws.getMultilingualValue('Lookup', model.Lookup4Id, 'Name') }}
+        </b-view-link>
+        </b-restricted>
+
+        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup4Id" [definitionId]="Lookup4_DefinitionId"
+            [required]="Lookup4_isRequired">
+        </b-lookups-picker>
+    </b-form-group> -->
+
+    <!-- Lookup 5 -->
+    <!-- <b-form-group class="b-form-group" [label]="Lookup5_label" *ngIf="Lookup5_isVisible"
+        [serverErrors]="model?.serverErrors?.Lookup5Id">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Lookup5">
+        <b-view-link [link]="'../../../lookups/' + Lookup5_DefinitionId" [itemId]="model?.Lookup5Id">
+            {{ ws.getMultilingualValue('Lookup', model.Lookup5Id, 'Name') }}
+        </b-view-link>
+        </b-restricted>
+
+        <b-lookups-picker *ngIf="isEdit" [(ngModel)]="model.Lookup5Id" [definitionId]="Lookup5_DefinitionId"
+            [required]="Lookup5_isRequired">
+        </b-lookups-picker>
+    </b-form-group> -->
+
+    <!-- Available Since -->
+    <b-form-group *ngIf="AvailableSince_isVisible" class="b-form-group" [label]="AvailableSince_label"
+        [serverErrors]="model?.serverErrors?.AvailableSince">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AvailableSince">
+            <div>{{ model?.AvailableSince | date:'yyyy-MM-dd' }}</div>
+        </b-restricted>
+        <b-date-picker *ngIf="isEdit" [(ngModel)]="model.AvailableSince" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="AvailableSince_isRequired">
+        </b-date-picker>
+    </b-form-group>
+
+    <!-- Available Till -->
+    <b-form-group *ngIf="AvailableTill_isVisible" class="b-form-group" [label]="AvailableTill_label"
+        [serverErrors]="model?.serverErrors?.AvailableTill">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.AvailableTill">
+            <div>{{ model?.AvailableTill | date:'yyyy-MM-dd' }}</div>
+        </b-restricted>
+        <b-date-picker *ngIf="isEdit" [(ngModel)]="model.AvailableTill" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="AvailableTill_isRequired">
+        </b-date-picker>
+    </b-form-group>
+
+
+    <!-- Description -->
+    <b-form-group *ngIf="Description_isVisible" class="b-form-group"
+        [label]="('Description' | translate) + ws.primaryPostfix" [serverErrors]="model?.serverErrors?.Description">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description">
+            <div *ngIf="!isEdit">{{ model?.Description }}</div>
+        </b-restricted>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="Description_isRequired">
+        </b-text-editor>
+    </b-form-group>
+
+    <!-- Description2 -->
+    <b-form-group *ngIf="Description_isVisible && ws.settings.SecondaryLanguageId" class="b-form-group"
+        [label]="('Description' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Description2">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description2">
+            <div *ngIf="!isEdit">{{ model?.Description2 }}</div>
+        </b-restricted>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description2" [ngModelOptions]="{ updateOn: 'blur' }">
+        </b-text-editor>
+    </b-form-group>
+
+    <!-- Description3 -->
+    <b-form-group *ngIf="Description_isVisible && ws.settings.TernaryLanguageId" class="b-form-group"
+        [label]="('Description' | translate) + ws.ternaryPostfix" [serverErrors]="model?.serverErrors?.Description3">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Description3">
+            <div *ngIf="!isEdit">{{ model?.Description3 }}</div>
+        </b-restricted>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Description3" [ngModelOptions]="{ updateOn: 'blur' }">
+        </b-text-editor>
     </b-form-group>
 
     <!-- Is Active -->
     <b-form-group class="b-form-group" [label]="'IsActive' | translate" *ngIf="!isEdit">
-        <b-auto-cell collection="Resource" [definition]="definitionId" [entity]="model" path="IsActive">
-        </b-auto-cell>
+        {{ (model?.IsActive ? 'Yes' : 'No') | translate }}
     </b-form-group>
 </ng-template>
 

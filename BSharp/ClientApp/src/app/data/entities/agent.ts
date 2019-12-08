@@ -3,10 +3,9 @@
 import { EntityWithKey } from './base/entity-with-key';
 import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
-import { EntityDescriptor } from './base/metadata';
+import { EntityDescriptor, NavigationPropDescriptor, NumberPropDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { GENERIC } from './base/constants';
 
 export class AgentForSave extends EntityWithKey {
 
@@ -55,13 +54,12 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
     _cache = {};
   }
 
-  const key = definitionId || GENERIC; // undefined
+  const key = definitionId || '-'; // undefined
   if (!_cache[key]) {
     if (!_definitionIds) {
       _definitionIds = Object.keys(ws.definitions.Agents);
     }
 
-    const definedDefinitionId = !!definitionId && definitionId !== GENERIC;
     const entityDesc: EntityDescriptor = {
       collection: 'Agent',
       definitionId,
@@ -69,8 +67,8 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
       titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Agents[definitionId], 'TitleSingular') || trx.instant('Agent'),
       titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Agents[definitionId], 'TitlePlural') || trx.instant('Agents'),
       select: _select,
-      apiEndpoint: definedDefinitionId ? `agents/${definitionId}` : 'agents',
-      screenUrl: definedDefinitionId ? `agents/${definitionId}` : 'agents',
+      apiEndpoint: !!definitionId ? `agents/${definitionId}` : 'agents',
+      screenUrl: !!definitionId ? `agents/${definitionId}` : 'agents',
       orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
@@ -109,13 +107,13 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
     // Adjust according to definitions
     const definition = _definitions.Agents[definitionId];
     if (!definition) {
-      if (definitionId !== GENERIC) {
+      if (!!definitionId) {
         // Programmer mistake
         console.error(`defintionId '${definitionId}' doesn't exist`);
       }
     } else {
 
-      // properties whose label is overridden by the definition
+      // Simple properties whose label is overridden by the definition
       const simpleLabelProps = ['StartDate'];
       for (const propName of simpleLabelProps) {
         const propDesc = entityDesc.properties[propName];
@@ -123,11 +121,31 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
         propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
       }
 
-      // properties whose visibility is overridden by the definition
+      // Simple properties whose visibility is overridden by the definition
       const simpleVisibilityProps = ['TaxIdentificationNumber', 'StartDate', 'Job', 'BasicSalary', 'TransportationAllowance', 'OvertimeRate', 'BankAccountNumber'];
       for (const propName of simpleVisibilityProps) {
         if (!definition[propName + 'Visibility']) {
           delete entityDesc.properties[propName];
+        }
+      }
+
+      // Navigation properties whose label is overriden by the definition
+      for (const propName of ['OperatingSegment']) {
+
+        const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
+        const defaultLabel = propDesc.label;
+        propDesc.label = () => ws.getMultilingualValueImmediate(definition, propName + 'Label') || defaultLabel();
+
+        const idPropDesc = entityDesc.properties[propName + 'Id'] as NumberPropDescriptor;
+        idPropDesc.label = () => `${propDesc.label()} (${trx.instant('Id')})`;
+
+      }
+
+      // Navigation properties whose visibility is overriden by the definition
+      for (const propName of ['OperatingSegment']) {
+        if (!definition[propName + 'Visibility']) {
+          delete entityDesc.properties[propName];
+          delete entityDesc.properties[propName + 'Id'];
         }
       }
     }

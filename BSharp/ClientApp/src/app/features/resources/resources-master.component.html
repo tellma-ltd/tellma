@@ -1,5 +1,6 @@
-<b-master collection="Resource" [definition]="definitionId" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
-  [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+<b-master *ngIf="found;else pageNotFound" collection="Resource" [definition]="definitionId" [mode]="mode"
+  [showCreateButton]="showCreate" [filterDefault]="filter" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="Code,IsActive" selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
               { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
               { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
@@ -10,6 +11,11 @@
           }">
 </b-master>
 
+<!-- If definitionId is invalid -->
+<ng-template #pageNotFound>
+  <b-application-page-not-found>
+  </b-application-page-not-found>
+</ng-template>
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
@@ -23,8 +29,8 @@
 
 <!-- Summary Header -->
 <ng-template #summaryHeader let-id="id">
-    {{ summary }}
-  </ng-template>
+  {{ summary }}
+</ng-template>
 
 <!-- Summary Column -->
 <ng-template #summaryColumn let-id="id">

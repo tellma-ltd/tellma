@@ -6,7 +6,6 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
-import { GENERIC } from './base/constants';
 
 export class LookupForSave extends EntityForSave {
     Name: string;
@@ -42,14 +41,13 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
         _cache = {};
     }
 
-    definitionId = definitionId || GENERIC;
-    if (!_cache[definitionId]) {
+    const key = definitionId || '-'; // undefined
+    if (!_cache[key]) {
 
         if (!_definitionIds) {
             _definitionIds = Object.keys(ws.definitions.Lookups);
         }
 
-        const definedDefinitionId = !!definitionId && definitionId !== GENERIC;
         const entityDesc: EntityDescriptor = {
             collection: 'Lookup',
             definitionId,
@@ -57,8 +55,8 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
             titleSingular: () => ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitleSingular'),
             titlePlural: () => ws.getMultilingualValueImmediate(ws.definitions.Lookups[definitionId], 'TitlePlural'),
             select: _select,
-            apiEndpoint: definedDefinitionId ? `lookups/${definitionId}` : 'lookups',
-            screenUrl: definedDefinitionId ? `lookups/${definitionId}` : 'lookups',
+            apiEndpoint: !!definitionId ? `lookups/${definitionId}` : 'lookups',
+            screenUrl: !!definitionId ? `lookups/${definitionId}` : 'lookups',
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
             format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
             properties: {
@@ -86,7 +84,7 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
 
         const definition = _definitions.Lookups[definitionId];
         if (!definition) {
-            if (definitionId !== GENERIC) {
+            if (!!definitionId) {
                 // Programmer mistake
                 console.error(`defintionId '${definitionId}' doesn't exist`);
             } else {
@@ -97,8 +95,8 @@ export function metadata_Lookup(ws: TenantWorkspace, trx: TranslateService, defi
             // Definition specific adjustments
         }
 
-        _cache[definitionId] = entityDesc;
+        _cache[key] = entityDesc;
     }
 
-    return _cache[definitionId];
+    return _cache[key];
 }

@@ -13,7 +13,6 @@ import { addToWorkspace, Key, addSingleToWorkspace } from '~/app/data/util';
 import { TranslateService } from '@ngx-translate/core';
 import { metadata, EntityDescriptor } from '~/app/data/entities/base/metadata';
 import { GetByIdResponse } from '~/app/data/dto/get-by-id-response';
-import { GENERIC } from '~/app/data/entities/base/constants';
 
 enum SearchStatus {
   showSpinner = 'showSpinner',
@@ -219,7 +218,6 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   ///////////////// Helper Functions
 
   entityDescriptor(definitionId?: string): EntityDescriptor {
-    definitionId = definitionId || GENERIC;
     const coll = this.collection;
     return !!coll ? metadata[coll](this.workspace.current, this.translate, definitionId) : null;
   }

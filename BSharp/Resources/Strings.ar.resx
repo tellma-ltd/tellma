@@ -265,6 +265,9 @@
   <data name="DefaultError" xml:space="preserve">
     <value>حدث خطأ غير معروف.</value>
   </data>
+  <data name="Definition" xml:space="preserve">
+    <value>التعريف</value>
+  </data>
   <data name="Definition_State" xml:space="preserve">
     <value>الحالة</value>
   </data>

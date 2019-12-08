@@ -61,7 +61,9 @@ import {
   faChartArea,
   faChartLine,
   faInfoCircle,
-  faTachometerAlt
+  faTachometerAlt,
+  faTools,
+  faCamera
 
 } from '@fortawesome/free-solid-svg-icons';
 import { BrandComponent } from './brand/brand.component';
@@ -191,7 +193,7 @@ export class SharedModule {
       faSave, faTimes, faDownload, faArrowCircleRight, faThumbsUp, faThumbsDown,
       faUndo, faClipboardCheck, faUpload, faFileDownload, faFilter, faCalendar,
       faAsterisk, faCameraRetro, faUser, faRulerCombined, faUsers, faCog,
-      faTasks, faMale, faBuilding, faChartPie, faInfoCircle,
+      faTasks, faMale, faBuilding, faChartPie, faInfoCircle, faTools, faCamera,
 
       faBars,
       faChartLine, faExternalLinkAlt, faMinusSquare

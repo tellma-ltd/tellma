@@ -171,6 +171,12 @@ namespace BSharp.Controllers.Dto
 
     public class ResourceDefinitionForClient : MasterDetailDefinitionForClient
     {
+        public string OperatingSegmentLabel { get; set; }
+        public string OperatingSegmentLabel2 { get; set; }
+        public string OperatingSegmentLabel3 { get; set; }
+        public string OperatingSegmentVisibility { get; set; }
+        public int? OperatingSegmentDefaultValue { get; set; }
+
         public string IdentifierLabel { get; set; }
         public string IdentifierLabel2 { get; set; }
         public string IdentifierLabel3 { get; set; }
@@ -255,7 +261,7 @@ namespace BSharp.Controllers.Dto
         public string Lookup1Label { get; set; }
         public string Lookup1Label2 { get; set; }
         public string Lookup1Label3 { get; set; }
-        public string Lookup1Visibility { get; set; } // 0, 1, 2 (not visible, visible, visible and required)
+        public string Lookup1Visibility { get; set; }
         public int? Lookup1DefaultValue { get; set; }
         public string Lookup1DefinitionId { get; set; }
 
@@ -294,6 +300,12 @@ namespace BSharp.Controllers.Dto
 
     public class AgentDefinitionForClient : MasterDetailDefinitionForClient
     {
+        public string OperatingSegmentLabel { get; set; }
+        public string OperatingSegmentLabel2 { get; set; }
+        public string OperatingSegmentLabel3 { get; set; }
+        public string OperatingSegmentVisibility { get; set; }
+        public int? OperatingSegmentDefaultValue { get; set; }
+
         public string TaxIdentificationNumberVisibility { get; set; }
         public string StartDateVisibility { get; set; }
         public string StartDateLabel { get; set; }

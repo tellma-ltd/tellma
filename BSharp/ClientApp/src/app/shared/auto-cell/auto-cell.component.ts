@@ -5,7 +5,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { Entity } from '~/app/data/entities/base/entity';
 import { formatNumber, formatDate } from '@angular/common';
-import { EntityWithKey } from '~/app/data/entities/base/entity-with-key';
 
 @Component({
   selector: 'b-auto-cell',
