@@ -1,9 +1,6 @@
-<b-details collection="AccountType" [expand]="expand" [mode]="mode" [showCreateButton]="false" [showEditButton]="false" [showDeleteButton]="false"
-  [masterCrumb]="'AccountTypes' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
-  [documentTemplate]="document" [actions]="[
-            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
-            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-           ]">
+<b-details collection="AccountType" [expand]="expand" [mode]="mode" [showCreateButton]="false" [showEditButton]="false"
+  [showDeleteButton]="false" [masterCrumb]="'AccountTypes' | translate" [detailsCrumb]="detailsCrumb"
+  [idString]="idString" [documentTemplate]="document" [actions]="[]">
 
 </b-details>
 
@@ -17,19 +14,18 @@
 <ng-template #document let-model="model">
 
   <!-- Header Name -->
-  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Name">
+  <b-form-group class="col-12 mb-2 mb-sm-4 b-h2">
     <h2 class="font-weight-normal">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
   </b-form-group>
 
   <!-- Name -->
-  <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix"
-    [serverErrors]="model?.serverErrors?.Name">
+  <b-form-group class="b-form-group" *ngIf="!ws.isPrimaryLanguage" [label]="('Name' | translate) + ws.primaryPostfix">
     <div>{{ model?.Name }}</div>
   </b-form-group>
 
   <!-- Name2 -->
   <b-form-group class="b-form-group" *ngIf="!ws.isSecondaryLanguage && ws.settings.SecondaryLanguageId"
-    [label]="('Name' | translate) + ws.secondaryPostfix" [serverErrors]="model?.serverErrors?.Name2">
+    [label]="('Name' | translate) + ws.secondaryPostfix">
     <div>{{ model?.Name2 }}</div>
   </b-form-group>
 
@@ -39,23 +35,26 @@
     <div>{{ model?.Name3 }}</div>
   </b-form-group>
 
-  <!-- Is Assignable -->
-  <b-form-group class="b-form-group" [label]="'IsAssignable' | translate">
-    <b-auto-cell collection="AccountType" [entity]="model" path="IsAssignable"></b-auto-cell>
-  </b-form-group>
-
-  <!-- Is Active -->
-  <b-form-group class="b-form-group" [label]="'IsActive' | translate">
-    <b-auto-cell collection="AccountType" [entity]="model" path="IsActive"></b-auto-cell>
-  </b-form-group>
-  
   <!-- Id -->
-  <b-form-group class="b-form-group" [label]="'Code' | translate" [serverErrors]="model?.serverErrors?.Id">
+  <b-form-group class="b-form-group" [label]="'Code' | translate">
     <div>{{ model?.Id }}</div>
   </b-form-group>
+
+  <!-- Description -->
+  <b-form-group class="b-form-group" [label]="('Description' | translate) + ws.primaryPostfix"
+    [serverErrors]="model?.serverErrors?.Description">
+    <div>{{ model?.Description }}</div>
+  </b-form-group>
+
+  <!-- Description2 -->
+  <b-form-group class="b-form-group" *ngIf="ws.settings.SecondaryLanguageId"
+    [label]="('Description' | translate) + ws.secondaryPostfix">
+    <div>{{ model?.Description2 }}</div>
+  </b-form-group>
+
+  <!-- Description3 -->
+  <b-form-group class="b-form-group" *ngIf="ws.settings.TernaryLanguageId"
+    [label]="('Description' | translate) + ws.ternaryPostfix">
+    <div>{{ model?.Description3 }}</div>
+  </b-form-group>
 </ng-template>
-
-
-<!-- Actions -->
-<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
-<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

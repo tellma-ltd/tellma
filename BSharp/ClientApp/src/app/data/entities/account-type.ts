@@ -10,16 +10,9 @@ export class AccountType extends EntityForSave {
   Name: string;
   Name2: string;
   Name3: string;
-  ParentId: string;
-  Level: number;
-  ChildCount: number;
-  ActiveChildCount: number;
-  IsAssignable: boolean;
-  IsActive: boolean;
-  CreatedAt: string;
-  CreatedById: number | string;
-  ModifiedAt: string;
-  ModifiedById: number | string;
+  Description: string;
+  Description2: string;
+  Description3: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);
@@ -51,42 +44,20 @@ export function metadata_AccountType(ws: TenantWorkspace, trx: TranslateService,
         Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
-
-        // tree stuff
-        Parent: {
-          control: 'navigation', label: () => trx.instant('TreeParent'), type: 'AccountType',
-          foreignKeyName: 'ParentId'
-        },
-        ChildCount: {
-          control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-          alignment: 'right'
-        },
-        ActiveChildCount: {
-          control: 'number', label: () => trx.instant('TreeActiveChildCount'), minDecimalPlaces: 0,
-          maxDecimalPlaces: 0, alignment: 'right'
-        },
-        Level: {
-          control: 'number', label: () => trx.instant('TreeLevel'), minDecimalPlaces: 0, maxDecimalPlaces: 0,
-          alignment: 'right'
-        },
-
-        IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable'),
-         format: (b) => !!b ? '✓' : '✗' },
-        // format: (b) => !!b ? '✔️' : '❌' },
-        IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-        CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
-        CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },
-        ModifiedAt: { control: 'datetime', label: () => trx.instant('ModifiedAt') },
-        ModifiedBy: { control: 'navigation', label: () => trx.instant('ModifiedBy'), type: 'User', foreignKeyName: 'ModifiedById' }
+        Description: { control: 'text', label: () => trx.instant('Description') + ws.primaryPostfix },
+        Description2: { control: 'text', label: () => trx.instant('Description') + ws.secondaryPostfix },
+        Description3: { control: 'text', label: () => trx.instant('Description') + ws.ternaryPostfix }
       }
     };
 
     if (!ws.settings.SecondaryLanguageId) {
       delete entityDesc.properties.Name2;
+      delete entityDesc.properties.Description2;
     }
 
     if (!ws.settings.TernaryLanguageId) {
       delete entityDesc.properties.Name3;
+      delete entityDesc.properties.Description3;
     }
 
     _cache = entityDesc;

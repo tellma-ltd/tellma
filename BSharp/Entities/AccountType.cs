@@ -23,33 +23,19 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Name3 { get; set; }
 
-        [Display(Name = "IsAssignable")]
+        [MultilingualDisplay(Name = "Description", Language = Language.Primary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
-        public bool? IsAssignable { get; set; }
+        public string Description { get; set; }
 
+        [MultilingualDisplay(Name = "Description", Language = Language.Secondary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
-        public string ParentId { get; set; }
+        public string Description2 { get; set; }
 
+        [MultilingualDisplay(Name = "Description", Language = Language.Ternary)]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
-        public short? Level { get; set; }
-
-        [AlwaysAccessible]
-        public int? ActiveChildCount { get; set; }
-
-        [AlwaysAccessible]
-        public int? ChildCount { get; set; }
-
-        [Display(Name = "IsActive")]
-        [AlwaysAccessible]
-        public bool? IsActive { get; set; }
-
-        // For Query
-
-        [AlwaysAccessible]
-        public HierarchyId Node { get; set; }
-
-        [Display(Name = "TreeParent")]
-        [ForeignKey(nameof(ParentId))]
-        public AccountType Parent { get; set; }
+        public string Description3 { get; set; }
     }
 }

@@ -49,15 +49,15 @@
             [class.b-less-dark]="isDark">
 
             <!-- Include Inactive -->
-            <li class="dropdown-item b-transparent-background" [class.b-text-whitish]="isDark"
-              [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{
+            <li *ngIf="showIncludeInactive" class="dropdown-item b-transparent-background"
+              [class.b-text-whitish]="isDark" [class.selected]="isIncludeInactive" (click)="onIncludeInactive()"><span> {{
                 includeInactiveLabel }} </span></li>
+            <li *ngIf="showIncludeInactive">
+              <hr />
+            </li>
 
             <!-- Custom filter options -->
             <ng-container *ngFor="let groupName of groupNames">
-              <li>
-                <hr />
-              </li>
               <ng-container *ngFor="let e of filterTemplates(groupName)">
                 <li class="dropdown-item b-transparent-background" [class.b-text-whitish]="isDark"
                   [class.selected]="isFilterChecked(groupName, e.expression)"
@@ -69,13 +69,13 @@
                     </ng-template>
                   </div>
                 </li>
+                <li>
+                  <hr />
+                </li>
               </ng-container>
             </ng-container>
 
             <!-- Custom Filter -->
-            <li>
-              <hr />
-            </li>
             <li class="dropdown-item b-transparent-background" [class.bg-white]="isLight" [class.b-less-dark]="isDark"
               style="cursor: default" [class.b-text-whitish]="isDark" [class.selected]="!!customFilter">
               <div>
@@ -84,11 +84,11 @@
                   [ngModelOptions]="{updateOn: 'blur'}" />
               </div>
             </li>
-
-            <!-- Clear Filter -->
             <li>
               <hr />
             </li>
+
+            <!-- Clear Filter -->
             <li class="dropdown-item b-transparent-background d-flex justify-content-between"
               [class.b-text-whitish]="isDark" [class.disabled]="!isAnyFilterChecked" (click)="onClearFilter()"><span
                 class="d-block">{{ 'ClearFilter' | translate }}</span><span [class.text-danger]="isLight"

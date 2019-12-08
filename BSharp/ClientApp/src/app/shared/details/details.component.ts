@@ -533,6 +533,10 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     return this.showEditButton;
   }
 
+  get showActions(): boolean {
+    return (!!this.actions && this.actions.length > 0) || this.showDelete || this.showClone;
+  }
+
   get showDelete(): boolean {
     return this.showDeleteButton;
   }

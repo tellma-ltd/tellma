@@ -44,7 +44,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             Assert.NotEmpty(responseData.Result);
 
-            Shared.Set("AccountType", responseData.Result.FirstOrDefault(e => e.IsAssignable ?? false));
+            Shared.Set("AccountType", responseData.Result.FirstOrDefault());
         }
 
         [Fact(DisplayName = "02 Getting a non-existent account type id returns a 404 Not Found")]
@@ -77,55 +77,9 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(entity.Name, responseDto.Name);
             Assert.Equal(entity.Name2, responseDto.Name2);
             Assert.Equal(entity.Name3, responseDto.Name3);
-            Assert.Equal(entity.ParentId, responseDto.ParentId);
-        }
-
-        [Fact(DisplayName = "04 Deactivating an active account type returns a 200 OK inactive entity")]
-        public async Task Test04()
-        {
-            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
-
-            // Get the Id
-            var entity = Shared.Get<AccountType>("AccountType");
-            var id = entity.Id;
-
-            // Call the API
-            var response = await Client.PutAsJsonAsync($"{Url}/deactivate", new List<string>() { id });
-
-            // Assert that the response status code is correct
-            Output.WriteLine(await response.Content.ReadAsStringAsync());
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<AccountType>>();
-            Assert.Single(responseData.Result);
-            var responseDto = responseData.Result.Single();
-
-            // Confirm that the entity was deactivated
-            Assert.False(responseDto.IsActive, "The account type was not deactivated");
-        }
-
-        [Fact(DisplayName = "05 Activating an inactive account type returns a 200 OK active entity")]
-        public async Task Test11()
-        {
-            // Get the Id
-            var entity = Shared.Get<AccountType>("AccountType");
-            var id = entity.Id;
-
-            // Call the API
-            var response = await Client.PutAsJsonAsync($"{Url}/activate", new List<string>() { id });
-
-            // Assert that the response status code is correct
-            Output.WriteLine(await response.Content.ReadAsStringAsync());
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            // Confirm that the response content is well formed singleton
-            var responseData = await response.Content.ReadAsAsync<EntitiesResponse<AccountType>>();
-            Assert.Single(responseData.Result);
-            var responseDto = responseData.Result.Single();
-
-            // Confirm that the entity was activated
-            Assert.True(responseDto.IsActive, "The account type was not activated");
+            Assert.Equal(entity.Description, responseDto.Description);
+            Assert.Equal(entity.Description2, responseDto.Description2);
+            Assert.Equal(entity.Description3, responseDto.Description3);
         }
     }
 }
