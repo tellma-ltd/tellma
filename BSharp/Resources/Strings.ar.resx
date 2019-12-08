@@ -1276,6 +1276,9 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>لون العلامة التجارية</value>
   </data>
+  <data name="Settings_FunctionalCurrency" xml:space="preserve">
+    <value>العملة الوظيفية</value>
+  </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>اللغة الرئيسية</value>
   </data>

@@ -50,7 +50,6 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     if (!!changes.maxDecimalPlaces && !changes.maxDecimalPlaces.isFirstChange()
       || !!changes.minDecimalPlaces && !changes.minDecimalPlaces.isFirstChange()) {
       this.input.nativeElement.value = this.format(this.input.nativeElement.value);

@@ -1276,6 +1276,9 @@
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>品牌颜色</value>
   </data>
+  <data name="Settings_FunctionalCurrency" xml:space="preserve">
+    <value>功能货币</value>
+  </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>主要语言</value>
   </data>

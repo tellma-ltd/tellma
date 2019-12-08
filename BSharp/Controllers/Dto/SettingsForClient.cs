@@ -10,6 +10,10 @@ namespace BSharp.Controllers.Dto
 
         public string ShortCompanyName3 { get; set; }
 
+        public string FunctionalCurrencyId { get; set; }
+
+        public byte FunctionalCurrencyDecimals { get; set; }
+
         public string PrimaryLanguageId { get; set; }
 
         public string PrimaryLanguageName { get; set; }
@@ -29,7 +33,7 @@ namespace BSharp.Controllers.Dto
         public string TernaryLanguageSymbol { get; set; }
 
         public string BrandColor { get; set; }
-               
+
         public DateTimeOffset CreatedAt { get; set; }
     }
 }

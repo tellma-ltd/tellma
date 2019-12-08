@@ -363,6 +363,7 @@
   "Settings": "إعدادات",
   "Settings_BrandColor": "لون العلامة التجارية",
   "Settings_BrandColorDescription": "لون شريط التصفح في أعلى واجهة المستخدم",
+  "Settings_FunctionalCurrency": "العملة الوظيفية",
   "Settings_LanguageSymbolDescription": "الرمز الذي يميز لغة الحقول المزدوجة اللغة",
   "Settings_PrimaryLanguage": "اللغة الرئيسية",
   "Settings_PrimaryLanguageDescription": "إدخال البيانات إلزامي بهذه اللغة",

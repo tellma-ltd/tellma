@@ -193,7 +193,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
 
   public MonetaryValue_decimals(model: Resource): number {
     const currency = this.ws.get('Currency', model.CurrencyId) as Currency;
-    return !!currency ? currency.E : 0;
+    return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals; // TODO: Use functional currency
   }
 
   public get CountUnit_isVisible(): boolean {
