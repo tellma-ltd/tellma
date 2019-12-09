@@ -5,7 +5,7 @@
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
         <b-account-types-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
-            (choose)="modal.close(true); update($event);">
+            (choose)="modal.close(true); update.call(null, $event);">
         </b-account-types-master>
     </div>
 </ng-template>

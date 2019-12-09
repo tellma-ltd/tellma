@@ -7,16 +7,19 @@
     let-definitionId="definitionId" let-idString="idString">
     <div class="modal-body">
         <b-resources-details mode="popup" [idString]="idString" [initialText]="initialText"
-            [definitionId]="definitionId" (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
+            [definitionId]="definitionId" (cancel)="modal.close(false);"
+            (saved)="modal.close(true); update.call(null, $event);">
         </b-resources-details>
     </div>
 </ng-template>
 
 <!-- The Resource Master Modal -->
-<ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId" let-filter="filter">
+<ng-template #master let-modal="modal" let-update="update" let-create="create" let-definitionId="definitionId"
+    let-filter="filter">
     <div class="modal-body">
         <b-resources-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
-            (choose)="modal.close(true); update($event);" (create)="modal.close(false); create()" [showCreate]="showCreate">
+            (choose)="modal.close(true); update.call(null, $event);" (create)="modal.close(false); create.call()"
+            [showCreate]="showCreate">
         </b-resources-master>
     </div>
 </ng-template>

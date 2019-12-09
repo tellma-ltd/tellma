@@ -141,7 +141,7 @@
               ws.getMultilingualValue('Role',
               item.RoleId, 'Name') }}</b-view-link>
             </b-restricted>
-            <b-roles-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update(item)"
+            <b-roles-picker *ngIf="isEdit" [(ngModel)]="item.RoleId" (ngModelChange)="update.call(null, item)"
               [showMembers]="false">
             </b-roles-picker>
           </b-form-group>
@@ -154,7 +154,7 @@
             <div *ngIf="!isEdit">
               <b-restricted [metadata]="item.EntityMetadata?.Memo">{{ item.Memo }}</b-restricted>
             </div>
-            <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update(item)"
+            <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update.call(null, item)"
               [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
           </b-form-group>
         </ng-template>

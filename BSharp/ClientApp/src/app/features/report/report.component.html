@@ -24,8 +24,8 @@
                         <!-- Decimal -->
                         <b-decimal-editor *ngSwitchCase="'number'" [(ngModel)]="arguments[p.key]"
                             [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
-                            (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="p.desc.minDecimalPlaces"
-                            [maxDecimalPlaces]="p.desc.maxDecimalPlaces">
+                            (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="p.desc['minDecimalPlaces']"
+                            [maxDecimalPlaces]="p.desc['maxDecimalPlaces']">
                         </b-decimal-editor>
 
                         <!-- Date -->
@@ -60,7 +60,7 @@
                         </div>
 
                         <!-- Navigation -->
-                        <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc.collection">
+                        <ng-container *ngSwitchCase="'navigation'" [ngSwitch]="p.desc['collection']">
                             <div class="text-danger font-weight-bold" *ngSwitchDefault>
                                 TODO: navigation controls
                             </div>
