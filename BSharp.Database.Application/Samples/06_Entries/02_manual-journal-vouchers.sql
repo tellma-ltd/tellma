@@ -108,7 +108,6 @@ BEGIN -- Inserting
 	-- TODO: fill index using ROWNUMBER
 	SELECT [Id], [Id] FROM dbo.[Lines] WHERE [State] = 0; --N'Draft';
 
-	--IF (1=0)
 	EXEC [api].[Lines__Sign]
 		@IndexedIds = @DocLinesIndexedIds,
 		@ToState = 4, -- N'Reviewed',
@@ -129,9 +128,9 @@ BEGIN -- Inserting
 	--SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
 	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
 
-	--EXEC [api].[Documents__File]
-	--	@IndexedIds = @DocsIndexedIds,
-	--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	EXEC [api].[Documents__File]
+		@IndexedIds = @DocsIndexedIds,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @DebugManualVouchers = 1
 	BEGIN

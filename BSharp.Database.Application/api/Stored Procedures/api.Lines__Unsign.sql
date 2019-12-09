@@ -32,4 +32,11 @@ SET NOCOUNT ON;
 	*/
 	IF EXISTS(SELECT * FROM @TransitionedIds)
 		EXEC [dal].[Lines_State__Update] @Ids = @TransitionedIds
+
+	DECLARE @DocIds dbo.IdList;
+	INSERT INTO @DocIds([Id])
+	SELECT DISTINCT DocumentId FROM dbo.Lines
+	WHERE [Id] IN (SELECT [Id] FROM @IndexedIds);
+
+	EXEC dal.Documents_State__Refresh @DocIds;
 END;

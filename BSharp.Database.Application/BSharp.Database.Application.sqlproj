@@ -470,6 +470,7 @@
     <Build Include="bll\Stored Procedures\bll.EntryClassifications_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dbo\Tables\dbo.ContractTypes.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents_State__Refresh.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

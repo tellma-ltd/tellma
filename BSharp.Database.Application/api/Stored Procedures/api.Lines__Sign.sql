@@ -78,4 +78,11 @@ SET NOCOUNT ON;
 	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_Lines__Ready](@Ids, @ToState);
 
 	EXEC dal.[Lines_State__Update] @Ids = @ReadyIds, @ToState = @ToState;
+
+	DECLARE @DocIds dbo.IdList;
+	INSERT INTO @DocIds([Id])
+	SELECT DISTINCT DocumentId FROM dbo.Lines
+	WHERE [Id] IN (SELECT [Id] FROM @IndexedIds);
+
+	EXEC dal.Documents_State__Refresh @DocIds;
 END;
