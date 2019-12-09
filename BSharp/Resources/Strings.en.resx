@@ -310,6 +310,9 @@
   <data name="Document_State_Authorized" xml:space="preserve">
     <value>Authorized</value>
   </data>
+  <data name="Document_State_Closed" xml:space="preserve">
+    <value>Closed</value>
+  </data>
   <data name="Document_State_Completed" xml:space="preserve">
     <value>Completed</value>
   </data>
@@ -322,14 +325,14 @@
   <data name="Document_State_Invalid" xml:space="preserve">
     <value>Invalid</value>
   </data>
-  <data name="Document_State_Posted" xml:space="preserve">
-    <value>Posted</value>
-  </data>
   <data name="Document_State_Rejected" xml:space="preserve">
     <value>Rejected</value>
   </data>
   <data name="Document_State_Requested" xml:space="preserve">
     <value>Requested</value>
+  </data>
+  <data name="Document_State_Reviewed" xml:space="preserve">
+    <value>Reviewed</value>
   </data>
   <data name="Document_State_Void" xml:space="preserve">
     <value>Void</value>
@@ -339,69 +342,6 @@
   </data>
   <data name="Document_VoucherNumericReference" xml:space="preserve">
     <value>Voucher Reference</value>
-  </data>
-  <data name="DocumentLine_AdditionalReference" xml:space="preserve">
-    <value>Additional Reference</value>
-  </data>
-  <data name="DocumentLine_ExternalReference" xml:space="preserve">
-    <value>External Reference</value>
-  </data>
-  <data name="DocumentLine_LineType" xml:space="preserve">
-    <value>Line Type</value>
-  </data>
-  <data name="DocumentLine_RelatedAccount" xml:space="preserve">
-    <value>Related Account</value>
-  </data>
-  <data name="DocumentLine_RelatedMoneyAmount" xml:space="preserve">
-    <value>Related Money Amount</value>
-  </data>
-  <data name="DocumentLine_RelatedQuantity" xml:space="preserve">
-    <value>Related Quantity</value>
-  </data>
-  <data name="DocumentLine_RelatedResource" xml:space="preserve">
-    <value>Related Resource</value>
-  </data>
-  <data name="DocumentLineEntry_Account" xml:space="preserve">
-    <value>Account</value>
-  </data>
-  <data name="DocumentLineEntry_Agent" xml:space="preserve">
-    <value>Agent</value>
-  </data>
-  <data name="DocumentLineEntry_Area" xml:space="preserve">
-    <value>Area</value>
-  </data>
-  <data name="DocumentLineEntry_BatchCode" xml:space="preserve">
-    <value>Batch Code</value>
-  </data>
-  <data name="DocumentLineEntry_Count" xml:space="preserve">
-    <value>Count</value>
-  </data>
-  <data name="DocumentLineEntry_IfrsEntryClassification" xml:space="preserve">
-    <value>IFRS Classification</value>
-  </data>
-  <data name="DocumentLineEntry_Length" xml:space="preserve">
-    <value>Length</value>
-  </data>
-  <data name="DocumentLineEntry_Mass" xml:space="preserve">
-    <value>Mass</value>
-  </data>
-  <data name="DocumentLineEntry_MonetaryValue" xml:space="preserve">
-    <value>Monetary Value</value>
-  </data>
-  <data name="DocumentLineEntry_Resource" xml:space="preserve">
-    <value>Resource</value>
-  </data>
-  <data name="DocumentLineEntry_ResponsibilityCenter" xml:space="preserve">
-    <value>Responsibility Center</value>
-  </data>
-  <data name="DocumentLineEntry_Time" xml:space="preserve">
-    <value>Time</value>
-  </data>
-  <data name="DocumentLineEntry_Value" xml:space="preserve">
-    <value>Value</value>
-  </data>
-  <data name="DocumentLineEntry_Volume" xml:space="preserve">
-    <value>Volume</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
     <value>Email '{0}' is already taken.</value>
@@ -423,6 +363,48 @@
   </data>
   <data name="EnterYourEmail" xml:space="preserve">
     <value>Enter your email</value>
+  </data>
+  <data name="Entry_Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Entry_Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Entry_Area" xml:space="preserve">
+    <value>Area</value>
+  </data>
+  <data name="Entry_BatchCode" xml:space="preserve">
+    <value>Batch Code</value>
+  </data>
+  <data name="Entry_Count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="Entry_IfrsEntryClassification" xml:space="preserve">
+    <value>IFRS Classification</value>
+  </data>
+  <data name="Entry_Length" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="Entry_Mass" xml:space="preserve">
+    <value>Mass</value>
+  </data>
+  <data name="Entry_MonetaryValue" xml:space="preserve">
+    <value>Monetary Value</value>
+  </data>
+  <data name="Entry_Resource" xml:space="preserve">
+    <value>Resource</value>
+  </data>
+  <data name="Entry_ResponsibilityCenter" xml:space="preserve">
+    <value>Responsibility Center</value>
+  </data>
+  <data name="Entry_Time" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Entry_Value" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="Entry_Volume" xml:space="preserve">
+    <value>Volume</value>
   </data>
   <data name="EntryClassification" xml:space="preserve">
     <value>Entry Classification</value>
@@ -726,6 +708,27 @@
   </data>
   <data name="Label" xml:space="preserve">
     <value>Label</value>
+  </data>
+  <data name="Line_AdditionalReference" xml:space="preserve">
+    <value>Additional Reference</value>
+  </data>
+  <data name="Line_ExternalReference" xml:space="preserve">
+    <value>External Reference</value>
+  </data>
+  <data name="Line_LineType" xml:space="preserve">
+    <value>Line Type</value>
+  </data>
+  <data name="Line_RelatedAccount" xml:space="preserve">
+    <value>Related Account</value>
+  </data>
+  <data name="Line_RelatedMoneyAmount" xml:space="preserve">
+    <value>Related Money Amount</value>
+  </data>
+  <data name="Line_RelatedQuantity" xml:space="preserve">
+    <value>Related Quantity</value>
+  </data>
+  <data name="Line_RelatedResource" xml:space="preserve">
+    <value>Related Resource</value>
   </data>
   <data name="LockedOut" xml:space="preserve">
     <value>Locked Out</value>

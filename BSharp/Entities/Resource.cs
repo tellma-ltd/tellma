@@ -110,6 +110,7 @@ namespace BSharp.Entities
 
     public class Resource : ResourceForSave
     {
+        [Display(Name = "Definition")]
         public string DefinitionId { get; set; }
 
         [Display(Name = "IsActive")]

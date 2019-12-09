@@ -8,12 +8,17 @@ namespace BSharp.Entities
     [StrongEntity]
     public class DocumentForSave<TDocumentLine> : EntityWithKey<int>
     {
+        [Display(Name = "OperatingSegment")]
+        public int? OperatingSegmentId { get; set; }
+
         [Display(Name = "Document_DocumentDate")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         public DateTime? DocumentDate { get; set; }
 
+        // HIDDEN
+
         [Display(Name = "Document_VoucherBooklet")]
-        public int? VoucherBookletId { get; set; }
+        public int? VoucherBookletId { get; set; } // HIDDEN
 
         [Display(Name = "Document_VoucherNumericReference")]
         public int? VoucherNumericReference { get; set; }
@@ -35,6 +40,8 @@ namespace BSharp.Entities
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string DocumentText2 { get; set; }
 
+        // END HIDDEN
+
         [Display(Name = "Memo")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string Memo { get; set; }
@@ -45,14 +52,15 @@ namespace BSharp.Entities
         public List<TDocumentLine> Lines { get; set; }
     }
 
-    public class DocumentForSave : DocumentForSave<DocumentLineForSave>
+    public class DocumentForSave : DocumentForSave<LineForSave>
     {
 
     }
 
-    public class Document : DocumentForSave<DocumentLine>
+    public class Document : DocumentForSave<Line>
     {
-        public string DocumentDefinitionId { get; set; }
+        [Display(Name = "Definition")]
+        public string DefinitionId { get; set; }
 
         [Display(Name = "Document_SerialNumber")]
         [AlwaysAccessible]
@@ -69,7 +77,8 @@ namespace BSharp.Entities
             DocState.Failed,
             DocState.Completed,
             DocState.Invalid,
-            DocState.Posted
+            DocState.Reviewed,
+            DocState.Closed
         },
             new string[] {
             DocStateName.Draft,
@@ -80,10 +89,10 @@ namespace BSharp.Entities
             DocStateName.Failed,
             DocStateName.Completed,
             DocStateName.Invalid,
-            DocStateName.Posted
+            DocStateName.Reviewed,
+            DocStateName.Closed
         })]
-        public string State { get; set; }
-        public decimal? SortKey { get; set; }
+        public int? State { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -98,6 +107,20 @@ namespace BSharp.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
+
+        [Display(Name = "OperatingSegment")]
+        [ForeignKey(nameof(OperatingSegmentId))]
+        public ResponsibilityCenter OperatingSegment { get; set; }
+
+        [Display(Name = "CreatedBy")]
+        [ForeignKey(nameof(CreatedById))]
+        public User CreatedBy { get; set; }
+
+        [Display(Name = "ModifiedBy")]
+        [ForeignKey(nameof(ModifiedById))]
+        public User ModifiedBy { get; set; }
+
+        // HIDDEN
 
         [Display(Name = "Document_VoucherBooklet")]
         [ForeignKey(nameof(VoucherBookletId))]
@@ -115,26 +138,21 @@ namespace BSharp.Entities
         [ForeignKey(nameof(DocumentLookup3Id))]
         public Lookup DocumentLookup3 { get; set; }
 
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
-
-        [Display(Name = "ModifiedBy")]
-        [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
+        // END HIDDEN
     }
 
     public static class DocState
     {
-        public const string Draft = nameof(Draft);
-        public const string Void = nameof(Void);
-        public const string Requested = nameof(Requested);
-        public const string Rejected = nameof(Rejected);
-        public const string Authorized = nameof(Authorized);
-        public const string Failed = nameof(Failed);
-        public const string Completed = nameof(Completed);
-        public const string Invalid = nameof(Invalid);
-        public const string Posted = nameof(Posted);
+        public const int Draft = 0;
+        public const int Void = -1;
+        public const int Requested = 1;
+        public const int Rejected = -2;
+        public const int Authorized = 2;
+        public const int Failed = -3;
+        public const int Completed = 3;
+        public const int Invalid = -4;
+        public const int Reviewed = 4;
+        public const int Closed = 5;
     }
 
     public static class DocStateName
@@ -142,13 +160,14 @@ namespace BSharp.Entities
         private const string _prefix = "Document_State_";
 
         public const string Draft = _prefix + nameof(Draft);
-        public const string Void =  _prefix + nameof(Void);
-        public const string Requested =  _prefix + nameof(Requested);
-        public const string Rejected =  _prefix + nameof(Rejected);
-        public const string Authorized =  _prefix + nameof(Authorized);
-        public const string Failed =  _prefix + nameof(Failed);
-        public const string Completed =  _prefix + nameof(Completed);
-        public const string Invalid =  _prefix + nameof(Invalid);
-        public const string Posted =  _prefix + nameof(Posted);
+        public const string Void = _prefix + nameof(Void);
+        public const string Requested = _prefix + nameof(Requested);
+        public const string Rejected = _prefix + nameof(Rejected);
+        public const string Authorized = _prefix + nameof(Authorized);
+        public const string Failed = _prefix + nameof(Failed);
+        public const string Completed = _prefix + nameof(Completed);
+        public const string Invalid = _prefix + nameof(Invalid);
+        public const string Reviewed = _prefix + nameof(Reviewed);
+        public const string Closed = _prefix + nameof(Closed);
     }
 }
