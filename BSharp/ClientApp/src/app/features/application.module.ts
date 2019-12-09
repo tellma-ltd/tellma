@@ -32,7 +32,8 @@ import { LookupsImportComponent } from './lookups/lookups-import.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
-  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck, faSitemap, faCoins, faUserFriends
+  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder,
+  faEuroSign, faTruck, faSitemap, faCoins, faUserFriends
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -67,6 +68,10 @@ import { ResourceClassificationsPickerComponent } from './resource-classificatio
 import { UsersPickerComponent } from './users/users-picker.component';
 import { RolesPickerComponent } from './roles/roles-picker.component';
 import { CurrenciesPickerComponent } from './currencies/currencies-picker.component';
+import { EntryClassificationsMasterComponent } from './entry-classifications/entry-classifications-master.component';
+import { EntryClassificationsImportComponent } from './entry-classifications/entry-classifications-import.component';
+import { EntryClassificationsDetailsComponent } from './entry-classifications/entry-classifications-details.component';
+import { EntryClassificationsPickerComponent } from './entry-classifications/entry-classifications-picker.component';
 
 const routes: Routes = [
   {
@@ -284,6 +289,23 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Entry Classifications
+      {
+        path: 'entry-classifications',
+        component: EntryClassificationsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'entry-classifications/import',
+        component: EntryClassificationsImportComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'entry-classifications/:id',
+        component: EntryClassificationsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
       // Report Definitions
       {
         path: 'report-definitions',
@@ -363,6 +385,7 @@ const routes: Routes = [
     ResourceClassificationsMasterComponent,
     ResourceClassificationsImportComponent,
     ResourceClassificationsDetailsComponent,
+    ResourceClassificationsPickerComponent,
     LookupsMasterComponent,
     LookupsDetailsComponent,
     LookupsImportComponent,
@@ -395,10 +418,13 @@ const routes: Routes = [
     ResponsibilityCentersMasterComponent,
     ResponsibilityCentersDetailsComponent,
     ResponsibilityCentersPickerComponent,
-    ResourceClassificationsPickerComponent,
     UsersPickerComponent,
     RolesPickerComponent,
-    CurrenciesPickerComponent
+    CurrenciesPickerComponent,
+    EntryClassificationsMasterComponent,
+    EntryClassificationsImportComponent,
+    EntryClassificationsDetailsComponent,
+    EntryClassificationsPickerComponent,
   ],
   imports: [
     SharedModule,

@@ -424,6 +424,18 @@
   <data name="EnterYourEmail" xml:space="preserve">
     <value>输入你的电子邮箱</value>
   </data>
+  <data name="EntryClassification" xml:space="preserve">
+    <value>进入分类</value>
+  </data>
+  <data name="EntryClassifications" xml:space="preserve">
+    <value>进入分类</value>
+  </data>
+  <data name="EntryClassifications_ForCredit" xml:space="preserve">
+    <value>对于信用</value>
+  </data>
+  <data name="EntryClassifications_ForDebit" xml:space="preserve">
+    <value>对于借记卡</value>
+  </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>A {0}路径不能与导航字段{1}终止。</value>
   </data>

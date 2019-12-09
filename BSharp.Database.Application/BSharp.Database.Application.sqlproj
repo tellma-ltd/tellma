@@ -466,6 +466,10 @@
     <Build Include="api\Stored Procedures\api.Settings__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.WideLines__Unpivot.sql" />
     <Build Include="bll\Stored Procedures\bll.LineDefinitionEntries__Pivot.sql" />
+    <Build Include="dal\Stored Procedures\dal.EntryClassifications__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.EntryClassifications__DeleteWithDescendants.sql" />
+    <Build Include="bll\Stored Procedures\bll.EntryClassifications_Validate__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.EntryClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dbo\Tables\dbo.ContractTypes.sql" />
   </ItemGroup>
   <ItemGroup>

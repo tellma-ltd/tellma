@@ -1,5 +1,6 @@
 ﻿CREATE TABLE [dbo].[EntryClassifications] ( -- inspired by IFRS concepts. However, its main purpose is to facilitate smart posting and reporting
 	[Id]					INT					CONSTRAINT [PK_EntryClassificatons]  PRIMARY KEY NONCLUSTERED IDENTITY,
+	[ParentId]				INT					CONSTRAINT [FK_EntryClassifications__ParentId] REFERENCES [dbo].[EntryClassifications] ([Id]),
 	[Code]					NVARCHAR (255)		UNIQUE NONCLUSTERED,
 	[Name]					NVARCHAR (255)		NOT NULL,
 	[Name2]					NVARCHAR (255),

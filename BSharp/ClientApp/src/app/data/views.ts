@@ -133,7 +133,15 @@ export const VIEWS_BUILT_IN: { [viewId: string]: ViewInfo } = {
             li('IsActive', false)
         ]
     },
-
+    'entry-classifications': {
+        name: 'EntryClassifications',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [
+            li('IsActive', false)
+        ]
+    },
     'settings': {
         name: 'Settings',
         actions: [

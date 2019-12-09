@@ -48,9 +48,9 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, _: 
                 Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
                 Code: { control: 'text', label: () => trx.instant('Code') },
                 IsSmart: { control: 'boolean', label: () => trx.instant('Account_IsSmart') },
-                AccountTypeId: { control: 'text', label: () => trx.instant('Account_Type') },
+                AccountTypeId: { control: 'text', label: () => `${trx.instant('Account_Type')} (${trx.instant('Id')})` },
                 AccountType: { control: 'navigation', label: () => trx.instant('Account_Type'), type: 'AccountType', foreignKeyName: 'AccountTypeId' },
-                AccountClassificationId: { control: 'number', label: () => trx.instant('Account_Classification'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                AccountClassificationId: { control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AccountClassification: { control: 'navigation', label: () => trx.instant('Account_Classification'), type: 'AccountClassification', foreignKeyName: 'AccountClassificationId' },
 
                 // PartyReference: { control: 'text', label: () => trx.instant('Account_PartyReference') },

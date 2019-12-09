@@ -7,8 +7,9 @@
 	DECLARE @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0, @DebugBanks bit = 0;
 	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugLineDefinitions bit = 1, @DebugDocumentDefinitions bit = 0;
 	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
-	DECLARE @DebugPettyCashVouchers bit = 1;
+	DECLARE @DebugCashPaymentVouchers bit = 0, @DebugPettyCashVouchers bit = 0;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
 	EXEC sp_set_session_context 'Debug', 1;
@@ -55,7 +56,7 @@
 
 		:r .\06_Entries\00_LineDefinitions.sql
 		:r .\06_Entries\01_DocumentDefinitions.sql
-		:r .\06_Entries\02_manual-vouchers.sql
+		:r .\06_Entries\02_manual-journal-vouchers.sql
 RETURN;
 ERR_LABEL:
 	SELECT * FROM OpenJson(@ValidationErrorsJson)

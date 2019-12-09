@@ -44,6 +44,7 @@ import { UpdateStateArguments } from './dto/update-state-arguments';
 import { ReportDefinition } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
 import { friendlify } from './util';
+import { EntryClassification } from './entities/entry-classification';
 
 
 @Injectable({
@@ -116,6 +117,13 @@ export class ApiService {
     return {
       activate: this.activateFactory<AccountClassification>('account-classifications', cancellationToken$),
       deactivate: this.deactivateFactory<AccountClassification>('account-classifications', cancellationToken$)
+    };
+  }
+
+  public entryClassificationsApi(cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<EntryClassification>(`entry-classifications`, cancellationToken$),
+      deactivate: this.deactivateFactory<EntryClassification>(`entry-classifications`, cancellationToken$)
     };
   }
 
