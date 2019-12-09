@@ -70,7 +70,6 @@ BEGIN
 				L.[Id],
 				DI.Id AS DocumentId,
 				L.[DefinitionId], 
-				L.[AgentDefinitionId],
 				L.[AgentId],
 				L.[ResourceId],
 				L.[Amount],
@@ -83,7 +82,6 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[DefinitionId]		= s.[DefinitionId],
-				t.[AgentDefinitionId]	= s.[AgentDefinitionId],
 				t.[AgentId]				= s.[AgentId],
 				t.[ResourceId]			= s.[ResourceId],
 				t.[Amount]				= s.[Amount],
@@ -94,7 +92,6 @@ BEGIN
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
 			INSERT ([DocumentId], [DefinitionId], [SortKey],
-				[AgentDefinitionId],
 				[AgentId],
 				[ResourceId],
 				[Amount],
@@ -103,7 +100,6 @@ BEGIN
 				[AdditionalReference]
 			)
 			VALUES (s.[DocumentId], s.[DefinitionId], s.[Index],
-				s.[AgentDefinitionId],
 				s.[AgentId],
 				s.[ResourceId],
 				s.[Amount],

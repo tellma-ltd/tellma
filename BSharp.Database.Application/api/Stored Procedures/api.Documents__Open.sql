@@ -1,11 +1,11 @@
-﻿CREATE PROCEDURE [api].[Documents__Close]
+﻿CREATE PROCEDURE [api].[Documents__Open]
 	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
 	SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @Ids [dbo].[IdList];
 	INSERT INTO @ValidationErrors
-	EXEC [bll].[Documents_Validate__Close]
+	EXEC [bll].[Documents_Validate__Open]
 		@Ids = @IndexedIds;
 
 	SELECT @ValidationErrorsJson = 
@@ -19,12 +19,11 @@ AS
 		RETURN;
 
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Documents_State__Update]
-		@Ids = @Ids,
-		@ToState = 5 --N'Closed'
-		;
+	EXEC [dal].[Documents_State__Refresh]
+		@Ids = @Ids;
 
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids,
-		@AssigneeId = NULL
+		@AssigneeId = @UserId
 		;

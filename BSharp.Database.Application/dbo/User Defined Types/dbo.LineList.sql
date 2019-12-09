@@ -4,7 +4,6 @@
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				NVARCHAR (50)	NOT NULL,
 	[CurrencyId]				NCHAR (3),
-	[AgentDefinitionId]			NVARCHAR (50),
 	[AgentId]					INT,
 	[ResourceId]				INT,
 	[Amount]					DECIMAL (19,4),
