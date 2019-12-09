@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Lines__RelevantIndexIds]
 	@DocLinesIndexedIds dbo.[IndexedIdList] READONLY,
 	@Roles dbo.[IdList] READONLY,
-	@ToState NVARCHAR(30)
+	@ToState SMALLINT -- NVARCHAR(30)
 AS
 	DECLARE @DocLinesIds dbo.[IdList]
 	INSERT INTO @DocLinesIds([Id]) SELECT [Id] FROM @DocLinesIndexedIds;

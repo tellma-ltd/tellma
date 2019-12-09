@@ -2,9 +2,9 @@
 	[Id]				INT					CONSTRAINT [PK_Workflows] PRIMARY KEY IDENTITY,
 	[LineDefinitionId]	NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Workflows__LineDefinitions] REFERENCES [dbo].[LineDefinitions] ([Id]) ON DELETE CASCADE,
 	-- Must be a positive state
-	[FromState]			NVARCHAR (30)		NOT NULL CONSTRAINT [CK_Workflows__FromState] CHECK ([FromState] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Reviewed')),
+	[FromState]			SMALLINT, --NVARCHAR (30)		NOT NULL CONSTRAINT [CK_Workflows__FromState] CHECK ([FromState] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Reviewed')),
 	-- Must be a positive state
-	[ToState]			NVARCHAR (30)		NOT NULL CONSTRAINT [CK_Workflows__ToState] CHECK ([ToState] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Reviewed')),		
+	[ToState]			SMALLINT, -- NVARCHAR (30)		NOT NULL CONSTRAINT [CK_Workflows__ToState] CHECK ([ToState] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Reviewed')),		
 	--[SavedAt]			AS [ValidFrom] AT TIME ZONE 'UTC',
 	[SavedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Workflows__SavedById] REFERENCES [dbo].[Users] ([Id]),
 	[ValidFrom]			DATETIME2			GENERATED ALWAYS AS ROW START NOT NULL,

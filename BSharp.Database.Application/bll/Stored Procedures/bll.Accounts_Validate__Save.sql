@@ -68,7 +68,8 @@ SET NOCOUNT ON;
 	JOIN dbo.[Lines] L ON L.[Id] = E.[LineId]
 	JOIN dbo.Documents D ON D.[Id] = L.[DocumentId]
 	JOIN dbo.DocumentDefinitions DD ON DD.[Id] = D.[DefinitionId]
-	WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
+	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
+	WHERE L.[State] > 0
 	AND (
 		FE.IsSmart					<> A.[IsSmart]					OR
 		FE.[AccountTypeId]			<> A.[AccountTypeId]			OR

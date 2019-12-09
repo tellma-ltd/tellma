@@ -3,7 +3,9 @@
 	[Id]						INT					CONSTRAINT [PK_Lines] PRIMARY KEY IDENTITY,
 	[DocumentId]				INT					NOT NULL CONSTRAINT [FK_Lines__DocumentId] REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
 	[DefinitionId]				NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Lines__DefinitionId] REFERENCES [dbo].[LineDefinitions] ([Id]),
-	[State]						NVARCHAR (30)		NOT NULL DEFAULT N'Draft' CONSTRAINT [CK_Lines__State] CHECK ([State] IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Reviewed')),
+	[State]						SMALLINT			NOT NULL DEFAULT	0
+	--CONSTRAINT [CK_Lines__State] CHECK ([State]	IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Reviewed')),
+	CONSTRAINT [CK_Lines__State] CHECK ([State]		IN (0		,	-1,			+1,			-2,				+2,			-3,			+3,			-4,				+4)),
 	[RequestedAt]				DATETIMEOFFSET(7),
 	[AuthorizeddAt]				DATETIMEOFFSET(7),
 	[CompletedAt]				DATETIMEOFFSET(7),

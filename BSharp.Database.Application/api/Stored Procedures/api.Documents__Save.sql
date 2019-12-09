@@ -32,8 +32,8 @@ BEGIN
 		@Lines = @AllLines,
 		@Entries = @AllEntries;
 			
-	select * from @AllLines;
-	select * from @FilledAllEntries;
+	--select * from @AllLines;
+	--select * from @FilledAllEntries;
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Save]
 		@Documents = @Documents,
@@ -50,10 +50,10 @@ BEGIN
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
-	--EXEC [dal].[Documents__Save]
-	--	@DefinitionId = @DefinitionId,
-	--	@Documents = @Documents,
-	--	@Lines = @AllLines,
-	--	@Entries = @FilledAllEntries,
-	--	@ReturnIds = @ReturnIds;
+	EXEC [dal].[Documents__Save]
+		@DefinitionId = @DefinitionId,
+		@Documents = @Documents,
+		@Lines = @AllLines,
+		@Entries = @FilledAllEntries,
+		@ReturnIds = @ReturnIds;
 END;

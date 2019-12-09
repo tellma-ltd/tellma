@@ -2,7 +2,7 @@
 -- returns from the list of available roles the ones that are useful to move some docs @ToState
 	@DocLinesIds dbo.IdList READONLY,
 	@Roles dbo.IdList READONLY,
-	@ToState NVARCHAR(30)
+	@ToState SMALLINT -- NVARCHAR(30)
 ) RETURNS TABLE AS
 RETURN
 	SELECT T.Id AS LineId, T.RoleId FROM (
@@ -11,12 +11,13 @@ RETURN
 		JOIN dbo.Workflows W ON W.[LineDefinitionId] = DL.[DefinitionId]
 		JOIN dbo.[WorkflowSignatures] WS ON W.[Id] = WS.WorkflowId
 		-- Workflows are defined for positive states. Hence when moving to negative state we need to use ABS value
-		WHERE W.[ToState] = CASE
-			WHEN @ToState = N'Rejected'	THEN N'Authorized'
-			WHEN @ToState = N'Failed'	THEN N'Completed'
-			WHEN @ToState = N'Invalid'	THEN N'Reviewed'
-			ELSE @ToState
-		END
+		WHERE W.[ToState] = ABS(@ToState)
+		--CASE
+		--	WHEN @ToState = N'Rejected'	THEN N'Authorized'
+		--	WHEN @ToState = N'Failed'	THEN N'Completed'
+		--	WHEN @ToState = N'Invalid'	THEN N'Reviewed'
+		--	ELSE @ToState
+		--END
 		-- IF FromState is negative we need to unsign the line first
 		AND W.[FromState] = DL.[State]
 		AND WS.Criteria IS NOT NULL

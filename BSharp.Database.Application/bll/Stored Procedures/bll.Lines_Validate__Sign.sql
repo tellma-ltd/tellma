@@ -2,7 +2,7 @@
 	@Ids dbo.[IndexedIdList] READONLY,
 	@AgentId INT,
 	@RoleId INT,
-	@ToState NVARCHAR(30),
+	@ToState SMALLINT,
 	@Top INT = 10
 AS
 SET NOCOUNT ON;
@@ -52,12 +52,14 @@ SET NOCOUNT ON;
 		);
 	END
 	-- verify that the line definition has a workflow transition from its current state to @ToState
+	-- TOTO: use localized state names instead
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_NoDirectTransitionFromState0ToState1',
-		L.[State],
-		@ToState
+		CAST(L.[State] AS NVARCHAR(50)),
+		CAST(@ToState AS NVARCHAR(50))
+		
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
 	LEFT JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[FromState] = L.[State]

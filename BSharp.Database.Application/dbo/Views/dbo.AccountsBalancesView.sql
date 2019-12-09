@@ -13,7 +13,7 @@ AS
 	JOIN dbo.[Documents] D ON DL.[DocumentId] = D.[Id]
 	JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 	WHERE D.[State] = N'Filed'
-	AND DL.[State] = N'Reviewed'
+	AND DL.[State] = +4 -- N'Reviewed'
 	GROUP BY
 		[AccountId]
 	HAVING

@@ -43,12 +43,14 @@ SET NOCOUNT ON;
 	SELECT
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(DL.[Id] AS NVARCHAR (255)) + ']',
-		N'Error_State2IsNotFinal',
-		DL.[State]
+		N'Error_State0IsNotFinal',
+		-- TODO: localize state name
+		CAST(DL.[State] AS NVARCHAR (50))
 	FROM @Ids D
 	JOIN dbo.[Lines] DL ON DL.[DocumentId] = D.[Id]
 	JOIN WorkflowsFinalStates WFS ON DL.[DefinitionId] = WFS.[LineDefinitionId]
-	WHERE DL.[State] NOT IN (N'Void', N'Rejected', N'Failed', N'Invalid', WFS.FinalState)
+	--WHERE DL.[State] NOT IN (N'Void', N'Rejected', N'Failed', N'Invalid', WFS.FinalState)
+	WHERE DL.[State] >= 0 AND DL.[State] <> WFS.FinalState
 
 	-- Cannot file a document with non-balanced (Reviewed) lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
@@ -59,7 +61,7 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.[Lines] DL ON FE.[Id] = DL.[DocumentId]
 	JOIN dbo.[Entries] DLE ON DL.[Id] = DLE.[LineId]
-	WHERE DL.[State] = N'Reviewed'
+	WHERE DL.[State] = +4 -- N'Reviewed'
 	GROUP BY FE.[Index]
 	HAVING SUM([Direction] * [Value]) <> 0;
 

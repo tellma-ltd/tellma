@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Ready__Select]
 	@LinesIds [dbo].[IdList] READONLY,
 	@ConditionalSignatures [dbo].[LineRoleList] READONLY,
-	@ToState NVARCHAR(30)
+	@ToState SMALLINT -- NVARCHAR(30)
 AS
 WITH
 RequiredSignatures AS (

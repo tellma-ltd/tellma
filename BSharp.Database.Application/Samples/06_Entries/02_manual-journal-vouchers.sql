@@ -108,12 +108,12 @@ BEGIN -- Inserting
 	DECLARE @DocLinesIndexedIds dbo.[IndexedIdList];
 	INSERT INTO @DocLinesIndexedIds([Index], [Id])
 	-- TODO: fill index using ROWNUMBER
-	SELECT [Id], [Id] FROM dbo.[Lines] WHERE [State] = N'Draft';
+	SELECT [Id], [Id] FROM dbo.[Lines] WHERE [State] = 0; --N'Draft';
 
 	--IF (1=0)
 	EXEC [api].[Lines__Sign]
 		@IndexedIds = @DocLinesIndexedIds,
-		@ToState = N'Reviewed',
+		@ToState = 4, -- N'Reviewed',
 		@AgentId = @MohamadAkra,
 		@RoleId = @Accountant, -- we allow selecting the role manually,
 		@SignedAt = @Now,

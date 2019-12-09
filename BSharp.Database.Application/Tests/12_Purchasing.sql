@@ -144,7 +144,7 @@ BEGIN -- signing
 	INSERT INTO @DocsToSign([Index], [Id]) SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents;-- WHERE STATE = N'Active';
 
 	EXEC [api].[Lines__Sign]
-		@DocsIndexedIds = @DocsToSign, @ToState = N'Reviewed', @ReasonDetails = N'seems ok',
+		@DocsIndexedIds = @DocsToSign, @ToState = 4, @ReasonDetails = N'seems ok',
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	INSERT INTO @D23Ids([Id]) SELECT [Id] FROM dbo.Documents;

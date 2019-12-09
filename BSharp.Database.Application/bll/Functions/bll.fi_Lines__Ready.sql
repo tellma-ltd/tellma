@@ -3,7 +3,7 @@
 	-- Determine which of the selected Lines are reacdy for state change
 	-- Note that If a line definition does not a have a workflow, the transition is always accepted
 	@Ids dbo.IdList READONLY,
-	@ToState NVARCHAR (30)
+	@ToState SMALLINT -- NVARCHAR (30)
 )
 RETURNS TABLE AS RETURN
 (

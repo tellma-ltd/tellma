@@ -1,5 +1,5 @@
-﻿DECLARE @GLAccounts dbo.AccountList;
-INSERT INTO @GLAccounts([Index],
+﻿DECLARE @BasicAccounts dbo.AccountList;
+INSERT INTO @BasicAccounts([Index],
 	[AccountTypeId],				[AccountClassificationId],	[Name],								[Code]) VALUES
 (0,N'Cash',							@BankAndCash_AC,			N'CBE - USD',						N'1101'),
 (1,N'Cash',							@BankAndCash_AC,			N'CBE - ETB',						N'1102'),
@@ -28,12 +28,12 @@ INSERT INTO @GLAccounts([Index],
 (24,N'Expenses',					@Expenses_AC,				N'Overtime - Admin',				N'5203');
 
 EXEC [api].[Accounts__Save] --  N'cash-and-cash-equivalents',
-	@Entities = @GLAccounts,
+	@Entities = @BasicAccounts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Inserting G/L Accounts'
+	Print 'Inserting Basic Accounts'
 	GOTO Err_Label;
 END;
 

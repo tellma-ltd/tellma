@@ -42,8 +42,8 @@ BEGIN -- reset Identities
 	DECLARE @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0, @DebugBanks bit = 0;
 	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
-	DECLARE @DebugLineDefinitions bit = 1, @DebugDocumentDefinitions bit = 0;
-	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
+	DECLARE @DebugLineDefinitions bit = 0, @DebugDocumentDefinitions bit = 0;
+	DECLARE @DebugManualVouchers bit = 1, @DebugReports bit = 0;
 	DECLARE @DebugCashPaymentVouchers bit = 0, @DebugPettyCashVouchers bit = 0;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
@@ -97,8 +97,8 @@ BEGIN TRY
 
 		:r ..\Samples\06_Entries\00_LineDefinitions.sql
 		:r ..\Samples\06_Entries\01_DocumentDefinitions.sql
-		--:r ..\Samples\06_Entries\02_manual-journal-vouchers.sql
-		:r ..\Samples\06_Entries\03_cash-payment-vouchers.sql
+		:r ..\Samples\06_Entries\02_manual-journal-vouchers.sql
+		--:r ..\Samples\06_Entries\03_cash-payment-vouchers.sql
 		--:r .\06_Entries\01_petty-cash-vouchers.sql
 		;
 		

@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [api].[Lines__Sign]
 	@IndexedIds dbo.[IndexedIdList] READONLY,
-	@ToState NVARCHAR(30),
+	@ToState SMALLINT,
 	@ReasonId INT = NULL,
 	@ReasonDetails	NVARCHAR(1024) = NULL,
 	@AgentId INT = NULL, -- we allow selecting the agent manually, when entering from an external source document

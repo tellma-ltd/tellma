@@ -10,6 +10,7 @@ SELECT DISTINCT
 		AG.[Name] AS [Signed By],
 		RL.[Name] AS [Role],
 		DS.[CreatedAt] AS [Signed At],
+		-- TODO: Localize State names
 		DS.[ToState] AS [To Be],
 		A2.[Name] AS [Recorded By],
 		A3.[Name] AS [Revoked By],

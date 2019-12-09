@@ -496,6 +496,7 @@
     <None Include="dbo\User Defined Types\Readme.txt" />
     <None Include="Samples\06_Entries\03_cash-payment-vouchers.sql" />
     <None Include="Provisioning\00_Setup\c_ContractTypes.sql" />
+    <None Include="Samples\05_Accounts\c_SmartAccounts.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
