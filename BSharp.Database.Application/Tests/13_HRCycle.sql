@@ -16,7 +16,7 @@ INSERT INTO @EM2 ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Directi
 	(17,12,4,2,-1,@SalariesAccrualsTaxable,	NULL,					1000,	@HOvertime,		10,		NULL,					@Mestawet);
 
 	EXEC [api].[Documents__Save]
-		@DefinitionId = N'manual-journals',
+		@DefinitionId = N'manual-journal-vouchers',
 		@Documents = @DM2, @Lines = @LM2, @Entries = @EM2,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -77,7 +77,7 @@ INSERT INTO @EM2 ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Directi
 	;
 	--SELECT * FROM @DM2; SELECT * FROM @LM2; SELECT * FROM @EM2;
 	EXEC [api].[Documents__Save]
-		@DefinitionId = N'manual-journals',
+		@DefinitionId = N'manual-journal-vouchers',
 		@Documents = @DM2, @Lines = @LM2, @Entries = @EM2,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

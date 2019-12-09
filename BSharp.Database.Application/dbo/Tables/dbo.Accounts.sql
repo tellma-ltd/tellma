@@ -18,7 +18,7 @@
 	[AccountTypeId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Accounts__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
 	[ContractType]					NVARCHAR (50) CONSTRAINT [CK_Accounts__ContractType] CHECK ( [ContractType] IN (
 										N'OnHand',
-										N'OnDemand',
+--										N'OnDemand', -- for all practical purposes, this is the same as OnHand
 										N'InTransit',
 										N'Receivable',--/PrepaidExpense
 										N'Deposit',

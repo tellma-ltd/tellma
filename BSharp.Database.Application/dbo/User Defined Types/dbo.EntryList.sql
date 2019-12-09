@@ -8,7 +8,7 @@
 	[AccountId]					INT,
 	[ContractType]				NVARCHAR (50) CHECK ( [ContractType] IN (
 										N'OnHand',
-										N'OnDemand',
+--										N'OnDemand', -- for all practical purposes, this is the same as OnHand
 										N'InTransit',
 										N'Receivable',--/PrepaidExpense
 										N'Deposit',
@@ -46,6 +46,7 @@
 	[RelatedAgentId]			INT,
 	[RelatedAgentName]			NVARCHAR (50),
 	[RelatedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
+	[RelatedDate]				DATE,
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0),	-- to time
 	[SortKey]					INT

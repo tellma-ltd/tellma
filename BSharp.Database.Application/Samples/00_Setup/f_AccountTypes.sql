@@ -9,7 +9,7 @@
 	For this demo, we will use PT Account types, since most clients have PT already
 	Contract Types
 	N'OnHand',
-	N'OnDemand',
+--	N'OnDemand', -- for all practical purposes, this is the same as OnHand
 	N'InTransit',
 	N'Receivable',
 	N'Deposit',

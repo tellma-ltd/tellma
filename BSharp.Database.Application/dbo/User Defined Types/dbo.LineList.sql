@@ -2,7 +2,7 @@
 	[Index]						INT				PRIMARY KEY,
 	[DocumentIndex]				INT				NOT NULL DEFAULT 0,
 	[Id]						INT				NOT NULL DEFAULT 0,
-	[DefinitionId]				NVARCHAR (255)	NOT NULL,
+	[DefinitionId]				NVARCHAR (50)	NOT NULL,
 	[CurrencyId]				NCHAR (3),
 	[AgentDefinitionId]			NVARCHAR (50),
 	[AgentId]					INT,

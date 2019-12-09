@@ -81,7 +81,7 @@ BEGIN -- Inserting
 	; 
 	
 	EXEC [api].[Documents__Save]
-		@DefinitionId = N'manual-journals',
+		@DefinitionId = N'manual-journal-vouchers',
 		@Documents = @D, @Lines = @L, @Entries = @E,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -123,7 +123,7 @@ BEGIN -- Inserting
 
 	IF @DebugManualVouchers = 1
 	BEGIN
-			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents;
+			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'manual-journal-vouchers';
 			EXEC [rpt].[Docs__UI] @DIds;
 	END
 END
@@ -161,7 +161,7 @@ END
 --	INSERT INTO @D12([Index], [Id], [DocumentDate],	[Memo])
 --	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id], [DocumentDate],	[Memo]
 --	FROM dbo.Documents
---	WHERE [DocumentDefinitionId] = N'manual-journals' AND [SerialNumber] = 1;
+--	WHERE [DocumentDefinitionId] = N'manual-journal-vouchers' AND [SerialNumber] = 1;
 
 --	INSERT INTO @L12([Index], [DocumentIndex],					[Id], [DocumentId], [LineDefinitionId], [ScalingFactor], [SortKey])
 --	SELECT ROW_NUMBER() OVER(ORDER BY DL.[Id]), D12.[Index], DL.[Id], DL.[DocumentId],  DL.[LineDefinitionId], [ScalingFactor], [SortKey]
@@ -180,7 +180,7 @@ END
 --	DELETE FROM @L12 WHERE [Index] = 3;
 
 --	EXEC [api].[Documents__Save]
---		@DefinitionId = N'manual-journals',
+--		@DefinitionId = N'manual-journal-vouchers',
 --		@Documents = @D12, @Lines = @L12, @Entries = @E12,
 --		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

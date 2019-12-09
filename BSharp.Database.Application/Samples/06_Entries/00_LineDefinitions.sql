@@ -105,26 +105,29 @@ INSERT INTO @LineDefinitionColumns
 -- NB: requisitions could be for payment towards something approved. Or it could be for a new purchase
 -- when it is for a new purchase, the document must have two tabs: payment details, and purchase details
 -- AgentDefinition is filtered by AccountType.AgentDefinitionList
-/*
+
 INSERT @LineDefinitions(
 [Id],				[TitleSingular],	[TitlePlural]) VALUES
+(N'BankPayment',	N'Payment',			N'Payments'),
 (N'CashPayment',	N'Payment',			N'Payments')
+
 INSERT INTO @LineDefinitionEntries
-([LineDefinitionId], [EntryNumber],[AccountSource], [AccountTypeId], [AgentDefinitionId], [ResourceSource], [EntryTypeSource],[MonetaryValueSource], [QuantitySource], [RelatedAgentSource], [RelatedAmountSource]) VALUES
-(N'CashPayment',		0,			4,				N'Cash',			N'PettyCashCustody',		-1,					1,				1,						-1,					-1,						-1);
+([LineDefinitionId], [EntryNumber],[Direction],	[ContractType],	[AgentDefinitionId],	[ResourceClassificationCode], [EntryClassificationSource],[RelatedAgentDefinitionSource], [RelatedAgentDefinitionId], [AgentSource],[ResourceSource],	[CurrencySource], [MonetaryValueSource], [ExternalReferenceSource], [AdditionalReferenceSource], [RelatedAgentSource], [RelatedAmountSource], [DueDateSource]) VALUES
+(N'BankPayment',		0,			-1,			N'OnHand',		N'banks',				N'Cash',						2,							2,								NULL,						2,					4,				2,				2,						2,						-1,								2,					-1,						-1);
+
 INSERT INTO @LineDefinitionColumns
 ([LineDefinitionId], [SortIndex], [ColumnName],								[Label]) VALUES
 (N'CashPayment',		0,			N'Line.Description',					N'Description'), 
 (N'CashPayment',		1,			N'Entry[1].MonetaryAmount',				N'Pay Amount'), 
 (N'CashPayment',		2,			N'Entry[1].CurrencyId',					N'Pay Currency'),
-(N'CashPayment',		3,			N'Entry[1].AdditionalReference',		N'Beneficiary'),
+(N'CashPayment',		3,			N'Entry[1].RelatedAgentName',			N'Beneficiary'),
 (N'CashPayment',		4,			N'Entry[1].EntryClassification',		N'Purpose'),
-(N'CashPayment',		5,			N'Entry[1].AgentDefinitionId',	N'Payment From'),
+(N'CashPayment',		5,			N'Entry[1].AgentDefinitionId',			N'Payment From'),
 (N'CashPayment',		6,			N'Entry[1].AgentId',					N'Bank/Cashier'),
 (N'CashPayment',		7,			N'Entry[1].ExternalReference',			N'Check #/Receipt #'),
-(N'CashPayment',		8,			N'Entry[1].DueDate',					N'Check Date')
+(N'CashPayment',		8,			N'Entry[1].RelatedDate',				N'Check Date')
 ;
-
+/*
 -- NB: We defined a Pettycash payment to separate the business rules
 INSERT @LineDefinitions(
 [Id],					[TitleSingular],	[TitlePlural]) VALUES
@@ -138,7 +141,7 @@ INSERT INTO @LineDefinitionColumns
 (N'PettyCashPayment',		1,		N'Entry[1].MonetaryAmount',				N'Pay Amount'), 
 (N'PettyCashPayment',		2,		N'Entry[1].CurrencyId',					N'Pay Currency'),
 (N'PettyCashPayment',		3,		N'Entry[1].AdditionalReference',		N'Beneficiary'),
-(N'PettyCashPayment',		4,		N'Entry[1].EntryClassification',					N'Purpose'),
+(N'PettyCashPayment',		4,		N'Entry[1].EntryClassification',		N'Purpose'),
 (N'CashPayment',			5,		N'Entry[1].AgentId',					N'Cashier'), -- TODO: Read it from document
 (N'PettyCashPayment',		6,		N'Entry[1].ExternalReference',			N'Receipt #')
 ;
@@ -205,3 +208,9 @@ WHEN NOT MATCHED BY SOURCE THEN
 WHEN NOT MATCHED BY TARGET THEN
     INSERT ([LineDefinitionId], [EntryNumber],		[Direction], [ContractType])
     VALUES (s.[LineDefinitionId], s.[EntryNumber], s.[Direction], s.[ContractType]);
+
+IF @DebugLineDefinitions = 1
+BEGIN
+	SELECT * FROM dbo.LineDefinitions;
+	SELECT * FROM dbo.LineDefinitionEntries;
+END

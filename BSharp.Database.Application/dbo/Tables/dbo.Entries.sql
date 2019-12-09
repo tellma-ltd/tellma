@@ -8,7 +8,7 @@
 
 	[ContractType]				NVARCHAR (50)	CONSTRAINT [CK_Entries__ContractType] CHECK ( [ContractType] IN (
 										N'OnHand',
-										N'OnDemand',
+--										N'OnDemand', -- for all practical purposes, this is the same as OnHand
 										N'InTransit',
 										N'Receivable',--/PrepaidExpense
 										N'Deposit',
@@ -66,6 +66,7 @@
 	[RelatedAgentId]			INT,
 	[RelatedAgentName]			NVARCHAR (50), -- In case, it is not necessary to define the agent, we simply capture the agent name.
 	[RelatedAmount]				DECIMAL (19,4),		-- e.g., amount subject to tax
+	[RelatedDate]					DATE,
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0),	-- to time
 	[SortKey]					INT,

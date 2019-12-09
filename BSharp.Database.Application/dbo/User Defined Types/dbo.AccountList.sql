@@ -12,7 +12,7 @@
 	[AccountTypeId]					NVARCHAR (50)		NOT NULL,
 	[ContractType]					NVARCHAR (50) CHECK ( [ContractType] IN (
 										N'OnHand',
-										N'OnDemand',
+--										N'OnDemand', -- for all practical purposes, this is the same as OnHand
 										N'InTransit',
 										N'Receivable',--/PrepaidExpense
 										N'Deposit',

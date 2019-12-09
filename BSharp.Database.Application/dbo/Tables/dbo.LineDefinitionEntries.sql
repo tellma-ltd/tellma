@@ -13,7 +13,7 @@
 	[AccountTypeSource]					SMALLINT			NOT NULL DEFAULT 2, -- 0:set from line def, 3: from account
 	[ContractType]						NVARCHAR (50)		CONSTRAINT [CK_LineDefinitionEntries__ContractType] CHECK ( [ContractType] IN (
 										N'OnHand',
-										N'OnDemand',
+--										N'OnDemand', -- for all practical purposes, this is the same as OnHand
 										N'InTransit',
 										N'Receivable',--/PrepaidExpense
 										N'Deposit',

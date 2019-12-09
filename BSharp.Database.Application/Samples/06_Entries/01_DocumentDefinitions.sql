@@ -23,7 +23,8 @@ INSERT @DocumentDefinitions
 	-- payroll, paysheet (w/loan deduction), loan issue, penalty, overtime, paid leave, unpaid leave
 	-- manual journal, depreciation,  
 	([Id],						[TitleSingular],			[TitlePlural],				[Prefix]) VALUES
-	(N'manual-journals',		N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
+	(N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
+	(N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'Cash Payment Vouchers',	N'CPV'),
 	(N'petty-cash-vouchers',	NULL,						NULL,						N'PCV');
 ---------------------------------------------
 
@@ -77,9 +78,13 @@ DECLARE @DocumentDefinitionsLineDefinitions TABLE(
 	PRIMARY KEY([DocumentDefinitionid], [LineDefinitionId])
 );
 
-INSERT @DocumentDefinitionsLineDefinitions ([DocumentDefinitionid], [LineDefinitionId], [IsVisibleByDefault]) VALUES
-	(N'manual-journals', N'ManualLine', 1),
-	(N'petty-cash-vouchers', N'PettyCashPayment', 1),
+INSERT @DocumentDefinitionsLineDefinitions 
+([DocumentDefinitionid],	[LineDefinitionId], [IsVisibleByDefault]) VALUES
+(N'manual-journal-vouchers',		N'ManualLine',		1),
+(N'cash-payment-vouchers',	N'CashPayment',		1),
+(N'cash-payment-vouchers',	N'ManualLine',		1),
+(N'cash-payment-vouchers',	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
+(N'petty-cash-vouchers',	N'PettyCashPayment',1),
 
 ---------------------------------------------------------------------
 	(N'purchasing-international', N'GoodReceiptInTransitWithInvoice', 1),
@@ -87,13 +92,11 @@ INSERT @DocumentDefinitionsLineDefinitions ([DocumentDefinitionid], [LineDefinit
 	(N'et-sales-witholding-tax-vouchers', N'ET.CustomerTaxWithholding', 1),
 	(N'et-sales-witholding-tax-vouchers', N'ReceivableCredit', 1), 
 	(N'et-sales-witholding-tax-vouchers', N'CashIssue', 0),
-	
-	(N'cash-payment-vouchers', N'CashIssue', 1),
+
 	(N'cash-payment-vouchers', N'ServiceReceiptWithInvoice', 1),
 	(N'cash-payment-vouchers', N'PayableDebit', 0), -- pay dues
 	(N'cash-payment-vouchers', N'ReceivableDebit', 0), -- lend
 	(N'cash-payment-vouchers', N'GoodReceiptWithInvoice', 0),
-	(N'cash-payment-vouchers', N'ManualLine', 0),
 	(N'cash-payment-vouchers', N'CashReceipt', 0),
 	(N'cash-payment-vouchers', N'LeaseInInvoiceWithoutReceipt', 0),
 
@@ -108,3 +111,5 @@ INSERT @DocumentDefinitionsLineDefinitions ([DocumentDefinitionid], [LineDefinit
 	(N'production-events', N'LaborIssue', 0), -- input to production
 	(N'production-events', N'GoodReceipt', 1) -- output from production
 ;
+IF @DebugDocumentDefinitions = 1
+	SELECT * FROM dbo.DocumentDefinitions;

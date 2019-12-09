@@ -18,25 +18,26 @@ INSERT INTO @FilledLines SELECT * FROM @Lines;
 --SET L.AgentId = D.AgentId
 --FROM @FilledLines L JOIN @Documents D ON L.DocumentIndex = D.[Index]
 --WHERE 
---select 1 as step, E.* from @FilledEntries E
+
 -- Copy information from Lines to Entries
 UPDATE E 
 SET E.CurrencyId = L.CurrencyId
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.CurrencySource = 2 AND E.CurrencyId <> L.CurrencyId
+WHERE LDE.CurrencySource = 1 AND E.CurrencyId <> L.CurrencyId
 --select 2 as step, E.* from @FilledEntries E
+
 UPDATE E 
 SET E.AgentId = L.AgentId
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.AgentSource = 2 AND E.AgentId <> L.AgentId
+WHERE LDE.AgentSource = 1 AND E.AgentId <> L.AgentId
 --select 3 as step, E.* from @FilledEntries E
 UPDATE E 
 SET E.ResourceId = L.ResourceId
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
-WHERE LDE.ResourceSource = 2 AND E.ResourceId <> L.ResourceId
+WHERE LDE.ResourceSource = 1 AND E.ResourceId <> L.ResourceId
 --select 4 as step, E.* from @FilledEntries E
 -- When using manual line, Copy information from Account to entries
 UPDATE E 
@@ -53,7 +54,7 @@ SET
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE L.DefinitionId = N'ManualLine' AND A.[IsSmart] = 1; -- Entered by user
---select 5 as step, E.* from @FilledEntries E
+
 -- for all lines, Get currency and identifier from Resources if available.
 UPDATE E 
 SET
@@ -61,14 +62,14 @@ SET
 	E.[ResourceIdentifier] =  COALESCE(R.[Identifier], E.[ResourceIdentifier])
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
---select 6 as step, E.* from @FilledEntries E
+
 -- set the count to one, if singleton
 UPDATE E 
 SET
 	E.[Count]		=	COALESCE(R.[Count], E.[Count]) -- If the Resource is a singleton, R.[Count] is one.
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
---select 7 as step, E.* from @FilledEntries E
+
 -- set the other measures, if the rate per unit is defined
 UPDATE E 
 SET
@@ -78,7 +79,7 @@ SET
 	E.[Time]		=	COALESCE(R.[Time] * E.[Count], E.[Time])
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
---select 8 as step, E.* from @FilledEntries E
+
 UPDATE E
 SET
 	E.[Direction] = COALESCE(E.[Direction], LDE.[Direction]),
@@ -88,7 +89,7 @@ SET
 FROM @FilledEntries E
 JOIN @Lines L ON E.[LineIndex] = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] AND E.[EntryNumber] = LDE.[EntryNumber]
---select 9 as step, E.* from @FilledEntries E
+
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
 SET E.[Value] = E.[MonetaryValue]
@@ -99,7 +100,7 @@ JOIN @Documents D ON L.DocumentIndex = D.[Index]
 WHERE
 	E.[CurrencyId] = @FunctionalCurrencyId
 	AND (E.[Value] <> E.[MonetaryValue]);
---select 10 as step, E.* from @FilledEntries E
+
 -- for financial amounts in foreign currency, the value is manually entered or read from a web service
 --UPDATE E 
 --SET E.[Value] = dbo.[fn_CurrencyExchange](D.[DocumentDate], E.[CurrencyId], @FunctionalCurrencyId, E.[MonetaryValue])

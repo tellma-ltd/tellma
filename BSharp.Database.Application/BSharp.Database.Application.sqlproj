@@ -117,7 +117,6 @@
     <Build Include="dbo\User Defined Types\dbo.AgentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.IndexedIdList.sql" />
     <Build Include="dbo\Tables\dbo.Translations.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Settings__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.MeasurementUnitList.sql" />
     <Build Include="dbo\User Defined Types\dbo.ResponsibilityCenterList.sql" />
     <Build Include="dbo\User Defined Types\dbo.SettingList.sql" />
@@ -194,7 +193,6 @@
     <Build Include="dbo\Views\dbo.DocumentLineEntriesDetailsView.sql" />
     <Build Include="dbo\Views\dbo.AccountsBalancesView.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_WideLines__Unpivot.sql" />
     <Build Include="dbo\Tables\dbo.DocumentStatesHistory.sql" />
     <Build Include="dbo\Tables\dbo.VoucherBooklets.sql" />
     <Build Include="dbo\Tables\dbo.Workflows.sql" />
@@ -428,7 +426,7 @@
     <None Include="Samples\02_Agents\01_ResponsibilityCenters.sql" />
     <None Include="Samples\05_Accounts\a_AccountClassifications.sql" />
     <None Include="Samples\05_Accounts\b_BasicAccounts.sql" />
-    <None Include="Samples\06_Entries\02_manual-vouchers.sql" />
+    <None Include="Samples\06_Entries\02_manual-journal-vouchers.sql" />
     <None Include="Samples\06_Entries\11_petty-cash-vouchers.sql" />
     <None Include="Samples\FillSampleData.sql" />
     <Build Include="api\Stored Procedures\api.Roles__Save.sql" />
@@ -464,6 +462,10 @@
     <None Include="Samples\06_Entries\01_DocumentDefinitions.sql" />
     <Build Include="bll\Functions\bll.fn_Prefix_CodeWidth_SN__Code.sql" />
     <Build Include="Mapping\map.AccountTypes.sql" />
+    <Build Include="bll\Stored Procedures\bll.Settings_Validate__Save.sql" />
+    <Build Include="api\Stored Procedures\api.Settings__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.WideLines__Unpivot.sql" />
+    <Build Include="bll\Stored Procedures\bll.LineDefinitionEntries__Pivot.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -487,6 +489,7 @@
     <None Include="Samples\02_Agents\05_Banks.sql" />
     <None Include="Samples\00_Setup\c_ResourceClassifications.sql" />
     <None Include="Samples\00_Setup\e_ResourceClassificationsEntryClassifications.sql" />
+    <None Include="Samples\06_Entries\03_cash-payment-vouchers.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

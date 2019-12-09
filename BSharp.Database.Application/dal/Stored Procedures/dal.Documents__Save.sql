@@ -130,7 +130,7 @@ BEGIN
 			E.[CurrencyId], E.[EntryClassificationId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
 			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAgentName], E.[RelatedAmount],
-			E.[Time1], E.[Time2]
+			E.[RelatedDate], E.[Time1], E.[Time2]
 		FROM @Entries E
 		JOIN @DocumentsIndexedIds DI ON E.[DocumentIndex] = DI.[Index]
 		JOIN @LinesIndexedIds LI ON E.[LineIndex] = LI.[Index]
@@ -156,6 +156,7 @@ BEGIN
 			t.[Count]					= s.[Count],
 			t.[Mass]					= s.[Mass],
 			t.[Volume]					= s.[Volume],
+			t.[RelatedDate]				= s.[RelatedDate],
 			t.[Time]					= s.[Time],
 			t.[Value]					= s.[Value],
 			t.[ExternalReference]		= s.[ExternalReference],
@@ -174,7 +175,7 @@ BEGIN
 			[CurrencyId], [EntryClassificationId], --[BatchCode], 
 			[DueDate], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
 			[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount],
-			[Time1], [Time2]
+			[RelatedDate], [Time1], [Time2]
 		)
 		VALUES (s.[LineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId],
 			s.[ContractType], s.[AgentDefinitionId], s.[ResourceClassificationId], s.[IsCurrent],
@@ -182,7 +183,7 @@ BEGIN
 			s.[CurrencyId], s.[EntryClassificationId], --[BatchCode], 
 			s.[DueDate], s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
 			s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentId], s.[RelatedAgentName], s.[RelatedAmount],
-			s.[Time1], s.[Time2]
+			s.[RelatedDate], s.[Time1], s.[Time2]
 		)
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
