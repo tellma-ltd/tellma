@@ -3,7 +3,7 @@
 -- if the assignee does not open the document, any user can still forward it to someone else
 	[DocumentId]	INT					CONSTRAINT [PK_DocumentAssignments__DocumentId] PRIMARY KEY
 										CONSTRAINT [FK_DocumentAssignments__DocumentId] REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
--- If the document becomes (Filed), this record will be deleted, and recorded in DocumentAssignmentsHistory
+-- If the document becomes (Closed), this record will be deleted, and recorded in DocumentAssignmentsHistory
 -- If it is in (Active) state, it will be automatically assigned to the person who moved it to (Active)
 	[AssigneeId]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignments__AssigneeId] REFERENCES [dbo].[Users] ([Id]),
 -- When moved to (Active) state, the comment is automatically To be completed in the user primary language

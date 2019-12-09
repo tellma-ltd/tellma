@@ -6,13 +6,12 @@
 	[State]						SMALLINT			NOT NULL DEFAULT	0
 	--CONSTRAINT [CK_Lines__State] CHECK ([State]	IN (N'Draft', N'Void', N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Reviewed')),
 	CONSTRAINT [CK_Lines__State] CHECK ([State]		IN (0		,	-1,			+1,			-2,				+2,			-3,			+3,			-4,				+4)),
-	[RequestedAt]				DATETIMEOFFSET(7),
-	[AuthorizeddAt]				DATETIMEOFFSET(7),
-	[CompletedAt]				DATETIMEOFFSET(7),
-	[ReviewedAt]				DATETIMEOFFSET(7),
+	--[RequestedAt]				DATETIMEOFFSET(7),
+	--[AuthorizeddAt]				DATETIMEOFFSET(7),
+	--[CompletedAt]				DATETIMEOFFSET(7),
+	--[ReviewedAt]				DATETIMEOFFSET(7),
 
 	[CurrencyId]				NCHAR (3)			CONSTRAINT [FK_Lines__CurrencyId] REFERENCES dbo.Currencies([Id]),
-	[AgentDefinitionId]			NVARCHAR (50)		CONSTRAINT [FK_Lines__AgentDefinitionId] REFERENCES dbo.AgentDefinitions([Id]),
 	[AgentId]					INT					CONSTRAINT [FK_Lines__AgentId] REFERENCES dbo.Agents([Id]), -- useful for storing the conversion agent in conversion transactions
 	[ResourceId]				INT					CONSTRAINT [FK_Lines__ResourceId] REFERENCES dbo.Resources([Id]),
 	[Amount]					DECIMAL (19,4),

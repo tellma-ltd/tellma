@@ -24,7 +24,7 @@ BEGIN
 -- The user may de-select some of those lines (if trying to select other lines, the business logic will show it as an error)
 -- The user signs with reason
 -- The system refreshes the document lines and the list of accessible states.
--- The document can be filed/posted provided that:
+-- The document can be closed provided that:
 	1) All the lines have reached their final states
 	2) The lines with state REVIEWED are balanced
 -- The user may edit/save a document provided that the document is active
@@ -78,4 +78,11 @@ SET NOCOUNT ON;
 	INSERT INTO @ReadyIds SELECT [Id] FROM [bll].[fi_Lines__Ready](@Ids, @ToState);
 
 	EXEC dal.[Lines_State__Update] @Ids = @ReadyIds, @ToState = @ToState;
+
+	DECLARE @DocIds dbo.IdList;
+	INSERT INTO @DocIds([Id])
+	SELECT DISTINCT DocumentId FROM dbo.Lines
+	WHERE [Id] IN (SELECT [Id] FROM @IndexedIds);
+
+	EXEC dal.Documents_State__Refresh @DocIds;
 END;

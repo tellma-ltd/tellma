@@ -396,10 +396,10 @@
     <Build Include="rpt\Functions\rpt.AccountClassificationGLAccount__Statement.sql" />
     <Build Include="rpt\Functions\rpt.Accounts__TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents_Validate__File.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Close.sql" />
     <Build Include="api\Stored Procedures\api.Lines__Unsign.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
-    <Build Include="api\Stored Procedures\api.Documents__File.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Close.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines__RelevantIndexIds.sql" />
     <Build Include="dbo\Functions\dbo.fn_State__StateId.sql" />
     <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
@@ -470,9 +470,12 @@
     <Build Include="bll\Stored Procedures\bll.EntryClassifications_Validate__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.EntryClassifications_Validate__DeleteWithDescendants.sql" />
     <Build Include="dbo\Tables\dbo.ContractTypes.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents_State__Refresh.sql" />
     <Build Include="Mapping\Documents.sql" />
     <Build Include="Mapping\Lines.sql" />
     <Build Include="Mapping\Entries.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Open.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Open.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

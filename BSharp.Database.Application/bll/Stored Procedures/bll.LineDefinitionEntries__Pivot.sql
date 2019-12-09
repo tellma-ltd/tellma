@@ -5,8 +5,8 @@
 AS
 	DECLARE @WideLines dbo.WideLineList;
 
-	INSERT INTO @WideLines([Index], [DocumentIndex],[DefinitionId], [AgentDefinitionId])
-	SELECT					@Index, @DocumentIndex , @DefinitionId, [AgentDefinitionId] 
+	INSERT INTO @WideLines([Index], [DocumentIndex],[DefinitionId])
+	SELECT					@Index, @DocumentIndex , @DefinitionId 
 	FROM dbo.LineDefinitions
 	WHERE [Id] = @DefinitionId
 
