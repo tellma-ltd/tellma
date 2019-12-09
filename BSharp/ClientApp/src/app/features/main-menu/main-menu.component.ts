@@ -51,31 +51,59 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     Financials: {
       background: 'b-green',
       items: [
-        { label: 'Accounts', icon: 'coins', link: '../accounts', viewId: 'accounts', sortKey: 100 },
-        // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
-        { label: 'Currencies', icon: 'euro-sign', link: '../currencies', viewId: 'currencies', sortKey: 300 },
+        {
+          label: 'Accounts', icon: 'coins', link: '../accounts',
+          viewId: 'accounts', sortKey: 100
+        },
         {
           label: 'AccountClassifications', icon: 'sitemap', link: '../account-classifications',
-          viewId: 'account-classifications', sortKey: 100
+          viewId: 'account-classifications', sortKey: 200
         },
-        { label: 'AccountTypes', icon: 'list', link: '../account-types', viewId: 'account-types', sortKey: 200 },
+        // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
         {
-          label: 'ResponsibilityCenters',
-          icon: 'sitemap', link: '../responsibility-centers', viewId: 'responsibility-centers', sortKey: 500
+          label: 'AccountTypes', icon: 'list', link: '../account-types',
+          viewId: 'account-types', sortKey: 300
+        },
+        {
+          label: 'Currencies', icon: 'euro-sign', link: '../currencies',
+          viewId: 'currencies', sortKey: 400
+        },
+        {
+          label: 'ResponsibilityCenters', icon: 'sitemap', link: '../responsibility-centers',
+          viewId: 'responsibility-centers', sortKey: 600
         },
       ]
     },
     Administration: {
       background: 'b-blue',
       items: [
-        { label: 'Users', icon: 'users', link: '../users', viewId: 'users', sortKey: 100 },
-        { label: 'Roles', icon: 'tasks', link: '../roles', viewId: 'roles', sortKey: 200 },
-        { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units', sortKey: 300 },
-        { label: 'Settings', icon: 'cog', link: '../settings', viewId: 'settings', sortKey: 400 },
-        { label: 'ReportDefinitions', icon: 'tools', link: '../report-definitions', viewId: 'report-definitions', sortKey: 500 },
         {
-          label: 'ResourceClassifications', icon: 'tasks',
-          link: '../resource-classifications', viewId: 'resource-classifications', sortKey: 600
+          label: 'Users', icon: 'users', link: '../users',
+          viewId: 'users', sortKey: 100
+        },
+        {
+          label: 'Roles', icon: 'tasks', link: '../roles',
+          viewId: 'roles', sortKey: 200
+        },
+        {
+          label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units',
+          viewId: 'measurement-units', sortKey: 300
+        },
+        {
+          label: 'Settings', icon: 'cog', link: '../settings',
+          viewId: 'settings', sortKey: 400
+        },
+        {
+          label: 'ReportDefinitions', icon: 'tools', link: '../report-definitions',
+          viewId: 'report-definitions', sortKey: 500
+        },
+        {
+          label: 'ResourceClassifications', icon: 'sitemap', link: '../resource-classifications',
+          viewId: 'resource-classifications', sortKey: 600
+        },
+        {
+          label: 'EntryClassifications', icon: 'sitemap', link: '../entry-classifications',
+          viewId: 'entry-classifications', sortKey: 700
         },
       ]
     },

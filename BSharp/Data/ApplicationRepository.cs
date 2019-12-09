@@ -263,6 +263,9 @@ namespace BSharp.Data
                     case nameof(ResponsibilityCenter):
                         return new SqlSource("[map].[ResponsibilityCenters]()");
 
+                    case nameof(EntryClassification):
+                        return new SqlSource("[map].[EntryClassifications]()");
+
                     #region _Temp
 
                     case nameof(VoucherBooklet):
@@ -3124,5 +3127,241 @@ FROM [dbo].[IfrsEntryClassifications] AS [Q])");
         }
 
         #endregion
+
+        #region EntryClassifications
+
+        public Query<EntryClassification> EntryClassifications__AsQuery(List<EntryClassificationForSave> entities)
+        {
+            // This method returns the provided entities as a Query that can be selected, filtered etc...
+            // The Ids in the result are always the indices of the original collection, even when the entity has a string key
+
+            // Parameters
+            DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+            SqlParameter entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+            {
+                TypeName = $"[dbo].[{nameof(EntryClassification)}List]",
+                SqlDbType = SqlDbType.Structured
+            };
+
+            // Query
+            var query = Query<EntryClassification>();
+            return query.FromSql($"[map].[{nameof(EntryClassifications__AsQuery)}] (@Entities)", null, entitiesTvp);
+        }
+
+        public async Task<IEnumerable<ValidationError>> EntryClassifications_Validate__Save(List<EntryClassificationForSave> entities, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(EntryClassification)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(EntryClassifications_Validate__Save)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task<List<int>> EntryClassifications__Save(List<EntryClassificationForSave> entities, bool returnIds)
+        {
+            var result = new List<IndexedId>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                DataTable entitiesTable = RepositoryUtilities.DataTableWithParentIndex(entities, e => e.ParentIndex);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(EntryClassification)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+                cmd.Parameters.Add("@ReturnIds", returnIds);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(EntryClassifications__Save)}]";
+
+                if (returnIds)
+                {
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            int i = 0;
+                            result.Add(new IndexedId
+                            {
+                                Index = reader.GetInt32(i++),
+                                Id = reader.GetInt32(i++)
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+            }
+
+            // Return ordered result
+            var sortedResult = new int[entities.Count];
+            result.ForEach(e =>
+            {
+                sortedResult[e.Index] = e.Id;
+            });
+
+            return sortedResult.ToList();
+        }
+
+        public async Task EntryClassifications__Activate(List<int> ids, bool isActive)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(EntryClassifications__Activate)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> EntryClassifications_Validate__Delete(List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(EntryClassifications_Validate__Delete)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task EntryClassifications__Delete(IEnumerable<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(EntryClassifications__Delete)}]";
+
+                // Execute
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+                {
+                    throw new ForeignKeyViolationException();
+                }
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> EntryClassifications_Validate__DeleteWithDescendants(List<int> ids, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(EntryClassifications_Validate__DeleteWithDescendants)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task EntryClassifications__DeleteWithDescendants(IEnumerable<int> ids)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(EntryClassifications__DeleteWithDescendants)}]";
+
+                // Execute
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (SqlException ex) when (RepositoryUtilities.IsForeignKeyViolation(ex))
+                {
+                    throw new ForeignKeyViolationException();
+                }
+            }
+        }
+
+        #endregion
+
     }
 }

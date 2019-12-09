@@ -10,6 +10,7 @@ namespace BSharp.Entities
         [NotMapped]
         public int? ParentIndex { get; set; }
 
+        [Display(Name = "TreeParent")]
         [AlwaysAccessible]
         public int? ParentId { get; set; }
 

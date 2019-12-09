@@ -153,6 +153,17 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "entry-classifications",
+                        Name = "EntryClassifications",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("IsActive")
+                        }
+                    },
+                    new ViewInfo {
                         Id = "settings",
                         Name = "Settings",
                         Actions = new ActionInfo[]

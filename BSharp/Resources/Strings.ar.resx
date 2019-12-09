@@ -424,6 +424,18 @@
   <data name="EnterYourEmail" xml:space="preserve">
     <value>أدخل عنوان بريدك الإلكتروني</value>
   </data>
+  <data name="EntryClassification" xml:space="preserve">
+    <value>تصنيف السطر</value>
+  </data>
+  <data name="EntryClassifications" xml:space="preserve">
+    <value>تصنيفات الأسطر</value>
+  </data>
+  <data name="EntryClassifications_ForCredit" xml:space="preserve">
+    <value>للدائن</value>
+  </data>
+  <data name="EntryClassifications_ForDebit" xml:space="preserve">
+    <value>للمدين</value>
+  </data>
   <data name="Error_A0PathCannotTerminateWithANavigationField1" xml:space="preserve">
     <value>مسار {0} لا ينبغي أن ينتهي بحقل تنقل مثل {1}</value>
   </data>

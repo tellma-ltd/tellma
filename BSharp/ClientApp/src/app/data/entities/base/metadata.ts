@@ -17,6 +17,7 @@ import { metadata_ReportDefinition } from '../report-definition';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { Entity } from './entity';
 import { metadata_ResponsibilityCenter } from '../responsibility-center';
+import { metadata_EntryClassification } from '../entry-classification';
 
 export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: TranslateService, definitionId: string) => EntityDescriptor } = {
     MeasurementUnit: metadata_MeasurementUnit,
@@ -33,6 +34,7 @@ export const metadata: { [collection: string]: (ws: TenantWorkspace, trx: Transl
     Account: metadata_Account,
     ReportDefinition: metadata_ReportDefinition,
     ResponsibilityCenter: metadata_ResponsibilityCenter,
+    EntryClassification: metadata_EntryClassification,
 
     // Temp
     VoucherBooklet: metadata_VoucherBooklet,

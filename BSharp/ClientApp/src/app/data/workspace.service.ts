@@ -25,7 +25,7 @@ import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
 import { Aggregation, ReportDefinition } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
-import { isSpecified } from './util';
+import { EntryClassification } from './entities/entry-classification';
 
 export enum MasterStatus {
 
@@ -210,6 +210,7 @@ export class TenantWorkspace {
   Account: EntityWorkspace<Account>;
   ReportDefinition: EntityWorkspace<ReportDefinition>;
   ResponsibilityCenter: EntityWorkspace<ResponsibilityCenter>;
+  EntryClassification: EntityWorkspace<EntryClassification>;
 
   constructor(private workspaceService: WorkspaceService) {
     this.reset();
@@ -234,6 +235,7 @@ export class TenantWorkspace {
     this.Account = new EntityWorkspace<Account>();
     this.ReportDefinition = new EntityWorkspace<ReportDefinition>();
     this.ResponsibilityCenter = new EntityWorkspace<ResponsibilityCenter>();
+    this.EntryClassification = new EntityWorkspace<EntryClassification>();
 
     this.notifyStateChanged();
   }

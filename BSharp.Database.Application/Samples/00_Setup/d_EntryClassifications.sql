@@ -1,6 +1,7 @@
-﻿DECLARE @EntryClassifications dbo.EntryClassificationList;
+﻿
+DECLARE @EntryClassificationsTemp TABLE ([IsAssignable] BIT, [Index] INT, [ForDebit] BIT, [ForCredit] BIT, [Node] HIERARCHYID, [Code] NVARCHAR(255), [Name] NVARCHAR(255))
 
-INSERT INTO @EntryClassifications([IsAssignable], [Index], [ForDebit], [ForCredit], [Node], [Code], [Name]) VALUES
+INSERT INTO @EntryClassificationsTemp([IsAssignable], [Index], [ForDebit], [ForCredit], [Node], [Code], [Name]) VALUES
  (0, 0, 1, 1, '/1/', 'ChangesInPropertyPlantAndEquipment', 'Increase (decrease) in property, plant and equipment')
 ,(1, 1, 1, 0, '/1/1/', 'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment', 'Additions other than through business combinations, property, plant and equipment')
 ,(1, 2, 1, 0, '/1/2/', 'AcquisitionsThroughBusinessCombinationsPropertyPlantAndEquipment', 'Acquisitions through business combinations, property, plant and equipment')
@@ -183,6 +184,14 @@ INSERT INTO @EntryClassifications([IsAssignable], [Index], [ForDebit], [ForCredi
 ,(1, 177, 1, 0, '/10/7/', N'PropertyPlantAndEquipmentReclassifiedAsInventory', 'Fixed asset to inventory conversion') -- merge with previous
 ,(1, 178, 1, 1, '/10/9/', N'InternalInventoryTransferExtension', 'Inventory transfer')
 -- we also need to add customer return and supplier return
+
+
+DECLARE @EntryClassifications dbo.EntryClassificationList;
+
+INSERT INTO @EntryClassifications ([IsAssignable], [Index], [ForDebit], [ForCredit], [ParentIndex], [Code], [Name])
+SELECT [IsAssignable], [Index], [ForDebit], [ForCredit], (SELECT [Index] FROM @EntryClassificationsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [Code], [Name]
+FROM @EntryClassificationsTemp RC
+				
 
 EXEC [api].[EntryClassifications__Save]
 	@Entities = @EntryClassifications,

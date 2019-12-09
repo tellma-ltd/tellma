@@ -28,6 +28,7 @@ DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[LookupDefinitions];
 DELETE FROM [dbo].[ResponsibilityCenters];
 DELETE FROM [dbo].[AccountTypes];
+DELETE FROM [dbo].[EntryClassifications];
 
 -- Populate
 
@@ -80,6 +81,15 @@ EXEC [api].[ResourceClassifications__Save]
 	@Entities = @ResourceClassifications,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
+DECLARE @EntryClassifications dbo.EntryClassificationList;
+INSERT INTO @EntryClassifications([IsAssignable], [Index], [ForDebit], [ForCredit], [ParentIndex], [Code], [Name]) VALUES
+ (0, 0, 1, 1, NULL, 'ChangesInPropertyPlantAndEquipment', 'Increase (decrease) in property, plant and equipment')
+,(1, 1, 1, 0, 0, 'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment', 'Additions other than through business combinations, property, plant and equipment')
+,(1, 2, 1, 0, 0, 'AcquisitionsThroughBusinessCombinationsPropertyPlantAndEquipment', 'Acquisitions through business combinations, property, plant and equipment')
+
+EXEC [api].[EntryClassifications__Save]
+	@Entities = @EntryClassifications,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 -- Currencies
 DECLARE @Currencies CurrencyList;
