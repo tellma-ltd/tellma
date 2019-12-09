@@ -47,7 +47,8 @@ SET NOCOUNT ON;
 		N'Error_CanOnlySaveADocumentInActiveState'
 	FROM @Documents FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
-	WHERE (BE.[State] <> N'Active')
+	--WHERE (BE.[State] <> N'Active')
+	WHERE (BE.[State] = 5)
 
 	-- TODO: For the cases below, add the condition that Entry Classification is enforced
 

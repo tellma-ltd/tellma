@@ -10,10 +10,11 @@ SET NOCOUNT ON;
 	SELECT
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentIsIn0State',
-		BE.[State]
+		CAST(BE.[State] AS NVARCHAR(50))
 	FROM @Ids FE
 	JOIN [dbo].[Lines] DL ON FE.[Id] = DL.[Id]
 	JOIN [dbo].[Documents] BE ON DL.[DocumentId] = BE.[Id]
-	WHERE (BE.[State] <> N'Active');
+	--WHERE (BE.[State] <> N'Active');
+	WHERE (BE.[State] = 5);
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

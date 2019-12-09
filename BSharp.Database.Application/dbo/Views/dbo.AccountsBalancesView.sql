@@ -12,7 +12,7 @@ AS
 	JOIN dbo.[Lines] DL ON DLE.[LineId] = DL.[Id]
 	JOIN dbo.[Documents] D ON DL.[DocumentId] = D.[Id]
 	JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
-	WHERE D.[State] = N'Filed'
+	WHERE D.[State] = 5 --N'Filed'
 	AND DL.[State] = +4 -- N'Reviewed'
 	GROUP BY
 		[AccountId]

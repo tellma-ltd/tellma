@@ -55,6 +55,6 @@ AS
 		JOIN [dbo].[Documents] D ON L.[DocumentId] = D.[Id]
 		JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 	WHERE
-		D.[State] = N'Filed'
-		AND L.[State] = +4; -- N'Reviewed';
+		D.[State] = 5 -- N'Filed'
+		AND L.[State] = 4; -- N'Reviewed';
 GO;

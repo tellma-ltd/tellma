@@ -3,7 +3,7 @@
 AS
 	DELETE FROM [dbo].[Resources] 
 	WHERE [DefinitionId] = 'currencies'
-	AND ResourceClassificationId = dbo.fn_RCCOde__Id(N'Cash')
+	AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash')
 	AND [CurrencyId] IN (SELECT Id FROM @Ids);
 
 	DELETE FROM [dbo].[Currencies] 
