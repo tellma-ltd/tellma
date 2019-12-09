@@ -25,9 +25,11 @@ export class ResourceClassificationsMasterComponent extends MasterBaseComponent 
     this.resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$);
   }
 
-  get viewId(): string {
+  private get viewId(): string {
     return `resource-classifications`;
   }
+
+  // UI Binding
 
   public get c() {
     return this.workspace.current.ResourceClassification;
@@ -58,9 +60,4 @@ export class ResourceClassificationsMasterComponent extends MasterBaseComponent 
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
-
-  public get masterCrumb(): string {
-    const entityDesc = metadata_ResourceClassification(this.ws, this.translate, null);
-    return !!entityDesc ? entityDesc.titlePlural() : '???';
-  }
 }

@@ -25,6 +25,7 @@ import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
 import { Aggregation, ReportDefinition } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
+import { isSpecified } from './util';
 
 export enum MasterStatus {
 
@@ -425,7 +426,7 @@ export interface DimensionInfo {
    */
   entityDesc?: EntityDescriptor;
   idKey?: string;
-  selectKeys?: { prop: string, path: string}[];
+  selectKeys?: { prop: string, path: string }[];
 
   autoExpand: boolean;
   label: () => string;
@@ -462,7 +463,8 @@ export class ChartDimensionCell {
     public parent?: ChartDimensionCell) { }
 
   toString() {
-    return this.display; // isSpecified(this.value) ? this.value : '';
+    return this.display;
+    // return isSpecified(this.valueId) ? this.valueId : '';
   }
 }
 

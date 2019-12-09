@@ -73,23 +73,11 @@
   <data name="Account_Classification" xml:space="preserve">
     <value>التصنيف</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>الذمة</value>
-  </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>مؤرشف</value>
   </data>
-  <data name="Account_Location" xml:space="preserve">
-    <value>الموقع</value>
-  </data>
-  <data name="Account_PartyReference" xml:space="preserve">
-    <value>الرقم الخارجي</value>
-  </data>
-  <data name="Account_Resource" xml:space="preserve">
-    <value>المورد</value>
-  </data>
-  <data name="Account_ResponsibilityCenter" xml:space="preserve">
-    <value>مركز التكلفة</value>
+  <data name="Account_IsSmart" xml:space="preserve">
+    <value>حساب ذكي</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>النوع</value>

@@ -119,13 +119,6 @@ export class ApiService {
     };
   }
 
-  public accountTypesApi(cancellationToken$: Observable<void>) {
-    return {
-      activate: this.activateFactory<AccountType>('account-types', cancellationToken$),
-      deactivate: this.deactivateFactory<AccountType>('account-types', cancellationToken$)
-    };
-  }
-
   // TODO
   public reportDefinitionsApi(cancellationToken$: Observable<void>) {
     return {
@@ -169,10 +162,10 @@ export class ApiService {
     };
   }
 
-  public accountsApi(definitionId: string, cancellationToken$: Observable<void>) {
+  public accountsApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<Account>(`accounts/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Account>(`accounts/${definitionId}`, cancellationToken$)
+      activate: this.activateFactory<Account>(`accounts`, cancellationToken$),
+      deactivate: this.deactivateFactory<Account>(`accounts`, cancellationToken$)
     };
   }
 

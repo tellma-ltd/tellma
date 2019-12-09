@@ -31,61 +31,6 @@ namespace BSharp.Controllers
             _repo = repo;
         }
 
-        [HttpPut("activate")]
-        public async Task<ActionResult<EntitiesResponse<AccountType>>> Activate([FromBody] List<string> ids, [FromQuery] ActivateArguments args)
-        {
-            bool returnEntities = args.ReturnEntities ?? false;
-
-            return await ControllerUtilities.InvokeActionImpl(() =>
-                Activate(ids: ids,
-                    returnEntities: returnEntities,
-                    expand: args.Expand,
-                    isActive: true)
-            , _logger);
-        }
-
-        [HttpPut("deactivate")]
-        public async Task<ActionResult<EntitiesResponse<AccountType>>> Deactivate([FromBody] List<string> ids, [FromQuery] DeactivateArguments args)
-        {
-            bool returnEntities = args.ReturnEntities ?? false;
-
-            return await ControllerUtilities.InvokeActionImpl(() =>
-                Activate(ids: ids,
-                    returnEntities: returnEntities,
-                    expand: args.Expand,
-                    isActive: false)
-            , _logger);
-        }
-
-        private async Task<ActionResult<EntitiesResponse<AccountType>>> Activate([FromBody] List<string> ids, bool returnEntities, string expand, bool isActive)
-        {
-            // Parse parameters
-            var expandExp = ExpandExpression.Parse(expand);
-            var idsArray = ids.ToArray();
-
-            // Check user permissions
-            await CheckActionPermissions("IsActive", idsArray);
-
-            // Execute and return
-            using (var trx = ControllerUtilities.CreateTransaction())
-            {
-                await _repo.AccountTypes__Activate(ids, isActive);
-
-                if (returnEntities)
-                {
-                    var response = await GetByIdListAsync(idsArray, expandExp);
-
-                    trx.Complete();
-                    return Ok(response);
-                }
-                else
-                {
-                    trx.Complete();
-                    return Ok();
-                }
-            }
-        }
-
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
             return await _repo.UserPermissions(action, ViewId);

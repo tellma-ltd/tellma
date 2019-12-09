@@ -56,7 +56,7 @@
         </div>
 
         <!-- Actions -->
-        <div class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
+        <div *ngIf="showActions" class="btn-group b-toolbar-button" ngbDropdown [placement]="actionsDropdownPlacement">
           <button type="button" class="btn btn-sm b-toolbar-button dropdown-toggle" ngbDropdownToggle
             [ngClass]="{ 'btn-light': isLight, 'text-primary': isLight, 'b-white-button': isLight, 'b-text-whitish': isDark, 'font-weight-normal': isDark }">
             {{ 'Actions' | translate }}
@@ -72,8 +72,8 @@
               </div>
             </ng-container>
 
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip" container="body"
-              *ngIf="showDelete">
+            <div *ngIf="showDelete" [placement]="actionsDropdownPlacement" [ngbTooltip]="deleteTooltip"
+              container="body">
               <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
                 [class.b-text-whitish]="isDark" (click)="modalService.open(deleteModal)" [disabled]="!canDelete"
                 *ngIf="showDelete">
@@ -81,9 +81,9 @@
               </button>
             </div>
 
-            <div [placement]="actionsDropdownPlacement" [ngbTooltip]="cloneTooltip" container="body">
+            <div *ngIf="showClone" [placement]="actionsDropdownPlacement" [ngbTooltip]="cloneTooltip" container="body">
               <button type="button" class="dropdown-item b-transparent-background" [class.btn-light]="isLight"
-                [class.b-text-whitish]="isDark" *ngIf="showClone" (click)="onClone()" [disabled]="!canClone">
+                [class.b-text-whitish]="isDark" (click)="onClone()" [disabled]="!canClone">
                 {{ 'Clone' | translate }}
               </button>
 

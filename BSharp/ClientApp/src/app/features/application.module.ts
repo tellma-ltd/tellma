@@ -32,7 +32,7 @@ import { LookupsImportComponent } from './lookups/lookups-import.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
-  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck, faSitemap, faCoins
+  faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck, faSitemap, faCoins, faUserFriends
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -269,17 +269,17 @@ const routes: Routes = [
 
       // Accounts
       {
-        path: 'accounts/:definitionId',
+        path: 'accounts',
         component: AccountsMasterComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'accounts/:definitionId/import',
+        path: 'accounts/import',
         component: AccountsImportComponent,
         canDeactivate: [SaveInProgressGuard]
       },
       {
-        path: 'accounts/:definitionId/:id',
+        path: 'accounts/:id',
         component: AccountsDetailsComponent,
         canDeactivate: [UnsavedChangesGuard]
       },
@@ -411,7 +411,7 @@ export class ApplicationModule {
     library.addIcons(
       // Main menu icons
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd, faSitemap, faCoins,
-      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck
+      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck, faUserFriends
     );
   }
 }

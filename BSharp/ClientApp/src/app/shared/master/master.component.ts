@@ -295,6 +295,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
         hasChanged = true;
       }
 
+      // Inactive
       const urlInactive = params.get('inactive') === 'true';
       if (urlInactive !== !!this.state.inactive) {
         this.state.inactive = urlInactive;
@@ -394,7 +395,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     let obs$: Observable<EntitiesResponse>;
 
     if (isTree && !isSearchOrFilter) {
-      const filter = s.inactive ? null : `(${this.inactiveFilter}) or ActiveChildCount gt 0`;
+      const filter = s.inactive || !this.showIncludeInactive ? null : `(${this.inactiveFilter}) or ActiveChildCount gt 0`;
       const parentIds: (string | number)[] = this.parentIdsFromUserSettings;
 
       obs$ = this.crud.getChildrenOf({
@@ -418,7 +419,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
       // compute the filter
       let filter = this.filter();
-      if (!s.inactive) {
+      if (!s.inactive && this.showIncludeInactive) {
         if (!!filter) {
           filter = `(${filter}) and (${this.inactiveFilter})`;
         } else {
@@ -486,7 +487,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // show rotator next to the expanded item
     parentNode.status = MasterStatus.loading;
 
-    const filter = s.inactive ? null : `(${this.inactiveFilter}) or ActiveChildCount gt 0`;
+    const filter = s.inactive || !this.showIncludeInactive ? null : `(${this.inactiveFilter}) or ActiveChildCount gt 0`;
     const select = this.computeSelect();
     const parentIds: (string | number)[] = [parentId];
 
@@ -1255,7 +1256,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   // Multiselect-related stuff
 
   public get showCheckboxes(): boolean {
-    return this.isScreenMode && !this.missingDefinitionId;
+    return this.isScreenMode && !this.missingDefinitionId && (
+      (!!this.multiselectActions && this.multiselectActions.length > 0) ||
+      this.showDelete || this.showDeleteWithDescendants);
   }
 
   public get canCheckAll(): boolean {
@@ -1483,6 +1486,10 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // AND the custom filter and the built-in filter together
     return (!!custom && !!builtin) ? `(${custom}) and (${builtin})` :
       !!custom ? custom : !!builtin ? builtin : null;
+  }
+
+  get showIncludeInactive(): boolean {
+    return !!this.includeInactiveLabel; // If the label is not specified then hide the option
   }
 
   onIncludeInactive(): void {

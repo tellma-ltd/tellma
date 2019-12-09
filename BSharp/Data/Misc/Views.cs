@@ -89,6 +89,17 @@
                         }
                     },
                     new ViewInfo {
+                        Id = "accounts",
+                        Name = "Accounts",
+                        Read = true,
+                        Update = true,
+                        Delete = true,
+                        Actions = new ActionInfo[]
+                        {
+                            Li("IsDeprecated")
+                        }
+                    },
+                    new ViewInfo {
                         Id = "account-types",
                         Name = "AccountTypes",
                         Actions = new ActionInfo[]

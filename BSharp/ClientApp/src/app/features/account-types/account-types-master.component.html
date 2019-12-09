@@ -1,13 +1,8 @@
 <b-master collection="AccountType" [mode]="mode" [showCreateButton]="false" [filterDefault]="filter"
-  [masterCrumb]="'AccountTypes' | translate" [showImportButton]="false"
-  [showDeleteButton]="false" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="IsAssignable,IsActive" selectForTiles="Name,Name2,Name3"
-  [enableTreeView]="true" [multiselectActions]="[
-            { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
-            { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-          ]" [includeInactiveLabel]="'IncludeInactive' | translate">
+  [masterCrumb]="'AccountTypes' | translate" [showImportButton]="false" [showDeleteButton]="false" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Id"
+  selectForTiles="Name,Name2,Name3" inactiveFilter="" [multiselectActions]="[]">
 </b-master>
-
 
 <!-- Tile Template -->
 <ng-template #tile let-id="id">
@@ -31,7 +26,3 @@
     <b-auto-cell collection="AccountType" [entity]="c[id]"></b-auto-cell>
   </span>
 </ng-template>
-
-<!-- Multiselect Actions -->
-<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
-<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

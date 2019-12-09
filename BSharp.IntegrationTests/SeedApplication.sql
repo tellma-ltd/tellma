@@ -27,8 +27,20 @@ DELETE FROM [dbo].[AccountClassifications];
 DELETE FROM [dbo].[ResourceDefinitions];
 DELETE FROM [dbo].[LookupDefinitions];
 DELETE FROM [dbo].[ResponsibilityCenters];
+DELETE FROM [dbo].[AccountTypes];
 
 -- Populate
+
+
+DECLARE @PTAccountTypes dbo.[AccountTypeList];
+INSERT INTO @PTAccountTypes (
+	[Id],					[Name],						[Description]) VALUES
+(N'AccountsPayable',		N'Accounts Payable',		N'This represents balances owed to vendors for goods, supplies, and services purchased on an open account. Accounts payable balances are used in accrual-based accounting, are generally due in 30 or 60 days, and do not bear interest.'),
+(N'AccountsReceivable',		N'Accounts Receivable',		N'This represents amounts owed by customers for items or services sold to them when cash is not received at the time of sale. Typically, accounts receivable balances are recorded on sales invoices that include terms of payment. Accounts receivable are used in accrual-based accounting.');
+
+DECLARE @OdooAccountTypes dbo.[AccountTypeList];
+
+INSERT INTO dbo.AccountTypes SELECT * FROM @PTAccountTypes;
 
 INSERT INTO [dbo].[Permissions] ([RoleId], [ViewId], [Action])
 VALUES

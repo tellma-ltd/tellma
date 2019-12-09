@@ -27,12 +27,7 @@ namespace BSharp.Controllers.Dto
         /// Mapping from agent definition Id to agent definition
         /// </summary>
         public Dictionary<string, AgentDefinitionForClient> Agents { get; set; }
-
-        /// <summary>
-        /// Mapping from resource definition Id to resource definition
-        /// </summary>
-        public Dictionary<string, AccountDefinitionForClient> Accounts { get; set; }
-
+        
         /// <summary>
         /// Mapping from lookup definition Id to lookup definition
         /// </summary>
@@ -133,40 +128,6 @@ namespace BSharp.Controllers.Dto
     public class LineTypeForClient // related entity for document definition
     {
         // TODO
-    }
-
-    public class AccountDefinitionForClient : MasterDetailDefinitionForClient
-    {
-        public string ResponsibilityCenterLabel { get; set; }
-        public string ResponsibilityCenterLabel2 { get; set; }
-        public string ResponsibilityCenterLabel3 { get; set; }
-        public string ResponsibilityCenterVisibility { get; set; }
-        public int? ResponsibilityCenterDefaultValue { get; set; }
-
-        public string CustodianLabel { get; set; }
-        public string CustodianLabel2 { get; set; }
-        public string CustodianLabel3 { get; set; }
-        public string CustodianVisibility { get; set; }
-        public int? CustodianDefaultValue { get; set; }
-
-        public string ResourceLabel { get; set; }
-        public string ResourceLabel2 { get; set; }
-        public string ResourceLabel3 { get; set; }
-        public string ResourceVisibility { get; set; }
-        public int? ResourceDefaultValue { get; set; }
-        public string Resource_DefinitionList { get; set; }
-
-        public string LocationLabel { get; set; }
-        public string LocationLabel2 { get; set; }
-        public string LocationLabel3 { get; set; }
-        public string LocationVisibility { get; set; }
-        public int? LocationDefaultValue { get; set; }
-        public string Location_DefinitionList { get; set; }
-
-        public string PartyReferenceLabel { get; set; }
-        public string PartyReferenceLabel2 { get; set; }
-        public string PartyReferenceLabel3 { get; set; }
-        public string PartyReferenceVisibility { get; set; }
     }
 
     public class ResourceDefinitionForClient : MasterDetailDefinitionForClient
@@ -334,14 +295,6 @@ namespace BSharp.Controllers.Dto
     {
         public const string Optional = "Optional";
         public const string Required = "Required";
-    }
-
-    public static class AccountVisibility
-    {
-        public const string None = nameof(None);
-        public const string RequiredInAccounts = nameof(RequiredInAccounts);
-        public const string RequiredInEntries = nameof(RequiredInEntries);
-        public const string OptionalInEntries = nameof(OptionalInEntries);
     }
 
     public static class ReportType

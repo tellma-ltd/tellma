@@ -90,6 +90,15 @@ export const VIEWS_BUILT_IN: { [viewId: string]: ViewInfo } = {
             li('IsDeprecated')
         ]
     },
+    'accounts': {
+        name: 'Accounts',
+        read: true,
+        update: true,
+        delete: true,
+        actions: [
+            li('IsDeprecated')
+        ]
+    },
     'account-types': {
         name: 'AccountTypes',
         actions: [

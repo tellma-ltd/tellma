@@ -1,5 +1,5 @@
 <b-master collection="ResourceClassification" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
-  [enableTreeView]="true" [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+  [enableTreeView]="true" [masterCrumb]="'ResourceClassifications' | translate" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
   [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsActive" selectForTiles="Code" [multiselectActions]="[
           { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
           { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
