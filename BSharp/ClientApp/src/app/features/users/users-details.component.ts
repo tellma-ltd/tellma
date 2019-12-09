@@ -145,4 +145,8 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   public get isNew(): boolean {
     return (this.isScreenMode && this.route.snapshot.paramMap.get('id') === 'new') || (this.isPopupMode && this.idString === 'new');
   }
+
+  // public invoke(f: () => {}) {
+  //   return f.
+  // }
 }
