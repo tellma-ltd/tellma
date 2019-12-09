@@ -12,8 +12,8 @@ INSERT INTO @LSave ([Index],
 [DocumentIndex], [LineType], [AgentId2], [Amount2],	[Value1],	[Amount1], [ResourceId1], [AgentId1], [Reference1])   
 						-- Shareholder,	NumberOfShares, CapitalInvested, PaidInAmount, BankAccount, Currency
 VALUES
-(@LIdx + 1, @DIdx, @LineType,	@MohamadAkra,	1000,	2350000,	100000,		@USD,			@CBEUSD,	N'LT101'),
-(@LIdx + 2, @DIdx, @LineType,	@AhmadAkra,		1000,	2350000,	100000,		@USD,			@CBEUSD,	N'LT101');
+(@LIdx + 1, @DIdx, @LineType,	@MohamadAkra,	1000,	2350000,	100000,		@USD,			@BA_CBEUSD,	N'LT101'),
+(@LIdx + 2, @DIdx, @LineType,	@AhmadAkra,		1000,	2350000,	100000,		@USD,			@BA_CBEUSD,	N'LT101');
 
 EXEC [api].[Documents__Save]
 	@Documents = @DSave, @LineTypes = @DLTSave,

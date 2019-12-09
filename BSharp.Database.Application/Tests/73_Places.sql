@@ -1,7 +1,7 @@
 ﻿BEGIN -- Cleanup & Declarations
 	DECLARE @PlacesDTO [dbo].[PlaceList];
 	DECLARE @System int, @RawMaterialsWarehouse int, @FinishedGoodsWarehouse int, @MiscWarehouse int, 
-			@CBEUSD int, @CBEETB int, @TigistSafe int; 
+			@BA_CBEUSD int, @BA_CBEETB int, @TigistSafe int; 
 END;
 
 BEGIN -- Insert 
@@ -86,10 +86,10 @@ SELECT
 	@RawMaterialsWarehouse = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Raw Materials Warehouse'), 
 	@FinishedGoodsWarehouse = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Finished Goods Warehouse'),
 	@MiscWarehouse = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Misc Warehouse'),
-	@CBEUSD = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'CBE - USD'),
-	@CBEETB = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'CBE - ETB'),
+	@BA_CBEUSD = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'CBE - USD'),
+	@BA_CBEETB = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'CBE - ETB'),
 	@TigistSafe = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Tigist - Safe');
 
 	INSERT INTO dbo.AgentsResources([AgentId],	[RelationType],	[ResourceId], CreatedAt, CreatedById, ModifiedAt, ModifiedById) VALUES
-	(@CBEETB, N'BankAccount', @ETB, @Now, @UserId, @Now, @UserId),
-	(@CBEUSD, N'BankAccount', @USD, @Now, @UserId, @Now, @UserId);
+	(@BA_CBEETB, N'BankAccount', @ETB, @Now, @UserId, @Now, @UserId),
+	(@BA_CBEUSD, N'BankAccount', @USD, @Now, @UserId, @Now, @UserId);

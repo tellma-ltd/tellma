@@ -1,4 +1,5 @@
-﻿INSERT INTO dbo.ContractTypes VALUES
+﻿IF NOT EXISTS(SELECT * FROM dbo.ContractTypes)
+INSERT INTO dbo.ContractTypes VALUES
 (N'OnHand'),
 --N'OnDemand', -- for all practical purposes, this is the same as OnHand
 (N'InTransit'),

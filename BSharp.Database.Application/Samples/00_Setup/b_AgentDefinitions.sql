@@ -7,7 +7,9 @@
 	(N'debtors',		N'Debtor',			N'Debtors'),
 	(N'owners',			N'Owner',			N'Owners'),
 	(N'suppliers',		N'Supplier',		N'Suppliers'),
-	(N'tax-agencies',	N'Tax Agency',		N'Tax Agencies');
+	(N'tax-agencies',	N'Tax Agency',		N'Tax Agencies'),
+	(N'banks',			N'Bank',			N'Banks')
+	;
 
 	INSERT INTO dbo.AgentDefinitions
 	([Id],				[TitleSingular],	[TitlePlural],	[JobVisibility], [BasicSalaryVisibility], [TransportationAllowanceVisibility], [OvertimeRateVisibility]) VALUES

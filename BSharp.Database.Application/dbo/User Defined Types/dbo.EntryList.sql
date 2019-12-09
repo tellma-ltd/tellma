@@ -48,6 +48,5 @@
 	[RelatedAmount]				DECIMAL (19,4), 	-- used in Tax accounts, to store the quantiy of taxable item
 	[RelatedDate]				DATE,
 	[Time1]						TIME (0),	-- from time
-	[Time2]						TIME (0),	-- to time
-	[SortKey]					INT
+	[Time2]						TIME (0)
 );

@@ -17,7 +17,6 @@ WITH Docs AS (
 			L.[Id] As [LineId],
 			L.[DefinitionId] AS LineDefinitionId,
 			L.[State] AS [LineState],
-			E.SortKey,
 			E.[Direction],
 			E.[EntryNumber], A.[Name] AS [Account],
 			E.[CurrencyId], E.[MonetaryValue], E.[EntryClassificationId],

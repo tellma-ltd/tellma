@@ -69,7 +69,6 @@
 	[RelatedDate]					DATE,
 	[Time1]						TIME (0),	-- from time
 	[Time2]						TIME (0),	-- to time
-	[SortKey]					INT,
 -- for auditing
 	[CreatedAt]					DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]				INT				NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Entries__CreatedById] REFERENCES [dbo].[Users] ([Id]),

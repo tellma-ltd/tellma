@@ -1,58 +1,32 @@
-﻿
-INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-	[Name],							[Code], [ResponsibilityType], [IsOperatingSegment], [ManagerId], [ParentIndex]) VALUES
-(3,0,N'Marketing & Sales',			N'13',	N'Revenue',					0,					@Ashenafi,			0),
-(4,1,N'Sales Dept Mgmt Office',		N'140',	N'Cost',					0,					@Ashenafi,			3);
+﻿DECLARE @banks dbo.[AgentList];
 
 BEGIN -- Cleanup & Declarations
-	DECLARE  @CostObjects  [dbo].[AgentList];
-	DECLARE  @Sesay int, @ERCA int,  @CBE int, @AWB int,
-			@NIB int;
+	DECLARE @Bank_CBE int, @Bank_AWB int,	@Bank_NIB int;
 END
-	INSERT INTO @Organizations([Index],
-		[Name],									[IsRelated], [Code]) VALUES
+	INSERT INTO @banks([Index],
+		[Name],							[IsRelated], [Code]) VALUES
+	(0, N'Commercial Bank of Ethiopia',	0,			'CBE'),
+	(1, N'Awash Bank',					0,			'AWB'),
+	(2, N'NIB',							0,			'NIB');
 
-	(16, N'Sisay Tesfaye, PLC',						0,		'O'),
-	(17, N'Ethiopian Revenues and Customs Authority',0,		'T'), -- taxing
-	(20, N'Commercial Bank of Ethiopia',			0,		'BC'), -- banking
-	(21, N'Awash Bank',								0,		'B'), -- banking
-	(22, N'NIB',									0,		'B');
+	EXEC [api].[Agents__Save]
+		@DefinitionId = N'banks',
+		@Entities = @banks,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-	INSERT INTO @Organizations([Index],
-		[Name],									[IsRelated], [Code]) VALUES	
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Banks: Inserting'
+		GOTO Err_Label;
+	END;
+	
+	IF @DebugEmployees = 1
+	SELECT A.[Code], A.[Name], A.[StartDate] AS 'Banking Since', A.[IsActive],
+	RC.[Name] AS OperatingSegment
+	FROM dbo.fi_Agents(N'banks', NULL) A
+	LEFT JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;
 
-	(26, N'Executive Office',						1,		'R'),
-	(27, N'Production Department',					0,		'R'),
-	(28, N'Sales & Marketing Department',			0,		'R'),
-	(29, N'Finance Department',						0,		'R'),
-	(30, N'Human Resources Department',				0,		'R'),
-	(31, N'Materials & Purchasing Department',		0,		'R');
 SELECT
-	@Sesay = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Sisay Tesfaye, PLC'),
-	@ERCA = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Ethiopian Revenues and Customs Authority'),
-
-	@CBE = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Commercial Bank of Ethiopia'),
-	@AWB = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Awash Bank'),
-	@NIB = (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'NIB');
-
-	/*
-
-BEGIN -- Users
-	IF NOT EXISTS(SELECT * FROM [dbo].[Users])
-	INSERT INTO [dbo].[Users]([Id], [Name], [AgentId]) VALUES
-	(N'system@banan-it.com', N'B#', NULL),
-	(N'mohamad.akra@banan-it.com', N'Mohamad Akra', @MohamadAkra),
-	(N'ahmad.akra@banan-it.com', N'Ahmad Akra', @AhmadAkra),
-	(N'badegek@gmail.com', N'Badege', @BadegeKebede),
-	(N'mintewelde00@gmail.com', N'Tizita', @TizitaNigussie),
-	(N'ashenafi935@gmail.com', N'Ashenafi', @Ashenafi),
-	(N'yisak.tegene@gmail.com', N'Yisak', @YisakTegene),
-	(N'zewdnesh.hora@gmail.com', N'Zewdinesh Hora', @ZewdineshHora),
-	(N'tigistnegash74@gmail.com', N'Tigist', @TigistNegash),
-	(N'roman.zen12@gmail.com', N'Roman', @RomanZenebe),
-	(N'mestawetezige@gmail.com', N'Mestawet', @Mestawet),
-	(N'ayelech.hora@gmail.com', N'Ayelech', @AyelechHora),
-	(N'info@banan-it.com', N'Banan IT', NULL)
-END
-
-*/
+	@Bank_CBE= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Commercial Bank of Ethiopia'),
+	@Bank_AWB= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Awash Bank'),
+	@Bank_NIB= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'NIB');

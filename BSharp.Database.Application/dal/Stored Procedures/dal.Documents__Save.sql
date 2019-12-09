@@ -124,7 +124,7 @@ BEGIN
 	MERGE INTO BE AS t
 	USING (
 		SELECT
-			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[SortKey], E.[Direction], E.[AccountId],
+			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],
 			E.[ContractType], E.[AgentDefinitionId], E.[ResourceClassificationId], E.[IsCurrent],
 			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId], E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[CurrencyId], E.[EntryClassificationId], --[BatchCode], 
@@ -137,7 +137,6 @@ BEGIN
 	) AS s ON (t.Id = s.Id)
 	WHEN MATCHED THEN
 		UPDATE SET
-			t.[SortKey]					= s.[Index],
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
 			t.[ContractType]			= s.[ContractType],
@@ -169,7 +168,7 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineId], [EntryNumber], [SortKey], [Direction], [AccountId],
+		INSERT ([LineId], [EntryNumber], [Direction], [AccountId],
 			[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent],
 			[AgentId], [ResourceId], [ResponsibilityCenterId], [AccountIdentifier], [ResourceIdentifier],
 			[CurrencyId], [EntryClassificationId], --[BatchCode], 
@@ -177,7 +176,7 @@ BEGIN
 			[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount],
 			[RelatedDate], [Time1], [Time2]
 		)
-		VALUES (s.[LineId], s.[EntryNumber], s.[SortKey], s.[Direction], s.[AccountId],
+		VALUES (s.[LineId], s.[EntryNumber], s.[Direction], s.[AccountId],
 			s.[ContractType], s.[AgentDefinitionId], s.[ResourceClassificationId], s.[IsCurrent],
 			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId], s.[AccountIdentifier], s.[ResourceIdentifier],
 			s.[CurrencyId], s.[EntryClassificationId], --[BatchCode], 

@@ -1,20 +1,10 @@
 ﻿DECLARE @SmartAccounts dbo.AccountList;
-																														--[ResponsibilityCenterId]		INT,
-																														--[ContractType]					NVARCHAR (50),--	REFERENCES dbo.[ContractTypes]([Id]),
-																														--[AgentDefinitionId]				NVARCHAR (50),
-																														--[ResourceClassificationId]		INT,
-																														--[IsCurrent]						BIT,
-																														--[AgentId]						INT,
-																														--[ResourceId]					INT,
-																														--[Identifier]					NVARCHAR (10),
-																														--[EntryClassificationId]			INT
---DECLARE @FunctionalETB
---INSERT INTO @SmartAccounts([Index], [IsSmart],
---	[AccountTypeId],		[AccountClassificationId],	[Name],								[Code],		[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent], [AgentId],	[ResourceId]) VALUES
-----(0,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1101'),
-----(1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1102'),
---(0,1,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1103',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		+1,			@Bank_CBE,	@),
---(1,1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1104',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash')),	+1,			@Bank_CBE);
+INSERT INTO @SmartAccounts([Index], [IsSmart],
+	[AccountTypeId],		[AccountClassificationId],	[Name],								[Code],		[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryClassificationId]) VALUES
+--(0,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1101'),
+--(1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1102'),
+(0,1,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1103',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,			@Bank_CBE,	@R_USD,			NULL,			NULL),
+(1,1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1104',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,			@Bank_CBE,	@R_ETB,			NULL,			NULL);
 --(3,1,N'Inventory',			@Inventories_AC,			N'TF1903950009',					N'1209'), -- Merchandise in transit, for given LC
 --(4,1,N'Inventory',			@Inventories_AC,			N'PPE Warehouse',					N'1210'),
 --(5,1,N'FixedAssets',		@NonCurrentAssets_AC,		N'PPE - Vehicles',					N'1301'),
@@ -36,21 +26,22 @@
 --(23,1,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5202'),
 --(24,1,N'Expenses',			@Expenses_AC,				N'Overtime - Admin',				N'5203');
 
---EXEC [api].[Accounts__Save] --  N'cash-and-cash-equivalents',
---	@Entities = @SmartAccounts,
---	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+EXEC [api].[Accounts__Save] --  N'cash-and-cash-equivalents',
+	@Entities = @SmartAccounts,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
---IF @ValidationErrorsJson IS NOT NULL 
---BEGIN
---	Print 'Inserting Smart Accounts'
---	GOTO Err_Label;
---END;
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'Inserting Smart Accounts'
+	GOTO Err_Label;
+END;
 
---IF @DebugAccounts = 1
---	SELECT * FROM map.Accounts();
+IF @DebugAccounts = 1
+	SELECT * FROM map.Accounts() WHERE IsSmart = 1;
 
---SELECT @CBEUSD = [Id] FROM dbo.[Accounts] WHERE Code = N'1101';
---SELECT @CBEETB = [Id] FROM dbo.[Accounts] WHERE Code = N'1102';
+DECLARE @SA_CBEUSD INT, @SA_CBEETB INT;
+SELECT @SA_CBEUSD = [Id] FROM dbo.[Accounts] WHERE Code = N'1103';
+SELECT @SA_CBEETB = [Id] FROM dbo.[Accounts] WHERE Code = N'1104';
 --SELECT @CBELC = [Id] FROM dbo.[Accounts] WHERE Code = N'1201';
 --SELECT @ESL = [Id] FROM dbo.[Accounts] WHERE Code = N'1209';
 --SELECT @PPEWarehouse = [Id] FROM dbo.[Accounts] WHERE Code = N'1210';

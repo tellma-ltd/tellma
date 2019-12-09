@@ -39,6 +39,9 @@ EXEC [api].Currencies__Delete
 	@IndexedIds = @DeletedCurrencies,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
+DECLARE @R_ETB INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'ETB' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
+DECLARE @R_USD INT = (SELECT [Id] FROM dbo.Resources WHERE CurrencyId = N'USD' AND ResourceClassificationId = dbo.fn_RCCode__Id(N'Cash') AND DefinitionId = N'currencies')
+	
 IF @DebugCurrencies = 1
 BEGIN
 	SELECT * FROM map.Currencies();

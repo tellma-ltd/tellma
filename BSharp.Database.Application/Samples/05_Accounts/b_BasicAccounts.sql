@@ -38,10 +38,10 @@ BEGIN
 END;
 
 IF @DebugAccounts = 1
-	SELECT * FROM map.Accounts();
+	SELECT * FROM map.Accounts() WHERE IsSmart = 0;
 
-SELECT @CBEUSD = [Id] FROM dbo.[Accounts] WHERE Code = N'1101';
-SELECT @CBEETB = [Id] FROM dbo.[Accounts] WHERE Code = N'1102';
+SELECT @BA_CBEUSD = [Id] FROM dbo.[Accounts] WHERE Code = N'1101';
+SELECT @BA_CBEETB = [Id] FROM dbo.[Accounts] WHERE Code = N'1102';
 SELECT @CBELC = [Id] FROM dbo.[Accounts] WHERE Code = N'1201';
 SELECT @ESL = [Id] FROM dbo.[Accounts] WHERE Code = N'1209';
 SELECT @PPEWarehouse = [Id] FROM dbo.[Accounts] WHERE Code = N'1210';
