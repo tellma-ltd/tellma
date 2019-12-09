@@ -11,38 +11,23 @@
 	[AccountId]							INT, -- invisible, except in 
 
 	[AccountTypeSource]					SMALLINT			NOT NULL DEFAULT 2, -- 0:set from line def, 3: from account
-	[ContractType]						NVARCHAR (50)		CONSTRAINT [CK_LineDefinitionEntries__ContractType] CHECK ( [ContractType] IN (
-										N'OnHand',
---										N'OnDemand', -- for all practical purposes, this is the same as OnHand
-										N'InTransit',
-										N'Receivable',--/PrepaidExpense
-										N'Deposit',
-										N'Loan',
-										N'AccruedIncome',
-										N'Equity',
-										N'AccruedExpense',
-										N'Payable',--/UnearnedRevenue
-										N'Retention',
-										N'Borrowing',
-										N'Revenue',
-										N'Expense'
-									)),
+	[ContractType]						NVARCHAR (50)		CONSTRAINT [CK_LineDefinitionEntries__ContractType] REFERENCES dbo.[ContractTypes]([Id]),
 
 	[AgentDefinitionSource]				SMALLINT			NOT NULL DEFAULT 2, --  -1: n/a, 0:set from line def, 3: from account
-	[AgentDefinitionId]					NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
+	[AgentDefinitionId]					NVARCHAR (50)		REFERENCES dbo.AgentDefinitions([Id]),
 
 	[ResourceClassificationCode]		NVARCHAR (255),
 
 	[AgentSource]						SMALLINT			NOT NULL DEFAULT 1, --  -1: n/a, 3: from account
-	[AgentId]							INT				REFERENCES dbo.Agents([Id]),	-- fixed in the case of ERCA, e.g., VAT
+	[AgentId]							INT					REFERENCES dbo.Agents([Id]),	-- fixed in the case of ERCA, e.g., VAT
 
 	[ResourceSource]					SMALLINT			NOT NULL DEFAULT 1,
-	[ResourceId]						INT				REFERENCES dbo.Resources([Id]),	-- Fixed in the case of unallocated expense
+	[ResourceId]						INT					REFERENCES dbo.Resources([Id]),	-- Fixed in the case of unallocated expense
 	
 	[CurrencySource]					SMALLINT			NOT NULL DEFAULT 2,
-	[CurrencyId]						NCHAR (3)		REFERENCES dbo.Currencies([Id]),	-- Fixed in the case of unallocated expense
+	[CurrencyId]						NCHAR (3)			REFERENCES dbo.Currencies([Id]),	-- Fixed in the case of unallocated expense
 
-	[EntryClassificationSource]					SMALLINT			NOT NULL DEFAULT 0,
+	[EntryClassificationSource]			SMALLINT			NOT NULL DEFAULT 0,
 	[EntryClassificationCode]			NVARCHAR (255),
 	
 	[MonetaryValueSource]				SMALLINT			NOT NULL DEFAULT 1,

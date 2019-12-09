@@ -58,7 +58,6 @@ WHEN NOT MATCHED BY TARGET THEN
     INSERT ([ResourceClassificationId], [EntryClassificationId])
     VALUES (s.[ResourceClassificationId], s.[EntryClassificationId]);
 
--- TODO: The following code is causing memory exception 
 IF @DebugResourceClassificationsEntryClassifications = 1
 	SELECT RC.[Name] AS [Resource Classification], EC.[Name] AS [Entry Classification]
 	FROM dbo.ResourceClassifications RC

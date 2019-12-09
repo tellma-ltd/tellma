@@ -16,22 +16,7 @@
 
 -- Major properties: NULL means it is not defined.
 	[AccountTypeId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Accounts__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
-	[ContractType]					NVARCHAR (50) CONSTRAINT [CK_Accounts__ContractType] CHECK ( [ContractType] IN (
-										N'OnHand',
---										N'OnDemand', -- for all practical purposes, this is the same as OnHand
-										N'InTransit',
-										N'Receivable',--/PrepaidExpense
-										N'Deposit',
-										N'Loan',
-										N'AccruedIncome',
-										N'Equity',
-										N'AccruedExpense',
-										N'Payable',--/UnearnedRevenue
-										N'Retention',
-										N'Borrowing',
-										N'Revenue',
-										N'Expense'
-									)),
+	[ContractType]					NVARCHAR (50)		CONSTRAINT [CK_Accounts__ContractType] REFERENCES dbo.[ContractTypes]([Id]),
 	[AgentDefinitionId]				NVARCHAR (50),
 	[ResourceClassificationId]		INT					CONSTRAINT [FK_Accounts__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	CONSTRAINT [CK_Accounts__IsSmart_ResourceClassificationId] CHECK ([IsSmart] = 0 OR [ResourceClassificationId] IS NOT NULL AND [ContractType] IS NOT NULL),

@@ -135,6 +135,8 @@ EXEC [api].[ResourceClassifications__Save]
 	@Entities = @ResourceClassifications,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
+UPDATE dbo.ResourceClassifications SET IsSystem = 1;
+
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
 	Print 'Resource Classifications: Inserting'

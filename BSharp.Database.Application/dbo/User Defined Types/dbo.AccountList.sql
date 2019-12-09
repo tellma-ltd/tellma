@@ -6,27 +6,12 @@
 	[Name3]							NVARCHAR (255),
 	[Code]							NVARCHAR (255),
 	[IsSmart]						BIT				NOT NULL DEFAULT 0,	
-	[AccountTypeId]					NVARCHAR (50)		NOT NULL,
+	[AccountTypeId]					NVARCHAR (50)	NOT NULL,
 	[AccountClassificationId]		INT,
 	
 	-- Not used right now
 	[ResponsibilityCenterId]		INT,
-	[ContractType]					NVARCHAR (50) CHECK ( [ContractType] IN (
-										N'OnHand',
---										N'OnDemand', -- for all practical purposes, this is the same as OnHand
-										N'InTransit',
-										N'Receivable',--/PrepaidExpense
-										N'Deposit',
-										N'Loan',
-										N'AccruedIncome',
-										N'Equity',
-										N'AccruedExpense',
-										N'Payable',--/UnearnedRevenue
-										N'Retention',
-										N'Borrowing',
-										N'Revenue',
-										N'Expense'
-									)),
+	[ContractType]					NVARCHAR (50),--	REFERENCES dbo.[ContractTypes]([Id]),
 	[AgentDefinitionId]				NVARCHAR (50),
 	[ResourceClassificationId]		INT,
 	[IsCurrent]						BIT,
@@ -40,5 +25,8 @@
 	[Identifier]					NVARCHAR (10),
 --
 	[EntryClassificationId]			INT,
-	CHECK ([IsSmart] = 0 OR [ResourceClassificationId] IS NOT NULL AND [ContractType] IS NOT NULL)
+	CHECK (
+		([IsSmart] = 0 AND [ResourceId] = CONVERT(INT, SESSION_CONTEXT(N'FunctionalResourceId'))) OR 
+		([ResourceClassificationId] IS NOT NULL AND [ContractType] IS NOT NULL)
+	)
 );

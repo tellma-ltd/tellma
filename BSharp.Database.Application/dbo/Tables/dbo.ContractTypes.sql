@@ -1,0 +1,4 @@
+﻿CREATE TABLE [dbo].[ContractTypes]
+(
+	[Id] NVARCHAR (50) NOT NULL PRIMARY KEY
+)

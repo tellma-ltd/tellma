@@ -194,6 +194,8 @@ BEGIN
 	GOTO Err_Label;
 END;									
 
+UPDATE dbo.[EntryClassifications] SET IsSystem = 1;
+
 IF @DebugEntryClassifications = 1
 	SELECT [Code], SPACE(5 * ([Node].GetLevel() - 1)) +  [Name] As [Name], [Node].ToString() As [Path], [IsAssignable]
 	FROM dbo.[EntryClassifications];

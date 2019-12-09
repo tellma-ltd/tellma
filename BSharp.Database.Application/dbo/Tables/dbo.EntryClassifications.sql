@@ -9,6 +9,7 @@
 	[IsActive]				BIT					NOT NULL DEFAULT 1,
 	[ForDebit]				BIT					NOT NULL DEFAULT 1,
 	[ForCredit]				BIT					NOT NULL DEFAULT 1,
+	[IsSystem]				BIT					NOT NULL DEFAULT 0,
 	-- Audit details
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]			INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),

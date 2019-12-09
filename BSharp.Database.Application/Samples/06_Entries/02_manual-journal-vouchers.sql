@@ -64,6 +64,20 @@ BEGIN -- Inserting
 	(4, 4, 1,1,+1,@CBEETB,			@InternalCashTransferExtension, @R_ETB,		1175000,		1175000),
 	(5, 5, 1,1,-1,@CBEUSD,			@InternalCashTransferExtension,	@R_USD,		50000,			1175000);
 
+	-- In a manual JV, we assume the following columns for dumb accounts:
+	-- Account, Debit, Credit, Memo
+	-- For smart accounts, 
+	---------------------- we will have dynamic properties as follows:
+	-- If agentdefinition = N'tax-agencies' show: RelatedAgent, RelatedAmount, ExternalReference, and 
+		-- if RelatedAgentDefinition =  N'customers' show also ExternalReference, Invoice #
+		-- if RelatedAgentDefinition =  N'suppliers' show also AdditionalReference, Machine #
+	-- If Contract type = N'OnHand',  show also RelatedAgentName, Debit: To - Credi: From
+	-- If Contract type = N'Payable', Credit, and AgentDefinition = N'suppliers', Credit, show External Reference: Invoice #
+	-- If Contract type = N'Receivable', Credit, and AgentDefinition = N'customers', Debit, show External Reference: Invoice #
+	-- Resource is always among the dynamic properties
+	-- ResourceDefinition specifies where or not to show (Count, Mass, Volume, Time, DueDate)
+	-- If ResourceClassificationEntryClassification is enforced, show Entry Classification
+	-- If AgentDefinition is not null, Show Agent
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],	[EntryClassificationId],[ResourceId],[MonetaryValue], [ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAmount]) VALUES
 	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,@R_ETB,		600000,			N'C-14209',			NULL,					NULL,			NULL),--

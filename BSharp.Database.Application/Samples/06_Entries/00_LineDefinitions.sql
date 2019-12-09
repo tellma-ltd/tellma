@@ -78,7 +78,7 @@ INSERT INTO @LineDefinitionColumns
 ([LineDefinitionId], [SortIndex],	[ColumnName],				[Label]) VALUES
 (N'ManualLine',			0,			N'Line.Memo',				N'Memo'), -- only if it appears,
 (N'ManualLine',			1,			N'Entry[0].Account',		N'Account'),
-(N'ManualLine',			2,			N'Entry[0].Currency',		N'Currency'), -- only if it appears,
+(N'ManualLine',			2,			N'Entry[0].Resource',		N'Currency'), -- only if it appears,
 (N'ManualLine',			3,			N'Entry[0].MonetaryAmount',	N'Debit'), -- see special case
 (N'ManualLine',			4,			N'Entry[0].MonetaryAmount',	N'Credit'),
 (N'ManualLine',			5,			N'Entry[0].Dynamic',		N'Properties')
