@@ -23,7 +23,7 @@ SET NOCOUNT ON;
 	--	JOIN @Ids I ON I.[Id] = A.[AccountClassificationId]
 	--	LEFT JOIN dbo.Resources R ON R.[Id] = A.[ResourceId]
 	--	LEFT JOIN dbo.Agents AG ON AG.[Id] = A.[AgentId]
-	--	WHERE D.[State] = N'Filed'
+	--	WHERE D.[State] = 5 -- N'Closed'
 	--	GROUP BY I.[Index], DLE.AccountId, R.[Name], AG.[Name], RC.[Name]
 	--	HAVING
 	--		SUM(DLE.[Direction] * DLE.[Value]) <> 0

@@ -1,10 +1,4 @@
-﻿CREATE PROCEDURE [api].[Documents__File]
--- TODO: Call it [api].[Documents__Close]
--- If all states are negative, it goes to VOID
--- While in process, the document is in state Active/InProcess/Pending
--- if at least one state is REVIEWED, it goes to Posted/Archived/Filed/Adjourned/WoundUp/Finished/Locked
-
--- Upon signing lines, the system can also change the document state automatically. 
+﻿CREATE PROCEDURE [api].[Documents__Close]
 	@IndexedIds dbo.[IndexedIdList] READONLY,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
 AS
@@ -27,7 +21,7 @@ AS
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 	EXEC [dal].[Documents_State__Update]
 		@Ids = @Ids,
-		@ToState = 5 --N'Filed'
+		@ToState = 5 --N'Closed'
 		;
 
 	EXEC [dal].[Documents__Assign]

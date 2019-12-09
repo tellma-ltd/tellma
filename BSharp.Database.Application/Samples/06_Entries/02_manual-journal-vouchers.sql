@@ -128,7 +128,7 @@ BEGIN -- Inserting
 	--SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
 	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
 
-	EXEC [api].[Documents__File]
+	EXEC [api].[Documents__Close]
 		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

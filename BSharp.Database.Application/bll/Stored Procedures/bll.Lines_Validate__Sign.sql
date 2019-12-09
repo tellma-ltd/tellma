@@ -65,15 +65,15 @@ SET NOCOUNT ON;
 	LEFT JOIN dbo.Workflows W ON W.[LineDefinitionId] = L.[DefinitionId] AND W.[FromState] = L.[State]
 	WHERE W.ToState <> @ToState
 
-	-- cannot sign lines unless the document is active. Document can be active, posted/filed	,
+	-- cannot sign lines unless the document is open.
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_LineBelongsToFiledDocument'
+		N'Error_LineBelongsToClosedDocument'
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
-	WHERE D.[State] = 5 --<> 'Active'
+	WHERE D.[State] = 5 --<> 'Closed'
 
 	-- No inactive account
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

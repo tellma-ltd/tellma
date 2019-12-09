@@ -424,4 +424,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[WideLines__Unpivot]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="403ae2f0-e6f9-4466-b937-f01597a233fa" ChangeDateTime="12/09/2019 20:26:33">
+    <Property Name="ElementName" Value="[api].[Documents__File]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[api]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Close]" />
+  </Operation>
 </Operations>
