@@ -1,1 +1,22 @@
-<p>accounts-picker works!</p>
+<b-details-picker [filter]="filter" collection="Account"
+    [masterTemplate]="master" [detailsTemplate]="showCreate ? details : null">
+</b-details-picker>
+
+<!-- The Details Modal -->
+<ng-template #details let-modal="modal" let-update="update" let-initialText="initialText"
+    let-idString="idString">
+    <div class="modal-body">
+        <b-accounts-details mode="popup" [initialText]="initialText" [idString]="idString"
+            (cancel)="modal.close(false);" (saved)="modal.close(true); update($event);">
+        </b-accounts-details>
+    </div>
+</ng-template>
+
+<!-- The Master Modal -->
+<ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
+    <div class="modal-body">
+        <b-accounts-master mode="popup" (cancel)="modal.close(false);" [showCreate]="showCreate" [filter]="filter"
+            (choose)="modal.close(true); update($event); " (create)="modal.close(false); create()">
+        </b-accounts-master>
+    </div>
+</ng-template>

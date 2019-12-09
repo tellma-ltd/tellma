@@ -5,7 +5,6 @@ import { PickerBaseComponent } from '~/app/shared/picker-base/picker-base.compon
 @Component({
   selector: 'b-resource-classifications-picker',
   templateUrl: './resource-classifications-picker.component.html',
-  styles: [],
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: ResourceClassificationsPickerComponent }]
 })
 export class ResourceClassificationsPickerComponent extends PickerBaseComponent {

@@ -211,7 +211,7 @@ namespace BSharp.Controllers
                             TitleSingular3 = "个人",
                             MainMenuIcon = "clipboard",
                             MainMenuSection = "Financials",
-                            MainMenuSortKey = 3m,
+                            MainMenuSortKey = 300m,
 
                             OperatingSegmentVisibility = Visibility.Optional,
                             TaxIdentificationNumberVisibility = Visibility.Optional,
@@ -227,9 +227,9 @@ namespace BSharp.Controllers
                             TitleSingular = "Employee",
                             TitleSingular2 = "مؤسسة",
                             TitleSingular3 = "组织",
-                            MainMenuIcon = "clipboard",
+                            MainMenuIcon = "user-friends",
                             MainMenuSection = "Financials",
-                            MainMenuSortKey = 4m,
+                            MainMenuSortKey = 400m,
 
                             OperatingSegmentVisibility = Visibility.Optional,
                             TaxIdentificationNumberVisibility = Visibility.Optional,
@@ -252,7 +252,7 @@ namespace BSharp.Controllers
                             TitleSingular3 = "组织",
                             MainMenuIcon = "clipboard",
                             MainMenuSection = "Financials",
-                            MainMenuSortKey = 5m,
+                            MainMenuSortKey = 500m,
 
                             OperatingSegmentVisibility = Visibility.Optional,
                             TaxIdentificationNumberVisibility = Visibility.Required,
@@ -345,35 +345,6 @@ namespace BSharp.Controllers
                         //{
                         //    // TODO: implement mock
                         //}
-                    },
-
-                    Accounts = new Dictionary<string, AccountDefinitionForClient>
-                    {
-                        ["gl-accounts"] = new AccountDefinitionForClient
-                        {
-                            TitleSingular = "G/L Account",
-                            TitleSingular2 = "حساب عام",
-                            TitleSingular3 = "基本账户",
-                            TitlePlural = "G/L Accounts",
-                            TitlePlural2 = "حسابات عامة",
-                            TitlePlural3 = "基本账户",
-                            MainMenuIcon = "coins",
-                            MainMenuSection = "Financials",
-                            MainMenuSortKey = 206m,
-                            CustodianVisibility = AccountVisibility.RequiredInAccounts,
-                            //CustodianLabel = "My Custodian",
-                            LocationVisibility = AccountVisibility.RequiredInAccounts,
-                            LocationLabel = "My Location",
-                            ResourceVisibility = AccountVisibility.RequiredInAccounts,
-                            //ResourceLabel = "My Resource",
-                            Resource_DefinitionList = "finished-goods",
-                            PartyReferenceVisibility = AccountVisibility.RequiredInAccounts,
-                            PartyReferenceLabel = "Barcode",
-                            PartyReferenceLabel2 = "الباركود",
-                            PartyReferenceLabel3 = "条码",
-                            ResponsibilityCenterVisibility = AccountVisibility.RequiredInAccounts,
-                            ResponsibilityCenterLabel = "My Responsibility Center",
-                        }
                     },
 
                     Lookups = new Dictionary<string, LookupDefinitionForClient>

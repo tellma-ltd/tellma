@@ -161,6 +161,13 @@
                     [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
                     [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <pre>{{model|json}}</pre>
+                    </ng-template>
+
+                    <ng-template #seriesTooltipTemplate let-model="model">
+                        <pre>{{model|json}}</pre>
+                    </ng-template>
                 </ngx-charts-bar-vertical>
             </ng-container>
 

@@ -1,15 +1,16 @@
 ﻿CREATE TYPE [dbo].[AccountList] AS TABLE ( 
 	[Index]							INT				PRIMARY KEY,
 	[Id]							INT				NOT NULL DEFAULT 0,
-	[ResponsibilityCenterId]		INT,
-	[AccountClassificationId]		INT,
-	[IsSmart]						BIT				NOT NULL DEFAULT 0,	
-	[Name]							NVARCHAR (255)	NOT NULL INDEX IX_Name UNIQUE,
+	[Name]							NVARCHAR (255)	NOT NULL,
 	[Name2]							NVARCHAR (255),
 	[Name3]							NVARCHAR (255),
 	[Code]							NVARCHAR (255),
-
+	[IsSmart]						BIT				NOT NULL DEFAULT 0,	
 	[AccountTypeId]					NVARCHAR (50)		NOT NULL,
+	[AccountClassificationId]		INT,
+	
+	-- Not used right now
+	[ResponsibilityCenterId]		INT,
 	[ContractType]					NVARCHAR (50) CHECK ( [ContractType] IN (
 										N'OnHand',
 										N'OnDemand',

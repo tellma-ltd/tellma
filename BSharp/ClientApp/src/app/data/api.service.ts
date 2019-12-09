@@ -162,10 +162,10 @@ export class ApiService {
     };
   }
 
-  public accountsApi(definitionId: string, cancellationToken$: Observable<void>) {
+  public accountsApi(cancellationToken$: Observable<void>) {
     return {
-      activate: this.activateFactory<Account>(`accounts/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Account>(`accounts/${definitionId}`, cancellationToken$)
+      activate: this.activateFactory<Account>(`accounts`, cancellationToken$),
+      deactivate: this.deactivateFactory<Account>(`accounts`, cancellationToken$)
     };
   }
 

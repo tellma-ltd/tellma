@@ -1,6 +1,6 @@
-<b-details collection="Account" [definition]="definitionId" [createFunc]="create" [expand]="expand" [mode]="mode"
-    [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString" [documentTemplate]="document"
-    [actions]="[
+<b-details collection="Account" [createFunc]="create" [expand]="expand" [mode]="mode"
+    [masterCrumb]="'Accounts' | translate" [detailsCrumb]="detailsCrumb" [idString]="idString"
+    [documentTemplate]="document" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
             { template: deactivate, action: onDeprecate, showAction: showDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
            ]">
@@ -11,7 +11,6 @@
 <ng-template #detailsCrumb let-model="model">
     <span>{{ getMultilingualValue(model, 'Name', ws) }}</span>
 </ng-template>
-
 
 <!-- Edit/View Template -->
 <ng-template #document let-model="model" let-isEdit="isEdit">
@@ -63,65 +62,30 @@
     </b-form-group>
 
     <!-- Type -->
-    <b-form-group class="b-form-group" [label]="p.AccountType | label"
+    <b-form-group class="b-form-group" [label]="'Account_Type' | translate"
         [serverErrors]="model?.serverErrors?.AccountTypeId">
-        <b-view-link *ngIf="!isEdit" link="../../../account-types" [itemId]="model?.AccountTypeId">
-            <b-auto-cell collection="Account" [definition]="definitionId" path="AccountType" [entity]="model">
+        <b-view-link *ngIf="!isEdit" link="../../account-types" [itemId]="model?.AccountTypeId">
+            <b-auto-cell collection="Account" path="AccountType" [entity]="model">
             </b-auto-cell>
         </b-view-link>
-        <b-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" [required]="true">
+        <b-account-types-picker *ngIf="isEdit" [(ngModel)]="model.AccountTypeId" [required]="false">
         </b-account-types-picker>
     </b-form-group>
 
     <!-- Classification -->
-    <b-form-group class="b-form-group" [label]="p.AccountClassification | label"
+    <b-form-group class="b-form-group" [label]="'Account_Classification' | translate"
         [serverErrors]="model?.serverErrors?.AccountClassificationId">
-        <b-view-link *ngIf="!isEdit" link="../../../account-classifications" [itemId]="model?.AccountClassificationId">
-            <b-auto-cell collection="Account" [definition]="definitionId" path="AccountClassification" [entity]="model">
+        <b-view-link *ngIf="!isEdit" link="../../account-classifications" [itemId]="model?.AccountClassificationId">
+            <b-auto-cell collection="Account" path="AccountClassification" [entity]="model">
             </b-auto-cell>
         </b-view-link>
         <b-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
         </b-account-classifications-picker>
     </b-form-group>
 
-    <!-- Custodian -->
-    <b-form-group class="b-form-group" [label]="p.Custodian | label" *ngIf="!!p.Custodian"
-        [serverErrors]="model?.serverErrors?.CustodianId">
-        <b-view-link *ngIf="!isEdit" link="../../../agents" [itemId]="model?.CustodianId">
-            <b-auto-cell collection="Account" [definition]="definitionId" path="Custodian" [entity]="model">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-agents-picker *ngIf="isEdit" [(ngModel)]="model.CustodianId" [required]="isRequired(d.Custodian_Visibility)">
-        </b-agents-picker>
-    </b-form-group>
-
-    <!-- Resource -->
-    <b-form-group class="b-form-group" [label]="p.Resource | label" *ngIf="!!p.Resource"
-        [serverErrors]="model?.serverErrors?.ResourceId">
-        <b-view-link *ngIf="!isEdit" [link]="'../../../resources/' + ws.Resource[model?.ResourceId]?.DefinitionId"
-            [itemId]="model?.ResourceId">
-            <b-auto-cell collection="Account" [definition]="definitionId" path="Resource" [entity]="model">
-            </b-auto-cell>
-        </b-view-link>
-
-        <b-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId" [definitionIds]="p.Resource?.definitions"
-            [required]="isRequired(d.Resource_Visibility)">
-        </b-resources-picker>
-    </b-form-group>
-
-    <!-- Party Reference -->
-    <b-form-group class="b-form-group" [label]="p.PartyReference | label" *ngIf="!!p.PartyReference"
-        [serverErrors]="model?.serverErrors?.PartyReference">
-        <div *ngIf="!isEdit">{{ model?.PartyReference }}</div>
-        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.PartyReference" [ngModelOptions]="{ updateOn: 'blur' }"
-            [required]="isRequired(d.PartyReference_Visibility)">
-        </b-text-editor>
-    </b-form-group>
-
     <!-- Is Deprecated -->
     <b-form-group class="b-form-group" [label]="'Account_IsDeprecated' | translate" *ngIf="!isEdit">
-        <b-auto-cell collection="Account" [definition]="definitionId" [entity]="model" path="IsDeprecated">
+        <b-auto-cell collection="Account" [entity]="model" path="IsDeprecated">
         </b-auto-cell>
     </b-form-group>
 </ng-template>

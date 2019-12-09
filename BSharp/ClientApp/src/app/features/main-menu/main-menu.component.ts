@@ -51,13 +51,14 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     Financials: {
       background: 'b-green',
       items: [
+        { label: 'Accounts', icon: 'coins', link: '../accounts', viewId: 'accounts', sortKey: 100 },
         // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
         { label: 'Currencies', icon: 'euro-sign', link: '../currencies', viewId: 'currencies', sortKey: 300 },
         {
-          label: 'AccountClassifications', icon: 'list', link: '../account-classifications',
+          label: 'AccountClassifications', icon: 'sitemap', link: '../account-classifications',
           viewId: 'account-classifications', sortKey: 100
         },
-        { label: 'AccountTypes', icon: 'sitemap', link: '../account-types', viewId: 'account-types', sortKey: 200 },
+        { label: 'AccountTypes', icon: 'list', link: '../account-types', viewId: 'account-types', sortKey: 200 },
         {
           label: 'ResponsibilityCenters',
           icon: 'sitemap', link: '../responsibility-centers', viewId: 'responsibility-centers', sortKey: 500
@@ -119,7 +120,6 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
       // add custom screens from definitions
       this.addDefinitions(menu, this.workspace.current.definitions.Lookups, 'lookups');
-      this.addDefinitions(menu, this.workspace.current.definitions.Accounts, 'accounts');
       this.addDefinitions(menu, this.workspace.current.definitions.Agents, 'agents');
       this.addDefinitions(menu, this.workspace.current.definitions.Resources, 'resources');
       this.addDefinitions(menu, this.workspace.current.definitions.Documents, 'documents');

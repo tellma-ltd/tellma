@@ -6,7 +6,6 @@ export class DefinitionsForClient {
     Lines: { [definitionId: string]: LineDefinitionForClient };
     Agents: { [definitionId: string]: AgentDefinitionForClient };
     Resources: { [definitionId: string]: ResourceDefinitionForClient };
-    Accounts: { [definitionId: string]: AccountDefinitionForClient };
     Lookups: { [definitionId: string]: LookupDefinitionForClient };
     Reports: { [definitionId: string]: ReportDefinitionForClient };
 }
@@ -94,42 +93,7 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
     Bla: string;
 }
 
-export type AccountVisibility = 'None' | 'RequiredInAccounts' | 'RequiredInEntries' | 'OptionalInEntries';
 export type Visibility = null | 'Optional' | 'Required';
-
-export interface AccountDefinitionForClient extends MasterDetailsDefinitionForClient {
-    ResponsibilityCenterLabel: string;
-    ResponsibilityCenterLabel2: string;
-    ResponsibilityCenterLabel3: string;
-    ResponsibilityCenterVisibility: AccountVisibility;
-    ResponsibilityCenterDefaultValue: number;
-
-    CustodianLabel: string;
-    CustodianLabel2: string;
-    CustodianLabel3: string;
-    CustodianVisibility: AccountVisibility;
-    CustodianDefaultValue: number;
-
-    ResourceLabel: string;
-    ResourceLabel2: string;
-    ResourceLabel3: string;
-    ResourceVisibility: AccountVisibility;
-    ResourceDefaultValue: number;
-
-
-    LocationLabel: string;
-    LocationLabel2: string;
-    LocationLabel3: string;
-    LocationVisibility: AccountVisibility;
-    LocationDefaultValue: number;
-
-
-    PartyReferenceLabel: string;
-    PartyReferenceLabel2: string;
-    PartyReferenceLabel3: string;
-    PartyReferenceVisibility: AccountVisibility;
-
-}
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
     OperatingSegmentLabel: string;

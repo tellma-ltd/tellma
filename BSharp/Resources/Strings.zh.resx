@@ -73,23 +73,11 @@
   <data name="Account_Classification" xml:space="preserve">
     <value>分类</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>保管人</value>
-  </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>已弃用</value>
   </data>
-  <data name="Account_Location" xml:space="preserve">
-    <value>位置</value>
-  </data>
-  <data name="Account_PartyReference" xml:space="preserve">
-    <value>党的文献</value>
-  </data>
-  <data name="Account_Resource" xml:space="preserve">
-    <value>资源</value>
-  </data>
-  <data name="Account_ResponsibilityCenter" xml:space="preserve">
-    <value>责任中心</value>
+  <data name="Account_IsSmart" xml:space="preserve">
+    <value>是聪明</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>类型</value>

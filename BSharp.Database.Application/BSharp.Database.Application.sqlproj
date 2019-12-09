@@ -483,10 +483,10 @@
     <None Include="Samples\00_Setup\b_AgentDefinitions.sql" />
     <None Include="Samples\00_Setup\z_LookupDefinitions.sql" />
     <None Include="Samples\00_Setup\f_AccountTypes.sql" />
-    <None Include="dbo\Tables\Readme.txt" />
     <None Include="Samples\02_Agents\05_Banks.sql" />
     <None Include="Samples\00_Setup\c_ResourceClassifications.sql" />
     <None Include="Samples\00_Setup\e_ResourceClassificationsEntryClassifications.sql" />
+    <None Include="dbo\User Defined Types\Readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

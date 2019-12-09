@@ -277,25 +277,6 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
         }
       }
 
-      const accounts = this.ws.definitions.Accounts;
-      for (const definitionId of Object.keys(accounts)) {
-        const entityDesc = metadata_Account(this.ws, this.translate, definitionId);
-        if (!!entityDesc) {
-          this._viewsDb[entityDesc.apiEndpoint] = {
-            name: entityDesc.titlePlural,
-            actions: {
-              All: { supportsCriteria: false, supportsMask: false },
-              Read: { supportsCriteria: true, supportsMask: true },
-              Update: { supportsCriteria: true, supportsMask: true },
-              Delete: { supportsCriteria: true, supportsMask: false },
-              IsDeprecated: { supportsCriteria: true, supportsMask: false },
-            }
-          };
-        } else {
-          console.error(`Could not find account definitionId '${definitionId}'`);
-        }
-      }
-
       const agents = this.ws.definitions.Agents;
       for (const definitionId of Object.keys(agents)) {
         const entityDesc = metadata_Agent(this.ws, this.translate, definitionId);

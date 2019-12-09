@@ -73,23 +73,11 @@
   <data name="Account_Classification" xml:space="preserve">
     <value>Classification</value>
   </data>
-  <data name="Account_Custodian" xml:space="preserve">
-    <value>Custodian</value>
-  </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>Is Deprecated</value>
   </data>
-  <data name="Account_Location" xml:space="preserve">
-    <value>Location</value>
-  </data>
-  <data name="Account_PartyReference" xml:space="preserve">
-    <value>Party Reference</value>
-  </data>
-  <data name="Account_Resource" xml:space="preserve">
-    <value>Resource</value>
-  </data>
-  <data name="Account_ResponsibilityCenter" xml:space="preserve">
-    <value>Responsibility Center</value>
+  <data name="Account_IsSmart" xml:space="preserve">
+    <value>Is Smart</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>Type</value>

@@ -7,15 +7,6 @@ namespace BSharp.Entities
     [StrongEntity]
     public class AccountForSave : EntityWithKey<int>
     {
-        [Display(Name = "Account_Type")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
-        [AlwaysAccessible]
-        public string AccountTypeId { get; set; }
-
-        [Display(Name = "Account_Classification")]
-        public int? AccountClassificationId { get; set; }
-
         [MultilingualDisplay(Name = "Name", Language = Language.Primary)]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -37,27 +28,35 @@ namespace BSharp.Entities
         [AlwaysAccessible]
         public string Code { get; set; }
 
-        [Display(Name = "Account_PartyReference")]
+        [Display(Name = "Account_IsSmart")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
+        [AlwaysAccessible]
+        public bool? IsSmart { get; set; }
+
+        [Display(Name = "Account_Type")]
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
-        public string PartyReference { get; set; }
+        [AlwaysAccessible]
+        public string AccountTypeId { get; set; }
 
-        [Display(Name = "Account_ResponsibilityCenter")]
+        [Display(Name = "Account_Classification")]
+        public int? AccountClassificationId { get; set; }
+
+        // Fields below are not used for now....
+
         public int? ResponsibilityCenterId { get; set; }
-
-        [Display(Name = "Account_Custodian")]
-        public int? CustodianId { get; set; }
-
-        [Display(Name = "Account_Resource")]
+        public string ContractType { get; set; }
+        public string AgentDefinitionId { get; set; }
+        public int? ResourceClassificationId { get; set; }
+        public bool? IsCurrent { get; set; }
+        public int? AgentId { get; set; }
         public int? ResourceId { get; set; }
-
-        [Display(Name = "Account_Location")]
-        public int? LocationId { get; set; }
+        public string Identifier { get; set; }
+        public int? EntryClassificationId { get; set; }
     }
 
     public class Account : AccountForSave
     {
-        public string DefinitionId { get; set; }
-
         [Display(Name = "Account_IsDeprecated")]
         [AlwaysAccessible]
         public bool? IsDeprecated { get; set; }
@@ -79,14 +78,6 @@ namespace BSharp.Entities
 
         // For Query
 
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
-
-        [Display(Name = "CreatedBy")]
-        [ForeignKey(nameof(ModifiedById))]
-        public User ModifiedBy { get; set; }
-
         [Display(Name = "Account_Type")]
         [ForeignKey(nameof(AccountTypeId))]
         public AccountType AccountType { get; set; }
@@ -95,20 +86,12 @@ namespace BSharp.Entities
         [ForeignKey(nameof(AccountClassificationId))]
         public AccountClassification AccountClassification { get; set; }
 
-        [Display(Name = "Account_ResponsibilityCenter")]
-        [ForeignKey(nameof(ResponsibilityCenterId))]
-        public ResponsibilityCenter ResponsibilityCenter { get; set; }
+        [Display(Name = "CreatedBy")]
+        [ForeignKey(nameof(CreatedById))]
+        public User CreatedBy { get; set; }
 
-        [Display(Name = "Account_Custodian")]
-        [ForeignKey(nameof(CustodianId))]
-        public Agent Custodian { get; set; }
-
-        [Display(Name = "Account_Resource")]
-        [ForeignKey(nameof(ResourceId))]
-        public Resource Resource { get; set; }
-
-        [Display(Name = "Account_Location")]
-        [ForeignKey(nameof(LocationId))]
-        public Location Location { get; set; }
+        [Display(Name = "CreatedBy")]
+        [ForeignKey(nameof(ModifiedById))]
+        public User ModifiedBy { get; set; }
     }
 }
