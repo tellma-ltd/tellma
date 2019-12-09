@@ -27,7 +27,7 @@ AS
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
 	EXEC [dal].[Documents_State__Update]
 		@Ids = @Ids,
-		@ToState = N'Filed'
+		@ToState = 5 --N'Filed'
 		;
 
 	EXEC [dal].[Documents__Assign]

@@ -69,11 +69,11 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT DISTINCT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-		N'Error_LineDoesNotBelongToActiveDocument'
+		N'Error_LineBelongsToFiledDocument'
 	FROM @Ids FE
 	JOIN dbo.[Lines] L ON FE.[Id] = L.[Id]
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
-	WHERE D.[State] <> 'Active'
+	WHERE D.[State] = 5 --<> 'Active'
 
 	-- No inactive account
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])

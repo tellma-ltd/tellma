@@ -124,20 +124,22 @@ BEGIN -- Inserting
 	END;
 
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
-	INSERT INTO @DocsIndexedIds([Index], [Id])
 	-- TODO: fill index using ROWNUMBER
-	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
+	INSERT INTO @DocsIndexedIds([Index], [Id])
+	--SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
+	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
 
-	IF (1=0)
-	EXEC [api].[Documents__File]
-		@IndexedIds = @DocsIndexedIds,
-		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+	--EXEC [api].[Documents__File]
+	--	@IndexedIds = @DocsIndexedIds,
+	--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 	IF @DebugManualVouchers = 1
 	BEGIN
 			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'manual-journal-vouchers';
 			EXEC [rpt].[Docs__UI] @DIds;
 	END
+	select * from documents;
+	select * from lines;
 END
 IF @DebugReports = 1
 BEGIN

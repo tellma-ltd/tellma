@@ -9,7 +9,7 @@
 	[SerialNumber]					INT				NOT NULL,	-- auto generated, copied to paper if needed.
 	[OperatingSegmentId]			INT				NOT NULL CONSTRAINT [FK_Documents__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
 	[DocumentDate]					DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()) CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())),
-	[State]							NVARCHAR (30)	NOT NULL DEFAULT N'Active' CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Active', N'Void', N'Filed')),
+	[State]							SMALLINT		NOT NULL DEFAULT 0, --CONSTRAINT [CK_Documents__State] CHECK ([State] IN (N'Active', N'Void', N'Filed')),
 	
 	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
 	-- When evidence type = source document
