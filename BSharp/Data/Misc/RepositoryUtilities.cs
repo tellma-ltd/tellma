@@ -1,4 +1,5 @@
 ﻿using BSharp.Data.Queries;
+using BSharp.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,24 +27,7 @@ namespace BSharp.Data
                 table.Columns.Add(new DataColumn("Index", typeof(int)));
             }
 
-            var props = typeof(T).GetMappedProperties();
-            foreach (var prop in props)
-            {
-                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                var column = new DataColumn(prop.Name, propType);
-                if (propType == typeof(string))
-                {
-                    // For string columns, it is more performant to explicitly specify the maximum column size
-                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
-                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
-                    if (stringLengthAttribute != null)
-                    {
-                        column.MaxLength = stringLengthAttribute.MaximumLength;
-                    }
-                }
-
-                table.Columns.Add(column);
-            }
+            var props = AddColumnsFromProperties<T>(table);
 
             int index = 0;
             foreach (var entity in entities)
@@ -77,30 +61,13 @@ namespace BSharp.Data
             table.Columns.Add(new DataColumn("Index", typeof(int)));
             table.Columns.Add(new DataColumn("HeaderIndex", typeof(int)));
 
-            var props = typeof(TLines).GetMappedProperties();
-            foreach (var prop in props)
-            {
-                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                var column = new DataColumn(prop.Name, propType);
-                if (propType == typeof(string))
-                {
-                    // For string columns, it is more performant to explicitly specify the maximum column size
-                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
-                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
-                    if (stringLengthAttribute != null)
-                    {
-                        column.MaxLength = stringLengthAttribute.MaximumLength;
-                    }
-                }
-
-                table.Columns.Add(column);
-            }
+            var props = AddColumnsFromProperties<TLines>(table);
 
             int headerIndex = 0;
             foreach (var entity in entities)
             {
                 int index = 0;
-                foreach(var line in linesFunc(entity))
+                foreach (var line in linesFunc(entity))
                 {
                     DataRow row = table.NewRow();
 
@@ -132,24 +99,7 @@ namespace BSharp.Data
             table.Columns.Add(new DataColumn("Index", typeof(int)));
             table.Columns.Add(new DataColumn("ParentIndex", typeof(int)));
 
-            var props = typeof(T).GetMappedProperties();
-            foreach (var prop in props)
-            {
-                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                var column = new DataColumn(prop.Name, propType);
-                if (propType == typeof(string))
-                {
-                    // For string columns, it is more performant to explicitly specify the maximum column size
-                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
-                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
-                    if (stringLengthAttribute != null)
-                    {
-                        column.MaxLength = stringLengthAttribute.MaximumLength;
-                    }
-                }
-
-                table.Columns.Add(column);
-            }
+            var props = AddColumnsFromProperties<T>(table);
 
             int index = 0;
             foreach (var entity in entities)
@@ -171,6 +121,112 @@ namespace BSharp.Data
             }
 
             return table;
+        }
+
+        public static (DataTable Documents, DataTable Lines, DataTable Entries) DataTableFromDocuments(IEnumerable<DocumentForSave> documents)
+        {
+            // Prepare the documents table skeleton
+            DataTable docsTable = new DataTable();
+            docsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            var docsProps = AddColumnsFromProperties<DocumentForSave>(docsTable);
+
+            // Prepare the lines table skeleton
+            DataTable linesTable = new DataTable();
+            docsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            docsTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
+            var linesProps = AddColumnsFromProperties<LineForSave>(linesTable);
+
+            // Prepare the entries table skeleton
+            DataTable entriesTable = new DataTable();
+            docsTable.Columns.Add(new DataColumn("Index", typeof(int)));
+            docsTable.Columns.Add(new DataColumn("LineIndex", typeof(int)));
+            docsTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
+            var entriesProps = AddColumnsFromProperties<EntryForSave>(entriesTable);
+
+            // Add the docs
+            int docsIndex = 0;
+            foreach (var doc in documents)
+            {
+                DataRow docsRow = docsTable.NewRow();
+
+                docsRow["Index"] = docsIndex;
+
+                foreach (var docsProp in docsProps)
+                {
+                    var docsPropValue = docsProp.GetValue(doc);
+                    docsRow[docsProp.Name] = docsPropValue ?? DBNull.Value;
+                }
+
+                // Add the lines if any
+                if (doc.Lines != null)
+                {
+                    int linesIndex = 0;
+                    doc.Lines.ForEach(line =>
+                    {
+                        DataRow linesRow = linesTable.NewRow();
+
+                        linesRow["Index"] = linesIndex;
+                        linesRow["DocumentIndex"] = docsIndex;
+
+                        foreach (var linesProp in linesProps)
+                        {
+                            var linesPropValue = linesProp.GetValue(line);
+                            linesRow[linesProp.Name] = linesPropValue ?? DBNull.Value;
+                        }
+
+                        if (line.Entries != null)
+                        {
+                            int entriesIndex = 0;
+                            line.Entries.ForEach(entry =>
+                            {
+                                DataRow entriesRow = entriesTable.NewRow();
+
+                                entriesRow["Index"] = entriesIndex;
+                                entriesRow["LineIndex"] = linesIndex;
+                                entriesRow["DocumentIndex"] = docsIndex;
+
+                                foreach (var entriesProp in entriesProps)
+                                {
+                                    var entriesPropValue = entriesProp.GetValue(entry);
+                                    entriesRow[entriesProp.Name] = entriesPropValue ?? DBNull.Value;
+                                }
+
+                                entriesIndex++;
+                            });
+                        }
+
+                        linesIndex++;
+                    });
+                }
+
+                docsIndex++;
+            }
+
+            return (docsTable, linesTable, entriesTable);
+        }
+
+        private static IEnumerable<PropertyInfo> AddColumnsFromProperties<T>(DataTable table)
+        {
+            var props = typeof(T).GetMappedProperties();
+            foreach (var prop in props)
+            {
+                var propType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                var column = new DataColumn(prop.Name, propType);
+                if (propType == typeof(string))
+                {
+                    // For string columns, it is more performant to explicitly specify the maximum column size
+                    // According to this article: http://www.dbdelta.com/sql-server-tvp-performance-gotchas/
+                    var stringLengthAttribute = prop.GetCustomAttribute<StringLengthAttribute>(inherit: true);
+                    if (stringLengthAttribute != null)
+                    {
+                        column.MaxLength = stringLengthAttribute.MaximumLength;
+                    }
+                }
+
+                table.Columns.Add(column);
+            }
+
+            return props;
         }
 
 

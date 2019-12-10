@@ -36,6 +36,7 @@ BEGIN
 	--select * from @FilledAllEntries;
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Documents_Validate__Save]
+		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @AllLines,
 		@Entries = @FilledAllEntries;
