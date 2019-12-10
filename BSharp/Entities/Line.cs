@@ -8,7 +8,7 @@ namespace BSharp.Entities
     public class LineForSave<TEntry> : EntityWithKey<int>
     {
         [NotMapped]
-        public int? DocumentIndexId { get; set; }
+        public int? DocumentIndex { get; set; }
 
         [Display(Name = "Definition")]
         [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
