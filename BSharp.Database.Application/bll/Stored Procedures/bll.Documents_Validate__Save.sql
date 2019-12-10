@@ -64,6 +64,7 @@ SET NOCOUNT ON;
 	--WHERE (E.[EntryClassificationId] IS NULL) AND [AT].EntryClassificationParentCode IS NOT NULL;
 
 	-- Invalid Entry Classification for resource classification
+	-- TODO: now, the table RCEC contains parents only, so the code need to consider this fact
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
@@ -71,9 +72,10 @@ SET NOCOUNT ON;
 		N'Error_IncompatibleResourceClassification0AndEntryClassification1',
 		RC.[Code] AS [ResourceClassification], EC.[Code] AS [EntryClassification]
 	FROM @Entries E
-	JOIN dbo.ResourceClassifications RC ON E.ResourceClassificationId = RC.[Id]
+	JOIN dbo.Resources R ON E.ResourceId = R.Id
+	JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.[Id]
 	JOIN dbo.EntryClassifications EC ON E.EntryClassificationId = EC.[Id]
-	LEFT JOIN dbo.[ResourceClassificationsEntryClassifications] RCEC ON (E.[ResourceClassificationId] = RCEC.[ResourceClassificationId]) AND (E.[EntryClassificationId] = RCEC.[EntryClassificationId])
+	LEFT JOIN dbo.[ResourceClassificationsEntryClassifications] RCEC ON (R.[ResourceClassificationId] = RCEC.[ResourceClassificationId]) AND (E.[EntryClassificationId] = RCEC.[EntryClassificationId])
 	WHERE (E.[EntryClassificationId] IS NOT NULL AND RCEC.[EntryClassificationId] IS NULL);
 
 	-- RelatedAgent is required for selected account definition, 

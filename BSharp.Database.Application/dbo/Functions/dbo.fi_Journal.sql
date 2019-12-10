@@ -33,8 +33,8 @@ RETURN
 		A.[AccountClassificationId],
 		V.[AccountId],		
 		V.[ContractType],
-		V.[AgentDefinitionId],
-		V.[ResourceClassificationId],
+		AG.[DefinitionId] AS AgentDefinitionId,
+		R.[ResourceClassificationId],
 		V.[IsCurrent],		
 		V.[CurrencyId],
 		V.[AgentId],
@@ -66,7 +66,8 @@ RETURN
 		V.[ModifiedById]
 	FROM dbo.[DocumentLineEntriesDetailsView] V
 	JOIN dbo.Accounts A ON V.AccountId = A.Id
-	LEFT JOIN dbo.Resources R ON V.ResourceId = R.Id
+	JOIN dbo.Resources R ON V.ResourceId = R.Id
+	LEFT JOIN dbo.Agents AG ON V.AgentId = AG.[Id]
 	--LEFT JOIN dbo.MeasurementUnits MU ON R.MassUnitId = MU.Id
 	--LEFT JOIN dbo.MeasurementUnits VU ON R.VolumeUnitId = VU.Id
 	--LEFT JOIN dbo.MeasurementUnits CU ON R.CountUnitId = CU.Id

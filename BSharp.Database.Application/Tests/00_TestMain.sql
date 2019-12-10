@@ -41,9 +41,9 @@ BEGIN -- reset Identities
 	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0, @DebugLookups bit = 0;
 	DECLARE @DebugResponsibilityCenters bit = 0;
 	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0, @DebugBanks bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 1;
 	DECLARE @DebugLineDefinitions bit = 0, @DebugDocumentDefinitions bit = 0;
-	DECLARE @DebugManualVouchers bit = 1, @DebugReports bit = 0;
+	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugCashPaymentVouchers bit = 0, @DebugPettyCashVouchers bit = 0;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
@@ -88,18 +88,19 @@ BEGIN TRY
 		:r ..\Samples\03_Resources\a4_PPE_general-fixed-assets.sql
 		:r ..\Samples\03_Resources\b_Inventories_raw-materials.sql
 		:r ..\Samples\03_Resources\d1_FG_vehicles.sql
+
 		--:r ..\Samples\03_Resources\d2_FG_steel-products.sql
 		--:r ..\Samples\03_Resources\e1_CCE_received-checks.sql
-		--:r ..\Samples\03_Resources\h_PL_employee-benefits.sql
+		:r ..\Samples\03_Resources\h_PL_employee-benefits.sql
 
 		:r ..\Samples\05_Accounts\a_AccountClassifications.sql
 		:r ..\Samples\05_Accounts\b_BasicAccounts.sql
 		:r ..\Samples\05_Accounts\c_SmartAccounts.sql
 		--:r .\00_Security\02_Workflows.sql		
 
-		:r ..\Samples\06_Entries\00_LineDefinitions.sql
-		:r ..\Samples\06_Entries\01_DocumentDefinitions.sql
-		:r ..\Samples\06_Entries\02_manual-journal-vouchers.sql
+		--:r ..\Samples\06_Entries\00_LineDefinitions.sql
+		--:r ..\Samples\06_Entries\01_DocumentDefinitions.sql
+		--:r ..\Samples\06_Entries\02_manual-journal-vouchers.sql
 		--:r ..\Samples\06_Entries\03_cash-payment-vouchers.sql
 		--:r .\06_Entries\01_petty-cash-vouchers.sql
 		;

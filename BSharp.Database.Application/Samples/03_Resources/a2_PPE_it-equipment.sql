@@ -1,23 +1,21 @@
-﻿	-- We look at the specialized Excel files in the IT department, and we define add Resource definitions accordingly
-		INSERT INTO dbo.ResourceDefinitions (
-			[Id],			[TitlePlural],		[TitleSingular],
-			[ResourceClassificationVisibility], [TimeUnitVisibility], [CurrencyVisibility],
-			[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId],
-			[Lookup2Visibility], [Lookup2Label], [Lookup2DefinitionId]
-		) VALUES (
-			N'it-equipment',	N'IT Equipment',	N'IT Equipment',
-	--		N'ComputerEquipment, CommunicationAndNetworkEquipment, NetworkInfrastructure',
-			N'Required', N'Required', N'Optional',
-			N'Optional', N'Manufacturer', N'it-equipment-manufacturers',
-			N'Optional', N'Operating System', N'operating-systems'
-		);
+﻿-- We look at the specialized Excel files in the IT department, and we define add Resource definitions accordingly
+	INSERT INTO dbo.ResourceDefinitions (
+		[Id],			[TitlePlural],		[TitleSingular],
+		[ResourceClassificationVisibility], [TimeUnitVisibility], [CurrencyVisibility],
+		[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId],
+		[Lookup2Visibility], [Lookup2Label], [Lookup2DefinitionId]
+	) VALUES (
+		N'it-equipment',	N'IT Equipment',	N'IT Equipment',
+--		N'ComputerEquipment, CommunicationAndNetworkEquipment, NetworkInfrastructure',
+		N'Required', N'Required', N'Optional',
+		N'Optional', N'Manufacturer', N'it-equipment-manufacturers',
+		N'Optional', N'Operating System', N'operating-systems'
+	);
 
-			DECLARE @ComputerEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'ComputerEquipment');
-			DECLARE @CommunicationAndNetworkEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'CommunicationAndNetworkEquipment');
-			DECLARE @NetworkInfrastructureId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'NetworkInfrastructure');
-
-
-
+	DECLARE @ComputerEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'ComputerEquipment');
+	DECLARE @CommunicationAndNetworkEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'CommunicationAndNetworkEquipment');
+	DECLARE @NetworkInfrastructureId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'NetworkInfrastructure');
+	   
 	DECLARE @ITEquipmentDescendants dbo.ResourceClassificationList;
 	INSERT INTO @ITEquipmentDescendants ([Index],
 		[Code],					[Name],			[ParentId],			[IsAssignable], [ResourceDefinitionId]) VALUES
@@ -32,7 +30,6 @@
 	--N'NetworkInfrastructure',					N'/1/1/8/'
 	(6, N'RoutersExtension',	N'Routers',		@NetworkInfrastructureId,	1,				N'it-equipment');
 	
-
 EXEC [api].[ResourceClassifications__Save]
 		@Entities = @ITEquipmentDescendants,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

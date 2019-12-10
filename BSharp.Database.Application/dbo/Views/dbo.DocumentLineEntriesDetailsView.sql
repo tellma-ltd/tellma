@@ -22,8 +22,6 @@ AS
 		E.[Direction],
 		E.[AccountId],		
 		E.[ContractType],
-		E.[AgentDefinitionId],
-		E.[ResourceClassificationId],
 		E.[IsCurrent],		
 		E.[CurrencyId],
 		E.[AgentId],

@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Currencies_Validate__Delete]
 	@Ids [dbo].[IndexedStringList] READONLY,
-	@Top INT = 10
+	@TOP INT = 10
 AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];

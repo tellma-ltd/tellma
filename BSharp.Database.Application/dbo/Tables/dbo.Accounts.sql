@@ -17,9 +17,9 @@
 -- Major properties: NULL means it is not defined.
 	[AccountTypeId]					NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Accounts__AccountTypeId] REFERENCES [dbo].[AccountTypes] ([Id]),
 	[ContractType]					NVARCHAR (50)		CONSTRAINT [CK_Accounts__ContractType] REFERENCES dbo.[ContractTypes]([Id]),
+	CONSTRAINT [CK_Accounts__IsSmart_ContractType] CHECK ([IsSmart] = 0 OR [ContractType] IS NOT NULL),
 	[AgentDefinitionId]				NVARCHAR (50),
 	[ResourceClassificationId]		INT					 NOT NULL CONSTRAINT [FK_Accounts__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
-	CONSTRAINT [CK_Accounts__IsSmart_ResourceClassificationId] CHECK ([IsSmart] = 0 OR [ContractType] IS NOT NULL),
 	[IsCurrent]						BIT,
 -- Minor properties: range of values is restricted by defining a major property. For example, if AccountTypeId = N'Payable', then responsibility center
 -- must be an operating segment. 
@@ -27,7 +27,7 @@
 --	a) If the type itself is null, then it is not defined
 --	b) if the type itself is not null, then it is to be defined in entries.
 	[AgentId]						INT					CONSTRAINT [FK_Accounts__AgentId] REFERENCES [dbo].[Agents] ([Id]),
-	[ResourceId]					INT					NOT NULL CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
+	[ResourceId]					INT					CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	[Identifier]					NVARCHAR (10)		CONSTRAINT [FK_Accounts__Identifier] REFERENCES dbo.[AccountIdentifiers]([Id]), -- to resolve Uniqueness Constraint
 -- Entry Property
 	[EntryClassificationId]			INT					CONSTRAINT [FK_Accounts__EntryClassificationId] REFERENCES dbo.[EntryClassifications],

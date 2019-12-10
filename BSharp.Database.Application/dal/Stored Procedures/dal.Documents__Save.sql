@@ -121,7 +121,7 @@ BEGIN
 	USING (
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],
-			E.[ContractType], E.[AgentDefinitionId], E.[ResourceClassificationId], E.[IsCurrent],
+			E.[IsCurrent],
 			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId], E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[CurrencyId], E.[EntryClassificationId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
@@ -135,9 +135,6 @@ BEGIN
 		UPDATE SET
 			t.[Direction]				= s.[Direction],	
 			t.[AccountId]				= s.[AccountId],
-			t.[ContractType]			= s.[ContractType],
-			t.[AgentDefinitionId]		= s.[AgentDefinitionId],
-			t.[ResourceClassificationId]= s.[ResourceClassificationId],
 			t.[IsCurrent]				= s.[IsCurrent],
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
@@ -164,16 +161,14 @@ BEGIN
 			t.[ModifiedAt]				= @Now,
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([LineId], [EntryNumber], [Direction], [AccountId],
-			[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent],
+		INSERT ([LineId], [EntryNumber], [Direction], [AccountId],[IsCurrent],
 			[AgentId], [ResourceId], [ResponsibilityCenterId], [AccountIdentifier], [ResourceIdentifier],
 			[CurrencyId], [EntryClassificationId], --[BatchCode], 
 			[DueDate], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
 			[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount],
 			[RelatedDate], [Time1], [Time2]
 		)
-		VALUES (s.[LineId], s.[EntryNumber], s.[Direction], s.[AccountId],
-			s.[ContractType], s.[AgentDefinitionId], s.[ResourceClassificationId], s.[IsCurrent],
+		VALUES (s.[LineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IsCurrent],
 			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId], s.[AccountIdentifier], s.[ResourceIdentifier],
 			s.[CurrencyId], s.[EntryClassificationId], --[BatchCode], 
 			s.[DueDate], s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],

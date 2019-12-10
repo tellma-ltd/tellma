@@ -137,8 +137,6 @@ BEGIN -- Inserting
 			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'manual-journal-vouchers';
 			EXEC [rpt].[Docs__UI] @DIds;
 	END
-	select * from documents;
-	select * from lines;
 END
 IF @DebugReports = 1
 BEGIN

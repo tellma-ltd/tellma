@@ -3,8 +3,8 @@ INSERT INTO @SmartAccounts([Index], [IsSmart],
 	[AccountTypeId],		[AccountClassificationId],	[Name],								[Code],		[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryClassificationId]) VALUES
 --(0,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1101'),
 --(1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1102'),
-(0,1,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1103',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,			@Bank_CBE,	@R_USD,			NULL,			NULL),
-(1,1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1104',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,			@Bank_CBE,	@R_ETB,			NULL,			NULL);
+(0,1,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1111',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,			@Bank_CBE,	@R_USD,			NULL,			NULL),
+(1,1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1112',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,			@Bank_CBE,	@R_ETB,			NULL,			NULL);
 --(3,1,N'Inventory',			@Inventories_AC,			N'TF1903950009',					N'1209'), -- Merchandise in transit, for given LC
 --(4,1,N'Inventory',			@Inventories_AC,			N'PPE Warehouse',					N'1210'),
 --(5,1,N'FixedAssets',		@NonCurrentAssets_AC,		N'PPE - Vehicles',					N'1301'),
@@ -23,8 +23,11 @@ INSERT INTO @SmartAccounts([Index], [IsSmart],
 --(20,1,N'Expenses',			@Expenses_AC,				N'fuel - Sales - admin - AG',		N'5102'),
 --(21,1,N'CostofSales',		@Expenses_AC,				N'fuel - Production',				N'5103'),
 --(22,1,N'Expenses',			@Expenses_AC,				N'fuel - Sales - distribution - AG',1,N'5201'),
---(23,1,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5202'),
---(24,1,N'Expenses',			@Expenses_AC,				N'Overtime - Admin',				N'5203');
+
+INSERT INTO @SmartAccounts([Index], [IsSmart],
+	[AccountTypeId],		[AccountClassificationId],	[Name],								[Code],		[ContractType], [AgentDefinitionId], [ResourceClassificationId],			[IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryClassificationId]) VALUES
+--(23,1,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5212',	N'Expense',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,				NULL,	NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense')),
+(24,1,N'Expenses',			@Expenses_AC,				N'Overtime - Admin',				N'5213',	N'Expense',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,				NULL,	NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense'));
 
 EXEC [api].[Accounts__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @SmartAccounts,
@@ -39,33 +42,33 @@ END;
 IF @DebugAccounts = 1
 	SELECT * FROM map.Accounts() WHERE IsSmart = 1;
 
-DECLARE @SA_CBEUSD INT, @SA_CBEETB INT;
-SELECT @SA_CBEUSD = [Id] FROM dbo.[Accounts] WHERE Code = N'1103';
-SELECT @SA_CBEETB = [Id] FROM dbo.[Accounts] WHERE Code = N'1104';
---SELECT @CBELC = [Id] FROM dbo.[Accounts] WHERE Code = N'1201';
---SELECT @ESL = [Id] FROM dbo.[Accounts] WHERE Code = N'1209';
---SELECT @PPEWarehouse = [Id] FROM dbo.[Accounts] WHERE Code = N'1210';
---SELECT @PPEVehicles = [Id] FROM dbo.[Accounts] WHERE Code = N'1301'; 
---SELECT @PrepaidRental = [Id] FROM dbo.[Accounts] WHERE Code = N'1401';
---SELECT @VATInput = [Id] FROM dbo.[Accounts] WHERE Code = N'1501';
+DECLARE @SA_CBEUSD INT, @SA_CBEETB INT, @SA_OvertimeAdmin INT;
+SELECT @SA_CBEUSD = [Id] FROM dbo.[Accounts] WHERE Code = N'1111';
+SELECT @SA_CBEETB = [Id] FROM dbo.[Accounts] WHERE Code = N'1112';
+--SELECT @SA_CBELC = [Id] FROM dbo.[Accounts] WHERE Code = N'1211';
+--SELECT @SA_ESL = [Id] FROM dbo.[Accounts] WHERE Code = N'1219';
+--SELECT @SA_PPEWarehouse = [Id] FROM dbo.[Accounts] WHERE Code = N'1211';
+--SELECT @SA_PPEVehicles = [Id] FROM dbo.[Accounts] WHERE Code = N'1311'; 
+--SELECT @SA_PrepaidRental = [Id] FROM dbo.[Accounts] WHERE Code = N'1411';
+--SELECT @SA_VATInput = [Id] FROM dbo.[Accounts] WHERE Code = N'1511';
 
---SELECT @VimeksAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2101';
---SELECT @CapitalMA = [Id] FROM dbo.[Accounts] WHERE Code = N'3101';
---SELECT @CapitalAA = [Id] FROM dbo.[Accounts] WHERE Code = N'3102';
+--SELECT @SA_VimeksAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2111';
+--SELECT @SA_CapitalMA = [Id] FROM dbo.[Accounts] WHERE Code = N'3111';
+--SELECT @SA_CapitalAA = [Id] FROM dbo.[Accounts] WHERE Code = N'3112';
 
---SELECT @NocJimmaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2102';
---SELECT @ToyotaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2103';
---SELECT @RegusAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2104';
---SELECT @SalariesAccrualsTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2501';
---SELECT @SalariesAccrualsNonTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2502';
---SELECT @EmployeesPayable = [Id] FROM dbo.[Accounts] WHERE Code = N'2503';
---SELECT @VATOutput = [Id] FROM dbo.[Accounts] WHERE Code = N'2601';
---SELECT @EmployeesIncomeTaxPayable = [Id] FROM dbo.[Accounts] WHERE Code = N'2602';
+--SELECT @SA_NocJimmaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2112';
+--SELECT @SA_ToyotaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2113';
+--SELECT @SA_RegusAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2114';
+--SELECT @SA_SalariesAccrualsTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2511';
+--SELECT @SA_SalariesAccrualsNonTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2512';
+--SELECT @SA_EmployeesPayable = [Id] FROM dbo.[Accounts] WHERE Code = N'2513';
+--SELECT @SA_VATOutput = [Id] FROM dbo.[Accounts] WHERE Code = N'2611';
+--SELECT @SA_EmployeesIncomeTaxPayable = [Id] FROM dbo.[Accounts] WHERE Code = N'2612';
 
---SELECT @fuelHR = [Id] FROM dbo.[Accounts] WHERE Code = N'5101';
---SELECT @fuelSalesAdminAG = [Id] FROM dbo.[Accounts] WHERE Code = N'5102';
---SELECT @fuelProduction = [Id] FROM dbo.[Accounts] WHERE Code = N'5103';
---SELECT @fuelSalesDistAG = [Id] FROM dbo.[Accounts] WHERE Code = N'5201';
+--SELECT @SA_fuelHR = [Id] FROM dbo.[Accounts] WHERE Code = N'5111';
+--SELECT @SA_fuelSalesAdminAG = [Id] FROM dbo.[Accounts] WHERE Code = N'5112';
+--SELECT @SA_fuelProduction = [Id] FROM dbo.[Accounts] WHERE Code = N'5113';
+--SELECT @SA_fuelSalesDistAG = [Id] FROM dbo.[Accounts] WHERE Code = N'5211';
 
---SELECT @SalariesAdmin = [Id] FROM dbo.[Accounts] WHERE Code = N'5202';
---SELECT @OvertimeAdmin = [Id] FROM dbo.[Accounts] WHERE Code = N'5203';
+--SELECT @SA_SalariesAdmin = [Id] FROM dbo.[Accounts] WHERE Code = N'5212';
+SELECT @SA_OvertimeAdmin = [Id] FROM dbo.[Accounts] WHERE Code = N'5213';

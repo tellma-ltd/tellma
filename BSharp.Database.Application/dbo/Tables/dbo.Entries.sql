@@ -22,8 +22,6 @@
 										N'Revenue',
 										N'Expense'
 									)),
-	[AgentDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
-	[ResourceClassificationId]	INT				CONSTRAINT [FK_Entries__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[IsCurrent]					BIT,
 
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),

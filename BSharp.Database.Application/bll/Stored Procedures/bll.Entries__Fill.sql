@@ -42,9 +42,6 @@ WHERE LDE.ResourceSource = 1 AND E.ResourceId <> L.ResourceId
 -- When using manual line, Copy information from Account to entries
 UPDATE E 
 SET
-	E.[ContractType]			= A.[ContractType],
-	E.[AgentDefinitionId]		= A.[AgentDefinitionId],
-	E.[ResourceClassificationId]= COALESCE(A.[ResourceClassificationId], E.[ResourceClassificationId]),
 	E.[IsCurrent]				= COALESCE(A.[IsCurrent], E.[IsCurrent]),
 	E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
 	E.[ResourceId]				= COALESCE(A.[AgentId], E.[AgentId]),

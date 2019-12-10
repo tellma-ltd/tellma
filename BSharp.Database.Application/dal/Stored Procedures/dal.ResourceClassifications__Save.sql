@@ -33,7 +33,7 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]			= @Now,
 				t.[ModifiedById]		= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([ParentId], [Name],	[Name2], [Name3], [Code], [Node], [ResourceDefinitionId], [IsAssignable])
+			INSERT ([ParentId],		[Name],		[Name2], [Name3], [Code],	[Node],		[ResourceDefinitionId], [IsAssignable])
 			VALUES (s.[ParentId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Node], s.[ResourceDefinitionId], s.[IsAssignable])
 			OUTPUT s.[Index], inserted.[Id] 
 	) As x;
