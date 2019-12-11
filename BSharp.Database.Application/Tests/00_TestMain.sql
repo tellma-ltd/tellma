@@ -44,7 +44,7 @@ BEGIN -- reset Identities
 			@DebugBanks bit = 0, @DebugCustodies bit = 0;
 	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
 	DECLARE @DebugLineDefinitions bit = 0, @DebugDocumentDefinitions bit = 0;
-	DECLARE @DebugManualVouchers bit = 1, @DebugReports bit = 0;
+	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
 	DECLARE @DebugCashPaymentVouchers bit = 0, @DebugPettyCashVouchers bit = 0;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;

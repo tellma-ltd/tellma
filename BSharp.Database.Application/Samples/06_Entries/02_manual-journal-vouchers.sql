@@ -55,8 +55,8 @@ BEGIN -- Inserting
 				[AccountId],		[EntryClassificationId],	[ResourceId], [MonetaryValue],[Value]) VALUES
 	(0, 0, 0,1,+1,@SA_CBEUSD,		@ProceedsFromIssuingShares, 	@R_USD,		200000,			4700000),--
 	(1, 1, 0,1,+1,@BA_CBEUSD,		@ProceedsFromIssuingShares, 	NULL,		100,			2350),
-	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					NULL,		2350050,		2350050),
-	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					NULL,		2350050,		2350050),
+	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					NULL,		2351175,		2351175),
+	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					NULL,		2351175,		2351175),
 		
 	(4, 4, 1,1,+1,@BA_CBEETB,		@InternalCashTransferExtension, NULL,		1175000,		1175000),
 	(5, 5, 1,1,-1,@SA_CBEUSD,		@InternalCashTransferExtension,	@R_USD,		50000,			1175000);

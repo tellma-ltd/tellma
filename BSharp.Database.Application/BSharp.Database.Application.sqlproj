@@ -276,7 +276,7 @@
     <Build Include="dbo\User Defined Types\dbo.UserList.sql" />
     <Build Include="Mapping\Users.sql" />
     <Build Include="bll\Stored Procedures\bll.Users_Validate__Save.sql" />
-    <Build Include="bll\Stored Procedures\bll.Documents__Fill.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents__Preprocess.sql" />
     <Build Include="api\Stored Procedures\api.Agents__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Agents_Validate__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Resources__Fill.sql" />
