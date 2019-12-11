@@ -445,4 +445,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Documents__Close]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="a677b070-1512-4283-8758-2e51c7ec13cd" ChangeDateTime="12/11/2019 16:43:33">
+    <Property Name="ElementName" Value="[bll].[Entries__Fill]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[bll]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Documents__Preprocess]" />
+  </Operation>
 </Operations>
