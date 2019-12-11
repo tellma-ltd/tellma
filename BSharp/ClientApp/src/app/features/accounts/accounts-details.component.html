@@ -81,6 +81,18 @@
         </b-view-link>
         <b-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
         </b-account-classifications-picker>
+    </b-form-group>    
+
+    <!-- Currency -->
+    <b-form-group *ngIf="!model?.IsSmart" class="b-form-group" [label]="'Account_Currency' | translate"
+        [serverErrors]="model?.serverErrors?.CurrencyId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
+            <b-view-link link="../../../currencies" [itemId]="model?.CurrencyId">
+                {{ ws.getMultilingualValue('Currency', model.CurrencyId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="true">
+        </b-currencies-picker>
     </b-form-group>
 
     <!-- Is Deprecated -->

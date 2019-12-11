@@ -73,6 +73,9 @@
   <data name="Account_Classification" xml:space="preserve">
     <value>分类</value>
   </data>
+  <data name="Account_Currency" xml:space="preserve">
+    <value>货币</value>
+  </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>已弃用</value>
   </data>

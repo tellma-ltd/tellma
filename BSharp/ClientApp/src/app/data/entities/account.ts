@@ -7,13 +7,13 @@ import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 
 export class AccountForSave extends EntityWithKey {
-    AccountTypeId: string;
-    AccountClassificationId: number;
     Name: string;
     Name2: string;
     Name3: string;
     Code: string;
     IsSmart: boolean;
+    AccountTypeId: string;
+    AccountClassificationId: number;
 }
 
 export class Account extends AccountForSave {
@@ -52,6 +52,8 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, _: 
                 AccountType: { control: 'navigation', label: () => trx.instant('Account_Type'), type: 'AccountType', foreignKeyName: 'AccountTypeId' },
                 AccountClassificationId: { control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AccountClassification: { control: 'navigation', label: () => trx.instant('Account_Classification'), type: 'AccountClassification', foreignKeyName: 'AccountClassificationId' },
+                CurrencyId: { control: 'number', label: () => `${trx.instant('Account_Currency')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Currency: { control: 'navigation', label: () => trx.instant('Account_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
 
                 // PartyReference: { control: 'text', label: () => trx.instant('Account_PartyReference') },
                 // ResponsibilityCenterId: { control: 'text', label: () => `${trx.instant('Account_ResponsibilityCenter')} (${trx.instant('Id')})` },
