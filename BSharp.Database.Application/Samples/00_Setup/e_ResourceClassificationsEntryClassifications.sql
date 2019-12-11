@@ -25,38 +25,56 @@ INSERT INTO @ResourceClassificationsEntryClassificationsParents
 (N'TaxExpenseOtherThanIncomeTaxExpense',N'ExpenseByFunctionExtension'),
 (N'OtherExpenseByNature',				N'ExpenseByFunctionExtension');
 
-WITH
-ResourceClassificationsDescendants(ResourceClassificationParentCode, ResourceClassificationChildId) AS
+WITH ResourceClassificationsEntryClassificationsParents AS
 (
-	SELECT  RCParent.[Code], RCChild.[Id]
-	FROM dbo.[ResourceClassifications] RCChild
-	JOIN dbo.[ResourceClassifications] RCParent ON RCChild.[Node].IsDescendantOf(RCParent.[Node]) = 1
-	WHERE RCParent.[Code] IN (SELECT [ResourceClassificationParentCode] FROM @ResourceClassificationsEntryClassificationsParents)
-	AND RCChild.IsAssignable = 1
-),
-EntryClassificationsDescendants(EntryClassificationParentCode, EntryClassificationChildId) AS
-(
-	SELECT ETParent.[Code], ETChild.[Id]
-	FROM dbo.[EntryClassifications] ETChild
-	JOIN dbo.[EntryClassifications] ETParent ON ETChild.[Node].IsDescendantOf(ETParent.[Node]) = 1 
-	WHERE ETParent.[Code] IN (SELECT [EntryClassificationParentCode] FROM @ResourceClassificationsEntryClassificationsParents)
-	AND ETChild.IsAssignable = 1
-),
-ResourceClassificationsEntryClassificationsExpanded([ResourceClassificationId], [EntryClassificationId]) AS
-(
-	SELECT TA.ResourceClassificationChildId, TE.EntryClassificationChildId
-	FROM ResourceClassificationsDescendants TA
-	JOIN @ResourceClassificationsEntryClassificationsParents TM ON TA.[ResourceClassificationParentCode] = TM.[ResourceClassificationParentCode]
-	JOIN EntryClassificationsDescendants TE ON TM.[EntryClassificationParentCode] = TE.[EntryClassificationParentCode]
+	SELECT
+		dbo.fn_RCCode__Id([ResourceClassificationParentCode]) AS ResourceClassificationId,
+		dbo.fn_ECCode__Id([EntryClassificationParentCode]) AS EntryClassificationId
+	FROM @ResourceClassificationsEntryClassificationsParents
 )
-MERGE [dbo].[ResourceClassificationsEntryClassifications] AS t
-USING ResourceClassificationsEntryClassificationsExpanded AS s
+--select RCEC.*, EC.Code  from ResourceClassificationsEntryClassificationsParents RCEC 
+--join dbo.EntryClassifications EC ON RCEC.EntryClassificationId = EC.Id;
+MERGE [ResourceClassificationsEntryClassifications] AS t
+USING ResourceClassificationsEntryClassificationsParents AS s
 ON (s.[ResourceClassificationId] = t.[ResourceClassificationId] AND s.[EntryClassificationId] = t.[EntryClassificationId])
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
     INSERT ([ResourceClassificationId], [EntryClassificationId])
     VALUES (s.[ResourceClassificationId], s.[EntryClassificationId]);
+
+--WITH
+--ResourceClassificationsDescendants(ResourceClassificationParentCode, ResourceClassificationChildId) AS
+--(
+--	SELECT  RCParent.[Code], RCChild.[Id]
+--	FROM dbo.[ResourceClassifications] RCChild
+--	JOIN dbo.[ResourceClassifications] RCParent ON RCChild.[Node].IsDescendantOf(RCParent.[Node]) = 1
+--	WHERE RCParent.[Code] IN (SELECT [ResourceClassificationParentCode] FROM @ResourceClassificationsEntryClassificationsParents)
+--	AND RCChild.IsAssignable = 1
+--),
+--EntryClassificationsDescendants(EntryClassificationParentCode, EntryClassificationChildId) AS
+--(
+--	SELECT ETParent.[Code], ETChild.[Id]
+--	FROM dbo.[EntryClassifications] ETChild
+--	JOIN dbo.[EntryClassifications] ETParent ON ETChild.[Node].IsDescendantOf(ETParent.[Node]) = 1 
+--	WHERE ETParent.[Code] IN (SELECT [EntryClassificationParentCode] FROM @ResourceClassificationsEntryClassificationsParents)
+--	AND ETChild.IsAssignable = 1
+--),
+--ResourceClassificationsEntryClassificationsExpanded([ResourceClassificationId], [EntryClassificationId]) AS
+--(
+--	SELECT TA.ResourceClassificationChildId, TE.EntryClassificationChildId
+--	FROM ResourceClassificationsDescendants TA
+--	JOIN @ResourceClassificationsEntryClassificationsParents TM ON TA.[ResourceClassificationParentCode] = TM.[ResourceClassificationParentCode]
+--	JOIN EntryClassificationsDescendants TE ON TM.[EntryClassificationParentCode] = TE.[EntryClassificationParentCode]
+--)
+--MERGE [dbo].[ResourceClassificationsEntryClassifications] AS t
+--USING ResourceClassificationsEntryClassificationsExpanded AS s
+--ON (s.[ResourceClassificationId] = t.[ResourceClassificationId] AND s.[EntryClassificationId] = t.[EntryClassificationId])
+--WHEN NOT MATCHED BY SOURCE THEN
+--    DELETE
+--WHEN NOT MATCHED BY TARGET THEN
+--    INSERT ([ResourceClassificationId], [EntryClassificationId])
+--    VALUES (s.[ResourceClassificationId], s.[EntryClassificationId]);
 
 IF @DebugResourceClassificationsEntryClassifications = 1
 	SELECT RC.[Name] AS [Resource Classification], EC.[Name] AS [Entry Classification]

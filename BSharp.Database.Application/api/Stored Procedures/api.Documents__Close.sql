@@ -19,10 +19,7 @@ AS
 		RETURN;
 
 	INSERT INTO @Ids SELECT [Id] FROM @IndexedIds;
-	EXEC [dal].[Documents_State__Update]
-		@Ids = @Ids,
-		@ToState = 5 --N'Closed'
-		;
+	EXEC [dal].[Documents__Close] @Ids = @Ids;
 
 	EXEC [dal].[Documents__Assign]
 		@Ids = @Ids,

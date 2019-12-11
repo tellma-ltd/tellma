@@ -26,3 +26,8 @@ EXEC master.sys.sp_set_session_context 'UserId', @AdminUserId;
 IF NOT EXISTS(SELECT * FROM dbo.ResourceDefinitions WHERE [Id] = N'currencies')
 	INSERT INTO dbo.ResourceDefinitions([Id])
 	VALUES(N'currencies');
+
+IF NOT EXISTS(SELECT * FROM dbo.ResourceDefinitions WHERE [Id] = N'general-items')
+INSERT INTO dbo.ResourceDefinitions (
+	[Id],			[TitlePlural],		[TitleSingular]) VALUES
+(N'general-items',	N'General Items',	N'General Item');

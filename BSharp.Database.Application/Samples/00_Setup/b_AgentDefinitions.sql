@@ -8,7 +8,8 @@
 	(N'owners',			N'Owner',			N'Owners'),
 	(N'suppliers',		N'Supplier',		N'Suppliers'),
 	(N'tax-agencies',	N'Tax Agency',		N'Tax Agencies'),
-	(N'banks',			N'Bank',			N'Banks')
+	(N'banks',			N'Bank',			N'Banks'),
+	(N'custodies',		N'Custody',			N'Custodies')
 	;
 
 	INSERT INTO dbo.AgentDefinitions

@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[IfrsAccountClassifications] ( -- managed by Banan IT
-	[Id]						NVARCHAR (255)			CONSTRAINT [PK_IfrsAccountClassifications] PRIMARY KEY NONCLUSTERED CONSTRAINT [FK_IfrsAccountClassifications__Id] FOREIGN KEY ([Id]) REFERENCES [dbo].[IfrsConcepts] ([Id]) ON DELETE CASCADE,
+	[Id]						NVARCHAR (255)			CONSTRAINT [PK_IfrsAccountClassifications] PRIMARY KEY NONCLUSTERED CONSTRAINT [FK_IfrsAccountClassifications__Id] REFERENCES [dbo].[IfrsConcepts] ([Id]) ON DELETE CASCADE,
 	[Node]						HIERARCHYID				NOT NULL CONSTRAINT [CK_IfrsClassifications__Node] UNIQUE INDEX [IX_IfrsAccountClassifications__Node] CLUSTERED,
 	[ParentNode]				AS [Node].GetAncestor(1),
 	[IsLeaf]					BIT						NOT NULL DEFAULT 1, -- update to 0 those who do appear as ancestors

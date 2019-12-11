@@ -51,10 +51,24 @@ BEGIN
 	IF @ValidationErrorsJson IS NOT NULL
 		RETURN;
 
+	DECLARE @DocumentsIndexedIds [dbo].[IndexedIdList];
+	INSERT INTO @DocumentsIndexedIds
 	EXEC [dal].[Documents__Save]
 		@DefinitionId = @DefinitionId,
 		@Documents = @Documents,
 		@Lines = @AllLines,
 		@Entries = @FilledAllEntries,
-		@ReturnIds = @ReturnIds;
+		@ReturnIds = 1;
+
+	---- Assign the new ones to self
+	DECLARE @NewDocumentsIds dbo.IdList;
+	INSERT INTO @NewDocumentsIds([Id])
+	SELECT Id FROM @DocumentsIndexedIds
+	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
+
+	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	EXEC [dal].[Documents__Assign]
+		@Ids = @NewDocumentsIds,
+		@AssigneeId = @UserId,
+		@Comment = N'FYC'
 END;

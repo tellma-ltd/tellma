@@ -1,12 +1,18 @@
-﻿	INSERT INTO dbo.ResourceDefinitions (
-		[Id],				[TitlePlural],			[TitleSingular]) VALUES
-	( N'employee-benefits',	N'Employee Benefits',	N'Employee Benefit');
+﻿	
+	--SELECT
+	--	RC.Id,
+	--	SPACE(5 * (RC.[Node].GetLevel() - 1)) +  RC.[Name] As [Name],
+	--	RC.[Node].ToString() As [Node],
+	--	RC.[ResourceDefinitionId],
+	--	RC.[IsAssignable],
+	--	RC.[IsActive],
+	--	(SELECT COUNT(*) FROM ResourceClassifications WHERE [ParentNode] = RC.[Node]) AS [ChildCount]
+	--FROM dbo.ResourceClassifications RC
 
 	DECLARE @EmployeeBenefits [dbo].ResourceList;
 
 	INSERT INTO @EmployeeBenefits (
 	[Index], [ResourceClassificationId],					[Name],					[TimeUnitId]) VALUES
-	--N'WagesAndSalaries'
 	(0,	dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Basic',				dbo.fn_UnitName__Id(N'wmo')),
 	(1, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Transportation',		dbo.fn_UnitName__Id(N'wmo')),
 	(2, dbo.fn_RCCode__Id(N'WagesAndSalaries'),				N'Day Overtime',		dbo.fn_UnitName__Id(N'hr')),
@@ -20,7 +26,7 @@
 	;
 
 	EXEC [api].[Resources__Save] -- N'employee-benefits'
-		@DefinitionId = N'employee-benefits',
+		@DefinitionId = N'general-items',
 		@Entities = @EmployeeBenefits,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -29,6 +35,11 @@
 		Print 'Inserting employee benefits'
 		GOTO Err_Label;
 	END;
+	DECLARE @R_DayOT INT, @R_NightOT INT, @R_RestOT INT, @R_HolidayOT INT
+	SELECT @R_DayOT = [Id] FROM dbo.Resources WHERE [Name] = N'Day Overtime';
+	SELECT @R_DayOT = [Id] FROM dbo.Resources WHERE [Name] = N'Night Overtime';
+	SELECT @R_DayOT = [Id] FROM dbo.Resources WHERE [Name] = N'Rest Overtime';
+	SELECT @R_DayOT = [Id] FROM dbo.Resources WHERE [Name] = N'Holiday Overtime';
 
 IF @DebugResources = 1
 BEGIN

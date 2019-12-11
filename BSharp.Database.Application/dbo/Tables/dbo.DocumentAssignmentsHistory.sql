@@ -1,11 +1,11 @@
 ﻿CREATE TABLE [dbo].[DocumentAssignmentsHistory] (
 -- To be filled by a trigger on table DocumentsAssignments
-	[Id]			INT					CONSTRAINT [PK_DocumentAssignmentsHistory] PRIMARY KEY,
-	[DocumentId]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignmentsHistory__DocumentId] FOREIGN KEY ([DocumentId]) REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
-	[AssigneeId]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignmentsHistory__AssigneeId] FOREIGN KEY ([AssigneeId]) REFERENCES [dbo].[Users] ([Id]),
+	[Id]			INT					CONSTRAINT [PK_DocumentAssignmentsHistory] PRIMARY KEY IDENTITY,
+	[DocumentId]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignmentsHistory__DocumentId] REFERENCES [dbo].[Documents] ([Id]) ON DELETE CASCADE,
+	[AssigneeId]	INT					NOT NULL CONSTRAINT [FK_DocumentAssignmentsHistory__AssigneeId] REFERENCES [dbo].[Users] ([Id]),
 	[Comment]		NVARCHAR (1024),
 	[CreatedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
-	[CreatedById]	INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentAssignmentsHistory__CreatedById] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[Users] ([Id]),
+	[CreatedById]	INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_DocumentAssignmentsHistory__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[OpenedAt]		DATETIMEOFFSET (7)	
 );
 GO

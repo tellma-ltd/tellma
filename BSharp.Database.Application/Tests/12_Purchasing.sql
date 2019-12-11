@@ -46,7 +46,7 @@ BEGIN -- Inserting
 	
 
 	EXEC [api].[Documents__Save]
-		@DocumentTypeId = N'purchasing-international',
+		@DefinitionId = N'purchasing-international',
 		@Documents = @D21, @Lines = @L21, @Entries = @E21,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

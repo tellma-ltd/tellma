@@ -51,16 +51,15 @@ BEGIN -- Inserting
 	(14,		4,				N'ManualLine'),
 	(15,		4,				N'ManualLine')
 		;
-
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],		[EntryClassificationId],	[ResourceId],[MonetaryValue],[Value]) VALUES
-	(0, 0, 0,1,+1,@BA_CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,		200000,			4700000),--
-	(1, 1, 0,1,+1,@BA_CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,		100,			2350),
+	(0, 0, 0,1,+1,@SA_CBEUSD,		@ProceedsFromIssuingShares, 							@R_USD,		200000,			4700000),--
+	(1, 1, 0,1,+1,@BA_CBEUSD,		@ProceedsFromIssuingShares, 	@R_USD,		100,			2350),
 	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					@R_ETB,		2351175,		2351175),
 	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					@R_ETB,		2351175,		2351175),
 		
-	(4, 4, 1,1,+1,@BA_CBEETB,			@InternalCashTransferExtension, @R_ETB,		1175000,		1175000),
-	(5, 5, 1,1,-1,@BA_CBEUSD,			@InternalCashTransferExtension,	@R_USD,		50000,			1175000);
+	(4, 4, 1,1,+1,@BA_CBEETB,		@InternalCashTransferExtension, @R_ETB,		1175000,		1175000),
+	(5, 5, 1,1,-1,@BA_CBEUSD,		@InternalCashTransferExtension,	@R_USD,		50000,			1175000);
 
 	-- In a manual JV, we assume the following columns for dumb accounts:
 	-- Account, Debit, Credit, Memo
@@ -137,8 +136,6 @@ BEGIN -- Inserting
 			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'manual-journal-vouchers';
 			EXEC [rpt].[Docs__UI] @DIds;
 	END
-	select * from documents;
-	select * from lines;
 END
 IF @DebugReports = 1
 BEGIN
@@ -166,9 +163,12 @@ BEGIN
 	GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;
 END
 
+select * from DocumentAssignments;
+select * from DocumentAssignmentsHistory;
+SELECT * FROM dbo.DocumentStatesHistory;
+select * from dbo.LineSignatures;
+--SELECT * FROM dbo.LineStatesHistory;
 
---SELECT * FROM dbo.DocumentSignatures;
---SELECT * FROM dbo.DocumentStatesHistory;
 --IF (1=0)
 --BEGIN -- Updating document and deleting lines/entries
 --	INSERT INTO @D12([Index], [Id], [DocumentDate],	[Memo])

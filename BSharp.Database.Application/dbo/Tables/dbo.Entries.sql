@@ -5,7 +5,7 @@
 	[EntryNumber]				INT				NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT		NOT NULL CONSTRAINT [CK_Entries__Direction]	CHECK ([Direction] IN (-1, 1)),
 	[AccountId]					INT				NOT NULL CONSTRAINT [FK_Entries__AccountId] REFERENCES [dbo].[Accounts] ([Id]),
-
+	-- Null for non-smart accounts, Not null for smart accounts
 	[ContractType]				NVARCHAR (50)	CONSTRAINT [CK_Entries__ContractType] CHECK ( [ContractType] IN (
 										N'OnHand',
 --										N'OnDemand', -- for all practical purposes, this is the same as OnHand
@@ -22,22 +22,21 @@
 										N'Revenue',
 										N'Expense'
 									)),
-	[AgentDefinitionId]			NVARCHAR (50)	REFERENCES dbo.AgentDefinitions([Id]),
-	[ResourceClassificationId]	INT				CONSTRAINT [FK_Entries__ResourceClassificationId] REFERENCES [dbo].[ResourceClassifications] ([Id]),
 	[IsCurrent]					BIT,
-
+	-- Agent Id is required in Entries only if we have Agent Definition in the account
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
-	[ResourceId]				INT				NOT NULL CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.Resources([Id]),
+	-- Resource Id is Required in Entries only if we have resource classification in the account
+	[ResourceId]				INT				CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.Resources([Id]),
+	-- Leaving it null means it appears in the shared Operating segment financial statements.
 	[ResponsibilityCenterId]	INT				REFERENCES dbo.ResponsibilityCenters([Id]),
 	[AccountIdentifier]			NVARCHAR (10)	CONSTRAINT [FK_Entriess__AccountIdentifier] REFERENCES dbo.AccountIdentifiers([Id]), -- to resolve Uniqueness Constraint
 	
 	[ResourceIdentifier]		NVARCHAR (10),
+	-- When resource is specified, and it has currency, it takes the resource currency. Otherwise, the user must specify it
 	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
-	
-	-- Entry Type is used to tag entries in a manner that does not affect the account balance
-	-- However, consider the case of acc depreciation. We want to map to a different GL. In that case, we set some account definition
-	-- to enforce a certain entry classification
+	-- Entry Classification is required only if the pair (ResourceClassification, EntryClassification) is enforced
 	[EntryClassificationId]		INT				CONSTRAINT [FK_Entries__EntryClassificationId] REFERENCES [dbo].[EntryClassifications] ([Id]),
+	-- Due Date is required only for certain resources, 
 	[DueDate]					DATE, -- applies to temporary accounts, such as loans and borrowings	
 
 -- Revenues Account: The customer
@@ -49,7 +48,6 @@
 -- Resource is defined as
 --	The good/service sold for revenues and direct expenses
 --	The good/service consumed for indirect expenses
-	--[ResourceInstanceId]		INT				CONSTRAINT [FK_Entries__ResourcePInstanceId] FOREIGN KEY ([ResourceInstanceId]) REFERENCES [dbo].[ResourceInstances] ([Id]),
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
 	--[Memo]						NVARCHAR (255),
 	[MonetaryValue]				DECIMAL (19,4)			NOT NULL DEFAULT 0,

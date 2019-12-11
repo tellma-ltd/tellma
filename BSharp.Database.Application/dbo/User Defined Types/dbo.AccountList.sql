@@ -10,6 +10,7 @@
 	[AccountClassificationId]		INT,
 	
 	-- Not used right now
+	[CurrencyId]					NCHAR (3),
 	[ResponsibilityCenterId]		INT,
 	[ContractType]					NVARCHAR (50),--	REFERENCES dbo.[ContractTypes]([Id]),
 	[AgentDefinitionId]				NVARCHAR (50),

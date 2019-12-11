@@ -23,16 +23,16 @@
 	[IdentifierLabel]					NVARCHAR (50),
 
 	[Lookup1Visibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([Lookup1Visibility] IN (N'None', N'Required', N'Optional')),
-	[Lookup1DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup1DefinitionId] FOREIGN KEY (Lookup1DefinitionId) REFERENCES dbo.LookupDefinitions([Id]),
+	[Lookup1DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup1DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
 	[Lookup1Label]						NVARCHAR (50),
 	[Lookup2Visibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([Lookup2Visibility] IN (N'None', N'Required', N'Optional')),
-	[Lookup2DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup2DefinitionId] FOREIGN KEY (Lookup2DefinitionId) REFERENCES dbo.LookupDefinitions([Id]),
+	[Lookup2DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup2DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
 	[Lookup2Label]						NVARCHAR (50),
 	[Lookup3Visibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([Lookup3Visibility] IN (N'None', N'Required', N'Optional')),
-	[Lookup3DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup3DefinitionId] FOREIGN KEY (Lookup3DefinitionId) REFERENCES dbo.LookupDefinitions([Id]),
+	[Lookup3DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup3DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
 	[Lookup3Label]						NVARCHAR (50),
 	[Lookup4Visibility]					NVARCHAR (50) DEFAULT N'None' CHECK ([Lookup4Visibility] IN (N'None', N'Required', N'Optional')),
-	[Lookup4DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup4DefinitionId] FOREIGN KEY (Lookup4DefinitionId) REFERENCES dbo.LookupDefinitions([Id]),
+	[Lookup4DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup4DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
 	[Lookup4Label]						NVARCHAR (50),
 
 	-- TODO: Production Date has been moved from Resources to Accounts/Entries... Delete from definition.
