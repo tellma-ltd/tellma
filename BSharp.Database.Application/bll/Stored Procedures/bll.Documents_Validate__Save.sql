@@ -49,7 +49,7 @@ SET NOCOUNT ON;
 	FROM @Documents FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
 	--WHERE (BE.[State] <> N'Active')
-	WHERE (BE.[State] = 5)
+	WHERE (BE.[State] = 5);
 
 	-- TODO: For the cases below, add the condition that Entry Classification is enforced
 
@@ -65,19 +65,35 @@ SET NOCOUNT ON;
 	--WHERE (E.[EntryClassificationId] IS NULL) AND [AT].EntryClassificationParentCode IS NOT NULL;
 
 	-- Invalid Entry Classification for resource classification
-	-- TODO: now, the table RCEC contains parents only, so the code need to consider this fact
+	WITH ParentNodes AS ( SELECT
+		RC.[Node] AS ResourceClassificationParentNode, EC.[Node] AS EntryClassificationParentNode
+		FROM ResourceClassificationsEntryClassifications RCEC
+		JOIN dbo.ResourceClassifications RC ON RC.Id = RCEC.ResourceClassificationId
+		JOIN dbo.EntryClassifications EC ON EC.Id = RCEC.EntryClassificationId
+	),
+	EntryNodes AS (SELECT
+		E.[DocumentIndex], E.[LineIndex], E.[Index], E.ResourceId, E.EntryClassificationId, 
+		RC.[Node] AS ResourceClassificationNode, RC.[Code] AS [ResourceClassificationCode],
+		EC.[Node] AS [EntryClassificationNode], EC.[Code] AS [EntryClassificationCode]
+		FROM @Entries E
+		JOIN dbo.Accounts A ON E.AccountId = A.Id
+		JOIN dbo.Resources R ON E.ResourceId = R.Id
+		JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
+		LEFT JOIN dbo.EntryClassifications EC ON E.EntryClassificationId = EC.Id
+	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST([Index] AS NVARCHAR(255)) + ']',
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + ']',
 		N'Error_IncompatibleResourceClassification0AndEntryClassification1',
-		RC.[Code] AS [ResourceClassification], EC.[Code] AS [EntryClassification]
-	FROM @Entries E
-	JOIN dbo.Resources R ON E.ResourceId = R.Id
-	JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.[Id]
-	JOIN dbo.EntryClassifications EC ON E.EntryClassificationId = EC.[Id]
-	LEFT JOIN dbo.[ResourceClassificationsEntryClassifications] RCEC ON (R.[ResourceClassificationId] = RCEC.[ResourceClassificationId]) AND (E.[EntryClassificationId] = RCEC.[EntryClassificationId])
-	WHERE (E.[EntryClassificationId] IS NOT NULL AND RCEC.[EntryClassificationId] IS NULL);
+		E.[ResourceClassificationCode], E.[EntryClassificationCode]
+	FROM EntryNodes E
+	LEFT JOIN ParentNodes P
+	ON  E.ResourceClassificationNode.IsDescendantOf(P.ResourceClassificationParentNode) = 1
+	AND E.[EntryClassificationNode].IsDescendantOf(P.EntryClassificationParentNode) = 1
+	WHERE
+		(E.[EntryClassificationNode] IS NOT NULL AND P.EntryClassificationParentNode IS NULL)
+	OR  (E.ResourceClassificationNode IS NOT NULL AND P.ResourceClassificationParentNode IS NULL);
 
 	-- RelatedAgent is required for selected account definition, 
 	--INSERT INTO @ValidationErrors([Key], [ErrorName])

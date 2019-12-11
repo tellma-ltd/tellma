@@ -18,7 +18,7 @@ WITH Docs AS (
 			L.[DefinitionId] AS LineDefinitionId,
 			L.[State] AS [LineState],
 			E.[Direction],
-			E.[EntryNumber], A.[Name] AS [Account],
+			E.[EntryNumber], A.[Name] AS [Account], A.[IsSmart] AS S,
 			E.[CurrencyId], E.[MonetaryValue], E.[EntryClassificationId],
 			--CAST(E.[Value] AS DECIMAL (19,4)) AS 
 			E.[Value]
@@ -52,7 +52,7 @@ WITH Docs AS (
 	--	(CASE WHEN Docs.[SortKey] = DocsFirst.SortKey THEN CAST([DocumentSortKey] AS TINYINT) ELSE '' END) AS [DSortKey],
 		Docs.[LineId], [LineDefinitionId],
 		[EntryNumber] AS [E/N], 
-		[Account], [CurrencyId],
+		[Account], [S], [CurrencyId],
 		FORMAT([Direction] * [MonetaryValue], '##,#;(##,#);-', 'en-us') AS [MonetaryValue],
 		EC.[Name] AS [EntryClassification],-- [Direction], 
 		FORMAT([Direction] * [Value], '##,#.00;-;-', 'en-us') AS Debit,

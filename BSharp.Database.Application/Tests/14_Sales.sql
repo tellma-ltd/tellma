@@ -23,7 +23,7 @@ BEGIN -- Inserting
 		(2,				5, 2,				-1,			@CBELC,	N'PaymentsToSuppliersForGoodsAndServices',	@ETB,		9000000,		0,		0);
 
 	EXEC [api].[Documents__Save]
-		@DocumentTypeId = N'purchasing-international',
+		@DefinitionId = N'purchasing-international',
 		@Documents = @D41, @Lines = @L41, @Entries = @E41,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 

@@ -49,6 +49,8 @@ SET NOCOUNT ON;
 	JOIN [dbo].[AccountClassifications] BE ON FE.AccountClassificationId = BE.Id
 	WHERE BE.[Node] IN (SELECT DISTINCT [ParentNode] FROM [dbo].[AccountClassifications]);
 
+	-- TODO: verify that id ResourceId is not null, and Resource has currency, that Account.Currency = Resource.Currency
+
 	-- Cannot change properties of the account is used in a line, unless the line is draft, or negative.
 	-- TODO: The code below is too conservative. We may relax it as follows:
 	-- We can make a dumb account smart, provided that the smart version is a cash account on functional currency

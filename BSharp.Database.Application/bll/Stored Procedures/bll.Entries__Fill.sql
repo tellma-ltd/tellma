@@ -32,19 +32,33 @@ SET E.AgentId = L.AgentId
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 WHERE LDE.AgentSource = 1 AND E.AgentId <> L.AgentId
---select 3 as step, E.* from @FilledEntries E
+
 UPDATE E 
 SET E.ResourceId = L.ResourceId
 FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 WHERE LDE.ResourceSource = 1 AND E.ResourceId <> L.ResourceId
---select 4 as step, E.* from @FilledEntries E
--- When using manual line, Copy information from Account to entries
+
+-- When using non smart accounts, set smart columns to null.
+UPDATE E
+SET
+	E.[IsCurrent]				= NULL,
+	E.[AgentId]					= NULL,
+	E.[ResourceId]				= NULL,
+	E.[CurrencyId]				= CONVERT(NCHAR (3), SESSION_CONTEXT(N'FunctionalCurrencyId')),
+	E.[ResponsibilityCenterId]	= NULL,
+	E.[AccountIdentifier]		= NULL,
+	E.[EntryClassificationId]	= NULL
+FROM @FilledEntries E
+JOIN dbo.Accounts A ON E.AccountId = A.Id
+WHERE A.IsSmart = 0;
+
+-- When using manual line, Copy information from smart Account to entries
 UPDATE E 
 SET
 	E.[IsCurrent]				= COALESCE(A.[IsCurrent], E.[IsCurrent]),
 	E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
-	E.[ResourceId]				= COALESCE(A.[AgentId], E.[AgentId]),
+	E.[ResourceId]				= COALESCE(A.[ResourceId], E.[ResourceId]),
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
 	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
 	E.[EntryClassificationId]	= COALESCE(A.[EntryClassificationId], E.[EntryClassificationId])

@@ -51,16 +51,15 @@ BEGIN -- Inserting
 	(14,		4,				N'ManualLine'),
 	(15,		4,				N'ManualLine')
 		;
-
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
 				[AccountId],		[EntryClassificationId],	[ResourceId],[MonetaryValue],[Value]) VALUES
-	(0, 0, 0,1,+1,@BA_CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,		200000,			4700000),--
-	(1, 1, 0,1,+1,@BA_CBEUSD,			@ProceedsFromIssuingShares, 	@R_USD,		100,			2350),
+	(0, 0, 0,1,+1,@SA_CBEUSD,		@ProceedsFromIssuingShares, 							@R_USD,		200000,			4700000),--
+	(1, 1, 0,1,+1,@BA_CBEUSD,		@ProceedsFromIssuingShares, 	@R_USD,		100,			2350),
 	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					@R_ETB,		2351175,		2351175),
 	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					@R_ETB,		2351175,		2351175),
 		
-	(4, 4, 1,1,+1,@BA_CBEETB,			@InternalCashTransferExtension, @R_ETB,		1175000,		1175000),
-	(5, 5, 1,1,-1,@BA_CBEUSD,			@InternalCashTransferExtension,	@R_USD,		50000,			1175000);
+	(4, 4, 1,1,+1,@BA_CBEETB,		@InternalCashTransferExtension, @R_ETB,		1175000,		1175000),
+	(5, 5, 1,1,-1,@BA_CBEUSD,		@InternalCashTransferExtension,	@R_USD,		50000,			1175000);
 
 	-- In a manual JV, we assume the following columns for dumb accounts:
 	-- Account, Debit, Credit, Memo

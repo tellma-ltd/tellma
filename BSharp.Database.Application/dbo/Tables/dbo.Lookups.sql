@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Lookups] (
 	[Id]				INT					CONSTRAINT [PK_Lookups] PRIMARY KEY NONCLUSTERED IDENTITY,
-	[DefinitionId]		NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Lookups__DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),	 -- TODO: Add foreign key to definitions table
+	[DefinitionId]		NVARCHAR (50)		NOT NULL CONSTRAINT [FK_Lookups__DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
 	[Name]				NVARCHAR (255)		NOT NULL, -- appears in select lists
 	[Name2]				NVARCHAR (255),
 	[Name3]				NVARCHAR (255),

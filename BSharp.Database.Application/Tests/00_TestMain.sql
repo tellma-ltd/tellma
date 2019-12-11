@@ -40,10 +40,11 @@ BEGIN -- reset Identities
 			@DebugLookupDefinitions bit = 0;
 	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0, @DebugLookups bit = 0;
 	DECLARE @DebugResponsibilityCenters bit = 0;
-	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0, @DebugBanks bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 1;
+	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0,
+			@DebugBanks bit = 0, @DebugCustodies bit = 0;
+	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
 	DECLARE @DebugLineDefinitions bit = 0, @DebugDocumentDefinitions bit = 0;
-	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
+	DECLARE @DebugManualVouchers bit = 1, @DebugReports bit = 0;
 	DECLARE @DebugCashPaymentVouchers bit = 0, @DebugPettyCashVouchers bit = 0;
 	DECLARE @LookupsSelect bit = 0;
 	DECLARE @fromDate Date, @toDate Date;
@@ -81,6 +82,7 @@ BEGIN TRY
 		:r ..\Samples\02_Agents\03_Customers.sql
 		:r ..\Samples\02_Agents\04_Employees.sql
 		:r ..\Samples\02_Agents\05_Banks.sql
+		:r ..\Samples\02_Agents\06_Custodies.sql
 
 		:r ..\Samples\03_Resources\a1_PPE_motor-vehicles.sql
 		:r ..\Samples\03_Resources\a2_PPE_it-equipment.sql
@@ -98,9 +100,9 @@ BEGIN TRY
 		:r ..\Samples\05_Accounts\c_SmartAccounts.sql
 		--:r .\00_Security\02_Workflows.sql		
 
-		--:r ..\Samples\06_Entries\00_LineDefinitions.sql
-		--:r ..\Samples\06_Entries\01_DocumentDefinitions.sql
-		--:r ..\Samples\06_Entries\02_manual-journal-vouchers.sql
+		:r ..\Samples\06_Entries\00_LineDefinitions.sql
+		:r ..\Samples\06_Entries\01_DocumentDefinitions.sql
+		:r ..\Samples\06_Entries\02_manual-journal-vouchers.sql
 		--:r ..\Samples\06_Entries\03_cash-payment-vouchers.sql
 		--:r .\06_Entries\01_petty-cash-vouchers.sql
 		;

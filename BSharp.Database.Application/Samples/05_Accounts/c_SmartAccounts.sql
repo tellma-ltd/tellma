@@ -3,10 +3,10 @@ INSERT INTO @SmartAccounts([Index], [IsSmart],
 	[AccountTypeId],		[AccountClassificationId],	[Name],								[Code],		[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryClassificationId]) VALUES
 --(0,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1101'),
 --(1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1102'),
-(0,1,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1111',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,			@Bank_CBE,	@R_USD,			NULL,			NULL),
-(1,1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1112',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,			@Bank_CBE,	@R_ETB,			NULL,			NULL);
+(0,1,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1111',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,		@Bank_CBE,		@R_USD,			NULL,			NULL),
+(1,1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1112',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,		@Bank_CBE,		@R_ETB,			NULL,			NULL),
 --(3,1,N'Inventory',			@Inventories_AC,			N'TF1903950009',					N'1209'), -- Merchandise in transit, for given LC
---(4,1,N'Inventory',			@Inventories_AC,			N'PPE Warehouse',					N'1210'),
+(4,1,N'Inventory',			@Inventories_AC,			N'RM Warehouse',					N'1220',	N'OnHand',		N'custodies',dbo.fn_RCCode__Id(N'RawMaterials'),	1,		@Warehouse_RM,	NULL,			NULL,			NULL),
 --(5,1,N'FixedAssets',		@NonCurrentAssets_AC,		N'PPE - Vehicles',					N'1301'),
 --(6,1,N'OtherCurrentAssets',	@Debtors_AC,				N'Prepaid Rental',					N'1401'),
 --(7,1,N'AccountsReceivable',	@Debtors_AC,				N'VAT Input',						N'1501'),
@@ -23,11 +23,8 @@ INSERT INTO @SmartAccounts([Index], [IsSmart],
 --(20,1,N'Expenses',			@Expenses_AC,				N'fuel - Sales - admin - AG',		N'5102'),
 --(21,1,N'CostofSales',		@Expenses_AC,				N'fuel - Production',				N'5103'),
 --(22,1,N'Expenses',			@Expenses_AC,				N'fuel - Sales - distribution - AG',1,N'5201'),
-
-INSERT INTO @SmartAccounts([Index], [IsSmart],
-	[AccountTypeId],		[AccountClassificationId],	[Name],								[Code],		[ContractType], [AgentDefinitionId], [ResourceClassificationId],			[IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryClassificationId]) VALUES
---(23,1,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5212',	N'Expense',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,				NULL,	NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense')),
-(24,1,N'Expenses',			@Expenses_AC,				N'Overtime - Admin',				N'5213',	N'Expense',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,				NULL,	NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense'));
+--(23,1,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5212',	N'Expense',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense')),
+(24,1,N'Expenses',			@Expenses_AC,				N'Overtime - Admin',				N'5213',	N'Expense',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,	NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense'));
 
 EXEC [api].[Accounts__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @SmartAccounts,
