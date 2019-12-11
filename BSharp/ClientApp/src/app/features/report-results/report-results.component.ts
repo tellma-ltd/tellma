@@ -531,16 +531,19 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
         // For nav properties, select the Id + the display properties
         addAtom(`${stringPath}/Id`);
 
+        const desc = entityDescriptorImpl(path, collection, definitionId,
+          this.workspace.current, this.translate);
+
         // This is to ensure that ordering of select columns is done in the correct order
-        currentDesc.orderby.forEach(o => {
-          const descSelect = currentDesc.select.find(s => s === o);
+        desc.orderby.forEach(o => {
+          const descSelect = desc.select.find(s => s === o);
           if (!!descSelect) {
             const descSelectPath = `${stringPath}/${descSelect}`.trim();
             addAtom(descSelectPath, orderDir);
           }
         });
 
-        currentDesc.select.forEach(descSelect => {
+        desc.select.forEach(descSelect => {
           const descSelectPath = `${stringPath}/${descSelect}`.trim();
           addAtom(descSelectPath, orderDir);
         });

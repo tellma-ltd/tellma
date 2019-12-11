@@ -493,6 +493,12 @@
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>同时确认您的电子邮件时发生错误。</value>
   </data>
+  <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
+    <value>该日期不能存档日期之前{0}</value>
+  </data>
+  <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
+    <value>该日期不能在未来</value>
+  </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>删除{0}不是从这个API的支持。</value>
   </data>
@@ -555,6 +561,9 @@
   </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>帐户“ {1}”中使用了帐户分类“ {0}”</value>
+  </data>
+  <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
+    <value>量{0}的值{1}不匹配，即使两者在{2}</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>该代码“{0}”不存在。</value>

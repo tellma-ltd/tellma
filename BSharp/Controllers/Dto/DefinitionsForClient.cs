@@ -120,9 +120,8 @@ namespace BSharp.Controllers.Dto
 
     public class DocumentDefinitionForClient : MasterDetailDefinitionForClient
     {
+        public string Prefix { get; set; }
         // TODO
-        public bool IsSourceDocument { get; internal set; }
-        public string FinalState { get; internal set; }
     }
 
     public class LineTypeForClient // related entity for document definition

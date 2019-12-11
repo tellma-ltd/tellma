@@ -35,7 +35,6 @@ import { Lookup } from './entities/lookup';
 import { Resource } from './entities/resource';
 import { User } from './entities/user';
 import { AccountClassification } from './entities/account-classification';
-import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
 import { GetChildrenArguments } from './dto/get-children-arguments';
 import { GetAggregateArguments } from './dto/get-aggregate-arguments';
@@ -45,6 +44,7 @@ import { ReportDefinition } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
 import { friendlify } from './util';
 import { EntryClassification } from './entities/entry-classification';
+import { Document } from './entities/document';
 
 
 @Injectable({
@@ -124,6 +124,13 @@ export class ApiService {
     return {
       activate: this.activateFactory<EntryClassification>(`entry-classifications`, cancellationToken$),
       deactivate: this.deactivateFactory<EntryClassification>(`entry-classifications`, cancellationToken$)
+    };
+  }
+
+  public documentsApi(definitionId: string, cancellationToken$: Observable<void>) {
+    return {
+      activate: this.activateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
+      deactivate: this.deactivateFactory<Document>(`documents/${definitionId}`, cancellationToken$)
     };
   }
 

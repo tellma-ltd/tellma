@@ -83,9 +83,8 @@ export interface ReportDimensionDefinitionForClient {
 }
 
 export interface DocumentDefinitionForClient extends MasterDetailsDefinitionForClient {
+    Prefix: string;
     // TODO
-    IsSourceDocument: boolean;
-    FinalState: string;
 }
 
 export interface LineDefinitionForClient extends MasterDetailsDefinitionForClient {

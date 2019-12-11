@@ -103,6 +103,7 @@ namespace BSharp.Entities
     {
         public int? LineId { get; set; }
 
+        // TODO: Choice List
         [Display(Name = "Entry_ContractType")]
         public string ContractType { get; set; }
 
