@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [bll].[Entries__Fill]
+﻿CREATE PROCEDURE [bll].[Documents__Preprocess]
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY
@@ -45,7 +45,7 @@ SET
 	E.[IsCurrent]				= NULL,
 	E.[AgentId]					= NULL,
 	E.[ResourceId]				= NULL,
-	E.[CurrencyId]				= CONVERT(NCHAR (3), SESSION_CONTEXT(N'FunctionalCurrencyId')),
+	E.[CurrencyId]				= A.CurrencyId, --CONVERT(NCHAR (3), SESSION_CONTEXT(N'FunctionalCurrencyId')),
 	E.[ResponsibilityCenterId]	= NULL,
 	E.[AccountIdentifier]		= NULL,
 	E.[EntryClassificationId]	= NULL

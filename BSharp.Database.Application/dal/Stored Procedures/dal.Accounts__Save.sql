@@ -32,6 +32,7 @@ SET NOCOUNT ON;
 				[IsCurrent],
 				[AgentId],
 				[ResourceId],
+				[CurrencyId],
 				[Identifier],
 				[EntryClassificationId]
 			FROM @Entities 
@@ -56,6 +57,7 @@ SET NOCOUNT ON;
 				t.[IsCurrent]				= s.[IsCurrent],
 				t.[AgentId]					= s.[AgentId],
 				t.[ResourceId]				= s.[ResourceId],
+				t.[CurrencyId]				= s.[CurrencyId],
 				t.[Identifier]				= s.[Identifier],
 				t.[EntryClassificationId]	= s.[EntryClassificationId],
 				t.[ModifiedAt]				= @Now,
@@ -76,6 +78,7 @@ SET NOCOUNT ON;
 				[IsCurrent],
 				[AgentId],
 				[ResourceId],
+				[CurrencyId],
 				[Identifier],
 				[EntryClassificationId])
 			VALUES (
@@ -92,6 +95,7 @@ SET NOCOUNT ON;
 				s.[IsCurrent],
 				s.[AgentId],
 				s.[ResourceId],
+				s.[CurrencyId],
 				s.[Identifier],
 				s.[EntryClassificationId])
 			OUTPUT s.[Index], inserted.[Id]

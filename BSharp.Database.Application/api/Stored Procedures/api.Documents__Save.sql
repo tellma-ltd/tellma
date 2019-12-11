@@ -27,7 +27,7 @@ BEGIN
 
 	-- using line definition Id, the entries wil be filled
 	INSERT INTO @FilledAllEntries
-	EXEC bll.[Entries__Fill]
+	EXEC bll.[Documents__Preprocess]
 		@Documents = @Documents,
 		@Lines = @AllLines,
 		@Entries = @AllEntries;
