@@ -85,13 +85,50 @@ namespace BSharp.Controllers
             return DocumentControllerUtil.SearchImpl(query, args, filteredPermissions);
         }
 
+        protected override async Task<List<DocumentForSave>> SavePreprocessAsync(List<DocumentForSave> entities)
+        {
+            // Set default values
+            entities.ForEach(doc =>
+            {
+                // Document defaults
+                doc.MemoIsCommon = doc.MemoIsCommon ?? true;
+                doc.Lines = doc.Lines ?? new List<LineForSave>();
+
+                doc.Lines.ForEach(line =>
+                {
+                    // Line defaults
+                    line.Entries = line.Entries ?? new List<EntryForSave>();
+
+                    line.Entries.ForEach(entry =>
+                    {
+                        // Entry defaults
+                        entry.EntryNumber = entry.EntryNumber ?? 0;
+                        entry.MonetaryValue = entry.MonetaryValue ?? 0;
+                        entry.Count = entry.Count ?? 0;
+                        entry.Mass = entry.Mass ?? 0;
+                        entry.Volume = entry.Volume ?? 0;
+                        entry.Time = entry.Time ?? 0;
+                        entry.Value = entry.Value ?? 0;
+                    });
+                });
+            });
+
+            // Set common header values on the lines
+            entities.ForEach(doc =>
+            {
+                if (doc.MemoIsCommon.Value)
+                {
+                    doc.Lines.ForEach(line => line.Memo = doc.Memo);
+                }
+            });
+
+            // SQL server preprocessing
+            return await _repo.Documents_Preprocess(DefinitionId, entities);
+        }
+
         protected override async Task SaveValidateAsync(List<DocumentForSave> docs)
         {
             // TODO: Add definition validation and defaults here
-
-            // Initialize collections to avoid null reference exceptions below
-            docs.ForEach(doc => doc.Lines = doc.Lines ?? new List<LineForSave>());
-            docs.ForEach(doc => doc.Lines.ForEach(line => line.Entries = line.Entries ?? new List<EntryForSave>()));
 
             // Find lines with duplicate Ids
             var duplicateLineIds = docs.SelectMany(doc => doc.Lines) // All lines
@@ -190,7 +227,7 @@ namespace BSharp.Controllers
             // Save the documents
             var ids = await _repo.Documents__Save(
                 DefinitionId,
-                entities: entities,
+                documents: entities,
                 returnIds: returnIds);
 
 

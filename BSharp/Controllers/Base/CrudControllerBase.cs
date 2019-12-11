@@ -453,16 +453,17 @@ return the entities
                 // This implements field level security
                 entities = await ApplyUpdatePermissionsMask(entities);
 
-                // Optional preprocessing
-                await PreprocessSavedEntitiesAsync(entities);
-
-                // Basic validation that applies to all entities
-                ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
-
                 // Start a transaction scope for save since it causes data modifications
                 using (var trx = ControllerUtilities.CreateTransaction(null, GetSaveTransactionOptions()))
                 {
                     // Validate
+                    // Optional preprocessing
+                    await SavePreprocessAsync(entities);
+
+                    // Basic validation that applies to all entities
+                    ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
+
+                    // Actual Validation
                     await SaveValidateAsync(entities);
                     if (!ModelState.IsValid)
                     {
@@ -495,9 +496,9 @@ return the entities
         }
 
         // Optional preprocessing of entities before they are validated and saved
-        protected virtual Task PreprocessSavedEntitiesAsync(List<TEntityForSave> entities)
+        protected virtual Task<List<TEntityForSave>> SavePreprocessAsync(List<TEntityForSave> entities)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(entities);
         }
 
         /// <summary>

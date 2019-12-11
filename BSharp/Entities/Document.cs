@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -47,6 +48,7 @@ namespace BSharp.Entities
         public string Memo { get; set; }
 
         [Display(Name = "Document_MemoIsCommon")]
+        [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
         [ForeignKey(nameof(Line.DocumentId))]

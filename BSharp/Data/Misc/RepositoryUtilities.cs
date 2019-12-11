@@ -129,20 +129,20 @@ namespace BSharp.Data
             // Prepare the documents table skeleton
             DataTable docsTable = new DataTable();
             docsTable.Columns.Add(new DataColumn("Index", typeof(int)));
-            var docsProps = AddColumnsFromProperties<DocumentForSave>(docsTable).Select(prop => (prop, prop.GetCustomAttribute<DefaultValueAttribute>()));
+            var docsProps = AddColumnsFromProperties<DocumentForSave>(docsTable);
 
             // Prepare the lines table skeleton
             DataTable linesTable = new DataTable();
             linesTable.Columns.Add(new DataColumn("Index", typeof(int)));
             linesTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
-            var linesProps = AddColumnsFromProperties<LineForSave>(linesTable).Select(prop => (prop, prop.GetCustomAttribute<DefaultValueAttribute>()));
+            var linesProps = AddColumnsFromProperties<LineForSave>(linesTable);
 
             // Prepare the entries table skeleton
             DataTable entriesTable = new DataTable();
             entriesTable.Columns.Add(new DataColumn("Index", typeof(int)));
             entriesTable.Columns.Add(new DataColumn("LineIndex", typeof(int)));
             entriesTable.Columns.Add(new DataColumn("DocumentIndex", typeof(int)));
-            var entriesProps = AddColumnsFromProperties<EntryForSave>(entriesTable).Select(prop => (prop, prop.GetCustomAttribute<DefaultValueAttribute>()));
+            var entriesProps = AddColumnsFromProperties<EntryForSave>(entriesTable);
 
             // Add the docs
             int docsIndex = 0;
@@ -152,10 +152,10 @@ namespace BSharp.Data
 
                 docsRow["Index"] = docsIndex;
 
-                foreach (var (docsProp, docsAtt) in docsProps)
+                foreach (var docsProp in docsProps)
                 {
                     var docsPropValue = docsProp.GetValue(doc);
-                    docsRow[docsProp.Name] = docsPropValue ?? docsAtt?.Value ?? DBNull.Value;
+                    docsRow[docsProp.Name] = docsPropValue ?? DBNull.Value;
                 }
 
                 // Add the lines if any
@@ -169,10 +169,10 @@ namespace BSharp.Data
                         linesRow["Index"] = linesIndex;
                         linesRow["DocumentIndex"] = docsIndex;
 
-                        foreach (var (linesProp, linesAtt) in linesProps)
+                        foreach (var linesProp in linesProps)
                         {
                             var linesPropValue = linesProp.GetValue(line);
-                            linesRow[linesProp.Name] = linesPropValue ?? linesAtt?.Value ?? DBNull.Value;
+                            linesRow[linesProp.Name] = linesPropValue ?? DBNull.Value;
                         }
 
                         if (line.Entries != null)
@@ -186,10 +186,10 @@ namespace BSharp.Data
                                 entriesRow["LineIndex"] = linesIndex;
                                 entriesRow["DocumentIndex"] = docsIndex;
 
-                                foreach (var (entriesProp, entriesAtt) in entriesProps)
+                                foreach (var entriesProp in entriesProps)
                                 {
                                     var entriesPropValue = entriesProp.GetValue(entry);
-                                    entriesRow[entriesProp.Name] = entriesPropValue ?? entriesAtt?.Value ?? DBNull.Value;
+                                    entriesRow[entriesProp.Name] = entriesPropValue ?? DBNull.Value;
                                 }
 
                                 entriesTable.Rows.Add(entriesRow);
