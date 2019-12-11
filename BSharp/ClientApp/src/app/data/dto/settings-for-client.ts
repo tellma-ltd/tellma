@@ -5,6 +5,12 @@ export class SettingsForClient {
     ShortCompanyName3: string;
     FunctionalCurrencyId: string;
     FunctionalCurrencyDecimals: number; // decimal places of the functional currency
+    FunctionalCurrencyName: string;
+    FunctionalCurrencyName2: string;
+    FunctionalCurrencyName3: string;
+    FunctionalCurrencyDescription: string;
+    FunctionalCurrencyDescription2: string;
+    FunctionalCurrencyDescription3: string;
     PrimaryLanguageId: string;
     PrimaryLanguageName: string;
     PrimaryLanguageSymbol: string;

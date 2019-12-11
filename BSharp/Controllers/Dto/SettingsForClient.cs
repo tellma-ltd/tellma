@@ -12,7 +12,21 @@ namespace BSharp.Controllers.Dto
 
         public string FunctionalCurrencyId { get; set; }
 
+        public string FunctionalCurrencyName { get; set; }
+
+        public string FunctionalCurrencyName2 { get; set; }
+
+        public string FunctionalCurrencyName3 { get; set; }
+
+        public string FunctionalCurrencyDescription { get; set; }
+
+        public string FunctionalCurrencyDescription2 { get; set; }
+
+        public string FunctionalCurrencyDescription3 { get; set; }
+
         public byte FunctionalCurrencyDecimals { get; set; }
+
+        public DateTime ArchiveDate { get; set; }
 
         public string PrimaryLanguageId { get; set; }
 

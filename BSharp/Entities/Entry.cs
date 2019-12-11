@@ -17,7 +17,7 @@ namespace BSharp.Entities
 
         [AlwaysAccessible]
         [ChoiceList(new object[] { -1, 1 })]
-        public byte? Direction { get; set; }
+        public short? Direction { get; set; }
 
         [Display(Name = "Entry_Account")]
         public int? AccountId { get; set; }

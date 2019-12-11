@@ -37,26 +37,5 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(nameof(VoucherBooklet), responseData.CollectionName);
             Assert.Empty(responseData.Result); // First 
         }
-
-        [Fact(DisplayName = "02 IFRS Entry Classifications")]
-        public async Task Test02()
-        {
-            await GrantPermissionToSecurityAdministrator("ifrs-entry-classifications", Constants.Update, "Id ne 'bla'");
-
-            var response = await Client.GetAsync("/api/ifrs-entry-classifications?search=e&top=10");
-
-            // Call the API
-            Output.WriteLine(await response.Content.ReadAsStringAsync());
-
-            // Assert the result is 200 OK
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            // Confirm the result is well formed
-            var responseData = await response.Content.ReadAsAsync<GetResponse<IfrsEntryClassification>>();
-
-            // Assert the result makes sense
-            Assert.Equal(nameof(IfrsEntryClassification), responseData.CollectionName);
-            Assert.Empty(responseData.Result); // First 
-        }
     }
 }

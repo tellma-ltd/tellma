@@ -27,7 +27,7 @@ namespace BSharp.Controllers.Dto
         /// Mapping from agent definition Id to agent definition
         /// </summary>
         public Dictionary<string, AgentDefinitionForClient> Agents { get; set; }
-        
+
         /// <summary>
         /// Mapping from lookup definition Id to lookup definition
         /// </summary>
@@ -89,7 +89,7 @@ namespace BSharp.Controllers.Dto
         public string Label3 { get; set; }
         public bool IsRequired { get; set; }
     }
-    
+
     public class ReportSelectDefinitionForClient
     {
         public string Path { get; set; }
@@ -274,7 +274,7 @@ namespace BSharp.Controllers.Dto
         public string StartDateLabel3 { get; set; }
         public string JobVisibility { get; set; }
         public string BasicSalaryVisibility { get; set; }
-        public string TransportationAllowanceVisibility { get; set; }   
+        public string TransportationAllowanceVisibility { get; set; }
         public string OvertimeRateVisibility { get; set; }
         public string BankAccountNumberVisibility { get; set; }
     }
@@ -282,13 +282,6 @@ namespace BSharp.Controllers.Dto
     public class LookupDefinitionForClient : MasterDetailDefinitionForClient
     {
 
-    }
-
-    public static class VisibilityOld
-    {
-        public const byte Hidden = 0;
-        public const byte Visible = 1;
-        public const byte Required = 2;
     }
 
     public static class Visibility

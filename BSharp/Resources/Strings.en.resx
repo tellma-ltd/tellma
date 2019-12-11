@@ -367,23 +367,35 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>Account</value>
   </data>
+  <data name="Entry_AccountIdentifier" xml:space="preserve">
+    <value>Account Identifier</value>
+  </data>
+  <data name="Entry_AdditionalReference" xml:space="preserve">
+    <value>Additional Reference</value>
+  </data>
   <data name="Entry_Agent" xml:space="preserve">
     <value>Agent</value>
   </data>
-  <data name="Entry_Area" xml:space="preserve">
-    <value>Area</value>
-  </data>
-  <data name="Entry_BatchCode" xml:space="preserve">
-    <value>Batch Code</value>
+  <data name="Entry_ContractType" xml:space="preserve">
+    <value>Contract Type</value>
   </data>
   <data name="Entry_Count" xml:space="preserve">
     <value>Count</value>
   </data>
-  <data name="Entry_IfrsEntryClassification" xml:space="preserve">
-    <value>IFRS Classification</value>
+  <data name="Entry_Currency" xml:space="preserve">
+    <value>Currency</value>
   </data>
-  <data name="Entry_Length" xml:space="preserve">
-    <value>Length</value>
+  <data name="Entry_DueDate" xml:space="preserve">
+    <value>Due Date</value>
+  </data>
+  <data name="Entry_EntryClassification" xml:space="preserve">
+    <value>Entry Classification</value>
+  </data>
+  <data name="Entry_ExternalReference" xml:space="preserve">
+    <value>External Reference</value>
+  </data>
+  <data name="Entry_IsCurrent" xml:space="preserve">
+    <value>Is Current</value>
   </data>
   <data name="Entry_Mass" xml:space="preserve">
     <value>Mass</value>
@@ -391,14 +403,35 @@
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>Monetary Value</value>
   </data>
+  <data name="Entry_RelatedAgent" xml:space="preserve">
+    <value>Related Agent</value>
+  </data>
+  <data name="Entry_RelatedAgentName" xml:space="preserve">
+    <value>Related Agent Name</value>
+  </data>
+  <data name="Entry_RelatedAmount" xml:space="preserve">
+    <value>Related Amount</value>
+  </data>
+  <data name="Entry_RelatedDate" xml:space="preserve">
+    <value>Related Date</value>
+  </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>Resource</value>
+  </data>
+  <data name="Entry_ResourceIdentifier" xml:space="preserve">
+    <value>Resource Identifier</value>
   </data>
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
     <value>Responsibility Center</value>
   </data>
   <data name="Entry_Time" xml:space="preserve">
     <value>Time</value>
+  </data>
+  <data name="Entry_Time1" xml:space="preserve">
+    <value>Time 1</value>
+  </data>
+  <data name="Entry_Time2" xml:space="preserve">
+    <value>Time 2</value>
   </data>
   <data name="Entry_Value" xml:space="preserve">
     <value>Value</value>
@@ -712,23 +745,20 @@
   <data name="Line_AdditionalReference" xml:space="preserve">
     <value>Additional Reference</value>
   </data>
+  <data name="Line_Agent" xml:space="preserve">
+    <value>Agent</value>
+  </data>
+  <data name="Line_Amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Line_Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
   <data name="Line_ExternalReference" xml:space="preserve">
     <value>External Reference</value>
   </data>
-  <data name="Line_LineType" xml:space="preserve">
-    <value>Line Type</value>
-  </data>
-  <data name="Line_RelatedAccount" xml:space="preserve">
-    <value>Related Account</value>
-  </data>
-  <data name="Line_RelatedMoneyAmount" xml:space="preserve">
-    <value>Related Money Amount</value>
-  </data>
-  <data name="Line_RelatedQuantity" xml:space="preserve">
-    <value>Related Quantity</value>
-  </data>
-  <data name="Line_RelatedResource" xml:space="preserve">
-    <value>Related Resource</value>
+  <data name="Line_Resource" xml:space="preserve">
+    <value>Resource</value>
   </data>
   <data name="LockedOut" xml:space="preserve">
     <value>Locked Out</value>
@@ -1276,11 +1306,20 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="Settings_ArchiveDate" xml:space="preserve">
+    <value>Archive Date</value>
+  </data>
+  <data name="Settings_ArchiveDateDescription" xml:space="preserve">
+    <value>Modifying transactions before this date is not allowed</value>
+  </data>
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>Brand Color</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>Functional Currency</value>
+  </data>
+  <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
+    <value>The primary currency used when generating and spending cash </value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>Primary Language</value>
