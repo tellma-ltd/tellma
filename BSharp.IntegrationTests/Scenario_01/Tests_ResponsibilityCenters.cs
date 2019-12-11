@@ -91,7 +91,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name2 = "بست بينت",
                 Code = "1101",
                 IsOperatingSegment = false,
-                IsLeaf = false,
+                IsLeaf = true
             };
 
             // Save it

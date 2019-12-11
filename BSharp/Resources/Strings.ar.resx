@@ -367,23 +367,35 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>الحساب</value>
   </data>
+  <data name="Entry_AccountIdentifier" xml:space="preserve">
+    <value>رقم تعريف الحساب</value>
+  </data>
+  <data name="Entry_AdditionalReference" xml:space="preserve">
+    <value>المرجع الإضافي</value>
+  </data>
   <data name="Entry_Agent" xml:space="preserve">
     <value>الذمّة</value>
   </data>
-  <data name="Entry_Area" xml:space="preserve">
-    <value>المساحة</value>
-  </data>
-  <data name="Entry_BatchCode" xml:space="preserve">
-    <value>رقم الوثقة</value>
+  <data name="Entry_ContractType" xml:space="preserve">
+    <value>نوع العقد</value>
   </data>
   <data name="Entry_Count" xml:space="preserve">
     <value>العدد</value>
   </data>
-  <data name="Entry_IfrsEntryClassification" xml:space="preserve">
-    <value>تصنيف (IFRS)</value>
+  <data name="Entry_Currency" xml:space="preserve">
+    <value>العملة</value>
   </data>
-  <data name="Entry_Length" xml:space="preserve">
-    <value>المسافة</value>
+  <data name="Entry_DueDate" xml:space="preserve">
+    <value>تاريخ الاستحقاق</value>
+  </data>
+  <data name="Entry_EntryClassification" xml:space="preserve">
+    <value>تصيف السطر</value>
+  </data>
+  <data name="Entry_ExternalReference" xml:space="preserve">
+    <value>المرجع الخارجي</value>
+  </data>
+  <data name="Entry_IsCurrent" xml:space="preserve">
+    <value>جار</value>
   </data>
   <data name="Entry_Mass" xml:space="preserve">
     <value>الكتلة</value>
@@ -391,14 +403,35 @@
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>المبلغ النقدي</value>
   </data>
+  <data name="Entry_RelatedAgent" xml:space="preserve">
+    <value>الذمة المتعلقة</value>
+  </data>
+  <data name="Entry_RelatedAgentName" xml:space="preserve">
+    <value>اسم الذمة المتعلقة</value>
+  </data>
+  <data name="Entry_RelatedAmount" xml:space="preserve">
+    <value>المبلغ المتعلق</value>
+  </data>
+  <data name="Entry_RelatedDate" xml:space="preserve">
+    <value>التاريخ المتعلق</value>
+  </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>المورد</value>
+  </data>
+  <data name="Entry_ResourceIdentifier" xml:space="preserve">
+    <value>رقم تعريف المورد</value>
   </data>
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
     <value>مركز التكلفة</value>
   </data>
   <data name="Entry_Time" xml:space="preserve">
     <value>الزمن</value>
+  </data>
+  <data name="Entry_Time1" xml:space="preserve">
+    <value>الزمن 1</value>
+  </data>
+  <data name="Entry_Time2" xml:space="preserve">
+    <value>الزمن 2</value>
   </data>
   <data name="Entry_Value" xml:space="preserve">
     <value>القيمة</value>
@@ -712,23 +745,20 @@
   <data name="Line_AdditionalReference" xml:space="preserve">
     <value>مرجع إضافي</value>
   </data>
+  <data name="Line_Agent" xml:space="preserve">
+    <value>الذمة</value>
+  </data>
+  <data name="Line_Amount" xml:space="preserve">
+    <value>المبلغ</value>
+  </data>
+  <data name="Line_Currency" xml:space="preserve">
+    <value>العملة</value>
+  </data>
   <data name="Line_ExternalReference" xml:space="preserve">
     <value>رقم المرجع الخارجي</value>
   </data>
-  <data name="Line_LineType" xml:space="preserve">
-    <value>نوع السطر</value>
-  </data>
-  <data name="Line_RelatedAccount" xml:space="preserve">
-    <value>حساب ذو صلة</value>
-  </data>
-  <data name="Line_RelatedMoneyAmount" xml:space="preserve">
-    <value>مبلغ نقدي ذو صلة</value>
-  </data>
-  <data name="Line_RelatedQuantity" xml:space="preserve">
-    <value>كمية ذات صلة</value>
-  </data>
-  <data name="Line_RelatedResource" xml:space="preserve">
-    <value>مورد ذو صلة</value>
+  <data name="Line_Resource" xml:space="preserve">
+    <value>المورد</value>
   </data>
   <data name="LockedOut" xml:space="preserve">
     <value>حساب معلق</value>
@@ -1276,11 +1306,20 @@
   <data name="Settings" xml:space="preserve">
     <value>إعدادات</value>
   </data>
+  <data name="Settings_ArchiveDate" xml:space="preserve">
+    <value>تاريخ الأِرشفة</value>
+  </data>
+  <data name="Settings_ArchiveDateDescription" xml:space="preserve">
+    <value>يمنع النظام تعديل أي معاملات قبل هذا التاريخ</value>
+  </data>
   <data name="Settings_BrandColor" xml:space="preserve">
     <value>لون العلامة التجارية</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
     <value>العملة الوظيفية</value>
+  </data>
+  <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
+    <value>العملة الرئيسية المستخدمة في المعاملات النقدية</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">
     <value>اللغة الرئيسية</value>

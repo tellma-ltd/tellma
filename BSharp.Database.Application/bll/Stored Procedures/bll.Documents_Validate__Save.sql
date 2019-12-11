@@ -9,36 +9,36 @@ SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 
-	-- (SL Check)  Cannot save with a future date, (Settings dependent)
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].DocumentDate',
-		N'Error_TheTransactionDate0IsInTheFuture',
-		[DocumentDate]
-	FROM @Documents
-	WHERE ([DocumentDate] > DATEADD(DAY, 1, @Now)) -- More accurately, FE.[DocumentDate] > CONVERT(DATE, SWITCHOFFSET(@Now, user_time_zone)) 
+
+	/* [C# Validation]
+	
+	 [✓] The DocumentDate is not after 1 day in the future
+	 [✓] The DocumentDate cannot be before archive date
+	 [✓] IF Resource == Functional currency THEN assert: Value == MonetaryValue
+
+	*/
 
 	-- (FE Check) If Resource = functional currency, the value must match the DECIMAL (19,4) amount
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
-	SELECT
-		'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST([LineIndex] AS NVARCHAR (255)) + '].Amount' + CAST([EntryNumber] AS NVARCHAR(255)),
-		N'Error_TheAmount0DoesNotMatchTheValue1',
-		[MonetaryValue],
-		[Value]
-	FROM @Entries E
-	JOIN dbo.Accounts A ON E.AccountId = A.[Id]
-	WHERE (E.[CurrencyId] = dbo.[fn_FunctionalCurrencyId]())
-	AND ([Value] <> [MonetaryValue] )
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
+	--SELECT
+	--	'[' + CAST([DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
+	--		CAST([LineIndex] AS NVARCHAR (255)) + '].Amount' + CAST([EntryNumber] AS NVARCHAR(255)),
+	--	N'Error_TheAmount0DoesNotMatchTheValue1',
+	--	[MonetaryValue],
+	--	[Value]
+	--FROM @Entries E
+	--JOIN dbo.Accounts A ON E.AccountId = A.[Id]
+	--WHERE (E.[CurrencyId] = dbo.[fn_FunctionalCurrencyId]())
+	--AND ([Value] <> [MonetaryValue] )
 
 	-- (FE Check, DB constraint)  Cannot save with a date that lies in the archived period
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
-		'[' + CAST([Index] AS NVARCHAR (255)) + '].DocumentDate',
-		N'Error_TheTransactionDateIsBeforeArchiveDate0',
-		(SELECT TOP 1 ArchiveDate FROM dbo.Settings)
-	FROM @Documents
-	WHERE [DocumentDate] < (SELECT TOP 1 ArchiveDate FROM dbo.Settings) 
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	--SELECT
+	--	'[' + CAST([Index] AS NVARCHAR (255)) + '].DocumentDate',
+	--	N'Error_TheTransactionDateIsBeforeArchiveDate0',
+	--	(SELECT TOP 1 ArchiveDate FROM dbo.Settings)
+	--FROM @Documents
+	--WHERE [DocumentDate] < (SELECT TOP 1 ArchiveDate FROM dbo.Settings) 
 	
 	-- (FE Check, DB IU trigger) Cannot save a document not in ACTIVE state
 	-- TODO: if it is not allowed to change a line once (Requested), report error

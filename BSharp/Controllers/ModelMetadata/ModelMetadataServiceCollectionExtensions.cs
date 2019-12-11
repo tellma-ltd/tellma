@@ -15,6 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services
                 .AddSingleton<IDefinitionsCache, DefinitionsCache>()
+                .AddSingleton<ISettingsCache, SettingsCache>()
                 .AddSingleton<IModelMetadataProvider, DefinitionsModelMetadataProvider>();
         }
     }

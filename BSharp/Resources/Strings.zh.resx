@@ -367,23 +367,35 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>帐户</value>
   </data>
+  <data name="Entry_AccountIdentifier" xml:space="preserve">
+    <value>帐户标识符</value>
+  </data>
+  <data name="Entry_AdditionalReference" xml:space="preserve">
+    <value>其他参考</value>
+  </data>
   <data name="Entry_Agent" xml:space="preserve">
     <value>代理人</value>
   </data>
-  <data name="Entry_Area" xml:space="preserve">
-    <value>区域</value>
-  </data>
-  <data name="Entry_BatchCode" xml:space="preserve">
-    <value>批号</value>
+  <data name="Entry_ContractType" xml:space="preserve">
+    <value>合同类型</value>
   </data>
   <data name="Entry_Count" xml:space="preserve">
     <value>计数</value>
   </data>
-  <data name="Entry_IfrsEntryClassification" xml:space="preserve">
-    <value>国际财务报告准则分类</value>
+  <data name="Entry_Currency" xml:space="preserve">
+    <value>货币</value>
   </data>
-  <data name="Entry_Length" xml:space="preserve">
-    <value>长度</value>
+  <data name="Entry_DueDate" xml:space="preserve">
+    <value>截止日期</value>
+  </data>
+  <data name="Entry_EntryClassification" xml:space="preserve">
+    <value>条目分类</value>
+  </data>
+  <data name="Entry_ExternalReference" xml:space="preserve">
+    <value>外部参考</value>
+  </data>
+  <data name="Entry_IsCurrent" xml:space="preserve">
+    <value>是当前的</value>
   </data>
   <data name="Entry_Mass" xml:space="preserve">
     <value>块</value>
@@ -391,14 +403,35 @@
   <data name="Entry_MonetaryValue" xml:space="preserve">
     <value>货币价值</value>
   </data>
+  <data name="Entry_RelatedAgent" xml:space="preserve">
+    <value>相关代理</value>
+  </data>
+  <data name="Entry_RelatedAgentName" xml:space="preserve">
+    <value>相关代理机构名称</value>
+  </data>
+  <data name="Entry_RelatedAmount" xml:space="preserve">
+    <value>关联量</value>
+  </data>
+  <data name="Entry_RelatedDate" xml:space="preserve">
+    <value>相关日期</value>
+  </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>资源</value>
+  </data>
+  <data name="Entry_ResourceIdentifier" xml:space="preserve">
+    <value>资源标识符</value>
   </data>
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
     <value>责任中心</value>
   </data>
   <data name="Entry_Time" xml:space="preserve">
     <value>时间</value>
+  </data>
+  <data name="Entry_Time1" xml:space="preserve">
+    <value>时间1</value>
+  </data>
+  <data name="Entry_Time2" xml:space="preserve">
+    <value>时间2</value>
   </data>
   <data name="Entry_Value" xml:space="preserve">
     <value>值</value>
@@ -712,23 +745,20 @@
   <data name="Line_AdditionalReference" xml:space="preserve">
     <value>其他参考</value>
   </data>
+  <data name="Line_Agent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Line_Amount" xml:space="preserve">
+    <value>量</value>
+  </data>
+  <data name="Line_Currency" xml:space="preserve">
+    <value>货币</value>
+  </data>
   <data name="Line_ExternalReference" xml:space="preserve">
     <value>外部参考</value>
   </data>
-  <data name="Line_LineType" xml:space="preserve">
-    <value>线路类型</value>
-  </data>
-  <data name="Line_RelatedAccount" xml:space="preserve">
-    <value>相关帐户</value>
-  </data>
-  <data name="Line_RelatedMoneyAmount" xml:space="preserve">
-    <value>相关金额</value>
-  </data>
-  <data name="Line_RelatedQuantity" xml:space="preserve">
-    <value>相关产品数量</value>
-  </data>
-  <data name="Line_RelatedResource" xml:space="preserve">
-    <value>相关资源</value>
+  <data name="Line_Resource" xml:space="preserve">
+    <value>资源</value>
   </data>
   <data name="LockedOut" xml:space="preserve">
     <value>被锁在外面</value>
@@ -1280,6 +1310,9 @@
     <value>品牌颜色</value>
   </data>
   <data name="Settings_FunctionalCurrency" xml:space="preserve">
+    <value>功能货币</value>
+  </data>
+  <data name="Settings_FunctionalCurrencyDescription" xml:space="preserve">
     <value>功能货币</value>
   </data>
   <data name="Settings_PrimaryLanguage" xml:space="preserve">

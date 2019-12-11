@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace BSharp.Controllers
 {
-    public class DefinitionsCache : IDefinitionsCache
+    public class SettingsCache : ISettingsCache
     {
         /// <summary>
         /// This efficient lock prevents concurrency issues when updating the cache.
@@ -15,28 +15,28 @@ namespace BSharp.Controllers
         private static readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
 
         /// <summary>
-        /// Mapping from database ID to its <see cref="DefinitionsForClient"/>
+        /// Mapping from database ID to its <see cref="SettingsForClient"/>
         /// </summary>
-        private static readonly ConcurrentDictionary<int, DataWithVersion<DefinitionsForClient>> _cache 
-            = new ConcurrentDictionary<int, DataWithVersion<DefinitionsForClient>>();
+        private static readonly ConcurrentDictionary<int, DataWithVersion<SettingsForClient>> _cache 
+            = new ConcurrentDictionary<int, DataWithVersion<SettingsForClient>>();
 
         private readonly ITenantIdAccessor _tenantIdAccessor;
 
-        public DefinitionsCache(ITenantIdAccessor tenantIdAccessor)
+        public SettingsCache(ITenantIdAccessor tenantIdAccessor)
         {
             _tenantIdAccessor = tenantIdAccessor;
         }
 
         /// <summary>
-        /// Implementation of <see cref="IDefinitionsCache"/>
+        /// Implementation of <see cref="ISettingsCache"/>
         /// </summary>
-        public DataWithVersion<DefinitionsForClient> GetDefinitionsIfCached(int databaseId)
+        public DataWithVersion<SettingsForClient> GetSettingsIfCached(int databaseId)
         {
             _lock.EnterReadLock();
             try
             {
-                _cache.TryGetValue(databaseId, out DataWithVersion<DefinitionsForClient> definitions);
-                return definitions;
+                _cache.TryGetValue(databaseId, out DataWithVersion<SettingsForClient> Settings);
+                return Settings;
             }
             finally
             {
@@ -44,28 +44,28 @@ namespace BSharp.Controllers
             }
         }
 
-        public DataWithVersion<DefinitionsForClient> GetCurrentDefinitionsIfCached()
+        public DataWithVersion<SettingsForClient> GetCurrentSettingsIfCached()
         {
             int databaseId = _tenantIdAccessor.GetTenantId();
-            return GetDefinitionsIfCached(databaseId);
+            return GetSettingsIfCached(databaseId);
         }
 
         /// <summary>
-        /// Implementation of <see cref="IDefinitionsCache"/>
+        /// Implementation of <see cref="ISettingsCache"/>
         /// </summary>
-        public void SetDefinitions(int databaseId, DataWithVersion<DefinitionsForClient> definitions)
+        public void SetSettings(int databaseId, DataWithVersion<SettingsForClient> Settings)
         {
             if (databaseId == 0)
             {
                 throw new ArgumentException($"{nameof(databaseId)} must be provided");
             }
 
-            if (definitions is null)
+            if (Settings is null)
             {
-                throw new ArgumentNullException(nameof(definitions));
+                throw new ArgumentNullException(nameof(Settings));
             }
 
-            _cache.AddOrUpdate(databaseId, definitions, (i, d) => definitions);
+            _cache.AddOrUpdate(databaseId, Settings, (i, d) => Settings);
         }
     }
 }

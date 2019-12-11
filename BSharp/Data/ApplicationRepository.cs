@@ -3425,7 +3425,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             }
         }
 
-        public async Task<List<int>> Documents__Save(string definitionId, List<DocumentForSave> entities, IEnumerable<IndexedImageId> imageIds, bool returnIds)
+        public async Task<List<int>> Documents__Save(string definitionId, List<DocumentForSave> entities, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -3433,23 +3433,30 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
-                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(entities);
+
+                var docsTvp = new SqlParameter("@Entities", docsTable)
                 {
-                    TypeName = $"[dbo].[{nameof(Document)}List]",
+                    TypeName = $"[dbo].[${nameof(Document)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
-                DataTable imageIdsTable = RepositoryUtilities.DataTable(imageIds);
-                var imageIdsTvp = new SqlParameter("@ImageIds", imageIdsTable)
+                var linesTvp = new SqlParameter("@Entities", linesTable)
                 {
-                    TypeName = $"[dbo].[IndexedImageIdList]",
+                    TypeName = $"[dbo].[{nameof(Line)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var entriesTvp = new SqlParameter("@Entities", entriesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Entry)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
                 cmd.Parameters.Add("@DefinitionId", definitionId);
-                cmd.Parameters.Add(entitiesTvp);
-                cmd.Parameters.Add(imageIdsTvp);
+                cmd.Parameters.Add(docsTvp);
+                cmd.Parameters.Add(linesTvp);
+                cmd.Parameters.Add(entriesTvp);
                 cmd.Parameters.Add("@ReturnIds", returnIds);
 
                 // Command
@@ -3490,6 +3497,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
         public async Task Documents__Delete(IEnumerable<int> ids)
         {
+            // TODO
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
@@ -3521,6 +3529,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Delete(string definitionId, List<int> ids, int top)
         {
+            // TODO
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
@@ -3545,8 +3554,9 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             }
         }
 
-        public async Task Documents__Activate(List<int> ids, bool isActive)
+        public async Task Documents_Close(List<int> ids, bool isActive)
         {
+            // TODO
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
@@ -3563,12 +3573,40 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Documents__Activate)}]";
+                cmd.CommandText = $"[dal].[{nameof(Documents_Close)}]";
 
                 // Execute
                 await cmd.ExecuteNonQueryAsync();
             }
         }
+
+
+        public async Task Documents_Open(List<int> ids, bool isActive)
+        {
+            // TODO
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@IsActive", isActive);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Documents_Open)}]";
+
+                // Execute
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
 
         #endregion
 

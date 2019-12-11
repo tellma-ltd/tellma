@@ -53,9 +53,16 @@ namespace BSharp.Entities
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string TernaryLanguageSymbol { get; set; }
 
+        // Branding
+
         [Display(Name = "Settings_BrandColor")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string BrandColor { get; set; } // e.g. #0284AB
+
+        // Financial
+
+        [Display(Name = "Settings_ArchiveDate")]
+        public DateTime? ArchiveDate { get; set; }
     }
 
     public class Settings : SettingsForSave

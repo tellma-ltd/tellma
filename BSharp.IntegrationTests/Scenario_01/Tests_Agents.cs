@@ -23,8 +23,8 @@ namespace BSharp.IntegrationTests.Scenario_01
         public readonly string _definitionId = "customers";
 
         public string ViewId => $"{_baseAddress}/{_definitionId}"; // For permissions
-        public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic resources
-        public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific resource definition
+        public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic agents
+        public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific agent definition
 
 
         [Fact(DisplayName = "01 Getting all agents before granting permissions returns a 403 Forbidden response")]

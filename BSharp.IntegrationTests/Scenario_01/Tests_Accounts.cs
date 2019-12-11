@@ -79,7 +79,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Code = "Payables",
                 AccountTypeId = "AccountsPayable",
                 AccountClassificationId = null,
-                IsSmart = false,
+                IsSmart = false
             };
 
             // Save it

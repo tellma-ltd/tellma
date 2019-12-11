@@ -4,6 +4,7 @@ using BSharp.Data.Queries;
 using BSharp.Entities;
 using BSharp.Services.ApiAuthentication;
 using BSharp.Services.ImportExport;
+using BSharp.Services.MultiTenancy;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -30,14 +31,20 @@ namespace BSharp.Controllers
         private readonly ApplicationRepository _repo;
         private readonly ILogger<SettingsController> _logger;
         private readonly IStringLocalizer _localizer;
+        private readonly ISettingsCache _settingsCache;
+        private readonly ITenantIdAccessor _tenantIdAccessor;
 
         public SettingsController(ApplicationRepository repo,
             ILogger<SettingsController> logger,
-            IStringLocalizer<Strings> localizer)
+            IStringLocalizer<Strings> localizer,
+            ISettingsCache settingsCache,
+            ITenantIdAccessor tenantIdAccessor)
         {
             _repo = repo;
             _logger = logger;
             _localizer = localizer;
+            _settingsCache = settingsCache;
+            _tenantIdAccessor = tenantIdAccessor;
         }
 
 
@@ -94,6 +101,11 @@ namespace BSharp.Controllers
                 // Persist
                 await _repo.Settings__Save(settingsForSave);
 
+                // Update the settings cache
+                var tenantId = _tenantIdAccessor.GetTenantId();
+                var settingsForClient = await LoadSettingsForClient(_repo);
+                _settingsCache.SetSettings(tenantId, settingsForClient);
+
                 // If requested, return the updated entity
                 if (args.ReturnEntities ?? false)
                 {
@@ -103,7 +115,7 @@ namespace BSharp.Controllers
                     {
                         Entities = res.Entities,
                         Result = res.Result,
-                        SettingsForClient = await GetForClientImpl()
+                        SettingsForClient = settingsForClient
                     };
 
                     return result;
@@ -121,11 +133,17 @@ namespace BSharp.Controllers
         }
 
         [HttpGet("client")]
-        public async Task<ActionResult<DataWithVersion<SettingsForClient>>> GetForClient()
+        public ActionResult<DataWithVersion<SettingsForClient>> GetForClient()
         {
             try
             {
-                var result = await GetForClientImpl();
+                // Simply retrieves the cached settings, which were refreshed by ApiControllerAttribute
+                var result = _settingsCache.GetCurrentSettingsIfCached();
+                if (result == null)
+                {
+                    throw new InvalidOperationException("The definitions were missing from the cache");
+                }
+
                 return Ok(result);
             }
             catch (BadRequestException ex)
@@ -171,56 +189,6 @@ namespace BSharp.Controllers
             };
 
             return result;
-        }
-
-        private async Task<DataWithVersion<SettingsForClient>> GetForClientImpl()
-        {
-            Settings settings = await _repo.Settings
-                .Expand(nameof(Settings.FunctionalCurrency))
-                .OrderBy(nameof(Settings.FunctionalCurrencyId))
-                .FirstOrDefaultAsync();
-
-            if (settings == null)
-            {
-                // This should never happen
-                throw new BadRequestException("Settings have not been initialized");
-            }
-
-            // Prepare the settings for client
-            SettingsForClient settingsForClient = new SettingsForClient();
-            foreach(var forClientProp in typeof(SettingsForClient).GetProperties())
-            {
-                var settingsProp = typeof(Settings).GetProperty(forClientProp.Name);
-                if(settingsProp != null)
-                {
-                    var value = settingsProp.GetValue(settings);
-                    forClientProp.SetValue(settingsForClient, value);
-                }
-            }
-
-            settingsForClient.FunctionalCurrencyDecimals = settings.FunctionalCurrency.E ?? 0;
-            settingsForClient.PrimaryLanguageName = GetCultureDisplayName(settingsForClient.PrimaryLanguageId);
-            settingsForClient.SecondaryLanguageName = GetCultureDisplayName(settingsForClient.SecondaryLanguageId);
-            settingsForClient.TernaryLanguageName = GetCultureDisplayName(settingsForClient.TernaryLanguageId);
-
-            // Tag the settings for client with their current version
-            var result = new DataWithVersion<SettingsForClient>
-            {
-                Version = settings.SettingsVersion.ToString(),
-                Data = settingsForClient
-            };
-
-            return result;
-        }
-
-        private string GetCultureDisplayName(string cultureName)
-        {
-            if (cultureName is null)
-            {
-                return null;
-            }
-
-            return CultureInfo.GetCultureInfo(cultureName)?.NativeName;
         }
 
         private void ValidateAndPreprocessSettings(SettingsForSave entity)
@@ -286,5 +254,65 @@ namespace BSharp.Controllers
                     _localizer["Error_TheField0MustBeAValidColorFormat", _localizer["Settings_BrandColor"]]);
             }
         }
+
+        public static async Task<DataWithVersion<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo)
+        {
+            Settings settings = await repo.Settings
+                .Expand(nameof(Settings.FunctionalCurrency))
+                .OrderBy(nameof(Settings.FunctionalCurrencyId))
+                .FirstOrDefaultAsync();
+
+            if (settings == null)
+            {
+                // This should never happen
+                throw new BadRequestException("Settings have not been initialized");
+            }
+
+            // Prepare the settings for client
+            SettingsForClient settingsForClient = new SettingsForClient();
+            foreach (var forClientProp in typeof(SettingsForClient).GetProperties())
+            {
+                var settingsProp = typeof(Settings).GetProperty(forClientProp.Name);
+                if (settingsProp != null)
+                {
+                    var value = settingsProp.GetValue(settings);
+                    forClientProp.SetValue(settingsForClient, value);
+                }
+            }
+
+            // Functional currency
+            settingsForClient.FunctionalCurrencyDecimals = settings.FunctionalCurrency.E ?? 0;
+            settingsForClient.FunctionalCurrencyName = settings.FunctionalCurrency.Name;
+            settingsForClient.FunctionalCurrencyName2 = settings.FunctionalCurrency.Name2;
+            settingsForClient.FunctionalCurrencyName3 = settings.FunctionalCurrency.Name3;
+            settingsForClient.FunctionalCurrencyDescription = settings.FunctionalCurrency.Description;
+            settingsForClient.FunctionalCurrencyDescription2 = settings.FunctionalCurrency.Description2;
+            settingsForClient.FunctionalCurrencyDescription3 = settings.FunctionalCurrency.Description3;
+
+            // Language
+            settingsForClient.PrimaryLanguageName = GetCultureDisplayName(settingsForClient.PrimaryLanguageId);
+            settingsForClient.SecondaryLanguageName = GetCultureDisplayName(settingsForClient.SecondaryLanguageId);
+            settingsForClient.TernaryLanguageName = GetCultureDisplayName(settingsForClient.TernaryLanguageId);
+
+            // Tag the settings for client with their current version
+            var result = new DataWithVersion<SettingsForClient>
+            {
+                Version = settings.SettingsVersion.ToString(),
+                Data = settingsForClient
+            };
+
+            return result;
+        }
+
+        private static string GetCultureDisplayName(string cultureName)
+        {
+            if (cultureName is null)
+            {
+                return null;
+            }
+
+            return System.Globalization.CultureInfo.GetCultureInfo(cultureName)?.NativeName;
+        }
+
     }
 }
