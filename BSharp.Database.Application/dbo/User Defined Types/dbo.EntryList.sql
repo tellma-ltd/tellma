@@ -1,7 +1,8 @@
 ﻿CREATE TYPE [dbo].EntryList AS TABLE (
-	[Index]						INT					PRIMARY KEY,-- IDENTITY (0,1),
-	[LineIndex]					INT					NOT NULL DEFAULT 0 INDEX IX_EntryList_LineIndex ([LineIndex]),
-	[DocumentIndex]				INT					NOT NULL DEFAULT 0,
+	[Index]						INT					,
+	[LineIndex]					INT					INDEX IX_EntryList_LineIndex ([LineIndex]),
+	[DocumentIndex]				INT					INDEX IX_EntryList_DocumentIndex ([DocumentIndex]),
+	PRIMARY KEY ([Index], [LineIndex], [DocumentIndex]),
 	[Id]						INT					NOT NULL DEFAULT 0,
 	[EntryNumber]				INT					NOT NULL DEFAULT 1,
 	[Direction]					SMALLINT,

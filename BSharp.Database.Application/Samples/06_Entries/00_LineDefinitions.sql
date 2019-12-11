@@ -69,19 +69,25 @@ DECLARE @LineDefinitionColumns TABLE (
 ;
 -- The behavior of the manual line is driven by the account.
 -- There is a special case, where 
--- [Direction] = SIGN ([Debit]) + SIGN([Credit]), [MonetaryAmount] = [Debit]-[Credit]
--- IF [Direction] = 1 THEN [Debit] = [Direction] * SIGN([MonetaryAmount]), [Credit] = 0
--- IF [Direction] = -1 THEN [Debit] = 0, [Credit] = - [Direction] * SIGN([MonetaryAmount])
+-- [Direction] = SIGN ([Debit]) + SIGN([Credit]), [Value] = [Debit]-[Credit]
+-- IF [Direction] = 1 THEN [Debit] = [Direction] * SIGN([Value]), [Credit] = 0
+-- IF [Direction] = -1 THEN [Debit] = 0, [Credit] = - [Direction] * SIGN([Value])
 -- NB: Debit & Credit Cannot be both non-zero. If both are zero, we set direction to +1.
 INSERT @LineDefinitions([Id], [TitleSingular], [TitlePlural]) VALUES (N'ManualLine', N'Adjustment', N'Adjustments');
 INSERT INTO @LineDefinitionColumns
-([LineDefinitionId], [SortIndex],	[ColumnName],				[Label]) VALUES
-(N'ManualLine',			0,			N'Line.Memo',				N'Memo'), -- only if it appears,
-(N'ManualLine',			1,			N'Entry[0].Account',		N'Account'),
-(N'ManualLine',			2,			N'Entry[0].Resource',		N'Currency'), -- only if it appears,
-(N'ManualLine',			3,			N'Entry[0].MonetaryAmount',	N'Debit'), -- see special case
-(N'ManualLine',			4,			N'Entry[0].MonetaryAmount',	N'Credit'),
-(N'ManualLine',			5,			N'Entry[0].Dynamic',		N'Properties')
+([LineDefinitionId], [SortIndex],	[ColumnName],			[Label]) VALUES
+(N'ManualLine',			0,			N'Line.Memo',			N'Memo'), -- only if it appears,
+(N'ManualLine',			1,			N'Entry[0].Account',	N'Account'),
+(N'ManualLine',			3,			N'Entry[0].Value',		N'Debit'), -- see special case
+(N'ManualLine',			4,			N'Entry[0].Value',		N'Credit'),
+-- Properties shown are as follows:
+-- Currency and monetary value, if Account Currency is <> functional
+-- Resource if account is smart and Account.[Resource Classification] is not null
+-- Agent if account is smart and Account.[Agent Definition] is not null
+-- Account Identifier if Account is smart and Account.[Has Identifier] = 1
+-- Based on Resource Definition: we show: Count, Mass, Volume, Time, Resource Identifier, Due Date
+-- Additional dynamic properties based on the tuple (Contract Type, Agent Definition, Resource Classifitation) -- to be stored in table
+(N'ManualLine',			5,			N'Entry[0].Dynamic',	N'Properties')
 ;
 INSERT @LineDefinitions(
 [Id],					[TitleSingular],		[TitlePlural],		[AgentDefinitionId]) VALUES
