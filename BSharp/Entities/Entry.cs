@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,10 +14,11 @@ namespace BSharp.Entities
         public int? DocumentIndex { get; set; }
 
         [AlwaysAccessible]
+        [DefaultValue(1)]
         public int? EntryNumber { get; set; }
 
         [AlwaysAccessible]
-        [ChoiceList(new object[] { -1, 1 })]
+        [ChoiceList(new object[] { (short)-1, (short)1 })]
         public short? Direction { get; set; }
 
         [Display(Name = "Entry_Account")]
@@ -53,21 +55,27 @@ namespace BSharp.Entities
         public DateTime? DueDate { get; set; }
 
         [Display(Name = "Entry_MonetaryValue")]
+        [DefaultValue(0)]
         public decimal? MonetaryValue { get; set; }
 
         [Display(Name = "Entry_Count")]
+        [DefaultValue(0)]
         public decimal? Count { get; set; }
 
         [Display(Name = "Entry_Mass")]
+        [DefaultValue(0)]
         public decimal? Mass { get; set; }
 
         [Display(Name = "Entry_Volume")]
+        [DefaultValue(0)]
         public decimal? Volume { get; set; }
 
         [Display(Name = "Entry_Time")]
+        [DefaultValue(0)]
         public decimal? Time { get; set; }
 
         [Display(Name = "Entry_Value")]
+        [DefaultValue(0)]
         public decimal? Value { get; set; }
 
         [Display(Name = "Entry_ExternalReference")]
@@ -100,6 +108,8 @@ namespace BSharp.Entities
 
     public class Entry : EntryForSave
     {
+        public int? LineId { get; set; }
+
         [Display(Name = "Entry_ContractType")]
         public string ContractType { get; set; }
 

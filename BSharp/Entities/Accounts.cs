@@ -44,6 +44,7 @@ namespace BSharp.Entities
 
         // Fields below are not used for now....
 
+        public string CurrencyId { get; set; }
         public int? ResponsibilityCenterId { get; set; }
         public string ContractType { get; set; }
         public string AgentDefinitionId { get; set; }

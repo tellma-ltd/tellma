@@ -44,6 +44,7 @@ namespace BSharp.Entities
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         public string AdditionalReference { get; set; } // HIDDEN
 
+        [ForeignKey(nameof(Entry.LineId))]
         public List<TEntry> Entries { get; set; }
     }
 
@@ -54,6 +55,8 @@ namespace BSharp.Entities
 
     public class Line : LineForSave<Entry>
     {
+        public int? DocumentId { get; set; }
+
         [Display(Name = "State")]
         [AlwaysAccessible]
         [ChoiceList(new object[] {
