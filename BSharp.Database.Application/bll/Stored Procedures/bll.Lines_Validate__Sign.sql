@@ -51,6 +51,16 @@ SET NOCOUNT ON;
 			)
 		);
 	END
+
+	-- Cannot sign a line with no Entries
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT DISTINCT
+		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
+		N'Error_TheLineHasNoEntries'
+	FROM @Ids FE
+	LEFT JOIN dbo.Entries E ON FE.[Id] = E.[LineId]
+	WHERE E.[Id] IS NULL;
+
 	-- verify that the line definition has a workflow transition from its current state to @ToState
 	-- TOTO: use localized state names instead
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])

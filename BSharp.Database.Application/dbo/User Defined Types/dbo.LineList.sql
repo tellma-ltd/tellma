@@ -1,6 +1,7 @@
 ﻿CREATE TYPE [dbo].[LineList] AS TABLE (
-	[Index]						INT				PRIMARY KEY,
-	[DocumentIndex]				INT				NOT NULL DEFAULT 0,
+	[Index]						INT,
+	[DocumentIndex]				INT		INDEX IX_LineList_DocumentIndex ([DocumentIndex]),
+	PRIMARY KEY ([Index], [DocumentIndex]),
 	[Id]						INT				NOT NULL DEFAULT 0,
 	[DefinitionId]				NVARCHAR (50)	NOT NULL,
 	[CurrencyId]				NCHAR (3),
