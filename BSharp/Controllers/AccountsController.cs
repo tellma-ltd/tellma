@@ -21,17 +21,20 @@ namespace BSharp.Controllers
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
+        private readonly ISettingsCache _settingsCache;
 
         private string ViewId => $"{BASE_ADDRESS}";
 
         public AccountsController(
             ILogger<AccountsController> logger,
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo) : base(logger, localizer)
+            ApplicationRepository repo,
+            ISettingsCache settingsCache) : base(logger, localizer)
         {
             _logger = logger;
             _localizer = localizer;
             _repo = repo;
+            _settingsCache = settingsCache;
         }
 
         [HttpPut("activate")]
@@ -115,6 +118,24 @@ namespace BSharp.Controllers
             }
 
             return query;
+        }
+
+        protected override Task<List<AccountForSave>> SavePreprocessAsync(List<AccountForSave> entities)
+        {
+            // Defaults
+            var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
+            entities.ForEach(entity =>
+            {
+                entity.IsSmart = entity.IsSmart ?? false;
+
+                if (!entity.IsSmart.Value)
+                {
+                    // Only for dumb accounts
+                    entity.CurrencyId = entity.CurrencyId ?? settings.FunctionalCurrencyId;
+                }
+            });
+
+            return Task.FromResult(entities);
         }
 
         protected override async Task SaveValidateAsync(List<AccountForSave> entities)

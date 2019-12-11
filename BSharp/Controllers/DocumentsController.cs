@@ -123,7 +123,7 @@ namespace BSharp.Controllers
             });
 
             // SQL server preprocessing
-            return await _repo.Documents_Preprocess(DefinitionId, entities);
+            return await _repo.Documents__Preprocess(DefinitionId, entities);
         }
 
         protected override async Task SaveValidateAsync(List<DocumentForSave> docs)

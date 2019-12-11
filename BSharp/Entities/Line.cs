@@ -83,7 +83,7 @@ namespace BSharp.Entities
             DocStateName.Reviewed,
             DocStateName.Closed
         })]
-        public int State { get; set; }
+        public short? State { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -97,7 +97,7 @@ namespace BSharp.Entities
         [Display(Name = "ModifiedBy")]
         public int? ModifiedById { get; set; }
 
-        public decimal? SortKey { get; set; }
+        public int? SortKey { get; set; }
 
         // For Query
 

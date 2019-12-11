@@ -29,7 +29,6 @@ namespace BSharp.Entities
         public string Code { get; set; }
 
         [Display(Name = "Account_IsSmart")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public bool? IsSmart { get; set; }
 

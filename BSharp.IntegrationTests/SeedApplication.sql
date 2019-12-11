@@ -8,6 +8,7 @@ EXEC sp_set_session_context 'UserId', @UserId;
 
 -- Cleanup, Central records before lookup records
 
+DELETE FROM [dbo].[Documents]
 DELETE FROM [dbo].[Permissions];
 DELETE FROM [dbo].[RoleMemberships];
 
@@ -21,7 +22,6 @@ DELETE FROM [dbo].[Currencies];
 --DELETE FROM [dbo].[ResourceClassifications] WHERE [Code] NOT IN (N'CashAndCashEquivalents');
 
 DELETE FROM [dbo].[ResourceClassificationsEntryClassifications];
-DELETE FROM [dbo].[Documents]
 DELETE FROM [dbo].[ResourceClassifications];
 DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[MeasurementUnits];

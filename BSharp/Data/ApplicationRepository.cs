@@ -3385,7 +3385,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return query.FromSql($"[map].[{nameof(Documents__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
-        public async Task<List<DocumentForSave>> Documents_Preprocess(string definitionId, List<DocumentForSave> documents)
+        public async Task<List<DocumentForSave>> Documents__Preprocess(string definitionId, List<DocumentForSave> documents)
         {
             var result = new List<DocumentForSave>();
 
@@ -3420,7 +3420,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[bll].[{nameof(Documents_Preprocess)}]";
+                cmd.CommandText = $"[bll].[{nameof(Documents__Preprocess)}]";
 
                 // Execute
                 using (var reader = await cmd.ExecuteReaderAsync())

@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Documents__Preprocess]
+	@DefinitionId NVARCHAR(50),
 	@Documents [dbo].[DocumentList] READONLY,
 	@Lines [dbo].[LineList] READONLY, 
 	@Entries [dbo].EntryList READONLY
