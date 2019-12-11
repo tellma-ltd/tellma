@@ -436,6 +436,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
             return result;
         }
+
         public async Task<IEnumerable<AbstractPermission>> Action_ViewPrefix__Permissions(string action, string viewIdPrefix)
         {
             var result = new List<AbstractPermission>();
@@ -3392,19 +3393,19 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 // Parameters
                 var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(entities);
 
-                var docsTvp = new SqlParameter("@Entities", docsTable)
+                var docsTvp = new SqlParameter("@Documents", docsTable)
                 {
-                    TypeName = $"[dbo].[${nameof(Document)}List]",
+                    TypeName = $"[dbo].[{nameof(Document)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
-                var linesTvp = new SqlParameter("@Entities", linesTable)
+                var linesTvp = new SqlParameter("@Lines", linesTable)
                 {
                     TypeName = $"[dbo].[{nameof(Line)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
-                var entriesTvp = new SqlParameter("@Entities", entriesTable)
+                var entriesTvp = new SqlParameter("@Entries", entriesTable)
                 {
                     TypeName = $"[dbo].[{nameof(Entry)}List]",
                     SqlDbType = SqlDbType.Structured
@@ -3435,19 +3436,19 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 // Parameters
                 var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(entities);
 
-                var docsTvp = new SqlParameter("@Entities", docsTable)
+                var docsTvp = new SqlParameter("@Documents", docsTable)
                 {
-                    TypeName = $"[dbo].[${nameof(Document)}List]",
+                    TypeName = $"[dbo].[{nameof(Document)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
-                var linesTvp = new SqlParameter("@Entities", linesTable)
+                var linesTvp = new SqlParameter("@Lines", linesTable)
                 {
                     TypeName = $"[dbo].[{nameof(Line)}List]",
                     SqlDbType = SqlDbType.Structured
                 };
 
-                var entriesTvp = new SqlParameter("@Entities", entriesTable)
+                var entriesTvp = new SqlParameter("@Entries", entriesTable)
                 {
                     TypeName = $"[dbo].[{nameof(Entry)}List]",
                     SqlDbType = SqlDbType.Structured
@@ -3606,7 +3607,6 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 await cmd.ExecuteNonQueryAsync();
             }
         }
-
 
         #endregion
 

@@ -158,9 +158,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             // Assert that the response is well-formed singleton of Document
             var responseData = await response.Content.ReadAsAsync<EntitiesResponse<Document>>();
-            Assert.Collection(responseData.Result,
-                e => Assert.NotEqual(0, e.Id),
-                e => Assert.NotEqual(0, e.Id));
+            Assert.NotEmpty(responseData.Result);
 
             // Assert that the result matches the saved entity
             Assert.Equal("Document", responseData.CollectionName);
@@ -168,6 +166,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Retreve the entity from the entities
             var responseDto = responseData.Result.FirstOrDefault();
 
+            Assert.NotEqual(0, responseDto.Id);
             Assert.NotNull(responseDto.SerialNumber);
             Assert.NotEqual(0, responseDto.SerialNumber);
             Assert.Equal(0, responseDto.State);

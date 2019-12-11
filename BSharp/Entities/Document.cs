@@ -49,6 +49,7 @@ namespace BSharp.Entities
         [Display(Name = "Document_MemoIsCommon")]
         public bool? MemoIsCommon { get; set; }
 
+        [ForeignKey(nameof(Line.DocumentId))]
         public List<TDocumentLine> Lines { get; set; }
     }
 
