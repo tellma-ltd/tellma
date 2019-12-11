@@ -63,3 +63,4 @@ GO
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Documents__DocumentDefinitionId_SerialNumber]
   ON [dbo].[Documents]([DefinitionId], [SerialNumber])
 GO
+-- TODO: Add trigger to fill DocumentsStatesHistory automatically, or use temporal

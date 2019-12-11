@@ -10,7 +10,7 @@ SET NOCOUNT ON;
 
 	-- Cannot file with no lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentHasNoLines'
 	FROM @Ids 
@@ -40,7 +40,7 @@ SET NOCOUNT ON;
 		FROM WorkflowsFinalStateIds
 	)
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(DL.[Id] AS NVARCHAR (255)) + ']',
 		N'Error_State0IsNotFinal',
@@ -54,15 +54,15 @@ SET NOCOUNT ON;
 
 	-- Cannot file a document with non-balanced (Reviewed) lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
+	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TransactionHasDebitCreditDifference0',
-		SUM([Direction] * [Value])
+		FORMAT(SUM(E.[Direction] * E.[Value]), '##,#;(##,#);-', 'en-us') AS NetDifference
 	FROM @Ids FE
-	JOIN dbo.[Lines] DL ON FE.[Id] = DL.[DocumentId]
-	JOIN dbo.[Entries] DLE ON DL.[Id] = DLE.[LineId]
-	WHERE DL.[State] = +4 -- N'Reviewed'
+	JOIN dbo.[Lines] L ON FE.[Id] = L.[DocumentId]
+	JOIN dbo.[Entries] E ON L.[Id] = E.[LineId]
+	WHERE L.[State] = +4 -- N'Reviewed'
 	GROUP BY FE.[Index]
-	HAVING SUM([Direction] * [Value]) <> 0;
+	HAVING SUM(E.[Direction] * E.[Value]) <> 0;
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

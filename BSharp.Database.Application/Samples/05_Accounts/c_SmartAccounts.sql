@@ -3,8 +3,8 @@ INSERT INTO @SmartAccounts([Index], [IsSmart],
 	[AccountTypeId],		[AccountClassificationId],	[Name],								[Code],		[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryClassificationId]) VALUES
 --(0,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1101'),
 --(1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1102'),
-(0,1,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1111',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,		@Bank_CBE,		@R_USD,			NULL,			NULL),
-(1,1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB',						N'1112',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,		@Bank_CBE,		@R_ETB,			NULL,			NULL),
+(0,1,N'Cash',				@BankAndCash_AC,			N'CBE - USD 2',						N'1111',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,		@Bank_CBE,		@R_USD,			NULL,			NULL),
+(1,1,N'Cash',				@BankAndCash_AC,			N'CBE - ETB 2',						N'1112',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,		@Bank_CBE,		@R_ETB,			NULL,			NULL),
 --(3,1,N'Inventory',			@Inventories_AC,			N'TF1903950009',					N'1209'), -- Merchandise in transit, for given LC
 (4,1,N'Inventory',			@Inventories_AC,			N'RM Warehouse',					N'1220',	N'OnHand',		N'custodies',dbo.fn_RCCode__Id(N'RawMaterials'),	1,		@Warehouse_RM,	NULL,			NULL,			NULL),
 --(5,1,N'FixedAssets',		@NonCurrentAssets_AC,		N'PPE - Vehicles',					N'1301'),

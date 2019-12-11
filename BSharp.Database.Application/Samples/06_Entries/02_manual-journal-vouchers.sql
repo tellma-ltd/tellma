@@ -52,14 +52,14 @@ BEGIN -- Inserting
 	(15,		4,				N'ManualLine')
 		;
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],		[EntryClassificationId],	[ResourceId],[MonetaryValue],[Value]) VALUES
-	(0, 0, 0,1,+1,@SA_CBEUSD,		@ProceedsFromIssuingShares, 							@R_USD,		200000,			4700000),--
-	(1, 1, 0,1,+1,@BA_CBEUSD,		@ProceedsFromIssuingShares, 	@R_USD,		100,			2350),
-	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					@R_ETB,		2351175,		2351175),
-	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					@R_ETB,		2351175,		2351175),
+				[AccountId],		[EntryClassificationId],	[ResourceId], [MonetaryValue],[Value]) VALUES
+	(0, 0, 0,1,+1,@SA_CBEUSD,		@ProceedsFromIssuingShares, 	@R_USD,		200000,			4700000),--
+	(1, 1, 0,1,+1,@BA_CBEUSD,		@ProceedsFromIssuingShares, 	NULL,		100,			2350),
+	(2, 2, 0,1,-1,@CapitalMA,		@IssueOfEquity,					NULL,		2350050,		2350050),
+	(3, 3, 0,1,-1,@CapitalAA,		@IssueOfEquity,					NULL,		2350050,		2350050),
 		
-	(4, 4, 1,1,+1,@BA_CBEETB,		@InternalCashTransferExtension, @R_ETB,		1175000,		1175000),
-	(5, 5, 1,1,-1,@BA_CBEUSD,		@InternalCashTransferExtension,	@R_USD,		50000,			1175000);
+	(4, 4, 1,1,+1,@BA_CBEETB,		@InternalCashTransferExtension, NULL,		1175000,		1175000),
+	(5, 5, 1,1,-1,@SA_CBEUSD,		@InternalCashTransferExtension,	@R_USD,		50000,			1175000);
 
 	-- In a manual JV, we assume the following columns for dumb accounts:
 	-- Account, Debit, Credit, Memo
@@ -76,19 +76,19 @@ BEGIN -- Inserting
 	-- If ResourceClassificationEntryClassification is enforced, show Entry Classification
 	-- If AgentDefinition is not null, Show Agent
 	INSERT INTO @E ([Index], [LineIndex], [DocumentIndex], [EntryNumber], [Direction],
-				[AccountId],	[EntryClassificationId],[ResourceId],[MonetaryValue], [ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAmount]) VALUES
-	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,@R_ETB,		600000,			N'C-14209',			NULL,					NULL,			NULL),--
-	(7, 7, 2,1,+1,@VATInput,	NULL, 						@R_ETB,		90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),--
-	(8, 8, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,@R_ETB,		600000,			N'C-14209',			NULL,					NULL,			NULL),
-	(9, 9, 2,1,+1,@VATInput,	NULL, 						@R_ETB,		90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),
-	(10,10,2,1,-1,@ToyotaAccount,NULL,						@R_ETB,		1380000,		N'C-14209',			NULL,					NULL,			NULL),
+				[AccountId],	[EntryClassificationId],[ResourceId], [MonetaryValue], [ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAmount]) VALUES
+	(6, 6, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,NULL,		600000,			N'C-14209',			NULL,					NULL,			NULL),--
+	(7, 7, 2,1,+1,@VATInput,	NULL, 						NULL,		90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),--
+	(8, 8, 2,1,+1,@PPEWarehouse,@InventoryPurchaseExtension,NULL,		600000,			N'C-14209',			NULL,					NULL,			NULL),
+	(9, 9, 2,1,+1,@VATInput,	NULL, 						NULL,		90000,			N'C-14209',			N'FS010102',			@Toyota,		600000),
+	(10,10,2,1,-1,@ToyotaAccount,NULL,						NULL,		1380000,		N'C-14209',			NULL,					NULL,			NULL),
 
-	(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,				@R_ETB,		600000,			NULL,				NULL, NULL, NULL),
-	(12,12,3,1,-1,@PPEWarehouse,@InvReclassifiedAsPPE,		@R_ETB,		600000,			NULL,				NULL, NULL, NULL),
+	(11,11,3,1,+1,@PPEVehicles,	@PPEAdditions,				NULL,		600000,			NULL,				NULL, NULL, NULL),
+	(12,12,3,1,-1,@PPEWarehouse,@InvReclassifiedAsPPE,		NULL,		600000,			NULL,				NULL, NULL, NULL),
 	
-	(13,13,4,1,+1,@VATInput,	NULL,						@R_ETB,		2250,			N'C-25301',			N'BP188954',			@Regus,			15000),
-	(14,14,4,1,+1,@PrepaidRental,NULL,						@R_ETB,		15000,			N'C-25301',			NULL,					NULL,			NULL),
-	(15,15,4,1,-1,@RegusAccount,NULL, 						@R_ETB,		17250,			N'C-25301',			NULL,					NULL,			NULL);
+	(13,13,4,1,+1,@VATInput,	NULL,						NULL,		2250,			N'C-25301',			N'BP188954',			@Regus,			15000),
+	(14,14,4,1,+1,@PrepaidRental,NULL,						NULL,		15000,			N'C-25301',			NULL,					NULL,			NULL),
+	(15,15,4,1,-1,@RegusAccount,NULL, 						NULL,		17250,			N'C-25301',			NULL,					NULL,			NULL);
 	; 
 	
 	EXEC [api].[Documents__Save]
@@ -117,9 +117,16 @@ BEGIN -- Inserting
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'Document Lines Signing'
+		Print 'Lines Signing'
 		GOTO Err_Label;
 	END;
+
+	IF @DebugManualVouchers = 1
+	BEGIN
+			DELETE FROM @DIds;
+			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'manual-journal-vouchers';
+			EXEC [rpt].[Docs__UI] @DIds;
+	END
 
 	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
 	-- TODO: fill index using ROWNUMBER
@@ -131,8 +138,15 @@ BEGIN -- Inserting
 		@IndexedIds = @DocsIndexedIds,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Documents closing'
+		GOTO Err_Label;
+	END;
+
 	IF @DebugManualVouchers = 1
 	BEGIN
+			DELETE FROM @DIds;
 			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'manual-journal-vouchers';
 			EXEC [rpt].[Docs__UI] @DIds;
 	END
@@ -163,10 +177,9 @@ BEGIN
 	GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;
 END
 
-select * from DocumentAssignments;
-select * from DocumentAssignmentsHistory;
-SELECT * FROM dbo.DocumentStatesHistory;
-select * from dbo.LineSignatures;
+--select * from DocumentAssignments;
+--SELECT * FROM dbo.DocumentStatesHistory;
+--select * from dbo.LineSignatures;
 --SELECT * FROM dbo.LineStatesHistory;
 
 --IF (1=0)

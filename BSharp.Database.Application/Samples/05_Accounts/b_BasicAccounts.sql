@@ -3,7 +3,7 @@ DECLARE @RC_Cash INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [Code
 
 INSERT INTO @BasicAccounts([Index],
 	[AccountTypeId],				[AccountClassificationId],	[Name],								[Code], [CurrencyId]) VALUES
-(0,N'Cash',							@BankAndCash_AC,			N'CBE - USD',						N'1101', N'ETB'),
+(0,N'Cash',							@BankAndCash_AC,			N'CBE - USD',						N'1101', N'USD'),
 (1,N'Cash',							@BankAndCash_AC,			N'CBE - ETB',						N'1102', N'ETB'),
 (2,N'OtherCurrentLiabilities',		@BankAndCash_AC,			N'CBE - LC',						N'1201', N'ETB'), -- reserved DECIMAL (19,4) to pay for LC when needed
 (3,N'Inventory',					@Inventories_AC,			N'TF1903950009',					N'1209', N'ETB'), -- Merchandise in transit, for given LC
