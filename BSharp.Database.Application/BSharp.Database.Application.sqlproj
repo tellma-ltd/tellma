@@ -398,7 +398,7 @@
     <Build Include="rpt\Stored Procedures\rpt.Docs__UI.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Close.sql" />
     <Build Include="api\Stored Procedures\api.Lines__Unsign.sql" />
-    <Build Include="dal\Stored Procedures\dal.Documents_State__Update.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Close.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Close.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines__RelevantIndexIds.sql" />
     <Build Include="dbo\Functions\dbo.fn_State__StateId.sql" />

@@ -49,12 +49,6 @@ BEGIN
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;
 	
-	---- Assign the new ones to self
-	INSERT INTO dbo.DocumentAssignments(DocumentId, AssigneeId)
-	SELECT Id, @UserId
-	FROM @DocumentsIndexedIds
-	WHERE [Index] IN (SELECT [Index] FROM @Documents WHERE [Id] = 0);
-
 	WITH BL AS (
 		SELECT * FROM dbo.[Lines]
 		WHERE DocumentId IN (SELECT [Id] FROM @DocumentsIndexedIds)

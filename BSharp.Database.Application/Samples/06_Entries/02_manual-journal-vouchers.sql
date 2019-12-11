@@ -163,9 +163,12 @@ BEGIN
 	GROUP BY A.[Name], A.TaxIdentificationNumber, J.ExternalReference, J.AdditionalReference, J.DocumentDate;
 END
 
+select * from DocumentAssignments;
+select * from DocumentAssignmentsHistory;
+SELECT * FROM dbo.DocumentStatesHistory;
+select * from dbo.LineSignatures;
+--SELECT * FROM dbo.LineStatesHistory;
 
---SELECT * FROM dbo.DocumentSignatures;
---SELECT * FROM dbo.DocumentStatesHistory;
 --IF (1=0)
 --BEGIN -- Updating document and deleting lines/entries
 --	INSERT INTO @D12([Index], [Id], [DocumentDate],	[Memo])
