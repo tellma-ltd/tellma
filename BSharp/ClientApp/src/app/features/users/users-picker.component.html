@@ -1,5 +1,5 @@
 <b-details-picker [filter]="filter" collection="User" [masterTemplate]="master"
-    [detailsTemplate]="showCreate ? details : null">
+    [detailsTemplate]="showCreate ? details : null" [additionalSelect]="additionalSelect">
 </b-details-picker>
 
 <!-- The Details Modal -->
@@ -15,7 +15,8 @@
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
         <b-users-master mode="popup" (cancel)="modal.close(false);" [showCreate]="showCreate" [filter]="filter"
-            (choose)="modal.close(true); update.call(null, $event); " (create)="modal.close(false); create.call()">
+            (choose)="modal.close(true); update.call(null, $event); " (create)="modal.close(false); create.call()"
+            [additionalSelect]="additionalSelect">
         </b-users-master>
     </div>
 </ng-template>

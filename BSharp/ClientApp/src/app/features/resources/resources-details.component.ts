@@ -5,7 +5,7 @@ import { tap } from 'rxjs/operators';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ResourceForSave, Resource } from '~/app/data/entities/resource';
 import { ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { Currency } from '~/app/data/entities/currency';

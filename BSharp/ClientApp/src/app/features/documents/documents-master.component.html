@@ -1,7 +1,9 @@
 <b-master *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [mode]="mode"
-  [showCreateButton]="showCreate" [filterDefault]="filter" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
-  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
-  selectDefault="DocumentDate,State,Memo" selectForTiles="DocumentDate,State" [includeInactiveLabel]="'IncludeVoid' | translate" inactiveFilter="State ne -1" [multiselectActions]="[
+  [additionalSelect]="additionalSelect" [showCreateButton]="showCreate" [filterDefault]="filter"
+  [masterCrumb]="masterCrumb" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
+  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="DocumentDate,State,Memo"
+  selectForTiles="DocumentDate,State" [includeInactiveLabel]="'IncludeVoid' | translate" inactiveFilter="State ne -1"
+  [multiselectActions]="[
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{
             'CreatedBy' : [
                 { template: createdByMe, expression: 'CreatedById eq me'}

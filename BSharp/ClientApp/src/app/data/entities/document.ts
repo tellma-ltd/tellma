@@ -138,3 +138,24 @@ export function metadata_Document(ws: TenantWorkspace, trx: TranslateService, de
 
     return _cache[key];
 }
+
+export function serialNumber(serial: number, prefix: string, digits: number) {
+
+    // Handle null and 0
+    if (!serial) {
+        return null;
+    }
+
+    let result = serial.toString();
+
+    // Add a padding of zeros when needed
+    if (result.length < digits) {
+        result = '00000000000000000'.substring(0, digits - result.length) + result;
+    }
+
+    // Prepend the prefix
+    result = prefix + result;
+
+    // Return the result
+    return result;
+}

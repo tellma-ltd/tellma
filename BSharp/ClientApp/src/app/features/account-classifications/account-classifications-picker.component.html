@@ -1,5 +1,5 @@
 <b-details-picker collection="AccountClassification" [masterTemplate]="master" [filter]="filter"
-    [detailsTemplate]="showCreate ? details : null">
+    [detailsTemplate]="showCreate ? details : null" [additionalSelect]="additionalSelect">
 </b-details-picker>
 
 <!-- The Resource Classifications Details Modal -->
@@ -15,8 +15,8 @@
 <ng-template #master let-modal="modal" let-update="update" let-create="create" let-filter="filter">
     <div class="modal-body">
         <b-account-classifications-master mode="popup" (cancel)="modal.close(false);" [filter]="filter"
-            [showCreate]="showCreate" (choose)="modal.close(true); update.call(null, $event); "
-            (create)="modal.close(false); create.call()">
+            [showCreate]="showCreate" (choose)="modal.close(true); update.call(null, $event);"
+            (create)="modal.close(false); create.call()" [additionalSelect]="additionalSelect">
         </b-account-classifications-master>
     </div>
 </ng-template>

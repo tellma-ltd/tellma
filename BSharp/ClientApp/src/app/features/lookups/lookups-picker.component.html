@@ -1,5 +1,5 @@
 <b-details-picker [definitionIds]="[definitionId]" [masterTemplate]="master"
-    [detailsTemplate]="showCreate ? details : null" collection="Lookup" [filter]="filter">
+    [detailsTemplate]="showCreate ? details : null" collection="Lookup" [filter]="filter" [additionalSelect]="additionalSelect">
 </b-details-picker>
 
 
@@ -19,7 +19,7 @@
     <div class="modal-body">
         <b-lookups-master mode="popup" (cancel)="modal.close(false);" [definitionId]="definitionId" [filter]="filter"
             (choose)="modal.close(true); update.call(null, $event);" (create)="modal.close(false); create.call()"
-            [showCreate]="showCreate">
+            [showCreate]="showCreate" [additionalSelect]="additionalSelect">
         </b-lookups-master>
     </div>
 </ng-template>

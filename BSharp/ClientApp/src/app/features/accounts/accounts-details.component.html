@@ -87,7 +87,7 @@
     <b-form-group *ngIf="!model?.IsSmart" class="b-form-group" [label]="'Account_Currency' | translate"
         [serverErrors]="model?.serverErrors?.CurrencyId">
         <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
-            <b-view-link link="../../../currencies" [itemId]="model?.CurrencyId">
+            <b-view-link link="../../currencies" [itemId]="model?.CurrencyId">
                 {{ ws.getMultilingualValue('Currency', model.CurrencyId, 'Name') }}
             </b-view-link>
         </b-restricted>

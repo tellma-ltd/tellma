@@ -179,5 +179,10 @@ namespace BSharp.Controllers
         {
             return _repo.Accounts__AsQuery(entities);
         }
+
+        protected override OrderByExpression DefaultOrderBy()
+        {
+            return OrderByExpression.Parse(nameof(Account.Code));
+        }
     }
 }

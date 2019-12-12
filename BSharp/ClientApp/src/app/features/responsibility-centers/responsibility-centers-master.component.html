@@ -1,6 +1,6 @@
-<b-master collection="ResponsibilityCenter" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter" [enableTreeView]="true"
-    [masterCrumb]="'ResponsibilityCenters' | translate" [tileTemplate]="tile"
-    [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+<b-master collection="ResponsibilityCenter" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+    [enableTreeView]="true" [additionalSelect]="additionalSelect" [masterCrumb]="'ResponsibilityCenters' | translate"
+    [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
     selectDefault="Code,ResponsibilityType" selectForTiles="Code, ResponsibilityType" [multiselectActions]="[
           { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
           { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }

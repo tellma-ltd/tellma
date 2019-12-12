@@ -32,7 +32,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   expand: string;
 
   @Input()
-  select: string = null;
+  additionalSelect: string = null;
 
   @Input()
   filter: string;
@@ -166,7 +166,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
             skip: 0,
             expand: this.expand,
             filter: this.queryFilter,
-            select: this.select
+            select: this.computeSelect()
           }).pipe(
             tap(() => this.status = SearchStatus.showResults),
             catchError(friendlyError => {
@@ -195,6 +195,28 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
     this.subscriptions.add(this.translate.onLangChange.subscribe(() => {
       this.updateUI(this.chosenItem);
     }));
+  }
+
+  private computeSelect(): string {
+    const desc = this.entityDescriptor();
+
+    const resultPaths: { [key: string]: true } = {};
+
+    // Basic select
+    if (!!desc.select) {
+      desc.select.forEach(s => resultPaths[s] = true);
+    }
+
+    if (!!desc.definitionIds) {
+      resultPaths.DefinitionId = true;
+    }
+
+    // custom select
+    if (!!this.additionalSelect) {
+      this.additionalSelect.split(',').forEach(s => resultPaths[s] = true);
+    }
+
+    return Object.keys(resultPaths).join(',');
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -234,7 +256,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   private doFetchUnloadedItem(id: string | number) {
     return this.api.getById(id, {
       expand: this.expand,
-      select: this.select
+      select: this.computeSelect()
     }).pipe(
       tap((response: GetByIdResponse) => {
         addSingleToWorkspace(response, this.workspace);
@@ -731,11 +753,19 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   public get editSelectedLeftMargin(): string {
-    return this.workspace.ws.isRtl ? null : '-24px';
+    return !this.workspace.ws.isRtl ? '-24px' : null;
   }
 
   public get editSelectedRightMargin(): string {
     return this.workspace.ws.isRtl ? '-24px' : null;
+  }
+
+  public get inputLeftPadding(): string {
+    return this.showEditSelected ? this.workspace.ws.isRtl ? '24px!important' : null : null;
+  }
+
+  public get inputRightPadding(): string {
+    return this.showEditSelected ? !this.workspace.ws.isRtl ? '24px!important' : null : null;
   }
 
   public get createOptions(): string[] {

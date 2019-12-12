@@ -31,7 +31,6 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
 
   writeValue(v: any): void {
 
-    v = v || '';
     this.input.nativeElement.value = this.format(v); // Format
   }
 
@@ -75,6 +74,9 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   }
 
   private format(value: number | string): string {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
 
     // Takes a number and formats it with a decimal point and a thousands separator
     let [integer, fraction = ''] = (value || '0').toString()
@@ -104,6 +106,10 @@ export class DecimalEditorComponent implements ControlValueAccessor, OnChanges {
   }
 
   private parse(value: string): number {
+
+    if (value === null || value === undefined || value === '') {
+      return undefined;
+    }
 
     // Reverses the effect of 'format' method above, and returns the original number
     let [integer, fraction = ''] = (value || '').split(this.decimalSeparator);

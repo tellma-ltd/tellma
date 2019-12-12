@@ -99,6 +99,9 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   selectForTiles: string;
 
   @Input()
+  additionalSelect: string; // Loaded, but does not appear in the grid
+
+  @Input()
   filterDefault: string;
 
   @Input()
@@ -611,7 +614,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   private computeSelect(): string {
     const select = this.state.select || '';
-    const resultPaths: { [path: string]: boolean } = {};
+    const resultPaths: { [path: string]: true } = {};
     const baseEntityDescriptor = this.entityDescriptor;
 
     // (0) add select for tiles
@@ -625,6 +628,11 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     // (2) append the definitoinId if any, it must always be loaded
     if (!!baseEntityDescriptor.definitionIds) {
       resultPaths.DefinitionId = true;
+    }
+
+    // (3) Append addition select
+    if (!!this.additionalSelect) {
+      this.additionalSelect.split(',').forEach(e => resultPaths[e] = true);
     }
 
     // (3) replace every path that terminates with a nav property (e.g. 'Unit' => 'Unit/Name,Unit/Name2,Unit/Name3')
@@ -1275,7 +1283,6 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
 
   public get checkedCount(): number {
     return this.checkedIds.length;
-
   }
 
   public get checkedIds(): (number | string)[] {

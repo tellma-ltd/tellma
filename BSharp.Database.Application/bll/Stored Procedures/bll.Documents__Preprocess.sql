@@ -104,7 +104,7 @@ JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] 
 
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
-SET E.[Value] = E.[MonetaryValue]
+SET E.[MonetaryValue] = E.[Value]
 FROM @FilledEntries E
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 JOIN @Lines L ON E.LineIndex = L.[Index]

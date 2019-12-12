@@ -23,6 +23,10 @@ export class TableComponent implements OnInit {
   private _dataSourceCopy: EntityForSave[] = [];
   private _indexMap: number[] = [];
 
+
+  @Input()
+  onNewItem: (item: EntityForSave) => EntityForSave;
+
   @Input()
   set isEdit(v: boolean) {
     if (this._isEdit !== v) {
@@ -63,9 +67,6 @@ export class TableComponent implements OnInit {
       weight: number,
     }
   } = {};
-
-  @Input()
-  onNewItem: (item: EntityForSave) => EntityForSave;
 
   @Input()
   set filter(v: (item: EntityForSave) => boolean) {

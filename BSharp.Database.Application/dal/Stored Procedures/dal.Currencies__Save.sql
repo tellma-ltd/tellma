@@ -6,6 +6,9 @@ SET NOCOUNT ON;
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 	DECLARE @Cash INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [Code] = N'Cash');
 
+	IF EXISTS (SELECT Id FROM @Entities WHERE Id = CONVERT(NCHAR (3), SESSION_CONTEXT(N'FunctionalCurrencyId')))
+		UPDATE [dbo].[Settings] SET SettingsVersion = NEWID(); -- The functional currency details are part of the settings
+
 	MERGE INTO [dbo].[Currencies] AS t
 	USING (
 		SELECT
