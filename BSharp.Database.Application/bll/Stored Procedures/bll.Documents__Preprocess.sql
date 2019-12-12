@@ -7,10 +7,7 @@ SET NOCOUNT ON;
 DECLARE @FunctionalCurrencyId NCHAR(3) = CONVERT(NCHAR(3), SESSION_CONTEXT(N'FunctionalCurrencyId'));
 
 DECLARE @FilledEntries [dbo].EntryList;
-DECLARE @FilledLines dbo.[LineList];
-
 INSERT INTO @FilledEntries SELECT * FROM @Entries;
-INSERT INTO @FilledLines SELECT * FROM @Lines;
 
 -- Applies to All line types
 -- Copy information from documents to Lines
@@ -22,20 +19,20 @@ INSERT INTO @FilledLines SELECT * FROM @Lines;
 -- Copy information from Lines to Entries
 UPDATE E 
 SET E.CurrencyId = L.CurrencyId
-FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
+FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 WHERE LDE.CurrencySource = 1 AND E.CurrencyId <> L.CurrencyId
 --select 2 as step, E.* from @FilledEntries E
 
 UPDATE E 
 SET E.AgentId = L.AgentId
-FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
+FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 WHERE LDE.AgentSource = 1 AND E.AgentId <> L.AgentId
 
 UPDATE E 
 SET E.ResourceId = L.ResourceId
-FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
+FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 WHERE LDE.ResourceSource = 1 AND E.ResourceId <> L.ResourceId
 
@@ -62,7 +59,7 @@ SET
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
 	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
 	E.[EntryClassificationId]	= COALESCE(A.[EntryClassificationId], E.[EntryClassificationId])
-FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
+FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE L.DefinitionId = N'ManualLine' AND A.[IsSmart] = 1; -- Entered by user
 
@@ -71,14 +68,14 @@ UPDATE E
 SET
 	E.[CurrencyId]			 = 	COALESCE(R.[CurrencyId], E.[CurrencyId]),
 	E.[ResourceIdentifier] =  COALESCE(R.[Identifier], E.[ResourceIdentifier])
-FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
+FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 
 -- set the count to one, if singleton
 UPDATE E 
 SET
 	E.[Count]		=	COALESCE(R.[Count], E.[Count]) -- If the Resource is a singleton, R.[Count] is one.
-FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
+FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 
 -- set the other measures, if the rate per unit is defined
@@ -88,7 +85,7 @@ SET
 	E.[Mass]		=	COALESCE(R.[Mass] * E.[Count], E.[Mass]),
 	E.[Volume]		=	COALESCE(R.[Volume] * E.[Count], E.[Volume]),
 	E.[Time]		=	COALESCE(R.[Time] * E.[Count], E.[Time])
-FROM @FilledEntries E JOIN @FilledLines L ON E.LineIndex = L.[Index]
+FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 
 UPDATE E

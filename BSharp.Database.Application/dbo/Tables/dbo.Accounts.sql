@@ -33,8 +33,7 @@
 	[AgentId]						INT					CONSTRAINT [FK_Accounts__AgentId] REFERENCES [dbo].[Agents] ([Id]),
 	[ResourceId]					INT					CONSTRAINT [FK_Accounts__ResourceId] REFERENCES [dbo].[Resources] ([Id]),
 	-- Especially needed for non-smart accounts to support multi-currencies
-	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id])
-														DEFAULT CONVERT(NCHAR (3), SESSION_CONTEXT(N'FunctionalCurrencyId')),
+	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	CONSTRAINT [CK_Accounts__IsSmart_CurrencyId] CHECK (
 		([IsSmart] = 0 AND [CurrencyId] IS NOT NULL) OR 
 		([IsSmart] = 1 AND [CurrencyId] IS NULL)
