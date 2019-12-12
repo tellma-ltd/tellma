@@ -1,7 +1,8 @@
 <b-master collection="MeasurementUnit" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
-  [masterCrumb]="'MeasurementUnits' | translate" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive"
-  selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
+  [additionalSelect]="additionalSelect" [masterCrumb]="'MeasurementUnits' | translate" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="Code,UnitType,UnitAmount,BaseAmount,IsActive" selectForTiles="Code,Name,Name2,Name3"
+  [multiselectActions]="[
             { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{

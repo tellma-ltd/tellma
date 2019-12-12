@@ -8,6 +8,7 @@ EXEC sp_set_session_context 'UserId', @UserId;
 
 -- Cleanup, Central records before lookup records
 
+DELETE FROM [dbo].[Documents]
 DELETE FROM [dbo].[Permissions];
 DELETE FROM [dbo].[RoleMemberships];
 
@@ -20,6 +21,7 @@ DELETE FROM [dbo].[Resources];
 DELETE FROM [dbo].[Currencies];
 --DELETE FROM [dbo].[ResourceClassifications] WHERE [Code] NOT IN (N'CashAndCashEquivalents');
 
+DELETE FROM [dbo].[ResourceClassificationsEntryClassifications];
 DELETE FROM [dbo].[ResourceClassifications];
 DELETE FROM [dbo].[Lookups];
 DELETE FROM [dbo].[MeasurementUnits];
@@ -52,11 +54,17 @@ VALUES
 INSERT INTO [dbo].[RoleMemberships] ([UserId], [RoleId])
 VALUES (@UserId, @RoleId)
 
+IF NOT EXISTS(SELECT * FROM [dbo].[DocumentDefinitions] WHERE [Id] = N'manual-journal-vouchers')
+	INSERT INTO [dbo].[DocumentDefinitions]	([Id], [TitleSingular], [TitlePlural], [Prefix]) VALUES
+	(N'manual-journal-vouchers', N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV');
+	
+IF NOT EXISTS(SELECT * FROM [dbo].[LineDefinitions] WHERE [Id] = N'ManualLine')
+	INSERT INTO [dbo].[LineDefinitions]([Id], [TitleSingular], [TitlePlural]) VALUES
+	(N'ManualLine', N'Adjustment', N'Adjustments');
 
 IF NOT EXISTS(SELECT * FROM [dbo].[LookupDefinitions] WHERE [Id] = N'colors')
 	INSERT INTO [dbo].[LookupDefinitions]([Id])
-	VALUES(N'colors');
-	
+	VALUES(N'colors');	
 
 IF NOT EXISTS(SELECT * FROM [dbo].[AgentDefinitions] WHERE [Id] = N'customers')
 	INSERT INTO [dbo].[AgentDefinitions]([Id])
@@ -90,6 +98,13 @@ INSERT INTO @EntryClassifications([IsAssignable], [Index], [ForDebit], [ForCredi
 EXEC [api].[EntryClassifications__Save]
 	@Entities = @EntryClassifications,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+-- Add mapping
+DECLARE @EntryClassificationId INT = (SELECT Id FROM [EntryClassifications] WHERE Code = 'ChangesInPropertyPlantAndEquipment')
+DECLARE @ResourceClassificationId INT = (SELECT Id FROM [ResourceClassifications] WHERE Code = 'CashAndCashEquivalents')
+INSERT INTO [dbo].[ResourceClassificationsEntryClassifications] (ResourceClassificationId, EntryClassificationId, IsEnforced)
+VALUES
+(@ResourceClassificationId, @EntryClassificationId, 1);
 
 -- Currencies
 DECLARE @Currencies CurrencyList;

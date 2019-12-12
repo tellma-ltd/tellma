@@ -1,7 +1,8 @@
 <b-master collection="Account" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
-  [masterCrumb]="'Accounts' | translate" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="Code,IsDeprecated" inactiveFilter="IsDeprecated eq false"
-  selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
+  [additionalSelect]="additionalSelect" [masterCrumb]="'Accounts' | translate" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="Code,IsDeprecated" inactiveFilter="IsDeprecated eq false" selectForTiles="Code,Name,Name2,Name3"
+  [multiselectActions]="[
               { template: activate, action: onActivate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip },
               { template: deprecate, action: onDeprecate, canAction: canActivateDeprecateItem, actionTooltip: activateDeprecateTooltip }
           ]" [includeInactiveLabel]="'IncludeDeprecated' | translate" [filterDefinition]="{

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -605,7 +606,7 @@ namespace BSharp.Controllers
             {
                 // Parse the import value into a DateTime
                 var valueString = value.ToString();
-                dateTime = DateTime.Parse(valueString);
+                dateTime = DateTime.ParseExact(valueString, "yyyy-MM-dd", CultureInfo.InvariantCulture);
             }
 
 

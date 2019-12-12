@@ -33,7 +33,7 @@ import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd,
   faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder,
-  faEuroSign, faTruck, faSitemap, faCoins, faUserFriends
+  faEuroSign, faTruck, faSitemap, faCoins, faUserFriends, faExchangeAlt
 } from '@fortawesome/free-solid-svg-icons';
 import { CurrenciesMasterComponent } from './currencies/currencies-master.component';
 import { CurrenciesDetailsComponent } from './currencies/currencies-details.component';
@@ -72,6 +72,8 @@ import { EntryClassificationsMasterComponent } from './entry-classifications/ent
 import { EntryClassificationsImportComponent } from './entry-classifications/entry-classifications-import.component';
 import { EntryClassificationsDetailsComponent } from './entry-classifications/entry-classifications-details.component';
 import { EntryClassificationsPickerComponent } from './entry-classifications/entry-classifications-picker.component';
+import { DocumentsMasterComponent } from './documents/documents-master.component';
+import { DocumentsDetailsComponent } from './documents/documents-details.component';
 
 const routes: Routes = [
   {
@@ -306,6 +308,24 @@ const routes: Routes = [
         canDeactivate: [UnsavedChangesGuard]
       },
 
+      // Documents
+      {
+        path: 'documents',
+        component: DocumentsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'documents/:definitionId',
+        component: DocumentsMasterComponent,
+        canDeactivate: [SaveInProgressGuard]
+      },
+      {
+        path: 'documents/:definitionId/:id',
+        component: DocumentsDetailsComponent,
+        canDeactivate: [UnsavedChangesGuard]
+      },
+
+
       // Report Definitions
       {
         path: 'report-definitions',
@@ -425,6 +445,8 @@ const routes: Routes = [
     EntryClassificationsImportComponent,
     EntryClassificationsDetailsComponent,
     EntryClassificationsPickerComponent,
+    DocumentsMasterComponent,
+    DocumentsDetailsComponent,
   ],
   imports: [
     SharedModule,
@@ -437,7 +459,8 @@ export class ApplicationModule {
     library.addIcons(
       // Main menu icons
       faCodeBranch, faList, faListUl, faMoneyCheck, faMoneyCheckAlt, faHandHoldingUsd, faSitemap, faCoins,
-      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign, faTruck, faUserFriends
+      faLandmark, faFileContract, faFileInvoiceDollar, faMoneyBillWave, faClipboard, faFolder, faEuroSign,
+      faTruck, faUserFriends, faExchangeAlt
     );
   }
 }

@@ -1,6 +1,6 @@
 <b-master collection="Currency" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
-  [masterCrumb]="'Currencies' | translate" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="E,IsActive"
+  [additionalSelect]="additionalSelect" [masterCrumb]="'Currencies' | translate" [tileTemplate]="tile"
+  [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="E,IsActive"
   selectForTiles="Name,Name2,Name3,Description,Description2,Description3" [multiselectActions]="[
             { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }

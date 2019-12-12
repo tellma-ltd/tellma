@@ -12,22 +12,25 @@ export class MasterBaseComponent implements OnDestroy {
   // and complements a b-master in the root of its HTML template
 
   @Input()
-  showCreate = true; // For details pickers
+  public showCreate = true; // For details pickers
 
   @Input()
   public mode: 'screen' | 'popup' = 'screen';
 
   @Input()
-  filter: string;
+  public filter: string;
+
+  @Input()
+  public additionalSelect: string;
 
   @Output()
-  choose = new EventEmitter<number | string>();
+  public choose = new EventEmitter<number | string>();
 
   @Output()
-  create = new EventEmitter<void>();
+  public create = new EventEmitter<void>();
 
   @Output()
-  cancel = new EventEmitter<void>();
+  public cancel = new EventEmitter<void>();
 
   private _master: MasterComponent;
   private masterSelect: Subscription;

@@ -73,6 +73,9 @@
   <data name="Account_Classification" xml:space="preserve">
     <value>التصنيف</value>
   </data>
+  <data name="Account_Currency" xml:space="preserve">
+    <value>العملة</value>
+  </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>مؤرشف</value>
   </data>
@@ -164,7 +167,7 @@
     <value>الآندرويد</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>بيشارپ</value>
+    <value>تلما</value>
   </data>
   <data name="AuthenticatorApp" xml:space="preserve">
     <value>تطبيق (Authenticator)</value>
@@ -490,6 +493,12 @@
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>حدث خطأ عند محاولة تأكيد عنوان بريدك الإلكتروني</value>
   </data>
+  <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
+    <value>التاريخ لا يمكن أن يكون قبل تاريخ الأرشفة</value>
+  </data>
+  <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
+    <value>التاريخ لا يمكن أن يكون في المستقبل</value>
+  </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>حذف {0} ليس مدعوما من هذه الواجهة</value>
   </data>
@@ -552,6 +561,9 @@
   </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>تصنيف الحساب ({0}) مستخدم في الحساب ({1})</value>
+  </data>
+  <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
+    <value>المبلغ {0} لا يساوي القيمة {1} مع أن العملة هي {2} لكليهما</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>الكود ({0}) غير موجود</value>

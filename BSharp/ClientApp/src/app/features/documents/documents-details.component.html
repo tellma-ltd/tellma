@@ -1,0 +1,204 @@
+<b-details *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [createFunc]="create"
+    [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
+    [documentTemplate]="document" [isInactive]="isInactive" [documentHeaderTemplate]="documentHeader" [actions]="[
+            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
+            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
+           ]">
+
+</b-details>
+
+<!-- If definitionId is invalid -->
+<ng-template #pageNotFound>
+    <b-application-page-not-found>
+    </b-application-page-not-found>
+</ng-template>
+
+<!-- Details Crumb -->
+<ng-template #detailsCrumb let-model="model">
+    <span>{{ formatSerial(model?.SerialNumber) }}</span>
+</ng-template>
+
+<ng-template #documentHeader let-model="model" let-isEdit="isEdit">
+    <div class="w-100 b-document-header d-flex justify-content-end">
+        <b-restricted [metadata]="model?.EntityMetadata?.State">
+            <div class="b-flow-chart small d-none d-md-block">
+                <div [class.active]="!model?.State"><span>{{'Document_State_Draft' | translate}}</span></div>
+                <div [class.active]="model?.State === 1"><span>{{'Document_State_Requested' | translate}}</span></div>
+                <div [class.active]="model?.State === 2"><span>{{'Document_State_Authorized' | translate}}</span></div>
+                <div [class.active]="model?.State === 3"><span>{{'Document_State_Completed' | translate}}</span></div>
+                <div [class.active]="model?.State === 4"><span>{{'Document_State_Reviewed' | translate}}</span></div>
+                <div [class.active]="model?.State === 5"><span>{{'Document_State_Closed' | translate}}</span></div>
+            </div>
+            <div class="small b-lone-state active d-block d-md-none">
+                <span>{{ (!model?.State ? 'Document_State_Draft' : 'Document_State_Closed') | translate }}</span>
+            </div>
+        </b-restricted>
+    </div>
+</ng-template>
+
+
+<!-- Edit/View Template -->
+<ng-template #document let-model="model" let-isEdit="isEdit">
+
+    <!-- Serial Number -->
+    <b-form-group class="col-12 mb-2 mb-sm-4">
+        <h2 class="font-weight-normal">{{ formatSerial(model?.SerialNumber) }}</h2>
+    </b-form-group>
+
+    <!-- Document Date -->
+    <b-form-group class="b-form-group" [label]="'Document_DocumentDate' | translate"
+        [serverErrors]="model?.serverErrors?.DocumentDate">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.DocumentDate">
+            <div>{{ model?.DocumentDate | date:'yyyy-MM-dd' }}</div>
+        </b-restricted>
+        <b-date-picker *ngIf="isEdit" [(ngModel)]="model.DocumentDate" [ngModelOptions]="{ updateOn: 'blur' }"
+            [required]="true">
+        </b-date-picker>
+    </b-form-group>
+
+    <!-- Operating Segment -->
+    <b-form-group *ngIf="OperatingSegment_isVisible" class="b-form-group" [label]="OperatingSegment_label"
+        [serverErrors]="model?.serverErrors?.OperatingSegmentId">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OperatingSegment">
+            <b-view-link link="../../../responsibility-centers" [itemId]="model?.OperatingSegmentId">
+                {{ ws.getMultilingualValue('ResponsibilityCenter', model.OperatingSegmentId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+        <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.OperatingSegmentId"
+            [filter]="'IsOperatingSegment eq true'">
+        </b-responsibility-centers-picker>
+    </b-form-group>
+
+    <!-- Memo -->
+    <b-form-group *ngIf="model?.MemoIsCommon" class="b-form-group" [label]="'Memo' | translate"
+        [serverErrors]="model?.serverErrors?.Memo">
+        <div *ngIf="!isEdit">{{ model?.Memo }}</div>
+        <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Memo" [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+    </b-form-group>
+
+    <!-- Memo Is Common -->
+    <b-form-group *ngIf="isEdit" class="b-form-group" [label]="'Document_MemoIsCommon' | translate"
+        [serverErrors]="model?.serverErrors?.MemoIsCommon">
+        <div class="custom-control custom-checkbox b-labelless-checkbox">
+            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.MemoIsCommon" id="memoIsCommon">
+            <label class="custom-control-label b-pointer" for="memoIsCommon">&zwnj;</label>
+        </div>
+    </b-form-group>
+
+    <ngb-tabset class="pt-3 pt-sm-4 w-100" [destroyOnHide]="true">
+
+        <!-- Entries -->
+        <ngb-tab [disabled]="true">
+            <ng-template ngbTabTitle><span class="small">{{ 'Entries' | translate }}<span
+                        *ngIf="model?.EntityMetadata?.Lines == 2"> ({{ model?.Lines.length | number }})</span></span>
+                <span *ngIf="showLineErrors(model)" class="text-danger">&nbsp;<fa-icon icon="exclamation-triangle">
+                    </fa-icon>
+                </span>
+            </ng-template>
+            <ng-template ngbTabContent>
+                <b-restricted [metadata]="model?.EntityMetadata?.Lines"
+                    [class.p-4]="model?.EntityMetadata?.Lines === 1">
+                    <b-table [dataSource]="model?.Lines" [isEdit]="isEdit" [columnPaths]="columnPaths(model)"
+                        [columnTemplates]="{
+                            'Memo' : { headerTemplate : header_Memo, rowTemplate : row_Memo, weight : 3 },
+                            'AccountId' : { headerTemplate : header_AccountId, rowTemplate : row_AccountId, weight : 2 },
+                            'Debit' : { headerTemplate : header_Debit, rowTemplate : row_Debit, weight : 1 },
+                            'Credit' : { headerTemplate : header_Credit, rowTemplate : row_Credit, weight : 1 },
+                            'Dynamic' : { headerTemplate : header_Dynamic, rowTemplate : row_Dynamic, weight : 2 }
+                        }" [onNewItem]="onNewLine">
+                    </b-table>
+                </b-restricted>
+
+                <!-- AccountId -->
+                <ng-template #header_AccountId>{{ 'Entry_Account' | translate }}</ng-template>
+                <ng-template #row_AccountId let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
+                    let-update="update">
+                    <b-form-group class="b-form-group" [serverErrors]="entry.serverErrors?.AccountId">
+                        <span
+                            *ngIf="isCredit(entry)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <b-restricted [metadata]="entry.EntityMetadata?.AccountId">
+                            <b-view-link *ngIf="!isEdit" link="../../../accounts" [itemId]="entry?.AccountId">{{
+                  ws.getMultilingualValue('Account',
+                  entry.AccountId, 'Name') }}</b-view-link>
+                        </b-restricted>
+                        <b-accounts-picker *ngIf="isEdit" [(ngModel)]="entry.AccountId"
+                            (ngModelChange)="update.call(null, item)"
+                            additionalSelect="Currency/Description,Currency/Description2,Currency/Description3">
+                        </b-accounts-picker>
+                    </b-form-group>
+                </ng-template>
+
+                <!-- Memo -->
+                <ng-template #header_Memo>{{ 'Memo' | translate }}</ng-template>
+                <ng-template #row_Memo let-item="item" let-index="originalIndex" let-update="update">
+                    <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.Memo">
+                        <div *ngIf="!isEdit">
+                            <b-restricted [metadata]="item.EntityMetadata?.Memo">{{ item.Memo }}</b-restricted>
+                        </div>
+                        <b-text-editor *ngIf="isEdit" [(ngModel)]="item.Memo" (ngModelChange)="update.call(null, item)"
+                            [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
+                    </b-form-group>
+                </ng-template>
+
+                <!-- Debit -->
+                <ng-template #header_Debit>
+                    <div style="float: right">{{ ('Debit' | translate) + functionalPostfix }}</div>
+                </ng-template>
+                <ng-template #row_Debit let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
+                    let-update="update">
+                    <b-restricted class="h-100" *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Value">
+                        <div style="float: right">{{ getDebit(entry) | number:'1.2-2' }}</div>
+                    </b-restricted>
+                    <b-form-group *ngIf="isEdit" class="b-form-group" [serverErrors]="entry.serverErrors?.Value">
+                        <b-decimal-editor [ngModel]="getDebit(entry)" [maxDecimalPlaces]="2" [minDecimalPlaces]="2"
+                            textAlignment="right" (ngModelChange)="setDebit(entry, $event); update.call(null, item);"
+                            [ngModelOptions]="{ updateOn: 'blur' }">
+                        </b-decimal-editor>
+                    </b-form-group>
+                </ng-template>
+
+                <!-- Credit -->
+                <ng-template #header_Credit>
+                    <div style="float: right">{{ ('Credit' | translate) + functionalPostfix }}</div>
+                </ng-template>
+                <ng-template #row_Credit let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
+                    let-update="update">
+                    <b-restricted class="h-100" *ngIf="!isEdit" [metadata]="entry.EntityMetadata?.Value">
+                        <div style="float: right">{{ getCredit(entry) | number:'1.2-2' }}</div>
+                    </b-restricted>
+                    <b-form-group *ngIf="isEdit" class="b-form-group" [serverErrors]="entry.serverErrors?.Value">
+                        <b-decimal-editor [ngModel]="getCredit(entry)" [maxDecimalPlaces]="2" [minDecimalPlaces]="2"
+                            textAlignment="right" (ngModelChange)="setCredit(entry, $event); update.call(null, item);"
+                            [ngModelOptions]="{ updateOn: 'blur' }">
+                        </b-decimal-editor>
+                    </b-form-group>
+                </ng-template>
+
+                <!-- Dynamic -->
+                <ng-template #header_Dynamic>
+                    <div></div>
+                </ng-template>
+                <ng-template #row_Dynamic let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
+                    let-update="update">
+                    <b-form-group *ngIf="showMonetaryValue(entry)"
+                        [label]="ws.getMultilingualValue('Currency', ws.get('Account', entry.AccountId)?.CurrencyId, 'Description')"
+                        class="b-form-group" [serverErrors]="entry.serverErrors?.MonetaryValue">
+                        <div *ngIf="!isEdit">
+                            <b-restricted [metadata]="item.EntityMetadata?.MonetaryValue">
+                                {{ entry.MonetaryValue | number:'1.2-2'}}
+                            </b-restricted>
+                        </div>
+                        <b-decimal-editor *ngIf="isEdit" [(ngModel)]="entry.MonetaryValue" [maxDecimalPlaces]="2"
+                            [minDecimalPlaces]="2" (ngModelChange)="update.call(null, item);"
+                            [ngModelOptions]="{ updateOn: 'blur' }">
+                        </b-decimal-editor>
+                    </b-form-group>
+                </ng-template>
+            </ng-template>
+        </ngb-tab>
+    </ngb-tabset>
+</ng-template>
+
+<!-- Actions -->
+<ng-template #activate> {{ 'Activate' | translate }} </ng-template>
+<ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -61,7 +60,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(0, responseData.TotalCount);
             Assert.Empty(responseData.Result);
         }
-
 
         [Fact(DisplayName = "03 Getting all generic documents before creating any returns a 200 OK singleton collection")]
         public async Task Test03()
@@ -169,7 +167,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.NotEqual(0, responseDto.Id);
             Assert.NotNull(responseDto.SerialNumber);
             Assert.NotEqual(0, responseDto.SerialNumber);
-            Assert.Equal(0, responseDto.State);
+            Assert.Equal((short)0, responseDto.State);
             Assert.Equal(dtoForSave.DocumentDate, responseDto.DocumentDate);
             Assert.Equal(dtoForSave.Memo, responseDto.Memo);
             Assert.Equal(dtoForSave.MemoIsCommon, responseDto.MemoIsCommon);
@@ -186,8 +184,8 @@ namespace BSharp.IntegrationTests.Scenario_01
                                 Assert.Equal(entryForSave.EntryNumber, entry.EntryNumber);
                                 Assert.Equal(entryForSave.Direction, entry.Direction);
                                 Assert.Equal(entryForSave.AccountId, entry.AccountId);
-                                Assert.Equal(entryForSave.EntryClassificationId, entry.EntryClassificationId);
-                                Assert.Equal(entryForSave.ResourceId, entry.ResourceId);
+                                Assert.Null(entry.EntryClassificationId);
+                                Assert.Null(entry.ResourceId);
                                 Assert.Equal(entryForSave.MonetaryValue, entry.MonetaryValue);
                                 Assert.Equal(entryForSave.Value, entry.Value);
                             }
@@ -204,8 +202,8 @@ namespace BSharp.IntegrationTests.Scenario_01
                                 Assert.Equal(entryForSave.EntryNumber, entry.EntryNumber);
                                 Assert.Equal(entryForSave.Direction, entry.Direction);
                                 Assert.Equal(entryForSave.AccountId, entry.AccountId);
-                                Assert.Equal(entryForSave.EntryClassificationId, entry.EntryClassificationId);
-                                Assert.Equal(entryForSave.ResourceId, entry.ResourceId);
+                                Assert.Null(entry.EntryClassificationId);
+                                Assert.Null(entry.ResourceId);
                                 Assert.Equal(entryForSave.MonetaryValue, entry.MonetaryValue);
                                 Assert.Equal(entryForSave.Value, entry.Value);
                             }
@@ -220,7 +218,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public async Task Test06()
         {
             // Query the API for the Id that was just returned from the Save
-            var entity = Shared.Get<Document>("Document_JohnWick");
+            var entity = Shared.Get<Document>("Document_CapitalInvestment");
             var id = entity.Id;
             var response = await Client.GetAsync($"{Url}/{id}");
 

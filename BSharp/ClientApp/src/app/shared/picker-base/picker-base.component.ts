@@ -12,6 +12,9 @@ export class PickerBaseComponent {
   @Input()
   filter: string;
 
+  @Input()
+  additionalSelect: string;
+
   @HostBinding('class.w-100')
   w100 = true;
 

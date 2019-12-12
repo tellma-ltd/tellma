@@ -29,7 +29,8 @@ BEGIN
         @SecondaryLanguageId NVARCHAR(255),
         @SecondaryLanguageSymbol NVARCHAR(255),
         @TernaryLanguageId NVARCHAR(255),
-        @TernaryLanguageSymbol NVARCHAR(255);
+        @TernaryLanguageSymbol NVARCHAR(255),
+		@FunctionalCurrencyId NCHAR(3);
 
     SELECT
         @UserId				= [Id],
@@ -59,11 +60,15 @@ BEGIN
         @SecondaryLanguageId	= [SecondaryLanguageId],
         @SecondaryLanguageSymbol= [SecondaryLanguageSymbol],
         @TernaryLanguageId		= [TernaryLanguageId],
-        @TernaryLanguageSymbol	= [TernaryLanguageSymbol]
+        @TernaryLanguageSymbol	= [TernaryLanguageSymbol],
+		@FunctionalCurrencyId   = [FunctionalCurrencyId]
     FROM [dbo].[Settings]
 
     -- Set the User Id
     EXEC master.sys.sp_set_session_context @key = N'UserId', @value = @UserId;
+
+	-- Set the Functional Currency Id
+    EXEC master.sys.sp_set_session_context @key = N'FunctionalCurrencyId', @value = @FunctionalCurrencyId;
 
     -- Return the user information
     SELECT 

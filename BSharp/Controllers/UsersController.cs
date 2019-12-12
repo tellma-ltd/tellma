@@ -382,11 +382,11 @@ namespace BSharp.Controllers
             ModelState.AddLocalizedErrors(sqlErrors, _localizer);
         }
 
-        protected override Task PreprocessSavedEntitiesAsync(List<UserForSave> entities)
+        protected override Task<List<UserForSave>> SavePreprocessAsync(List<UserForSave> entities)
         {
             // Make all the emails small case
             entities.ForEach(e => e.Email = e.Email.ToLower());
-            return Task.CompletedTask;
+            return Task.FromResult(entities);
         }
 
         protected override async Task<List<int>> SaveExecuteAsync(List<UserForSave> entities, ExpandExpression expand, bool returnIds)

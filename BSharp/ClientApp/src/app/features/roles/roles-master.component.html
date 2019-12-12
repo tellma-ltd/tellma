@@ -1,4 +1,5 @@
-<b-master collection="Role" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter" [masterCrumb]="'Roles' | translate" [tileTemplate]="tile"
+<b-master collection="Role" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
+  [additionalSelect]="additionalSelect" [masterCrumb]="'Roles' | translate" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" selectForTiles="Code" selectDefault="Code,IsPublic,IsActive"
   [tableSummaryHeaderTemplate]="summaryHeader" [multiselectActions]="[
   { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },

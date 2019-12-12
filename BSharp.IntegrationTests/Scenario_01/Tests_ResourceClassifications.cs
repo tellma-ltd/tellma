@@ -74,6 +74,8 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "04 Saving a single well-formed ResourceClassificationForSave returns a 200 OK result")]
         public async Task Test04()
         {
+            var parentId = (await (await Client.GetAsync($"{Url}?filter=Code eq 'CashAndCashEquivalents'")).Content.ReadAsAsync<GetResponse<ResourceClassification>>()).Result.Single().Id;
+
             // Prepare a well formed entity
             var dtoForSave = new ResourceClassificationForSave
             {
@@ -81,8 +83,9 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name = "Sheet Metals",
                 Name2 = "صفائح المعدن",
                 Code = "SM",
-                ParentId = null,
-                IsAssignable = true
+                ParentId = parentId,
+                IsAssignable = true,
+                 
             };
 
             // Save it

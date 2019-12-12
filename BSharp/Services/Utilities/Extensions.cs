@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -244,7 +245,9 @@ namespace BSharp.Services.Utilities
             {
                 // Parse the import value into a DateTime
                 var valueString = @this.ToString();
+                // dateTime = DateTime.ParseExact(valueString, "yyyy-MM-ddT", CultureInfo.InvariantCulture);
                 dateTime = DateTime.Parse(valueString);
+
             }
 
             return dateTime;

@@ -1,4 +1,5 @@
-<b-master *ngIf="found;else pageNotFound" collection="Lookup" [definition]="definitionId" [mode]="mode" [showCreateButton]="showCreate"
+<b-master *ngIf="found;else pageNotFound" collection="Lookup" [definition]="definitionId" [mode]="mode"
+  [additionalSelect]="additionalSelect" [showCreateButton]="showCreate"
   [filterDefault]="filter" [masterCrumb]="masterCrumb" [tileTemplate]="tile"
   [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
   selectDefault="Code,IsActive" selectForTiles="Code,Name,Name2,Name3" [multiselectActions]="[
@@ -13,8 +14,8 @@
 
 <!-- If definitionId is invalid -->
 <ng-template #pageNotFound>
-    <b-application-page-not-found>
-      </b-application-page-not-found>
+  <b-application-page-not-found>
+  </b-application-page-not-found>
 </ng-template>
 
 <!-- Tile Template -->

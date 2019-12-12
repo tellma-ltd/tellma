@@ -419,7 +419,7 @@ input.b-h2,
 
 .b-input {
   border-width: 0 0 1px 0;
-  border-color: $gray-500;
+  border-color: $gray-400;
   background-color: transparent;
   padding: 0 !important;
   height: auto;
@@ -627,11 +627,11 @@ li.b-text-whitish:hover {
   resize: none;
 }
 
-.table tr .b-input {
+table tr .b-input {
   border-bottom-width: 0px;
 }
 
-.table tr .b-form-group {
+table tr .b-form-group {
   padding: 0 !important;
 }
 

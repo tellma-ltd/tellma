@@ -57,14 +57,21 @@ namespace BSharp.Controllers
             {
                 Documents = new Dictionary<string, DocumentDefinitionForClient>
                 {
-                    //["journal-vouchers"] = new DocumentDefinitionForClient
-                    //{
-                    //    IsSourceDocument = true,
-                    //    FinalState = "Posted",
+                    ["manual-journal-vouchers"] = new DocumentDefinitionForClient
+                    {
+                        Prefix = "JV",
+                        TitlePlural = "Manual Journal Vouchers",
+                        TitlePlural2 = "قيود تسوية يدوية",
+                        TitlePlural3 = "手动日记帐凭单",
+                        TitleSingular = "Manual Journal Voucher",
+                        TitleSingular2 = "قيد تسوية يدوي",
+                        TitleSingular3 = "手动日记帐凭证",
+                        MainMenuIcon = "exchange-alt",
+                        MainMenuSection = "Financials",
+                        MainMenuSortKey = 50m,
 
-
-                    //    // TODO: implement mock
-                    //}
+                        // TODO: implement mock
+                    }
                 },
 
                 Agents = new Dictionary<string, AgentDefinitionForClient>

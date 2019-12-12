@@ -73,6 +73,8 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
       format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _select[0]),
       properties: {
         Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+        DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
+        Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'AgentDefinition', foreignKeyName: 'DefinitionId' },
         Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
         Name2: { control: 'text', label: () => trx.instant('Name') + ws.secondaryPostfix },
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
@@ -112,6 +114,9 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
         console.error(`defintionId '${definitionId}' doesn't exist`);
       }
     } else {
+
+      delete entityDesc.properties.DefinitionId;
+      delete entityDesc.properties.Definition;
 
       // Simple properties whose label is overridden by the definition
       const simpleLabelProps = ['StartDate'];

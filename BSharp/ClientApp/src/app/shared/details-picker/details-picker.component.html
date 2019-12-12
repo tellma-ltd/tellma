@@ -3,14 +3,14 @@
   <!-- The Search Field -->
   <div class="d-flex">
     <input class="form-control b-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
-      ngbDropdownAnchor autocomplete="off" />
+      ngbDropdownAnchor autocomplete="off"/>
     &nbsp;
-    <button class="btn btn-light btn-sm text-primary b-white-button p-0 px-1" *ngIf="showEditSelected" type="button" [style.margin-left]="editSelectedLeftMargin"  [style.margin-right]="editSelectedRightMargin"
+    <button class="btn btn-light btn-sm text-primary b-white-button p-0 px-1" *ngIf="showEditSelected" type="button"
       title="{{ 'Edit' | translate }}" (click)="onEditFromFocus()" [disabled]="isDisabled || disableEditSelected">
       <fa-icon icon="external-link-alt"></fa-icon>
     </button>
-    <button class="btn btn-light btn-sm text-primary b-white-button p-0 px-1" style="width:22.6px" *ngIf="showMagnifier" type="button"
-      title="{{ 'Search' | translate }}" (click)="openSearchModal()" [disabled]="isDisabled">
+    <button class="btn btn-light btn-sm text-primary b-white-button p-0 px-1" style="width:22.6px" *ngIf="showMagnifier"
+      type="button" title="{{ 'Search' | translate }}" (click)="openSearchModal()" [disabled]="isDisabled">
       <fa-icon icon="search"></fa-icon>
     </button>
   </div>
@@ -35,9 +35,6 @@
     </div>
     <ng-container *ngIf="showCreateNew">
       <hr />
-      <!-- <button class="dropdown-item text-primary b-slightly-bold" *ngIf="showEditSelected" [class.active]="highlightEditSelected">
-        Edit Selected...
-      </button> -->
       <div [placement]="placement" [ngbTooltip]="createNewTooltip">
         <button class="dropdown-item b-slightly-bold" [class.text-primary]="canCreateNew"
           [class.text-muted]="!canCreateNew" [class.active]="highlightCreateNew" (click)="onCreateFromFocus()"

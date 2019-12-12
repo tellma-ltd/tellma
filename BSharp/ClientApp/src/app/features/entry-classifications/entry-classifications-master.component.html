@@ -1,6 +1,7 @@
 <b-master collection="EntryClassification" [mode]="mode" [showCreateButton]="showCreate" [filterDefault]="filter"
-  [enableTreeView]="true" [masterCrumb]="'EntryClassifications' | translate" [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn"
-  [tableSummaryHeaderTemplate]="summaryHeader" selectDefault="IsAssignable" selectForTiles="Code" [multiselectActions]="[
+  [additionalSelect]="additionalSelect" [enableTreeView]="true" [masterCrumb]="'EntryClassifications' | translate"
+  [tileTemplate]="tile" [tableSummaryColumnTemplate]="summaryColumn" [tableSummaryHeaderTemplate]="summaryHeader"
+  selectDefault="IsAssignable" selectForTiles="Code" [multiselectActions]="[
           { template: activate, action: onActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
           { template: deactivate, action: onDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
           ]" [includeInactiveLabel]="'IncludeInactive' | translate" [filterDefinition]="{

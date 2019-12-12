@@ -1,5 +1,5 @@
 <b-details-picker [filter]="filter" collection="EntryClassification" [masterTemplate]="master"
-    [detailsTemplate]="showCreate ? details : null">
+    [detailsTemplate]="showCreate ? details : null" [additionalSelect]="additionalSelect">
 </b-details-picker>
 
 <!-- The Details Modal -->
@@ -16,7 +16,7 @@
     <div class="modal-body">
         <b-entry-classifications-master mode="popup" (cancel)="modal.close(false);" [showCreate]="showCreate"
             [filter]="filter" (choose)="modal.close(true); update.call(null, $event); "
-            (create)="modal.close(false); create.call()">
+            (create)="modal.close(false); create.call()" [additionalSelect]="additionalSelect">
         </b-entry-classifications-master>
     </div>
 </ng-template>

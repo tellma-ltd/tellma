@@ -29,7 +29,6 @@ namespace BSharp.Entities
         public string Code { get; set; }
 
         [Display(Name = "Account_IsSmart")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
         public bool? IsSmart { get; set; }
 
@@ -42,9 +41,11 @@ namespace BSharp.Entities
         [Display(Name = "Account_Classification")]
         public int? AccountClassificationId { get; set; }
 
+        [Display(Name = "Account_Currency")]
+        public string CurrencyId { get; set; }
+
         // Fields below are not used for now....
 
-        public string CurrencyId { get; set; }
         public int? ResponsibilityCenterId { get; set; }
         public string ContractType { get; set; }
         public string AgentDefinitionId { get; set; }
@@ -86,6 +87,10 @@ namespace BSharp.Entities
         [Display(Name = "Account_Classification")]
         [ForeignKey(nameof(AccountClassificationId))]
         public AccountClassification AccountClassification { get; set; }
+
+        [Display(Name = "Account_Currency")]
+        [ForeignKey(nameof(CurrencyId))]
+        public Currency Currency { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

@@ -38,29 +38,6 @@ export class IfrsAccountClassification extends EntityWithKey {
   ParentNode: string;
 }
 
-export class IfrsEntryClassification extends EntityWithKey {
-  Level: number;
-  ParentId: number | string;
-  ActiveChildCount: number;
-  ChildCount: number;
-  IsLeaf: boolean;
-  Label: string;
-  Label2: string;
-  Label3: string;
-  Documentation: string;
-  Documentation2: string;
-  Documentation3: string;
-  EffectiveDate: string;
-  ExpiryDate: string;
-  ForDebit: boolean;
-  ForCredit: boolean;
-  IsActive: boolean;
-  Node: string;
-  ParentNode: string;
-}
-
-const _select = ['', '2', '3'].map(pf => 'Name' + pf);
-
 let _voucherBookletSettings: SettingsForClient;
 let _voucherBookletCache: EntityDescriptor;
 
@@ -123,50 +100,6 @@ export function metadata_IfrsAccountClassification(ws: TenantWorkspace, trx: Tra
       ExpiryDate: { control: 'date', label: () => trx.instant('IfrsConcepts_ExpiryDate') },
       ForDebit: { control: 'boolean', label: () => trx.instant('IfrsNotes_ForDebit') },
       ForCredit: { control: 'boolean', label: () => trx.instant('IfrsNotes_ForCredit') },
-      IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
-
-      // tree stuff
-      ChildCount: {
-        control: 'number', label: () => trx.instant('TreeChildCount'), minDecimalPlaces: 0,
-        maxDecimalPlaces: 0, alignment: 'right'
-      },
-      ActiveChildCount: {
-        control: 'number', label: () => trx.instant('TreeActiveChildCount'),
-        minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
-      },
-      Level: {
-        control: 'number', label: () => trx.instant('TreeLevel'),
-        minDecimalPlaces: 0, maxDecimalPlaces: 0, alignment: 'right'
-      },
-      Parent: {
-        control: 'navigation', label: () => trx.instant('TreeParent'),
-        type: 'IfrsAccountClassification', foreignKeyName: 'ParentId'
-      },
-    }
-  };
-}
-
-export function metadata_IfrsEntryClassification(ws: TenantWorkspace, trx: TranslateService, _: string): EntityDescriptor {
-  // Some global values affect the result, we check here if they have changed, otherwise we return the cached result
-  return {
-    collection: 'IfrsEntryClassification',
-    titleSingular: () =>  'IFRS Entry Classification',
-    titlePlural: () =>  'IFRS Entry Classification',
-    select: _label,
-    apiEndpoint: 'ifrs-entry-classifications',
-    screenUrl: 'ifrs-entry-classifications',
-    orderby: ws.isSecondaryLanguage ? [_label[1], _label[0]] : ws.isTernaryLanguage ? [_label[2], _label[0]] : [_label[0]],
-    format: (item: EntityWithKey) => ws.getMultilingualValueImmediate(item, _label[0]),
-    properties: {
-      Id: { control: 'text', label: () => trx.instant('Code') },
-      Label: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.primaryPostfix },
-      Label2: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.secondaryPostfix },
-      Label3: { control: 'text', label: () => trx.instant('IfrsConcepts_Label') + ws.ternaryPostfix },
-      Documentation: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.primaryPostfix },
-      Documentation2: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.secondaryPostfix },
-      Documentation3: { control: 'text', label: () => trx.instant('IfrsConcepts_Documentation') + ws.ternaryPostfix },
-      EffectiveDate: { control: 'date', label: () => trx.instant('IfrsConcepts_EffectiveDate') },
-      ExpiryDate: { control: 'date', label: () => trx.instant('IfrsConcepts_ExpiryDate') },
       IsActive: { control: 'boolean', label: () => trx.instant('IsActive') },
 
       // tree stuff

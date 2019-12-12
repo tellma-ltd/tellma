@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -47,6 +48,7 @@ namespace BSharp.Entities
         public string Memo { get; set; }
 
         [Display(Name = "Document_MemoIsCommon")]
+        [DefaultValue(true)]
         public bool? MemoIsCommon { get; set; }
 
         [ForeignKey(nameof(Line.DocumentId))]
@@ -93,7 +95,7 @@ namespace BSharp.Entities
             DocStateName.Reviewed,
             DocStateName.Closed
         })]
-        public int? State { get; set; }
+        public short? State { get; set; }
 
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
@@ -144,16 +146,16 @@ namespace BSharp.Entities
 
     public static class DocState
     {
-        public const int Draft = 0;
-        public const int Void = -1;
-        public const int Requested = 1;
-        public const int Rejected = -2;
-        public const int Authorized = 2;
-        public const int Failed = -3;
-        public const int Completed = 3;
-        public const int Invalid = -4;
-        public const int Reviewed = 4;
-        public const int Closed = 5;
+        public const short Draft = 0;
+        public const short Void = -1;
+        public const short Requested = 1;
+        public const short Rejected = -2;
+        public const short Authorized = 2;
+        public const short Failed = -3;
+        public const short Completed = 3;
+        public const short Invalid = -4;
+        public const short Reviewed = 4;
+        public const short Closed = 5;
     }
 
     public static class DocStateName

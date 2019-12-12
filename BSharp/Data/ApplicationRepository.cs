@@ -3385,13 +3385,77 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return query.FromSql($"[map].[{nameof(Documents__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
-        public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(string definitionId, List<DocumentForSave> entities, int top)
+        public async Task<List<DocumentForSave>> Documents__Preprocess(string definitionId, List<DocumentForSave> documents)
+        {
+            var result = new List<DocumentForSave>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
+
+                var docsTvp = new SqlParameter("@Documents", docsTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Document)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var linesTvp = new SqlParameter("@Lines", linesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Line)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                var entriesTvp = new SqlParameter("@Entries", entriesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Entry)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add("@DefinitionId", definitionId);
+                cmd.Parameters.Add(docsTvp);
+                cmd.Parameters.Add(linesTvp);
+                cmd.Parameters.Add(entriesTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Documents__Preprocess)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    var props = typeof(EntryForSave).GetMappedProperties();
+                    while (await reader.ReadAsync())
+                    {
+                        var index = reader.GetInt32(2);
+                        var lineIndex = reader.GetInt32(1);
+                        var documentIndex = reader.GetInt32(0);
+
+                        var entry = documents[documentIndex].Lines[lineIndex].Entries[index];
+
+                        foreach (var prop in props)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entry, propValue);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(string definitionId, List<DocumentForSave> documents, int top)
         {
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(entities);
+                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
                 var docsTvp = new SqlParameter("@Documents", docsTable)
                 {
@@ -3426,7 +3490,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             }
         }
 
-        public async Task<List<int>> Documents__Save(string definitionId, List<DocumentForSave> entities, bool returnIds)
+        public async Task<List<int>> Documents__Save(string definitionId, List<DocumentForSave> documents, bool returnIds)
         {
             var result = new List<IndexedId>();
 
@@ -3434,7 +3498,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             using (var cmd = conn.CreateCommand())
             {
                 // Parameters
-                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(entities);
+                var (docsTable, linesTable, entriesTable) = RepositoryUtilities.DataTableFromDocuments(documents);
 
                 var docsTvp = new SqlParameter("@Documents", docsTable)
                 {
@@ -3487,7 +3551,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             }
 
             // Return ordered result
-            var sortedResult = new int[entities.Count];
+            var sortedResult = new int[documents.Count];
             result.ForEach(e =>
             {
                 sortedResult[e.Index] = e.Id;

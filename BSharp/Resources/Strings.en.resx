@@ -73,6 +73,9 @@
   <data name="Account_Classification" xml:space="preserve">
     <value>Classification</value>
   </data>
+  <data name="Account_Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>Is Deprecated</value>
   </data>
@@ -164,7 +167,7 @@
     <value>Android</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>BSharp</value>
+    <value>tellma</value>
   </data>
   <data name="AuthenticatorApp" xml:space="preserve">
     <value>Authenticator App</value>
@@ -490,6 +493,12 @@
   <data name="Error_ConfirmingYourEmail" xml:space="preserve">
     <value>An error occurred while confirming your email.</value>
   </data>
+  <data name="Error_DateCannotBeBeforeArchiveDate0" xml:space="preserve">
+    <value>The date cannot be before the archive date {0}</value>
+  </data>
+  <data name="Error_DateCannotBeInTheFuture" xml:space="preserve">
+    <value>The date cannot be in the future</value>
+  </data>
   <data name="Error_Deleting0IsNotSupportedFromThisAPI" xml:space="preserve">
     <value>Deleting {0} is not supported from this API.</value>
   </data>
@@ -552,6 +561,9 @@
   </data>
   <data name="Error_TheAccountClassification0IsUsedInAccount1" xml:space="preserve">
     <value>The account classification '{0}' is used in account '{1}'</value>
+  </data>
+  <data name="Error_TheAmount0DoesNotMatchTheValue1EvenThoughBothIn2" xml:space="preserve">
+    <value>The amount {0} does not match the value {1} even though both are in {2}</value>
   </data>
   <data name="Error_TheCode0DoesNotExist" xml:space="preserve">
     <value>The code '{0}' does not exist.</value>

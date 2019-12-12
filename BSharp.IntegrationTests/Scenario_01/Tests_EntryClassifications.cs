@@ -72,13 +72,15 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "04 Saving a single well-formed EntryClassificationForSave returns a 200 OK result")]
         public async Task Test04()
         {
+            var parentId = (await (await Client.GetAsync($"{Url}?filter=Code eq 'ChangesInPropertyPlantAndEquipment'")).Content.ReadAsAsync<GetResponse<EntryClassification>>()).Result.Single().Id;
+
             // Prepare a well formed entity
             var dtoForSave = new EntryClassificationForSave
             {
                 Name = "Sheet Metals",
                 Name2 = "صفائح المعدن",
                 Code = "SM",
-                ParentId = null,
+                ParentId = parentId,
                 IsAssignable = true,
                 ForDebit = true,
                 ForCredit = true

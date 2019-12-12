@@ -15,6 +15,7 @@ import { metadata_ResourceClassification } from '~/app/data/entities/resource-cl
 import { metadata_Account } from '~/app/data/entities/account';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { metadata_Agent } from '~/app/data/entities/agent';
+import { metadata_Document } from '~/app/data/entities/document';
 
 interface ConcreteViewInfo {
   name: () => string;
@@ -312,6 +313,22 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
           };
         } else {
           console.error(`Could not find resource definitionId '${definitionId}'`);
+        }
+      }
+
+      const documents = this.ws.definitions.Documents;
+      for (const definitionId of Object.keys(documents)) {
+        const entityDesc = metadata_Document(this.ws, this.translate, definitionId);
+        if (!!entityDesc) {
+          this._viewsDb[entityDesc.apiEndpoint] = {
+            name: entityDesc.titlePlural,
+            actions: {
+              All: { supportsCriteria: false, supportsMask: false },
+              Read: { supportsCriteria: true, supportsMask: true },
+              Update: { supportsCriteria: true, supportsMask: true },
+              Delete: { supportsCriteria: true, supportsMask: false },
+            }
+          };
         }
       }
     }
