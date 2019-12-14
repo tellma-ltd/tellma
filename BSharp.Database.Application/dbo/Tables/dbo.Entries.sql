@@ -50,14 +50,14 @@
 --	The good/service consumed for indirect expenses
 --	Manufacturing and expiry date apply to the composite pair (ResourceId and BatchCode)
 	--[Memo]						NVARCHAR (255),
-	[MonetaryValue]				DECIMAL (19,4)			NOT NULL DEFAULT 0,
+	[MonetaryValue]				DECIMAL (19,4),--			NOT NULL DEFAULT 0,
 -- Tracking additive measures, the data type is to be decided by AA
-	[Count]						DECIMAL (19,4)	NOT NULL DEFAULT 0,
-	[Mass]						DECIMAL (19,4)	NOT NULL DEFAULT 0,
-	[Volume]					DECIMAL (19,4)	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
-	[Time]						DECIMAL (19,4)	NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[Count]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
+	[Mass]						DECIMAL (19,4),--	NOT NULL DEFAULT 0,
+	[Volume]					DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping	
+	[Time]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- ServiceTimeUnit
 	
-	[Value]						VTYPE			NOT NULL DEFAULT 0, -- equivalent in functional currency
+	[Value]						DECIMAL (19,4),--	NOT NULL DEFAULT 0, -- equivalent in functional currency
 -- The following are sort of dynamic properties that capture information for reporting purposes
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),

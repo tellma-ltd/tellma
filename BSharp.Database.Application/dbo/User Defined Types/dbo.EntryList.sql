@@ -18,12 +18,12 @@
 	[EntryClassificationId]		INT,
 	--[BatchCode]					NVARCHAR (50),
 	[DueDate]					DATE,
-	[MonetaryValue]				DECIMAL (19,4)		NOT NULL DEFAULT 0, -- Amount in foreign Currency 
-	[Count]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- CountUnit
-	[Mass]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
-	[Volume]					DECIMAL (19,4)		NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
-	[Time]						DECIMAL (19,4)		NOT NULL DEFAULT 0, -- ServiceTimeUnit
-	[Value]						DECIMAL (19,4)		NOT NULL DEFAULT 0 ,-- equivalent in functional currency
+	[MonetaryValue]				DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- Amount in foreign Currency 
+	[Count]						DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- CountUnit
+	[Mass]						DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- MassUnit, like LTZ bar, cement bag, etc
+	[Volume]					DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- VolumeUnit, possibly for shipping
+	[Time]						DECIMAL (19,4),--		NOT NULL DEFAULT 0, -- ServiceTimeUnit
+	[Value]						DECIMAL (19,4),--		NOT NULL DEFAULT 0 ,-- equivalent in functional currency
 	[ExternalReference]			NVARCHAR (50),
 	[AdditionalReference]		NVARCHAR (50),
 	[RelatedAgentId]			INT,

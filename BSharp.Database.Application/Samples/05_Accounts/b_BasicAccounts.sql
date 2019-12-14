@@ -1,4 +1,12 @@
-﻿DECLARE @BasicAccounts dbo.AccountList;
+﻿DECLARE @BA_CBEUSD INT, @BA_CBEETB INT, @CBELC INT, @ESL INT, @CapitalMA INT, @CapitalAA INT, 
+	@RegusAccount INT, @VimeksAccount INT, @NocJimmaAccount INT, @BA_ToyotaAccount INT, @PrepaidRental INT;
+DECLARE @PPEVehicles INT, @PPEWarehouse INT;
+DECLARE @fuelHR INT, @fuelSalesAdminAG INT, @fuelProduction INT, @fuelSalesDistAG INT;
+DECLARE @VATInput INT, @VATOutput INT, @SalariesAdmin INT, @SalariesAccrualsTaxable INT, @OvertimeAdmin INT,
+		@SalariesAccrualsNonTaxable INT, @EmployeesPayable INT, @EmployeesIncomeTaxPayable INT;
+
+
+DECLARE @BasicAccounts dbo.AccountList;
 DECLARE @RC_Cash INT = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [Code] = N'Cash');
 
 INSERT INTO @BasicAccounts([Index],
@@ -56,7 +64,7 @@ SELECT @CapitalMA = [Id] FROM dbo.[Accounts] WHERE Code = N'3101';
 SELECT @CapitalAA = [Id] FROM dbo.[Accounts] WHERE Code = N'3102';
 
 SELECT @NocJimmaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2102';
-SELECT @ToyotaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2103';
+SELECT @BA_ToyotaAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2103';
 SELECT @RegusAccount = [Id] FROM dbo.[Accounts] WHERE Code = N'2104';
 SELECT @SalariesAccrualsTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2501';
 SELECT @SalariesAccrualsNonTaxable = [Id] FROM dbo.[Accounts] WHERE Code = N'2502';

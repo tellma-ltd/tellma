@@ -27,7 +27,7 @@
 --
 	[EntryClassificationId]			INT,
 	CHECK (
-		([IsSmart] = 0 AND [ResourceId] = CONVERT(INT, SESSION_CONTEXT(N'FunctionalResourceId'))) OR 
-		([ResourceClassificationId] IS NOT NULL AND [ContractType] IS NOT NULL)
+		([IsSmart] = 0) OR 
+		([ContractType] IS NOT NULL)
 	)
 );

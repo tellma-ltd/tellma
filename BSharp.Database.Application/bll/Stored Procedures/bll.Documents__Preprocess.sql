@@ -23,7 +23,6 @@ SET E.CurrencyId = L.CurrencyId
 FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.LineDefinitionEntries LDE ON L.DefinitionId = LDE.LineDefinitionId AND E.EntryNumber = LDE.EntryNumber
 WHERE LDE.CurrencySource = 1 AND E.CurrencyId <> L.CurrencyId
---select 2 as step, E.* from @FilledEntries E
 
 UPDATE E 
 SET E.AgentId = L.AgentId
@@ -43,8 +42,8 @@ SET
 	E.[IsCurrent]				= NULL,
 	E.[AgentId]					= NULL,
 	E.[ResourceId]				= NULL,
-	E.[CurrencyId]				= A.CurrencyId, --CONVERT(NCHAR (3), SESSION_CONTEXT(N'FunctionalCurrencyId')),
-	E.[ResponsibilityCenterId]	= NULL,
+	E.[CurrencyId]				= A.CurrencyId,
+	E.[ResponsibilityCenterId]	= NULL, -- this one may be copied or coalesced in the future
 	E.[AccountIdentifier]		= NULL,
 	E.[EntryClassificationId]	= NULL
 FROM @FilledEntries E
@@ -57,6 +56,7 @@ SET
 	E.[IsCurrent]				= COALESCE(A.[IsCurrent], E.[IsCurrent]),
 	E.[AgentId]					= COALESCE(A.[AgentId], E.[AgentId]),
 	E.[ResourceId]				= COALESCE(A.[ResourceId], E.[ResourceId]),
+	E.[CurrencyId]				= COALESCE(A.[CurrencyId], E.[CurrencyId]),
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
 	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
 	E.[EntryClassificationId]	= COALESCE(A.[EntryClassificationId], E.[EntryClassificationId])
@@ -65,20 +65,16 @@ JOIN dbo.Accounts A ON E.AccountId = A.Id
 WHERE L.DefinitionId = N'ManualLine' AND A.[IsSmart] = 1; -- Entered by user
 
 -- for all lines, Get currency and identifier from Resources if available.
-UPDATE E 
-SET
-	E.[CurrencyId]			 = 	COALESCE(R.[CurrencyId], E.[CurrencyId]),
-	E.[ResourceIdentifier] =  COALESCE(R.[Identifier], E.[ResourceIdentifier])
-FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
-JOIN dbo.Resources R ON E.ResourceId = R.Id
-
 -- set the count to one, if singleton
 UPDATE E 
 SET
-	E.[Count]		=	COALESCE(R.[Count], E.[Count]) -- If the Resource is a singleton, R.[Count] is one.
+	E.[CurrencyId]			=	COALESCE(R.[CurrencyId], E.[CurrencyId]),
+	E.[ResourceIdentifier]	=	COALESCE(R.[Identifier], E.[ResourceIdentifier]),
+	E.[Count]				=	COALESCE(R.[Count], E.[Count]) -- If the Resource is a singleton, R.[Count] is one.
 FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id
 
+-- Once E.Count is defined, 
 -- set the other measures, if the rate per unit is defined
 UPDATE E 
 SET
@@ -101,14 +97,16 @@ JOIN dbo.LineDefinitionEntries LDE ON L.[DefinitionId] = LDE.[LineDefinitionId] 
 
 -- for financial amounts in functional currency, the value is known
 UPDATE E 
-SET E.[MonetaryValue] = E.[Value]
+SET -- to allow flexibility, we can either enter value and get monetary value or vice versa
+	E.[MonetaryValue]	= COALESCE(E.[MonetaryValue], E.[Value]),
+	E.[Value]			= COALESCE(E.[Value], E.[MonetaryValue])
 FROM @FilledEntries E
 JOIN dbo.Accounts A ON E.AccountId = A.Id
 JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN @Documents D ON L.DocumentIndex = D.[Index]
 WHERE
 	E.[CurrencyId] = @FunctionalCurrencyId
-	AND (E.[Value] <> E.[MonetaryValue]);
+	AND (E.[Value] IS NULL OR E.[MonetaryValue] IS NULL);
 
 -- for financial amounts in foreign currency, the value is manually entered or read from a web service
 --UPDATE E 
