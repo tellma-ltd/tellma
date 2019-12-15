@@ -7,7 +7,9 @@ WITH Docs__NewStates AS (
 	GROUP BY DocumentId
 )
 UPDATE D
-SET D.[State] = DN.[State]
+SET
+	D.[State]	= DN.[State],
+	D.[StateAt] = SYSDATETIMEOFFSET()
 FROM dbo.Documents D
 JOIN Docs__NewStates DN ON D.[Id] = DN.[Id]
 WHERE D.[State] <> DN.[State];

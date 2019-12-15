@@ -10,7 +10,7 @@
 	[OperatingSegmentId]			INT				NOT NULL CONSTRAINT [FK_Documents__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
 	[DocumentDate]					DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()) CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())),
 	[State]							SMALLINT		NOT NULL DEFAULT 0,
-	
+	[StateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	-- For a source socument, Evidence type == Authentication. Else source document, Attachment, trust
 	-- When evidence type = source document
 	[VoucherBookletId]				INT, -- each range might be dedicated for a special purpose

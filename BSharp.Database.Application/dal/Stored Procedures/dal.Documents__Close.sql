@@ -4,7 +4,8 @@ AS
 BEGIN
 	UPDATE dbo.Documents
 	SET
-		[State] = 5
+		[State] = 5,
+		[StateAt] = SYSDATETIMEOFFSET()
 	Where [Id] IN (
 		SELECT [Id] FROM @Ids
 	);
