@@ -477,6 +477,7 @@
     <Build Include="api\Stored Procedures\api.Documents__Open.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Open.sql" />
     <Build Include="dbo\Functions\dbo.fn_ECCode__Id.sql" />
+    <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

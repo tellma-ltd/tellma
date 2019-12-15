@@ -102,13 +102,25 @@ BEGIN -- Inserting
 		GOTO Err_Label;
 	END;
 
-	DECLARE @DocLinesIndexedIds dbo.[IndexedIdList];
-	INSERT INTO @DocLinesIndexedIds([Index], [Id])
-	-- TODO: fill index using ROWNUMBER
-	SELECT [Id], [Id] FROM dbo.[Lines] WHERE [State] = 0; --N'Draft';
+	--DECLARE @DocLinesIndexedIds dbo.[IndexedIdList];
+	--INSERT INTO @DocLinesIndexedIds([Index], [Id])
+	---- TODO: fill index using ROWNUMBER
+	--SELECT [Id], [Id] FROM dbo.[Lines] WHERE [State] = 0; --N'Draft';
 
-	EXEC [api].[Lines__Sign]
-		@IndexedIds = @DocLinesIndexedIds,
+	--EXEC [api].[Lines__Sign]
+	--	@IndexedIds = @DocLinesIndexedIds,
+	--	@ToState = 4, -- N'Reviewed',
+	--	@AgentId = @MohamadAkra,
+	--	@RoleId = @Accountant, -- we allow selecting the role manually,
+	--	@SignedAt = @Now,
+	--	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
+	INSERT INTO @DocsIndexedIds([Index], [Id])
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
+
+	EXEC [api].[Documents__Sign]
+		@IndexedIds = @DocsIndexedIds,
 		@ToState = 4, -- N'Reviewed',
 		@AgentId = @MohamadAkra,
 		@RoleId = @Accountant, -- we allow selecting the role manually,
@@ -121,18 +133,9 @@ BEGIN -- Inserting
 		GOTO Err_Label;
 	END;
 
-	--IF @DebugManualVouchers = 1
-	--BEGIN
-	--		DELETE FROM @DIds;
-	--		INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'manual-journal-vouchers';
-	--		EXEC [rpt].[Docs__UI] @DIds;
-	--END
-
-	DECLARE @DocsIndexedIds dbo.[IndexedIdList];
-	-- TODO: fill index using ROWNUMBER
+	DELETE FROM @DocsIndexedIds;
 	INSERT INTO @DocsIndexedIds([Index], [Id])
-	--SELECT [Id], [Id] FROM dbo.Documents WHERE [State] = N'Active';
-	SELECT [Id], [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
+	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
 
 	EXEC [api].[Documents__Close]
 		@IndexedIds = @DocsIndexedIds,

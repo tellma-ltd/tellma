@@ -72,4 +72,7 @@ BEGIN
 		@Ids = @NewDocumentsIds,
 		@AssigneeId = @UserId,
 		@Comment = N'FYC'
+
+	IF @ReturnIds = 1
+		SELECT * FROM @DocumentsIndexedIds;
 END;
