@@ -1,4 +1,5 @@
-﻿IF NOT EXISTS(SELECT * FROM [dbo].[Users] WHERE [Email] = @DeployEmail)
+﻿-- TODO: Use API to fill uers and roles
+IF NOT EXISTS(SELECT * FROM [dbo].[Users] WHERE [Email] = @DeployEmail)
 BEGIN
 	--INSERT INTO dbo.Agents([Name],[DefinitionId], CreatedById, ModifiedById)
 	--VALUES (N'Banan IT', N'organizations', IDENT_CURRENT('dbo.Agents'), IDENT_CURRENT('dbo.Agents'));
@@ -22,12 +23,3 @@ END
 -- Set the user session context
 SELECT @AdminUserId = [Id] FROM dbo.[Users] WHERE [Email] = @DeployEmail;
 EXEC master.sys.sp_set_session_context 'UserId', @AdminUserId;
-
-IF NOT EXISTS(SELECT * FROM dbo.ResourceDefinitions WHERE [Id] = N'currencies')
-	INSERT INTO dbo.ResourceDefinitions([Id])
-	VALUES(N'currencies');
-
-IF NOT EXISTS(SELECT * FROM dbo.ResourceDefinitions WHERE [Id] = N'general-items')
-INSERT INTO dbo.ResourceDefinitions (
-	[Id],			[TitlePlural],		[TitleSingular]) VALUES
-(N'general-items',	N'General Items',	N'General Item');

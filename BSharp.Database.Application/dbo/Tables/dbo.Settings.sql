@@ -1,5 +1,4 @@
 ﻿CREATE TABLE [dbo].[Settings] ( -- TODO: Make it wide table, up to 30,0000 columns
-
 	[ShortCompanyName]			NVARCHAR (255) NOT NULL,
 	[ShortCompanyName2]			NVARCHAR (255) NULL,
 	[ShortCompanyName3]			NVARCHAR (255) NULL,
@@ -13,7 +12,7 @@
 	[DefinitionsVersion]		UNIQUEIDENTIFIER NOT NULL,
 	[SettingsVersion]			UNIQUEIDENTIFIER NOT NULL,
 
-	[FunctionalCurrencyId]		NCHAR(3),
+	[FunctionalCurrencyId]		NCHAR(3)			CONSTRAINT [FK_Settings__CurrencyId] REFERENCES dbo.Currencies([Id]),
 	-- The date before which data is frozen.
 	[ArchiveDate]				DATE				NOT NULL DEFAULT ('1900.01.01'),
 	[ResourceLookup1Label]		NVARCHAR (50),

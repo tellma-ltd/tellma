@@ -205,13 +205,3 @@ END;
 
 UPDATE dbo.[EntryClassifications] SET IsSystem = 1;
 
-IF @DebugEntryClassifications = 1
-	SELECT [Code], SPACE(5 * ([Node].GetLevel() - 1)) +  [Name] As [Name], [Node].ToString() As [Path], [IsAssignable]
-	FROM dbo.[EntryClassifications];
-
-DECLARE @ProceedsFromIssuingShares		INT = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'ProceedsFromIssuingShares' );
-DECLARE @IssueOfEquity					INT = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'IssueOfEquity' );
-DECLARE @InternalCashTransferExtension	INT = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'InternalCashTransferExtension' );
-DECLARE @InventoryPurchaseExtension		INT = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'InventoryPurchaseExtension' );
-DECLARE @PPEAdditions					INT = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment' );
-DECLARE @InvReclassifiedAsPPE			INT = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'InventoryReclassifiedAsPropertyPlantAndEquipment' );

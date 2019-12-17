@@ -1,4 +1,6 @@
-﻿	INSERT INTO dbo.AgentDefinitions
+﻿IF NOT EXISTS(SELECT * FROM dbo.AgentDefinitions)
+BEGIN
+	INSERT INTO dbo.AgentDefinitions
 	([Id],				[TitleSingular],	[TitlePlural]) VALUES
 	(N'cost-units',		N'Cost Unit',		N'Cost Units'),
 	(N'cost-centers',	N'Cost Center',		N'Cost Centers'),
@@ -12,6 +14,8 @@
 	(N'custodies',		N'Custody',			N'Custodies')
 	;
 
+	-- TODO: depends on country
 	INSERT INTO dbo.AgentDefinitions
 	([Id],				[TitleSingular],	[TitlePlural],	[JobVisibility], [BasicSalaryVisibility], [TransportationAllowanceVisibility], [OvertimeRateVisibility]) VALUES
 	(N'employees',		N'Employee',		N'Employees',	N'VisibleAndRequired',N'VisibleAndRequired',	N'VisibleAndRequired',				N'VisibleAndRequired');
+END
