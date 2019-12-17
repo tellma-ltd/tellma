@@ -485,6 +485,7 @@
     <None Include="Provisioning\d_EntryClassifications.sql" />
     <None Include="Provisioning\e_ResourceClassificationsEntryClassifications.sql" />
     <None Include="Provisioning\j_AccountTypes.sql" />
+    <Build Include="Mapping\DocumentSignatures.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

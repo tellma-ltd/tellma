@@ -152,6 +152,8 @@ BEGIN -- Inserting
 			DELETE FROM @DIds;
 			INSERT INTO @DIds([Id]) SELECT [Id] FROM dbo.Documents WHERE DefinitionId = N'manual-journal-vouchers';
 			EXEC [rpt].[Docs__UI] @DIds;
+
+			SELECT * FROM map.DocumentSignatures();
 	END
 END
 IF @DebugReports = 1
