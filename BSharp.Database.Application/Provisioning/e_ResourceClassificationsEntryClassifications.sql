@@ -76,9 +76,3 @@ WHEN NOT MATCHED BY TARGET THEN
 --    INSERT ([ResourceClassificationId], [EntryClassificationId])
 --    VALUES (s.[ResourceClassificationId], s.[EntryClassificationId]);
 
-IF @DebugResourceClassificationsEntryClassifications = 1
-	SELECT RC.[Name] AS [Resource Classification], EC.[Name] AS [Entry Classification]
-	FROM dbo.ResourceClassifications RC
-	JOIN dbo.[ResourceClassificationsEntryClassifications] RCET ON RC.Id = RCET.ResourceClassificationId
-	JOIN dbo.[EntryClassifications] EC ON RCET.EntryClassificationId = EC.[Id]
-	ORDER BY RC.[Node], EC.[Node]

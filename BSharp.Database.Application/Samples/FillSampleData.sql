@@ -1,34 +1,5 @@
-﻿-- TODO: Make it idempotent, and also write it so as not to repeat the variable declarations
-	DECLARE @ValidationErrorsJson nvarchar(max);
-	DECLARE @DebugRoles bit = 0, @DebugResourceClassifications bit = 0,
-			@DebugEntryClassifications bit = 0, @DebugResourceClassificationsEntryClassifications bit = 0, @DebugAccountTypes bit = 0,
-			@DebugLookupDefinitions bit = 0;
-	DECLARE @DebugCurrencies bit = 0, @DebugMeasurementUnits bit = 0, @DebugLookups bit = 0;
-	DECLARE @DebugResponsibilityCenters bit = 0;
-	DECLARE @DebugSuppliers bit = 0, @DebugCustomers bit = 0, @DebugEmployees bit = 0, @DebugShareholders bit = 0,
-			@DebugBanks bit = 0, @DebugCustodies bit = 0;
-	DECLARE @DebugResources bit = 0, @DebugAccountClassifications bit = 0, @DebugAccounts bit = 0;
-	DECLARE @DebugLineDefinitions bit = 0, @DebugDocumentDefinitions bit = 0;
-	DECLARE @DebugManualVouchers bit = 0, @DebugReports bit = 0;
-	DECLARE @DebugCashPaymentVouchers bit = 0, @DebugPettyCashVouchers bit = 0;	DECLARE @LookupsSelect bit = 0;
-	DECLARE @fromDate Date, @toDate Date;
-	EXEC sp_set_session_context 'Debug', 1;
-	DECLARE @UserId INT, @RowCount INT;
-
-	SELECT @UserId = [Id] FROM dbo.[Users] WHERE [Email] = N'admin@bsharp.online';-- '$(DeployEmail)';
-	EXEC sp_set_session_context 'UserId', @UserId;--, @read_only = 1;
-
-	DECLARE @FunctionalCurrencyId NCHAR(3);
-	SELECT @FunctionalCurrencyId = [FunctionalCurrencyId] FROM dbo.Settings;
-	EXEC sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;--, @read_only = 1;
-
-	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-		:r .\00_Setup\a_RolesMemberships.sql
-		:r .\00_Setup\b_AgentDefinitions.sql
-		:r .\00_Setup\c_ResourceClassifications.sql
-		:r .\00_Setup\d_EntryClassifications.sql
-		:r .\00_Setup\e_ResourceClassificationsEntryClassifications.sql
-		:r .\00_Setup\f_AccountTypes.sql
+﻿		:r .\00_Setup\a_Declarations.sql
+		:r .\00_Setup\b_RolesMemberships.sql
 		:r .\00_Setup\z_LookupDefinitions.sql
 
 		:r .\01_Basic\a_Currencies.sql

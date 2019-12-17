@@ -84,8 +84,6 @@
     <Folder Include="rpt\Stored Procedures" />
     <Folder Include="bll\Functions" />
     <Folder Include="Mapping" />
-    <Folder Include="Provisioning\00_Setup" />
-    <Folder Include="Provisioning\03_Lines" />
     <Folder Include="Samples" />
     <Folder Include="Samples\00_Setup" />
     <Folder Include="Samples\03_Resources" />
@@ -139,9 +137,9 @@
     <None Include="Tests\60_SalesCycle.sql" />
     <None Include="Tests\21_Financing.sql" />
     <None Include="Tests\TestingToBeCleaned.sql" />
-    <None Include="Provisioning\93_IfrsAccountClassifications.sql" />
-    <None Include="Provisioning\92_IfrsEntryClassifications.sql" />
-    <PostDeploy Include="Provisioning\00_Main.sql" />
+    <None Include="Provisioning\z_IfrsAccountClassifications.sql" />
+    <None Include="Provisioning\y_IfrsEntryClassifications.sql" />
+    <PostDeploy Include="Provisioning\__Main.sql" />
     <Build Include="Security\bll.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitions.sql" />
     <Build Include="dbo\Functions\dbo.fe_EndDateTime__StartDateTime_Frequency_Duration.sql" />
@@ -404,12 +402,11 @@
     <Build Include="dbo\Functions\dbo.fn_State__StateId.sql" />
     <Build Include="dbo\Functions\dbo.fn_StateId__State.sql" />
     <Build Include="bll\Functions\bll.fi_Lines__Ready.sql" />
-    <None Include="Provisioning\03_Lines\b_DELETE_LineDefinitionEntries.sql" />
     <Build Include="bll\Stored Procedures\bll.PurchaseInvoice__Fill.sql" />
     <Build Include="dbo\Tables\dbo.AccountTypes.sql" />
     <Build Include="api\Stored Procedures\api.ResponsibilityCenters__Save.sql" />
     <Build Include="dal\Stored Procedures\dal.ResponsibilityCenters__Save.sql" />
-    <None Include="Samples\00_Setup\a_RolesMemberships.sql" />
+    <None Include="Samples\00_Setup\b_RolesMemberships.sql" />
     <None Include="Samples\03_Resources\a1_PPE_motor-vehicles.sql" />
     <None Include="Samples\03_Resources\a2_PPE_it-equipment.sql" />
     <None Include="Samples\03_Resources\a3_PPE_machineries.sql" />
@@ -440,7 +437,6 @@
     <None Include="Samples\01_Basic\a_Currencies.sql" />
     <None Include="Samples\01_Basic\b_MeasurementUnits.sql" />
     <None Include="Samples\01_Basic\c_Lookups.sql" />
-    <None Include="Samples\00_Setup\d_EntryClassifications.sql" />
     <None Include="Samples\01_Basic\h_Workflows.sql" />
     <Build Include="dbo\Tables\dbo.AgentDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.AccountIdentifier.sql" />
@@ -478,11 +474,22 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Open.sql" />
     <Build Include="dbo\Functions\dbo.fn_ECCode__Id.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
+    <None Include="Provisioning\zz_DELETE_LineDefinitionEntries.sql" />
+    <None Include="Provisioning\a_AdminUser.sql" />
+    <None Include="Provisioning\b_ResourceDefinitions.sql" />
+    <None Include="Provisioning\c_ResourceClassifications.sql" />
+    <None Include="Provisioning\f_FunctionalCurrency.sql" />
+    <None Include="Provisioning\i_Settings.sql" />
+    <None Include="Provisioning\g_ContractTypes.sql" />
+    <None Include="Provisioning\h_AgentDefinitions.sql" />
+    <None Include="Provisioning\d_EntryClassifications.sql" />
+    <None Include="Provisioning\e_ResourceClassificationsEntryClassifications.sql" />
+    <None Include="Provisioning\j_AccountTypes.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
-    <None Include="Provisioning\90_IfrsConcepts.sql" />
-    <None Include="Provisioning\91_IfrsDisclosures.sql" />
+    <None Include="Provisioning\w_IfrsConcepts.sql" />
+    <None Include="Provisioning\x_IfrsDisclosures.sql" />
     <None Include="Tests\72_ResourceClassifications.sql" />
     <None Include="Dev.publish.xml" />
     <None Include="Tests\12_Purchasing.sql" />
@@ -492,20 +499,14 @@
     <None Include="Tests\07_Resources_FinancialAssets.sql" />
     <None Include="Tests\07_Resources_ProductionSupplies.sql" />
     <None Include="Tests\13_HRCycle.sql" />
-    <None Include="Provisioning\00_Setup\a_AdminSetup.sql" />
-    <None Include="Provisioning\00_Setup\b_Settings.sql" />
-    <None Include="Samples\00_Setup\b_AgentDefinitions.sql" />
     <None Include="Samples\00_Setup\z_LookupDefinitions.sql" />
-    <None Include="Samples\00_Setup\f_AccountTypes.sql" />
     <None Include="Samples\02_Agents\05_Banks.sql" />
-    <None Include="Samples\00_Setup\c_ResourceClassifications.sql" />
-    <None Include="Samples\00_Setup\e_ResourceClassificationsEntryClassifications.sql" />
     <None Include="dbo\User Defined Types\Readme.txt" />
     <None Include="Samples\06_Entries\03_cash-payment-vouchers.sql" />
-    <None Include="Provisioning\00_Setup\c_ContractTypes.sql" />
     <None Include="Samples\05_Accounts\c_SmartAccounts.sql" />
     <None Include="Samples\02_Agents\07_Shareholders.sql" />
     <None Include="Samples\02_Agents\06_Custodies.sql" />
+    <None Include="Samples\00_Setup\a_Declarations.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
