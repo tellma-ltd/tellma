@@ -8,7 +8,7 @@
 	[LineId]					INT					NOT NULL CONSTRAINT [FK_LineSignatures__Documents] REFERENCES [dbo].[Lines] ([Id]) ON DELETE CASCADE,
 	
 	[ToState]					SMALLINT, -- NVARCHAR (30)		NOT NULL CONSTRAINT [CK_LineSignatures__ToState] CHECK ([ToState] IN (N'Requested', N'Rejected', N'Authorized', N'Failed', N'Completed', N'Invalid', N'Reviewed')),
-	[ReasonId]					INT,	-- Especially important for states: Rejected/Failed/Declined.
+	[ReasonId]					INT					CONSTRAINT [FK_LineSignatures__ReasonId] REFERENCES dbo.LineDefinitionsStatesReasons([Id]),	-- Especially important for states: Rejected/Failed/Declined.
 	[ReasonDetails]				NVARCHAR(1024),		-- especially useful when Reason Id = Other.
 	-- For a source document, SignedAt = Now(). For a copy, it is manually entered.
 	[SignedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),

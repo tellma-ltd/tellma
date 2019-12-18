@@ -452,4 +452,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Documents__Preprocess]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="4fdd92ee-ee4b-4130-a77c-6a9cd50d812b" ChangeDateTime="12/18/2019 15:07:28">
+    <Property Name="ElementName" Value="[dbo].[LineStatesReasons]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionsStatesReasons]" />
+  </Operation>
 </Operations>

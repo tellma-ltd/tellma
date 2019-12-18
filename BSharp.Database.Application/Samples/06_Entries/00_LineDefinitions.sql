@@ -67,6 +67,15 @@ DECLARE @LineDefinitionColumns TABLE (
 	[Label3]					NVARCHAR (50)
 )
 ;
+DECLARE @LineDefinitionsStatesReasons TABLE (
+	[Index]				INT				PRIMARY KEY,
+	[Id]				INT				DEFAULT 0,
+	[LineDefinitionId]	NVARCHAR (50)	NOT NULL,
+	[StateId]			SMALLINT		NOT NULL,
+	[Name]				NVARCHAR (50)	NOT NULL,
+	[Name2]				NVARCHAR (50),
+	[Name3]				NVARCHAR (50)
+);
 -- The behavior of the manual line is driven by the account.
 -- There is a special case, where 
 -- [Direction] = SIGN ([Debit]) + SIGN([Credit]), [Value] = [Debit]-[Credit]
@@ -89,6 +98,11 @@ INSERT INTO @LineDefinitionColumns
 -- Additional dynamic properties based on the tuple (Contract Type, Agent Definition, Resource Classifitation) -- to be stored in table
 (N'ManualLine',			5,			N'Entry[0].Dynamic',	N'Properties')
 ;
+INSERT INTO @LineDefinitionsStatesReasons([Index],
+[LineDefinitionId],[StateId], [Name]) VALUES
+(0,N'ManualLine',		-4,			N'Duplicate Line'),
+(1,N'ManualLine',		-4,			N'Incorrect Analysis'),
+(2,N'ManualLine',		-4,			N'Other reasons');
 INSERT @LineDefinitions(
 [Id],					[TitleSingular],		[TitlePlural],		[AgentDefinitionId]) VALUES
 (N'PurchaseInvoice',	N'Purchase Invoice',	N'Purchase Invoices',	N'suppliers');
@@ -214,6 +228,22 @@ WHEN NOT MATCHED BY SOURCE THEN
 WHEN NOT MATCHED BY TARGET THEN
     INSERT ([LineDefinitionId], [EntryNumber],		[Direction], [ContractType])
     VALUES (s.[LineDefinitionId], s.[EntryNumber], s.[Direction], s.[ContractType]);
+
+MERGE [dbo].[LineDefinitionsStatesReasons] AS t
+USING @LineDefinitionsStatesReasons AS s
+ON s.Id = t.Id
+WHEN MATCHED THEN
+	UPDATE SET
+		t.[LineDefinitionId]= s.[LineDefinitionId],
+		t.[StateId]			= s.[StateId],
+		t.[Name]			= s.[Name],
+		t.[Name2]			= s.[Name2],
+		t.[Name3]			= s.[Name3]
+WHEN NOT MATCHED BY SOURCE THEN
+    DELETE
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([LineDefinitionId],		[StateId], [Name],		[Name2], [Name3])
+    VALUES (s.[LineDefinitionId], s.[StateId], s.[Name], s.[Name2], s.[Name3]);
 
 IF @DebugLineDefinitions = 1
 BEGIN
