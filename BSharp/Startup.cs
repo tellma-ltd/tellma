@@ -158,6 +158,12 @@ namespace BSharp
 
                 // Giving access to clients that are hosted on another domain
                 services.AddCors();
+
+                services.AddHttpsRedirection(opt =>
+                {
+                    // This is a required configuration since ASP.NET Core 2.1
+                    opt.HttpsPort = 443;
+                });
             }
             catch (Exception ex)
             {
@@ -201,6 +207,8 @@ namespace BSharp
                     app.UseHsts();
                 }
 
+                app.UseHttpsRedirection();
+
                 // Localization
                 // Extract the culture from the request string and set it in the execution thread
                 var defaultUiCulture = GlobalOptions.Localization?.DefaultUICulture ?? "en";
@@ -216,8 +224,6 @@ namespace BSharp
                     // UI strings that we have localized
                     opt.AddSupportedUICultures(SUPPORTED_CULTURES);
                 });
-
-                app.UseHttpsRedirection();
                 app.UseStaticFiles();
 
                 if (GlobalOptions.EmbeddedClientApplicationEnabled)

@@ -3,7 +3,7 @@
     [documentTemplate]="document" [isInactive]="isInactive" [documentHeaderTemplate]="documentHeader" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-           ]">
+           ]" [sidebarTemplate]="sidebar">
 
 </b-details>
 
@@ -16,6 +16,12 @@
 <!-- Details Crumb -->
 <ng-template #detailsCrumb let-model="model">
     <span>{{ formatSerial(model?.SerialNumber) }}</span>
+</ng-template>
+
+<ng-template #sidebar>
+    <div class="p-3">
+        Work in Progress: Circulation and Attachments
+    </div>
 </ng-template>
 
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit">
@@ -202,8 +208,9 @@
                 </ng-template>
                 <ng-template #row_Dynamic let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
                     let-update="update">
+                    {{ ws.getMultilingualValue('Currency', ws.get('Account', entry.AccountId)?.CurrencyId, 'Description') }}
                     <b-form-group *ngIf="showMonetaryValue(entry)"
-                        [label]="ws.getMultilingualValue('Currency', ws.get('Account', entry.AccountId)?.CurrencyId, 'Description')"
+                        [label]="ws.getMultilingualValue('Currency', ws.get('Account', entry.AccountId)?.CurrencyId, 'Name')"
                         class="b-form-group" [serverErrors]="entry.serverErrors?.MonetaryValue">
                         <div *ngIf="!isEdit">
                             <b-restricted [metadata]="item.EntityMetadata?.MonetaryValue">
@@ -222,16 +229,17 @@
 
     <!-- Signatures -->
     <div class="col-12 pt-4" *ngIf="model?.Signatures && model.Signatures.length > 0">
-        <span class="small font-weight-bold">Signatures:</span>
+        <span class="small font-weight-bold">{{ 'Document_Signatures' | translate }}:</span>
         <div class="row px-2 px-md-5">
             <ng-container *ngFor="let signature of model?.Signatures">
                 <div class="col-12 col-md-6 px-2 px-md-5 mt-3">
-                    <div class="b-signature-box2 border-bottom">
+                    <div class="border-bottom">
+                        <span *ngIf="!!signature.RoleId">
+                            {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}: </span>
                         <span
                             class="font-italic2 b-large2">{{ ws.getMultilingualValue('User', signature.CreatedById, 'Name') }}</span>
-                        <span *ngIf="!!signature.RoleId">,
-                            {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}</span>
-                        <!-- <span *ngIf="!!signature?.AgentId" class="font-italic2 b-large2">{{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}</span> -->
+                        <span *ngIf="!!signature?.AgentId" class="font-italic2 b-large2">
+                            {{ 'OnBehalfOf' | translate }}{{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}</span>
                     </div>
                     <span class="small text-muted"> {{ signature?.SignedAt | date:'yyyy-MM-dd HH:mm' }} </span>
                 </div>
