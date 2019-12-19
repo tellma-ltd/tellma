@@ -151,7 +151,7 @@
                         </b-restricted>
                         <b-accounts-picker *ngIf="isEdit" [(ngModel)]="entry.AccountId"
                             (ngModelChange)="update.call(null, item)"
-                            additionalSelect="Currency/Description,Currency/Description2,Currency/Description3">
+                            additionalSelect="Currency/Name,Currency/Name,Currency/Name">
                         </b-accounts-picker>
                     </b-form-group>
                 </ng-template>
@@ -208,7 +208,7 @@
                 </ng-template>
                 <ng-template #row_Dynamic let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
                     let-update="update">
-                    {{ ws.getMultilingualValue('Currency', ws.get('Account', entry.AccountId)?.CurrencyId, 'Description') }}
+                    <!-- {{ ws.getMultilingualValue('Currency', ws.get('Account', entry.AccountId)?.CurrencyId, 'Name') }} -->
                     <b-form-group *ngIf="showMonetaryValue(entry)"
                         [label]="ws.getMultilingualValue('Currency', ws.get('Account', entry.AccountId)?.CurrencyId, 'Name')"
                         class="b-form-group" [serverErrors]="entry.serverErrors?.MonetaryValue">
