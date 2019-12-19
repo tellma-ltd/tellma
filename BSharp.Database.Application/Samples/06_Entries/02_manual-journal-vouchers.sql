@@ -119,6 +119,14 @@ BEGIN -- Inserting
 	INSERT INTO @DocsIndexedIds([Index], [Id])
 	SELECT ROW_NUMBER() OVER(ORDER BY [Id]), [Id] FROM dbo.Documents WHERE [State] BETWEEN 0 AND 4;
 
+	DECLARE @IdWithNewComment INT
+	SELECT @IdWithNewComment = MIN([Id]) FROM dbo.Documents;
+
+	EXEC api.[Document_Comment__Save]
+		@DocumentId = @IdWithNewComment,
+		@Comment = N'For your kind attention',
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
 	EXEC [api].[Documents__Sign]
 		@IndexedIds = @DocsIndexedIds,
 		@ToState = 4, -- N'Reviewed',
@@ -154,6 +162,7 @@ BEGIN -- Inserting
 			EXEC [rpt].[Docs__UI] @DIds;
 
 			SELECT * FROM map.DocumentSignatures();
+			SELECT * FROM dbo.DocumentAssignmentsHistory;
 	END
 END
 IF @DebugReports = 1
