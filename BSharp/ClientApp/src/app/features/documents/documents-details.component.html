@@ -21,7 +21,8 @@
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit">
     <div class="w-100 b-document-header d-flex justify-content-end">
         <b-restricted [metadata]="model?.EntityMetadata?.State">
-            <div class="b-flow-chart small d-none d-md-block">
+            <!-- Positive state in wide screen -->
+            <div class="b-flow-chart small d-none d-md-block" *ngIf="!model?.State || model.State > 0">
                 <div [class.active]="!model?.State"><span>{{'Document_State_Draft' | translate}}</span></div>
                 <div [class.active]="model?.State === 1"><span>{{'Document_State_Requested' | translate}}</span></div>
                 <div [class.active]="model?.State === 2"><span>{{'Document_State_Authorized' | translate}}</span></div>
@@ -29,9 +30,30 @@
                 <div [class.active]="model?.State === 4"><span>{{'Document_State_Reviewed' | translate}}</span></div>
                 <div [class.active]="model?.State === 5"><span>{{'Document_State_Closed' | translate}}</span></div>
             </div>
-            <div class="small b-lone-state active d-block d-md-none">
-                <span>{{ (!model?.State ? 'Document_State_Draft' : 'Document_State_Closed') | translate }}</span>
+            <div class="small b-lone-state active d-none d-md-block" *ngIf="!!model?.State && model.State < 0">
+                <!-- Negative state in wide screen-->
+                <ng-container *ngTemplateOutlet="loneState">
+
+                </ng-container>
             </div>
+            <div class="small b-lone-state active d-block d-md-none">
+                <!-- Narrow screen -->
+                <ng-container *ngTemplateOutlet="loneState"> </ng-container>
+            </div>
+
+            <ng-template #loneState>
+                <span>{{ (!model?.State ? 'Document_State_Draft' :
+                            model?.State === -1 ? 'Document_State_Void' :
+                            model?.State === 1 ? 'Document_State_Requested' :
+                            model?.State === -2 ? 'Document_State_Rejected' :
+                            model?.State === 2 ? 'Document_State_Authorized' :
+                            model?.State === -3 ? 'Document_State_Failed' :
+                            model?.State === 3 ? 'Document_State_Completed' :
+                            model?.State === -4 ? 'Document_State_Invalid' :
+                            model?.State === 4 ? 'Document_State_Reviewed' :
+                            model?.State === 5 ? 'Document_State_Closed' :
+                             model?.State) | translate }}</span>
+            </ng-template>
         </b-restricted>
     </div>
 </ng-template>
@@ -197,6 +219,25 @@
             </ng-template>
         </ngb-tab>
     </ngb-tabset>
+
+    <!-- Signatures -->
+    <div class="col-12 pt-4" *ngIf="model?.Signatures && model.Signatures.length > 0">
+        <span class="small font-weight-bold">Signatures:</span>
+        <div class="row px-2 px-md-5">
+            <ng-container *ngFor="let signature of model?.Signatures">
+                <div class="col-12 col-md-6 px-2 px-md-5 mt-3">
+                    <div class="b-signature-box2 border-bottom">
+                        <span
+                            class="font-italic2 b-large2">{{ ws.getMultilingualValue('User', signature.CreatedById, 'Name') }}</span>
+                        <span *ngIf="!!signature.RoleId">,
+                            {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}</span>
+                        <!-- <span *ngIf="!!signature?.AgentId" class="font-italic2 b-large2">{{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}</span> -->
+                    </div>
+                    <span class="small text-muted"> {{ signature?.SignedAt | date:'yyyy-MM-dd HH:mm' }} </span>
+                </div>
+            </ng-container>
+        </div>
+    </div>
 </ng-template>
 
 <!-- Actions -->

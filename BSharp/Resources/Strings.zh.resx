@@ -307,6 +307,9 @@
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>序列号</value>
   </data>
+  <data name="Document_Signatures" xml:space="preserve">
+    <value>签名</value>
+  </data>
   <data name="Document_State" xml:space="preserve">
     <value>州</value>
   </data>
@@ -1350,6 +1353,15 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>三元语言符号</value>
+  </data>
+  <data name="Signature_Agent" xml:space="preserve">
+    <value>代表</value>
+  </data>
+  <data name="Signature_Role" xml:space="preserve">
+    <value>角色</value>
+  </data>
+  <data name="Signature_SignedAt" xml:space="preserve">
+    <value>签署于</value>
   </data>
   <data name="Signatures" xml:space="preserve">
     <value>签名</value>

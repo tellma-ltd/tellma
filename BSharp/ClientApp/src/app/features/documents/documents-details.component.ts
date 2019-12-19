@@ -33,7 +33,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `OperatingSegment,Lines/Entries/Account/Currency`;
+  public expand = `OperatingSegment,Lines/Entries/Account/Currency,Signatures/Agent,Signatures/Role,Signatures/CreatedBy`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,

@@ -275,6 +275,9 @@ namespace BSharp.Data
                     case nameof(Entry):
                         return new SqlSource("[map].[Entries]()");
 
+                    case nameof(DocumentSignature):
+                        return new SqlSource("[map].[DocumentSignatures]()");
+
                     #region _Temp
 
                     case nameof(VoucherBooklet):

@@ -7,6 +7,7 @@ import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { LineForSave, Line, LineState } from './line';
+import { DocumentSignature } from './document-signature';
 
 export type DocumentState = LineState | 5;
 
@@ -26,6 +27,7 @@ export class Document extends DocumentForSave<Line> {
     CreatedById: number | string;
     ModifiedAt: string;
     ModifiedById: number | string;
+    Signatures: DocumentSignature[];
 }
 
 const _select = ['SerialNumber'];

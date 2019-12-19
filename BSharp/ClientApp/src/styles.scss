@@ -1412,6 +1412,8 @@ $container-margin: 15px;
 .b-menu-screen {
   margin: 0 -15px;
   height: 100%;
+  overflow-y: auto;
+  overflow-y: overlay;
 }
 
 .b-container {
@@ -1509,4 +1511,8 @@ h1.b-report-measure:hover {
 
 .is-invalid .b-studio-input {
   border-color: lightpink !important;
+}
+
+.b-signature-box {
+  border-bottom: 1px solid $gray-500;
 }
