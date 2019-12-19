@@ -307,6 +307,9 @@
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>الرقم المتسلسل</value>
   </data>
+  <data name="Document_Signatures" xml:space="preserve">
+    <value>التوقيعات</value>
+  </data>
   <data name="Document_State" xml:space="preserve">
     <value>حالة القيد</value>
   </data>
@@ -1356,6 +1359,15 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>رمز اللغة الثالثة</value>
+  </data>
+  <data name="Signature_Agent" xml:space="preserve">
+    <value>بالنيابة عن</value>
+  </data>
+  <data name="Signature_Role" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  <data name="Signature_SignedAt" xml:space="preserve">
+    <value>زمن التوقيع</value>
   </data>
   <data name="Signatures" xml:space="preserve">
     <value>توقيعات</value>

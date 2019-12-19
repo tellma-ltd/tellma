@@ -45,6 +45,7 @@ import { ResponsibilityCenter } from './entities/responsibility-center';
 import { friendlify } from './util';
 import { EntryClassification } from './entities/entry-classification';
 import { Document } from './entities/document';
+import { SignArguments } from './dto/sign-arguments';
 
 
 @Injectable({
@@ -130,7 +131,10 @@ export class ApiService {
   public documentsApi(definitionId: string, cancellationToken$: Observable<void>) {
     return {
       activate: this.activateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
-      deactivate: this.deactivateFactory<Document>(`documents/${definitionId}`, cancellationToken$)
+      deactivate: this.deactivateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
+      sign: (ids: (string | number)[], args: SignArguments) => {
+        return null;
+      }
     };
   }
 

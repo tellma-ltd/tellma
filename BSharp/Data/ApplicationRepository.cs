@@ -275,6 +275,9 @@ namespace BSharp.Data
                     case nameof(Entry):
                         return new SqlSource("[map].[Entries]()");
 
+                    case nameof(DocumentSignature):
+                        return new SqlSource("[map].[DocumentSignatures]()");
+
                     #region _Temp
 
                     case nameof(VoucherBooklet):
@@ -3559,6 +3562,67 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
             return sortedResult.ToList();
         }
+
+        public async Task<IEnumerable<ValidationError>> Lines_Validate__Sign(List<int> ids, int? agentId, int? roleId, short toState, int top)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }), addIndex: true);
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IndexedIdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@AgentId", agentId);
+                cmd.Parameters.Add("@RoleId", roleId);
+                cmd.Parameters.Add("@ToState", toState);
+                cmd.Parameters.Add("@Top", top);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Lines_Validate__Sign)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? agentId, int? roleId, DateTimeOffset? signedAt)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@ToState", toState);
+                cmd.Parameters.Add("@ReasonId", reasonId);
+                cmd.Parameters.Add("@ReasonDetails", reasonDetails);
+                cmd.Parameters.Add("@AgentId", agentId);
+                cmd.Parameters.Add("@RoleId", roleId);
+                cmd.Parameters.Add("@ToState", toState);
+                cmd.Parameters.Add("@SignedAt", signedAt);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Documents__Delete)}]";
+
+                // Execute                    
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        // TODO: deal with the SPs below
 
         public async Task Documents__Delete(IEnumerable<int> ids)
         {

@@ -123,6 +123,10 @@ namespace BSharp.Entities
         [ForeignKey(nameof(ModifiedById))]
         public User ModifiedBy { get; set; }
 
+        [Display(Name = "Document_Signatures")]
+        [ForeignKey(nameof(DocumentSignature.DocumentId))]
+        public List<DocumentSignature> Signatures { get; set; }
+
         // HIDDEN
 
         [Display(Name = "Document_VoucherBooklet")]
