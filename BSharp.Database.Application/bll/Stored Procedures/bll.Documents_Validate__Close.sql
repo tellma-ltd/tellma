@@ -5,8 +5,8 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	-- Document Date not before last archive date
-	-- Posting date must not be within Archived period
+	-- Document Date not before last archive date (C#)
+	-- Posting date must not be within Archived period (C#)
 
 	-- Cannot file with no lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
@@ -20,7 +20,6 @@ SET NOCOUNT ON;
 	);
 
 	-- All lines must be in their final states.
-	-- TODO: convert State to integers
 	WITH DocumentsLineDefinitions AS
 	(
 		SELECT DISTINCT DL.[DefinitionId] FROM 
@@ -44,15 +43,14 @@ SET NOCOUNT ON;
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].Lines[' +
 			CAST(DL.[Id] AS NVARCHAR (255)) + ']',
 		N'Error_State0IsNotFinal',
-		-- TODO: localize state name
-		CAST(DL.[State] AS NVARCHAR (50))
+		dbo.fn_StateId__State(DL.[State])
 	FROM @Ids D
 	JOIN dbo.[Lines] DL ON DL.[DocumentId] = D.[Id]
 	JOIN WorkflowsFinalStates WFS ON DL.[DefinitionId] = WFS.[LineDefinitionId]
 	--WHERE DL.[State] NOT IN (N'Void', N'Rejected', N'Failed', N'Invalid', WFS.FinalState)
 	WHERE DL.[State] >= 0 AND DL.[State] <> WFS.FinalState
 
-	-- Cannot file a document with non-balanced (Reviewed) lines
+	-- Cannot close a document with non-balanced (Reviewed) lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 

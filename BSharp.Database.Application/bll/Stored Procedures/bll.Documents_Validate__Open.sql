@@ -5,9 +5,9 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList], @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
-	-- Cannot open it if it is not closed
-
+	-- Cannot open it if it is not closed (C#)
 	-- cannot open if the document posting date falls in an archived period.
+
 	-- TODO: Might be useful to define a separate archive date for each operating segment
 INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT

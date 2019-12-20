@@ -149,7 +149,6 @@
     <Build Include="dbo\Functions\dbo.fw_TransactionEntries__Json.sql" />
     <Build Include="dbo\User Defined Types\dbo.AccountList.sql" />
     <Build Include="dbo\Functions\dbo.fn_User__Language.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.bll_Transactions_Validate__Unpost.sql" />
     <Build Include="dbo\Tables\dbo.LineSignatures.sql" />
     <Build Include="dbo\Functions\dbo.fi_MyWorkspace.sql" />
     <Build Include="dbo\Tables\dbo.DocumentAssignmentsHistory.sql" />

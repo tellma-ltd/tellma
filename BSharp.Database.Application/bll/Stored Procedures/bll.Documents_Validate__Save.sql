@@ -40,7 +40,7 @@ SET NOCOUNT ON;
 	--FROM @Documents
 	--WHERE [DocumentDate] < (SELECT TOP 1 ArchiveDate FROM dbo.Settings) 
 	
-	-- (FE Check, DB IU trigger) Cannot save a document not in ACTIVE state
+	-- (FE Check, DB IU trigger) Cannot save a CLOSED document
 	-- TODO: if it is not allowed to change a line once (Requested), report error
 	INSERT INTO @ValidationErrors([Key], [ErrorName])
 	SELECT
@@ -48,8 +48,7 @@ SET NOCOUNT ON;
 		N'Error_CanOnlySaveADocumentInActiveState'
 	FROM @Documents FE
 	JOIN [dbo].[Documents] BE ON FE.[Id] = BE.[Id]
-	--WHERE (BE.[State] <> N'Active')
-	WHERE (BE.[State] = 5);
+	WHERE (BE.[State] = 5); -- Closed
 
 	-- TODO: For the cases below, add the condition that Entry Classification is enforced
 
