@@ -85,7 +85,7 @@ SET NOCOUNT ON;
 	JOIN dbo.Documents D ON L.[DocumentId] = D.[Id]
 	WHERE D.[State] = 5 --<> 'Closed'
 
-	-- No inactive account
+	-- No deprecated account
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST(FE.[Index] AS NVARCHAR (255)),'') + ']', 
@@ -95,6 +95,8 @@ SET NOCOUNT ON;
 	JOIN dbo.[Entries] E ON FE.[Id] = E.[LineId]
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
 	WHERE (A.[IsDeprecated] = 1);
+
+	-- TODO: No inactive Resource, No inactive Agent
 
 	-- Not allowed to cause negative balance in conservative accounts
 	DECLARE @NonFinancialResourceClassificationNode HIERARCHYID = 
@@ -170,12 +172,14 @@ SET NOCOUNT ON;
 		OR	(C.[Mass] + P.[Mass]) < 0
 		OR	(C.[Volume] + P.[Volume]) < 0
 	)
-	-- TODO: to be rewritten for each unit of measure. Also localize!
+	-- TODO: to be rewritten for each unit of measure.
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2])
 	SELECT TOP (@Top)
 		'[' + ISNULL(CAST([Index] AS NVARCHAR (255)),'') + ']', 
 		N'Error_TheResource0Account1Shortage2',
-		R.[Name], A.[Name], D.[Mass] -- 
+		dbo.fn_Localize(R.[Name], R.[Name2], R.[Name3]) AS [Resource], 
+		dbo.fn_Localize(A.[Name], A.[Name2], A.[Name3]) AS [Account],
+		D.[Mass] -- 
 	FROM OffendingEntries D
 	JOIN dbo.[Accounts] A ON D.AccountId = A.Id
 	JOIN dbo.Resources R ON A.ResourceId = R.Id

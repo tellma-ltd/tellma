@@ -9,6 +9,7 @@ CREATE TABLE [dbo].[Resources] (
 	-- Inspired by IFRS, with additions to simplify application logic, to cater for user custom classifications for reporting purposes
 	[ResourceClassificationId]		INT					NOT NULL,
 	CONSTRAINT [FK_Resources__ResourceClassificationId_DefinitionId] FOREIGN KEY ([ResourceClassificationId], [DefinitionId]) REFERENCES [dbo].[ResourceClassifications] ([Id], [ResourceDefinitionId]),
+	CONSTRAINT [CK_Resources__Id_ResourceClassificationId] UNIQUE ([Id], [ResourceClassificationId]),
 	[Name]							NVARCHAR (255)		NOT NULL,
 	CONSTRAINT [CK_Resources__ResourceDefinitionId_Name_Identifier] UNIQUE ([DefinitionId],[Name],[Identifier]),
 	[Name2]							NVARCHAR (255),
@@ -23,6 +24,7 @@ CREATE TABLE [dbo].[Resources] (
 	[CountUnitId]					INT					CONSTRAINT [FK_Resources__CountUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[Count]							Decimal (19,4)		DEFAULT 1,
 	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Resources__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
+	CONSTRAINT [CK_Resources__Id_CurrencyId] UNIQUE ([Id], [CurrencyId]),
 	[MonetaryValue]					Decimal (19,4), -- if [MonetaryValue] is not null, this value is forced in Entries
 	[MassUnitId]					INT					CONSTRAINT [FK_Resources__MassUnitId] REFERENCES [dbo].[MeasurementUnits] ([Id]),
 	[Mass]							Decimal (19,4),

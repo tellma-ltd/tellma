@@ -35,12 +35,6 @@
 	[Lookup4DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup4DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
 	[Lookup4Label]						NVARCHAR (50),
 
-	-- TODO: Production Date has been moved from Resources to Accounts/Entries... Delete from definition.
-	[ProductionDateVisibility]			NVARCHAR (50) DEFAULT N'None' CHECK ([ProductionDateVisibility] IN (N'None', N'Required', N'Optional')),
-	[ProductionDateLabel]				NVARCHAR (50),
-	[ProductionDateLabel2]				NVARCHAR (50),
-	[ProductionDateLabel3]				NVARCHAR (50),
-
 	[ExpiryDateVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([ExpiryDateVisibility] IN (N'None', N'Required', N'Optional')),
 	[ExpiryDateLabel]					NVARCHAR (50),
 	[ExpiryDateLabel2]					NVARCHAR (50),
