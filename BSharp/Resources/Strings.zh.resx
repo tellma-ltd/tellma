@@ -283,6 +283,9 @@
   <data name="DisableTwoFactorAuthenticationTitle" xml:space="preserve">
     <value>这个动作只禁止2FA。</value>
   </data>
+  <data name="Document" xml:space="preserve">
+    <value>文献</value>
+  </data>
   <data name="Document_DocumentDate" xml:space="preserve">
     <value>日期</value>
   </data>
@@ -305,7 +308,7 @@
     <value>备注是常有的事</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
-    <value>序列号</value>
+    <value>p.p. </value>
   </data>
   <data name="Document_Signatures" xml:space="preserve">
     <value>签名</value>
@@ -348,6 +351,9 @@
   </data>
   <data name="Document_VoucherNumericReference" xml:space="preserve">
     <value>参考凭证</value>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>文件资料</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
     <value>电子邮件“{0}”已被使用。</value>

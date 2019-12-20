@@ -28,6 +28,13 @@
                             [maxDecimalPlaces]="p.desc['maxDecimalPlaces']">
                         </b-decimal-editor>
 
+                        <!-- Serial -->
+                        <b-decimal-editor *ngSwitchCase="'serial'" [(ngModel)]="arguments[p.key]"
+                            [required]="p.isRequired" [ngModelOptions]="{ updateOn: 'blur' }"
+                            (ngModelChange)="onArgumentChange()" [minDecimalPlaces]="0"
+                            [maxDecimalPlaces]="0">
+                        </b-decimal-editor>
+
                         <!-- Date -->
                         <b-date-picker *ngSwitchCase="'date'" [(ngModel)]="arguments[p.key]" [required]="p.isRequired"
                             [ngModelOptions]="{ updateOn: 'blur' }" (ngModelChange)="onArgumentChange()">

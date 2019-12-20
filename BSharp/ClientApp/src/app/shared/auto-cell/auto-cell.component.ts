@@ -239,11 +239,14 @@ export function displayValue(value: any, prop: PropDescriptor, trx: TranslateSer
       return formatDate(value, format, locale);
     }
     case 'boolean': {
-      return (!!prop && !!prop.format) ? prop.format(value) : trx.instant(value ? 'Yes' : 'No');
+      return !!prop && !!prop.format ? prop.format(value) : trx.instant(value ? 'Yes' : 'No');
     }
     case 'choice':
     case 'state': {
       return !!prop && !!prop.format ? prop.format(value) : null;
+    }
+    case 'serial': {
+      return !!prop && !!prop.format ? prop.format(value) : (value + '');
     }
     case 'navigation':
     default:

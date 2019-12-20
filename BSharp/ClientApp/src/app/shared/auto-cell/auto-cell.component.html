@@ -3,16 +3,18 @@
   <ng-container *ngSwitchCase="2" [ngSwitch]="control">
 
     <span *ngSwitchCase="'error'" class="text-danger"> Error </span>
-    <span *ngSwitchCase="'text'">{{ displayValue }}</span>
-    <span *ngSwitchCase="'choice'">{{ displayValue }}</span>
     <div class="d-inline" *ngSwitchCase="'state'" [style.text-align]="alignment">
       <span class="text-white px-2" [style.background-color]="stateColor">{{ displayValue }}</span>
     </div>
-    <span *ngSwitchCase="'boolean'">{{ displayValue }}</span>
     <span *ngSwitchCase="'number'" class="d-inline" [style.float]="alignment">{{ displayValue }}</span>
+    <span *ngSwitchCase="'navigation'">{{ navigationValue }}</span>
+
+    <!-- <span *ngSwitchCase="'boolean'">{{ displayValue }}</span>
     <span *ngSwitchCase="'date'">{{ displayValue }}</span>
     <span *ngSwitchCase="'datetime'">{{ displayValue }}</span>
-    <span *ngSwitchCase="'navigation'">{{ navigationValue }}</span>
+    <span *ngSwitchCase="'serial'">{{ displayValue }}</span>
+    <span *ngSwitchCase="'text'">{{ displayValue }}</span>
+    <span *ngSwitchCase="'choice'">{{ displayValue }}</span> -->
     <span *ngSwitchDefault>{{ displayValue }}</span>
 
   </ng-container>

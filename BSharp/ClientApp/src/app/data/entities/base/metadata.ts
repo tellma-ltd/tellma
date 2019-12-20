@@ -143,6 +143,12 @@ export interface TextPropDescriptor extends PropDescriptorBase {
     control: 'text';
 }
 
+export interface SerialPropDescriptor extends PropDescriptorBase {
+    control: 'serial';
+
+    format: (serial: number) => string;
+}
+
 export interface ChoicePropDescriptor extends PropDescriptorBase {
     control: 'choice';
 
@@ -245,7 +251,8 @@ export interface NavigationPropDescriptor extends PropDescriptorBase {
 }
 
 export declare type PropDescriptor = TextPropDescriptor | ChoicePropDescriptor | BooleanPropDescriptor
-    | NumberPropDescriptor | DatePropDscriptor | DatetimePropDscriptor | NavigationPropDescriptor | StatePropDescriptor;
+    | NumberPropDescriptor | DatePropDscriptor | DatetimePropDscriptor | NavigationPropDescriptor
+    | StatePropDescriptor | SerialPropDescriptor;
 
 export function entityDescriptorImpl(
     pathArray: string[], baseCollection: string, baseDefinition: string,
@@ -284,6 +291,5 @@ export function isText(propDesc: PropDescriptor): boolean {
 }
 
 export function isNumeric(propDesc: PropDescriptor): boolean {
-    return !!propDesc && (propDesc.control === 'number' ||
-        ((propDesc.control === 'state' || propDesc.control === 'choice') && (typeof propDesc.choices[0]) === 'number'));
+    return !!propDesc && propDesc.control === 'number';
 }

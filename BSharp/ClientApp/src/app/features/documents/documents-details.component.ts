@@ -1,12 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import { addToWorkspace } from '~/app/data/util';
-import { tap } from 'rxjs/operators';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { DocumentForSave, Document, serialNumber as formatSerialNumber } from '~/app/data/entities/document';
+import { DocumentForSave, Document, serialNumber } from '~/app/data/entities/document';
 import { DocumentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { LineForSave } from '~/app/data/entities/line';
 import { EntryForSave, Entry } from '~/app/data/entities/entry';
@@ -97,7 +95,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       return `(${this.translate.instant('New')})`;
     }
     const def = this.definition;
-    return formatSerialNumber(serial, def.Prefix, 4);
+    return serialNumber(serial, def.Prefix, 4);
   }
 
   public get OperatingSegment_isVisible(): boolean {

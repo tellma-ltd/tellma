@@ -283,6 +283,9 @@
   <data name="DisableTwoFactorAuthenticationTitle" xml:space="preserve">
     <value>This action only disables 2FA.</value>
   </data>
+  <data name="Document" xml:space="preserve">
+    <value>Document</value>
+  </data>
   <data name="Document_DocumentDate" xml:space="preserve">
     <value>Date</value>
   </data>
@@ -348,6 +351,9 @@
   </data>
   <data name="Document_VoucherNumericReference" xml:space="preserve">
     <value>Voucher Reference</value>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>Documents</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
     <value>Email '{0}' is already taken.</value>

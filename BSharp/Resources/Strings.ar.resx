@@ -283,6 +283,9 @@
   <data name="DisableTwoFactorAuthenticationTitle" xml:space="preserve">
     <value>هذا الأمر يقوم بتعطيل التوثيق مزدوج العوامل</value>
   </data>
+  <data name="Document" xml:space="preserve">
+    <value>مستند</value>
+  </data>
   <data name="Document_DocumentDate" xml:space="preserve">
     <value>التاريخ</value>
   </data>
@@ -348,6 +351,9 @@
   </data>
   <data name="Document_VoucherNumericReference" xml:space="preserve">
     <value>رقم المستند</value>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>مستندات</value>
   </data>
   <data name="DuplicateEmail" xml:space="preserve">
     <value>عنوان البريد الإلكتروني ({0}) محجوز.</value>
