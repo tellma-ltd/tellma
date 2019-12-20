@@ -173,7 +173,7 @@
   <!-- Content Area -->
   <div class="row" [class.b-main-and-side]="!!sidebarTemplate" [class.border-bottom]="isPopupMode"
     [class.b-rest-of-screen]="isScreenMode">
-    <div class="w-100 h-100" [class.b-main-document]="showSidebar">
+    <div class="w-100" [class.b-main-document]="showSidebar" [class.h-100]="!showSidebar">
 
       <!-- Document content -->
       <div class="p-0 p-sm-3 d-flex flex-column align-items-center" *ngIf="showDocument && documentLayout">
@@ -219,8 +219,10 @@
 
     <!-- Sidebar -->
     <div *ngIf="showSidebar" class="b-sidebar bg-white">
-      <ng-container *ngTemplateOutlet="sidebarTemplate;context: { model: activeModel, isEdit: isEdit }">
-      </ng-container>
+      <div class="bg-white">
+          <ng-container *ngTemplateOutlet="sidebarTemplate;context: { model: activeModel, isEdit: isEdit }">
+            </ng-container>
+      </div>
     </div>
 
   </div>

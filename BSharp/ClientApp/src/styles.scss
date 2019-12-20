@@ -755,6 +755,7 @@ $flow-text: $secondary;
 .b-lone-state.active {
   background-color: $flow-state-active;
   font-weight: bold;
+  color: #212529;
 }
 
 .b-flow-chart div.active span::after {
@@ -915,6 +916,11 @@ $dark-flow-text: $whitish;
     border-top: none;
     border-left: 1px solid $flow-border;
     overflow-y: auto;
+  }
+
+  .b-rtl .b-sidebar {
+    border-left-width: 0px;
+    border-right: 1px solid $flow-border;
   }
 }
 
@@ -1511,8 +1517,4 @@ h1.b-report-measure:hover {
 
 .is-invalid .b-studio-input {
   border-color: lightpink !important;
-}
-
-.b-signature-box {
-  border-bottom: 1px solid $gray-500;
 }
