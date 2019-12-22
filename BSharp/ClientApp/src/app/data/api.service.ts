@@ -46,6 +46,7 @@ import { friendlify } from './util';
 import { EntryClassification } from './entities/entry-classification';
 import { Document } from './entities/document';
 import { SignArguments } from './dto/sign-arguments';
+import { AssignArguments } from './dto/assign-arguments';
 
 
 @Injectable({
@@ -132,6 +133,42 @@ export class ApiService {
     return {
       activate: this.activateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
       deactivate: this.deactivateFactory<Document>(`documents/${definitionId}`, cancellationToken$),
+      assign: (ids: (string | number)[], args: AssignArguments) => {
+        const paramsArray: string[] = [
+          `assigneeId=${encodeURIComponent(args.assigneeId)}`
+        ];
+
+        if (!!args.comment) {
+          paramsArray.push(`comment=${encodeURIComponent(args.comment)}`);
+        }
+
+        if (!!args.returnEntities) {
+          paramsArray.push(`returnEntities=${args.returnEntities}`);
+        }
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${args.expand}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/assign?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<EntitiesResponse<Document>>(url, ids, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
       sign: (ids: (string | number)[], args: SignArguments) => {
         return null;
       }

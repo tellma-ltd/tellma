@@ -489,6 +489,7 @@
     <Build Include="api\Stored Procedures\api.Document_Comment__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Document_Validate__Comment_Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Document_Comment__Save.sql" />
+    <Build Include="Mapping\DocumentAssignmentsHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

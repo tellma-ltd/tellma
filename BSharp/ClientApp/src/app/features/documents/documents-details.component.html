@@ -18,12 +18,6 @@
     <span>{{ formatSerial(model?.SerialNumber) }}</span>
 </ng-template>
 
-<ng-template #sidebar>
-    <div class="p-3">
-        Work in Progress: Circulation and Attachments
-    </div>
-</ng-template>
-
 <ng-template #documentHeader let-model="model" let-isEdit="isEdit">
     <div class="w-100 b-document-header d-flex justify-content-end">
         <b-restricted [metadata]="model?.EntityMetadata?.State">
@@ -243,6 +237,114 @@
                     </div>
                     <span class="small text-muted"> {{ signature?.SignedAt | date:'yyyy-MM-dd HH:mm' }} </span>
                 </div>
+            </ng-container>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #sidebar let-model="model" let-isEdit="isEdit">
+    <div class="d-flex justify-content-center">
+        <div class="w-100 b-paper-width">
+            <!-- <div class="py-3 px-3 d-flex justify-content-center small font-weight-bold" *ngIf="!!model.AssigneeId">
+                {{ 'Document_AssignmentsHistory' | translate }}
+            </div> -->
+
+            <!-- Currently with -->
+            <div class="bg-light border-bottom border-top2 py-2 px-3" *ngIf="!!model.AssigneeId">
+                <div class="d-flex">
+                    <b-image [src]="'users/' + model.AssigneeId + '/image'"
+                        [imageId]="ws.get('User', model.AssigneeId)?.ImageId" [size]="36" shape="circle"></b-image>
+                    <div class="p-2 text-nowrap">
+                        <b-view-link link="../../../users" [itemId]="model.AssigneeId">
+                            {{ ws.getMultilingualValue('User', model.AssigneeId, 'Name') }}</b-view-link>
+                        {{ 'OwnsThisDocument' | translate }}
+                    </div>
+                </div>
+
+                <!-- Assign the document -->
+                <div class="px-2 pb-2 pt-0" style="margin-left:36px" *ngIf="showAssignDocument(model, isEdit)">
+                    <div class="form-group">
+                        <label class="small font-weight-bold" for="user">{{ 'AssignTo' | translate }}</label>
+                        <div class="bg-white border b-borderless-input p-1">
+                            <b-users-picker id="user" [(ngModel)]="assigneeId" filter="Id ne me" [showCreate]="false">
+                            </b-users-picker>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <!-- <label class="small font-weight-bold" for="message">Message (Optional)</label> -->
+                        <textarea type="password" class="form-control b-input p-1 border bg-white" id="message"
+                            placeholder="{{ 'OptionalMessage' | translate }}" [(ngModel)]="comment"></textarea>
+                    </div>
+                    <button class="btn btn-primary btn-sm" (click)="onAssign(model)" [disabled]="!canAssign(model)">{{ 'Assign' | translate }}</button>
+                </div>
+            </div>
+
+            <!-- All history -->
+            <ng-container *ngFor="let dayEvents of sortChronologically(model)">
+                <div class="px-3 py-4 small font-weight-bold">{{ dayEvents.date }}</div>
+
+                <!-- Day's history -->
+                <ng-container *ngFor="let event of dayEvents.events; let i = index">
+                    <div class="bg-light border-bottom pt-2 pb-2 px-3" [class.border-top]="i === 0"
+                        [ngSwitch]="event.type">
+
+                        <!-- Reassignment -->
+                        <ng-container *ngSwitchCase="'reassignment'">
+                            <div class="d-flex flex-wrap">
+                                <b-image [src]="'users/' + event.userId + '/image'"
+                                    [imageId]="ws.get('User', event.userId)?.ImageId" [size]="36" shape="circle">
+                                </b-image>
+                                <div class="p-2 text-nowrap">
+                                    <b-view-link link="../../../users" [itemId]="event.userId">
+                                        {{ ws.getMultilingualValue('User', event.userId, 'Name') }}
+                                    </b-view-link>
+                                </div>
+                                &nbsp;
+                                <div class="pt-2">
+                                    <fa-icon icon="angle-right" [flip]="flip" [size]="120"></fa-icon>
+                                </div>
+                                &nbsp;
+                                &nbsp;
+                                <b-image [src]="'users/' + reassignment(event).assigneeId + '/image'"
+                                    [imageId]="ws.get('User', reassignment(event).assigneeId)?.ImageId" [size]="36"
+                                    shape="circle">
+                                </b-image>
+                                <div class="p-2 text-nowrap">
+                                    <b-view-link link="../../../users" [itemId]="reassignment(event).assigneeId">
+                                        {{ ws.getMultilingualValue('User', reassignment(event).assigneeId, 'Name') }}
+                                    </b-view-link>
+                                </div>
+                                <div class="py-2 text-nowrap">
+                                    <span class="my-auto b-vertical-alignment-center small text-muted">
+                                        {{ event.time | date:'HH:mm' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="py-2 px-1" *ngIf="!!reassignment(event).comment">
+                                {{ reassignment(event).comment }}
+                            </div>
+                        </ng-container>
+
+                        <!-- Creation -->
+                        <ng-container *ngSwitchCase="'creation'">
+                            <div class="d-flex">
+                                <b-image [src]="'users/' + event.userId + '/image'"
+                                    [imageId]="ws.get('User', event.userId)?.ImageId" [size]="36" shape="circle">
+                                </b-image>
+                                <div class="p-2 text-nowrap">
+                                    <b-view-link link="../../../users" [itemId]="event.userId">
+                                        {{ ws.getMultilingualValue('User', event.userId, 'Name') }}</b-view-link>
+                                    {{ 'CreatedThisDocument' | translate }}
+                                </div>
+                                <div class="py-2 text-nowrap">
+                                    <span class="small text-muted">
+                                        {{ event.time | date:'HH:mm' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-container>
             </ng-container>
         </div>
     </div>

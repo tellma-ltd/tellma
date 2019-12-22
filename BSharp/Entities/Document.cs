@@ -97,6 +97,21 @@ namespace BSharp.Entities
         })]
         public short? State { get; set; }
 
+        [Display(Name = "Document_Comment")]
+        public string Comment { get; set; }
+
+        [Display(Name = "Document_Assignee")]
+        public int? AssigneeId { get; set; }
+
+        [Display(Name = "Document_AssignedAt")]
+        public DateTimeOffset? AssignedAt { get; set; }
+
+        [Display(Name = "Document_AssignedBy")]
+        public int? AssignedById { get; set; }
+
+        [Display(Name = "Document_OpenedAt")]
+        public DateTimeOffset? OpenedAt { get; set; }
+
         [Display(Name = "CreatedAt")]
         public DateTimeOffset? CreatedAt { get; set; }
 
@@ -115,6 +130,14 @@ namespace BSharp.Entities
         [ForeignKey(nameof(OperatingSegmentId))]
         public ResponsibilityCenter OperatingSegment { get; set; }
 
+        [Display(Name = "Document_Assignee")]
+        [ForeignKey(nameof(AssigneeId))]
+        public User Assignee { get; set; }
+
+        [Display(Name = "Document_AssignedBy")]
+        [ForeignKey(nameof(AssignedById))]
+        public User AssignedBy { get; set; }
+
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]
         public User CreatedBy { get; set; }
@@ -126,6 +149,10 @@ namespace BSharp.Entities
         [Display(Name = "Document_Signatures")]
         [ForeignKey(nameof(DocumentSignature.DocumentId))]
         public List<DocumentSignature> Signatures { get; set; }
+
+        [Display(Name = "Document_AssignmentsHistory")]
+        [ForeignKey(nameof(DocumentAssignment.DocumentId))]
+        public List<DocumentAssignment> AssignmentsHistory { get; set; }
 
         // HIDDEN
 

@@ -64,6 +64,72 @@ namespace BSharp.Controllers
             _tenantInfoAccessor = tenantInfoAccessor;
         }
 
+        [HttpPut("assign")]
+        public async Task<ActionResult<EntitiesResponse<Lookup>>> Assign([FromBody] List<int> ids, [FromQuery] AssignArguments args)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // TODO: Check permissions
+
+                // Parse parameters
+                var expandExp = ExpandExpression.Parse(args.Expand);
+                var idsArray = ids.ToArray();
+
+                // Check user permissions
+                await CheckActionPermissions("IsActive", idsArray);
+
+                // Execute and return
+                using (var trx = ControllerUtilities.CreateTransaction())
+                {
+                    await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment);
+
+                    if (args.ReturnEntities ?? false)
+                    {
+                        var response = await GetByIdListAsync(idsArray, expandExp);
+
+                        trx.Complete();
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        trx.Complete();
+                        return Ok();
+                    }
+                }
+            }
+            , _logger);
+        }
+
+        private async Task<ActionResult<EntitiesResponse<Lookup>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
+        {
+            // Parse parameters
+            var expandExp = ExpandExpression.Parse(expand);
+            var idsArray = ids.ToArray();
+
+            // Check user permissions
+            await CheckActionPermissions("IsActive", idsArray);
+
+            // Execute and return
+            using (var trx = ControllerUtilities.CreateTransaction())
+            {
+                await _repo.Lookups__Activate(ids, isActive);
+
+                if (returnEntities)
+                {
+                    var response = await GetByIdListAsync(idsArray, expandExp);
+
+                    trx.Complete();
+                    return Ok(response);
+                }
+                else
+                {
+                    trx.Complete();
+                    return Ok();
+                }
+            }
+        }
+
+
         protected override IRepository GetRepository()
         {
             string filter = $"{nameof(Document.DefinitionId)} {Ops.eq} '{DefinitionId}'";
@@ -354,7 +420,5 @@ namespace BSharp.Controllers
 
             return query;
         }
-
-
     }
 }
