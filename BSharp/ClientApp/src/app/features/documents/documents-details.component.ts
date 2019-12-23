@@ -38,7 +38,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   private documentsApi = this.api.documentsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
-  private _currentHistory: DocumentAssignment[];
+  private _currentDoc: Document;
   private _sortedHistory: { date: string, events: DocumentEvent[] }[] = [];
 
   // These two are bound from UI
@@ -58,7 +58,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `OperatingSegment,Lines/Entries/Account/Currency,Signatures/Agent,Signatures/Role
+  public expand = `CreatedBy,ModifiedBy,OperatingSegment,Lines/Entries/Account/Currency,Signatures/Agent,Signatures/Role
   ,Signatures/CreatedBy,AssignmentsHistory/Assignee,AssignmentsHistory/CreatedBy`;
 
   constructor(
@@ -108,6 +108,35 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // TODO: Set defaults
 
     return result;
+  }
+
+  clone: (item: Document) => Document = (item: Document) => {
+    if (!!item) {
+      const clone = JSON.parse(JSON.stringify(item)) as Document;
+      clone.Id = null;
+
+      if (!!clone.Lines) {
+        clone.Lines.forEach(line => {
+          line.Id = null;
+          if (!!line.Entries) {
+            line.Entries.forEach(entry => {
+              entry.Id = null;
+            });
+          }
+        });
+      }
+
+      delete clone.CreatedById;
+      delete clone.ModifiedById;
+      delete clone.SerialNumber;
+      delete clone.State;
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
   }
 
   public get ws() {
@@ -206,13 +235,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public sortChronologically(model: Document): { date: string, events: DocumentEvent[] }[] {
-    if (!model || !model.AssignmentsHistory) {
+    if (!model) {
       return null;
     }
 
-    if (model.AssignmentsHistory !== this._currentHistory) {
-      const history = model.AssignmentsHistory;
-      this._currentHistory = history;
+    if (model !== this._currentDoc) {
+      this._currentDoc = model;
+      const history = model.AssignmentsHistory || [];
 
       const filteredHistory: DocumentAssignment[] = history.filter(e => e.CreatedById !== e.AssigneeId);
 

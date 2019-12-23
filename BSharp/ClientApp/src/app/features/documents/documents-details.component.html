@@ -1,4 +1,4 @@
-<b-details *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [createFunc]="create"
+<b-details *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [createFunc]="create" [cloneFunc]="clone"
     [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
     [documentTemplate]="document" [isInactive]="isInactive" [documentHeaderTemplate]="documentHeader" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
