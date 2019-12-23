@@ -253,7 +253,7 @@
             <div class="bg-light border-bottom border-top2 py-2 px-3" *ngIf="!!model.AssigneeId">
                 <div class="d-flex">
                     <b-image [src]="'users/' + model.AssigneeId + '/image'"
-                        [imageId]="ws.get('User', model.AssigneeId)?.ImageId" [size]="36" shape="circle"></b-image>
+                        [imageId]="ws.get('User', model.AssigneeId)?.ImageId" [size]="picSize" shape="circle"></b-image>
                     <div class="p-2 text-nowrap">
                         <b-view-link link="../../../users" [itemId]="model.AssigneeId">
                             {{ ws.getMultilingualValue('User', model.AssigneeId, 'Name') }}</b-view-link>
@@ -262,7 +262,7 @@
                 </div>
 
                 <!-- Assign the document -->
-                <div class="px-2 pb-2 pt-0" style="margin-left:36px" *ngIf="showAssignDocument(model, isEdit)">
+                <div class="px-2 pb-2 pt-0" [style.margin-left.px]="picSize" *ngIf="showAssignDocument(model, isEdit)">
                     <div class="form-group">
                         <label class="small font-weight-bold" for="user">{{ 'AssignTo' | translate }}</label>
                         <div class="bg-white border b-borderless-input p-1">
@@ -281,7 +281,7 @@
 
             <!-- All history -->
             <ng-container *ngFor="let dayEvents of sortChronologically(model)">
-                <div class="px-3 py-4 small font-weight-bold">{{ dayEvents.date }}</div>
+                <div class="px-3 py-3 small font-weight-bold">{{ dayEvents.date }}</div>
 
                 <!-- Day's history -->
                 <ng-container *ngFor="let event of dayEvents.events; let i = index">
@@ -320,7 +320,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="py-2 px-1" *ngIf="!!reassignment(event).comment">
+                            <div class="pt-1 pb-2 px-2" [style.margin-left.px]="picSize" *ngIf="!!reassignment(event).comment">
                                 {{ reassignment(event).comment }}
                             </div>
                         </ng-container>

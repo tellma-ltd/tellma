@@ -44,6 +44,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   // These two are bound from UI
   public assigneeId: number;
   public comment: string;
+  public picSize = 36;
 
   @Input()
   public set definitionId(t: string) {

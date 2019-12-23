@@ -169,12 +169,6 @@ namespace BSharp.Controllers
                     {
                         // Entry defaults
                         entry.EntryNumber = entry.EntryNumber ?? 0;
-                        entry.MonetaryValue = entry.MonetaryValue ?? 0;
-                        entry.Count = entry.Count ?? 0;
-                        entry.Mass = entry.Mass ?? 0;
-                        entry.Volume = entry.Volume ?? 0;
-                        entry.Time = entry.Time ?? 0;
-                        entry.Value = entry.Value ?? 0;
                     });
                 });
             });
