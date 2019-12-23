@@ -16,7 +16,7 @@ SET NOCOUNT ON;
 		USING (
 			SELECT 	
 				[Index], [Id],
-				[OperatingSegmentId],
+				--[OperatingSegmentId],
 				@DefinitionId AS [DefinitionId],
 				[ResourceClassificationId], 
 				[Name], 
@@ -70,7 +70,7 @@ SET NOCOUNT ON;
 		WHEN MATCHED 
 		THEN
 			UPDATE SET
-				t.[OperatingSegmentId]		= s.[OperatingSegmentId],
+				--t.[OperatingSegmentId]		= s.[OperatingSegmentId],
 				t.[DefinitionId]			= s.[DefinitionId],
 				t.[ResourceClassificationId]= s.[ResourceClassificationId], 
 				t.[Name]					= s.[Name],
@@ -120,7 +120,8 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([OperatingSegmentId], [DefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], [Identifier], [Code],
+			INSERT (--[OperatingSegmentId], 
+				[DefinitionId], [ResourceClassificationId], [Name], [Name2], [Name3], [Identifier], [Code],
 				[CurrencyId],
 				[MonetaryValue],
 				[CountUnitId],
@@ -161,7 +162,8 @@ SET NOCOUNT ON;
 				--[Text1],					
 				--[Text2]			
 				)
-			VALUES (s.[OperatingSegmentId], s.[DefinitionId], s.[ResourceClassificationId], s.[Name], s.[Name2], s.[Name3], s.[Identifier], s.[Code],
+			VALUES (--s.[OperatingSegmentId], 
+				s.[DefinitionId], s.[ResourceClassificationId], s.[Name], s.[Name2], s.[Name3], s.[Identifier], s.[Code],
 				s.[CurrencyId],
 				s.[MonetaryValue],
 				s.[CountUnitId],

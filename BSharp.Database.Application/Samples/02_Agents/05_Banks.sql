@@ -21,10 +21,10 @@ END
 	END;
 	
 	IF @DebugEmployees = 1
-	SELECT A.[Code], A.[Name], A.[StartDate] AS 'Banking Since', A.[IsActive],
-	RC.[Name] AS OperatingSegment
+	SELECT A.[Code], A.[Name], A.[StartDate] AS 'Banking Since', A.[IsActive]
+	--RC.[Name] AS OperatingSegment
 	FROM dbo.fi_Agents(N'banks', NULL) A
-	LEFT JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;
+	--LEFT JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;
 
 SELECT
 	@Bank_CBE= (SELECT [Id] FROM [dbo].[Agents] WHERE [Name] = N'Commercial Bank of Ethiopia'),

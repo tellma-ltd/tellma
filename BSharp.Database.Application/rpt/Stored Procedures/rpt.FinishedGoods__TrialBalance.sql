@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [rpt].[FinishedGoods__TrialBalance]
-	@OperatingSegmentId INT = NULL,
+	--@OperatingSegmentId INT = NULL,
 	@FromDate Date = '01.01.2020',
 	@ToDate Date = '01.01.2020',
 	@CountUnitId INT,
@@ -14,7 +14,7 @@ BEGIN
 			SUM(OpeningCount) AS OpeningCount, SUM(CountIn) AS CountIn, SUM(CountOut) AS CountOut, SUM(EndingCount) AS EndingCount,
 			SUM(OpeningMass) AS OpeningMass, SUM(MassIn) AS MassIn, SUM(MassOut) AS MassOut, SUM(EndingMass) AS EndingMass
 		FROM rpt.fi_JournalSummary(
-			@OperatingSegmentId,
+			--@OperatingSegmentId,
 			N'NonFinancialAsset',
 			N'storage-custodies',
 			N'FinishedGoods', 

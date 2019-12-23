@@ -2,11 +2,11 @@
 	DECLARE @Paint int, @Plastic int, @WaliaSteel int, @Lifan int;
 		
 	INSERT INTO @Customers
-	([Index],	[Name],						[StartDate], [OperatingSegmentId]) VALUES
-	(0,			N'Best Paint Industry',		'2017.09.15', @OS_IT),
-	(1,			N'Best Plastic Industry',	'2017.10.25', @OS_IT),
-	(2,			N'Walia Steel Industry, plc','2018.01.05', @OS_IT),
-	(3,			N'Yangfan Motors, PLC',		'2017.10.25', @OS_IT);
+	([Index],	[Name],						[StartDate]) VALUES
+	(0,			N'Best Paint Industry',		'2017.09.15'),
+	(1,			N'Best Plastic Industry',	'2017.10.25'),
+	(2,			N'Walia Steel Industry, plc','2018.01.05'),
+	(3,			N'Yangfan Motors, PLC',		'2017.10.25');
 
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'customers',
@@ -25,8 +25,8 @@
 		@Lifan = (SELECT [Id] FROM [dbo].fi_Agents(N'customers', NULL) WHERE [Name] = N'Yangfan Motors, PLC');
 
 	IF @DebugCustomers = 1
-		SELECT A.[Code], A.[Name], A.[StartDate] AS 'Customer Since', A.[IsActive],
+		SELECT A.[Code], A.[Name], A.[StartDate] AS 'Customer Since', A.[IsActive]
 		--A.[CustomerRating], A.[BillingAddress], A.[ShippingAddress], A.[CreditLine],
-		RC.[Name] AS OperatingSegment
+		--RC.[Name] AS OperatingSegment
 		FROM dbo.fi_Agents(N'customers', NULL) A
-		JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;
+		--JOIN dbo.ResponsibilityCenters RC ON A.OperatingSegmentId = RC.Id;

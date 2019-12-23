@@ -1,8 +1,10 @@
 ﻿CREATE TABLE [dbo].[DocumentDefinitions] (
 -- table managed by Banan
 -- Note that, in steel production: CTS, HSP, and SM are considered 3 different document types.
-	[Id]						NVARCHAR (50)	CONSTRAINT [PK_DocumentDefinitions] PRIMARY KEY, -- Kebab case
-	[IsSourceDocument]			BIT				DEFAULT 1, -- <=> IsVoucherReferenceRequired
+	[Id]						NVARCHAR (50)	CONSTRAINT [PK_DocumentDefinitions] PRIMARY KEY,
+	-- IsPrimal, means that we are not copying the data from elsewhere. Instead, this is the only place where it exists
+	-- Original is less confusing than Source Document. An SIV is not a source document, but can be primal
+	[IsOriginalDocument]		BIT				DEFAULT 1, -- <=> IsVoucherReferenceRequired = 0
 	-- EvidenceType = Authentication <=> Document is paperless. Workflow and Account signatures are required
 	-- EvidenceType = SourceDocument <=> There is a external booklet from which we are copying. In that case, Include voucher booklet and reference. Only workflow required
 	-- EvidenceType = Attachment <=> There is no external booklet. Instead, there are support documents proving what happened. In that case, attach them. Only workflow required

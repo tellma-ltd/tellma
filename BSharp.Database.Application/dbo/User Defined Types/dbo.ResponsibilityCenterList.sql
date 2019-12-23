@@ -11,7 +11,7 @@
 	[Name3]					NVARCHAR (255),
 	[ManagerId]				INT,
 -- (Ifrs 8) Profit or Investment Center, Performance regularly reviewed by CODM, discrete financial information is available
-	[IsOperatingSegment]	BIT					NOT NULL DEFAULT 0, -- on each path from root to leaf, at most one O/S
+	--[IsOperatingSegment]	BIT					NOT NULL DEFAULT 0, -- on each path from root to leaf, at most one O/S
 
 	[Code]					NVARCHAR (255),
 	[IsLeaf]				BIT DEFAULT 1

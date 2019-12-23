@@ -13,7 +13,7 @@ RETURN
 			AccountId,
 			SUM([Opening]) AS [Opening], SUM([Debit]) AS [Debit], SUM([Credit]) AS [Credit], SUM([Closing]) AS Closing
 		FROM rpt.fi_JournalSummary(
-			NULL, -- OperatingSegmentId
+			--NULL, -- OperatingSegmentId
 			NULL, --@AccountTypeId
 			NULL, -- @AgentDefinitionId
 			NULL, -- @ResourceClassificationCode

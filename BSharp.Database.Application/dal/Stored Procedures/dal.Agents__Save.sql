@@ -16,7 +16,7 @@ SET NOCOUNT ON;
 	(
 		MERGE INTO [dbo].[Agents] AS t
 		USING (
-			SELECT [Index], [Id], [OperatingSegmentId],
+			SELECT [Index], [Id], --[OperatingSegmentId],
 				@DefinitionId AS [DefinitionId], [Name], [Name2], [Name3], [Code], [IsRelated], 
 				[TaxIdentificationNumber], --[ImageId], -- imageId is handled separately in the code below.
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
@@ -40,7 +40,7 @@ SET NOCOUNT ON;
 		WHEN MATCHED
 		THEN
 			UPDATE SET
-				t.[OperatingSegmentId]		= s.[OperatingSegmentId],
+				--t.[OperatingSegmentId]		= s.[OperatingSegmentId],
 				t.[DefinitionId]			= s.[DefinitionId],
 				t.[Name]					= s.[Name],
 				t.[Name2]					= s.[Name2],
@@ -98,7 +98,7 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]				= @Now,
 				t.[ModifiedById]			= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([OperatingSegmentId],
+			INSERT (--[OperatingSegmentId],
 				[DefinitionId], [Name], [Name2], [Name3], [Code], [IsRelated], 
 				[TaxIdentificationNumber],--,[ImageId]
 				--[IsLocal], [Citizenship], [Facebook], [Instagram], [Twitter],
@@ -118,7 +118,7 @@ SET NOCOUNT ON;
 				[CostObjectType],
 				[UserId]
 				)
-			VALUES (s.[OperatingSegmentId],
+			VALUES (--s.[OperatingSegmentId],
 				s.[DefinitionId], s.[Name], s.[Name2], s.[Name3], s.[Code], s.[IsRelated], 
 				s.[TaxIdentificationNumber],--, s[ImageId]
 				--s.[IsLocal], s.[Citizenship], s.[Facebook], s.[Instagram], s.[Twitter],

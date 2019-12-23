@@ -4,7 +4,8 @@
 ) RETURNS TABLE
 AS 
 RETURN
-	SELECT 	R.[DefinitionId], R.[Id],OS.[Name] AS [OperatingSegment], RC.[Name] AS [Classification], R.[Name], R.[IsActive], R.[Code],
+	SELECT 	R.[DefinitionId], R.[Id],--OS.[Name] AS [OperatingSegment], 
+	RC.[Name] AS [Classification], R.[Name], R.[IsActive], R.[Code],
 		C.[Name] AS [Currency], R.[MonetaryValue],
 		[Mass], MM.[Name] AS [MassUnit], [Volume], MV.[Name] AS [VolumeUnit],
 		[Time], MT.[Name] AS [TimeUnit], [Count], MC.[Name] AS [CountUnit],
@@ -12,7 +13,7 @@ RETURN
 		LK1.[Name] AS Lookup1, LK2.[Name] AS Lookup2--, LK3.[Name] AS Lookup3, LK4.[Name] AS Lookup4, LK5.[Name] AS Lookup5
 	FROM dbo.Resources R
 	JOIN dbo.ResourceClassifications RC ON R.[ResourceClassificationId] = RC.[Id]
-	LEFT JOIN dbo.ResponsibilityCenters OS ON R.OperatingSegmentId = OS.[Id]
+	--LEFT JOIN dbo.ResponsibilityCenters OS ON R.OperatingSegmentId = OS.[Id]
 	LEFT JOIN dbo.Currencies C ON R.[CurrencyId] = C.[Id]
 	LEFT JOIN dbo.MeasurementUnits MC ON R.[CountUnitId] = MC.[Id]
 	LEFT JOIN dbo.MeasurementUnits MM ON R.[MassUnitId] = MM.[Id]

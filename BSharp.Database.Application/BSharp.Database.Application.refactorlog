@@ -459,4 +459,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[LineDefinitionsStatesReasons]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="47ace425-706b-40e7-a9bf-5412e3e97600" ChangeDateTime="12/23/2019 10:13:09">
+    <Property Name="ElementName" Value="[dbo].[DocumentDefinitions].[IsSourceDocument]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DocumentDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[IsOriginalDocument]" />
+  </Operation>
 </Operations>

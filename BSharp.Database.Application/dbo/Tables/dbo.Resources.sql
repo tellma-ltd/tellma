@@ -4,7 +4,7 @@
 CREATE TABLE [dbo].[Resources] (
 -- Resource can be seen as the true leaf level of Resource Classifications.
 	[Id]							INT					CONSTRAINT [PK_Resources] PRIMARY KEY IDENTITY,
-	[OperatingSegmentId]			INT					CONSTRAINT [FK_Resources__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
+	--[OperatingSegmentId]			INT					CONSTRAINT [FK_Resources__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
 	[DefinitionId]					NVARCHAR (50)		NOT NULL,
 	-- Inspired by IFRS, with additions to simplify application logic, to cater for user custom classifications for reporting purposes
 	[ResourceClassificationId]		INT					NOT NULL,

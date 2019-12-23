@@ -5,9 +5,9 @@
 
 	DECLARE @FixedAssets dbo.ResourceList;
 	INSERT INTO @FixedAssets ([Index],
-		[OperatingSegmentId],	[ResourceClassificationId],		[Name],			[TimeUnitId],				[Identifier]) VALUES
-	(0, @OS_IT, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'MA'),
-	(1, @OS_IT, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'AA');
+		[ResourceClassificationId],					[Name],			[TimeUnitId],				[Identifier]) VALUES
+	(0, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'MA'),
+	(1, dbo.fn_RCCode__Id(N'FixturesAndFittings'),	N'Office Chair',dbo.fn_UnitName__Id(N'Yr'), N'AA');
 
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'general-fixed-assets',
@@ -25,6 +25,6 @@
 		DECLARE @FixedAssetsIds dbo.IdList;
 		INSERT INTO @FixedAssetsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'general-fixed-assets';
 
-		SELECT [Name] AS 'Fixed Asset', [Identifier] AS N'Used By', [TimeUnit] AS 'Usage In', [OperatingSegment] -- Custodian/Location, etc.... from DLE
+		SELECT [Name] AS 'Fixed Asset', [Identifier] AS N'Used By', [TimeUnit] AS 'Usage In' -- Custodian/Location, etc.... from DLE
 		FROM rpt.Resources(@FixedAssetsIds);
 	END

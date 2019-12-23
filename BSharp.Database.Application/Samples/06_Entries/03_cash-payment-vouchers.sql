@@ -3,10 +3,10 @@ DECLARE @WL_CPV [dbo].[WideLineList];
 
 BEGIN
 	INSERT INTO @D_CPV
-	([Index],	[DocumentDate], [Memo],											[OperatingSegmentId]) VALUES
+	([Index],	[DocumentDate], [Memo]) VALUES
 	--(0,			'2018.02.08',	N'Projector for Exec office',					@OS_Steel), -- fixed asset
 	--(1,			'2018.02.15',	N'Fuel for machinery',							@OS_Steel), -- inventory
-	(2,			'2018.02.22',	N'HP laser jet ink + SQL Server 2019 License',	@OS_Steel); -- Consumables + Intangible
+	(2,			'2018.02.22',	N'HP laser jet ink + SQL Server 2019 License'); -- Consumables + Intangible
 
 	INSERT INTO @WL_CPV
 	EXEC bll.LineDefinitionEntries__Pivot @index = 0, @DocumentIndex = 2, @DefinitionId = N'BankPayment';

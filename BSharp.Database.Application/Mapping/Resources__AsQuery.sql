@@ -8,7 +8,7 @@ AS
 RETURN (
 	SELECT 
 		[Index] AS [Id],
-		[OperatingSegmentId],
+	--	[OperatingSegmentId],
 		@DefinitionId AS [ResourceDefinitionId],
 		[Name],
 		[Name2],

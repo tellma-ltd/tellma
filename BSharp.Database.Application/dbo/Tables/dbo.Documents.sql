@@ -7,7 +7,7 @@
 	-- Common to all document types
 	[DefinitionId]					NVARCHAR (50)	NOT NULL CONSTRAINT [FK_Documents__DefinitionId] REFERENCES [dbo].[DocumentDefinitions] ([Id]) ON UPDATE CASCADE,
 	[SerialNumber]					INT				NOT NULL,	-- auto generated, copied to paper if needed.
-	[OperatingSegmentId]			INT				NOT NULL CONSTRAINT [FK_Documents__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
+	--[OperatingSegmentId]			INT				NOT NULL CONSTRAINT [FK_Documents__OperatingSegmentId] REFERENCES dbo.ResponsibilityCenters([Id]),
 	[DocumentDate]					DATE			NOT NULL DEFAULT CONVERT (DATE, SYSDATETIME()) CONSTRAINT [CK_Documents__DocumentDate] CHECK ([DocumentDate] < DATEADD(DAY, 1, GETDATE())),
 	[State]							SMALLINT		NOT NULL DEFAULT 0,
 	[StateAt]						DATETIMEOFFSET(7)NOT NULL DEFAULT SYSDATETIMEOFFSET(),

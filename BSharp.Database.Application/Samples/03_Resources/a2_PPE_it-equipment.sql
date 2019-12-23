@@ -41,11 +41,11 @@ EXEC [api].[ResourceClassifications__Save]
 	END;		
 
 	DECLARE @ITEquipment dbo.ResourceList;
-	INSERT INTO @ITEquipment ([Index], [OperatingSegmentId],
+	INSERT INTO @ITEquipment ([Index],
 		[ResourceClassificationId],							[Name],			[TimeUnitId],				[Identifier], [Lookup1Id],											[Lookup2Id]) VALUES
-	(0,@OS_IT,dbo.fn_RCCode__Id(N'ServersExtension'),	N'Dell ML 200',	dbo.fn_UnitName__Id(N'Yr'),	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Dell'),	dbo.fn_Lookup(N'operating-systems', N'Windows Server 2017')),
-	(1,@OS_IT,dbo.fn_RCCode__Id(N'PrintersExtension'),	N'HP Deskject',	dbo.fn_UnitName__Id(N'Yr'),	N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'HP'),	NULL),
-	(2,@OS_IT,dbo.fn_RCCode__Id(N'RoutersExtension'),	N'ASUS Router',	dbo.fn_UnitName__Id(N'Yr'), N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Apple'),	dbo.fn_Lookup(N'operating-systems', N'iOS 13'));
+	(0,dbo.fn_RCCode__Id(N'ServersExtension'),	N'Dell ML 200',	dbo.fn_UnitName__Id(N'Yr'),	N'FZ889123',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Dell'),	dbo.fn_Lookup(N'operating-systems', N'Windows Server 2017')),
+	(1,dbo.fn_RCCode__Id(N'PrintersExtension'),	N'HP Deskject',	dbo.fn_UnitName__Id(N'Yr'),	N'SS9898224',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'HP'),	NULL),
+	(2,dbo.fn_RCCode__Id(N'RoutersExtension'),	N'ASUS Router',	dbo.fn_UnitName__Id(N'Yr'), N'100022311',	dbo.fn_Lookup(N'it-equipment-manufacturers', N'Apple'),	dbo.fn_Lookup(N'operating-systems', N'iOS 13'));
 	
 	EXEC [api].[Resources__Save]
 		@DefinitionId = N'it-equipment',
@@ -66,6 +66,6 @@ EXEC [api].[ResourceClassifications__Save]
 		INSERT INTO @ITEquipmentIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'it-equipment';
 
 		SELECT [Classification], [Name] AS 'IT Equipment', [TimeUnit] AS 'Usage In',
-			[Lookup1] AS 'Manufacturer', [Lookup2] AS 'Operating System', [OperatingSegment]
+			[Lookup1] AS 'Manufacturer', [Lookup2] AS 'Operating System'
 		FROM rpt.Resources(@ITEquipmentIds);
 	END

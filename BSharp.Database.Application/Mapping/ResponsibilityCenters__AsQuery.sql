@@ -8,7 +8,7 @@ RETURN (
 		ISNULL(E.Id, 0) AS Id, 
 		E.[ResponsibilityType],
 		E.IsLeaf,
-		E.IsOperatingSegment,
+	--	E.IsOperatingSegment,
 		E.Name, 
 		E.Name2, 
 		E.Name3, 
