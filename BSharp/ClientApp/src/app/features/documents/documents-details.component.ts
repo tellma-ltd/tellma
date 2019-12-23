@@ -8,6 +8,26 @@ import { DocumentForSave, Document, serialNumber } from '~/app/data/entities/doc
 import { DocumentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { LineForSave } from '~/app/data/entities/line';
 import { EntryForSave, Entry } from '~/app/data/entities/entry';
+import { DocumentAssignment } from '~/app/data/entities/document-assignment';
+import { addToWorkspace } from '~/app/data/util';
+import { tap } from 'rxjs/operators';
+
+interface DocumentEventBase {
+  time: string;
+  userId: number;
+}
+
+interface DocumentReassignmentEvent extends DocumentEventBase {
+  type: 'reassignment';
+  assigneeId: number;
+  comment?: string;
+}
+
+interface DocumentCreationEvent extends DocumentEventBase {
+  type: 'creation';
+}
+
+type DocumentEvent = DocumentReassignmentEvent | DocumentCreationEvent;
 
 @Component({
   selector: 'b-documents-details',
@@ -18,6 +38,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   private documentsApi = this.api.documentsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
+  private _currentDoc: Document;
+  private _sortedHistory: { date: string, events: DocumentEvent[] }[] = [];
+
+  // These two are bound from UI
+  public assigneeId: number;
+  public comment: string;
+  public picSize = 36;
 
   @Input()
   public set definitionId(t: string) {
@@ -31,7 +58,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `OperatingSegment,Lines/Entries/Account/Currency,Signatures/Agent,Signatures/Role,Signatures/CreatedBy`;
+  public expand = `CreatedBy,ModifiedBy,OperatingSegment,Lines/Entries/Account/Currency,Signatures/Agent,Signatures/Role
+  ,Signatures/CreatedBy,AssignmentsHistory/Assignee,AssignmentsHistory/CreatedBy`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -80,6 +108,35 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     // TODO: Set defaults
 
     return result;
+  }
+
+  clone: (item: Document) => Document = (item: Document) => {
+    if (!!item) {
+      const clone = JSON.parse(JSON.stringify(item)) as Document;
+      clone.Id = null;
+
+      if (!!clone.Lines) {
+        clone.Lines.forEach(line => {
+          line.Id = null;
+          if (!!line.Entries) {
+            line.Entries.forEach(entry => {
+              entry.Id = null;
+            });
+          }
+        });
+      }
+
+      delete clone.CreatedById;
+      delete clone.ModifiedById;
+      delete clone.SerialNumber;
+      delete clone.State;
+
+      return clone;
+    } else {
+      // programmer mistake
+      console.error('Cloning a non existing item');
+      return null;
+    }
   }
 
   public get ws() {
@@ -170,5 +227,82 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public get functionalPostfix(): string {
     return ' (' + this.ws.getMultilingualValueImmediate(this.ws.settings, 'FunctionalCurrencyName') + ')';
+  }
+
+  public get flip() {
+    // this is to flip the UI icons in RTL
+    return this.workspace.ws.isRtl ? 'horizontal' : null;
+  }
+
+  public sortChronologically(model: Document): { date: string, events: DocumentEvent[] }[] {
+    if (!model) {
+      return null;
+    }
+
+    if (model !== this._currentDoc) {
+      this._currentDoc = model;
+      const history = model.AssignmentsHistory || [];
+
+      const filteredHistory: DocumentAssignment[] = history.filter(e => e.CreatedById !== e.AssigneeId);
+
+      const mappedHistory: DocumentEvent[] = filteredHistory.map(e =>
+        ({
+          type: 'reassignment',
+          time: e.CreatedAt,
+          userId: e.CreatedById,
+          assigneeId: e.AssigneeId,
+          comment: e.Comment,
+        }));
+
+      if (!!model.CreatedById) {
+        mappedHistory.push({ type: 'creation', userId: model.CreatedById, time: model.CreatedAt });
+      }
+
+      const sortedHistory: DocumentEvent[] = mappedHistory.sort((a, b) => {
+        return a.time < b.time ? 1 :
+          a.time > b.time ? -1 : 0;
+      });
+
+      const result: { [date: string]: DocumentEvent[] } = {};
+      for (const entry of sortedHistory) {
+        const date = entry.time.split('T')[0];
+        if (!result[date]) {
+          result[date] = [];
+        }
+
+        result[date].push(entry);
+      }
+
+      this._sortedHistory = Object.keys(result).map(date => ({ date, events: result[date] }));
+    }
+
+    return this._sortedHistory;
+  }
+
+  public reassignment(event: DocumentEvent): DocumentReassignmentEvent {
+    return event as DocumentReassignmentEvent;
+  }
+
+  public showAssignDocument(doc: Document, isEdit: boolean) {
+    // return true;
+    return !isEdit && !!doc && doc.AssigneeId === this.ws.userSettings.UserId;
+  }
+
+  public onAssign(doc: Document): void {
+    if (!!this.assigneeId) {
+      this.documentsApi.assign([doc.Id], {
+        returnEntities: true,
+        expand: this.expand,
+        assigneeId: this.assigneeId,
+        comment: this.comment
+      }).pipe(
+        tap(res => addToWorkspace(res, this.workspace))
+      ).subscribe({ error: this.details.handleActionError });
+
+    }
+  }
+
+  public canAssign(_: Document) {
+    return !!this.assigneeId;
   }
 }

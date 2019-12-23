@@ -17,7 +17,9 @@ BEGIN
 		WHEN MATCHED THEN
 			UPDATE SET
 				t.[AssigneeId] = @AssigneeId,
-				t.[Comment] = @Comment
+				t.[Comment] = @Comment,
+				t.[CreatedAt] = SYSDATETIMEOFFSET(),
+				t.[CreatedById] = CONVERT(INT, SESSION_CONTEXT(N'UserId'))
 		WHEN NOT MATCHED THEN
 			INSERT ([DocumentId], [AssigneeId], [Comment])
 			VALUES (s.[Id], @AssigneeId, @Comment);

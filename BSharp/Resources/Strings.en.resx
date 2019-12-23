@@ -286,6 +286,21 @@
   <data name="Document" xml:space="preserve">
     <value>Document</value>
   </data>
+  <data name="Document_AssignedAt" xml:space="preserve">
+    <value>Assigned At</value>
+  </data>
+  <data name="Document_AssignedBy" xml:space="preserve">
+    <value>Assigned By</value>
+  </data>
+  <data name="Document_AssignmentsHistory" xml:space="preserve">
+    <value>Circulation</value>
+  </data>
+  <data name="Document_Assingee" xml:space="preserve">
+    <value>Assignee</value>
+  </data>
+  <data name="Document_Comment" xml:space="preserve">
+    <value>Comment</value>
+  </data>
   <data name="Document_DocumentDate" xml:space="preserve">
     <value>Date</value>
   </data>
@@ -306,6 +321,9 @@
   </data>
   <data name="Document_MemoIsCommon" xml:space="preserve">
     <value>Memo Is Common</value>
+  </data>
+  <data name="Document_OpenedAt" xml:space="preserve">
+    <value>Opened At</value>
   </data>
   <data name="Document_SerialNumber" xml:space="preserve">
     <value>Serial Number</value>

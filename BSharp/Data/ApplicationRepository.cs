@@ -278,6 +278,9 @@ namespace BSharp.Data
                     case nameof(DocumentSignature):
                         return new SqlSource("[map].[DocumentSignatures]()");
 
+                    case nameof(DocumentAssignment):
+                        return new SqlSource("[map].[DocumentAssignmentsHistory]()");
+
                     #region _Temp
 
                     case nameof(VoucherBooklet):
@@ -3616,6 +3619,56 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.CommandText = $"[dal].[{nameof(Documents__Delete)}]";
+
+                // Execute                    
+                await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<IEnumerable<ValidationError>> Documents_Validate__Assign(IEnumerable<int> ids, int assigneeId, string comment)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Documents_Validate__Assign)}]";
+
+                // Execute
+                return await RepositoryUtilities.LoadErrors(cmd);
+            }
+        }
+
+        public async Task Documents__Assign(IEnumerable<int> ids, int assigneeId, string comment)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable idsTable = RepositoryUtilities.DataTable(ids.Select(id => new { Id = id }));
+                var idsTvp = new SqlParameter("@Ids", idsTable)
+                {
+                    TypeName = $"[dbo].[IdList]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(idsTvp);
+                cmd.Parameters.Add("@AssigneeId", assigneeId);
+                cmd.Parameters.Add("@Comment", comment);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Documents__Assign)}]";
 
                 // Execute                    
                 await cmd.ExecuteNonQueryAsync();

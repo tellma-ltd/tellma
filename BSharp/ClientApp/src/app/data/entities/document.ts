@@ -8,6 +8,7 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 import { LineForSave, Line, LineState } from './line';
 import { DocumentSignature } from './document-signature';
+import { DocumentAssignment } from './document-assignment';
 
 export type DocumentState = LineState | 5;
 
@@ -23,11 +24,17 @@ export class Document extends DocumentForSave<Line> {
     DefinitionId: string;
     SerialNumber: number;
     State: DocumentState;
+    Comment: string;
+    AssigneeId: number;
+    AssignedAt: string;
+    AssignedById: number;
+    OpenedAt: string;
     CreatedAt: string;
-    CreatedById: number | string;
+    CreatedById: number;
     ModifiedAt: string;
-    ModifiedById: number | string;
+    ModifiedById: number;
     Signatures: DocumentSignature[];
+    AssignmentsHistory: DocumentAssignment[];
 }
 
 const _select = ['SerialNumber'];
@@ -36,7 +43,7 @@ let _definitions: DefinitionsForClient;
 let _cache: { [defId: string]: EntityDescriptor } = {};
 let _definitionIds: string[];
 
-function prefix(ws: TenantWorkspace, definitionId: string) {
+function getPrefix(ws: TenantWorkspace, definitionId: string) {
     const def = ws.definitions.Documents[definitionId];
     return  !!def ? def.Prefix : '';
 }
@@ -69,7 +76,7 @@ export function metadata_Document(ws: TenantWorkspace, trx: TranslateService, de
             apiEndpoint: !!definitionId ? `documents/${definitionId}` : 'documents',
             screenUrl: !!definitionId ? `documents/${definitionId}` : 'documents',
             orderby: ws.isSecondaryLanguage ? [_select[1], _select[0]] : ws.isTernaryLanguage ? [_select[2], _select[0]] : [_select[0]],
-            format: (doc: Document) => !!doc.SerialNumber ? serialNumber(doc.SerialNumber, prefix(ws, definitionId), 4) : `(${trx.instant('New')})`,
+            format: (doc: Document) => !!doc.SerialNumber ? serialNumber(doc.SerialNumber, getPrefix(ws, definitionId), 4) : `(${trx.instant('New')})`,
             properties: {
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
@@ -83,7 +90,7 @@ export function metadata_Document(ws: TenantWorkspace, trx: TranslateService, de
                 // TODO
                 SerialNumber: {
                     control: 'serial', label: () => trx.instant('Document_SerialNumber'),
-                    format: (serial: number) => serialNumber(serial, prefix(ws, definitionId), 4)
+                    format: (serial: number) => serialNumber(serial, getPrefix(ws, definitionId), 4)
                 },
                 State: {
                     control: 'state',
