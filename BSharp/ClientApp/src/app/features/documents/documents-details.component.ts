@@ -267,7 +267,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   public showAssignDocument(doc: Document, isEdit: boolean) {
     // return true;
-    return !isEdit && !!doc && doc.AssigneeId === this.ws.userSettings.UserId;
+    return !isEdit && !!doc && !!doc.AssigneeId; // === this.ws.userSettings.UserId;
   }
 
   public onAssign(doc: Document): void {

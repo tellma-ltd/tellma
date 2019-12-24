@@ -206,7 +206,7 @@ namespace BSharp.Data.Queries
                     var valueString = atom.Value;
                     object value;
                     bool isNull = false;
-                    if (valueString == "null")
+                    if (valueString?.ToLower() == "null")
                     {
                         value = null;
                         isNull = true;
@@ -282,6 +282,44 @@ namespace BSharp.Data.Queries
                             }
 
                             return $"{propSQL} NOT LIKE N'%' + {paramSymbol} + N'%'";
+
+
+                        case Ops.startsw: // Must be text
+                            if (propType != typeof(string) || isHierarchyId)
+                            {
+                                // Developer mistake
+                                throw new InvalidOperationException($"Property {propName} is not of type String, therefore cannot use the operator '{atom.Op}'");
+                            }
+
+                            return $"{propSQL} LIKE {paramSymbol} + N'%'";
+
+                        case Ops.nstartsw: // Must be text
+                            if (propType != typeof(string) || isHierarchyId)
+                            {
+                                // Developer mistake
+                                throw new InvalidOperationException($"Property {propName} is not of type String, therefore cannot use the operator '{atom.Op}'");
+                            }
+
+                            return $"{propSQL} NOT LIKE {paramSymbol} + N'%'";
+
+
+                        case Ops.endsw: // Must be text
+                            if (propType != typeof(string) || isHierarchyId)
+                            {
+                                // Developer mistake
+                                throw new InvalidOperationException($"Property {propName} is not of type String, therefore cannot use the operator '{atom.Op}'");
+                            }
+
+                            return $"{propSQL} LIKE N'%' + {paramSymbol}";
+
+                        case Ops.nendsw: // Must be text
+                            if (propType != typeof(string) || isHierarchyId)
+                            {
+                                // Developer mistake
+                                throw new InvalidOperationException($"Property {propName} is not of type String, therefore cannot use the operator '{atom.Op}'");
+                            }
+
+                            return $"{propSQL} NOT LIKE N'%' + {paramSymbol}";
 
                         case Ops.childof: // Must be hierarchy Id
                             {
