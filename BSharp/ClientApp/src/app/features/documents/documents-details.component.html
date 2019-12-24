@@ -1,6 +1,7 @@
-<b-details *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [createFunc]="create" [cloneFunc]="clone"
-    [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb" [idString]="idString"
-    [documentTemplate]="document" [isInactive]="isInactive" [documentHeaderTemplate]="documentHeader" [actions]="[
+<b-details *ngIf="found;else pageNotFound" collection="Document" [definition]="definitionId" [createFunc]="create"
+    [cloneFunc]="clone" [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb"
+    [idString]="idString" [documentTemplate]="document" [isInactive]="isInactive"
+    [documentHeaderTemplate]="documentHeader" [actions]="[
             { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
             { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
            ]" [sidebarTemplate]="sidebar">
@@ -214,15 +215,40 @@
         <div class="row px-2 px-md-5">
             <ng-container *ngFor="let signature of model?.Signatures">
                 <div class="col-12 col-md-6 px-2 px-md-5 mt-3">
-                    <div class="border-bottom">
-                        <span *ngIf="!!signature.RoleId">
+                    <div class="border-bottom d-flex">
+                        <div class="d-flex align-items-center justify-content">
+                            <b-image [src]="'users/' + signature.CreatedById + '/image'"
+                                [imageId]="ws.get('User', signature.CreatedById)?.ImageId" [size]="36" shape="circle">
+                            </b-image>
+                        </div>
+                        <div class="p-2 text-truncate d-flex flex-column">
+                            <span>
+                                <b-view-link link="../../../users" [itemId]="signature.CreatedById">
+                                    {{ ws.getMultilingualValue('User', signature.CreatedById, 'Name') }}
+                                </b-view-link>
+                                <span *ngIf="!!signature?.AgentId">
+                                    {{ 'OnBehalfOf' | translate }}<b-view-link
+                                        [link]="'../../../agents/' + ws.get('Agent', signature.AgentId)?.DefinitionId"
+                                        [itemId]="signature.AgentId">
+                                        {{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}
+                                    </b-view-link></span>
+                            </span>
+                            <b-view-link link="../../../roles" [itemId]="signature.RoleId" class="small2">
+                                {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}</b-view-link>
+                        </div>
+
+                        <!-- <span *ngIf="!!signature.RoleId">
                             {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}: </span>
                         <span
                             class="font-italic2 b-large2">{{ ws.getMultilingualValue('User', signature.CreatedById, 'Name') }}</span>
                         <span *ngIf="!!signature?.AgentId" class="font-italic2 b-large2">
-                            {{ 'OnBehalfOf' | translate }}{{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}</span>
+                            {{ 'OnBehalfOf' | translate }}{{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}</span> -->
                     </div>
-                    <span class="small text-muted"> {{ signature?.SignedAt | date:'yyyy-MM-dd HH:mm' }} </span>
+                    <div class="px-2">
+                        <span class="small text-muted" [style.margin-left.px]="marginLeft"
+                            [style.margin-right.px]="marginRight"> {{ signature?.SignedAt | date:'yyyy-MM-dd HH:mm' }}
+                        </span>
+                    </div>
                 </div>
             </ng-container>
         </div>
@@ -241,7 +267,7 @@
                 <div class="d-flex">
                     <b-image [src]="'users/' + model.AssigneeId + '/image'"
                         [imageId]="ws.get('User', model.AssigneeId)?.ImageId" [size]="picSize" shape="circle"></b-image>
-                    <div class="p-2 text-nowrap">
+                    <div class="p-2 text-truncate">
                         <b-view-link link="../../../users" [itemId]="model.AssigneeId">
                             {{ ws.getMultilingualValue('User', model.AssigneeId, 'Name') }}</b-view-link>
                         {{ 'OwnsThisDocument' | translate }}
@@ -249,7 +275,8 @@
                 </div>
 
                 <!-- Assign the document -->
-                <div class="px-2 pb-2 pt-0" [style.margin-left.px]="picSize" *ngIf="showAssignDocument(model, isEdit)">
+                <div class="px-2 pb-2 pt-0" [style.margin-left.px]="marginLeft" [style.margin-right.px]="marginRight"
+                    *ngIf="showAssignDocument(model, isEdit)">
                     <div class="form-group">
                         <label class="small font-weight-bold" for="user">{{ 'AssignTo' | translate }}</label>
                         <div class="bg-white border b-borderless-input p-1">
@@ -262,7 +289,8 @@
                         <textarea type="password" class="form-control b-input p-1 border bg-white" id="message"
                             placeholder="{{ 'OptionalMessage' | translate }}" [(ngModel)]="comment"></textarea>
                     </div>
-                    <button class="btn btn-primary btn-sm" (click)="onAssign(model)" [disabled]="!canAssign(model)">{{ 'Assign' | translate }}</button>
+                    <button class="btn btn-primary btn-sm" (click)="onAssign(model)"
+                        [disabled]="!canAssign(model)">{{ 'Assign' | translate }}</button>
                 </div>
             </div>
 
@@ -281,7 +309,7 @@
                                 <b-image [src]="'users/' + event.userId + '/image'"
                                     [imageId]="ws.get('User', event.userId)?.ImageId" [size]="36" shape="circle">
                                 </b-image>
-                                <div class="p-2 text-nowrap">
+                                <div class="p-2 text-truncate">
                                     <b-view-link link="../../../users" [itemId]="event.userId">
                                         {{ ws.getMultilingualValue('User', event.userId, 'Name') }}
                                     </b-view-link>
@@ -296,18 +324,19 @@
                                     [imageId]="ws.get('User', reassignment(event).assigneeId)?.ImageId" [size]="36"
                                     shape="circle">
                                 </b-image>
-                                <div class="p-2 text-nowrap">
+                                <div class="p-2 text-truncate">
                                     <b-view-link link="../../../users" [itemId]="reassignment(event).assigneeId">
                                         {{ ws.getMultilingualValue('User', reassignment(event).assigneeId, 'Name') }}
                                     </b-view-link>
                                 </div>
-                                <div class="py-2 text-nowrap">
+                                <div class="py-2 text-truncate">
                                     <span class="my-auto b-vertical-alignment-center small text-muted">
                                         {{ event.time | date:'HH:mm' }}
                                     </span>
                                 </div>
                             </div>
-                            <div class="pt-1 pb-2 px-2" [style.margin-left.px]="picSize" *ngIf="!!reassignment(event).comment">
+                            <div class="pt-1 pb-2 px-2" [style.margin-left.px]="marginLeft"
+                                [style.margin-right.px]="marginRight" *ngIf="!!reassignment(event).comment">
                                 {{ reassignment(event).comment }}
                             </div>
                         </ng-container>
@@ -318,12 +347,12 @@
                                 <b-image [src]="'users/' + event.userId + '/image'"
                                     [imageId]="ws.get('User', event.userId)?.ImageId" [size]="36" shape="circle">
                                 </b-image>
-                                <div class="p-2 text-nowrap">
+                                <div class="p-2 text-truncate">
                                     <b-view-link link="../../../users" [itemId]="event.userId">
                                         {{ ws.getMultilingualValue('User', event.userId, 'Name') }}</b-view-link>
                                     {{ 'CreatedThisDocument' | translate }}
                                 </div>
-                                <div class="py-2 text-nowrap">
+                                <div class="py-2 text-truncate">
                                     <span class="small text-muted">
                                         {{ event.time | date:'HH:mm' }}
                                     </span>
