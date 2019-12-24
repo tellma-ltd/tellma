@@ -1,4 +1,10 @@
-﻿INSERT INTO dbo.Lookups
+﻿/*
+'101' -- Banan SD, USD, en
+'102' -- Banan ET, ETB, en
+'103' -- Lifan Cars, SAR, en/ar/cn
+'104' -- Walia Steel, ETB, en/am
+*/
+INSERT INTO dbo.Lookups
 ([DefinitionId],		[Name],			[SortKey]) VALUES
 (N'body-colors',		N'Black',		1),
 (N'body-colors',		N'White',		2),

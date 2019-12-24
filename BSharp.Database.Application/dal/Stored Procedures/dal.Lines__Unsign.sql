@@ -11,10 +11,10 @@ BEGIN
 		SELECT Max(Id) FROM dbo.[LineSignatures]
 		WHERE [LineId] IN (SELECT [Id] FROM @Ids)
 	)
-	AND [AgentId] = @UserId;
+	AND [OnBehalfOfuserId] = @UserId;
 
 	-- else, soft delete the signature
 	UPDATE dbo.[LineSignatures]
 	SET [RevokedAt] = @Now
-	WHERE [AgentId] = @UserId;
+	WHERE [OnBehalfOfuserId] = @UserId;
 END;

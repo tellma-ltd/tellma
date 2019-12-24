@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [bll].[Lines_Validate__Sign]
 	@Ids dbo.[IndexedIdList] READONLY,
-	@AgentId INT,
+	@OnBehalfOfuserId INT,
 	@RoleId INT,
 	@ToState SMALLINT,
 	@Top INT = 10
@@ -13,15 +13,15 @@ SET NOCOUNT ON;
 	-- Conservation of mass
 	-- conservation of volume
 
-	-- If signing on behalf of Agent
-	IF (SELECT UserId FROM dbo.Agents WHERE [Id] = @AgentId) <> @UserId
+	-- If signing on behalf of User
+	IF (@OnBehalfOfuserId IS NOT NULL) AND (@OnBehalfOfuserId <> @UserId)
 	BEGIN
-		-- If there is no proxy role, then Agent must sign in person
+		-- If there is no proxy role, then User must sign in person
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-			N'Error_LineCannotBeSignedOnBehalOfAgent0',
-			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
+			N'Error_LineCannotBeSignedOnBehalOfUser0',
+			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfuserId)
 		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT L.[Id] 
@@ -35,9 +35,9 @@ SET NOCOUNT ON;
 		INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 		SELECT TOP (@Top)
 			'[' + CAST([Index] AS NVARCHAR (255)) + ']',
-			N'Error_User0LacksPermissionToSignLineOnBehalOfAgent1',
-			(SELECT [Name] FROM dbo.Users WHERE [Id] = @UserId),
-			(SELECT [Name] FROM dbo.Agents WHERE [Id] = @AgentId)
+			N'Error_User0LacksPermissionToSignLineOnBehalfOfUser1',
+			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @UserId),
+			(SELECT dbo.fn_Localize([Name], [Name2], [Name3]) FROM dbo.Users WHERE [Id] = @OnBehalfOfuserId)
 		FROM @Ids 
 		WHERE [Id] IN (
 			SELECT L.[Id] 
@@ -96,7 +96,7 @@ SET NOCOUNT ON;
 	JOIN dbo.[Accounts] A ON A.[Id] = E.[AccountId]
 	WHERE (A.[IsDeprecated] = 1);
 
-	-- TODO: No inactive Resource, No inactive Agent
+	-- TODO: No inactive Resource, No inactive User
 
 	-- Not allowed to cause negative balance in conservative accounts
 	DECLARE @NonFinancialResourceClassificationNode HIERARCHYID = 

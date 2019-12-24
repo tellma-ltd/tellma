@@ -20,7 +20,8 @@ BEGIN
 			SELECT 
 				[Index], [Id], --[OperatingSegmentId], 
 				[DocumentDate], [VoucherNumericReference], --[SortKey],
-				[Memo],-- [Frequency], [Repetitions],
+				[Memo], -- [Frequency], [Repetitions],
+				[MemoIsCommon],
 				ROW_Number() OVER (PARTITION BY [Id] ORDER BY [Index]) + (
 					-- max(SerialNumber) per document type.
 					SELECT ISNULL(MAX([SerialNumber]), 0) FROM dbo.Documents WHERE [DefinitionId] = @DefinitionId
@@ -33,6 +34,7 @@ BEGIN
 				--t.[OperatingSegmentId]		= s.[OperatingSegmentId],
 				t.[VoucherNumericReference]	= s.[VoucherNumericReference],
 				t.[Memo]					= s.[Memo],
+				t.[MemoIsCommon]			= s.[MemoIsCommon],
 				--t.[Frequency]				= s.[Frequency],
 				--t.[Repetitions]			= s.[Repetitions],
 
@@ -42,12 +44,12 @@ BEGIN
 			INSERT (
 				[DefinitionId], [SerialNumber], --[OperatingSegmentId], 
 				[DocumentDate], [VoucherNumericReference], --[SortKey],
-				[Memo]--, [Frequency], [Repetitions]
+				[Memo], [MemoIsCommon]--, [Frequency], [Repetitions]
 			)
 			VALUES (
 				@DefinitionId, s.[SerialNumber], --s.[OperatingSegmentId], 
 				s.[DocumentDate], s.[VoucherNumericReference], --s.[SerialNumber], 
-				s.[Memo]--, s.[Frequency], s.[Repetitions]
+				s.[Memo], s.[MemoIsCommon]--, s.[Frequency], s.[Repetitions]
 			)
 		OUTPUT s.[Index], inserted.[Id] 
 	) As x;

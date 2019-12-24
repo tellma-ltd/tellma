@@ -3,7 +3,7 @@
 	@ToState SMALLINT,
 	@ReasonId INT = NULL,
 	@ReasonDetails	NVARCHAR(1024) = NULL,
-	@AgentId INT = NULL, -- we allow selecting the agent manually, when entering from an external source document
+	@OnBehalfOfuserId INT = NULL, -- we allow selecting the user manually, when entering from an external source document
 	@RoleId INT = NULL, -- we allow selecting the role manually, 
 	@SignedAt DATETIMEOFFSET(7) = NULL,
 	@ValidationErrorsJson NVARCHAR(MAX) OUTPUT
@@ -17,8 +17,8 @@ BEGIN
 -- The system lists the missing roles signatures. This helps the user see if he can sign, and usign which role
 -- The system shows all the states (positive and negative) accessible from the current state
 -- The user selects the state he wants to move the lines to. By default, it is the min positive state
--- If the user is copying from another source document, the user can select the agent to sign on behalf of
--- The system shows all the roles of that agent
+-- If the user is copying from another source document, the user can select the user to sign on behalf of
+-- The system shows all the roles of that user
 -- The user selects the role he wants to use for signing, by default it is the role with maximum lines
 -- The system highlights the lines that can benefit from the user role signature
 -- The user may de-select some of those lines (if trying to select other lines, the business logic will show it as an error)
@@ -38,18 +38,18 @@ SET NOCOUNT ON;
 
 	IF @RoleId NOT IN (
 		SELECT RoleId FROM dbo.RoleMemberships 
-		WHERE [UserId] = (SELECT UserId FROM dbo.Agents WHERE Id = @AgentId)
+		WHERE [UserId] = @OnBehalfOfuserId
 	)
 	BEGIN
-		RAISERROR(N'Error_IncompatibleAgentRole', 16, 1);
+		RAISERROR(N'Error_IncompatibleUserRole', 16, 1);
 		RETURN
 	END
 	
-	-- Validate that the agent is not violating any business logic attempting to move the relevant lines to State @ToState
+	-- Validate that the user is not violating any business logic attempting to move the relevant lines to State @ToState
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Lines_Validate__Sign]
 		@Ids = @IndexedIds,
-		@AgentId = @AgentId,
+		@OnBehalfOfuserId = @OnBehalfOfuserId,
 		@RoleId = @RoleId,
 		@ToState = @ToState;
 
@@ -69,7 +69,7 @@ SET NOCOUNT ON;
 		@ToState = @ToState,
 		@ReasonId = @ReasonId,
 		@ReasonDetails = @ReasonDetails,
-		@AgentId = @AgentId,
+		@OnBehalfOfuserId = @OnBehalfOfuserId,
 		@RoleId = @RoleId,
 		@SignedAt = @SignedAt
 

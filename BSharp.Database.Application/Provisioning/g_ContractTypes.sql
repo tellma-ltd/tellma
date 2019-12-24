@@ -5,7 +5,7 @@ INSERT INTO dbo.ContractTypes VALUES
 (N'InTransit'),
 (N'Receivable'),--/PrepaidExpense
 (N'Deposit'),
-(N'Loa(N'),
+(N'Loan'),
 (N'AccruedIncome'),
 (N'Equity'),
 (N'AccruedExpense'),

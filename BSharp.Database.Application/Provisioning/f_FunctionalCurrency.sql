@@ -7,7 +7,7 @@ BEGIN
 (1, N'ETB', N'Birr',		N'بر',				N'Ethiopian Birr',		N'بر أثيوبي',		2),
 (2, N'GBP', N'Pounds',		N'جنيه',			N'Sterling Pound',		N'جنيه استرليني',	2),
 (3, N'AED', N'Dirhams',		N'درهم',			N'Emirates Dirham',		N'درهم إماراتي',	2),
-(4, N'JPY', N'Yen',			N'ين',				N'Japanese Yen',		N'ين ياباني',		2);
+(4, N'SAR', N'Riyal',		N'ريال',				N'Saudi Riyal',			N'ريال سعودي',			2);
 
 	DECLARE @FunctionalCurrencies dbo.CurrencyList; -- actually, it is only one
 	INSERT INTO @FunctionalCurrencies
