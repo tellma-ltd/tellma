@@ -7,9 +7,6 @@ namespace BSharp.Entities
     [StrongEntity]
     public class ResourceForSave : EntityWithKey<int>
     {
-        [Display(Name = "OperatingSegment")]
-        public int? OperatingSegmentId { get; set; }
-
         [Display(Name = "Resource_Classification")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [AlwaysAccessible]
@@ -130,10 +127,6 @@ namespace BSharp.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
-
-        [Display(Name = "OperatingSegment")]
-        [ForeignKey(nameof(OperatingSegmentId))]
-        public ResponsibilityCenter OperatingSegment { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

@@ -44,11 +44,6 @@ namespace BSharp.Entities
         [Display(Name = "ResponsibilityCenter_Manager")]
         public int? ManagerId { get; set; }
 
-        [Display(Name = "ResponsibilityCenter_IsOperatingSegment")]
-        [Required(ErrorMessage = nameof(RequiredAttribute))]
-        [AlwaysAccessible]
-        public bool? IsOperatingSegment { get; set; } = false;
-
         [Display(Name = "Code")]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]

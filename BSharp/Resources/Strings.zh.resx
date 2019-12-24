@@ -901,9 +901,6 @@
   <data name="No" xml:space="preserve">
     <value>没有</value>
   </data>
-  <data name="OperatingSegment" xml:space="preserve">
-    <value>经营分部</value>
-  </data>
   <data name="Or" xml:space="preserve">
     <value>要么</value>
   </data>
@@ -1290,9 +1287,6 @@
   </data>
   <data name="ResponsibilityCenter" xml:space="preserve">
     <value>责任中心</value>
-  </data>
-  <data name="ResponsibilityCenter_IsOperatingSegment" xml:space="preserve">
-    <value>是一家以经营分部</value>
   </data>
   <data name="ResponsibilityCenter_Manager" xml:space="preserve">
     <value>经理</value>

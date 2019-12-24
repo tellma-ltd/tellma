@@ -901,9 +901,6 @@
   <data name="No" xml:space="preserve">
     <value>لا</value>
   </data>
-  <data name="OperatingSegment" xml:space="preserve">
-    <value>قطاع التشغيل</value>
-  </data>
   <data name="Or" xml:space="preserve">
     <value>أو</value>
   </data>
@@ -1290,9 +1287,6 @@
   </data>
   <data name="ResponsibilityCenter" xml:space="preserve">
     <value>مركز مسؤولية</value>
-  </data>
-  <data name="ResponsibilityCenter_IsOperatingSegment" xml:space="preserve">
-    <value>قطاع تشغيل</value>
   </data>
   <data name="ResponsibilityCenter_Manager" xml:space="preserve">
     <value>المدير</value>

@@ -87,19 +87,6 @@
     </b-text-editor>
   </b-form-group>
 
-  <!-- Operating Segment -->
-  <b-form-group *ngIf="OperatingSegment_isVisible" class="b-form-group" [label]="OperatingSegment_label"
-    [serverErrors]="model?.serverErrors?.OperatingSegmentId">
-    <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OperatingSegment">
-      <b-view-link *ngIf="!isEdit" link="../../../responsibility-centers" [itemId]="model?.OperatingSegmentId">
-        {{ ws.getMultilingualValue('ResponsibilityCenter', model.OperatingSegmentId, 'Name') }}
-      </b-view-link>
-    </b-restricted>
-    <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.OperatingSegmentId"
-      [filter]="'IsOperatingSegment eq true'">
-    </b-responsibility-centers-picker>
-  </b-form-group>
-
   <!-- Start Date -->
   <b-form-group class="b-form-group" *ngIf="StartDate_isVisible" [label]="StartDate_label"
     [serverErrors]="model?.serverErrors?.StartDate">

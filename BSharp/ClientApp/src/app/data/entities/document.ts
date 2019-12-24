@@ -13,7 +13,6 @@ import { DocumentAssignment } from './document-assignment';
 export type DocumentState = LineState | 5;
 
 export class DocumentForSave<TLine = LineForSave> extends EntityWithKey {
-    OperatingSegmentId: number;
     DocumentDate: string;
     Memo: string;
     MemoIsCommon: boolean;
@@ -81,8 +80,6 @@ export function metadata_Document(ws: TenantWorkspace, trx: TranslateService, de
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'DocumentDefinition', foreignKeyName: 'DefinitionId' },
-                OperatingSegmentId: { control: 'number', label: () => `${trx.instant('OperatingSegment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                OperatingSegment: { control: 'navigation', label: () => trx.instant('OperatingSegment'), type: 'ResponsibilityCenter', foreignKeyName: 'OperatingSegmentId' },
                 DocumentDate: { control: 'date', label: () => trx.instant('Document_DocumentDate') },
                 Memo: { control: 'text', label: () => trx.instant('Memo') },
                 MemoIsCommon: { control: 'boolean', label: () => trx.instant('Document_MemoIsCommon') },

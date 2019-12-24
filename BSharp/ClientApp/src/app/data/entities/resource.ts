@@ -8,7 +8,6 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 
 export class ResourceForSave extends EntityWithKey {
-    OperatingSegmentId: number;
     ResourceClassificationId: number;
     Name: string;
     Name2: string;
@@ -85,8 +84,6 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
                 Id: { control: 'number', label: () => trx.instant('Id'), minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 DefinitionId: { control: 'text', label: () => `${trx.instant('Definition')} (${trx.instant('Id')})` },
                 Definition: { control: 'navigation', label: () => trx.instant('Definition'), type: 'ResourceDefinition', foreignKeyName: 'DefinitionId' },
-                OperatingSegmentId: { control: 'number', label: () => `${trx.instant('OperatingSegment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                OperatingSegment: { control: 'navigation', label: () => trx.instant('OperatingSegment'), type: 'ResponsibilityCenter', foreignKeyName: 'OperatingSegmentId' },
                 ResourceClassificationId: { control: 'number', label: () => `${trx.instant('Resource_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 ResourceClassification: { control: 'navigation', label: () => trx.instant('Resource_Classification'), type: 'ResourceClassification', definition: definitionId, foreignKeyName: 'ResourceClassificationId' },
                 Name: { control: 'text', label: () => trx.instant('Name') + ws.primaryPostfix },
@@ -174,7 +171,7 @@ export function metadata_Resource(ws: TenantWorkspace, trx: TranslateService, de
             }
 
             // Navigation properties
-            for (const propName of ['OperatingSegment', 'Currency', 'CountUnit', 'MassUnit', 'VolumeUnit', 'TimeUnit']) {
+            for (const propName of ['Currency', 'CountUnit', 'MassUnit', 'VolumeUnit', 'TimeUnit']) {
                 if (!definition[propName + 'Visibility']) {
                     delete entityDesc.properties[propName];
                     delete entityDesc.properties[propName + 'Id'];

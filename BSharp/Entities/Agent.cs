@@ -37,9 +37,6 @@ namespace BSharp.Entities
         [StringLength(30, ErrorMessage = nameof(StringLengthAttribute))]
         public string TaxIdentificationNumber { get; set; }
 
-        [Display(Name = "OperatingSegment")]
-        public int? OperatingSegmentId { get; set; }
-
         [Display(Name = "Agent_StartDate")]
         public DateTime? StartDate { get; set; }
 
@@ -98,11 +95,7 @@ namespace BSharp.Entities
         // [Display(Name = "Agent_Job")]
         // [ForeignKey(nameof(JobId))]
         // public Job Job { get; set; }
-
-        [Display(Name = "OperatingSegment")]
-        [ForeignKey(nameof(OperatingSegmentId))]
-        public ResponsibilityCenter OperatingSegment { get; set; }
-
+        
         [Display(Name = "Agent_User")]
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }

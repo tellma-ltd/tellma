@@ -79,7 +79,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name = "Walia Steel Industry",
                 Name2 = "واليا الحديد",
                 Code = "110",
-                IsOperatingSegment = true,
                 IsLeaf = false,
             };
 
@@ -90,7 +89,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name = "Best Paint",
                 Name2 = "بست بينت",
                 Code = "1101",
-                IsOperatingSegment = false,
                 IsLeaf = true
             };
 
@@ -116,7 +114,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSaveParent.Name, responseDtoParent.Name);
             Assert.Equal(dtoForSaveParent.Name2, responseDtoParent.Name2);
             Assert.Equal(dtoForSaveParent.Code, responseDtoParent.Code);
-            Assert.Equal(dtoForSaveParent.IsOperatingSegment, responseDtoParent.IsOperatingSegment);
             Assert.Equal(dtoForSaveParent.IsLeaf, responseDtoParent.IsLeaf);
 
 
@@ -126,7 +123,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSaveChild.Name, responseDtoChild.Name);
             Assert.Equal(dtoForSaveChild.Name2, responseDtoChild.Name2);
             Assert.Equal(dtoForSaveChild.Code, responseDtoChild.Code);
-            Assert.Equal(dtoForSaveParent.IsOperatingSegment, responseDtoParent.IsOperatingSegment);
             Assert.Equal(dtoForSaveParent.IsLeaf, responseDtoParent.IsLeaf);
 
 
@@ -168,7 +164,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                     Name = "Another Name",
                     Name2 = "Another Name",
                     Code = "110",
-                    IsOperatingSegment = true,
                     IsLeaf = true,
                 }
             };
@@ -203,7 +198,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 Name = "  Best Plastic", // Leading space
                 Name2 = "بست بلاستيك",
                 Code = "1102  ", // Trailing space
-                IsOperatingSegment = true,
                 IsLeaf = true,
             };
 

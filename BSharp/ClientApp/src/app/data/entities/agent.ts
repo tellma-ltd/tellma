@@ -15,7 +15,6 @@ export class AgentForSave extends EntityWithKey {
   Code: string;
   IsRelated: boolean;
   TaxIdentificationNumber: string;
-  OperatingSegmentId: number;
   StartDate: string;
   JobId: number;
   BasicSalary: number;
@@ -80,8 +79,6 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
         Name3: { control: 'text', label: () => trx.instant('Name') + ws.ternaryPostfix },
         Code: { control: 'text', label: () => trx.instant('Code') },
         TaxIdentificationNumber: { control: 'text', label: () => trx.instant('Agent_TaxIdentificationNumber') },
-        OperatingSegmentId: { control: 'number', label: () => `${trx.instant('OperatingSegment')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-        OperatingSegment: { control: 'navigation', label: () => trx.instant('OperatingSegment'), type: 'ResponsibilityCenter', foreignKeyName: 'OperatingSegmentId' },
         StartDate: { control: 'date', label: () => trx.instant('Agent_StartDate') },
         JobId: { control: 'number', label: () => `${trx.instant('Agent_Job')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
         BasicSalary: { control: 'number', label: () => trx.instant('Agent_BasicSalary'), minDecimalPlaces: 2, maxDecimalPlaces: 2, alignment: 'right' },
@@ -135,7 +132,7 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
       }
 
       // Navigation properties whose label is overriden by the definition
-      for (const propName of ['OperatingSegment']) {
+      for (const propName of []) {
 
         const propDesc = entityDesc.properties[propName] as NavigationPropDescriptor;
         const defaultLabel = propDesc.label;
@@ -147,7 +144,7 @@ export function metadata_Agent(ws: TenantWorkspace, trx: TranslateService, defin
       }
 
       // Navigation properties whose visibility is overriden by the definition
-      for (const propName of ['OperatingSegment']) {
+      for (const propName of []) {
         if (!definition[propName + 'Visibility']) {
           delete entityDesc.properties[propName];
           delete entityDesc.properties[propName + 'Id'];

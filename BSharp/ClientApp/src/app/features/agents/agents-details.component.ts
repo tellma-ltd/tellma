@@ -31,7 +31,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     return this._definitionId;
   }
 
-  public expand = 'OperatingSegment,User';
+  public expand = 'User';
 
   create = () => {
     const result = new AgentForSave();
@@ -114,20 +114,6 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
 
   public get masterCrumb(): string {
     return this.ws.getMultilingualValueImmediate(this.definition, 'TitlePlural');
-  }
-
-  public get OperatingSegment_isVisible(): boolean {
-    return !!this.definition.OperatingSegmentVisibility;
-  }
-
-  public get OperatingSegment_isRequired(): boolean {
-    return this.definition.OperatingSegmentVisibility === 'Required';
-  }
-
-  public get OperatingSegment_label(): string {
-    return !!this.definition.OperatingSegmentLabel ?
-      this.ws.getMultilingualValueImmediate(this.definition, 'OperatingSegmentLabel') :
-      this.translate.instant('OperatingSegment');
   }
 
   public get TaxIdentificationNumber_isVisible(): boolean {

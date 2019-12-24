@@ -9,9 +9,6 @@ namespace BSharp.Entities
     [StrongEntity]
     public class DocumentForSave<TDocumentLine> : EntityWithKey<int>
     {
-        [Display(Name = "OperatingSegment")]
-        public int? OperatingSegmentId { get; set; }
-
         [Display(Name = "Document_DocumentDate")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         public DateTime? DocumentDate { get; set; }
@@ -125,10 +122,6 @@ namespace BSharp.Entities
         public int? ModifiedById { get; set; }
 
         // For Query
-
-        [Display(Name = "OperatingSegment")]
-        [ForeignKey(nameof(OperatingSegmentId))]
-        public ResponsibilityCenter OperatingSegment { get; set; }
 
         [Display(Name = "Document_Assignee")]
         [ForeignKey(nameof(AssigneeId))]

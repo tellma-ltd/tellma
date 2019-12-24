@@ -95,11 +95,6 @@ export interface LineDefinitionForClient extends MasterDetailsDefinitionForClien
 export type Visibility = null | 'Optional' | 'Required';
 
 export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForClient {
-    OperatingSegmentLabel: string;
-    OperatingSegmentLabel2: string;
-    OperatingSegmentLabel3: string;
-    OperatingSegmentVisibility: Visibility;
-    OperatingSegmentDefaultValue: number;
 
     IdentifierLabel: string;
     IdentifierLabel2: string;
@@ -227,11 +222,6 @@ export interface LookupDefinitionForClient extends MasterDetailsDefinitionForCli
 }
 
 export interface AgentDefinitionForClient extends MasterDetailsDefinitionForClient {
-    OperatingSegmentLabel: string;
-    OperatingSegmentLabel2: string;
-    OperatingSegmentLabel3: string;
-    OperatingSegmentVisibility: Visibility;
-    OperatingSegmentDefaultValue: number;
 
     TaxIdentificationNumberVisibility?: string;
     StartDateVisibility?: string;

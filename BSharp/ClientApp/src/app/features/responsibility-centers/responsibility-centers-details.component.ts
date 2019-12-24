@@ -34,7 +34,6 @@ export class ResponsibilityCentersDetailsComponent extends DetailsBaseComponent 
       result.Name3 = this.initialText;
     }
 
-    result.IsOperatingSegment = false;
     result.IsLeaf = true;
 
     return result;

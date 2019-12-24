@@ -131,12 +131,6 @@ namespace BSharp.Controllers.Dto
 
     public class ResourceDefinitionForClient : MasterDetailDefinitionForClient
     {
-        public string OperatingSegmentLabel { get; set; }
-        public string OperatingSegmentLabel2 { get; set; }
-        public string OperatingSegmentLabel3 { get; set; }
-        public string OperatingSegmentVisibility { get; set; }
-        public int? OperatingSegmentDefaultValue { get; set; }
-
         public string IdentifierLabel { get; set; }
         public string IdentifierLabel2 { get; set; }
         public string IdentifierLabel3 { get; set; }
@@ -260,12 +254,6 @@ namespace BSharp.Controllers.Dto
 
     public class AgentDefinitionForClient : MasterDetailDefinitionForClient
     {
-        public string OperatingSegmentLabel { get; set; }
-        public string OperatingSegmentLabel2 { get; set; }
-        public string OperatingSegmentLabel3 { get; set; }
-        public string OperatingSegmentVisibility { get; set; }
-        public int? OperatingSegmentDefaultValue { get; set; }
-
         public string TaxIdentificationNumberVisibility { get; set; }
         public string StartDateVisibility { get; set; }
         public string StartDateLabel { get; set; }

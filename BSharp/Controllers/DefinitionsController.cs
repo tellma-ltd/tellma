@@ -88,7 +88,6 @@ namespace BSharp.Controllers
                         MainMenuSection = "Financials",
                         MainMenuSortKey = 300m,
 
-                        OperatingSegmentVisibility = Visibility.Optional,
                         TaxIdentificationNumberVisibility = Visibility.Optional,
                         StartDateVisibility = Visibility.Optional,
                         StartDateLabel = "Birth Date",
@@ -106,7 +105,6 @@ namespace BSharp.Controllers
                         MainMenuSection = "Financials",
                         MainMenuSortKey = 400m,
 
-                        OperatingSegmentVisibility = Visibility.Optional,
                         TaxIdentificationNumberVisibility = Visibility.Optional,
                         StartDateVisibility = Visibility.Optional,
                         StartDateLabel = "Birth Date",
@@ -129,7 +127,6 @@ namespace BSharp.Controllers
                         MainMenuSection = "Financials",
                         MainMenuSortKey = 500m,
 
-                        OperatingSegmentVisibility = Visibility.Optional,
                         TaxIdentificationNumberVisibility = Visibility.Required,
                         BankAccountNumberVisibility = Visibility.Optional,
                     }
@@ -167,7 +164,6 @@ namespace BSharp.Controllers
                         VolumeUnitVisibility = Visibility.Optional,
                         VolumeVisibility = Visibility.Optional,
 
-                        OperatingSegmentVisibility = Visibility.Optional,
                         AvailableSinceVisibility = Visibility.Optional,
                         AvailableTillVisibility = Visibility.Optional,
                         DescriptionVisibility = Visibility.Optional,
@@ -198,7 +194,7 @@ namespace BSharp.Controllers
                         Lookup1Label = "Color",
                         Lookup1Label2 = "اللون",
                         Lookup1Visibility = Visibility.Optional,
-                        Lookup1DefinitionId = "colors"
+                        Lookup1DefinitionId = "body-colors"
                     },
                     ["currencies"] = new ResourceDefinitionForClient
                     {

@@ -58,7 +58,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
-  public expand = `CreatedBy,ModifiedBy,OperatingSegment,Lines/Entries/Account/Currency,Signatures/Agent,Signatures/Role
+  public expand = `CreatedBy,ModifiedBy,Lines/Entries/Account/Currency,Signatures/Agent,Signatures/Role
   ,Signatures/CreatedBy,AssignmentsHistory/Assignee,AssignmentsHistory/CreatedBy`;
 
   constructor(
@@ -153,24 +153,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
     const def = this.definition;
     return serialNumber(serial, def.Prefix, 4);
-  }
-
-  public get OperatingSegment_isVisible(): boolean {
-    // return !!this.definition.OperatingSegmentVisibility;
-    return true;
-  }
-
-  public get OperatingSegment_isRequired(): boolean {
-    // return this.definition.OperatingSegmentVisibility === 'Required';
-    return false;
-  }
-
-  public get OperatingSegment_label(): string {
-    // return !!this.definition.OperatingSegmentLabel ?
-    //   this.ws.getMultilingualValueImmediate(this.definition, 'OperatingSegmentLabel') :
-    //   this.translate.instant('OperatingSegment');
-
-    return this.translate.instant('OperatingSegment');
   }
 
   // TODO

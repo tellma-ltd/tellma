@@ -92,19 +92,6 @@
         </b-resource-classifications-picker>
     </b-form-group>
 
-    <!-- Operating Segment -->
-    <b-form-group *ngIf="OperatingSegment_isVisible" class="b-form-group" [label]="OperatingSegment_label"
-        [serverErrors]="model?.serverErrors?.OperatingSegmentId">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.OperatingSegment">
-            <b-view-link link="../../../responsibility-centers" [itemId]="model?.OperatingSegmentId">
-                {{ ws.getMultilingualValue('ResponsibilityCenter', model.OperatingSegmentId, 'Name') }}
-            </b-view-link>
-        </b-restricted>
-        <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.OperatingSegmentId"
-            [filter]="'IsOperatingSegment eq true'">
-        </b-responsibility-centers-picker>
-    </b-form-group>
-
     <!-- Currency -->
     <b-form-group *ngIf="Currency_isVisible" class="b-form-group" [label]="Currency_label"
         [serverErrors]="model?.serverErrors?.CurrencyId">

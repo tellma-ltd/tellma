@@ -92,16 +92,6 @@
         <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ParentId"></b-responsibility-centers-picker>
     </b-form-group>
 
-    <!-- Is Operating Segment -->
-    <b-form-group class="b-form-group" [label]="'ResponsibilityCenter_IsOperatingSegment' | translate">
-        <div *ngIf="!isEdit">{{ (model?.IsOperatingSegment ? 'Yes' : 'No') | translate }}</div>
-        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
-            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsOperatingSegment"
-                id="isOperatingSegment">
-            <label class="custom-control-label b-pointer" for="isOperatingSegment">&zwnj;</label>
-        </div>
-    </b-form-group>
-
     <!-- Is Leaf -->
     <b-form-group class="b-form-group" [label]="'IsLeaf' | translate">
         <div *ngIf="!isEdit">{{ (model?.IsLeaf ? 'Yes' : 'No') | translate }}</div>

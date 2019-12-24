@@ -13,7 +13,6 @@ export class ResponsibilityCenterForSave extends EntityForSave {
     Name2: string;
     Name3: string;
     ManagerId: number;
-    IsOperatingSegment: boolean;
     Code: string;
     IsLeaf: boolean;
 }
@@ -74,7 +73,6 @@ export function metadata_ResponsibilityCenter(ws: TenantWorkspace, trx: Translat
                     minDecimalPlaces: 0,
                     maxDecimalPlaces: 0
                 },
-                IsOperatingSegment: { control: 'boolean', label: () => trx.instant('ResponsibilityCenter_IsOperatingSegment') },
                 Code: { control: 'text', label: () => trx.instant('Code') },
                 IsLeaf: { control: 'boolean', label: () => trx.instant('IsLeaf') },
 
