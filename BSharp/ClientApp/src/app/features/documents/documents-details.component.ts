@@ -287,4 +287,13 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public canAssign(_: Document) {
     return !!this.assigneeId;
   }
+
+  // Used by signatures and assignments
+  public get marginLeft(): number {
+    return this.workspace.ws.isRtl ? 0 : 36;
+  }
+
+  public get marginRight(): number {
+    return this.workspace.ws.isRtl ? 36 : 0;
+  }
 }
