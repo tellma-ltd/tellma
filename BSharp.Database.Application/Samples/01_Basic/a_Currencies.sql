@@ -5,8 +5,7 @@ INSERT INTO @Currencies([Index],
 (1, N'ETB', N'Birr',		N'بر',				N'Ethiopian Birr',		N'بر أثيوبي',		2),
 (2, N'GBP', N'Pounds',		N'جنيه',			N'Sterling Pound',		N'جنيه استرليني',	2),
 (3, N'AED', N'Dirhams',		N'درهم',			N'Emirates Dirham',		N'درهم إماراتي',	2),
-(4, N'JPY', N'Yen',			N'ين',				N'Japanese Yen',		N'ين ياباني',		2);
-
+(4, N'SAR', N'Riyal',		N'ريال',				N'Saudi Riyal',			N'ريال سعودي',			2);
 EXEC [api].Currencies__Save
 	@Entities = @Currencies,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
@@ -22,7 +21,7 @@ DECLARE @ActiveCurrencies IndexedStringList;
 INSERT INTO @ActiveCurrencies([Index], [Id]) VALUES 
 (0,N'GBP'),
 (1,N'AED'),
-(2,N'JPY');
+(2,N'SAR');
 
 EXEC api.Currencies__Activate
 	@IndexedIds = @ActiveCurrencies,
@@ -33,7 +32,7 @@ DECLARE @DeletedCurrencies IndexedStringList;
 INSERT INTO @DeletedCurrencies
 ([Index],	[Id]) VALUES 
 (0,			N'GBP'), 
-(1,			N'JPY');
+(1,			N'SAR');
 
 EXEC [api].Currencies__Delete
 	@IndexedIds = @DeletedCurrencies,

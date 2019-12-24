@@ -512,6 +512,11 @@
     <None Include="Samples\02_Agents\07_Shareholders.sql" />
     <None Include="Samples\02_Agents\06_Custodies.sql" />
     <None Include="Samples\00_Setup\a_Declarations.sql" />
+    <None Include="101.BananSD.publish.xml" />
+    <None Include="103.LifanCars.publish.xml" />
+    <None Include="104.WaliaSteel.publish.xml" />
+    <None Include="Tests\101.BananIT.publish.xml" />
+    <None Include="102.BananET.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">

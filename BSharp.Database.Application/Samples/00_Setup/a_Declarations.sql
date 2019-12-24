@@ -24,6 +24,7 @@
 	EXEC sp_set_session_context 'FunctionalCurrencyId', @FunctionalCurrencyId;--, @read_only = 1;
 	SELECT @FunctionalResourceId = [Id] FROM dbo.Resources WHERE DefinitionId = N'currencies' AND CurrencyId = @FunctionalCurrencyId;
 	EXEC sp_set_session_context 'FunctionalResourceId', @FunctionalResourceId;--, @read_only = 1;
+	DECLARE @DB NVARCHAR (50) = RIGHT(DB_NAME(), 3);
 
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 

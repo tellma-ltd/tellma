@@ -7,7 +7,7 @@ SELECT DISTINCT
 		DT.Prefix + 
 		REPLICATE(N'0', DT.[CodeWidth] - 1 - FLOOR(LOG10(D.SerialNumber))) +
 		CAST(D.SerialNumber AS NVARCHAR(30)) AS [S/N],
-		AG.[Name] AS [Signed By],
+		dbo.fn_Localize(U.[Name], U.[Name2], U.[Name3]) AS [Signed By],
 		RL.[Name] AS [Role],
 		DS.[CreatedAt] AS [Signed At],
 		-- TODO: Localize State names
@@ -19,7 +19,7 @@ SELECT DISTINCT
 	JOIN dbo.[Lines] DL ON D.[Id] = DL.[DocumentId]
 	JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 	JOIN dbo.[LineSignatures] DS ON DL.[Id] = DS.[LineId]
-	JOIN dbo.Agents AG ON DS.AgentId = AG.Id
+	JOIN dbo.Users U ON DS.OnBehalfOfuserId = U.Id
 	JOIN dbo.Roles RL ON DS.RoleId = RL.[Id]
 	JOIN dbo.Agents A2 ON DS.[CreatedById] = A2.[Id]
 	LEFT JOIN dbo.Agents A3 ON DS.[RevokedById] = A3.[Id]

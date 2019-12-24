@@ -13,7 +13,7 @@
 	-- For a source document, SignedAt = Now(). For a copy, it is manually entered.
 	[SignedAt]					DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	-- For a source document, ActorId is the userId. Else, it is editable.
-	[AgentId]					INT					CONSTRAINT [FK_LineSignatures__AgentId] REFERENCES [dbo].[Agents] ([Id]),
+	[OnBehalfOfuserId]			INT					CONSTRAINT [FK_LineSignatures__OnBehalfOfUserId] REFERENCES [dbo].[Users] ([Id]),
 	-- Role Id is selected from a choice list of the actor's roles of the actor that are compatible with workflow
 	[RoleId]					INT					NOT NULL,
 
