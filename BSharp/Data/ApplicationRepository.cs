@@ -3613,7 +3613,6 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.Parameters.Add("@ReasonDetails", reasonDetails);
                 cmd.Parameters.Add("@AgentId", agentId);
                 cmd.Parameters.Add("@RoleId", roleId);
-                cmd.Parameters.Add("@ToState", toState);
                 cmd.Parameters.Add("@SignedAt", signedAt);
 
                 // Command

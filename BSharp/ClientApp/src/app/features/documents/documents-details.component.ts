@@ -225,7 +225,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       this._currentDoc = model;
       const history = model.AssignmentsHistory || [];
 
-      const filteredHistory: DocumentAssignment[] = history.filter(e => e.CreatedById !== e.AssigneeId);
+      const filteredHistory: DocumentAssignment[] = history; // .filter(e => e.CreatedById !== e.AssigneeId);
 
       const mappedHistory: DocumentEvent[] = filteredHistory.map(e =>
         ({

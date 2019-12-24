@@ -263,7 +263,7 @@
             </div> -->
 
             <!-- Currently with -->
-            <div class="bg-light border-bottom border-top2 py-2 px-3" *ngIf="!!model.AssigneeId">
+            <div class="bg-light border-bottom border-top2 mt-0 mt-sm-3 py-2 px-3" *ngIf="!!model.AssigneeId">
                 <div class="d-flex">
                     <b-image [src]="'users/' + model.AssigneeId + '/image'"
                         [imageId]="ws.get('User', model.AssigneeId)?.ImageId" [size]="picSize" shape="circle"></b-image>
@@ -280,7 +280,7 @@
                     <div class="form-group">
                         <label class="small font-weight-bold" for="user">{{ 'AssignTo' | translate }}</label>
                         <div class="bg-white border b-borderless-input p-1">
-                            <b-users-picker id="user" [(ngModel)]="assigneeId" filter="Id ne me" [showCreate]="false">
+                            <b-users-picker id="user" [(ngModel)]="assigneeId" [filter]="'Id ne ' + model.AssigneeId" [showCreate]="false">
                             </b-users-picker>
                         </div>
                     </div>

@@ -76,7 +76,7 @@ namespace BSharp.Controllers
                 var idsArray = ids.ToArray();
 
                 // Check user permissions
-                await CheckActionPermissions("IsActive", idsArray);
+                // await CheckActionPermissions("IsActive", idsArray);
 
                 // Execute and return
                 using (var trx = ControllerUtilities.CreateTransaction())
@@ -99,36 +99,6 @@ namespace BSharp.Controllers
             }
             , _logger);
         }
-
-        private async Task<ActionResult<EntitiesResponse<Lookup>>> Activate([FromBody] List<int> ids, bool returnEntities, string expand, bool isActive)
-        {
-            // Parse parameters
-            var expandExp = ExpandExpression.Parse(expand);
-            var idsArray = ids.ToArray();
-
-            // Check user permissions
-            await CheckActionPermissions("IsActive", idsArray);
-
-            // Execute and return
-            using (var trx = ControllerUtilities.CreateTransaction())
-            {
-                await _repo.Lookups__Activate(ids, isActive);
-
-                if (returnEntities)
-                {
-                    var response = await GetByIdListAsync(idsArray, expandExp);
-
-                    trx.Complete();
-                    return Ok(response);
-                }
-                else
-                {
-                    trx.Complete();
-                    return Ok();
-                }
-            }
-        }
-
 
         protected override IRepository GetRepository()
         {
