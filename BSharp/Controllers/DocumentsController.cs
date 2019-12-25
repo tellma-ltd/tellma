@@ -65,27 +65,72 @@ namespace BSharp.Controllers
         }
 
         [HttpPut("assign")]
-        public async Task<ActionResult<EntitiesResponse<Lookup>>> Assign([FromBody] List<int> ids, [FromQuery] AssignArguments args)
+        public async Task<ActionResult<EntitiesResponse<Document>>> Assign([FromBody] List<int> ids, [FromQuery] AssignArguments args)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                // TODO: Check permissions
-
                 // Parse parameters
+                var selectExp = SelectExpression.Parse(args.Expand);
                 var expandExp = ExpandExpression.Parse(args.Expand);
                 var idsArray = ids.ToArray();
 
-                // Check user permissions
+                // TODO: Check user permissions
                 // await CheckActionPermissions("IsActive", idsArray);
 
                 // Execute and return
                 using (var trx = ControllerUtilities.CreateTransaction())
                 {
+                    // TODO: Validate assign
+
                     await _repo.Documents__Assign(ids, args.AssigneeId, args.Comment);
 
                     if (args.ReturnEntities ?? false)
                     {
-                        var response = await GetByIdListAsync(idsArray, expandExp);
+                        var response = await GetByIdListAsync(idsArray, expandExp, selectExp);
+
+                        trx.Complete();
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        trx.Complete();
+                        return Ok();
+                    }
+                }
+            }
+            , _logger);
+        }
+
+        [HttpPut("sign-lines")]
+        public async Task<ActionResult<EntitiesResponse<Document>>> SignLines([FromBody] List<int> ids, [FromQuery] SignArguments args)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                // Parse parameters
+                var selectExp = SelectExpression.Parse(args.Expand);
+                var expandExp = ExpandExpression.Parse(args.Expand);
+                var idsArray = ids.ToArray();
+
+                // TODO: Check user permissions
+                // await CheckActionPermissions("IsActive", idsArray);
+
+                // Execute and return
+                using (var trx = ControllerUtilities.CreateTransaction())
+                {
+                    // TODO: Validate sign
+
+                    var documentIds = await _repo.Lines__Sign(
+                        ids, 
+                        args.ToState, 
+                        args.ReasonId, 
+                        args.ReasonDetails, 
+                        args.OnBehalfOfUserId, 
+                        args.RoleId, 
+                        args.SignedAt);
+
+                    if (args.ReturnEntities ?? false)
+                    {
+                        var response = await GetByIdListAsync(documentIds.ToArray(), expandExp, selectExp);
 
                         trx.Complete();
                         return Ok(response);

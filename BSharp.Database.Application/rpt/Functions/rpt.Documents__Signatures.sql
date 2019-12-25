@@ -19,7 +19,7 @@ SELECT DISTINCT
 	JOIN dbo.[Lines] DL ON D.[Id] = DL.[DocumentId]
 	JOIN dbo.[DocumentDefinitions] DT ON D.[DefinitionId] = DT.[Id]
 	JOIN dbo.[LineSignatures] DS ON DL.[Id] = DS.[LineId]
-	JOIN dbo.Users U ON DS.OnBehalfOfuserId = U.Id
+	JOIN dbo.Users U ON DS.[OnBehalfOfUserId] = U.Id
 	JOIN dbo.Roles RL ON DS.RoleId = RL.[Id]
 	JOIN dbo.Agents A2 ON DS.[CreatedById] = A2.[Id]
 	LEFT JOIN dbo.Agents A3 ON DS.[RevokedById] = A3.[Id]

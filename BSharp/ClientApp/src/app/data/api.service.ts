@@ -150,6 +150,10 @@ export class ApiService {
           paramsArray.push(`expand=${args.expand}`);
         }
 
+        if (!!args.select) {
+          paramsArray.push(`select=${args.select}`);
+        }
+
         const params: string = paramsArray.join('&');
         const url = appsettings.apiAddress + `api/documents/${definitionId}/assign?${params}`;
 
@@ -170,7 +174,61 @@ export class ApiService {
         return obs$;
       },
       sign: (ids: (string | number)[], args: SignArguments) => {
-        return null;
+        const paramsArray: string[] = [
+          `toState=${encodeURIComponent(args.toState)}`
+        ];
+
+        if (!!args.reasonId) {
+          paramsArray.push(`reasonId=${encodeURIComponent(args.reasonId)}`);
+        }
+
+        if (!!args.reasonDetails) {
+          paramsArray.push(`reasonDetails=${encodeURIComponent(args.reasonDetails)}`);
+        }
+
+        if (!!args.onBehalfOfUserId) {
+          paramsArray.push(`onBehalfOfUserId=${encodeURIComponent(args.onBehalfOfUserId)}`);
+        }
+
+        if (!!args.roleId) {
+          paramsArray.push(`roleId=${encodeURIComponent(args.roleId)}`);
+        }
+
+        if (!!args.signedAt) {
+          paramsArray.push(`signedAt=${encodeURIComponent(args.signedAt)}`);
+        }
+
+
+        if (!!args.returnEntities) {
+          paramsArray.push(`returnEntities=${args.returnEntities}`);
+        }
+
+        if (!!args.expand) {
+          paramsArray.push(`expand=${args.expand}`);
+        }
+
+        if (!!args.select) {
+          paramsArray.push(`select=${args.select}`);
+        }
+
+        const params: string = paramsArray.join('&');
+        const url = appsettings.apiAddress + `api/documents/${definitionId}/sign-lines?${params}`;
+
+        this.showRotator = true;
+        const obs$ = this.http.put<EntitiesResponse<Document>>(url, ids, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError(error => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
       }
     };
   }

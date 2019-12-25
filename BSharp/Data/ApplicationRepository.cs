@@ -3594,8 +3594,10 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             }
         }
 
-        public async Task Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? agentId, int? roleId, DateTimeOffset? signedAt)
+        public async Task<IEnumerable<int>> Lines__Sign(IEnumerable<int> ids, short toState, int? reasonId, string reasonDetails, int? onBehalfOfUserId, int? roleId, DateTimeOffset? signedAt)
         {
+            var result = new List<int>();
+
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
@@ -3611,7 +3613,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.Parameters.Add("@ToState", toState);
                 cmd.Parameters.Add("@ReasonId", reasonId);
                 cmd.Parameters.Add("@ReasonDetails", reasonDetails);
-                cmd.Parameters.Add("@AgentId", agentId);
+                cmd.Parameters.Add("@OnBehalfOfUserId", onBehalfOfUserId);
                 cmd.Parameters.Add("@RoleId", roleId);
                 cmd.Parameters.Add("@SignedAt", signedAt);
 
@@ -3620,8 +3622,16 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 cmd.CommandText = $"[dal].[{nameof(Documents__Delete)}]";
 
                 // Execute                    
-                await cmd.ExecuteNonQueryAsync();
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        result.Add(reader.GetInt32(0));
+                    }
+                }
             }
+
+            return result;
         }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Assign(IEnumerable<int> ids, int assigneeId, string comment)

@@ -11,9 +11,11 @@ BEGIN
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 -- TODO: make sure signatures are not repeated if signing two times in a row
 	INSERT INTO dbo.[LineSignatures] (
-		[LineId], [ToState], [ReasonId], [ReasonDetails], [OnBehalfOfuserId], [RoleId], [SignedAt]
+		[LineId], [ToState], [ReasonId], [ReasonDetails], [OnBehalfOfUserId], [RoleId], [SignedAt]
 	)
 	SELECT
 		[Id],	@ToState,	@ReasonId,	@ReasonDetails,	 ISNULL(@OnBehalfOfuserId, @UserId), @RoleId, @SignedAt
 	FROM @Ids
+
+	SELECT DISTINCT [DocumentId] FROM [dbo].[Lines] WHERE [Id] IN (SELECT [Id] FROM @Ids)
 END;

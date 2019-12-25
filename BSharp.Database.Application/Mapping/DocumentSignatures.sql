@@ -6,7 +6,7 @@ RETURN (
 		MIN(LS.[Id]) AS [Id],
 		L.[DocumentId],
 		LS.[SignedAt],
-		LS.[OnBehalfOfuserId],
+		LS.[OnBehalfOfUserId],
 		LS.[RoleId],
 		LS.[CreatedAt],
 		LS.[CreatedById]
@@ -18,7 +18,7 @@ RETURN (
 	GROUP BY
 		L.[DocumentId],
 		LS.[SignedAt],
-		LS.[OnBehalfOfuserId],
+		LS.[OnBehalfOfUserId],
 		LS.[RoleId],
 		LS.[CreatedAt],
 		LS.[CreatedById]

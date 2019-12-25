@@ -1378,7 +1378,7 @@
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>رمز اللغة الثالثة</value>
   </data>
-  <data name="Signature_Agent" xml:space="preserve">
+  <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>بالنيابة عن</value>
   </data>
   <data name="Signature_Role" xml:space="preserve">

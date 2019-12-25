@@ -1372,7 +1372,7 @@
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>三元语言符号</value>
   </data>
-  <data name="Signature_Agent" xml:space="preserve">
+  <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>代表</value>
   </data>
   <data name="Signature_Role" xml:space="preserve">

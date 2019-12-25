@@ -429,7 +429,7 @@
   "ShortMonth7": "يوليو",
   "ShortMonth8": "أغسطس",
   "ShortMonth9": "سبتمبر",
-  "Signature_Agent": "بالنيابة عن",
+  "Signature_OnBehalfOfUser": "بالنيابة عن",
   "Signature_Role": "الدور",
   "Signature_SignedAt": "زمن التوقيع",
   "Signatures": "توقيعات",

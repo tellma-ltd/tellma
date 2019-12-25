@@ -212,7 +212,7 @@
     <!-- Signatures -->
     <div class="col-12 pt-4" *ngIf="model?.Signatures && model.Signatures.length > 0">
         <span class="small font-weight-bold">{{ 'Document_Signatures' | translate }}:</span>
-        <div class="row px-2 px-md-5">
+        <div class="row px-2 px-md-3 px-xl-5">
             <ng-container *ngFor="let signature of model?.Signatures">
                 <div class="col-12 col-md-6 px-2 px-md-5 mt-3">
                     <div class="border-bottom d-flex">
@@ -226,11 +226,11 @@
                                 <b-view-link link="../../../users" [itemId]="signature.CreatedById">
                                     {{ ws.getMultilingualValue('User', signature.CreatedById, 'Name') }}
                                 </b-view-link>
-                                <span *ngIf="!!signature?.AgentId">
+                                <span *ngIf="!!signature?.OnBehalfOfUserId">
                                     {{ 'OnBehalfOf' | translate }}<b-view-link
-                                        [link]="'../../../agents/' + ws.get('Agent', signature.AgentId)?.DefinitionId"
-                                        [itemId]="signature.AgentId">
-                                        {{ ws.getMultilingualValue('Agent', signature.AgentId, 'Name') }}
+                                        link="../../../users"
+                                        [itemId]="signature.OnBehalfOfUserId">
+                                        {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
                                     </b-view-link></span>
                             </span>
                             <b-view-link link="../../../roles" [itemId]="signature.RoleId" class="small2">
@@ -256,14 +256,14 @@
 </ng-template>
 
 <ng-template #sidebar let-model="model" let-isEdit="isEdit">
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center p-2">
         <div class="w-100 b-paper-width">
             <!-- <div class="py-3 px-3 d-flex justify-content-center small font-weight-bold" *ngIf="!!model.AssigneeId">
                 {{ 'Document_AssignmentsHistory' | translate }}
             </div> -->
 
             <!-- Currently with -->
-            <div class="bg-light border-bottom border-top2 mt-0 mt-sm-3 py-2 px-3" *ngIf="!!model.AssigneeId">
+            <div class="b-biege border-bottom border-top2 py-2 px-3" *ngIf="!!model.AssigneeId">
                 <div class="d-flex">
                     <b-image [src]="'users/' + model.AssigneeId + '/image'"
                         [imageId]="ws.get('User', model.AssigneeId)?.ImageId" [size]="picSize" shape="circle"></b-image>
@@ -300,7 +300,7 @@
 
                 <!-- Day's history -->
                 <ng-container *ngFor="let event of dayEvents.events; let i = index">
-                    <div class="bg-light border-bottom pt-2 pb-2 px-3" [class.border-top]="i === 0"
+                    <div class="b-biege border-bottom pt-2 pb-2 px-3" [class.border-top]="i === 0"
                         [ngSwitch]="event.type">
 
                         <!-- Reassignment -->
