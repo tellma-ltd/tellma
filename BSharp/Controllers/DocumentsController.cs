@@ -107,7 +107,7 @@ namespace BSharp.Controllers
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
                 // Parse parameters
-                var selectExp = SelectExpression.Parse(args.Expand);
+                var selectExp = SelectExpression.Parse(args.Select);
                 var expandExp = ExpandExpression.Parse(args.Expand);
                 var idsArray = ids.ToArray();
 
@@ -126,7 +126,7 @@ namespace BSharp.Controllers
                         args.ReasonDetails, 
                         args.OnBehalfOfUserId, 
                         args.RoleId, 
-                        args.SignedAt);
+                        args.SignedAt ?? DateTimeOffset.Now);
 
                     if (args.ReturnEntities ?? false)
                     {

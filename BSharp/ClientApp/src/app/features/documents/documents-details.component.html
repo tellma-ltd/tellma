@@ -2,9 +2,8 @@
     [cloneFunc]="clone" [expand]="expand" [mode]="mode" [masterCrumb]="masterCrumb" [detailsCrumb]="detailsCrumb"
     [idString]="idString" [documentTemplate]="document" [isInactive]="isInactive"
     [documentHeaderTemplate]="documentHeader" [actions]="[
-            { template: activate, action: onActivate, showAction: showActivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip },
-            { template: deactivate, action: onDeactivate, showAction: showDeactivate, canAction: canActivateDeactivateItem, actionTooltip: activateDeactivateTooltip }
-           ]" [sidebarTemplate]="sidebar">
+        { template: sign, action: onSign, showAction: showSign, canAction: canSign, actionTooltip: signTooltip }
+    ]" [sidebarTemplate]="sidebar">
 
 </b-details>
 
@@ -227,13 +226,12 @@
                                     {{ ws.getMultilingualValue('User', signature.CreatedById, 'Name') }}
                                 </b-view-link>
                                 <span *ngIf="!!signature?.OnBehalfOfUserId">
-                                    {{ 'OnBehalfOf' | translate }}<b-view-link
-                                        link="../../../users"
+                                    {{ 'OnBehalfOf' | translate }}<b-view-link link="../../../users"
                                         [itemId]="signature.OnBehalfOfUserId">
                                         {{ ws.getMultilingualValue('User', signature.OnBehalfOfUserId, 'Name') }}
                                     </b-view-link></span>
                             </span>
-                            <b-view-link link="../../../roles" [itemId]="signature.RoleId" class="small2">
+                            <b-view-link link="../../../roles" [itemId]="signature.RoleId" class="small">
                                 {{ ws.getMultilingualValue('Role', signature.RoleId, 'Name') }}</b-view-link>
                         </div>
 
@@ -280,7 +278,8 @@
                     <div class="form-group">
                         <label class="small font-weight-bold" for="user">{{ 'AssignTo' | translate }}</label>
                         <div class="bg-white border b-borderless-input p-1">
-                            <b-users-picker id="user" [(ngModel)]="assigneeId" [filter]="'Id ne ' + model.AssigneeId" [showCreate]="false">
+                            <b-users-picker id="user" [(ngModel)]="assigneeId" [filter]="'Id ne ' + model.AssigneeId"
+                                [showCreate]="false">
                             </b-users-picker>
                         </div>
                     </div>
@@ -367,5 +366,52 @@
 </ng-template>
 
 <!-- Actions -->
+<ng-template #sign> {{ 'Sign' | translate }} </ng-template>
 <ng-template #activate> {{ 'Activate' | translate }} </ng-template>
 <ng-template #deactivate> {{ 'Deactivate' | translate }} </ng-template>
+
+
+<!-- Sign Modal -->
+<ng-template #signModal let-modal>
+
+    <!-- header -->
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ 'Sign' | translate }} </h5>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <!-- body -->
+    <div class="modal-body">
+        <!-- To State -->
+        <b-form-group class="b-form-group" [label]="'Document_State' | translate" [serverErrors]="null">
+            <b-selector [(ngModel)]="toState" [choices]="stateChoices" required>
+            </b-selector>
+        </b-form-group>
+
+        <!-- User -->
+        <b-form-group class="b-form-group" [label]="'Signature_OnBehalfOfUser' | translate" [serverErrors]="null">
+            <b-users-picker [(ngModel)]="onBehalfOfUserId" [showCreate]="false">
+            </b-users-picker>
+        </b-form-group>
+
+        <!-- Role -->
+        <b-form-group class="b-form-group" [label]="'Signature_Role' | translate" [serverErrors]="null">
+            <b-roles-picker [(ngModel)]="roleId" required [showCreate]="false">
+            </b-roles-picker>
+        </b-form-group>
+    </div>
+
+    <!-- footer -->
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="modal.close()" [disabled]="!canConfirmSign">
+            <fa-icon icon="check"></fa-icon>
+            &nbsp;{{ 'Sign' | translate }}
+        </button>
+        <button class="btn btn-light text-primary b-white-button" (click)="modal.dismiss()" ngbAutofocus>
+            <fa-icon icon="times"></fa-icon>
+            &nbsp;{{ 'Cancel' | translate }}
+        </button>
+    </div>
+</ng-template>

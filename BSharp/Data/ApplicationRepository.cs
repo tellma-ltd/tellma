@@ -3619,7 +3619,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Documents__Delete)}]";
+                cmd.CommandText = $"[dal].[{nameof(Lines__Sign)}]";
 
                 // Execute                    
                 using (var reader = await cmd.ExecuteReaderAsync())

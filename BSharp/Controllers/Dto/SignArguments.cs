@@ -32,6 +32,7 @@ namespace BSharp.Controllers.Dto
         /// <summary>
         /// The role associated with the signature
         /// </summary>
+        [Required(ErrorMessage = nameof(RequiredAttribute))]
         public int? RoleId { get; set; }
 
         /// <summary>

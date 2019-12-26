@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
@@ -10,7 +10,10 @@ import { LineForSave } from '~/app/data/entities/line';
 import { EntryForSave, Entry } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import { addToWorkspace } from '~/app/data/util';
-import { tap } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { of } from 'rxjs';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
 interface DocumentEventBase {
   time: string;
@@ -40,11 +43,20 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   private _definitionId: string;
   private _currentDoc: Document;
   private _sortedHistory: { date: string, events: DocumentEvent[] }[] = [];
+  private _stateChoices: SelectorChoice[];
 
-  // These two are bound from UI
+  // These are bound from UI
   public assigneeId: number;
   public comment: string;
   public picSize = 36;
+
+  public toState: number;
+  public reasonId: number;
+  public reasonDetails: string;
+  public onBehalfOfUserId: number;
+  public roleId: number;
+  public signedAt: string = null;
+
 
   @Input()
   public set definitionId(t: string) {
@@ -58,12 +70,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return this._definitionId;
   }
 
+  @ViewChild('signModal', { static: true })
+  signModal: TemplateRef<any>;
+
   public expand = `CreatedBy,ModifiedBy,Lines/Entries/Account/Currency,Signatures/Agent,Signatures/Role
   ,Signatures/CreatedBy,AssignmentsHistory/Assignee,AssignmentsHistory/CreatedBy`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute, private modalService: NgbModal) {
     super();
   }
 
@@ -126,6 +141,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
         });
       }
 
+      clone.AssignmentsHistory = [];
+
+      delete clone.AssigneeId;
       delete clone.CreatedById;
       delete clone.ModifiedById;
       delete clone.SerialNumber;
@@ -296,4 +314,78 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public get marginRight(): number {
     return this.workspace.ws.isRtl ? 36 : 0;
   }
+
+  public onSign = (model: Document): void => {
+    if (!!model && !!model.Id) {
+      this.modalService.open(this.signModal)
+        .result.then(
+          () => this.onConfirmSign(model),
+          (_: any) => { }
+        );
+    }
+  }
+
+  public onConfirmSign = (model: Document): void => {
+    const lineIds = model.Lines.map(l => l.Id);
+    this.documentsApi.sign(lineIds, {
+      returnEntities: true,
+      expand: this.expand,
+      onBehalfOfUserId: this.onBehalfOfUserId,
+      toState: this.toState,
+      roleId: this.roleId,
+      reasonDetails: this.reasonDetails,
+      reasonId: this.reasonId,
+      signedAt: this.signedAt
+    }).pipe(
+      tap(res => addToWorkspace(res, this.workspace)),
+      catchError(friendlyError => {
+        this.details.handleActionError(friendlyError); return of(null);
+      })
+    ).subscribe();
+  }
+
+  public get canConfirmSign() {
+    return !!this.roleId && this.toState;
+  }
+
+  get stateChoices(): SelectorChoice[] {
+
+    if (!this._stateChoices) {
+      /*
+Document_State_Draft
+Document_State_Void
+Document_State_Requested
+Document_State_Rejected
+Document_State_Authorized
+Document_State_Failed
+Document_State_Completed
+Document_State_Invalid
+Document_State_Reviewed
+Document_State_Closed
+      */
+
+      this._stateChoices = [
+        { value: 0,  name: () => this.translate.instant('Document_State_Draft') },
+        { value: -1,  name: () => this.translate.instant('Document_State_Void') },
+        { value: 1,  name: () => this.translate.instant('Document_State_Requested') },
+        { value: -2,  name: () => this.translate.instant('Document_State_Rejected') },
+        { value: 2,  name: () => this.translate.instant('Document_State_Authorized') },
+        { value: -3,  name: () => this.translate.instant('Document_State_Failed') },
+        { value: 3,  name: () => this.translate.instant('Document_State_Completed') },
+        { value: -4,  name: () => this.translate.instant('Document_State_Invalid') },
+        { value: 4,  name: () => this.translate.instant('Document_State_Reviewed') },
+    //    { value: 5,  name: () => this.translate.instant('Document_State_Closed') },
+      ];
+    }
+
+    return this._stateChoices;
+  }
+
+  public showSign = (model: Document) => true; // !!model && !model.IsActive;
+
+  public canSign = (model: Document) => true; // this.ws.canDo(this.definitionId, 'IsActive', model.Id);
+
+  public signTooltip = (model: Document) => ''; // this.canActivateDeactivateItem(model) ? '' :
+  // this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
+
 }

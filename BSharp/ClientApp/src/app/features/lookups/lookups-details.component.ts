@@ -76,7 +76,7 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
 
   public onActivate = (model: Lookup): void => {
     if (!!model && !!model.Id) {
-      this.lookupsApi.activate([model.Id], { returnEntities: true }).pipe(
+      this.lookupsApi.activate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
@@ -84,7 +84,7 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
 
   public onDeactivate = (model: Lookup): void => {
     if (!!model && !!model.Id) {
-      this.lookupsApi.deactivate([model.Id], { returnEntities: true }).pipe(
+      this.lookupsApi.deactivate([model.Id], { returnEntities: true, expand: this.expand }).pipe(
         tap(res => addToWorkspace(res, this.workspace))
       ).subscribe({ error: this.details.handleActionError });
     }
