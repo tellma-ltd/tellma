@@ -190,7 +190,7 @@
                 <ng-template #row_Dynamic let-item="item" let-entry="item.Entries[0]" let-index="originalIndex"
                     let-update="update">
                     <!-- {{ ws.getMultilingualValue('Currency', ws.get('Account', entry.AccountId)?.CurrencyId, 'Name') }} -->
-                    <b-form-group *ngIf="showMonetaryValue(entry)"
+                    <b-form-group-dynamic *ngIf="showMonetaryValue(entry)"
                         [label]="ws.getMultilingualValue('Currency', ws.get('Account', entry.AccountId)?.CurrencyId, 'Name')"
                         class="b-form-group" [serverErrors]="entry.serverErrors?.MonetaryValue">
                         <div *ngIf="!isEdit">
@@ -202,7 +202,7 @@
                             [minDecimalPlaces]="2" (ngModelChange)="update.call(null, item);"
                             [ngModelOptions]="{ updateOn: 'blur' }">
                         </b-decimal-editor>
-                    </b-form-group>
+                    </b-form-group-dynamic>
                 </ng-template>
             </ng-template>
         </ngb-tab>
@@ -274,7 +274,7 @@
 
                 <!-- Assign the document -->
                 <div class="px-2 pb-2 pt-0" [style.margin-left.px]="marginLeft" [style.margin-right.px]="marginRight"
-                    *ngIf="showAssignDocument(model, isEdit)">
+                    *ngIf="showAssignDocument(model)">
                     <div class="form-group">
                         <label class="small font-weight-bold" for="user">{{ 'AssignTo' | translate }}</label>
                         <div class="bg-white border b-borderless-input p-1">
@@ -289,7 +289,7 @@
                             placeholder="{{ 'OptionalMessage' | translate }}" [(ngModel)]="comment"></textarea>
                     </div>
                     <button class="btn btn-primary btn-sm" (click)="onAssign(model)"
-                        [disabled]="!canAssign(model)">{{ 'Assign' | translate }}</button>
+                        [disabled]="!canAssign(model, isEdit)">{{ 'Assign' | translate }}</button>
                 </div>
             </div>
 

@@ -17,7 +17,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FilterTools } from '~/app/data/filter-expression';
 import { NgControl } from '@angular/forms';
-import { highlightInvalid, validationErrors, areServerErrors } from '~/app/shared/form-group/form-group.component';
+import { highlightInvalid, validationErrors, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 
 export interface FieldInfo {
   path: string;

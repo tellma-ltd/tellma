@@ -70,11 +70,13 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
       if (!!clone.Permissions) {
         clone.Permissions.forEach(e => {
           e.Id = null;
+          delete e.RoleId;
         });
       }
       if (!!clone.Members) {
         clone.Members.forEach(e => {
           e.Id = null;
+          delete e.RoleId;
         });
       }
 

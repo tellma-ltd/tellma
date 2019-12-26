@@ -11,10 +11,6 @@ namespace BSharp.Entities
 
     public class PermissionForSave : EntityWithKey<int>
     {
-        [Display(Name = "Permission_Role")]
-        [AlwaysAccessible]
-        public int? RoleId { get; set; }
-
         [Display(Name = "Permission_View")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
@@ -45,6 +41,10 @@ namespace BSharp.Entities
 
     public class Permission : PermissionForSave
     {
+        [Display(Name = "Permission_Role")]
+        [AlwaysAccessible]
+        public int? RoleId { get; set; }
+
         [Display(Name = "ModifiedBy")]
         public int? SavedById { get; set; }
 

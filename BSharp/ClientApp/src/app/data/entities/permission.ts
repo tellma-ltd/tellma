@@ -4,7 +4,6 @@ import { Action } from '../views';
 
 export class PermissionForSave extends EntityForSave {
   ViewId: Action;
-  RoleId: number;
   Action: 'Read' | 'Update' | 'Delete' | 'IsActive' | 'ResendInvitationEmail';
   Criteria: string;
   Mask: string;
@@ -12,6 +11,7 @@ export class PermissionForSave extends EntityForSave {
 }
 
 export class Permission extends PermissionForSave {
+  RoleId: number;
   CreatedAt: string;
   CreatedById: number | string;
   ModifiedAt: string;

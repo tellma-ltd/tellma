@@ -1218,11 +1218,6 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         {
             entities.ForEach(e =>
             {
-                e.Permissions?.ForEach(p =>
-                {
-                    p.RoleId = e.Id;
-                });
-
                 e.Members?.ForEach(m =>
                 {
                     m.RoleId = e.Id;
@@ -1301,11 +1296,6 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         {
             entities.ForEach(e =>
             {
-                e.Permissions?.ForEach(p =>
-                {
-                    p.RoleId = e.Id;
-                });
-
                 e.Members?.ForEach(m =>
                 {
                     m.RoleId = e.Id;

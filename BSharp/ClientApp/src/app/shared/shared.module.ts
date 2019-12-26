@@ -92,6 +92,9 @@ import { AutoCellComponent } from './auto-cell/auto-cell.component';
 import { AutoLabelComponent } from './auto-label/auto-label.component';
 import { LabelPipe } from './label/label.pipe';
 import { PickerBaseComponent } from './picker-base/picker-base.component';
+import { FormGroupBaseComponent } from '../shared/form-group-base/form-group-base.component';
+import { FormGroupDynamicComponent } from '../shared/form-group-dynamic/form-group-dynamic.component';
+import { FormGroupSettingsComponent } from '../shared/form-group-settings/form-group-settings.component';
 
 @NgModule({
   declarations: [
@@ -118,7 +121,10 @@ import { PickerBaseComponent } from './picker-base/picker-base.component';
     AutoCellComponent,
     AutoLabelComponent,
     LabelPipe,
-    PickerBaseComponent
+    PickerBaseComponent,
+    FormGroupBaseComponent,
+    FormGroupDynamicComponent,
+    FormGroupSettingsComponent,
   ],
   imports: [
     CommonModule,
@@ -165,6 +171,8 @@ import { PickerBaseComponent } from './picker-base/picker-base.component';
     TextEditorComponent,
     ImportComponent,
     FormGroupComponent,
+    FormGroupSettingsComponent,
+    FormGroupDynamicComponent,
     SelectorComponent,
     DecimalEditorComponent,
     DetailsBaseComponent,

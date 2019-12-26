@@ -65,90 +65,90 @@
           <div class="row col-12 b-settings-section">
 
             <!-- Short Company Name -->
-            <b-form-group class="b-form-group" [label]="('Settings_ShortCompanyName' | translate) + primaryPostfix"
+            <b-form-group-settings class="b-form-group" [label]="('Settings_ShortCompanyName' | translate) + primaryPostfix"
               [description]="'Settings_ShortCompanyNameDescription' | translate"
               [serverErrors]="validationErrors.ShortCompanyName">
               <div *ngIf="!isEdit">{{ model?.ShortCompanyName }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName"
                 [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
+            </b-form-group-settings>
 
             <!-- Short Company Name 2 -->
-            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId"
+            <b-form-group-settings class="b-form-group" *ngIf="model.SecondaryLanguageId"
               [label]="('Settings_ShortCompanyName' | translate) + secondaryPostfix"
               [description]="'Settings_ShortCompanyNameDescription' | translate"
               [serverErrors]="validationErrors.ShortCompanyName2">
               <div *ngIf="!isEdit">{{ model?.ShortCompanyName2 }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName2"
                 [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>            
+            </b-form-group-settings>            
 
             <!-- Short Company Name 3 -->
-            <b-form-group class="b-form-group" *ngIf="model.TernaryLanguageId"
+            <b-form-group-settings class="b-form-group" *ngIf="model.TernaryLanguageId"
               [label]="('Settings_ShortCompanyName' | translate) + ternaryPostfix"
               [description]="'Settings_ShortCompanyNameDescription' | translate"
               [serverErrors]="validationErrors.ShortCompanyName3">
               <div *ngIf="!isEdit">{{ model?.ShortCompanyName3 }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.ShortCompanyName3"
                 [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
+            </b-form-group-settings>
 
             <!-- Primary Language -->
-            <b-form-group class="b-form-group" [label]="'Settings_PrimaryLanguage' | translate"
+            <b-form-group-settings class="b-form-group" [label]="'Settings_PrimaryLanguage' | translate"
               [description]="'Settings_PrimaryLanguageDescription' | translate"
               [serverErrors]="validationErrors.PrimaryLanguageId">
               <div *ngIf="!isEdit">{{ cultureName(model?.PrimaryLanguageId) || '-' }}</div>
               <b-selector *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageId" [choices]="cultures" required>
               </b-selector>
-            </b-form-group>
+            </b-form-group-settings>
 
             <!-- Secondary Language -->
-            <b-form-group class="b-form-group" [label]="'Settings_SecondaryLanguage' | translate"
+            <b-form-group-settings class="b-form-group" [label]="'Settings_SecondaryLanguage' | translate"
               [description]="'Settings_SecondaryLanguageDescription' | translate"
               [serverErrors]="validationErrors.SecondaryLanguageId">
               <div *ngIf="!isEdit">{{ cultureName(model?.SecondaryLanguageId) || '-' }}</div>
               <b-selector *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageId" [choices]="cultures" isOptional="true">
               </b-selector>
-            </b-form-group>
+            </b-form-group-settings>
 
             <!-- Ternary Language -->
-            <b-form-group class="b-form-group" [label]="'Settings_TernaryLanguage' | translate"
+            <b-form-group-settings class="b-form-group" [label]="'Settings_TernaryLanguage' | translate"
               [description]="'Settings_TernaryLanguageDescription' | translate"
               [serverErrors]="validationErrors.TernaryLanguageId">
               <div *ngIf="!isEdit">{{ cultureName(model?.TernaryLanguageId) || '-' }}</div>
               <b-selector *ngIf="isEdit" [(ngModel)]="model.TernaryLanguageId" [choices]="cultures" isOptional="true">
               </b-selector>
-            </b-form-group>
+            </b-form-group-settings>
 
             <!-- Primary Language Symbol -->
-            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId"
+            <b-form-group-settings class="b-form-group" *ngIf="model.SecondaryLanguageId"
               [label]="'Settings_PrimaryLanguageSymbol' | translate"
               [description]="'Settings_LanguageSymbolDescription' | translate"
               [serverErrors]="validationErrors.PrimaryLanguageSymbol">
               <div *ngIf="!isEdit">{{ model?.PrimaryLanguageSymbol || '-' }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.PrimaryLanguageSymbol"
                 [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
+            </b-form-group-settings>
 
             <!-- Secondary Language Symbol -->
-            <b-form-group class="b-form-group" *ngIf="model.SecondaryLanguageId"
+            <b-form-group-settings class="b-form-group" *ngIf="model.SecondaryLanguageId"
               [label]="'Settings_SecondaryLanguageSymbol' | translate"
               [description]="'Settings_LanguageSymbolDescription' | translate"
               [serverErrors]="validationErrors.SecondaryLanguageSymbol">
               <div *ngIf="!isEdit">{{ model?.SecondaryLanguageSymbol || '-' }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.SecondaryLanguageSymbol"
                 [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
+            </b-form-group-settings>
             
             <!-- Ternary Language Symbol -->
-            <b-form-group class="b-form-group" *ngIf="model.TernaryLanguageId"
+            <b-form-group-settings class="b-form-group" *ngIf="model.TernaryLanguageId"
               [label]="'Settings_TernaryLanguageSymbol' | translate"
               [description]="'Settings_LanguageSymbolDescription' | translate"
               [serverErrors]="validationErrors.TernaryLanguageSymbol">
               <div *ngIf="!isEdit">{{ model?.TernaryLanguageSymbol || '-' }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.TernaryLanguageSymbol"
                 [ngModelOptions]="{ updateOn: 'blur' }"></b-text-editor>
-            </b-form-group>
+            </b-form-group-settings>
           </div>
 
           <h5 class="col-12 bg-light b-settings-header">
@@ -157,12 +157,12 @@
 
           <div class="row col-12 b-settings-section">
             <!-- Brand Color -->
-            <b-form-group class="b-form-group" [label]="'Settings_BrandColor' | translate"
+            <b-form-group-settings class="b-form-group" [label]="'Settings_BrandColor' | translate"
               [description]="'Settings_BrandColorDescription' | translate" [serverErrors]="validationErrors.BrandColor">
               <div *ngIf="!isEdit">{{ model?.BrandColor || '-' }}</div>
               <b-text-editor *ngIf="isEdit" [(ngModel)]="model.BrandColor" [ngModelOptions]="{ updateOn: 'blur' }"
                 placeholder="e.g. #343A40"></b-text-editor>
-            </b-form-group>
+            </b-form-group-settings>
           </div>
         </div>
       </div>
