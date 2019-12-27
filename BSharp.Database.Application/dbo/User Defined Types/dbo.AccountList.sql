@@ -23,7 +23,7 @@
 	[ResourceId]					INT,
 	[Identifier]					NVARCHAR (10),
 --
-	[EntryClassificationId]			INT,
+	[EntryClassificationId]			INT --,
 
 	-- I commented this since I need this table type to call [bll].[Account__Preprocess],
 	-- and when this check is violated it returns a cryptic error instead of a proper validation error
