@@ -52,7 +52,7 @@ BEGIN
 	(3,				0,		N'All',									N'Read');
 
 END
---IF @DB = N'103' -- Lifan Cars, SAR, en/ar/cn
+--IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
 --	INSERT INTO @Users
 --	([Index],[Name],			[Name2],		[Name3],							[Email]) VALUES
 --	(0,		N'Salman Al-Juhani',N'سلمان الجهني',N'萨尔曼·朱哈尼（Salman Al-Juhani)',	N'salman.aljuhani@lifan.com'),

@@ -8,7 +8,12 @@
 	DECLARE @DefinitionsVersion UNIQUEIDENTIFIER	= NEWID();
 	DECLARE @SettingsVersion UNIQUEIDENTIFIER		= NEWID();
 	DECLARE @ChartOfAccounts NVARCHAR(255)			= NULL; --'$(ChartOfAccounts)';
+	-- Because there is no way to pass the NULL value to 
+	IF @SecondaryLanguageId = N'NULL' SET @SecondaryLanguageId = NULL;
+	IF @TernaryLanguageId = N'NULL' SET @TernaryLanguageId = NULL;
 END
+
+
 -- Local Variables
 
 -- Minimum required for provisioning:
@@ -30,6 +35,8 @@ END
 :r .\00_Common\h_AgentDefinitions.sql
 :r .\00_Common\i_Settings.sql
 :r .\00_Common\j_AccountTypes.sql
+:r .\01_Security\a_Users.sql
+:r .\01_Security\b_RolesMemberships.sql
 
 RETURN;
 ERR_LABEL:

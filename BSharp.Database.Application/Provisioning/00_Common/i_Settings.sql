@@ -8,7 +8,7 @@ BEGIN
 	PRINT N'BSharp.' + @DB;
 
 END
-IF @DB = N'103' -- Lifan Cars, SAR, en/ar/cn
+IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
 BEGIN
 	PRINT N'BSharp.' + @DB;
 

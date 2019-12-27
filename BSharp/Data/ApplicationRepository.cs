@@ -418,7 +418,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             {
                 // Parameters
                 cmd.Parameters.Add("@Action", action);
-                cmd.Parameters.Add("@ViewId", viewId);
+                cmd.Parameters.Add("@View", viewId);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;

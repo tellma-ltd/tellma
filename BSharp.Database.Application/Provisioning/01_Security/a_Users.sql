@@ -13,11 +13,10 @@ IF @DB = N'102' -- Banan ET, ETB, en
 	(0,			N'Jiad Akra',			N'jiad.akra@banan-it.com'),
 	(1,			N'Mohamad Akra',		N'mohamad.akra@banan-it.com'),
 	(2,			N'Ahmad Akra',			N'ahmad.akra@banan-it.com'),
-	(3,			N'Mohamad Akra',		N'mohamad.akra@banan-it.com'),
-	(4,			N'Yisak Fikadu',		N'yisakfikadu79@gmail.com'),
-	(5,			N'Wondewsen Semaneh',	N'wendylulu99@gmail.com');
+	(3,			N'Yisak Fikadu',		N'yisakfikadu79@gmail.com'),
+	(4,			N'Wondewsen Semaneh',	N'wendylulu99@gmail.com');
 
-IF @DB = N'103' -- Lifan Cars, SAR, en/ar/cn
+IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
 	INSERT INTO @Users
 	([Index],[Name],			[Name2],		[Name3],							[Email]) VALUES
 	(0,		N'Salman Al-Juhani',N'سلمان الجهني',N'萨尔曼·朱哈尼（Salman Al-Juhani)',	N'salman.aljuhani@lifan.com'),
