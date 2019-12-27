@@ -40,8 +40,8 @@ RETURN
 		V.[AgentId],
 		V.[ResourceId],
 		V.[ResponsibilityCenterId],
-		V.[AccountIdentifier],
-		V.[ResourceIdentifier],
+		--V.[AccountIdentifier],
+		--V.[ResourceIdentifier],
 		V.[DueDate],		
 		V.[EntryClassificationId],
 		V.[MonetaryValue], -- normalization is already done in the Value and stored in the entry

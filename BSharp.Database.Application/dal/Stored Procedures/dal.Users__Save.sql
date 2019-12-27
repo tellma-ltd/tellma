@@ -9,8 +9,17 @@ SET NOCOUNT ON;
 
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
-	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	DECLARE @UserId INT;
 
+	-- This exceptional case happens during first provisioning
+	IF NOT EXISTS (SELECT * FROM dbo.[Users])
+	BEGIN
+		SET @UserId = IDENT_CURRENT('[dbo].[Users]');
+		EXEC master.sys.sp_set_session_context 'UserId', @UserId;
+	END
+		
+	SET @UserId = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
+	
 	-- Users
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]

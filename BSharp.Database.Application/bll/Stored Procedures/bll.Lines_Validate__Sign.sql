@@ -116,8 +116,8 @@ SET NOCOUNT ON;
 			E.ResourceId,
 			E.AgentId,
 			E.DueDate,
-			E.[AccountIdentifier],
-			E.[ResourceIdentifier],
+			--E.[AccountIdentifier],
+			--E.[ResourceIdentifier],
 			SUM(E.[Direction] * E.[Count]) AS [Count],
 			SUM(E.[Direction] * E.[Mass]) AS [Mass], 
 			SUM(E.[Direction] * E.[Volume]) AS [Volume] 
@@ -129,9 +129,9 @@ SET NOCOUNT ON;
 			E.AccountId,
 			E.ResourceId,
 			E.AgentId,
-			E.DueDate,
-			E.[AccountIdentifier],
-			E.[ResourceIdentifier]
+			E.DueDate--,
+			--E.[AccountIdentifier],
+			--E.[ResourceIdentifier]
 		HAVING SUM(E.[Direction] * E.[Mass]) < 0
 		OR SUM(E.[Direction] * E.[Volume]) < 0
 		OR SUM(E.[Direction] * E.[Count]) < 0
@@ -142,8 +142,8 @@ SET NOCOUNT ON;
 			E.ResourceId,
 			E.AgentId,
 			E.DueDate,
-			E.[AccountIdentifier],
-			E.[ResourceIdentifier],
+			--E.[AccountIdentifier],
+			--E.[ResourceIdentifier],
 			SUM(E.[Direction] * E.[Mass]) AS [Mass], 
 			SUM(E.[Direction] * E.[Volume]) AS [Volume], 
 			SUM(E.[Direction] * E.[Count]) AS [Count]
@@ -153,9 +153,9 @@ SET NOCOUNT ON;
 			E.AccountId,
 			E.ResourceId,
 			E.AgentId,
-			E.[DueDate],
-			E.[AccountIdentifier],
-			E.[ResourceIdentifier]
+			E.[DueDate]
+			--E.[AccountIdentifier],
+			--E.[ResourceIdentifier]
 	),
 	OffendingEntries AS (
 		SELECT C.[Index], C.AccountId, (C.[Mass] + P.[Mass]) AS [Mass]
@@ -165,8 +165,8 @@ SET NOCOUNT ON;
 		AND (C.ResourceId = P.ResourceId)
 		AND (C.AgentId = P.AgentId)
 		AND (C.[DueDate] = P.[DueDate] OR (C.[DueDate] IS NULL AND P.[DueDate] IS NULL))
-		AND (C.[AccountIdentifier] = P.[AccountIdentifier] OR (C.[AccountIdentifier] IS NULL AND P.[AccountIdentifier] IS NULL))
-		AND (C.[ResourceIdentifier] = P.[ResourceIdentifier] OR (C.[ResourceIdentifier] IS NULL AND P.[ResourceIdentifier] IS NULL))
+		--AND (C.[AccountIdentifier] = P.[AccountIdentifier] OR (C.[AccountIdentifier] IS NULL AND P.[AccountIdentifier] IS NULL))
+		--AND (C.[ResourceIdentifier] = P.[ResourceIdentifier] OR (C.[ResourceIdentifier] IS NULL AND P.[ResourceIdentifier] IS NULL))
 		WHERE
 			(C.[Count] + P.[Count]) < 0
 		OR	(C.[Mass] + P.[Mass]) < 0

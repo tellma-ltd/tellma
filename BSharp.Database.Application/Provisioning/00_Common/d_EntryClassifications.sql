@@ -205,3 +205,11 @@ END;
 
 UPDATE dbo.[EntryClassifications] SET IsSystem = 1;
 
+SET @ProceedsFromIssuingShares		 = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'ProceedsFromIssuingShares' );
+SET @IssueOfEquity					 = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'IssueOfEquity' );
+SET @InternalCashTransferExtension	 = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'InternalCashTransferExtension' );
+SET @InventoryPurchaseExtension		 = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'InventoryPurchaseExtension' );
+SET @PPEAdditions					 = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'AdditionsOtherThanThroughBusinessCombinationsPropertyPlantAndEquipment' );
+SET @InvReclassifiedAsPPE			 = (SELECT [Id] FROM dbo.EntryClassifications WHERE [Code] = N'InventoryReclassifiedAsPropertyPlantAndEquipment' );
+
+

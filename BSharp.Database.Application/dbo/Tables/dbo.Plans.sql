@@ -1,15 +1,15 @@
 ﻿CREATE TABLE [dbo].[Plans] (
-	[Id]					INT				CONSTRAINT [PK_Plans] PRIMARY KEY,
+	[Id]					INT				CONSTRAINT [PK_Plans] PRIMARY KEY IDENTITY,
 	[Activity]				NVARCHAR(255), -- Sale, Production, Consumption, 
 	[FromDate]				DATE			NOT NULL,
 	[ToDate]				DATE			NOT NULL,
-	CONSTRAINT [CK_Plans__FromDate_ToDate] CHECK ([FromDate] >= [ToDate]),
+	CONSTRAINT [CK_Plans__FromDate_ToDate] CHECK ([FromDate] <= [ToDate]),
 	[CostObjectId]			INT				NOT NULL CONSTRAINT [FK_Plans__CostObjectId] REFERENCES [dbo].[Agents] ([Id]),
 	[ResourceLookup1Id]		INT,			-- UDL 
 	[ResourceLookup2Id]		INT,			-- UDL 
 	[ResourceLookup3Id]		INT,			-- UDL 
 	[ResourceLookup4Id]		INT,			-- UDL 
-		--[DailyProduction]			DECIMAL,
+	--[DailyProduction]			DECIMAL,
 	--[Quantity]					VTYPE				NOT NULL DEFAULT 0, -- measure on which the value is based. If it is MassMeasure then [Mass] must equal [ValueMeasure] and so on.
 	[MonetaryValue]			DECIMAL (19,4)			NOT NULL DEFAULT 0, -- Amount in foreign Currency 
 	[CurrencyId]			INT,

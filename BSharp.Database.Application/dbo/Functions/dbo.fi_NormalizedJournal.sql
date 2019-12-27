@@ -40,7 +40,7 @@ RETURN
 		J.[AgentId],
 		J.[EntryClassificationId],
 		J.[ResourceId],
-		J.[ResourceIdentifier],
+		--J.[ResourceIdentifier],
 		J.[DueDate],
 		J.[MonetaryValue],
 		J.[CurrencyId],

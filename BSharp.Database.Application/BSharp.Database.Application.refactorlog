@@ -473,4 +473,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[OnBehalfOfUserId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="af35122c-bc76-4a66-9cd5-fe450fdb2e5d" ChangeDateTime="12/27/2019 13:12:03">
+    <Property Name="ElementName" Value="[dbo].[Permissions].[ViewId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Permissions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[View]" />
+  </Operation>
 </Operations>

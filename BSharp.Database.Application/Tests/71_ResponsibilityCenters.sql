@@ -118,24 +118,3 @@ SELECT
 	@WSI = (SELECT [Id] FROM [dbo].[ResponsibilityCenters] WHERE [Name] = N'Walia Steel Industry'),
 	@Existing = (SELECT [Id] FROM [dbo].[ResponsibilityCenters] WHERE [Name] = N'Existing'),
 	@Expansion = (SELECT [Id] FROM [dbo].[ResponsibilityCenters] WHERE [Name] = N'Expansion');
-	
-EXEC api_Operation__SetOperatingSegment
-	@OperationId = @WSI,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-	@ResultsJson = @ResultsJson OUTPUT;
-	IF @DebugOperations = 1
-		SELECT * FROM [dbo].[fr_ResponsibilityCenters__Json](@ResultsJson);
-
-EXEC api_Operation__SetOperatingSegment
-	@OperationId = @Existing,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-	@ResultsJson = @ResultsJson OUTPUT;
-	IF @DebugOperations = 1
-		SELECT * FROM [dbo].[fr_ResponsibilityCenters__Json](@ResultsJson);
-
-EXEC api_Operation__SetOperatingSegment
-	@OperationId = @WSI,
-	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT,
-	@ResultsJson = @ResultsJson OUTPUT;
-	IF @DebugOperations = 1
-		SELECT * FROM [dbo].[fr_ResponsibilityCenters__Json](@ResultsJson);
