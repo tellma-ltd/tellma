@@ -6,7 +6,10 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AccountForSave, Account, metadata_Account } from '~/app/data/entities/account';
-import { PropDescriptor } from '~/app/data/entities/base/metadata';
+import { PropDescriptor, getChoices, ChoicePropDescriptor } from '~/app/data/entities/base/metadata';
+import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { Resource } from '~/app/data/entities/resource';
+import { Agent } from '~/app/data/entities/agent';
 
 @Component({
   selector: 'b-accounts-details',
@@ -17,7 +20,8 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
 
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
-  public expand = `AccountType,AccountClassification,Currency`;
+  public expand = `AccountType,AccountClassification,Currency,ResponsibilityCenter,
+  ResourceClassification,Agent,Resource/ResourceClassification,Resource/Currency,EntryClassification`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -79,4 +83,43 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   public activateDeprecateTooltip = (model: Account) => this.canActivateDeprecateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
+
+  public get contractTypeChoices(): SelectorChoice[] {
+    const meta = metadata_Account(this.ws, this.translate, null).properties.ContractType as ChoicePropDescriptor;
+    return getChoices(meta);
+  }
+
+  public CurrencyId(model: Account) {
+    if (!model) {
+      return null;
+    }
+
+    if (!!model.ResourceId) {
+      return (this.ws.get('Resource', model.ResourceId) as Resource).CurrencyId;
+    }
+
+    return model.CurrencyId;
+  }
+
+  public AgentDefinitionId(model: Account) {
+    if (!model) {
+      return null;
+    }
+
+    if (!!model.AgentId) {
+      return (this.ws.get('Agent', model.AgentId) as Agent).DefinitionId;
+    }
+  }
+
+  public ResourceClassificationId(model: Account) {
+    if (!model) {
+      return null;
+    }
+
+    if (!!model.ResourceId) {
+      return (this.ws.get('Resource', model.ResourceId) as Resource).ResourceClassificationId;
+    }
+
+    return model.ResourceClassificationId;
+  }
 }

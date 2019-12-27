@@ -42,18 +42,36 @@ namespace BSharp.Entities
         public int? AccountClassificationId { get; set; }
 
         [Display(Name = "Account_Currency")]
+        [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
         public string CurrencyId { get; set; }
 
-        // Fields below are not used for now....
-
+        [Display(Name = "Account_ResponsibilityCenter")]
         public int? ResponsibilityCenterId { get; set; }
+
+        [Display(Name = "Account_ContractType")]
         public string ContractType { get; set; }
+
+        [Display(Name = "Account_AgentDefinition")]
+        [StringLength(50, ErrorMessage = nameof(StringLengthAttribute))]
         public string AgentDefinitionId { get; set; }
+
+        [Display(Name = "Account_ResourceClassification")]
         public int? ResourceClassificationId { get; set; }
+
+        [Display(Name = "Account_IsCurrent")]
         public bool? IsCurrent { get; set; }
+
+        [Display(Name = "Account_Agent")]
         public int? AgentId { get; set; }
+
+        [Display(Name = "Account_Resource")]
         public int? ResourceId { get; set; }
+
+        [Display(Name = "Account_Identifier")]
+        [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
         public string Identifier { get; set; }
+
+        [Display(Name = "Account_EntryClassification")]
         public int? EntryClassificationId { get; set; }
     }
 
@@ -91,6 +109,30 @@ namespace BSharp.Entities
         [Display(Name = "Account_Currency")]
         [ForeignKey(nameof(CurrencyId))]
         public Currency Currency { get; set; }
+
+        [Display(Name = "Account_ResponsibilityCenter")]
+        [ForeignKey(nameof(ResponsibilityCenterId))]
+        public ResponsibilityCenter ResponsibilityCenter { get; set; }
+
+        //[Display(Name = "Account_AgentDefinition")]
+        //[ForeignKey(nameof(AgentDefinitionId))]
+        //public AgentDefinition AgentDefinition { get; set; }
+
+        [Display(Name = "Account_ResourceClassification")]
+        [ForeignKey(nameof(ResourceClassificationId))]
+        public ResourceClassification ResourceClassification { get; set; }
+
+        [Display(Name = "Account_Agent")]
+        [ForeignKey(nameof(AgentId))]
+        public Agent Agent { get; set; }
+
+        [Display(Name = "Account_Resource")]
+        [ForeignKey(nameof(ResourceId))]
+        public Resource Resource { get; set; }
+
+        [Display(Name = "Account_EntryClassification")]
+        [ForeignKey(nameof(EntryClassificationId))]
+        public EntryClassification EntryClassification { get; set; }
 
         [Display(Name = "CreatedBy")]
         [ForeignKey(nameof(CreatedById))]

@@ -14,6 +14,17 @@ export class AccountForSave extends EntityWithKey {
     IsSmart: boolean;
     AccountTypeId: string;
     AccountClassificationId: number;
+    CurrencyId: string;
+
+    ResponsibilityCenterId: number;
+    ContractType: string;
+    AgentDefinitionId: string;
+    ResourceClassificationId: number;
+    IsCurrent: boolean;
+    AgentId: number;
+    ResourceId: number;
+    Identifier: string;
+    EntryClassificationId: number;
 }
 
 export class Account extends AccountForSave {
@@ -52,17 +63,29 @@ export function metadata_Account(ws: TenantWorkspace, trx: TranslateService, _: 
                 AccountType: { control: 'navigation', label: () => trx.instant('Account_Type'), type: 'AccountType', foreignKeyName: 'AccountTypeId' },
                 AccountClassificationId: { control: 'number', label: () => `${trx.instant('Account_Classification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
                 AccountClassification: { control: 'navigation', label: () => trx.instant('Account_Classification'), type: 'AccountClassification', foreignKeyName: 'AccountClassificationId' },
-                CurrencyId: { control: 'number', label: () => `${trx.instant('Account_Currency')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                CurrencyId: { control: 'text', label: () => `${trx.instant('Account_Currency')} (${trx.instant('Id')})` },
                 Currency: { control: 'navigation', label: () => trx.instant('Account_Currency'), type: 'Currency', foreignKeyName: 'CurrencyId' },
-
-                // PartyReference: { control: 'text', label: () => trx.instant('Account_PartyReference') },
-                // ResponsibilityCenterId: { control: 'text', label: () => `${trx.instant('Account_ResponsibilityCenter')} (${trx.instant('Id')})` },
-                // ResponsibilityCenter: { control: 'navigation', label: () => trx.instant('Account_ResponsibilityCenter'), type: 'ResponsibilityCenter', foreignKeyName: 'ResponsibilityCenterId' },
-                // CustodianId: { control: 'number', label: () => `${trx.instant('Account_Custodian')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                // Custodian: { control: 'navigation', label: () => trx.instant('Account_Custodian'), type: 'Agent', foreignKeyName: 'CustodianId' },
-                // ResourceId: { control: 'number', label: () => `${trx.instant('Account_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
-                // Resource: { control: 'navigation', label: () => trx.instant('Account_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
-
+                ResponsibilityCenterId: { control: 'number', label: () => `${trx.instant('Account_ResponsibilityCenter')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ResponsibilityCenter: { control: 'navigation', label: () => trx.instant('Account_ResponsibilityCenter'), type: 'ResponsibilityCenter', foreignKeyName: 'ResponsibilityCenterId' },
+                ContractType: {
+                    control: 'choice',
+                    label: () => trx.instant('Account_ContractType'),
+                    choices: ['OnHand', 'InTransit', 'Receivable', 'Deposit', 'Loan', 'AccruedIncome',
+                        'Equity', 'AccruedExpense', 'Payable', 'Retention', 'Borrowing', 'Revenue', 'Expense'],
+                    format: (c: string) => trx.instant('Account_ContractType_' + c)
+                },
+                AgentDefinitionId: { control: 'text', label: () => `${trx.instant('Account_AgentDefinition')} (${trx.instant('Id')})` },
+                AgentDefinition: { control: 'navigation', label: () => trx.instant('Account_AgentDefinition'), type: 'AgentDefinition', foreignKeyName: 'AgentDefinitionId' },
+                ResourceClassificationId: { control: 'number', label: () => `${trx.instant('Account_ResourceClassification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                ResourceClassification: { control: 'navigation', label: () => trx.instant('Account_ResourceClassification'), type: 'ResourceClassification', foreignKeyName: 'ResourceClassificationId' },
+                IsCurrent: { control: 'boolean', label: () => trx.instant('Account_IsCurrent') },
+                AgentId: { control: 'number', label: () => `${trx.instant('Account_Agent')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Agent: { control: 'navigation', label: () => trx.instant('Account_Agent'), type: 'Agent', foreignKeyName: 'AgentId' },
+                ResourceId: { control: 'number', label: () => `${trx.instant('Account_Resource')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                Resource: { control: 'navigation', label: () => trx.instant('Account_Resource'), type: 'Resource', foreignKeyName: 'ResourceId' },
+                Identifier: { control: 'text', label: () => trx.instant('Account_Identifier') },
+                EntryClassificationId: { control: 'number', label: () => `${trx.instant('Account_EntryClassification')} (${trx.instant('Id')})`, minDecimalPlaces: 0, maxDecimalPlaces: 0 },
+                EntryClassification: { control: 'navigation', label: () => trx.instant('Account_EntryClassification'), type: 'EntryClassification', foreignKeyName: 'EntryClassificationId' },
                 IsDeprecated: { control: 'boolean', label: () => trx.instant('Account_IsDeprecated') },
                 CreatedAt: { control: 'datetime', label: () => trx.instant('CreatedAt') },
                 CreatedBy: { control: 'navigation', label: () => trx.instant('CreatedBy'), type: 'User', foreignKeyName: 'CreatedById' },

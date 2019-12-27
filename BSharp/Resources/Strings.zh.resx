@@ -70,17 +70,83 @@
   <data name="Account" xml:space="preserve">
     <value>帐户</value>
   </data>
+  <data name="Account_Agent" xml:space="preserve">
+    <value>代理人</value>
+  </data>
+  <data name="Account_AgentDefinition" xml:space="preserve">
+    <value>代理定义</value>
+  </data>
   <data name="Account_Classification" xml:space="preserve">
     <value>分类</value>
   </data>
+  <data name="Account_ContractType" xml:space="preserve">
+    <value>合同类型</value>
+  </data>
+  <data name="Account_ContractType_AccruedExpense" xml:space="preserve">
+    <value>预提费用</value>
+  </data>
+  <data name="Account_ContractType_AccruedIncome" xml:space="preserve">
+    <value>计提坏账收入</value>
+  </data>
+  <data name="Account_ContractType_Borrowing" xml:space="preserve">
+    <value>借用</value>
+  </data>
+  <data name="Account_ContractType_Deposit" xml:space="preserve">
+    <value>存款</value>
+  </data>
+  <data name="Account_ContractType_Equity" xml:space="preserve">
+    <value>公平</value>
+  </data>
+  <data name="Account_ContractType_Expense" xml:space="preserve">
+    <value>费用</value>
+  </data>
+  <data name="Account_ContractType_InTransit" xml:space="preserve">
+    <value>在途中</value>
+  </data>
+  <data name="Account_ContractType_Loan" xml:space="preserve">
+    <value>贷款</value>
+  </data>
+  <data name="Account_ContractType_OnHand" xml:space="preserve">
+    <value>手上</value>
+  </data>
+  <data name="Account_ContractType_Payable" xml:space="preserve">
+    <value>应付帐款</value>
+  </data>
+  <data name="Account_ContractType_Receivable" xml:space="preserve">
+    <value>应收账款</value>
+  </data>
+  <data name="Account_ContractType_Retention" xml:space="preserve">
+    <value>保留</value>
+  </data>
+  <data name="Account_ContractType_Revenue" xml:space="preserve">
+    <value>收入</value>
+  </data>
   <data name="Account_Currency" xml:space="preserve">
     <value>货币</value>
+  </data>
+  <data name="Account_EntryClassification" xml:space="preserve">
+    <value>进入分类</value>
+  </data>
+  <data name="Account_Identifier" xml:space="preserve">
+    <value>识别码</value>
+  </data>
+  <data name="Account_IsCurrent" xml:space="preserve">
+    <value>是当前</value>
   </data>
   <data name="Account_IsDeprecated" xml:space="preserve">
     <value>已弃用</value>
   </data>
   <data name="Account_IsSmart" xml:space="preserve">
     <value>是聪明</value>
+  </data>
+  <data name="Account_Resource" xml:space="preserve">
+    <value>资源</value>
+  </data>
+  <data name="Account_ResourceClassification" xml:space="preserve">
+    <value>资源分类</value>
+  </data>
+  <data name="Account_ResponsibilityCenter" xml:space="preserve">
+    <value>责任中心</value>
   </data>
   <data name="Account_Type" xml:space="preserve">
     <value>类型</value>
@@ -1460,7 +1526,7 @@
     <value>标题</value>
   </data>
   <data name="TitleSingular" xml:space="preserve">
-    <value>奇异名称</value>
+    <value>标志</value>
   </data>
   <data name="Total" xml:space="preserve">
     <value>总</value>

@@ -1,9 +1,6 @@
-<div class="row" [class.border-left]="showDescription && !isRtl" [class.border-right]="showDescription && isRtl">
-  <div class="font-weight-bold small col-12 text-truncate" [class.col-lg-4]="!showDescription" *ngIf="showLabel">
+<div class="row">
+  <div class="font-weight-bold small col-12 col-lg-4 text-truncate" *ngIf="showLabel">
     <span class="b-vertical-align-middle" [class.text-danger]="invalid" [title]="label">{{ label }}</span>
-  </div>
-  <div class="text-muted small col-12 mb-2 text-nowrap" *ngIf="showDescription" [title]="description">
-    <span class="b-vertical-align-middle">{{ description }}</span>
   </div>
   <div class="col-12 d-flex form-group-container" [class.is-invalid]="invalid" [class.col-lg-8]="showLabel">
     <ng-content></ng-content>

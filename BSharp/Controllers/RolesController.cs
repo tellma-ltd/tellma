@@ -19,8 +19,6 @@ namespace BSharp.Controllers
     {
         public const string BASE_ADDRESS = "roles";
 
-
-        private readonly Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider _metadataProvider;
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
         private readonly ApplicationRepository _repo;
@@ -30,13 +28,11 @@ namespace BSharp.Controllers
         public RolesController(
             ILogger<RolesController> logger,
             IStringLocalizer<Strings> localizer,
-            ApplicationRepository repo,
-            Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider metadataProvider) : base(logger, localizer)
+            ApplicationRepository repo) : base(logger, localizer)
         {
             _logger = logger;
             _localizer = localizer;
             _repo = repo;
-            _metadataProvider = metadataProvider;
         }
 
         [HttpPut("activate")]

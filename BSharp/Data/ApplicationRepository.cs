@@ -1218,11 +1218,6 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         {
             entities.ForEach(e =>
             {
-                e.Permissions?.ForEach(p =>
-                {
-                    p.RoleId = e.Id;
-                });
-
                 e.Members?.ForEach(m =>
                 {
                     m.RoleId = e.Id;
@@ -1301,11 +1296,6 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         {
             entities.ForEach(e =>
             {
-                e.Permissions?.ForEach(p =>
-                {
-                    p.RoleId = e.Id;
-                });
-
                 e.Members?.ForEach(m =>
                 {
                     m.RoleId = e.Id;
@@ -2590,6 +2580,46 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return query.FromSql($"[map].[{nameof(Accounts__AsQuery)}] (@Entities)", null, entitiesTvp);
         }
 
+        public async Task Accounts__Preprocess(List<AccountForSave> entities)
+        {
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Parameters
+                DataTable entitiesTable = RepositoryUtilities.DataTable(entities, addIndex: true);
+                var entitiesTvp = new SqlParameter("@Entities", entitiesTable)
+                {
+                    TypeName = $"[dbo].[{nameof(Account)}List]",
+                    SqlDbType = SqlDbType.Structured
+                };
+
+                cmd.Parameters.Add(entitiesTvp);
+
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[bll].[{nameof(Accounts__Preprocess)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    var props = typeof(AccountForSave).GetMappedProperties();
+                    while (await reader.ReadAsync())
+                    {
+                        var index = reader.GetInt32(0);
+                        var entity = entities[index];
+                        foreach (var prop in props)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entity, propValue);
+                        }
+                    }
+                }
+            }
+        }
+
         public async Task<IEnumerable<ValidationError>> Accounts_Validate__Save(List<AccountForSave> entities, int top)
         {
             var conn = await GetConnectionAsync();
@@ -3391,10 +3421,8 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return query.FromSql($"[map].[{nameof(Documents__AsQuery)}] (@Entities)", null, definitionParameter, entitiesTvp);
         }
 
-        public async Task<List<DocumentForSave>> Documents__Preprocess(string definitionId, List<DocumentForSave> documents)
+        public async Task Documents__Preprocess(string definitionId, List<DocumentForSave> documents)
         {
-            var result = new List<DocumentForSave>();
-
             var conn = await GetConnectionAsync();
             using (var cmd = conn.CreateCommand())
             {
@@ -3451,8 +3479,6 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                     }
                 }
             }
-
-            return result;
         }
 
         public async Task<IEnumerable<ValidationError>> Documents_Validate__Save(string definitionId, List<DocumentForSave> documents, int top)

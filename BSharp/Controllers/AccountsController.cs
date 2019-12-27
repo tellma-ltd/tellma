@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BSharp.Controllers
@@ -120,7 +122,7 @@ namespace BSharp.Controllers
             return query;
         }
 
-        protected override Task<List<AccountForSave>> SavePreprocessAsync(List<AccountForSave> entities)
+        protected override async Task<List<AccountForSave>> SavePreprocessAsync(List<AccountForSave> entities)
         {
             // Defaults
             var settings = _settingsCache.GetCurrentSettingsIfCached().Data;
@@ -132,14 +134,56 @@ namespace BSharp.Controllers
                 {
                     // Only for dumb accounts
                     entity.CurrencyId = entity.CurrencyId ?? settings.FunctionalCurrencyId;
+
+                    // Dumb accounts set all these to null
+                    entity.ResponsibilityCenterId = null;
+                    entity.ContractType = null;
+                    entity.AgentDefinitionId = null;
+                    entity.ResourceClassificationId = null;
+                    entity.IsCurrent = null;
+                    entity.AgentId = null;
+                    entity.ResourceId = null;
+                    entity.Identifier = null;
+                    entity.EntryClassificationId = null;
                 }
             });
 
-            return Task.FromResult(entities);
+            // SQL Preprocessing
+            await _repo.Accounts__Preprocess(entities);
+            return entities;
         }
 
         protected override async Task SaveValidateAsync(List<AccountForSave> entities)
         {
+            foreach (var (entity, index) in entities.Select((e, i) => (e, i)))
+            {
+                if (entity.IsSmart ?? false)
+                {
+                    // These are required for smart accounts
+                    if(entity.ContractType == null)
+                    {
+                        string path = $"[{index}].{nameof(entity.ContractType)}";
+                        string propDisplayName = _localizer["Account_ContractType"];
+                        string errorMsg = _localizer[nameof(RequiredAttribute), propDisplayName];
+
+                        ModelState.AddModelError(path, errorMsg);
+                    }
+                }
+
+                if (ModelState.HasReachedMaxErrors)
+                {
+                    // No need to keep going forever
+                    break;
+                }
+            }
+
+            // No need to invoke SQL if the model state is full of errors
+            if (ModelState.HasReachedMaxErrors)
+            {
+                // null Ids will cause an error when calling the SQL validation
+                return;
+            }
+
             // SQL validation
             int remainingErrorCount = ModelState.MaxAllowedErrors - ModelState.ErrorCount;
             var sqlErrors = await _repo.Accounts_Validate__Save(entities, top: remainingErrorCount);

@@ -35,10 +35,10 @@
 	[Lookup4DefinitionId]				NVARCHAR (50) CONSTRAINT [FK_ResourceDefinitions__Lookup4DefinitionId] REFERENCES dbo.LookupDefinitions([Id]),
 	[Lookup4Label]						NVARCHAR (50),
 
-	[ExpiryDateVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([ExpiryDateVisibility] IN (N'None', N'Required', N'Optional')),
-	[ExpiryDateLabel]					NVARCHAR (50),
-	[ExpiryDateLabel2]					NVARCHAR (50),
-	[ExpiryDateLabel3]					NVARCHAR (50),
+	[DueDateVisibility]				NVARCHAR (50) DEFAULT N'None' CHECK ([DueDateVisibility] IN (N'None', N'Required', N'Optional')),
+	[DueDateLabel]					NVARCHAR (50),
+	[DueDateLabel2]					NVARCHAR (50),
+	[DueDateLabel3]					NVARCHAR (50),
 	-- more properties from Resource Instances to come..
 
 	[State]							NVARCHAR (50)				DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)

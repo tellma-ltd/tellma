@@ -10,7 +10,7 @@ INSERT INTO dbo.ContractTypes VALUES
 (N'Equity'),
 (N'AccruedExpense'),
 (N'Payable'),--/UnearnedRevenue
-(N'RetentioN'),
+(N'Retention'),
 (N'Borrowing'),
 (N'Revenue'),
 (N'Expense');

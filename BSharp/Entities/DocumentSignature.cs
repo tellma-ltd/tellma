@@ -14,7 +14,7 @@ namespace BSharp.Entities
         [Display(Name = "Signature_SignedAt")]
         public DateTimeOffset? SignedAt { get; set; }
 
-        [Display(Name = "Signature_Agent")]
+        [Display(Name = "Signature_OnBehalfOfUser")]
         public int? OnBehalfOfUserId { get; set; }
 
         [Display(Name = "Signature_Role")]
@@ -30,7 +30,7 @@ namespace BSharp.Entities
 
         [Display(Name = "Signature_OnBehalfOfUser")]
         [ForeignKey(nameof(OnBehalfOfUserId))]
-        public Agent Agent { get; set; }
+        public User OnBehalfOfUser { get; set; }
 
         [Display(Name = "Signature_Role")]
         [ForeignKey(nameof(RoleId))]

@@ -73,7 +73,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   @ViewChild('signModal', { static: true })
   signModal: TemplateRef<any>;
 
-  public expand = `CreatedBy,ModifiedBy,Lines/Entries/Account/Currency,Signatures/Agent,Signatures/Role
+  public expand = `CreatedBy,ModifiedBy,Lines/Entries/Account/Currency,Signatures/OnBehalfOfUser,Signatures/Role
   ,Signatures/CreatedBy,AssignmentsHistory/Assignee,AssignmentsHistory/CreatedBy`;
 
   constructor(
@@ -283,9 +283,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     return event as DocumentReassignmentEvent;
   }
 
-  public showAssignDocument(doc: Document, isEdit: boolean) {
+  public showAssignDocument(doc: Document) {
     // return true;
-    return !isEdit && !!doc && !!doc.AssigneeId; // === this.ws.userSettings.UserId;
+    return !!doc && !!doc.AssigneeId; // === this.ws.userSettings.UserId;
   }
 
   public onAssign(doc: Document): void {
@@ -302,8 +302,8 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     }
   }
 
-  public canAssign(_: Document) {
-    return !!this.assigneeId;
+  public canAssign(_: Document, isEdit: boolean) {
+    return !!this.assigneeId && !isEdit;
   }
 
   // Used by signatures and assignments
