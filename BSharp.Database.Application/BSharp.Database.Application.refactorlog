@@ -473,4 +473,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[OnBehalfOfUserId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="6b536dba-3962-4231-9c78-3ccc2c61871a" ChangeDateTime="12/27/2019 03:01:29">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[ExpiryDateVisibility]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DueDateVisibility]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="69e643a9-8657-4c46-abeb-1fddf0c8f71c" ChangeDateTime="12/27/2019 03:01:38">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[ExpiryDateLabel]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DueDateLabel]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="581f107d-f49e-4112-a0cf-26a142b66e90" ChangeDateTime="12/27/2019 03:01:48">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[ExpiryDateLabel2]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DueDateLabel2]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7ca473d2-1101-40d9-ac16-e0e449bdad30" ChangeDateTime="12/27/2019 03:02:14">
+    <Property Name="ElementName" Value="[dbo].[ResourceDefinitions].[ExpiryDateLabel3]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ResourceDefinitions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[DueDateLabel3]" />
+  </Operation>
 </Operations>

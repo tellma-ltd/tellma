@@ -8,8 +8,6 @@
 	[IsSmart]						BIT				NOT NULL DEFAULT 0,	
 	[AccountTypeId]					NVARCHAR (50)	NOT NULL,
 	[AccountClassificationId]		INT,
-	
-	-- Not used right now
 	[CurrencyId]					NCHAR (3),
 	[ResponsibilityCenterId]		INT,
 	[ContractType]					NVARCHAR (50),--	REFERENCES dbo.[ContractTypes]([Id]),
@@ -26,8 +24,12 @@
 	[Identifier]					NVARCHAR (10),
 --
 	[EntryClassificationId]			INT,
-	CHECK (
-		([IsSmart] = 0) OR 
-		([ContractType] IS NOT NULL)
-	)
+
+	-- I commented this since I need this table type to call [bll].[Account__Preprocess],
+	-- and when this check is violated it returns a cryptic error instead of a proper validation error
+
+	--CHECK (
+	--	([IsSmart] = 0) OR 
+	--	([ContractType] IS NOT NULL)
+	--)
 );

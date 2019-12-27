@@ -81,19 +81,147 @@
         </b-view-link>
         <b-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
         </b-account-classifications-picker>
-    </b-form-group>    
+    </b-form-group>
 
     <!-- Currency -->
-    <b-form-group *ngIf="!model?.IsSmart" class="b-form-group" [label]="'Account_Currency' | translate"
+    <b-form-group class="b-form-group" [label]="'Account_Currency' | translate"
         [serverErrors]="model?.serverErrors?.CurrencyId">
         <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
             <b-view-link link="../../currencies" [itemId]="model?.CurrencyId">
-                {{ ws.getMultilingualValue('Currency', model.CurrencyId, 'Name') }}
+                {{ ws.getMultilingualValue('Currency', CurrencyId(model), 'Name') }}
             </b-view-link>
         </b-restricted>
-        <b-currencies-picker *ngIf="isEdit" [(ngModel)]="model.CurrencyId" [required]="true">
+
+        <!-- In edit mode -->
+        <span
+            *ngIf="isEdit && (model?.IsSmart && !!model?.ResourceId)">{{ ws.getMultilingualValue('Currency', CurrencyId(model), 'Name') }}</span>
+
+        <b-currencies-picker *ngIf="isEdit && (!model?.IsSmart || !model?.ResourceId)" [(ngModel)]="model.CurrencyId"
+            [required]="!model?.IsSmart">
         </b-currencies-picker>
     </b-form-group>
+
+    <!-- Is Smart -->
+    <b-form-group class="b-form-group" [label]="'Account_IsSmart' | translate"
+        [serverErrors]="model?.serverErrors?.IsSmart">
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsSmart">
+            {{ (model?.IsSmart ? 'Yes' : 'No') | translate }}
+        </b-restricted>
+        <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+            <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsSmart" id="isSmart">
+            <label class="custom-control-label b-pointer" for="isSmart">&zwnj;</label>
+        </div>
+    </b-form-group>
+
+    <!-- This entire section is invisible in dumb accounts -->
+    <ng-container *ngIf="model?.IsSmart">
+
+        <!-- Responsibility Center -->
+        <b-form-group class="b-form-group" [label]="'Account_ResponsibilityCenter' | translate"
+            [serverErrors]="model?.serverErrors?.ResponsibilityCenterId">
+            <b-view-link *ngIf="!isEdit" link="../../responsibility-centers" [itemId]="model?.ResponsibilityCenterId">
+                <b-auto-cell collection="Account" path="ResponsibilityCenter" [entity]="model">
+                </b-auto-cell>
+            </b-view-link>
+            <b-responsibility-centers-picker *ngIf="isEdit" [(ngModel)]="model.ResponsibilityCenterId">
+            </b-responsibility-centers-picker>
+        </b-form-group>
+
+        <!-- Contract Type -->
+        <b-form-group class="b-form-group" [label]="'Account_ContractType' | translate"
+            [serverErrors]="model?.serverErrors?.ContractType">
+            <b-auto-cell *ngIf="!isEdit" collection="Account" path="ContractType" [entity]="model">
+            </b-auto-cell>
+            <b-selector *ngIf="isEdit" [(ngModel)]="model.ContractType" [choices]="contractTypeChoices" [required]="model?.IsSmart">
+            </b-selector>
+        </b-form-group>
+
+        <!-- Agent -->
+        <b-form-group class="b-form-group" [label]="'Account_Agent' | translate"
+            [serverErrors]="model?.serverErrors?.AgentId">
+            <b-view-link *ngIf="!isEdit" [link]="'../../agents/' + ws.get('Agent', model?.AgentId)?.DefinitionId"
+                [itemId]="model?.AgentId">
+                <b-auto-cell collection="Account" path="Agent" [entity]="model">
+                </b-auto-cell>
+            </b-view-link>
+            <b-agents-picker *ngIf="isEdit" [(ngModel)]="model.AgentId" additionalSelect="DefinitionId">
+            </b-agents-picker>
+        </b-form-group>
+
+        <!-- Agent Definition -->
+        <b-form-group class="b-form-group" [label]="'Account_AgentDefinition' | translate"
+            [serverErrors]="model?.serverErrors?.AgentDefinitionId">
+            <b-auto-cell *ngIf="!isEdit" collection="Account" path="AgentDefinitionId" [entity]="model">
+            </b-auto-cell>
+
+            <span *ngIf="isEdit && !!model?.AgentId">{{ AgentDefinitionId(model) }}</span>
+
+            <b-text-editor *ngIf="isEdit && !model?.AgentId" [(ngModel)]="model.AgentDefinitionId">
+            </b-text-editor>
+        </b-form-group>
+
+        <!-- Resource -->
+        <b-form-group class="b-form-group" [label]="'Account_Resource' | translate"
+            [serverErrors]="model?.serverErrors?.ResourceId">
+            <b-view-link *ngIf="!isEdit"
+                [link]="'../../resources/' + ws.get('Resource', model?.ResourceId)?.DefinitionId"
+                [itemId]="model?.ResourceId">
+                <b-auto-cell collection="Account" path="Resource" [entity]="model">
+                </b-auto-cell>
+            </b-view-link>
+            <b-resources-picker *ngIf="isEdit" [(ngModel)]="model.ResourceId"
+                additionalSelect="Currency/Name,Currency/Name2,Currency/Name3,ResourceClassification/Name,ResourceClassification/Name2,ResourceClassification/Name3">
+            </b-resources-picker>
+        </b-form-group>
+
+        <!-- Resource Classification -->
+        <b-form-group class="b-form-group" [label]="'Account_ResourceClassification' | translate"
+            [serverErrors]="model?.serverErrors?.ResourceClassificationId">
+            <!-- In view mode -->
+            <b-view-link *ngIf="!isEdit" link="../../resource-classifications"
+                [itemId]="ResourceClassificationId(model)">
+                {{ ws.getMultilingualValue('ResourceClassification', ResourceClassificationId(model), 'Name') }}
+            </b-view-link>
+            <!-- In edit mode -->
+            <span
+                *ngIf="isEdit && !!model?.ResourceId">{{ ws.getMultilingualValue('ResourceClassification', ResourceClassificationId(model), 'Name') }}</span>
+            <b-resource-classifications-picker *ngIf="isEdit && !model?.ResourceId"
+                [(ngModel)]="model.ResourceClassificationId">
+            </b-resource-classifications-picker>
+        </b-form-group>
+
+        <!-- Is Current -->
+        <b-form-group class="b-form-group" [label]="'Account_IsCurrent' | translate"
+            [serverErrors]="model?.serverErrors?.IsCurrent">
+            <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.IsCurrent">
+                {{ (model?.IsCurrent ? 'Yes' : 'No') | translate }}
+            </b-restricted>
+            <div *ngIf="isEdit" class="custom-control custom-checkbox b-labelless-checkbox">
+                <input type="checkbox" class="custom-control-input" [(ngModel)]="model.IsCurrent" id="isCurrent">
+                <label class="custom-control-label b-pointer" for="isCurrent">&zwnj;</label>
+            </div>
+        </b-form-group>
+
+        <!-- Identifier -->
+        <b-form-group *ngIf="false" class="b-form-group" [label]="'Account_Identifier' | translate"
+            [serverErrors]="model?.serverErrors?.Identifier">
+            <div *ngIf="!isEdit">{{ model?.Identifier }}</div>
+            <b-text-editor *ngIf="isEdit" [(ngModel)]="model.Identifier" [ngModelOptions]="{ updateOn: 'blur' }">
+            </b-text-editor>
+        </b-form-group>
+
+        <!-- Entry Classification -->
+        <b-form-group class="b-form-group" [label]="'Account_EntryClassification' | translate"
+            [serverErrors]="model?.serverErrors?.EntryClassificationId">
+            <b-view-link *ngIf="!isEdit" link="../../entry-classifications" [itemId]="model?.EntryClassificationId">
+                <b-auto-cell collection="Account" path="EntryClassification" [entity]="model">
+                </b-auto-cell>
+            </b-view-link>
+            <b-entry-classifications-picker *ngIf="isEdit" [(ngModel)]="model.EntryClassificationId">
+            </b-entry-classifications-picker>
+        </b-form-group>
+
+    </ng-container>
 
     <!-- Is Deprecated -->
     <b-form-group class="b-form-group" [label]="'Account_IsDeprecated' | translate" *ngIf="!isEdit">
