@@ -159,7 +159,6 @@
     <Build Include="dbo\Tables\dbo.Views.sql" />
     <Build Include="dbo\User Defined Types\dbo.RoleList.sql" />
     <Build Include="dbo\User Defined Types\dbo.PermissionList.sql" />
-    <Build Include="dbo\User Defined Types\dbo.ViewList.sql" />
     <Build Include="dbo\Tables\dbo.Entries.sql" />
     <Build Include="dbo\User Defined Types\dbo.EntryList.sql" />
     <Build Include="dbo\Tables\dbo.RoleMemberships.sql" />
@@ -351,10 +350,7 @@
     <Build Include="dbo\User Defined Types\dbo.AccountClassificationList.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Save.sql" />
     <Build Include="api\Stored Procedures\api.Roles__Activate.sql" />
-    <Build Include="dal\Stored Procedures\dal.Views__Activate.sql" />
-    <Build Include="api\Stored Procedures\api.Views__Activate.sql" />
     <Build Include="api\Stored Procedures\api.Agents__Activate.sql" />
-    <Build Include="bll\Stored Procedures\bll.Views_Validate__Save.sql" />
     <Build Include="api\Stored Procedures\api.AccountClassifications__Deprecate.sql" />
     <Build Include="bll\Stored Procedures\bll.AccountClassifications_Validate__Deprecate.sql" />
     <Build Include="dal\Stored Procedures\dal.AccountClassifications__Deprecate.sql" />
@@ -371,10 +367,8 @@
     <Build Include="bll\Stored Procedures\bll.Accounts_Validate__Delete.sql" />
     <Build Include="Mapping\Accounts.sql" />
     <Build Include="Mapping\Accounts__AsQuery.sql" />
-    <Build Include="api\Stored Procedures\api.Views__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Validate__Unsign.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines__Unsign.sql" />
-    <Build Include="dal\Stored Procedures\dal.Views__Save.sql" />
     <Build Include="dbo\Tables\dbo.LookupDefinitions.sql" />
     <Build Include="dbo\Tables\dbo.EntryClassifications.sql" />
     <Build Include="Mapping\EntryClassifications.sql" />

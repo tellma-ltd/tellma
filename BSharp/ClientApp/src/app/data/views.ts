@@ -31,7 +31,7 @@ export const ACTIONS: { [action: string]: string } = {
 
 // IMPORTANT: This mimmicks another C# structure on the server, it is important
 // to keep them in sync
-export const VIEWS_BUILT_IN: { [viewId: string]: ViewInfo } = {
+export const VIEWS_BUILT_IN: { [view: string]: ViewInfo } = {
     'all': {
         name: 'View_All',
         actions: [

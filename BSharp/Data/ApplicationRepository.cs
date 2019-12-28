@@ -409,7 +409,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             }
         }
 
-        public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string viewId)
+        public async Task<IEnumerable<AbstractPermission>> Action_View__Permissions(string action, string view)
         {
             var result = new List<AbstractPermission>();
 
@@ -418,7 +418,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             {
                 // Parameters
                 cmd.Parameters.Add("@Action", action);
-                cmd.Parameters.Add("@ViewId", viewId);
+                cmd.Parameters.Add("@View", view);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -431,7 +431,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                         int i = 0;
                         result.Add(new AbstractPermission
                         {
-                            ViewId = reader.GetString(i++),
+                            View = reader.GetString(i++),
                             Action = reader.GetString(i++),
                             Criteria = reader.String(i++),
                             Mask = reader.String(i++)
@@ -443,7 +443,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return result;
         }
 
-        public async Task<IEnumerable<AbstractPermission>> Action_ViewPrefix__Permissions(string action, string viewIdPrefix)
+        public async Task<IEnumerable<AbstractPermission>> Action_ViewPrefix__Permissions(string action, string viewPrefix)
         {
             var result = new List<AbstractPermission>();
 
@@ -452,7 +452,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             {
                 // Parameters
                 cmd.Parameters.Add("@Action", action);
-                cmd.Parameters.Add("@ViewIdPrefix", viewIdPrefix);
+                cmd.Parameters.Add("@ViewPrefix", viewPrefix);
 
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -465,7 +465,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                         int i = 0;
                         result.Add(new AbstractPermission
                         {
-                            ViewId = reader.GetString(i++),
+                            View = reader.GetString(i++),
                             Action = reader.GetString(i++),
                             Criteria = reader.String(i++),
                             Mask = reader.String(i++)
@@ -496,7 +496,7 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                         int i = 0;
                         result.Add(new AbstractPermission
                         {
-                            ViewId = reader.String(i++),
+                            View = reader.String(i++),
                             Action = reader.String(i++),
                             Criteria = reader.String(i++),
                             Mask = reader.String(i++)

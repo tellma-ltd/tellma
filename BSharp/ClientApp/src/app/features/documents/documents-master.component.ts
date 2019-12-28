@@ -55,7 +55,7 @@ export class DocumentsMasterComponent extends MasterBaseComponent implements OnI
     });
   }
 
-  get viewId(): string {
+  get view(): string {
     return `documents/${this.definitionId}`;
   }
 

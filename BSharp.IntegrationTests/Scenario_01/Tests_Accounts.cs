@@ -21,7 +21,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
         public readonly string _baseAddress = "accounts";
 
-        public string ViewId => $"{_baseAddress}"; // For permissions
+        public string View => $"{_baseAddress}"; // For permissions
         public string Url => $"/api/{_baseAddress}";
 
         [Fact(DisplayName = "01 Getting a specific type of account before granting permissions returns a 403 Forbidden response")]
@@ -39,7 +39,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting accounts of a specific type before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id gt -1");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id gt -1");
 
             // Call the API
             var response = await Client.GetAsync(Url);
@@ -207,7 +207,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "08 Deleting an existing account Id returns a 200 OK")]
         public async Task Test08()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<Account>("Account_Receivables");
@@ -241,7 +241,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deactivating an active account returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, "IsDeprecated", null);
+            await GrantPermissionToSecurityAdministrator(View, "IsDeprecated", null);
 
             // Get the Id
             var entity = Shared.Get<Account>("Account_Payables");

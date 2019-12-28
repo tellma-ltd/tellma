@@ -35,7 +35,7 @@ namespace BSharp.Controllers
         private ResourceDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Resources?
             .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
 
-        private string ViewId => $"{BASE_ADDRESS}{DefinitionId}";
+        private string View => $"{BASE_ADDRESS}{DefinitionId}";
 
         public ResourcesController(
             ILogger<ResourcesController> logger,
@@ -108,7 +108,7 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.UserPermissions(action, ViewId);
+            return await _repo.UserPermissions(action, View);
         }
 
         protected override IRepository GetRepository()
@@ -298,9 +298,9 @@ namespace BSharp.Controllers
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)
-            foreach (var permission in permissions.Where(e => e.ViewId != "all"))
+            foreach (var permission in permissions.Where(e => e.View != "all"))
             {
-                string definitionId = permission.ViewId.Remove(0, prefix.Length).Replace("'", "''");
+                string definitionId = permission.View.Remove(0, prefix.Length).Replace("'", "''");
                 string definitionPredicate = $"{nameof(Resource.DefinitionId)} {Ops.eq} '{definitionId}'";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {

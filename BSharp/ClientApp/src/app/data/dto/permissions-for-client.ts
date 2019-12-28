@@ -1,5 +1,5 @@
 export class PermissionsForClient {
-    [viewId: string]: {
+    [view: string]: {
       [action: string]: boolean;
     };
   }

@@ -53,7 +53,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
     });
   }
 
-  get viewId(): string {
+  get view(): string {
     return `agents/${this.definitionId}`;
   }
 
@@ -91,7 +91,7 @@ export class AgentsMasterComponent extends MasterBaseComponent implements OnInit
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.viewId, 'IsActive', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.view, 'IsActive', null);
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

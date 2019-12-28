@@ -350,8 +350,8 @@ namespace BSharp.Controllers
         /// </summary>
         protected virtual FilterExpression GetReadPermissionsCriteria(IEnumerable<AbstractPermission> permissions)
         {
-            // Check if the user has any permissions on ViewId at all, else throw forbidden exception
-            // If the user has some permissions on ViewId, OR all their criteria together and apply the where clause
+            // Check if the user has any permissions on View at all, else throw forbidden exception
+            // If the user has some permissions on View, OR all their criteria together and apply the where clause
 
             if (!permissions.Any())
             {

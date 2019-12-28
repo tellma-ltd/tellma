@@ -8,7 +8,7 @@
         /// <summary>
         /// "measurement-units"
         /// </summary>
-        public string ViewId { get; set; }
+        public string View { get; set; }
 
         /// <summary>
         /// "Read", "Update", etc...

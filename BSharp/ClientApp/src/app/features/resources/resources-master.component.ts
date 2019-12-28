@@ -55,7 +55,7 @@ export class ResourcesMasterComponent extends MasterBaseComponent implements OnI
     });
   }
 
-  get viewId(): string {
+  get view(): string {
     return `resources/${this.definitionId}`;
   }
 
@@ -93,7 +93,7 @@ export class ResourcesMasterComponent extends MasterBaseComponent implements OnI
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.viewId, 'IsActive', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.view, 'IsActive', null);
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

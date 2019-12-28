@@ -25,7 +25,7 @@ export class ResourceClassificationsMasterComponent extends MasterBaseComponent 
     this.resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$);
   }
 
-  private get viewId(): string {
+  private get view(): string {
     return `resource-classifications`;
   }
 
@@ -56,7 +56,7 @@ export class ResourceClassificationsMasterComponent extends MasterBaseComponent 
     return obs$;
   }
 
-  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.viewId, 'IsActive', null);
+  public canActivateDeactivateItem = (_: (number | string)[]) => this.ws.canDo(this.view, 'IsActive', null);
 
   public activateDeactivateTooltip = (ids: (number | string)[]) => this.canActivateDeactivateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

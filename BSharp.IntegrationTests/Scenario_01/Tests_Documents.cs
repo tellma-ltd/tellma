@@ -22,7 +22,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public readonly string _baseAddress = "documents";
         public readonly string _definitionId = "manual-journal-vouchers";
 
-        public string ViewId => $"{_baseAddress}/{_definitionId}"; // For permissions
+        public string View => $"{_baseAddress}/{_definitionId}"; // For permissions
         public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic documents
         public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific document definition
 
@@ -42,7 +42,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting all JV documents before creating any returns a 200 OK singleton collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id lt 100000");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
 
             // Call the API
             var response = await Client.GetAsync(Url);
@@ -94,7 +94,6 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "05 Saving a well-formed DocumentForSave returns a 200 OK result")]
         public async Task Test05()
         {
-            var opSegmentId = Shared.Get<ResponsibilityCenter>("ResponsibilityCenter_Parent").Id;
             // var etbId = "ETB";
             var accountId = Shared.Get<Account>("Account_Payables").Id;
             var entryClassificationId = Shared.Get<EntryClassification>("EntryClassification_SM").Id;
@@ -106,7 +105,6 @@ namespace BSharp.IntegrationTests.Scenario_01
                 DocumentDate = DateTime.Today,
                 Memo = "Capital investment",
                 MemoIsCommon = true,
-                OperatingSegmentId = opSegmentId,
                 Lines = new List<LineForSave>
                 {
                     new LineForSave
@@ -171,7 +169,6 @@ namespace BSharp.IntegrationTests.Scenario_01
             Assert.Equal(dtoForSave.DocumentDate, responseDto.DocumentDate);
             Assert.Equal(dtoForSave.Memo, responseDto.Memo);
             Assert.Equal(dtoForSave.MemoIsCommon, responseDto.MemoIsCommon);
-            Assert.Equal(dtoForSave.OperatingSegmentId, responseDto.OperatingSegmentId);
             Assert.Collection(responseDto.Lines,
                     line =>
                     {
@@ -302,7 +299,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         //[Fact(DisplayName = "09 Deleting an existing document Id returns a 200 OK")]
         //public async Task Test09()
         //{
-        //    await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
+        //    await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
         //    // Get the Id
         //    var entity = Shared.Get<Document>("Document_Matilda");
@@ -338,7 +335,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         //[Fact(DisplayName = "11 Deactivating an active document returns a 200 OK inactive entity")]
         //public async Task Test11()
         //{
-        //    await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
+        //    await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
         //    // Get the Id
         //    var entity = Shared.Get<Document>("Document_JohnWick");

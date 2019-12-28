@@ -22,7 +22,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public readonly string _baseAddress = "currencies";
 
         public string Url => $"/api/{_baseAddress}";
-        private string ViewId => _baseAddress;
+        private string View => _baseAddress;
 
         [Fact(DisplayName = "01 Getting all currencies before granting permissions returns a 403 Forbidden response")]
         public async Task Test01()
@@ -39,7 +39,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting all currencies before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id ne 'Bla'");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id ne 'Bla'");
 
             // Call the API
             var response = await Client.GetAsync(Url);
@@ -202,7 +202,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "08 Deleting an existing currency Id returns a 200 OK")]
         public async Task Test08()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<Currency>("Currency_AED");
@@ -236,7 +236,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deactivating an active currency returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
+            await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
             var entity = Shared.Get<Currency>("Currency_EUR");

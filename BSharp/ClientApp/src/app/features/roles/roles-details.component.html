@@ -92,8 +92,8 @@
         <b-restricted [metadata]="model?.EntityMetadata?.Permissions"
           [class.p-4]="model?.EntityMetadata?.Permissions === 1">
           <b-table [dataSource]="model?.Permissions" [isEdit]="isEdit"
-            [columnPaths]="['ViewId', 'Action', 'Criteria', 'Mask', 'Memo']" [columnTemplates]="{
-              'ViewId' : { headerTemplate : header_ViewId, rowTemplate : row_ViewId, weight : 1 },
+            [columnPaths]="['View', 'Action', 'Criteria', 'Mask', 'Memo']" [columnTemplates]="{
+              'View' : { headerTemplate : header_View, rowTemplate : row_View, weight : 1 },
               'Action' : { headerTemplate : header_Action, rowTemplate : row_Action, weight : 1 },
               'Criteria' : { headerTemplate : header_Criteria, rowTemplate : row_Criteria, weight : 1 },
               'Mask' : { headerTemplate : header_Mask, rowTemplate : row_Mask, weight : 1 },
@@ -102,13 +102,13 @@
           </b-table>
         </b-restricted>
         <!-- View -->
-        <ng-template #header_ViewId>{{ 'Permission_View' | translate }}</ng-template>
-        <ng-template #row_ViewId let-item="item" let-index="originalIndex" let-update="update">
-          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.ViewId">
+        <ng-template #header_View>{{ 'Permission_View' | translate }}</ng-template>
+        <ng-template #row_View let-item="item" let-index="originalIndex" let-update="update">
+          <b-form-group class="b-form-group" [serverErrors]="item.serverErrors?.View">
             <div *ngIf="!isEdit">
-              {{ permissionViewLookup(item.ViewId) }}
+              {{ permissionViewLookup(item.View) }}
             </div>
-            <b-selector *ngIf="isEdit" [choices]="permissionViewChoices" [(ngModel)]="item.ViewId" [required]="!item.PH"
+            <b-selector *ngIf="isEdit" [choices]="permissionViewChoices" [(ngModel)]="item.View" [required]="!item.PH"
               (ngModelChange)="update.call(null, item); onPermissionChanged(item);"></b-selector>
           </b-form-group>
         </ng-template>
@@ -120,7 +120,7 @@
             <div *ngIf="!isEdit">{{ permissionActionLookup(item?.Action) | translate }}</div>
             <b-selector *ngIf="isEdit" [(ngModel)]="item.Action" [required]="!item.PH"
               (ngModelChange)="update.call(null, item); onPermissionChanged(item);" [ngModelOptions]="{ updateOn: 'blur' }"
-              [choices]="permissionActionChoices(item)" [disabled]="!item.ViewId"></b-selector>
+              [choices]="permissionActionChoices(item)" [disabled]="!item.View"></b-selector>
           </b-form-group>
         </ng-template>
 

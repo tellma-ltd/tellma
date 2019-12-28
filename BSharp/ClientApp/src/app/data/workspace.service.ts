@@ -340,35 +340,35 @@ export class TenantWorkspace {
     return null;
   }
 
-  public canRead(viewId: string) {
-    if (!viewId) {
+  public canRead(view: string) {
+    if (!view) {
       return false;
     }
 
-    if (viewId === 'all') {
+    if (view === 'all') {
       return true;
     }
 
-    const viewPerms = this.permissions[viewId];
+    const viewPerms = this.permissions[view];
     const allPerms = this.permissions.all;
     return (!!viewPerms || !!allPerms);
   }
 
-  public canCreate(viewId: string) {
-    return this.canDo(viewId, 'Update', null);
+  public canCreate(view: string) {
+    return this.canDo(view, 'Update', null);
   }
 
-  public canUpdate(viewId: string, createdById: string | number) {
-    return this.canDo(viewId, 'Update', createdById);
+  public canUpdate(view: string, createdById: string | number) {
+    return this.canDo(view, 'Update', createdById);
   }
 
-  public canDo(viewId: string, action: Action, createdById: string | number) {
+  public canDo(view: string, action: Action, createdById: string | number) {
 
-    if (!viewId) {
+    if (!view) {
       return false;
     }
 
-    const viewPerms = this.permissions[viewId];
+    const viewPerms = this.permissions[view];
     const allPerms = this.permissions.all;
     // const userId = this.userSettings.UserId;
     // (userId === createdById) ||

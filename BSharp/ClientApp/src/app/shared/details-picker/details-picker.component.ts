@@ -564,8 +564,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   private hasCreatePermissions = (definitionId: string): boolean => {
     // This returns false if the API is definitioned, but definitionId was not supplied
-    const viewId = this.apiEndpoint(definitionId);
-    return this.workspace.current.canCreate(viewId);
+    const view = this.apiEndpoint(definitionId);
+    return this.workspace.current.canCreate(view);
   }
 
   private get canCreateNewInner(): boolean {
@@ -732,8 +732,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   }
 
   public canUpdatePermissions = (definitionId: string): boolean => {
-    const viewId = this.apiEndpoint(definitionId);
-    return this.workspace.current.canUpdate(viewId, null);
+    const view = this.apiEndpoint(definitionId);
+    return this.workspace.current.canUpdate(view, null);
   }
 
   public canCreateFromOptions = (definitionId: string): boolean => {

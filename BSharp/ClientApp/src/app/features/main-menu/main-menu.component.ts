@@ -10,7 +10,7 @@ import { SettingsForClient } from '~/app/data/dto/settings-for-client';
 import { PermissionsForClient } from '~/app/data/dto/permissions-for-client';
 
 interface MenuSectionInfo { label?: string; background: string; items: MenuItemInfo[]; }
-interface MenuItemInfo { icon: string; label: string; link: string; viewId?: string; sortKey: number; }
+interface MenuItemInfo { icon: string; label: string; link: string; view?: string; sortKey: number; }
 
 @Component({
   selector: 'b-main-menu',
@@ -40,11 +40,11 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // TODO: replace below with a dynamically constructed mainMenu
   quickAccess: MenuItemInfo[] = [
-    { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', viewId: 'measurement-units', sortKey: 10 },
-    // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 20 },
-    { label: 'Users', icon: 'users', link: '../users', viewId: 'users', sortKey: 40 },
-    { label: 'Roles', icon: 'tasks', link: '../roles', viewId: 'roles', sortKey: 50 },
-    { label: 'Settings', icon: 'cog', link: '../settings', viewId: 'settings', sortKey: 60 },
+    { label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units', view: 'measurement-units', sortKey: 10 },
+    // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', view: 'ifrs-notes', sortKey: 20 },
+    { label: 'Users', icon: 'users', link: '../users', view: 'users', sortKey: 40 },
+    { label: 'Roles', icon: 'tasks', link: '../roles', view: 'roles', sortKey: 50 },
+    { label: 'Settings', icon: 'cog', link: '../settings', view: 'settings', sortKey: 60 },
   ];
 
   mainMenuBase: { [section: string]: MenuSectionInfo } = {
@@ -53,24 +53,24 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       items: [
         {
           label: 'Accounts', icon: 'coins', link: '../accounts',
-          viewId: 'accounts', sortKey: 100
+          view: 'accounts', sortKey: 100
         },
         {
           label: 'AccountClassifications', icon: 'sitemap', link: '../account-classifications',
-          viewId: 'account-classifications', sortKey: 200
+          view: 'account-classifications', sortKey: 200
         },
-        // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', viewId: 'ifrs-notes', sortKey: 100 },
+        // { label: 'IfrsNotes', icon: 'clipboard', link: '../ifrs-notes', view: 'ifrs-notes', sortKey: 100 },
         {
           label: 'AccountTypes', icon: 'list', link: '../account-types',
-          viewId: 'account-types', sortKey: 300
+          view: 'account-types', sortKey: 300
         },
         {
           label: 'Currencies', icon: 'euro-sign', link: '../currencies',
-          viewId: 'currencies', sortKey: 400
+          view: 'currencies', sortKey: 400
         },
         {
           label: 'ResponsibilityCenters', icon: 'sitemap', link: '../responsibility-centers',
-          viewId: 'responsibility-centers', sortKey: 600
+          view: 'responsibility-centers', sortKey: 600
         },
       ]
     },
@@ -79,31 +79,31 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       items: [
         {
           label: 'Users', icon: 'users', link: '../users',
-          viewId: 'users', sortKey: 100
+          view: 'users', sortKey: 100
         },
         {
           label: 'Roles', icon: 'tasks', link: '../roles',
-          viewId: 'roles', sortKey: 200
+          view: 'roles', sortKey: 200
         },
         {
           label: 'MeasurementUnits', icon: 'ruler-combined', link: '../measurement-units',
-          viewId: 'measurement-units', sortKey: 300
+          view: 'measurement-units', sortKey: 300
         },
         {
           label: 'Settings', icon: 'cog', link: '../settings',
-          viewId: 'settings', sortKey: 400
+          view: 'settings', sortKey: 400
         },
         {
           label: 'ReportDefinitions', icon: 'tools', link: '../report-definitions',
-          viewId: 'report-definitions', sortKey: 500
+          view: 'report-definitions', sortKey: 500
         },
         {
           label: 'ResourceClassifications', icon: 'sitemap', link: '../resource-classifications',
-          viewId: 'resource-classifications', sortKey: 600
+          view: 'resource-classifications', sortKey: 600
         },
         {
           label: 'EntryClassifications', icon: 'sitemap', link: '../entry-classifications',
-          viewId: 'entry-classifications', sortKey: 700
+          view: 'entry-classifications', sortKey: 700
         },
       ]
     },
@@ -514,7 +514,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   showItem(item: MenuItemInfo): boolean {
     const term = this.search;
-    return (!item.viewId || this.canView(item.viewId)) &&
+    return (!item.view || this.canView(item.view)) &&
       (!term || this.translate.instant(item.label).toLowerCase().indexOf(term.toLowerCase()) !== -1);
   }
 
@@ -532,7 +532,7 @@ export class MainMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.mainMenu.every(section => !this.showSection(section.items));
   }
 
-  public canView(viewId: string) {
-    return this.workspace.current.canRead(viewId);
+  public canView(view: string) {
+    return this.workspace.current.canRead(view);
   }
 }

@@ -22,7 +22,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public readonly string _definitionId = "colors";
         public readonly string _baseAddress = "lookups";
 
-        public string ViewId => $"{_baseAddress}/{_definitionId}"; // For permissions
+        public string View => $"{_baseAddress}/{_definitionId}"; // For permissions
         public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific lookup definition
 
 
@@ -41,7 +41,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting all lookups before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id lt 100000");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
 
             // Call the API
             var response = await Client.GetAsync(Url);
@@ -197,7 +197,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "08 Deleting an existing lookup Id returns a 200 OK")]
         public async Task Test08()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<Lookup>("Lookup_Blue");
@@ -231,7 +231,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deactivating an active lookup returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
+            await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
             var entity = Shared.Get<Lookup>("Lookup_Red");

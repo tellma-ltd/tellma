@@ -37,11 +37,11 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   @Input()
   public showIsPublic = true;
 
-  private _permissionActionChoices: { [viewId: string]: SelectorChoice[] } = {};
-  private _viewsDb: { [viewId: string]: ConcreteViewInfo } = null;
+  private _permissionActionChoices: { [view: string]: SelectorChoice[] } = {};
+  private _viewsDb: { [view: string]: ConcreteViewInfo } = null;
   private _currentLang: string;
   private _currentDefinition: DefinitionsForClient;
-  private _currentViewsDb: { [viewId: string]: ConcreteViewInfo } = null;
+  private _currentViewsDb: { [view: string]: ConcreteViewInfo } = null;
   private _viewsForSelector: SelectorChoice[] = null;
   private rolesApi = this.api.rolesApi(this.notifyDestruct$); // for intellisense
 
@@ -95,22 +95,22 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   permissionActionChoices(item: Permission): SelectorChoice[] {
-    if (!item.ViewId) {
+    if (!item.View) {
       return [];
     }
 
     // Returns the permission actions only permitted by the specified view
-    if (!this._permissionActionChoices[item.ViewId]) {
-      const view = this.viewsDb[item.ViewId];
+    if (!this._permissionActionChoices[item.View]) {
+      const view = this.viewsDb[item.View];
       if (!!view && !!view.actions) {
-        this._permissionActionChoices[item.ViewId] =
+        this._permissionActionChoices[item.View] =
           Object.keys(view.actions).map(e => ({ name: () => this.translate.instant(ACTIONS[e]), value: e }));
       } else {
-        this._permissionActionChoices[item.ViewId] = [];
+        this._permissionActionChoices[item.View] = [];
       }
     }
 
-    return this._permissionActionChoices[item.ViewId];
+    return this._permissionActionChoices[item.View];
   }
 
   public permissionActionLookup(value: string): string {
@@ -126,10 +126,10 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   public disableCriteria(item: Permission): boolean {
-    if (!item || !item.ViewId || !item.Action) {
+    if (!item || !item.View || !item.Action) {
       return true;
     }
-    const view = this.viewsDb[item.ViewId];
+    const view = this.viewsDb[item.View];
     if (!!view && !!view.actions) {
       const viewAction = view.actions[item.Action];
       return !(viewAction && viewAction.supportsCriteria);
@@ -139,10 +139,10 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   }
 
   public disableMask(item: Permission): boolean {
-    if (!item || !item.ViewId || !item.Action) {
+    if (!item || !item.View || !item.Action) {
       return true;
     }
-    const view = this.viewsDb[item.ViewId];
+    const view = this.viewsDb[item.View];
     if (!!view && !!view.actions) {
       const viewAction = view.actions[item.Action];
       return !(viewAction && viewAction.supportsMask);
@@ -226,39 +226,39 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   //     (this.translate.instant(this.ws.get('View', id).ResourceName)) :
   //     this.ws.getMultilingualValue('View', id, 'Name')
 
-  get viewsDb(): { [viewId: string]: ConcreteViewInfo } {
+  get viewsDb(): { [view: string]: ConcreteViewInfo } {
 
     if (this._currentLang !== this.translate.currentLang || this._currentDefinition !== this.ws.definitions) {
       this._currentLang = this.translate.currentLang;
       this._currentDefinition = this.ws.definitions;
 
       this._viewsDb = {};
-      for (const viewId of Object.keys(VIEWS_BUILT_IN)) {
-        const view = VIEWS_BUILT_IN[viewId];
+      for (const view of Object.keys(VIEWS_BUILT_IN)) {
+        const viewInfo = VIEWS_BUILT_IN[view];
         const concreteView: ConcreteViewInfo = {
-          name: () => this.translate.instant(view.name),
+          name: () => this.translate.instant(viewInfo.name),
           actions: {}
         };
 
         concreteView.actions.All = { supportsCriteria: false, supportsMask: false };
 
-        if (view.read) {
+        if (viewInfo.read) {
           concreteView.actions.Read = { supportsCriteria: true, supportsMask: true };
         }
 
-        if (view.update) {
+        if (viewInfo.update) {
           concreteView.actions.Update = { supportsCriteria: true, supportsMask: true };
         }
 
-        if (view.delete) {
+        if (viewInfo.delete) {
           concreteView.actions.Delete = { supportsCriteria: true, supportsMask: false };
         }
 
-        for (const action of view.actions) {
+        for (const action of viewInfo.actions) {
           concreteView.actions[action.action] = { supportsCriteria: action.criteria, supportsMask: false };
         }
 
-        this._viewsDb[viewId] = concreteView;
+        this._viewsDb[view] = concreteView;
       }
 
       const lookups = this.ws.definitions.Lookups;
@@ -353,7 +353,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
     return this._viewsForSelector;
   }
 
-  permissionViewLookup(viewId: string): string {
-    return this.viewsDb[viewId].name();
+  permissionViewLookup(view: string): string {
+    return this.viewsDb[view].name();
   }
 }

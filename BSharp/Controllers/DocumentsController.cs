@@ -45,7 +45,7 @@ namespace BSharp.Controllers
         private DocumentDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Documents?
             .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
 
-        private string ViewId => $"{BASE_ADDRESS}{DefinitionId}";
+        private string View => $"{BASE_ADDRESS}{DefinitionId}";
 
         public DocumentsController(ILogger<DocumentsController> logger, IStringLocalizer<Strings> localizer,
             ApplicationRepository repo, ITenantIdAccessor tenantIdAccessor, IBlobService blobService,
@@ -153,7 +153,7 @@ namespace BSharp.Controllers
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return _repo.UserPermissions(action, ViewId);
+            return _repo.UserPermissions(action, View);
         }
 
         protected override Query<Document> GetAsQuery(List<DocumentForSave> entities)
@@ -376,9 +376,9 @@ namespace BSharp.Controllers
 
             // Massage the permissions by adding definitionId = definitionId as an extra clause 
             // (since the controller will not filter the results per any specific definition Id)
-            foreach (var permission in permissions.Where(e => e.ViewId != "all"))
+            foreach (var permission in permissions.Where(e => e.View != "all"))
             {
-                string definitionId = permission.ViewId.Remove(0, prefix.Length).Replace("'", "''");
+                string definitionId = permission.View.Remove(0, prefix.Length).Replace("'", "''");
                 string definitionPredicate = $"{nameof(Document.DefinitionId)} {Ops.eq} '{definitionId}'";
                 if (!string.IsNullOrWhiteSpace(permission.Criteria))
                 {
