@@ -14,7 +14,7 @@ BEGIN
 	(N'it-equipment-manufacturers', N'IT Manufacturers',	N'IT Manufacturer'),
 	(N'operating-systems',			N'Operating Systems',	N'Operating System');
 	END
-IF @DB = N'103' -- Lifan Cars, SAR, en/ar/cn
+IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
 BEGIN
 	PRINT N'BSharp.' + @DB;
 	INSERT INTO dbo.LookupDefinitions

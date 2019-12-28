@@ -1,7 +1,7 @@
 ﻿/*
 '101' -- Banan SD, USD, en
 '102' -- Banan ET, ETB, en
-'103' -- Lifan Cars, SAR, en/ar/cn
+'103' -- Lifan Cars, SAR, en/ar/zh
 '104' -- Walia Steel, ETB, en/am
 */
 INSERT INTO dbo.Lookups

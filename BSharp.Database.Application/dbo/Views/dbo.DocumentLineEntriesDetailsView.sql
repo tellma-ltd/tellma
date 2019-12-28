@@ -27,8 +27,8 @@ AS
 		E.[AgentId],
 		E.[ResourceId],
 		E.[ResponsibilityCenterId],
-		E.[AccountIdentifier],
-		E.[ResourceIdentifier],
+		--E.[AccountIdentifier],
+		--E.[ResourceIdentifier],
 		E.[DueDate],		
 		E.[EntryClassificationId],
 		E.[MonetaryValue], -- normalization is already done in the Value and stored in the entry

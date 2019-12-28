@@ -11,7 +11,7 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheId0WasNotFound',
-		CAST([Id] As NVARCHAR (255))
+		CAST([Id] As NVARCHAR (255)) AS [Id]
     FROM @Entities
     WHERE Id <> 0 AND Id NOT IN (SELECT Id from [dbo].[Accounts])
 
@@ -255,15 +255,15 @@ SET NOCOUNT ON;
 
 -- Setting the responsibility center for smart accounts to given one (whether it was null or null)
 	-- is not allowed if the account has been used already in an line but with different responsibility center
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3], [Argument4])
+	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1], [Argument2], [Argument3])
 	SELECT TOP (@Top)
 		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheAccount0IsUsedIn12LineDefinition3WithIdentifier4',
 		[dbo].[fn_Localize](A.[Name], A.[Name2], A.[Name3]) AS Account,
 		[dbo].[fn_Localize](DD.[TitleSingular], DD.[TitleSingular2], DD.[TitleSingular3]) AS DocumentDefinition,
 		[bll].[fn_Prefix_CodeWidth_SN__Code](DD.[Prefix], DD.[CodeWidth], D.[SerialNumber]) AS [S/N],
-		L.DefinitionId,
-		E.[AccountIdentifier]
+		L.DefinitionId
+		--,	E.[AccountIdentifier]
 	FROM @Entities FE
 	JOIN dbo.Accounts A ON FE.[Id] = A.[Id]
 	JOIN [dbo].[Entries] E ON E.AccountId = FE.[Id]
@@ -273,8 +273,8 @@ SET NOCOUNT ON;
 	--WHERE L.[State] IN (N'Requested', N'Authorized', N'Completed', N'Reviewed')
 	-- TODO: make sure when revoking a negative signature that we dont end up with anomalies
 	WHERE L.[State] >= 0
-	AND FE.[Identifier] IS NOT NULL
-	AND E.[AccountIdentifier] IS NOT NULL
-	AND FE.[Identifier] <> E.[AccountIdentifier]
+	--AND FE.[Identifier] IS NOT NULL
+	--AND E.[AccountIdentifier] IS NOT NULL
+	--AND FE.[Identifier] <> E.[AccountIdentifier]
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

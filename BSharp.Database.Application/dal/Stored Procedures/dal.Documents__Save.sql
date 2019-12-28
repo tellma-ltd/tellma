@@ -121,7 +121,7 @@ BEGIN
 		SELECT
 			E.[Index], E.[Id], LI.Id AS [LineId], E.[EntryNumber], E.[Direction], E.[AccountId],
 			E.[IsCurrent],
-			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId], E.[AccountIdentifier], E.[ResourceIdentifier],
+			E.[AgentId], E.[ResourceId], E.[ResponsibilityCenterId],-- E.[AccountIdentifier], E.[ResourceIdentifier],
 			E.[CurrencyId], E.[EntryClassificationId], --[BatchCode], 
 			E.[DueDate], E.[MonetaryValue], E.[Count], E.[Mass], E.[Volume], E.[Time], E.[Value],
 			E.[ExternalReference], E.[AdditionalReference], E.[RelatedAgentId], E.[RelatedAgentName], E.[RelatedAmount],
@@ -138,8 +138,8 @@ BEGIN
 			t.[AgentId]					= s.[AgentId],
 			t.[ResourceId]				= s.[ResourceId],
 			t.[ResponsibilityCenterId]	= s.[ResponsibilityCenterId],
-			t.[AccountIdentifier]		= s.[AccountIdentifier],
-			t.[ResourceIdentifier]		= s.[ResourceIdentifier],
+			--t.[AccountIdentifier]		= s.[AccountIdentifier],
+			--t.[ResourceIdentifier]		= s.[ResourceIdentifier],
 			t.[CurrencyId]				= s.[CurrencyId],
 			t.[EntryClassificationId]	= s.[EntryClassificationId],
 			t.[DueDate]					= s.[DueDate],
@@ -161,14 +161,14 @@ BEGIN
 			t.[ModifiedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([LineId], [EntryNumber], [Direction], [AccountId],[IsCurrent],
-			[AgentId], [ResourceId], [ResponsibilityCenterId], [AccountIdentifier], [ResourceIdentifier],
+			[AgentId], [ResourceId], [ResponsibilityCenterId], --[AccountIdentifier], [ResourceIdentifier],
 			[CurrencyId], [EntryClassificationId], --[BatchCode], 
 			[DueDate], [MonetaryValue], [Count], [Mass], [Volume], [Time], [Value],
 			[ExternalReference], [AdditionalReference], [RelatedAgentId], [RelatedAgentName], [RelatedAmount],
 			[RelatedDate], [Time1], [Time2]
 		)
 		VALUES (s.[LineId], s.[EntryNumber], s.[Direction], s.[AccountId], s.[IsCurrent],
-			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId], s.[AccountIdentifier], s.[ResourceIdentifier],
+			s.[AgentId], s.[ResourceId], s.[ResponsibilityCenterId],-- s.[AccountIdentifier], s.[ResourceIdentifier],
 			s.[CurrencyId], s.[EntryClassificationId], --[BatchCode], 
 			s.[DueDate], s.[MonetaryValue], s.[Count], s.[Mass], s.[Volume], s.[Time], s.[Value],
 			s.[ExternalReference], s.[AdditionalReference], s.[RelatedAgentId], s.[RelatedAgentName], s.[RelatedAmount],

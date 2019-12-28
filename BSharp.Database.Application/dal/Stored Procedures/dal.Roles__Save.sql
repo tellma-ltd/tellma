@@ -17,7 +17,6 @@ BEGIN
 			SELECT [UserId] AS [Id] FROM @Members
 		) AS X;
 
-
 	INSERT INTO @IndexedIds([Index], [Id])
 	SELECT x.[Index], x.[Id]
 	FROM
@@ -46,7 +45,6 @@ BEGIN
 			)
 			OUTPUT s.[Index], INSERTED.[Id] 
 	) As x;
-
 
 	-- Members
 	WITH BE AS (

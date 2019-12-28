@@ -27,11 +27,11 @@
 	[AgentId]					INT				REFERENCES dbo.Agents([Id]),
 	-- Resource Id is Required in Entries only if we have resource classification in the account
 	[ResourceId]				INT				CONSTRAINT [FK_Entries__ResourceId] REFERENCES dbo.Resources([Id]),
-	-- Leaving it null means it appears in the shared Operating segment financial statements.
+	-- required when the resource classification is anything but Cash
 	[ResponsibilityCenterId]	INT				REFERENCES dbo.ResponsibilityCenters([Id]),
-	[AccountIdentifier]			NVARCHAR (10)	CONSTRAINT [FK_Entriess__AccountIdentifier] REFERENCES dbo.AccountIdentifiers([Id]), -- to resolve Uniqueness Constraint
+	--[AccountIdentifier]			NVARCHAR (10)	CONSTRAINT [FK_Entries__AccountIdentifier] REFERENCES dbo.AccountIdentifiers([Id]), -- to resolve Uniqueness Constraint
 	
-	[ResourceIdentifier]		NVARCHAR (10),
+	--[ResourceIdentifier]		NVARCHAR (10),
 	-- When resource is specified, and it has currency, it takes the resource currency. Otherwise, the user must specify it
 	[CurrencyId]				NCHAR (3)		NOT NULL REFERENCES dbo.Currencies([Id]),
 	-- Entry Classification is required only if the pair (ResourceClassification, EntryClassification) is enforced

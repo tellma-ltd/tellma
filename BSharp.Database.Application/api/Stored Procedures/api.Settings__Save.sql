@@ -1,6 +1,8 @@
 ﻿CREATE PROCEDURE [api].[Settings__Save]
 	@ShortCompanyName NVARCHAR(255),
 	@PrimaryLanguageId NVARCHAR(255),
+	@SecondaryLanguageId NVARCHAR(255),
+	@TernaryLanguageId NVARCHAR(255),
 	@DefinitionsVersion UNIQUEIDENTIFIER,
 	@SettingsVersion UNIQUEIDENTIFIER,
 	@FunctionalCurrencyId NCHAR(3),
@@ -12,11 +14,13 @@ SET NOCOUNT ON;
 -- Validate
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Settings_Validate__Save]
-		@ShortCompanyName,
-		@PrimaryLanguageId,
-		@DefinitionsVersion,
-		@SettingsVersion,
-		@FunctionalCurrencyId;
+		@ShortCompanyName = @ShortCompanyName,
+		@PrimaryLanguageId = @PrimaryLanguageId,
+		@SecondaryLanguageId = @SecondaryLanguageId,
+		@TernaryLanguageId = @TernaryLanguageId,
+		@DefinitionsVersion = @DefinitionsVersion,
+		@SettingsVersion = @SettingsVersion,
+		@FunctionalCurrencyId = @FunctionalCurrencyId;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -29,9 +33,11 @@ SET NOCOUNT ON;
 		RETURN;
 	
 	EXEC [dal].[Settings__Save]
-		@ShortCompanyName,
-		@PrimaryLanguageId,
-		@DefinitionsVersion,
-		@SettingsVersion,
-		@FunctionalCurrencyId;
+		@ShortCompanyName = @ShortCompanyName,
+		@PrimaryLanguageId = @PrimaryLanguageId,
+		@SecondaryLanguageId = @SecondaryLanguageId,
+		@TernaryLanguageId = @TernaryLanguageId,
+		@DefinitionsVersion = @DefinitionsVersion,
+		@SettingsVersion = @SettingsVersion,
+		@FunctionalCurrencyId = @FunctionalCurrencyId;
 END;

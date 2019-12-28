@@ -91,6 +91,8 @@
     <Folder Include="Samples\05_Accounts" />
     <Folder Include="Samples\06_Entries" />
     <Folder Include="Samples\01_Basic" />
+    <Folder Include="Provisioning\00_Common" />
+    <Folder Include="Provisioning\01_Security" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\dbo.Documents.sql" />
@@ -122,8 +124,6 @@
     <Build Include="dbo\User Defined Types\dbo.ResourceList.sql" />
     <Build Include="dbo\User Defined Types\dbo.DocumentList.sql" />
     <Build Include="dbo\User Defined Types\dbo.WideLineList.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.api_Operation__SetOperatingSegment.sql" />
-    <Build Include="dbo\Stored Procedures\dbo.dal_Operation__SetOperatingSegment.sql" />
     <Build Include="dbo\Functions\dbo.fe_Responsibility__FirstSibling.sql" />
     <Build Include="dbo\User Defined Types\dbo.VType.sql" />
     <None Include="Tests\00_TestMain.sql" />
@@ -137,8 +137,6 @@
     <None Include="Tests\60_SalesCycle.sql" />
     <None Include="Tests\21_Financing.sql" />
     <None Include="Tests\TestingToBeCleaned.sql" />
-    <None Include="Provisioning\z_IfrsAccountClassifications.sql" />
-    <None Include="Provisioning\y_IfrsEntryClassifications.sql" />
     <PostDeploy Include="Provisioning\__Main.sql" />
     <Build Include="Security\bll.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitions.sql" />
@@ -467,29 +465,31 @@
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Open.sql" />
     <Build Include="dbo\Functions\dbo.fn_ECCode__Id.sql" />
     <Build Include="api\Stored Procedures\api.Documents__Sign.sql" />
-    <None Include="Provisioning\zz_DELETE_LineDefinitionEntries.sql" />
-    <None Include="Provisioning\a_AdminUser.sql" />
-    <None Include="Provisioning\b_ResourceDefinitions.sql" />
-    <None Include="Provisioning\c_ResourceClassifications.sql" />
-    <None Include="Provisioning\f_FunctionalCurrency.sql" />
-    <None Include="Provisioning\i_Settings.sql" />
-    <None Include="Provisioning\g_ContractTypes.sql" />
-    <None Include="Provisioning\h_AgentDefinitions.sql" />
-    <None Include="Provisioning\d_EntryClassifications.sql" />
-    <None Include="Provisioning\e_ResourceClassificationsEntryClassifications.sql" />
-    <None Include="Provisioning\j_AccountTypes.sql" />
     <Build Include="Mapping\DocumentSignatures.sql" />
     <Build Include="dbo\Tables\dbo.LineDefinitionsStatesReasons.sql" />
     <Build Include="api\Stored Procedures\api.Document_Comment__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.Document_Validate__Comment_Save.sql" />
     <Build Include="dal\Stored Procedures\dal.Document_Comment__Save.sql" />
     <Build Include="Mapping\DocumentAssignmentsHistory.sql" />
-    <Build Include="bll\Stored Procedures\bll.Accounts__Preprocess.sql" />
+    <None Include="Provisioning\00_Common\a_AdminUser.sql" />
+    <None Include="Provisioning\00_Common\b_ResourceDefinitions.sql" />
+    <None Include="Provisioning\00_Common\c_ResourceClassifications.sql" />
+    <None Include="Provisioning\00_Common\d_EntryClassifications.sql" />
+    <None Include="Provisioning\00_Common\e_ResourceClassificationsEntryClassifications.sql" />
+    <None Include="Provisioning\00_Common\f_FunctionalCurrency.sql" />
+    <None Include="Provisioning\00_Common\g_ContractTypes.sql" />
+    <None Include="Provisioning\00_Common\h_AgentDefinitions.sql" />
+    <None Include="Provisioning\00_Common\i_Settings.sql" />
+    <None Include="Provisioning\00_Common\j_AccountTypes.sql" />
+    <None Include="Provisioning\00_Common\w_IfrsConcepts.sql" />
+    <None Include="Provisioning\00_Common\x_IfrsDisclosures.sql" />
+    <None Include="Provisioning\00_Common\y_IfrsEntryClassifications.sql" />
+    <None Include="Provisioning\00_Common\z_IfrsAccountClassifications.sql" />
+    <None Include="Provisioning\00_Common\zz_DELETE_LineDefinitionEntries.sql" />
+    <Build Include="dbo\Functions\dbo.fn_LanguageId__Symbol.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
-    <None Include="Provisioning\w_IfrsConcepts.sql" />
-    <None Include="Provisioning\x_IfrsDisclosures.sql" />
     <None Include="Tests\72_ResourceClassifications.sql" />
     <None Include="Dev.publish.xml" />
     <None Include="Tests\12_Purchasing.sql" />
@@ -512,6 +512,9 @@
     <None Include="104.WaliaSteel.publish.xml" />
     <None Include="Tests\101.BananIT.publish.xml" />
     <None Include="102.BananET.publish.xml" />
+    <None Include="Provisioning\00_Common\__Declarations.sql" />
+    <None Include="Provisioning\01_Security\b_RolesMemberships.sql" />
+    <None Include="Provisioning\01_Security\a_Users.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
@@ -526,9 +529,17 @@
       <DefaultValue>en</DefaultValue>
       <Value>$(SqlCmdVar__3)</Value>
     </SqlCmdVariable>
+    <SqlCmdVariable Include="SecondaryLanguageId">
+      <DefaultValue>ar</DefaultValue>
+      <Value>$(SqlCmdVar__5)</Value>
+    </SqlCmdVariable>
     <SqlCmdVariable Include="ShortCompanyName">
       <DefaultValue>ACME International</DefaultValue>
       <Value>$(SqlCmdVar__2)</Value>
+    </SqlCmdVariable>
+    <SqlCmdVariable Include="TernaryLanguageId">
+      <DefaultValue>zh</DefaultValue>
+      <Value>$(SqlCmdVar__6)</Value>
     </SqlCmdVariable>
   </ItemGroup>
   <ItemGroup>
