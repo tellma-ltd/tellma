@@ -22,7 +22,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public readonly string _baseAddress = "resources";
         public readonly string _definitionId = "currencies";
 
-        public string ViewId => $"{_baseAddress}/{_definitionId}"; // For permissions
+        public string View => $"{_baseAddress}/{_definitionId}"; // For permissions
         public string GenericlUrl => $"/api/{_baseAddress}"; // For querying generic resources
         public string Url => $"/api/{_baseAddress}/{_definitionId}"; // For querying and updating specific resource definition
 
@@ -54,7 +54,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "03 Getting resources of a specific type before creating any returns a 200 OK empty collection")]
         public async Task Test03()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id gt -1");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id gt -1");
 
             // Call the API
             var response = await Client.GetAsync(Url);
@@ -230,7 +230,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deleting an existing resource Id returns a 200 OK")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<Resource>("Resource_HR1000x0.9");
@@ -264,7 +264,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "12 Deactivating an active resource returns a 200 OK inactive entity")]
         public async Task Test12()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
+            await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
             var entity = Shared.Get<Resource>("Resource_HR1000x0.8");

@@ -22,7 +22,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public readonly string _baseAddress = "entry-classifications";
 
         public string Url => $"/api/{_baseAddress}"; // For querying and updating specific entry definition
-        public string ViewId => _baseAddress; // For permissions
+        public string View => _baseAddress; // For permissions
 
 
         [Fact(DisplayName = "01 Getting all entry classifications before granting permissions returns a 403 Forbidden response")]
@@ -40,7 +40,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting all entry classifications before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id lt 100000");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
 
             // Call the API
             var response = await Client.GetAsync(Url);
@@ -215,7 +215,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "08 Deleting an existing entry classification Id returns a 200 OK")]
         public async Task Test08()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<EntryClassification>("EntryClassification_HS");
@@ -248,7 +248,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deactivating an active entry classification returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
+            await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
             var entity = Shared.Get<EntryClassification>("EntryClassification_SM");

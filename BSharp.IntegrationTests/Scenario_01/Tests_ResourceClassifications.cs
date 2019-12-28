@@ -22,7 +22,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public readonly string _baseAddress = "resource-classifications";
 
         public string Url => $"/api/{_baseAddress}"; // For querying and updating specific resource definition
-        public string ViewId => _baseAddress; // For permissions
+        public string View => _baseAddress; // For permissions
 
         private string _definitionId = "currencies";
 
@@ -42,7 +42,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting all resource classifications before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id lt 100000");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id lt 100000");
 
             // Call the API
             var response = await Client.GetAsync(Url);
@@ -213,7 +213,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "08 Deleting an existing resource classification Id returns a 200 OK")]
         public async Task Test08()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<ResourceClassification>("ResourceClassification_HS");
@@ -246,7 +246,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deactivating an active resource classification returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, "IsActive", null);
+            await GrantPermissionToSecurityAdministrator(View, "IsActive", null);
 
             // Get the Id
             var entity = Shared.Get<ResourceClassification>("ResourceClassification_SM");

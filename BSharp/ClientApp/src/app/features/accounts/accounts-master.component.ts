@@ -27,7 +27,7 @@ export class AccountsMasterComponent extends MasterBaseComponent {
     this.accountsApi = this.api.accountsApi(this.notifyDestruct$);
   }
 
-  private get viewId(): string {
+  private get view(): string {
     return `accounts`;
   }
 
@@ -59,7 +59,7 @@ export class AccountsMasterComponent extends MasterBaseComponent {
     return obs$;
   }
 
-  public canActivateDeprecateItem = (_: (number | string)[]) => this.ws.canDo(this.viewId, 'IsDeprecated', null);
+  public canActivateDeprecateItem = (_: (number | string)[]) => this.ws.canDo(this.view, 'IsDeprecated', null);
 
   public activateDeprecateTooltip = (ids: (number | string)[]) => this.canActivateDeprecateItem(ids) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

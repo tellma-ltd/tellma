@@ -15,7 +15,7 @@ namespace BSharp.Entities
         [Required(ErrorMessage = nameof(RequiredAttribute))]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
-        public string ViewId { get; set; }
+        public string View { get; set; }
 
         [Display(Name = "Permission_Action")]
         [Required(ErrorMessage = nameof(RequiredAttribute))]

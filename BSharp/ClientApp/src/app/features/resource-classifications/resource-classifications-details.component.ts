@@ -26,7 +26,7 @@ export class ResourceClassificationsDetailsComponent extends DetailsBaseComponen
     this.resourceClassificationsApi = this.api.resourceClassificationsApi(this.notifyDestruct$);
   }
 
-  get viewId(): string {
+  get view(): string {
     return `resource-classifications`;
   }
 
@@ -67,7 +67,7 @@ export class ResourceClassificationsDetailsComponent extends DetailsBaseComponen
   public showActivate = (model: ResourceClassification) => !!model && !model.IsActive;
   public showDeactivate = (model: ResourceClassification) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: ResourceClassification) => this.ws.canDo(this.viewId, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: ResourceClassification) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: ResourceClassification) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

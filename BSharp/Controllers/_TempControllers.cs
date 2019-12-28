@@ -15,7 +15,7 @@ namespace BSharp.Controllers
     {
         public static IEnumerable<AbstractPermission> UserPermissions(string view)
         {
-            yield return new AbstractPermission { Action = "All", ViewId = view, };
+            yield return new AbstractPermission { Action = "All", View = view, };
         }
     }
 

@@ -33,7 +33,7 @@ namespace BSharp.Controllers
         private LookupDefinitionForClient Definition() => _definitionsCache.GetCurrentDefinitionsIfCached()?.Data?.Lookups?
             .GetValueOrDefault(DefinitionId) ?? throw new InvalidOperationException($"Definition for '{DefinitionId}' was missing from the cache");
 
-        private string ViewId => $"{BASE_ADDRESS}{DefinitionId}";
+        private string View => $"{BASE_ADDRESS}{DefinitionId}";
 
         public LookupsController(
             ILogger<LookupsController> logger,
@@ -104,7 +104,7 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.UserPermissions(action, ViewId);
+            return await _repo.UserPermissions(action, View);
         }
 
         protected override IRepository GetRepository()

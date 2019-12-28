@@ -23,7 +23,7 @@ namespace BSharp.Controllers
         private readonly ILogger _logger;
         private readonly IStringLocalizer _localizer;
 
-        private string ViewId => BASE_ADDRESS;
+        private string View => BASE_ADDRESS;
 
         public ResourceClassificationsController(
             ILogger<ResourceClassificationsController> logger,
@@ -92,7 +92,7 @@ namespace BSharp.Controllers
 
         protected override async Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return await _repo.UserPermissions(action, ViewId);
+            return await _repo.UserPermissions(action, View);
         }
 
         protected override IRepository GetRepository()

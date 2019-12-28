@@ -55,7 +55,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
     });
   }
 
-  get viewId(): string {
+  get view(): string {
     return `resources/${this.definitionId}`;
   }
 
@@ -126,7 +126,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   public showActivate = (model: Resource) => !!model && !model.IsActive;
   public showDeactivate = (model: Resource) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: Resource) => this.ws.canDo(this.viewId, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Resource) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: Resource) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

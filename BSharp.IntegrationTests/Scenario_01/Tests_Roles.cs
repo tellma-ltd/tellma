@@ -70,12 +70,12 @@ namespace BSharp.IntegrationTests.Scenario_01
                 {
                     new PermissionForSave
                     {
-                        ViewId = "users",
+                        View = "users",
                         Action = "Read"
                     },
                     new PermissionForSave
                     {
-                        ViewId = "measurement-units",
+                        View = "measurement-units",
                         Action = "Update"
                     }
                 },
@@ -99,7 +99,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                 {
                     new PermissionForSave
                     {
-                        ViewId = "agents",
+                        View = "agents",
                         Action = "Update"
                     }
                 },
@@ -134,13 +134,13 @@ namespace BSharp.IntegrationTests.Scenario_01
                     p =>
                     {
                         Assert.Equal(dtoForSave.Permissions[0].Action, p.Action);
-                        Assert.Equal(dtoForSave.Permissions[0].ViewId, p.ViewId);
+                        Assert.Equal(dtoForSave.Permissions[0].View, p.View);
                         Assert.NotEqual(0, p.Id);
                     },
                     p =>
                     {
                         Assert.Equal(dtoForSave.Permissions[1].Action, p.Action);
-                        Assert.Equal(dtoForSave.Permissions[1].ViewId, p.ViewId);
+                        Assert.Equal(dtoForSave.Permissions[1].View, p.View);
                         Assert.NotEqual(0, p.Id);
                     }
                 );
@@ -164,7 +164,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                     p =>
                     {
                         Assert.Equal(dtoForSave2.Permissions[0].Action, p.Action);
-                        Assert.Equal(dtoForSave2.Permissions[0].ViewId, p.ViewId);
+                        Assert.Equal(dtoForSave2.Permissions[0].View, p.View);
                         Assert.NotEqual(0, p.Id);
                     }
                 );
@@ -200,13 +200,13 @@ namespace BSharp.IntegrationTests.Scenario_01
                     p =>
                     {
                         Assert.Equal(entity.Permissions[0].Action, p.Action);
-                        Assert.Equal(entity.Permissions[0].ViewId, p.ViewId);
+                        Assert.Equal(entity.Permissions[0].View, p.View);
                         Assert.NotEqual(0, p.Id);
                     },
                     p =>
                     {
                         Assert.Equal(entity.Permissions[1].Action, p.Action);
-                        Assert.Equal(entity.Permissions[1].ViewId, p.ViewId);
+                        Assert.Equal(entity.Permissions[1].View, p.View);
                         Assert.NotEqual(0, p.Id);
                     }
                 );
@@ -236,7 +236,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         //        {
         //            new PermissionForSave
         //            {
-        //                ViewId = "DoesntExist", // Doesn't exist
+        //                View = "DoesntExist", // Doesn't exist
         //                Action = "Read"
         //            }
         //        }
@@ -253,8 +253,8 @@ namespace BSharp.IntegrationTests.Scenario_01
         //    // Confirm that the result is a well-formed validation errors structure
         //    var errors = await response.Content.ReadAsAsync<ValidationErrors>();
 
-        //    // Assert that it contains a validation key pointing to the ViewId property of the permission line
-        //    string expectedKey = "[0].Permissions[0].ViewId";
+        //    // Assert that it contains a validation key pointing to the View property of the permission line
+        //    string expectedKey = "[0].Permissions[0].View";
         //    Assert.True(errors.ContainsKey(expectedKey), $"Expected error key '{expectedKey}' was not found");
 
         //    // Assert that it contains a useful error message in English
@@ -292,7 +292,7 @@ namespace BSharp.IntegrationTests.Scenario_01
                     p =>
                     {
                         Assert.Equal(dto.Permissions[0].Action, p.Action);
-                        Assert.Equal(dto.Permissions[0].ViewId, p.ViewId);
+                        Assert.Equal(dto.Permissions[0].View, p.View);
                     }
                 );
 

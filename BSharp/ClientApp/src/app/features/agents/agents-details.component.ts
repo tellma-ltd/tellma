@@ -70,7 +70,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
     });
   }
 
-  get viewId(): string {
+  get view(): string {
     return `agents/${this.definitionId}`;
   }
 
@@ -103,7 +103,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   public showActivate = (model: Agent) => !!model && !model.IsActive;
   public showDeactivate = (model: Agent) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: Agent) => this.ws.canDo(this.viewId, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: Agent) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: Agent) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')

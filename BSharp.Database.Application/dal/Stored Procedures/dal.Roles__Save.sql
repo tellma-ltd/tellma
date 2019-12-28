@@ -88,7 +88,7 @@ BEGIN
 			t.[Memo]		= s.[Memo],
 			t.[SavedById]	= @UserId
 	WHEN NOT MATCHED THEN
-		INSERT ([RoleId],	[View],		[Action],	[Criteria], [Mask], [Memo])
+		INSERT ([RoleId],	[View],	[Action],	[Criteria], [Mask], [Memo])
 		VALUES (s.[RoleId], s.[View], s.[Action], s.[Criteria], s.[Mask], s.[Memo])
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;

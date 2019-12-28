@@ -41,7 +41,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Output = output;
         }
 
-        protected async Task GrantPermissionToSecurityAdministrator(string viewId, string level, string criteria)
+        protected async Task GrantPermissionToSecurityAdministrator(string view, string level, string criteria)
         {
             // Query the API for the Id that was just returned from the Save
             var getResponse = await Client.GetAsync($"/api/roles/{1}?expand=Permissions,Members/User");
@@ -54,7 +54,7 @@ namespace BSharp.IntegrationTests.Scenario_01
 
             role.Permissions.Add(new Permission
             {
-                ViewId = viewId,
+                View = view,
                 Action = level,
                 Criteria = criteria
             });

@@ -129,18 +129,19 @@ SET NOCOUNT ON;
 		HAVING COUNT(*) > 1
 	) OPTION(HASH JOIN);
 
-	-- No inactive view
-	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
-	SELECT
-		'[' + CAST(P.[HeaderIndex] AS NVARCHAR (255)) + '].Permissions[' + 
-				CAST(P.[Index] AS NVARCHAR (255)) + '].View',
-		N'Error_TheView0IsInactive',
-		P.[View]
-	FROM @Permissions P
-	WHERE (
-		P.[View] IN (SELECT [Id] FROM dbo.[Views] WHERE IsActive = 0) AND 
-		P.[View] <> N'all'
-	);
+
+	---- No inactive view
+	--INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
+	--SELECT
+	--	'[' + CAST(P.[HeaderIndex] AS NVARCHAR (255)) + '].Permissions[' + 
+	--			CAST(P.[Index] AS NVARCHAR (255)) + '].View',
+	--	N'Error_TheView0IsInactive',
+	--	P.[View]
+	--FROM @Permissions P
+	--WHERE (
+	--	P.View IN (SELECT [Id] FROM dbo.[Views] WHERE IsActive = 0) AND 
+	--	P.View <> N'all'
+	--);
 	
 	-- TODO: No Inactive user
 

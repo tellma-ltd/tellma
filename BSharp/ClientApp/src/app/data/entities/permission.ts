@@ -3,7 +3,7 @@ import { EntityForSave } from '../entities/base/entity-for-save';
 import { Action } from '../views';
 
 export class PermissionForSave extends EntityForSave {
-  ViewId: Action;
+  View: Action;
   Action: 'Read' | 'Update' | 'Delete' | 'IsActive' | 'ResendInvitationEmail';
   Criteria: string;
   Mask: string;

@@ -22,12 +22,12 @@ namespace BSharp.IntegrationTests.Scenario_01
         public readonly string _baseAddress = "account-types";
 
         public string Url => $"/api/{_baseAddress}"; // For querying and updating specific account definition
-        public string ViewId => $"{_baseAddress}"; // For permissions
+        public string View => $"{_baseAddress}"; // For permissions
 
         [Fact(DisplayName = "01 Getting all account types returns a 200 OK collection")]
         public async Task Test01()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Read, "Id ne 'Bla'");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Read, "Id ne 'Bla'");
 
             // Call the API
             var response = await Client.GetAsync(Url);

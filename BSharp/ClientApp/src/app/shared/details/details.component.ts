@@ -359,7 +359,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
     }
   }
 
-  private get viewId(): string {
+  private get view(): string {
     return this.entityDescriptor.apiEndpoint;
   }
 
@@ -564,7 +564,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   }
 
   get canCreatePermissions(): boolean {
-    return this.workspace.current.canCreate(this.viewId);
+    return this.workspace.current.canCreate(this.view);
   }
 
   get canCreate(): boolean {
@@ -614,7 +614,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   get canEditPermissions(): boolean {
 
     const createdById = this.activeModel ? this.activeModel['CreatedById'] : null;
-    return this.workspace.current.canUpdate(this.viewId, createdById);
+    return this.workspace.current.canUpdate(this.view, createdById);
   }
 
   get canEdit(): boolean {

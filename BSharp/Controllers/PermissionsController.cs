@@ -49,14 +49,14 @@ namespace BSharp.Controllers
 
                 // Arrange the permission in a DTO that is easy for clients to consume
                 var permissions = new PermissionsForClient();
-                foreach (var gViewIds in allPermissions.GroupBy(e => e.ViewId))
+                foreach (var gView in allPermissions.GroupBy(e => e.View))
                 {
-                    string viewId = gViewIds.Key;
-                    Dictionary<string, bool> viewActions = gViewIds
+                    string view = gView.Key;
+                    Dictionary<string, bool> viewActions = gView
                         .GroupBy(e => e.Action)
                         .ToDictionary(g => g.Key, g => true);
 
-                    permissions[viewId] = viewActions;
+                    permissions[view] = viewActions;
                 }
 
                 // Tag the permissions for client with their current version

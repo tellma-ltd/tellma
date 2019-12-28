@@ -45,7 +45,7 @@ DECLARE @OdooAccountTypes dbo.[AccountTypeList];
 
 INSERT INTO dbo.AccountTypes SELECT * FROM @PTAccountTypes;
 
-INSERT INTO [dbo].[Permissions] ([RoleId], [ViewId], [Action])
+INSERT INTO [dbo].[Permissions] ([RoleId], [View], [Action])
 VALUES
 (@RoleId, N'users', N'All'),
 (@RoleId, N'roles', N'All')

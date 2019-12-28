@@ -13,9 +13,9 @@ namespace BSharp.Data
         /// <summary>
         /// Syntactic sugar for <see cref="ApplicationRepository.Action_View__Permissions(string, string)"/>
         /// </summary>
-        public static async Task<IEnumerable<AbstractPermission>> UserPermissions(this ApplicationRepository repo, string action, string viewId)
+        public static async Task<IEnumerable<AbstractPermission>> UserPermissions(this ApplicationRepository repo, string action, string view)
         {
-            return await repo.Action_View__Permissions(action, viewId);
+            return await repo.Action_View__Permissions(action, view);
         }
 
         /// <summary>

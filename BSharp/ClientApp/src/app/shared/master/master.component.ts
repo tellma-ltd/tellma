@@ -549,7 +549,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  private get viewId(): string {
+  private get view(): string {
     return this.entityDescriptor.apiEndpoint;
   }
 
@@ -1052,7 +1052,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   get canCreatePermissions(): boolean {
-    return this.workspace.current.canCreate(this.viewId);
+    return this.workspace.current.canCreate(this.view);
   }
 
   get canCreate(): boolean {
@@ -1064,7 +1064,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   get canImportPermissions(): boolean {
-    return this.workspace.current.canCreate(this.viewId);
+    return this.workspace.current.canCreate(this.view);
   }
 
   get canImport(): boolean {
@@ -1076,7 +1076,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   get canExportPermissions(): boolean {
-    return this.workspace.current.canRead(this.viewId);
+    return this.workspace.current.canRead(this.view);
   }
 
   get canExport(): boolean {
@@ -1096,7 +1096,7 @@ export class MasterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   get canDeletePermissions(): boolean {
-    return this.workspace.current.canDo(this.viewId, 'Delete', null);
+    return this.workspace.current.canDo(this.view, 'Delete', null);
   }
 
   get canDelete(): boolean {

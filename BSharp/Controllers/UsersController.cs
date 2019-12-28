@@ -48,7 +48,7 @@ namespace BSharp.Controllers
         private TransactionScope _adminTrxScope;
         private TransactionScope _identityTrxScope;
 
-        private string ViewId => BASE_ADDRESS;
+        private string View => BASE_ADDRESS;
 
         public UsersController(
             ApplicationRepository appRepo,
@@ -585,7 +585,7 @@ namespace BSharp.Controllers
 
         protected override Task<IEnumerable<AbstractPermission>> UserPermissions(string action)
         {
-            return _appRepo.UserPermissions(action, ViewId);
+            return _appRepo.UserPermissions(action, View);
         }
 
         private string BlobName(string guid)

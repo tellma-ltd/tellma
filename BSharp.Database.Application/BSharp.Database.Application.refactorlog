@@ -501,4 +501,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[DueDateLabel3]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="c0368b4b-7145-451d-98cf-6abf3f99c897" ChangeDateTime="12/28/2019 09:59:42">
+    <Property Name="ElementName" Value="[dbo].[Permissions].[ViewId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Permissions]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[View]" />
+  </Operation>
 </Operations>

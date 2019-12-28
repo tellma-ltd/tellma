@@ -97,7 +97,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
     });
   }
 
-  get viewId(): string {
+  get view(): string {
     return `documents/${this.definitionId}`;
   }
 

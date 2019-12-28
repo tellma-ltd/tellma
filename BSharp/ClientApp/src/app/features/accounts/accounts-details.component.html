@@ -132,7 +132,8 @@
             [serverErrors]="model?.serverErrors?.ContractType">
             <b-auto-cell *ngIf="!isEdit" collection="Account" path="ContractType" [entity]="model">
             </b-auto-cell>
-            <b-selector *ngIf="isEdit" [(ngModel)]="model.ContractType" [choices]="contractTypeChoices" [required]="model?.IsSmart">
+            <b-selector *ngIf="isEdit" [(ngModel)]="model.ContractType" [choices]="contractTypeChoices"
+                [required]="model?.IsSmart">
             </b-selector>
         </b-form-group>
 

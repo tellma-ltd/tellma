@@ -26,7 +26,7 @@ export class EntryClassificationsDetailsComponent extends DetailsBaseComponent {
     this.entryClassificationsApi = this.api.entryClassificationsApi(this.notifyDestruct$);
   }
 
-  get viewId(): string {
+  get view(): string {
     return `entry-classifications`;
   }
 
@@ -67,7 +67,7 @@ export class EntryClassificationsDetailsComponent extends DetailsBaseComponent {
   public showActivate = (model: EntryClassification) => !!model && !model.IsActive;
   public showDeactivate = (model: EntryClassification) => !!model && model.IsActive;
 
-  public canActivateDeactivateItem = (model: EntryClassification) => this.ws.canDo(this.viewId, 'IsActive', model.Id);
+  public canActivateDeactivateItem = (model: EntryClassification) => this.ws.canDo(this.view, 'IsActive', model.Id);
 
   public activateDeactivateTooltip = (model: EntryClassification) => this.canActivateDeactivateItem(model) ? '' :
     this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
