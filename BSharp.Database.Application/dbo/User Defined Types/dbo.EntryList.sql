@@ -11,8 +11,8 @@
 	[AgentId]					INT,
 	[ResourceId]				INT,
 	[ResponsibilityCenterId]	INT,
-	[AccountIdentifier]			NVARCHAR (10),
-	[ResourceIdentifier]		NVARCHAR (10),
+	--[AccountIdentifier]			NVARCHAR (10),
+	--[ResourceIdentifier]		NVARCHAR (10),
 	[CurrencyId]				NCHAR (3),
 
 	[EntryClassificationId]		INT,

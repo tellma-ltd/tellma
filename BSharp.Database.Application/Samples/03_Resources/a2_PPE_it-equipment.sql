@@ -1,13 +1,13 @@
 ﻿-- We look at the specialized Excel files in the IT department, and we define add Resource definitions accordingly
 	INSERT INTO dbo.ResourceDefinitions (
 		[Id],			[TitlePlural],		[TitleSingular],
-		[ResourceClassificationVisibility], [TimeUnitVisibility], [CurrencyVisibility],
+		[TimeUnitVisibility], [CurrencyVisibility],
 		[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId],
 		[Lookup2Visibility], [Lookup2Label], [Lookup2DefinitionId]
 	) VALUES (
 		N'it-equipment',	N'IT Equipment',	N'IT Equipment',
 --		N'ComputerEquipment, CommunicationAndNetworkEquipment, NetworkInfrastructure',
-		N'Required', N'Required', N'Optional',
+		N'Required', N'Optional',
 		N'Optional', N'Manufacturer', N'it-equipment-manufacturers',
 		N'Optional', N'Operating System', N'operating-systems'
 	);

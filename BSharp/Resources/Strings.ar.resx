@@ -463,9 +463,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>الحساب</value>
   </data>
-  <data name="Entry_AccountIdentifier" xml:space="preserve">
-    <value>رقم تعريف الحساب</value>
-  </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>المرجع الإضافي</value>
   </data>
@@ -513,9 +510,6 @@
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>المورد</value>
-  </data>
-  <data name="Entry_ResourceIdentifier" xml:space="preserve">
-    <value>رقم تعريف المورد</value>
   </data>
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
     <value>مركز التكلفة</value>

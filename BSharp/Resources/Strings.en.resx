@@ -463,9 +463,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>Account</value>
   </data>
-  <data name="Entry_AccountIdentifier" xml:space="preserve">
-    <value>Account Identifier</value>
-  </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>Additional Reference</value>
   </data>
@@ -513,9 +510,6 @@
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>Resource</value>
-  </data>
-  <data name="Entry_ResourceIdentifier" xml:space="preserve">
-    <value>Resource Identifier</value>
   </data>
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
     <value>Responsibility Center</value>

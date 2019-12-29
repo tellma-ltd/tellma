@@ -17,5 +17,5 @@ BEGIN
 	-- TODO: depends on country
 	INSERT INTO dbo.AgentDefinitions
 	([Id],				[TitleSingular],	[TitlePlural],	[JobVisibility], [BasicSalaryVisibility], [TransportationAllowanceVisibility], [OvertimeRateVisibility]) VALUES
-	(N'employees',		N'Employee',		N'Employees',	N'VisibleAndRequired',N'VisibleAndRequired',	N'VisibleAndRequired',				N'VisibleAndRequired');
+	(N'employees',		N'Employee',		N'Employees',	N'Required',	 N'Required',			  N'Required',							N'Required');
 END

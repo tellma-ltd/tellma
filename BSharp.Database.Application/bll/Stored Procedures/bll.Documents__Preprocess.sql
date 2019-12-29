@@ -44,7 +44,7 @@ SET
 	E.[ResourceId]				= NULL,
 	E.[CurrencyId]				= A.CurrencyId,
 	E.[ResponsibilityCenterId]	= NULL, -- this one may be copied or coalesced in the future
-	E.[AccountIdentifier]		= NULL,
+--	E.[AccountIdentifier]		= NULL,
 	E.[EntryClassificationId]	= NULL
 FROM @FilledEntries E
 JOIN dbo.Accounts A ON E.AccountId = A.Id
@@ -58,7 +58,7 @@ SET
 	E.[ResourceId]				= COALESCE(A.[ResourceId], E.[ResourceId]),
 	E.[CurrencyId]				= COALESCE(A.[CurrencyId], E.[CurrencyId]),
 	E.[ResponsibilityCenterId]	= COALESCE(A.[ResponsibilityCenterId], E.[ResponsibilityCenterId]),
-	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
+--	E.[AccountIdentifier]		= COALESCE(A.[Identifier], E.[AccountIdentifier]),
 	E.[EntryClassificationId]	= COALESCE(A.[EntryClassificationId], E.[EntryClassificationId])
 FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Accounts A ON E.AccountId = A.Id
@@ -69,7 +69,7 @@ WHERE L.DefinitionId = N'ManualLine' AND A.[IsSmart] = 1; -- Entered by user
 UPDATE E 
 SET
 	E.[CurrencyId]			=	COALESCE(R.[CurrencyId], E.[CurrencyId]),
-	E.[ResourceIdentifier]	=	COALESCE(R.[Identifier], E.[ResourceIdentifier]),
+--	E.[ResourceIdentifier]	=	COALESCE(R.[Identifier], E.[ResourceIdentifier]),
 	E.[Count]				=	COALESCE(R.[Count], E.[Count]) -- If the Resource is a singleton, R.[Count] is one.
 FROM @FilledEntries E JOIN @Lines L ON E.LineIndex = L.[Index]
 JOIN dbo.Resources R ON E.ResourceId = R.Id

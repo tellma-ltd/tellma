@@ -32,38 +32,30 @@ namespace BSharp.Controllers
         }
 
         [HttpGet("client")]
-        public virtual async Task<ActionResult<DataWithVersion<PermissionsForClient>>> GetForClient()
+        public virtual async Task<ActionResult<DataWithVersion<PermissionsForClient>>> PermissionsForClient()
         {
             try
             {
-                // Retrieve the current version of the permissions
-                Guid version = await _repo.GetUserPermissionsVersion();
-                if (version == null)
-                {
-                    // Programmer mistake
-                    return BadRequest("No user in the system");
-                }
-
-                // Retrieve all the permissions
-                IEnumerable<AbstractPermission> allPermissions = await _repo.GetUserPermissions();
+                // Retrieve the user permissions and their current version
+                var (version, permissions)  = await _repo.Permissions__Load();
 
                 // Arrange the permission in a DTO that is easy for clients to consume
-                var permissions = new PermissionsForClient();
-                foreach (var gView in allPermissions.GroupBy(e => e.View))
+                var permissionsForClient = new PermissionsForClient();
+                foreach (var gView in permissions.GroupBy(e => e.View))
                 {
                     string view = gView.Key;
                     Dictionary<string, bool> viewActions = gView
                         .GroupBy(e => e.Action)
                         .ToDictionary(g => g.Key, g => true);
 
-                    permissions[view] = viewActions;
+                    permissionsForClient[view] = viewActions;
                 }
 
                 // Tag the permissions for client with their current version
                 var result = new DataWithVersion<PermissionsForClient>
                 {
                     Version = version.ToString(),
-                    Data = permissions
+                    Data = permissionsForClient
                 };
 
                 // Return the result

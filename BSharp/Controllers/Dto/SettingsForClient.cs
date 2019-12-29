@@ -49,5 +49,7 @@ namespace BSharp.Controllers.Dto
         public string BrandColor { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
+
+        public bool IsMultiResponsibilityCenter { get; set; }
     }
 }

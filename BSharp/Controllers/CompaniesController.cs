@@ -40,9 +40,8 @@ namespace BSharp.Controllers
             _clientInfoAccessor = clientInfoAccessor;
         }
 
-
         [HttpGet("client")]
-        public async Task<ActionResult<IEnumerable<UserCompany>>> GetForClient()
+        public async Task<ActionResult<IEnumerable<UserCompany>>> CompaniesForClient()
         {
             try
             {

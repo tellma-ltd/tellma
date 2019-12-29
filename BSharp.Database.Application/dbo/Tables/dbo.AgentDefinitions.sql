@@ -1,8 +1,6 @@
 ﻿CREATE TABLE [dbo].[AgentDefinitions]
 (
 	[Id]								NVARCHAR(50)		CONSTRAINT [PK_AgentDefinitions] PRIMARY KEY,
-	[MainMenuIcon]						NVARCHAR (50),
-	[MainMenuSortKey]					DECIMAL (9,4),
 	[TitleSingular]						NVARCHAR (255),
 	[TitleSingular2]					NVARCHAR (255),
 	[TitleSingular3]					NVARCHAR (255),
@@ -24,7 +22,13 @@
 	[TransportationAllowanceVisibility]	NVARCHAR (50),
 --	[HardshipAllowanceVisibility]		NVARCHAR (50),
 	[OvertimeRateVisibility]			NVARCHAR (50),
-	BankAccountNumberVisibility			NVARCHAR (50),
+	[BankAccountNumberVisibility]		NVARCHAR (50),
+	
+	[State]							NVARCHAR (50)	DEFAULT N'Draft',	-- Deployed, Archived (Phased Out)
+	[MainMenuIcon]					NVARCHAR (50),
+	[MainMenuSection]				NVARCHAR (50),			-- IF Null, it does not show on the main menu
+	[MainMenuSortKey]				DECIMAL (9,4),
+
 	[CreatedAt]			DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(),
 	[CreatedById]		INT DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_AgentDefinitions__CreatedById] REFERENCES [dbo].[Users] ([Id]),
 	[ModifiedAt]		DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET(), 

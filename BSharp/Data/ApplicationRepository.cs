@@ -477,24 +477,116 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return result;
         }
 
-        public async Task<IEnumerable<AbstractPermission>> GetUserPermissions()
+        public async Task<(bool, Settings)> Settings__Load()
         {
-            var result = new List<AbstractPermission>();
+            // Returns 
+            // (1) whether active leaf responsibility centers are multiple or single
+            // (2) the settings with the functional currency expanded
+
+            bool isMultiResonsibilityCenter = false;
+            Settings settings = new Settings();
 
             var conn = await GetConnectionAsync();
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GetUserPermissions)}]";
+                cmd.CommandText = $"[dal].[{nameof(Settings__Load)}]";
 
                 // Execute
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
+                    // Load the version
+                    if (await reader.ReadAsync())
+                    {
+                        isMultiResonsibilityCenter = reader.GetBoolean(0);
+                    }
+                    else
+                    {
+                        // Programmer mistake
+                        throw new Exception($"IsMultiResonsibilityCenter was not returned from SP {nameof(Settings__Load)}");
+                    }
+
+                    // Next load settings
+                    await reader.NextResultAsync();
+
+                    if (await reader.ReadAsync())
+                    {
+                        var props = typeof(Settings).GetMappedProperties();
+                        foreach (var prop in props)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(settings, propValue);
+                        }
+                    }
+                    else
+                    {
+                        // Programmer mistake
+                        throw new Exception($"Settings was not returned from SP {nameof(Settings__Load)}");
+                    }
+
+                    // Next load functional currency
+                    await reader.NextResultAsync();
+
+                    if (await reader.ReadAsync())
+                    {
+                        settings.FunctionalCurrency = new Currency();
+                        var props = typeof(Currency).GetMappedProperties();
+                        foreach (var prop in props)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(settings.FunctionalCurrency, propValue);
+                        }
+                    }
+                    else
+                    {
+                        // Programmer mistake
+                        throw new Exception($"The Functional Currency was not returned from SP {nameof(Settings__Load)}");
+                    }
+                }
+            }
+
+            return (isMultiResonsibilityCenter, settings);
+        }
+
+        public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load()
+        {
+            Guid version;
+            var permissions = new List<AbstractPermission>();
+
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    // Load the version
+                    if (await reader.ReadAsync())
+                    {
+                        version = reader.GetGuid(0);
+                    }
+                    else
+                    {
+                        version = Guid.Empty;
+                    }
+
+                    // Load the permissions
+                    await reader.NextResultAsync();
+
                     while (await reader.ReadAsync())
                     {
                         int i = 0;
-                        result.Add(new AbstractPermission
+                        permissions.Add(new AbstractPermission
                         {
                             View = reader.String(i++),
                             Action = reader.String(i++),
@@ -505,31 +597,96 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 }
             }
 
-            return result;
+            return (version, permissions);
         }
 
-        public async Task<Guid> GetUserPermissionsVersion()
+        public async Task<(Guid, IEnumerable<LookupDefinition>, IEnumerable<AgentDefinition>, IEnumerable<ResourceDefinition>)> Definitions__Load()
         {
+            Guid version;
+            List<LookupDefinition> lookupDefinitions = new List<LookupDefinition>();
+            List<AgentDefinition> agentDefinitions = new List<AgentDefinition>();
+            List<ResourceDefinition> resourceDefinitions = new List<ResourceDefinition>();
+
             var conn = await GetConnectionAsync();
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GetUserPermissionsVersion)}]";
+                cmd.CommandText = $"[dal].[{nameof(Definitions__Load)}]";
 
                 // Execute
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
+                    // Load the version
                     if (await reader.ReadAsync())
                     {
-                        return reader.GetGuid(0);
+                        version = reader.GetGuid(0);
                     }
                     else
                     {
-                        return Guid.Empty;
+                        version = Guid.Empty;
+                    }
+
+                    // Next load lookup definitions
+                    await reader.NextResultAsync();
+
+                    var lookupDefinitionProps = typeof(LookupDefinition).GetMappedProperties();
+                    while (await reader.ReadAsync())
+                    {
+                        var entity = new LookupDefinition();
+                        foreach (var prop in lookupDefinitionProps)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        lookupDefinitions.Add(entity);
+                    }
+
+                    // Next load agent definitions
+                    await reader.NextResultAsync();
+
+                    var agentDefinitionProps = typeof(AgentDefinition).GetMappedProperties();
+                    while (await reader.ReadAsync())
+                    {
+                        var entity = new AgentDefinition();
+                        foreach (var prop in agentDefinitionProps)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        agentDefinitions.Add(entity);
+                    }
+
+                    // Next load resource definitions
+                    await reader.NextResultAsync();
+
+                    var resourceDefinitionProps = typeof(ResourceDefinition).GetMappedProperties();
+                    while (await reader.ReadAsync())
+                    {
+                        var entity = new ResourceDefinition();
+                        foreach (var prop in resourceDefinitionProps)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        resourceDefinitions.Add(entity);
                     }
                 }
             }
+
+            return (version, lookupDefinitions, agentDefinitions, resourceDefinitions);
         }
 
         #endregion
@@ -3825,6 +3982,5 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         }
 
         #endregion
-
     }
 }

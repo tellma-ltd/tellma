@@ -508,4 +508,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[View]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="8a6cd0d0-b29b-4d74-bfa2-8b5fd83deedb" ChangeDateTime="12/29/2019 04:52:22">
+    <Property Name="ElementName" Value="[dal].[GetUserPermissions]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Permissions__Load]" />
+  </Operation>
 </Operations>
