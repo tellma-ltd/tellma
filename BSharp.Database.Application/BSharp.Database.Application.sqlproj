@@ -256,11 +256,10 @@
     <Build Include="dal\Stored Procedures\dal.Accounts__Deprecate.sql" />
     <Build Include="dbo\Tables\dbo.IfrsStatements.sql" />
     <Build Include="dbo\Tables\dbo.AccountsDisclosures.sql" />
-    <Build Include="dal\Stored Procedures\dal.GetUserPermissions.sql" />
+    <Build Include="dal\Stored Procedures\dal.Permissions__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SetExternalIdByUserId.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SetEmailByUserId.sql" />
     <Build Include="dal\Stored Procedures\dal.AddUserPermissionsVersion.sql" />
-    <Build Include="dal\Stored Procedures\dal.GetUserPermissionsVersion.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SaveSettings.sql" />
     <Build Include="dbo\Tables\dbo.UserSettings.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SettingsForClient.sql" />

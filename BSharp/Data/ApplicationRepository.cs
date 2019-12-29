@@ -477,24 +477,38 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return result;
         }
 
-        public async Task<IEnumerable<AbstractPermission>> GetUserPermissions()
+        public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load()
         {
-            var result = new List<AbstractPermission>();
+            Guid version;
+            var permissions = new List<AbstractPermission>();
 
             var conn = await GetConnectionAsync();
             using (SqlCommand cmd = conn.CreateCommand())
             {
                 // Command
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GetUserPermissions)}]";
+                cmd.CommandText = $"[dal].[{nameof(Permissions__Load)}]";
 
                 // Execute
                 using (var reader = await cmd.ExecuteReaderAsync())
                 {
+                    // Load the version
+                    if (await reader.ReadAsync())
+                    {
+                        version = reader.GetGuid(0);
+                    }
+                    else
+                    {
+                        version = Guid.Empty;
+                    }
+
+                    // Load the permissions
+                    await reader.NextResultAsync();
+
                     while (await reader.ReadAsync())
                     {
                         int i = 0;
-                        result.Add(new AbstractPermission
+                        permissions.Add(new AbstractPermission
                         {
                             View = reader.String(i++),
                             Action = reader.String(i++),
@@ -505,34 +519,10 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                 }
             }
 
-            return result;
+            return (version, permissions);
         }
 
-        public async Task<Guid> GetUserPermissionsVersion()
-        {
-            var conn = await GetConnectionAsync();
-            using (SqlCommand cmd = conn.CreateCommand())
-            {
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(GetUserPermissionsVersion)}]";
-
-                // Execute
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return reader.GetGuid(0);
-                    }
-                    else
-                    {
-                        return Guid.Empty;
-                    }
-                }
-            }
-        }
-
-        public async Task<(Guid, List<LookupDefinition>, List<AgentDefinition>, List<ResourceDefinition>)> Definitions__Load()
+        public async Task<(Guid, IEnumerable<LookupDefinition>, IEnumerable<AgentDefinition>, IEnumerable<ResourceDefinition>)> Definitions__Load()
         {
             Guid version;
             List<LookupDefinition> lookupDefinitions = new List<LookupDefinition>();
