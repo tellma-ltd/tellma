@@ -35,14 +35,6 @@ namespace BSharp.Entities
         [Display(Name = "Entry_ResponsibilityCenter")]
         public int? ResponsibilityCenterId { get; set; }
 
-        [Display(Name = "Entry_AccountIdentifier")]
-        [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
-        public string AccountIdentifier { get; set; }
-
-        [Display(Name = "Entry_ResourceIdentifier")]
-        [StringLength(10, ErrorMessage = nameof(StringLengthAttribute))]
-        public string ResourceIdentifier { get; set; }
-
         [Display(Name = "Entry_Currency")]
         [StringLength(3, ErrorMessage = nameof(StringLengthAttribute))]
         public string CurrencyId { get; set; }

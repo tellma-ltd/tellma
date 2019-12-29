@@ -10,8 +10,6 @@ export class EntryForSave extends EntityWithKey {
     AgentId: number;
     ResourceId: number;
     ResponsibilityCenterId: number;
-    AccountIdentifier: string;
-    ResourceIdentifier: string;
     CurrencyId: string;
     EntryClassificationId: number;
     DueDate: string;

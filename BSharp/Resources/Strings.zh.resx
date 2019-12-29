@@ -463,9 +463,6 @@
   <data name="Entry_Account" xml:space="preserve">
     <value>帐户</value>
   </data>
-  <data name="Entry_AccountIdentifier" xml:space="preserve">
-    <value>帐户标识符</value>
-  </data>
   <data name="Entry_AdditionalReference" xml:space="preserve">
     <value>其他参考</value>
   </data>
@@ -513,9 +510,6 @@
   </data>
   <data name="Entry_Resource" xml:space="preserve">
     <value>资源</value>
-  </data>
-  <data name="Entry_ResourceIdentifier" xml:space="preserve">
-    <value>资源标识符</value>
   </data>
   <data name="Entry_ResponsibilityCenter" xml:space="preserve">
     <value>责任中心</value>
