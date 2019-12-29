@@ -23,7 +23,7 @@ INSERT @DocumentDefinitions
 	-- payroll, paysheet (w/loan deduction), loan issue, penalty, overtime, paid leave, unpaid leave
 	-- manual journal, depreciation,  
 	([Id],						[TitleSingular],			[TitlePlural],				[Prefix]) VALUES
-	(N'manual-journal-vouchers',		N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
+	(N'manual-journal-vouchers',N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
 	(N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'Cash Payment Vouchers',	N'CPV'),
 	(N'petty-cash-vouchers',	NULL,						NULL,						N'PCV');
 ---------------------------------------------

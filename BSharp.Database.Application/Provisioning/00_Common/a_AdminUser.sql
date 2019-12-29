@@ -18,7 +18,7 @@ BEGIN
 	
 	INSERT INTO @Roles ([Name],	[Code]) VALUES	(N'Administrator', 'All');
 	INSERT INTO @Members ([UserId])	VALUES (@AdminUserId);
-	INSERT INTO @Permissions ([View],	[Action]) VALUES (N'All', N'All');
+	INSERT INTO @Permissions ([View],	[Action]) VALUES (N'all', N'All');
 
 	EXEC [dal].[Roles__Save]
 		@Entities = @Roles,
