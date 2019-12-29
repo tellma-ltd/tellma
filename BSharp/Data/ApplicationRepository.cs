@@ -477,6 +477,84 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return result;
         }
 
+        public async Task<(bool, Settings)> Settings__Load()
+        {
+            // Returns 
+            // (1) whether active leaf responsibility centers are multiple or single
+            // (2) the settings with the functional currency expanded
+
+            bool isMultiResonsibilityCenter = false;
+            Settings settings = new Settings();
+
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Settings__Load)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    // Load the version
+                    if (await reader.ReadAsync())
+                    {
+                        isMultiResonsibilityCenter = reader.GetBoolean(0);
+                    }
+                    else
+                    {
+                        // Programmer mistake
+                        throw new Exception($"IsMultiResonsibilityCenter was not returned from SP {nameof(Settings__Load)}");
+                    }
+
+                    // Next load settings
+                    await reader.NextResultAsync();
+
+                    if (await reader.ReadAsync())
+                    {
+                        var props = typeof(Settings).GetMappedProperties();
+                        foreach (var prop in props)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(settings, propValue);
+                        }
+                    }
+                    else
+                    {
+                        // Programmer mistake
+                        throw new Exception($"Settings was not returned from SP {nameof(Settings__Load)}");
+                    }
+
+                    // Next load functional currency
+                    await reader.NextResultAsync();
+
+                    if (await reader.ReadAsync())
+                    {
+                        settings.FunctionalCurrency = new Currency();
+                        var props = typeof(Currency).GetMappedProperties();
+                        foreach (var prop in props)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(settings.FunctionalCurrency, propValue);
+                        }
+                    }
+                    else
+                    {
+                        // Programmer mistake
+                        throw new Exception($"The Functional Currency was not returned from SP {nameof(Settings__Load)}");
+                    }
+                }
+            }
+
+            return (isMultiResonsibilityCenter, settings);
+        }
+
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load()
         {
             Guid version;

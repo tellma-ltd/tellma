@@ -2,6 +2,7 @@
 	@Ids [dbo].[IdList] READONLY
 AS
 SET NOCOUNT ON;
+	DECLARE @BeforeCount INT = (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE IsLeaf = 1 AND IsActive = 1);
 	DELETE [dbo].[ResponsibilityCenters] WHERE [Id] IN (SELECT [Id] FROM @Ids);
 		
 	-- reorganize the nodes
@@ -24,3 +25,8 @@ SET NOCOUNT ON;
 	MERGE INTO [dbo].[ResponsibilityCenters] As t
 	USING Paths As s ON (t.[Id] = s.[Id] AND t.[Node] <> s.[Node])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
+	
+	-- Whether there are multiple responsibility centers is an important settings value
+	DECLARE @AfterCount INT = (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE IsLeaf = 1 AND IsActive = 1);
+	IF (@BeforeCount <= 1 AND @AfterCount > 1) OR (@BeforeCount > 1 AND @AfterCount <= 1) 
+		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();

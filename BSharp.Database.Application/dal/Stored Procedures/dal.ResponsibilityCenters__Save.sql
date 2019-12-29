@@ -3,6 +3,8 @@
 	@ReturnIds BIT = 0
 AS
 SET NOCOUNT ON;
+	DECLARE @BeforeCount INT = (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE IsLeaf = 1 AND IsActive = 1);
+
 	DECLARE @IndexedIds [dbo].[IndexedIdList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
@@ -70,6 +72,11 @@ SET NOCOUNT ON;
 	MERGE INTO [dbo].[ResponsibilityCenters] As t
 	USING Paths As s ON (t.[Id] = s.[Id])
 	WHEN MATCHED THEN UPDATE SET t.[Node] = s.[Node];
+
+	-- Whether there are multiple responsibility centers is an important settings value
+	DECLARE @AfterCount INT = (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE IsLeaf = 1 AND IsActive = 1);
+	IF (@BeforeCount <= 1 AND @AfterCount > 1) OR (@BeforeCount > 1 AND @AfterCount <= 1) 
+		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();
 
 	IF @ReturnIds = 1
 		SELECT * FROM @IndexedIds;

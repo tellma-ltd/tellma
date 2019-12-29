@@ -257,11 +257,7 @@ namespace BSharp.Controllers
 
         public static async Task<DataWithVersion<SettingsForClient>> LoadSettingsForClient(ApplicationRepository repo)
         {
-            Settings settings = await repo.Settings
-                .Expand(nameof(Settings.FunctionalCurrency))
-                .OrderBy(nameof(Settings.FunctionalCurrencyId))
-                .FirstOrDefaultAsync();
-
+            var (isMultiResponsibilityCenter, settings) = await repo.Settings__Load();
             if (settings == null)
             {
                 // This should never happen
@@ -279,6 +275,9 @@ namespace BSharp.Controllers
                     forClientProp.SetValue(settingsForClient, value);
                 }
             }
+
+            // Is Multi Responsibility Center
+            settingsForClient.IsMultiResponsibilityCenter = isMultiResponsibilityCenter;
 
             // Functional currency
             settingsForClient.FunctionalCurrencyDecimals = settings.FunctionalCurrency.E ?? 0;

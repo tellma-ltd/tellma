@@ -2,6 +2,8 @@
 	@Ids [dbo].[IdList] READONLY,
 	@IsActive bit
 AS
+	DECLARE @BeforeCount INT = (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE IsLeaf = 1 AND IsActive = 1);
+
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
@@ -16,3 +18,8 @@ AS
 			t.[IsActive]		= @IsActive,
 			t.[ModifiedAt]		= @Now,
 			t.[ModifiedById]	= @UserId;
+
+	-- Whether there are multiple responsibility centers is an important settings value
+	DECLARE @AfterCount INT = (SELECT COUNT(*) FROM [dbo].[ResponsibilityCenters] WHERE IsLeaf = 1 AND IsActive = 1);
+	IF (@BeforeCount <= 1 AND @AfterCount > 1) OR (@BeforeCount > 1 AND @AfterCount <= 1) 
+		UPDATE [dbo].[Settings] SET [SettingsVersion] = NEWID();
