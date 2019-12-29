@@ -125,7 +125,7 @@ namespace BSharp.Controllers
         }
 
         [HttpGet("client")]
-        public ActionResult<DataWithVersion<GlobalSettingsForClient>> GetForClient()
+        public ActionResult<DataWithVersion<GlobalSettingsForClient>> GlobalSettingsForClient()
         {
             try
             {

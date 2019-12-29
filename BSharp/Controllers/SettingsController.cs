@@ -133,7 +133,7 @@ namespace BSharp.Controllers
         }
 
         [HttpGet("client")]
-        public ActionResult<DataWithVersion<SettingsForClient>> GetForClient()
+        public ActionResult<DataWithVersion<SettingsForClient>> SettingsForClient()
         {
             try
             {

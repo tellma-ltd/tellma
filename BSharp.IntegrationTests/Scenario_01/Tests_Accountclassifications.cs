@@ -22,7 +22,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         public readonly string _baseAddress = "account-classifications";
 
         public string Url => $"/api/{_baseAddress}"; // For querying and updating specific account definition
-        public string ViewId => $"{_baseAddress}"; // For permissions
+        public string View => $"{_baseAddress}"; // For permissions
 
 
         [Fact(DisplayName = "01 Getting all account classifications before granting permissions returns a 403 Forbidden response")]
@@ -40,7 +40,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "02 Getting all account classifications before creating any returns a 200 OK empty collection")]
         public async Task Test02()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Update, "Id ge 0");
+            await GrantPermissionToSecurityAdministrator(View, Constants.Update, "Id ge 0");
 
             // Call the API
             var response = await Client.GetAsync(Url);
@@ -213,7 +213,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "08 Deleting an existing account classification Id returns a 200 OK")]
         public async Task Test08()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, Constants.Delete, null);
+            await GrantPermissionToSecurityAdministrator(View, Constants.Delete, null);
 
             // Get the Id
             var entity = Shared.Get<AccountClassification>("AccountClassification_Child2");
@@ -246,7 +246,7 @@ namespace BSharp.IntegrationTests.Scenario_01
         [Fact(DisplayName = "10 Deactivating an active account classification returns a 200 OK inactive entity")]
         public async Task Test10()
         {
-            await GrantPermissionToSecurityAdministrator(ViewId, "IsDeprecated", null);
+            await GrantPermissionToSecurityAdministrator(View, "IsDeprecated", null);
 
             // Get the Id
             var entity = Shared.Get<AccountClassification>("AccountClassification_Child");

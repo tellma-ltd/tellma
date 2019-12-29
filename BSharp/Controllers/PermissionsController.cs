@@ -32,7 +32,7 @@ namespace BSharp.Controllers
         }
 
         [HttpGet("client")]
-        public virtual async Task<ActionResult<DataWithVersion<PermissionsForClient>>> GetForClient()
+        public virtual async Task<ActionResult<DataWithVersion<PermissionsForClient>>> PermissionsForClient()
         {
             try
             {

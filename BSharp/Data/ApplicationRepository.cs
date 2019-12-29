@@ -532,6 +532,95 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             }
         }
 
+        public async Task<(Guid, List<LookupDefinition>, List<AgentDefinition>, List<ResourceDefinition>)> Definitions__Load()
+        {
+            Guid version;
+            List<LookupDefinition> lookupDefinitions = new List<LookupDefinition>();
+            List<AgentDefinition> agentDefinitions = new List<AgentDefinition>();
+            List<ResourceDefinition> resourceDefinitions = new List<ResourceDefinition>();
+
+            var conn = await GetConnectionAsync();
+            using (SqlCommand cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(Definitions__Load)}]";
+
+                // Execute
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    // Load the version
+                    if (await reader.ReadAsync())
+                    {
+                        version = reader.GetGuid(0);
+                    }
+                    else
+                    {
+                        version = Guid.Empty;
+                    }
+
+                    // Next load lookup definitions
+                    await reader.NextResultAsync();
+
+                    var lookupDefinitionProps = typeof(LookupDefinition).GetMappedProperties();
+                    while (await reader.ReadAsync())
+                    {
+                        var entity = new LookupDefinition();
+                        foreach (var prop in lookupDefinitionProps)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        lookupDefinitions.Add(entity);
+                    }
+
+                    // Next load agent definitions
+                    await reader.NextResultAsync();
+
+                    var agentDefinitionProps = typeof(AgentDefinition).GetMappedProperties();
+                    while (await reader.ReadAsync())
+                    {
+                        var entity = new AgentDefinition();
+                        foreach (var prop in agentDefinitionProps)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        agentDefinitions.Add(entity);
+                    }
+
+                    // Next load resource definitions
+                    await reader.NextResultAsync();
+
+                    var resourceDefinitionProps = typeof(ResourceDefinition).GetMappedProperties();
+                    while (await reader.ReadAsync())
+                    {
+                        var entity = new ResourceDefinition();
+                        foreach (var prop in resourceDefinitionProps)
+                        {
+                            // get property value
+                            var propValue = reader[prop.Name];
+                            propValue = propValue == DBNull.Value ? null : propValue;
+
+                            prop.SetValue(entity, propValue);
+                        }
+
+                        resourceDefinitions.Add(entity);
+                    }
+                }
+            }
+
+            return (version, lookupDefinitions, agentDefinitions, resourceDefinitions);
+        }
+
         #endregion
 
         #region MeasurementUnits
@@ -3825,6 +3914,5 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         }
 
         #endregion
-
     }
 }

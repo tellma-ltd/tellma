@@ -131,16 +131,16 @@ namespace BSharp.Controllers.Dto
 
     public class ResourceDefinitionForClient : MasterDetailDefinitionForClient
     {
-        public string IdentifierLabel { get; set; }
-        public string IdentifierLabel2 { get; set; }
-        public string IdentifierLabel3 { get; set; }
-        public string IdentifierVisibility { get; set; }
+        public string IdentifierLabel { get; set; } // Yes
+        public string IdentifierLabel2 { get; set; } // Yes
+        public string IdentifierLabel3 { get; set; } // Yes
+        public string IdentifierVisibility { get; set; } // Yes
         public string IdentifierDefaultValue { get; set; }
 
         public string CurrencyLabel { get; set; }
         public string CurrencyLabel2 { get; set; }
         public string CurrencyLabel3 { get; set; }
-        public string CurrencyVisibility { get; set; }
+        public string CurrencyVisibility { get; set; } // Yes
         public string CurrencyDefaultValue { get; set; }
 
         public string MonetaryValueLabel { get; set; }
@@ -152,7 +152,7 @@ namespace BSharp.Controllers.Dto
         public string CountUnitLabel { get; set; }
         public string CountUnitLabel2 { get; set; }
         public string CountUnitLabel3 { get; set; }
-        public string CountUnitVisibility { get; set; }
+        public string CountUnitVisibility { get; set; } // Yes
         public int? CountUnitDefaultValue { get; set; }
 
         public string CountLabel { get; set; }
@@ -164,7 +164,7 @@ namespace BSharp.Controllers.Dto
         public string MassUnitLabel { get; set; }
         public string MassUnitLabel2 { get; set; }
         public string MassUnitLabel3 { get; set; }
-        public string MassUnitVisibility { get; set; }
+        public string MassUnitVisibility { get; set; } // Yes
         public int? MassUnitDefaultValue { get; set; }
 
         public string MassLabel { get; set; }
@@ -176,7 +176,7 @@ namespace BSharp.Controllers.Dto
         public string VolumeUnitLabel { get; set; }
         public string VolumeUnitLabel2 { get; set; }
         public string VolumeUnitLabel3 { get; set; }
-        public string VolumeUnitVisibility { get; set; }
+        public string VolumeUnitVisibility { get; set; } // Yes
         public int? VolumeUnitDefaultValue { get; set; }
 
         public string VolumeLabel { get; set; }
@@ -188,7 +188,7 @@ namespace BSharp.Controllers.Dto
         public string TimeUnitLabel { get; set; }
         public string TimeUnitLabel2 { get; set; }
         public string TimeUnitLabel3 { get; set; }
-        public string TimeUnitVisibility { get; set; }
+        public string TimeUnitVisibility { get; set; } // Yes
         public int? TimeUnitDefaultValue { get; set; }
 
         public string TimeLabel { get; set; }
@@ -197,35 +197,35 @@ namespace BSharp.Controllers.Dto
         public string TimeVisibility { get; set; }
         public int? TimeDefaultValue { get; set; }
 
-        public string DescriptionVisibility { get; set; }
+        public string DescriptionVisibility { get; set; } // Yes
 
-        public string AvailableSinceLabel { get; set; }
-        public string AvailableSinceLabel2 { get; set; }
-        public string AvailableSinceLabel3 { get; set; }
-        public string AvailableSinceVisibility { get; set; }
+        public string AvailableSinceLabel { get; set; } // Yes
+        public string AvailableSinceLabel2 { get; set; } // Yes
+        public string AvailableSinceLabel3 { get; set; } // Yes
+        public string AvailableSinceVisibility { get; set; } // Yes
         public DateTime? AvailableSinceDefaultValue { get; set; }
 
-        public string AvailableTillLabel { get; set; }
-        public string AvailableTillLabel2 { get; set; }
-        public string AvailableTillLabel3 { get; set; }
-        public string AvailableTillVisibility { get; set; }
+        public string AvailableTillLabel { get; set; } // Yes
+        public string AvailableTillLabel2 { get; set; } // Yes
+        public string AvailableTillLabel3 { get; set; } // Yes
+        public string AvailableTillVisibility { get; set; } // Yes
         public DateTime? AvailableTillDefaultValue { get; set; }
 
         // Lookup 1
-        public string Lookup1Label { get; set; }
-        public string Lookup1Label2 { get; set; }
-        public string Lookup1Label3 { get; set; }
-        public string Lookup1Visibility { get; set; }
+        public string Lookup1Label { get; set; } // Yes
+        public string Lookup1Label2 { get; set; } // Yes
+        public string Lookup1Label3 { get; set; } // Yes
+        public string Lookup1Visibility { get; set; } // Yes
         public int? Lookup1DefaultValue { get; set; }
-        public string Lookup1DefinitionId { get; set; }
+        public string Lookup1DefinitionId { get; set; } // Yes
 
         // Lookup 2
-        public string Lookup2Label { get; set; }
-        public string Lookup2Label2 { get; set; }
-        public string Lookup2Label3 { get; set; }
-        public string Lookup2Visibility { get; set; }
+        public string Lookup2Label { get; set; } // Yes
+        public string Lookup2Label2 { get; set; } // Yes
+        public string Lookup2Label3 { get; set; } // Yes
+        public string Lookup2Visibility { get; set; } // Yes
         public int? Lookup2DefaultValue { get; set; }
-        public string Lookup2DefinitionId { get; set; }
+        public string Lookup2DefinitionId { get; set; } // Yes
 
         //// Lookup 3
         //public string Lookup3Label { get; set; }
@@ -250,6 +250,12 @@ namespace BSharp.Controllers.Dto
         //public string Lookup5Visibility { get; set; }
         //public int? Lookup5DefaultValue { get; set; }
         //public string Lookup5DefinitionId { get; set; }
+
+        public string DueDateLabel { get; set; } // Yes
+        public string DueDateLabel2 { get; set; } // Yes
+        public string DueDateLabel3 { get; set; } // Yes
+        public string DueDateVisibility { get; set; } // Yes
+        public DateTime? DueDateDefaultValue { get; set; }
     }
 
     public class AgentDefinitionForClient : MasterDetailDefinitionForClient
@@ -273,8 +279,9 @@ namespace BSharp.Controllers.Dto
 
     public static class Visibility
     {
-        public const string Optional = "Optional";
-        public const string Required = "Required";
+        public const string Optional = nameof(Optional);
+        public const string Required = nameof(Required);
+        public const string None = nameof(None);
     }
 
     public static class ReportType
