@@ -13,30 +13,54 @@
 	IF @TernaryLanguageId = N'NULL' SET @TernaryLanguageId = NULL;
 END
 
-
--- Local Variables
-
--- Minimum required for provisioning:
--- Admin user, the same who started the instance, as well as 
--- resource definitions: N'currencies' & N'general-items'
--- Resource classifications: The Ifrs ones
--- functional currency
--- contract type
--- agent definitions: (local) customers, (local) suppliers, (local) employees, shareholders, banks, ...
--- all line definitions, some standard document definitions
 :r .\00_Common\__Declarations.sql
 :r .\00_Common\a_AdminUser.sql
-:r .\00_Common\b_ResourceDefinitions.sql
-:r .\00_Common\c_ResourceClassifications.sql
-:r .\00_Common\d_EntryClassifications.sql
-:r .\00_Common\e_ResourceClassificationsEntryClassifications.sql
-:r .\00_Common\f_FunctionalCurrency.sql
-:r .\00_Common\g_ContractTypes.sql
-:r .\00_Common\h_AgentDefinitions.sql
-:r .\00_Common\i_Settings.sql
-:r .\00_Common\j_AccountTypes.sql
-:r .\01_Security\a_Users.sql
-:r .\01_Security\b_RolesMemberships.sql
+:r .\00_Common\b_ResourceClassifications.sql
+:r .\00_Common\c_EntryClassifications.sql
+:r .\00_Common\d_ResourceClassificationsEntryClassifications.sql
+:r .\00_Common\e_FunctionalCurrency.sql
+:r .\00_Common\f_Settings.sql
+
+:r .\01_Definitions\a_LookupDefinitions.sql
+:r .\01_Definitions\b_ResourceDefinitions.sql
+:r .\01_Definitions\c_AgentDefinitions.sql
+--:r .\01_Definitions\d_LineDefinitions.sql
+--:r .\01_Definitions\e_DocumentDefinitions.sql
+--:r .\01_Definitions\f_ContractTypes.sql
+--:r .\01_Definitions\g_AccountTypes.sql
+
+--:r .\02_Security\a_Users.sql
+--:r .\02_Security\b_RolesMemberships.sql
+--:r .\02_Security\c_Workflows.sql
+
+--:r .\03_Basic\a_Currencies.sql
+--:r .\03_Basic\b_MeasurementUnits.sql
+--:r .\03_Basic\c_Lookups.sql
+		
+--:r .\04_Agents\01_ResponsibilityCenters.sql
+--:r .\04_Agents\02_Suppliers.sql
+--:r .\04_Agents\03_Customers.sql
+--:r .\04_Agents\04_Employees.sql
+--:r .\04_Agents\05_Banks.sql
+--:r .\04_Agents\06_Custodies.sql
+--:r .\04_Agents\07_Shareholders.sql
+
+--:r .\05_Resources\a1_PPE_motor-vehicles.sql
+--:r .\05_Resources\a2_PPE_it-equipment.sql
+--:r .\05_Resources\a3_PPE_machineries.sql
+--:r .\05_Resources\a4_PPE_general-fixed-assets.sql
+--:r .\05_Resources\b_Inventories_raw-materials.sql
+--:r .\05_Resources\d1_FG_vehicles.sql
+----:r .\05_Resources\d2_FG_steel-products.sql
+----:r .\05_Resources\e1_CCE_received-checks.sql
+--:r .\05_Resources\h_PL_employee-benefits.sql
+
+--:r .\06_Accounts\a_AccountClassifications.sql
+--:r .\06_Accounts\b_BasicAccounts.sql
+--:r .\06_Accounts\c_SmartAccounts.sql
+
+--:r .\07_Entries\01_manual-journal-vouchers.sql
+
 
 RETURN;
 ERR_LABEL:
