@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[LineDefinitionsStatesReasons]
 (
 	[Id]				INT				CONSTRAINT [PK_LineDefinitionsStatesReasons] PRIMARY KEY IDENTITY,
-	[LineDefinitionId]	NVARCHAR (50)	NOT NULL CONSTRAINT [FK_LineDefinitionsStatesReasons__LineDefinitionId] REFERENCES dbo.LineDefinitions([Id]),
+	[LineDefinitionId]	NVARCHAR (50)	NOT NULL,
 	[StateId]			SMALLINT		NOT NULL,
 	[Name]				NVARCHAR (50)	NOT NULL,
 	[Name2]				NVARCHAR (50),

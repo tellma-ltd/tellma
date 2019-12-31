@@ -15,17 +15,16 @@ SET NOCOUNT ON;
 	WHEN MATCHED 
 	THEN
 		UPDATE SET 
-			t.[TitleSingular]			= s.[TitleSingular],
-			t.[TitleSingular2]			= s.[TitleSingular2],
-			t.[TitleSingular3]			= s.[TitleSingular3],
-			t.[TitlePlural]				= s.[TitlePlural],
-			t.[TitlePlural2]			= s.[TitlePlural2],
-			t.[TitlePlural3]			= s.[TitlePlural3],
-			t.[MainMenuIcon]			= s.[MainMenuIcon],
-			t.[MainMenuSection]			= s.[MainMenuSection],
-			t.[MainMenuSortKey]			= s.[MainMenuSortKey],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[TitleSingular]		= s.[TitleSingular],
+			t.[TitleSingular2]		= s.[TitleSingular2],
+			t.[TitleSingular3]		= s.[TitleSingular3],
+			t.[TitlePlural]			= s.[TitlePlural],
+			t.[TitlePlural2]		= s.[TitlePlural2],
+			t.[TitlePlural3]		= s.[TitlePlural3],
+			t.[MainMenuIcon]		= s.[MainMenuIcon],
+			t.[MainMenuSection]		= s.[MainMenuSection],
+			t.[MainMenuSortKey]		= s.[MainMenuSortKey],
+			t.[SavedById]			= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([Id],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3], [MainMenuIcon],		[MainMenuSection], [MainMenuSortKey])
 		VALUES (s.[Id], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3], s.[MainMenuIcon], s.[MainMenuSection], s.[MainMenuSortKey]);

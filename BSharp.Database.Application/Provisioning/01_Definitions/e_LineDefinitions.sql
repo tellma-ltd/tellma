@@ -1,17 +1,8 @@
-﻿DECLARE @LineDefinitions TABLE (
-	[Id]								NVARCHAR (50)			PRIMARY KEY,
-	[TitleSingular]						NVARCHAR (255) NOT NULL,
-	[TitleSingular2]					NVARCHAR (255),
-	[TitleSingular3]					NVARCHAR (255),
-	[TitlePlural]						NVARCHAR (255) NOT NULL,
-	[TitlePlural2]						NVARCHAR (255),
-	[TitlePlural3]						NVARCHAR (255),
-	[AgentDefinitionId]					NVARCHAR (50),--	REFERENCES dbo.AgentDefinitions([Id]),
-	[ResourceClassificationCode]		NVARCHAR (255),
-	[Script]							NVARCHAR (MAX)
-);
-
+﻿DECLARE @LineDefinitions dbo.LineDefinitionList;
+DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
+DECLARE @LineDefinitionsStatesReasons dbo.[LineDefinitionsStatesReasonList];
 DECLARE @LineDefinitionEntries TABLE (
+	[Index]						INT,
 	[LineDefinitionId]			NVARCHAR (50),
 	[EntryNumber]				INT,
 	[Direction]					SMALLINT,
@@ -58,37 +49,21 @@ DECLARE @LineDefinitionEntries TABLE (
 	[RelatedAmountSource]		SMALLINT			NOT NULL DEFAULT -1,
 	[DueDateSource]				SMALLINT			NOT NULL DEFAULT -1
 );
-DECLARE @LineDefinitionColumns TABLE (
-	[LineDefinitionId]			NVARCHAR (50),
-	[SortIndex]					TINYINT,
-	[ColumnName]				NVARCHAR (50),
-	[Label]						NVARCHAR (50),
-	[Label2]					NVARCHAR (50),
-	[Label3]					NVARCHAR (50)
-)
-;
-DECLARE @LineDefinitionsStatesReasons TABLE (
-	[Index]				INT				PRIMARY KEY,
-	[Id]				INT				DEFAULT 0,
-	[LineDefinitionId]	NVARCHAR (50)	NOT NULL,
-	[StateId]			SMALLINT		NOT NULL,
-	[Name]				NVARCHAR (50)	NOT NULL,
-	[Name2]				NVARCHAR (50),
-	[Name3]				NVARCHAR (50)
-);
 -- The behavior of the manual line is driven by the account.
 -- There is a special case, where 
 -- [Direction] = SIGN ([Debit]) + SIGN([Credit]), [Value] = [Debit]-[Credit]
 -- IF [Direction] = 1 THEN [Debit] = [Direction] * SIGN([Value]), [Credit] = 0
 -- IF [Direction] = -1 THEN [Debit] = 0, [Credit] = - [Direction] * SIGN([Value])
 -- NB: Debit & Credit Cannot be both non-zero. If both are zero, we set direction to +1.
-INSERT @LineDefinitions([Id], [TitleSingular], [TitlePlural]) VALUES (N'ManualLine', N'Adjustment', N'Adjustments');
-INSERT INTO @LineDefinitionColumns
-([LineDefinitionId], [SortIndex],	[ColumnName],			[Label]) VALUES
-(N'ManualLine',			0,			N'Line.Memo',			N'Memo'), -- only if it appears,
-(N'ManualLine',			1,			N'Entry[0].Account',	N'Account'),
-(N'ManualLine',			3,			N'Entry[0].Value',		N'Debit'), -- see special case
-(N'ManualLine',			4,			N'Entry[0].Value',		N'Credit'),
+INSERT @LineDefinitions([Index],
+	[Id],			[TitleSingular], [TitleSingular2],	[TitlePlural], [TitlePlural2]) VALUES (
+	0,N'ManualLine', N'Adjustment',		N'تسوية',		N'Adjustments',	N'تسويات');
+INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
+[SortKey],	[ColumnName],		[Label],		[Label2]) VALUES
+(0,0,0,		N'Line.Memo',		N'Memo',		N'البيان'), -- only if it appears,
+(1,0,1,		N'Entry[0].Account',N'Account',		N'الحساب'),
+(2,0,3,		N'Entry[0].Value',	N'Debit',		N'مدين'), -- see special case
+(3,0,4,		N'Entry[0].Value',	N'Credit',		N'دائن'),
 -- Properties shown are as follows:
 -- Currency and monetary value, if Account Currency is <> functional
 -- Resource if account is smart and Account.[Resource Classification] is not null
@@ -96,13 +71,13 @@ INSERT INTO @LineDefinitionColumns
 -- Account Identifier if Account is smart and Account.[Has Identifier] = 1
 -- Based on Resource Definition: we show: Count, Mass, Volume, Time, Resource Identifier, Due Date
 -- Additional dynamic properties based on the tuple (Contract Type, Agent Definition, Resource Classifitation) -- to be stored in table
-(N'ManualLine',			5,			N'Entry[0].Dynamic',	N'Properties')
-;
-INSERT INTO @LineDefinitionsStatesReasons([Index],
-[LineDefinitionId],[StateId], [Name]) VALUES
-(0,N'ManualLine',		-4,			N'Duplicate Line'),
-(1,N'ManualLine',		-4,			N'Incorrect Analysis'),
-(2,N'ManualLine',		-4,			N'Other reasons');
+(4,0,5,		N'Entry[0].Dynamic',N'Properties',	N'الواصفات');
+INSERT INTO @LineDefinitionsStatesReasons([Index],[HeaderIndex],
+[StateId], [Name],					[Name2]) VALUES
+(0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
+(1,0,-4,	N'Incorrect Analysis',	N'تحليل خطأ'),
+(2,0,-4,	N'Other reasons',		N'أسباب أخرى');
+/*
 INSERT @LineDefinitions(
 [Id],					[TitleSingular],		[TitlePlural],		[AgentDefinitionId]) VALUES
 (N'PurchaseInvoice',	N'Purchase Invoice',	N'Purchase Invoices',	N'suppliers');
@@ -147,6 +122,7 @@ INSERT INTO @LineDefinitionColumns
 (N'CashPayment',		7,			N'Entry[1].ExternalReference',			N'Check #/Receipt #'),
 (N'CashPayment',		8,			N'Entry[1].RelatedDate',				N'Check Date')
 ;
+*/
 /*
 -- NB: We defined a Pettycash payment to separate the business rules
 INSERT @LineDefinitions(
@@ -199,6 +175,7 @@ INSERT INTO @LineDefinitionColumns
 -- payroll lines (one per comlumn)
 -- etc...
 
+DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 MERGE [dbo].[LineDefinitions] AS t
 USING @LineDefinitions AS s
 ON s.Id = t.Id
@@ -209,13 +186,41 @@ WHEN MATCHED THEN
 		t.[TitleSingular3]	= s.[TitleSingular3],
 		t.[TitlePlural]		= s.[TitlePlural],
 		t.[TitlePlural2]	= s.[TitlePlural2],
-		t.[TitlePlural3]	= s.[TitlePlural3]
+		t.[TitlePlural3]	= s.[TitlePlural3],
+		t.[SavedById]		= @UserId
 WHEN NOT MATCHED BY SOURCE THEN
     DELETE
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT ([Id], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3])
+    INSERT ([Id],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3])
     VALUES (s.[Id], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3]);
 
+MERGE [dbo].[LineDefinitionColumns] AS t
+USING (
+	SELECT
+		LDC.[Id],
+		LD.[Id] AS [LineDefinitionId],
+		LDC.[SortKey],
+		LDC.[ColumnName],
+		LDC.[Label],
+		LDC.[Label2],
+		LDC.[Label3]
+	FROM @LineDefinitionColumns LDC
+	JOIN @LineDefinitions LD ON LDC.HeaderIndex = LD.[Index]
+) AS s
+ON s.[Id] = t.[Id]
+WHEN MATCHED THEN
+	UPDATE SET
+		t.[SortKey]			= s.[SortKey],
+		t.[ColumnName]		= s.[ColumnName],
+		t.[Label]			= s.[Label],
+		t.[Label2]			= s.[Label2],
+		t.[Label3]			= s.[Label3]
+WHEN NOT MATCHED BY SOURCE THEN
+    DELETE
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT ([LineDefinitionId], [SortKey],	[ColumnName],	[Label],	[Label2],	[Label3])
+    VALUES (s.[LineDefinitionId], s.[SortKey], s.[ColumnName], s.[Label], s.[Label2], s.[Label3]);
+/*
 MERGE [dbo].[LineDefinitionEntries] AS t
 USING @LineDefinitionEntries AS s
 ON s.[LineDefinitionId] = t.[LineDefinitionId] AND s.[EntryNumber] = t.[EntryNumber]
@@ -228,9 +233,21 @@ WHEN NOT MATCHED BY SOURCE THEN
 WHEN NOT MATCHED BY TARGET THEN
     INSERT ([LineDefinitionId], [EntryNumber],		[Direction], [ContractType])
     VALUES (s.[LineDefinitionId], s.[EntryNumber], s.[Direction], s.[ContractType]);
+	*/
+--
 
 MERGE [dbo].[LineDefinitionsStatesReasons] AS t
-USING @LineDefinitionsStatesReasons AS s
+USING (
+	SELECT
+		LDSR.[Id],
+		LD.[Id] AS [LineDefinitionId],
+		LDSR.[StateId],
+		LDSR.[Name],
+		LDSR.[Name2],
+		LDSR.[Name3]
+	FROM @LineDefinitionsStatesReasons LDSR
+	JOIN @LineDefinitions LD ON LDSR.HeaderIndex = LD.[Index]
+)AS s
 ON s.Id = t.Id
 WHEN MATCHED THEN
 	UPDATE SET

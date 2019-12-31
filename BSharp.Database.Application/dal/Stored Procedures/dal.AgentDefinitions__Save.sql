@@ -2,7 +2,6 @@
 	@Entities [AgentDefinitionList] READONLY
 AS
 SET NOCOUNT ON;
-	DECLARE @IndexedIds [dbo].[IndexedStringList];
 	DECLARE @Now DATETIMEOFFSET(7) = SYSDATETIMEOFFSET();
 	DECLARE @UserId INT = CONVERT(INT, SESSION_CONTEXT(N'UserId'));
 
@@ -55,11 +54,10 @@ SET NOCOUNT ON;
 			t.[OvertimeRateVisibility]		= s.[OvertimeRateVisibility],
 			t.[BankAccountNumberVisibility]	= s. [BankAccountNumberVisibility],
 			
-			t.[MainMenuIcon]			= s.[MainMenuIcon],
-			t.[MainMenuSection]			= s.[MainMenuSection],
-			t.[MainMenuSortKey]			= s.[MainMenuSortKey],
-			t.[ModifiedAt]				= @Now,
-			t.[ModifiedById]			= @UserId
+			t.[MainMenuIcon]				= s.[MainMenuIcon],
+			t.[MainMenuSection]				= s.[MainMenuSection],
+			t.[MainMenuSortKey]				= s.[MainMenuSortKey],
+			t.[SavedById]					= @UserId
 	WHEN NOT MATCHED THEN
 		INSERT ([Id],	[TitleSingular],	[TitleSingular2], [TitleSingular3],		[TitlePlural],	[TitlePlural2],		[TitlePlural3], 
 			[TaxIdentificationNumberVisibility],

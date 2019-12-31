@@ -22,7 +22,7 @@
 -- While Voucher Number referes to the source document, this refers to any other identifying string 
 -- for support documents, such as deposit slip reference, invoice number, etc...
 
-	[SortKey]					INT				NOT NULL,
+	[SortKey]					DECIMAL (9,4)				NOT NULL,
 -- for auditing
 	[CreatedAt]				DATETIMEOFFSET(7)	NOT NULL DEFAULT SYSDATETIMEOFFSET() CONSTRAINT [FK_Lines__CreatedById]	FOREIGN KEY ([CreatedById])	REFERENCES [dbo].[Users] ([Id]),
 	[CreatedById]			INT	NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')),

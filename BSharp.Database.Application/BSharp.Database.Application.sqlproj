@@ -84,8 +84,6 @@
     <Folder Include="rpt\Stored Procedures" />
     <Folder Include="bll\Functions" />
     <Folder Include="Mapping" />
-    <Folder Include="Samples" />
-    <Folder Include="Samples\00_Setup" />
     <Folder Include="Provisioning\00_Common" />
     <Folder Include="Provisioning\02_Security" />
     <Folder Include="Provisioning\01_Definitions" />
@@ -461,9 +459,9 @@
     <Build Include="dal\Stored Procedures\dal.Definitions__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
     <None Include="Provisioning\01_Definitions\a_LookupDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\d_LineDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\e_DocumentDefinitions.sql" />
-    <None Include="Provisioning\01_Definitions\f_ContractTypes.sql" />
+    <None Include="Provisioning\01_Definitions\e_LineDefinitions.sql" />
+    <None Include="Provisioning\01_Definitions\f_DocumentDefinitions.sql" />
+    <None Include="Provisioning\01_Definitions\d_ContractTypes.sql" />
     <None Include="Provisioning\01_Definitions\g_AccountTypes.sql" />
     <None Include="Provisioning\02_Security\c_Workflows.sql" />
     <None Include="Provisioning\03_Basic\a_Currencies.sql" />
@@ -493,6 +491,12 @@
     <None Include="Provisioning\07_Entries\03_petty-cash-vouchers.sql" />
     <Build Include="dal\Stored Procedures\dal.AgentDefinitions__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.AgentDefinitionList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LineDefinitionList.sql" />
+    <Build Include="dal\Stored Procedures\dal.LineDefinitions__Save.sql" />
+    <Build Include="dbo\User Defined Types\dbo.ResourceDefinitionList.sql" />
+    <Build Include="dbo\Tables\dbo.LineDefinitionColumns.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LineDefinitionColumnList.sql" />
+    <Build Include="dbo\User Defined Types\dbo.LineDefinitionsStatesReasonList.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -506,7 +510,6 @@
     <None Include="Tests\07_Resources_ProductionSupplies.sql" />
     <None Include="Tests\13_HRCycle.sql" />
     <None Include="dbo\User Defined Types\Readme.txt" />
-    <None Include="Samples\00_Setup\a_Declarations.sql" />
     <None Include="101.BananSD.publish.xml" />
     <None Include="103.LifanCars.publish.xml" />
     <None Include="104.WaliaSteel.publish.xml" />

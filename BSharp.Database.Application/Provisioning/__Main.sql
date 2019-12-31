@@ -24,9 +24,10 @@ END
 :r .\01_Definitions\a_LookupDefinitions.sql
 :r .\01_Definitions\b_ResourceDefinitions.sql
 :r .\01_Definitions\c_AgentDefinitions.sql
---:r .\01_Definitions\d_LineDefinitions.sql
---:r .\01_Definitions\e_DocumentDefinitions.sql
---:r .\01_Definitions\f_ContractTypes.sql
+:r .\01_Definitions\d_ContractTypes.sql
+:r .\01_Definitions\e_LineDefinitions.sql
+--:r .\01_Definitions\f_DocumentDefinitions.sql
+
 --:r .\01_Definitions\g_AccountTypes.sql
 
 --:r .\02_Security\a_Users.sql

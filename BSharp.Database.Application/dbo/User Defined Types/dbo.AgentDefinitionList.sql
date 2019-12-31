@@ -1,7 +1,6 @@
-﻿CREATE TYPE [dbo].[AgentDefinitionList] AS TABLE
-(
+﻿CREATE TYPE [dbo].[AgentDefinitionList] AS TABLE (
 	[Index]								INT	PRIMARY KEY,
-	[Id]								NVARCHAR (50),
+	[Id]								NVARCHAR (50) NOT NULL UNIQUE,
 	[TitleSingular]						NVARCHAR (255),
 	[TitleSingular2]					NVARCHAR (255),
 	[TitleSingular3]					NVARCHAR (255),
