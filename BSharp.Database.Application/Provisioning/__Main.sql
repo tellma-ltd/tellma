@@ -30,8 +30,8 @@ END
 
 :r .\01_Definitions\g_AccountTypes.sql
 
---:r .\02_Security\a_Users.sql
---:r .\02_Security\b_RolesMemberships.sql
+:r .\02_Security\a_Users.sql
+:r .\02_Security\b_RolesMemberships.sql
 --:r .\02_Security\c_Workflows.sql
 
 --:r .\03_Basic\a_Currencies.sql

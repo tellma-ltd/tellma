@@ -109,5 +109,9 @@ BEGIN
 	--(13,		N'Kalkidan Asemamaw',		N'kasmamaw5@gmail.com');
 END
 
+EXEC dal.Roles__Save
+	@Entities = @Roles,
+	@Members = @Members,
+	@Permissions = @Permissions
 IF @DebugRoles = 1
 	SELECT * FROM map.Roles();
