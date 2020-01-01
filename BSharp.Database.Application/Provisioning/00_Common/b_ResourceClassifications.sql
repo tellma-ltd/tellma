@@ -1,4 +1,11 @@
-﻿IF NOT EXISTS(SELECT * FROM dbo.ResourceClassifications)
+﻿IF NOT EXISTS(SELECT * FROM dbo.ResourceDefinitions)
+BEGIN
+	INSERT INTO dbo.ResourceDefinitions
+	([Id],				[TitlePlural],		[TitleSingular]) VALUES
+	(N'currencies',		N'Currencies',		N'Currency'),
+	(N'general-items',	N'General Items',	N'General Item');
+END
+IF NOT EXISTS(SELECT * FROM dbo.ResourceClassifications)
 BEGIN
 	DECLARE @ResourceClassificationsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT, [Index] INT)
 	INSERT INTO @ResourceClassificationsTemp

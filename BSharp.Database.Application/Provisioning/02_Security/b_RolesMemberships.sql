@@ -19,10 +19,10 @@ BEGIN
 	INSERT INTO @Permissions
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
 	([HeaderIndex],	[Index],[View],									[Action]) VALUES
-	(0,				0,		N'All',									N'Read'),
+	(0,				0,		N'all',									N'Read'),
 	(0,				1,		N'documents/manual-journal-vouchers',	N'All'),
-	(1,				0,		N'All',									N'Read'),
-	(2,				0,		N'All',									N'Read');
+	(1,				0,		N'all',									N'Read'),
+	(2,				0,		N'all',									N'Read');
 END
 
 IF @DB = N'102' -- Banan ET, ETB, en
@@ -46,10 +46,10 @@ BEGIN
 	INSERT INTO @Permissions
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
 	([HeaderIndex],	[Index],[View],									[Action]) VALUES
-	(0,				0,		N'All',									N'Read'),
+	(0,				0,		N'all',									N'Read'),
 	(0,				1,		N'documents/manual-journal-vouchers',	N'All'),
-	(1,				0,		N'All',									N'Read'),
-	(3,				0,		N'All',									N'Read');
+	(1,				0,		N'all',									N'Read'),
+	(3,				0,		N'all',									N'Read');
 
 END
 --IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
@@ -84,11 +84,11 @@ BEGIN
 	INSERT INTO @Permissions
 	--Action: N'Read', N'Update', N'Delete', N'IsActive', N'IsDeprecated', N'ResendInvitationEmail', N'All'))
 	([HeaderIndex],	[Index],[View],									[Action]) VALUES
-	(0,				0,		N'All',									N'Read'),
+	(0,				0,		N'all',									N'Read'),
 	(0,				1,		N'documents/manual-journal-vouchers',	N'All'),
-	(1,				0,		N'All',									N'Read'),
-	(4,				0,		N'All',									N'Read'),
-	(5,				0,		N'All',									N'Read')
+	(1,				0,		N'all',									N'Read'),
+	(4,				0,		N'all',									N'Read'),
+	(5,				0,		N'all',									N'Read')
 	;
 
 	--INSERT INTO @Users
@@ -109,5 +109,9 @@ BEGIN
 	--(13,		N'Kalkidan Asemamaw',		N'kasmamaw5@gmail.com');
 END
 
+EXEC dal.Roles__Save
+	@Entities = @Roles,
+	@Members = @Members,
+	@Permissions = @Permissions
 IF @DebugRoles = 1
 	SELECT * FROM map.Roles();

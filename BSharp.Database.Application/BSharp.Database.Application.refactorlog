@@ -515,4 +515,25 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[Permissions__Load]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="60ca5d6a-e4a8-4aa7-86a8-7eb246ffd508" ChangeDateTime="12/31/2019 05:53:38">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionColumns].[SortIndex]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[LineDefinitionColumns]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SortKey]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3ab4534d-79b2-45f3-b8cd-789d1b744685" ChangeDateTime="12/31/2019 07:51:55">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionsStatesReasonList]" />
+    <Property Name="ElementType" Value="SqlTableType" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionStateReasonList]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="fc5ebbc6-d531-4636-9677-7b2ce640ebd4" ChangeDateTime="12/31/2019 07:52:35">
+    <Property Name="ElementName" Value="[dbo].[LineDefinitionsStatesReasons]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[LineDefinitionStateReasons]" />
+  </Operation>
 </Operations>
