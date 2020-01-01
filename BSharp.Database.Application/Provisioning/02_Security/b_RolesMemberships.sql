@@ -67,7 +67,7 @@ BEGIN
 	(2,			N'Production Manager',	'PM'),
 	(3,			N'Sales Manager',		'SM'),
 	(4,			N'Accountant',			'AE'),
-	(5,			N'Accountant',			'AE')
+	(5,			N'Cashier',				'CS')
 	;
 
 	INSERT INTO @Members
