@@ -26,7 +26,7 @@ END
 :r .\01_Definitions\c_AgentDefinitions.sql
 :r .\01_Definitions\d_ContractTypes.sql
 :r .\01_Definitions\e_LineDefinitions.sql
---:r .\01_Definitions\f_DocumentDefinitions.sql
+:r .\01_Definitions\f_DocumentDefinitions.sql
 
 --:r .\01_Definitions\g_AccountTypes.sql
 

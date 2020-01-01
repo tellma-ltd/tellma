@@ -1,6 +1,6 @@
 ﻿DECLARE @LineDefinitions dbo.LineDefinitionList;
 DECLARE @LineDefinitionColumns dbo.LineDefinitionColumnList;
-DECLARE @LineDefinitionsStatesReasons dbo.[LineDefinitionsStatesReasonList];
+DECLARE @LineDefinitionStateReasons dbo.[LineDefinitionStateReasonList];
 DECLARE @LineDefinitionEntries TABLE (
 	[Index]						INT,
 	[LineDefinitionId]			NVARCHAR (50),
@@ -72,7 +72,7 @@ INSERT INTO @LineDefinitionColumns([Index], [HeaderIndex],
 -- Based on Resource Definition: we show: Count, Mass, Volume, Time, Resource Identifier, Due Date
 -- Additional dynamic properties based on the tuple (Contract Type, Agent Definition, Resource Classifitation) -- to be stored in table
 (4,0,5,		N'Entry[0].Dynamic',N'Properties',	N'الواصفات');
-INSERT INTO @LineDefinitionsStatesReasons([Index],[HeaderIndex],
+INSERT INTO @LineDefinitionStateReasons([Index],[HeaderIndex],
 [StateId], [Name],					[Name2]) VALUES
 (0,0,-4,	N'Duplicate Line',		N'بيانات مكررة'),
 (1,0,-4,	N'Incorrect Analysis',	N'تحليل خطأ'),
@@ -236,7 +236,7 @@ WHEN NOT MATCHED BY TARGET THEN
 	*/
 --
 
-MERGE [dbo].[LineDefinitionsStatesReasons] AS t
+MERGE [dbo].[LineDefinitionStateReasons] AS t
 USING (
 	SELECT
 		LDSR.[Id],
@@ -245,7 +245,7 @@ USING (
 		LDSR.[Name],
 		LDSR.[Name2],
 		LDSR.[Name3]
-	FROM @LineDefinitionsStatesReasons LDSR
+	FROM @LineDefinitionStateReasons LDSR
 	JOIN @LineDefinitions LD ON LDSR.HeaderIndex = LD.[Index]
 )AS s
 ON s.Id = t.Id

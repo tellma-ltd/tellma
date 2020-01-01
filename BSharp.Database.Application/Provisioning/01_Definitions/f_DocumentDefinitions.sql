@@ -80,7 +80,7 @@ DECLARE @DocumentDefinitionsLineDefinitions TABLE(
 
 INSERT @DocumentDefinitionsLineDefinitions 
 ([DocumentDefinitionid],	[LineDefinitionId], [IsVisibleByDefault]) VALUES
-(N'manual-journal-vouchers',		N'ManualLine',		1),
+(N'manual-journal-vouchers',	N'ManualLine',		1),
 (N'cash-payment-vouchers',	N'CashPayment',		1),
 (N'cash-payment-vouchers',	N'ManualLine',		1),
 (N'cash-payment-vouchers',	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
