@@ -28,7 +28,7 @@ END
 :r .\01_Definitions\e_LineDefinitions.sql
 :r .\01_Definitions\f_DocumentDefinitions.sql
 
---:r .\01_Definitions\g_AccountTypes.sql
+:r .\01_Definitions\g_AccountTypes.sql
 
 --:r .\02_Security\a_Users.sql
 --:r .\02_Security\b_RolesMemberships.sql

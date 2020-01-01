@@ -1,19 +1,5 @@
-﻿DECLARE @DocumentDefinitions TABLE (
-	[Id]						NVARCHAR (50)	PRIMARY KEY,
-	[IsSourceDocument]			BIT				DEFAULT (1), -- <=> IsVoucherReferenceRequired
-	[TitleSingular]				NVARCHAR (255),
-	[TitleSingular2]			NVARCHAR (255),
-	[TitleSingular3]			NVARCHAR (255),
-	[TitlePlural]				NVARCHAR (255),
-	[TitlePlural2]				NVARCHAR (255),
-	[TitlePlural3]				NVARCHAR (255),
-	-- UI Specs
-	[Prefix]					NVARCHAR (5)	NOT NULL,
-	[CodeWidth]					TINYINT			DEFAULT (3), -- For presentation purposes
-	[AgentDefinitionId]			NVARCHAR (50)
-);
-INSERT @DocumentDefinitions
-	
+﻿DECLARE @DocumentDefinitions [DocumentDefinitionList];
+DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinitionList];
 	-- The list includes the following transaction types, and their variant flavours depending on country and industry:
 	-- lease-in agreement, lease-in receipt, lease-in invoice
 	-- cash sale w/invoice, sales agreement (w/invoice, w/collection, w/issue), cash collection (w/invoice), G/S issue (w/invoice), sales invoice
@@ -22,10 +8,103 @@ INSERT @DocumentDefinitions
 	-- production, maintenance
 	-- payroll, paysheet (w/loan deduction), loan issue, penalty, overtime, paid leave, unpaid leave
 	-- manual journal, depreciation,  
-	([Id],						[TitleSingular],			[TitlePlural],				[Prefix]) VALUES
-	(N'manual-journal-vouchers',N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
-	(N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'Cash Payment Vouchers',	N'CPV'),
-	(N'petty-cash-vouchers',	NULL,						NULL,						N'PCV');
+
+	IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
+	INSERT @DocumentDefinitions([Index],	
+		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
+	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
+	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
+
+	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId], [IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',		1),
+	(0,1,	N'CashPayment',		1),
+	(1,1,	N'ManualLine',		1),
+	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
+	(0,2,	N'PettyCashPayment',1);
+END
+IF @DB = N'102' -- Banan ET, ETB, en
+BEGIN
+	INSERT @DocumentDefinitions([Index],	
+		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
+	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
+	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
+	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'WT')
+	N'et-sales-witholding-tax-vouchers'
+
+
+	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId], [IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',		1),
+	(0,1,	N'CashPayment',		1),
+	(1,1,	N'ManualLine',		1),
+	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
+	(0,2,	N'PettyCashPayment',1);END
+IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+BEGIN
+	INSERT @DocumentDefinitions([Index],	
+		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
+	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
+	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
+
+	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId], [IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',		1),
+	(0,1,	N'CashPayment',		1),
+	(1,1,	N'ManualLine',		1),
+	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
+	(0,2,	N'PettyCashPayment',1);END
+IF @DB = N'104' -- Walia Steel, ETB, en/am
+BEGIN
+	INSERT @DocumentDefinitions([Index],	
+		[Id],		[IsOriginalDocument],	[TitleSingular],			[TitlePlural],				[Prefix]) VALUES
+	(0,	N'manual-journal-vouchers',	1,		N'Manual Journal Voucher',	N'Manual Journal Vouchers',	N'JV'),
+	(1,	N'cash-payment-vouchers',	0,		N'Cash Payment Voucher',	N'Cash Payment Vouchers',	N'CPV'),
+	(2,	N'petty-cash-vouchers',		0,		N'Petty Cash Voucher',		N'Petty Cash Vouchers',		N'PCV');
+
+	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId], [IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',		1),
+	(0,1,	N'CashPayment',		1),
+	(1,1,	N'ManualLine',		1),
+	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
+	(0,2,	N'PettyCashPayment',1);
+END
+
+EXEC dal.DocumentDefinitions__Save
+	@Entities = @DocumentDefinitions,
+	@DocumentDefinitionLineDefinitions = @DocumentDefinitionLineDefinitions;
+	
+---------------------------------------------------------------------
+--	(N'purchasing-international', N'GoodReceiptInTransitWithInvoice', 1),
+
+--	(N'et-sales-witholding-tax-vouchers', N'ET.CustomerTaxWithholding', 1),
+--	(N'et-sales-witholding-tax-vouchers', N'ReceivableCredit', 1), 
+--	(N'et-sales-witholding-tax-vouchers', N'CashIssue', 0),
+
+--	(N'cash-payment-vouchers', N'ServiceReceiptWithInvoice', 1),
+--	(N'cash-payment-vouchers', N'PayableDebit', 0), -- pay dues
+--	(N'cash-payment-vouchers', N'ReceivableDebit', 0), -- lend
+--	(N'cash-payment-vouchers', N'GoodReceiptWithInvoice', 0),
+--	(N'cash-payment-vouchers', N'CashReceipt', 0),
+--	(N'cash-payment-vouchers', N'LeaseInInvoiceWithoutReceipt', 0),
+
+--	(N'sales-cash', N'CashReceipt', 1),
+--	(N'sales-cash', N'GoodIssueWithInvoice', 1),
+--	(N'sales-cash', N'ServiceIssueWithInvoice', 0),
+--	(N'sales-cash', N'CustomerTaxWithholding', 0),	
+--	(N'sales-cash', N'GoodServiceInvoiceWithoutIssue', 0),
+--	(N'sales-cash', N'LeaseOutInvoiceWithoutIssue', 0),
+
+--	(N'production-events', N'GoodIssue', 1), -- input to production
+--	(N'production-events', N'LaborIssue', 0), -- input to production
+--	(N'production-events', N'GoodReceipt', 1) -- output from production
+--;
+
 ---------------------------------------------
 
 	--(N'et-sales-witholding-tax-vouchers', N'WT'), -- (N'et-customers-tax-withholdings'), (N'receivable-credit'), (N'cash-issue')
@@ -57,59 +136,6 @@ INSERT @DocumentDefinitions
 	
 	--(N'production-events', NULL, NULL, N'PRD');
 
-MERGE [dbo].[DocumentDefinitions] AS t
-USING @DocumentDefinitions AS s
-ON s.Id = t.Id
-WHEN NOT MATCHED BY SOURCE THEN
-    DELETE
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT (
-		[Id], [IsOriginalDocument], [TitleSingular], [TitleSingular2], [TitleSingular3], [TitlePlural], [TitlePlural2], [TitlePlural3],
-		[Prefix], [CodeWidth], [AgentDefinitionId]
-	) VALUES (
-		s.[Id], s.[IsSourceDocument], s.[TitleSingular], s.[TitleSingular2], s.[TitleSingular3], s.[TitlePlural], s.[TitlePlural2], s.[TitlePlural3],
-		s.[Prefix], s.[CodeWidth], s.[AgentDefinitionId]
-	);
 
-DECLARE @DocumentDefinitionsLineDefinitions TABLE(
-	[DocumentDefinitionid]		NVARCHAR (50), 
-	[LineDefinitionId]			NVARCHAR (50), 
-	[IsVisibleByDefault]	BIT,
-	PRIMARY KEY([DocumentDefinitionid], [LineDefinitionId])
-);
-
-INSERT @DocumentDefinitionsLineDefinitions 
-([DocumentDefinitionid],	[LineDefinitionId], [IsVisibleByDefault]) VALUES
-(N'manual-journal-vouchers',	N'ManualLine',		1),
-(N'cash-payment-vouchers',	N'CashPayment',		1),
-(N'cash-payment-vouchers',	N'ManualLine',		1),
-(N'cash-payment-vouchers',	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
-(N'petty-cash-vouchers',	N'PettyCashPayment',1),
-
----------------------------------------------------------------------
-	(N'purchasing-international', N'GoodReceiptInTransitWithInvoice', 1),
-
-	(N'et-sales-witholding-tax-vouchers', N'ET.CustomerTaxWithholding', 1),
-	(N'et-sales-witholding-tax-vouchers', N'ReceivableCredit', 1), 
-	(N'et-sales-witholding-tax-vouchers', N'CashIssue', 0),
-
-	(N'cash-payment-vouchers', N'ServiceReceiptWithInvoice', 1),
-	(N'cash-payment-vouchers', N'PayableDebit', 0), -- pay dues
-	(N'cash-payment-vouchers', N'ReceivableDebit', 0), -- lend
-	(N'cash-payment-vouchers', N'GoodReceiptWithInvoice', 0),
-	(N'cash-payment-vouchers', N'CashReceipt', 0),
-	(N'cash-payment-vouchers', N'LeaseInInvoiceWithoutReceipt', 0),
-
-	(N'sales-cash', N'CashReceipt', 1),
-	(N'sales-cash', N'GoodIssueWithInvoice', 1),
-	(N'sales-cash', N'ServiceIssueWithInvoice', 0),
-	(N'sales-cash', N'CustomerTaxWithholding', 0),	
-	(N'sales-cash', N'GoodServiceInvoiceWithoutIssue', 0),
-	(N'sales-cash', N'LeaseOutInvoiceWithoutIssue', 0),
-
-	(N'production-events', N'GoodIssue', 1), -- input to production
-	(N'production-events', N'LaborIssue', 0), -- input to production
-	(N'production-events', N'GoodReceipt', 1) -- output from production
-;
 IF @DebugDocumentDefinitions = 1
 	SELECT * FROM dbo.DocumentDefinitions;
