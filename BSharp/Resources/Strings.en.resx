@@ -515,7 +515,7 @@
     <value>Responsibility Center</value>
   </data>
   <data name="Entry_Time" xml:space="preserve">
-    <value>Time</value>
+    <value>Period</value>
   </data>
   <data name="Entry_Time1" xml:space="preserve">
     <value>Time 1</value>

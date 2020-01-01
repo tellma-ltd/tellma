@@ -5,7 +5,7 @@ import { ApiService } from '~/app/data/api.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { DocumentForSave, Document, serialNumber } from '~/app/data/entities/document';
-import { DocumentDefinitionForClient } from '~/app/data/dto/definitions-for-client';
+import { DocumentDefinitionForClient, ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { LineForSave } from '~/app/data/entities/line';
 import { EntryForSave, Entry } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
@@ -14,6 +14,11 @@ import { tap, catchError } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { AccountForSave } from '~/app/data/entities/account';
+import { Resource, metadata_Resource, ResourceForSave } from '~/app/data/entities/resource';
+import { Currency } from '~/app/data/entities/currency';
+import { metadata_Agent } from '~/app/data/entities/agent';
+import { ResourceClassification } from '~/app/data/entities/resource-classification';
 
 interface DocumentEventBase {
   time: string;
@@ -73,8 +78,29 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   @ViewChild('signModal', { static: true })
   signModal: TemplateRef<any>;
 
-  public expand = `CreatedBy,ModifiedBy,Lines/Entries/Account/Currency,Signatures/OnBehalfOfUser,Signatures/Role
-  ,Signatures/CreatedBy,AssignmentsHistory/Assignee,AssignmentsHistory/CreatedBy`;
+  public expand2 = `CreatedBy,ModifiedBy` +
+    `Lines/Entries/Account/Currency,Lines/Entries/Account/Resource/Currency,
+  Lines/Entries/Account/Agent,Lines/Entries/Account/ResourceClassification,Lines/Entries/Resource/Currency,
+  Signatures/OnBehalfOfUser,Signatures/Role,Signatures/CreatedBy,AssignmentsHistory/Assignee,AssignmentsHistory/CreatedBy`;
+
+  public expand = 'CreatedBy,ModifiedBy,' +
+    // Entry Account
+    ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit',
+      'Resource/VolumeUnit', 'Resource/TimeUnit', 'Agent', 'ResourceClassification']
+      .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
+
+    // Entry
+    ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit',
+      'Resource/VolumeUnit', 'Resource/TimeUnit', 'Agent']
+      .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
+
+    // Signatures
+    ['OnBehalfOfUser', 'Role', 'CreatedBy']
+      .map(prop => `Signatures/${prop}`).join(',') + ',' +
+
+    // Assignment history
+    ['Assignee', 'CreatedBy']
+      .map(prop => `AssignmentsHistory/${prop}`).join(',');
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
@@ -215,14 +241,17 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   public columnPaths(model: DocumentForSave): string[] {
-    return model.MemoIsCommon ?
-      ['AccountId', 'Debit', 'Credit', 'Dynamic'] :
-      ['Memo', 'AccountId', 'Debit', 'Credit', 'Dynamic'];
-  }
+    const paths = ['AccountId', 'Debit', 'Credit', 'Dynamic'];
 
-  public showMonetaryValue(entry: Entry): boolean {
-    const account = this.ws.get('Account', entry.AccountId);
-    return !!account && !!account.CurrencyId && account.CurrencyId !== this.ws.settings.FunctionalCurrencyId;
+    if (this.ws.settings.IsMultiResponsibilityCenter) {
+      paths.splice(1, 0, 'ResponsibilityCenter');
+    }
+
+    if (!model.MemoIsCommon) {
+      paths.unshift('Memo');
+    }
+
+    return paths;
   }
 
   public get functionalPostfix(): string {
@@ -365,16 +394,16 @@ Document_State_Closed
       */
 
       this._stateChoices = [
-        { value: 0,  name: () => this.translate.instant('Document_State_Draft') },
-        { value: -1,  name: () => this.translate.instant('Document_State_Void') },
-        { value: 1,  name: () => this.translate.instant('Document_State_Requested') },
-        { value: -2,  name: () => this.translate.instant('Document_State_Rejected') },
-        { value: 2,  name: () => this.translate.instant('Document_State_Authorized') },
-        { value: -3,  name: () => this.translate.instant('Document_State_Failed') },
-        { value: 3,  name: () => this.translate.instant('Document_State_Completed') },
-        { value: -4,  name: () => this.translate.instant('Document_State_Invalid') },
-        { value: 4,  name: () => this.translate.instant('Document_State_Reviewed') },
-    //    { value: 5,  name: () => this.translate.instant('Document_State_Closed') },
+        { value: 0, name: () => this.translate.instant('Document_State_Draft') },
+        { value: -1, name: () => this.translate.instant('Document_State_Void') },
+        { value: 1, name: () => this.translate.instant('Document_State_Requested') },
+        { value: -2, name: () => this.translate.instant('Document_State_Rejected') },
+        { value: 2, name: () => this.translate.instant('Document_State_Authorized') },
+        { value: -3, name: () => this.translate.instant('Document_State_Failed') },
+        { value: 3, name: () => this.translate.instant('Document_State_Completed') },
+        { value: -4, name: () => this.translate.instant('Document_State_Invalid') },
+        { value: 4, name: () => this.translate.instant('Document_State_Reviewed') },
+        //    { value: 5,  name: () => this.translate.instant('Document_State_Closed') },
       ];
     }
 
@@ -388,4 +417,113 @@ Document_State_Closed
   public signTooltip = (model: Document) => ''; // this.canActivateDeactivateItem(model) ? '' :
   // this.translate.instant('Error_AccountDoesNotHaveSufficientPermissions')
 
+  public account(entry: Entry): AccountForSave {
+    return this.ws.get('Account', entry.AccountId) as AccountForSave;
+  }
+
+  public resource(entry: Entry): Resource {
+    const account = this.account(entry);
+    const accountResourceId = !!account ? account.ResourceId : null;
+    const resourceId = accountResourceId || entry.ResourceId;
+    return this.ws.get('Resource', resourceId) as Resource;
+  }
+
+  // AgentId
+
+  public showAgent(entry: Entry): boolean {
+    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
+    return !!account && !!account.AgentDefinitionId;
+  }
+
+  public agentLabel(entry: Entry): string {
+    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
+    const agentDefinitionId = !!account ? account.AgentDefinitionId : null;
+
+    return metadata_Agent(this.ws, this.translate, agentDefinitionId).titleSingular();
+  }
+
+  // ResourceId
+
+  public showResource(entry: Entry): boolean {
+    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
+    return !!account && !!account.ResourceClassificationId;
+  }
+
+  public resourceDefinitionIds(entry: Entry): string[] {
+    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
+    const resourceClassificationId = !!account ? account.ResourceClassificationId : null;
+    const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as ResourceClassification;
+
+    return !!resourceClassification ? [resourceClassification.ResourceDefinitionId] : [];
+  }
+
+  public resourceLabel(entry: Entry): string {
+    const resourceDefinitionIds = this.resourceDefinitionIds(entry);
+    const resourceDefinitionId = resourceDefinitionIds[0];
+
+    return metadata_Resource(this.ws, this.translate, resourceDefinitionId).titleSingular();
+  }
+
+  // DueDate
+
+  private resourceDefinition(entry: Entry): ResourceDefinitionForClient {
+    const resource = this.resource(entry);
+    const defId = !!resource ? resource.DefinitionId : null;
+    const resourceDefinition = !!defId ? this.ws.definitions.Resources[defId] : null;
+    return resourceDefinition;
+  }
+
+  public showDueDate(entry: Entry): boolean {
+    const resourceDefinition = this.resourceDefinition(entry);
+    return !!resourceDefinition && !!resourceDefinition.DueDateVisibility;
+  }
+
+  public requireDueDate(entry: Entry): boolean {
+    const resourceDefinition = this.resourceDefinition(entry);
+    return !!resourceDefinition && resourceDefinition.DueDateVisibility === 'Required';
+  }
+
+  public labelDueDate(entry: Entry): string {
+    const resourceDefinition = this.resourceDefinition(entry);
+    return this.ws.getMultilingualValueImmediate(resourceDefinition, 'DueDateLabel');
+  }
+
+  // MonetaryValue + CurrencyId
+
+  public showMonetaryValue(entry: Entry): boolean {
+    const account = this.account(entry);
+    return !!account && (!account.CurrencyId || account.CurrencyId !== this.ws.settings.FunctionalCurrencyId);
+  }
+
+  public getAccountCurrencyId(entry: Entry): string {
+    // returns the currency Id if any
+    if (!entry) {
+      return null;
+    }
+
+    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
+    const resource = (!!account ? this.ws.get('Resource', account.ResourceId) : null) as Resource;
+
+    const resourceCurrencyId = !!resource ? resource.CurrencyId : null;
+    const accountCurrencyId = !!account ? account.CurrencyId : null;
+
+    return accountCurrencyId || resourceCurrencyId;
+  }
+
+  public getCurrencyId(entry: Entry): string {
+    // returns the currency Id if any
+    if (!entry) {
+      return null;
+    }
+
+    const accountCurrencyId = this.getAccountCurrencyId(entry);
+    const entryCurrencyId = entry.CurrencyId;
+
+    return accountCurrencyId || entryCurrencyId;
+  }
+
+  public MonetaryValue_decimals(currencyId: string): number {
+    const currency = this.ws.get('Currency', currencyId) as Currency;
+    return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
+  }
 }

@@ -215,6 +215,12 @@ export interface ResourceDefinitionForClient extends MasterDetailsDefinitionForC
     // Lookup5Visibility: Visibility;
     // Lookup5DefaultValue: number;
     // Lookup5DefinitionId: string;
+
+    DueDateLabel: string;
+    DueDateLabel2: string;
+    DueDateLabel3: string;
+    DueDateVisibility: Visibility;
+    DueDateDefaultValue: string;
 }
 
 export interface LookupDefinitionForClient extends MasterDetailsDefinitionForClient {

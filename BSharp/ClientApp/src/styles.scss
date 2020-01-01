@@ -432,6 +432,23 @@ input.b-h2,
   margin-bottom: -1px;
 }
 
+.b-input:focus {
+  background-color: transparent;
+  box-shadow: 0 2px $primary;
+}
+
+.b-dynamic-container .b-input {
+  box-shadow: 0 1px $gray-600;
+}
+
+.b-dynamic-container.is-invalid .b-input {
+  box-shadow: 0 1px $danger;
+}
+
+.b-dynamic-container .b-input:focus {
+  box-shadow: 0 2px $primary;
+}
+
 .b-studio-input {
   padding: 0.15rem 0.45rem !important;
   height: auto;
@@ -640,12 +657,6 @@ table tr .b-input, .b-borderless-input .b-input {
 table tr .b-form-group {
   padding: 0 !important;
 }
-
-.b-input:focus {
-  background-color: transparent;
-  box-shadow: 0 2px $primary;
-}
-
 .b-text-primary {
   color: $primary;
 }
