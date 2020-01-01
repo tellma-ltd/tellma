@@ -253,20 +253,14 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Query the delete API
             var msg = new HttpRequestMessage(HttpMethod.Delete, Url)
             {
-                Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter())
+                Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter(), "application/json")
             };
 
-            try
-            {
-                var deleteResponse = await Client.SendAsync(msg);
 
-                Output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
-                Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
-            }
-            catch (Exception ex)
-            {
-                Output.WriteLine(ex.Message);
-            }
+            var deleteResponse = await Client.SendAsync(msg);
+
+            Output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
+            Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
 
         [Fact(DisplayName = "10 Getting an Id that was just deleted returns a 404 Not Found")]
