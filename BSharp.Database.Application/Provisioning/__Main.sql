@@ -32,7 +32,7 @@ END
 
 :r .\02_Security\a_Users.sql
 :r .\02_Security\b_RolesMemberships.sql
---:r .\02_Security\c_Workflows.sql
+:r .\02_Security\c_Workflows.sql
 
 --:r .\03_Basic\a_Currencies.sql
 --:r .\03_Basic\b_MeasurementUnits.sql
