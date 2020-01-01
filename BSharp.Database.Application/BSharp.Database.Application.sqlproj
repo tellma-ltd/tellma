@@ -458,6 +458,7 @@
     <Build Include="dbo\Functions\dbo.fn_LanguageId__Symbol.sql" />
     <Build Include="dal\Stored Procedures\dal.Definitions__Load.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Load.sql" />
+    <Build Include="bll\Stored Procedures\bll.Accounts__Preprocess.sql" />
     <None Include="Provisioning\01_Definitions\a_LookupDefinitions.sql" />
     <None Include="Provisioning\01_Definitions\e_LineDefinitions.sql" />
     <None Include="Provisioning\01_Definitions\f_DocumentDefinitions.sql" />

@@ -1,6 +1,4 @@
-<input class="form-control b-input" type="text"
-       [style.text-align]="textAlignment"
-       #input
-       (input)="onChange($event.target.value)"
-       (blur)="onBlur($event.target.value)"
-       [disabled]="isDisabled" />
+<div>
+    <input class="form-control b-input" type="text" [style.text-align]="textAlignment" #input
+        (input)="onChange($event.target.value)" (blur)="onBlur($event.target.value)" [disabled]="isDisabled" />
+</div>

@@ -107,7 +107,8 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
 
   get chosenItemDefinition(): string {
     const defIds = this.entityDescriptor().definitionIds;
-    return !!defIds ? this.workspace.current[this.collection][this.chosenItem].DefinitionId : null;
+    const chosenItem = this.workspace.current[this.collection][this.chosenItem];
+    return !!defIds ? (!!chosenItem ? chosenItem.DefinitionId : null) : null;
   }
 
   ngOnInit() {
@@ -379,7 +380,7 @@ export class DetailsPickerComponent implements OnInit, OnChanges, OnDestroy, Con
   public get queryFilter(): string {
     // IF this is a definitioned API and the definition id is ambigious
     // then we add the definitions to the filter
-    if (this.isDefinitioned && !this.definitionIdsSingleOrDefault && !!this.definitionIds) {
+    if (this.isDefinitioned && !this.definitionIdsSingleOrDefault && !!this.definitionIds && this.definitionIds.length > 0) {
 
       const definitionfilter = this.definitionIds
         .map(e => `DefinitionId eq '${e.replace('\'', '\'\'')}'`)

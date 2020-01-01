@@ -22,4 +22,5 @@ export class SettingsForClient {
     TernaryLanguageSymbol: string;
     BrandColor: string;
     CreatedAt: string;
+    IsMultiResponsibilityCenter: boolean;
 }
