@@ -33,7 +33,7 @@ BEGIN
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'WT')
-	N'et-sales-witholding-tax-vouchers'
+	--N'et-sales-witholding-tax-vouchers'
 
 
 	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
