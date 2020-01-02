@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Currencies]
 (
-	[Id]			NCHAR(3)			NOT NULL		CONSTRAINT [PK_Currencies] PRIMARY KEY,
-	[Name]			NVARCHAR (50)		NOT NULL,
+	[Id]			NCHAR(3)			NOT NULL CONSTRAINT [PK_Currencies] PRIMARY KEY,
+	[Name]			NVARCHAR (50)		NOT NULL CONSTRAINT [UQ_Currencies__Name] UNIQUE,
 	[Name2]			NVARCHAR (50),
 	[Name3]			NVARCHAR (50),
 	[Description]	NVARCHAR (255),
