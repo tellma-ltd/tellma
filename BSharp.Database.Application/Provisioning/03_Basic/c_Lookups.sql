@@ -1,4 +1,6 @@
 ﻿/*
+NOTE: DEFINITIONS ARE IN A DIFFERENT FILE. THIS IS THE FILE FOR RECORDS ONLY
+
 '101' -- Banan SD, USD, en
 '102' -- Banan ET, ETB, en
 '103' -- Lifan Cars, SAR, en/ar/zh
@@ -102,6 +104,7 @@ BEGIN
 	(2,	N'Honda',	N'هوندا'),
 	(3,	N'BMW',		N'بي أم دبليو');
 END
+
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	SET @DefinitionId = N'steel-thicknesses'
