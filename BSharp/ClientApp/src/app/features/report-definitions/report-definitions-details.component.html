@@ -13,7 +13,6 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
     <div class="h-100 d-flex flex-drop-row" *ngIf="watchIsEdit(isEdit)">
 
-
         <!-- Collapsed Definition Editor -->
         <div class="p-2 b-dark b-text-whitish b-collapsed-studio-pane b-pointer" *ngIf="isEdit && collapseFields"
             (click)="onToggleFields()">

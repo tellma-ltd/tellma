@@ -22,7 +22,7 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
   <!-- Header Name -->
-  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" [serverErrors]="model?.serverErrors?.Name">
+  <b-form-group class="col-12 col-md-8 mb-2 mb-sm-4 b-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
     <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
     <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
