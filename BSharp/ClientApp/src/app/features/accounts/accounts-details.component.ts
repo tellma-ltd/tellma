@@ -21,7 +21,8 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   private accountsApi = this.api.accountsApi(this.notifyDestruct$); // for intellisense
 
   public expand = `AccountType,AccountClassification,Currency,ResponsibilityCenter,
-  ResourceClassification,Agent,Resource/ResourceClassification,Resource/Currency,EntryClassification`;
+  ResourceClassification,Agent,Resource/ResourceClassification,Resource/Currency,EntryClassification,
+  Resource/CountUnit,Resource/MassUnit,Resource/VolumeUnit,Resource/TimeUnit`;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
@@ -89,16 +90,21 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
     return getChoices(meta);
   }
 
+  public resourceCurrencyId(model: Account) {
+    if (!model) {
+      return null;
+    }
+
+    const resource = this.ws.get('Resource', model.ResourceId) as Resource;
+    return !!resource ? resource.CurrencyId : null;
+  }
+
   public CurrencyId(model: Account) {
     if (!model) {
       return null;
     }
 
-    if (!!model.ResourceId) {
-      return (this.ws.get('Resource', model.ResourceId) as Resource).CurrencyId;
-    }
-
-    return model.CurrencyId;
+    return this.resourceCurrencyId(model) || model.CurrencyId;
   }
 
   public AgentDefinitionId(model: Account) {
