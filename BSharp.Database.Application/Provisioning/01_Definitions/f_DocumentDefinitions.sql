@@ -32,7 +32,7 @@ BEGIN
 	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
 	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
 	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV'),
-	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'WT')
+	(3,	N'withholding-tax-vouchers',N'Withholding Tax Voucher',	N'إشعار خصم ضريبة',N'Withholding Tax Vouchers',N'إشعارات خصم ضريبة',	N'WT')
 	--N'et-sales-witholding-tax-vouchers'
 
 

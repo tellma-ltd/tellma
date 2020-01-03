@@ -34,7 +34,7 @@ END
 :r .\02_Security\b_RolesMemberships.sql
 :r .\02_Security\c_Workflows.sql
 
---:r .\03_Basic\a_Currencies.sql
+:r .\03_Basic\a_Currencies.sql
 --:r .\03_Basic\b_MeasurementUnits.sql
 --:r .\03_Basic\c_Lookups.sql
 		
