@@ -1,6 +1,6 @@
 ﻿DECLARE @Currencies CurrencyList;
 
-IF @DB = N'100' -- ACME
+IF @DB = N'100' -- ACME, USD, en/ar/zh
 INSERT INTO @Currencies([Index],
 	[Id],	[Name],			[Name2],			[Description],			[Description2],		[E]) VALUES
 (0, N'USD', N'USD',			N'دولار',			N'United States Dollar',N'دولار أمريكي',		2),
@@ -12,7 +12,7 @@ INSERT INTO @Currencies([Index],
 (6, N'SDG', N'S.Pound',		N'جنيه س',			N'Sudanese Pound',		N'جنيه سوداني',		2),
 (7, N'EUR', N'EUR',			N'يورو',			N'Euro',				N'يورو',			2);
 
-IF @DB = N'101' -- Banan SD, USD, en
+ELSE IF @DB = N'101' -- Banan SD, USD, en
 INSERT INTO @Currencies([Index],
 	[Id],	[Name],			[Name2],			[Description],			[Description2],		[E]) VALUES
 (0, N'USD', N'USD',			N'دولار',			N'United States Dollar',N'دولار أمريكي',		2),
