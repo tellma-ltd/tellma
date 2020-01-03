@@ -16,7 +16,8 @@
 <ng-template #document let-model="model" let-isEdit="isEdit">
 
     <!-- Header Name -->
-    <b-form-group class="col-12 mb-2 mb-sm-4 b-h2" [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
+    <b-form-group class="col-12 mb-2 mb-sm-4 b-h2"
+        [serverErrors]="getMultilingualValue(model?.serverErrors, 'Name', ws)">
         <h2 class="font-weight-normal" *ngIf="!isEdit">{{ getMultilingualValue(model, 'Name', ws) }}</h2>
 
         <b-text-editor *ngIf="isEdit && ws.isPrimaryLanguage" [focusIf]="!model.Id" [(ngModel)]="model.Name"
@@ -81,24 +82,6 @@
         </b-view-link>
         <b-account-classifications-picker *ngIf="isEdit" [(ngModel)]="model.AccountClassificationId">
         </b-account-classifications-picker>
-    </b-form-group>
-
-    <!-- Currency -->
-    <b-form-group class="b-form-group" [label]="'Account_Currency' | translate"
-        [serverErrors]="model?.serverErrors?.CurrencyId">
-        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
-            <b-view-link link="../../currencies" [itemId]="model?.CurrencyId">
-                {{ ws.getMultilingualValue('Currency', CurrencyId(model), 'Name') }}
-            </b-view-link>
-        </b-restricted>
-
-        <!-- In edit mode -->
-        <span
-            *ngIf="isEdit && (model?.IsSmart && !!model?.ResourceId)">{{ ws.getMultilingualValue('Currency', CurrencyId(model), 'Name') }}</span>
-
-        <b-currencies-picker *ngIf="isEdit && (!model?.IsSmart || !model?.ResourceId)" [(ngModel)]="model.CurrencyId"
-            [required]="!model?.IsSmart">
-        </b-currencies-picker>
     </b-form-group>
 
     <!-- Is Smart -->
@@ -223,6 +206,27 @@
         </b-form-group>
 
     </ng-container>
+
+    <!-- Currency -->
+    <b-form-group class="b-form-group" [label]="'Account_Currency' | translate"
+        [serverErrors]="model?.serverErrors?.CurrencyId">
+        <!-- In view mode -->
+        <b-restricted *ngIf="!isEdit" [metadata]="model?.EntityMetadata?.Currency">
+            <b-view-link link="../../currencies" [itemId]="model?.CurrencyId">
+                {{ ws.getMultilingualValue('Currency', model?.CurrencyId, 'Name') }}
+            </b-view-link>
+        </b-restricted>
+
+        <!-- In edit mode -->
+        <ng-container *ngIf="isEdit">
+            <span
+                *ngIf="model?.IsSmart && !!resourceCurrencyId(model)">{{ ws.getMultilingualValue('Currency', resourceCurrencyId(model), 'Name') }}</span>
+
+            <b-currencies-picker *ngIf="!model?.IsSmart || !resourceCurrencyId(model)" [(ngModel)]="model.CurrencyId"
+                [required]="!model?.IsSmart">
+            </b-currencies-picker>
+        </ng-container>
+    </b-form-group>
 
     <!-- Is Deprecated -->
     <b-form-group class="b-form-group" [label]="'Account_IsDeprecated' | translate" *ngIf="!isEdit">
