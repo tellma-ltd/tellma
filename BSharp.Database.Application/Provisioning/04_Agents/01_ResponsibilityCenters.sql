@@ -26,8 +26,8 @@ DECLARE @OS_Steel INT, @RC_ExecutiveOffice INT, @RC_HR INT, @RC_Materials INT,	@
 
 IF @DB = N'100' -- ACME, USD, en/ar/zh
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],
-	[Name],							[Code], [ResponsibilityType], [ParentIndex]) VALUES
-(0,1,N'ACME',						N'',	N'Investment',			NULL);
+	[Name],		[Name2],					[Code], [ResponsibilityType], [ParentIndex]) VALUES
+(0,1,N'ACME',	N'أكمي إنترناشيونال',		N'',	N'Investment',			NULL);
 
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 INSERT INTO @ResponsibilityCenters([Index], [IsLeaf],

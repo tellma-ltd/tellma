@@ -1,5 +1,7 @@
 ﻿	DECLARE @Suppliers dbo.[AgentList];
 	DECLARE @BananIT int, @Regus int, @NocJimma INT, @Toyota INT, @Amazon INT;
+
+IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @Suppliers
 	([Index], [Name],								[StartDate],	[TaxIdentificationNumber]) VALUES
 	(0,		N'Banan Information technologies, plc',	'2017.09.15',	NULL),
@@ -7,6 +9,25 @@
 	(2,		N'Noc Jimma Ber Service Station',		'2018.03.11',	NULL),
 	(3,		N'Toyota, Ethiopia',					'2019.03.19',	N'67675440'),
 	(4,		N'Amazon, Ethiopia',					'2019.05.09',	N'67075123');
+ELSE IF @DB = N'101' -- Banan SD, USD, en
+	INSERT INTO @Suppliers
+	([Index], [Name],								[StartDate],	[TaxIdentificationNumber]) VALUES
+	(0,		N'Tellma',								'2020.01.01',	NULL);
+ELSE IF @DB = N'102' -- Banan ET, ETB, en
+	INSERT INTO @Suppliers
+	([Index], [Name],								[StartDate],	[TaxIdentificationNumber]) VALUES
+	(0,		N'Tellma',								'2020.01.01',	NULL),
+	(1,		N'Abadir',								'2018.01.05',	N'4544287');
+ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+	INSERT INTO @Suppliers
+	([Index], [Name],								[StartDate],	[TaxIdentificationNumber]) VALUES
+	(0,		N'Banan Information technologies, plc',	'2017.09.15',	NULL),
+	(1,		N'Yuangfan',							'2016.01.05',	NULL);
+ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
+	INSERT INTO @Suppliers
+	([Index], [Name],								[StartDate],	[TaxIdentificationNumber]) VALUES
+	(0,		N'Banan Information technologies, plc',	'2017.09.15',	NULL),
+	(1,		N'Noc Jimma Ber Service Station',		'2018.03.11',	NULL);
 
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'suppliers',
