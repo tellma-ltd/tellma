@@ -43,7 +43,8 @@
 	[ModifiedById]					INT					NOT NULL DEFAULT CONVERT(INT, SESSION_CONTEXT(N'UserId')) CONSTRAINT [FK_Accounts__ModifiedById] REFERENCES [dbo].[Users] ([Id])
 );
 GO
---CREATE UNIQUE INDEX [IX_Accounts__Id_AccountDefinitionId] ON dbo.Accounts([Id], [AccountTypeId]);
+CREATE UNIQUE INDEX [IX_Accounts__Code] ON dbo.Accounts([Code]) WHERE [Code] IS NOT NULL;
+GO
 CREATE UNIQUE INDEX [IX_Accounts__Id_AccountTypeId_AgentDefinitionId_ResourceClassificationId] ON dbo.Accounts(
 			[AccountTypeId],
 			[AgentDefinitionId],

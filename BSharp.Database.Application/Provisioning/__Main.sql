@@ -35,10 +35,10 @@ END
 :r .\02_Security\c_Workflows.sql
 
 :r .\03_Basic\a_Currencies.sql
---:r .\03_Basic\b_MeasurementUnits.sql
---:r .\03_Basic\c_Lookups.sql
+:r .\03_Basic\b_MeasurementUnits.sql
+:r .\03_Basic\c_Lookups.sql
 		
---:r .\04_Agents\01_ResponsibilityCenters.sql
+:r .\04_Agents\01_ResponsibilityCenters.sql
 --:r .\04_Agents\02_Suppliers.sql
 --:r .\04_Agents\03_Customers.sql
 --:r .\04_Agents\04_Employees.sql

@@ -27,8 +27,8 @@ SET NOCOUNT ON;
 				t.[ModifiedAt]		= @Now,
 				t.[ModifiedById]	= @UserId
 		WHEN NOT MATCHED THEN
-			INSERT ([DefinitionId], [Name],		[Name2], [Name3], [Code])
-			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code])
+			INSERT ([DefinitionId], [Name],		[Name2], [Name3], [Code], [SortKey])
+			VALUES (@DefinitionId, s.[Name], s.[Name2], s.[Name3], s.[Code], s.[Index])
 		OUTPUT s.[Index], inserted.[Id]
 	) AS x;
 

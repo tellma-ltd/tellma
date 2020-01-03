@@ -520,7 +520,6 @@
     <None Include="101.BananSD.publish.xml" />
     <None Include="103.LifanCars.publish.xml" />
     <None Include="104.WaliaSteel.publish.xml" />
-    <None Include="Tests\101.BananIT.publish.xml" />
     <None Include="102.BananET.publish.xml" />
     <None Include="Provisioning\00_Common\__Declarations.sql" />
     <None Include="Provisioning\02_Security\b_RolesMemberships.sql" />

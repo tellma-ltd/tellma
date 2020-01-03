@@ -65,6 +65,16 @@ SET NOCOUNT ON;
 	--AND (FE.AgentId IS NOT NULL) -- not needed since we are using JOIN w/ dbo.Agents
 	AND (FE.AgentDefinitionId IS NULL OR AG.DefinitionId <> FE.AgentDefinitionId)
 
+	-- If resource classification/resource definition is "currencies" and currency is not null, then resource must be not null
+	INSERT INTO @ValidationErrors([Key], [ErrorName])
+	SELECT TOP (@Top)
+		'[' + CAST(FE.[Index] AS NVARCHAR (255)) + '].ResourceId',
+		N'Error_TheResourceIsRequired'
+	FROM @Entities FE 
+	JOIN [dbo].[ResourceClassifications] RC ON RC.[Id] = FE.[ResourceClassificationId]
+	WHERE (FE.IsSmart = 1)
+	AND (RC.ResourceDefinitionId = N'currencies' AND FE.CurrencyId IS NOT NULL AND FE.ResourceId IS NULL)
+
 	-- If Resource Id is not null, then Account and Resource must have same resource classification
 	-- It is already added as FK constraint, but this will give a friendly error message
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])

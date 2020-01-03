@@ -1,46 +1,133 @@
 ﻿/*
+NOTE: DEFINITIONS ARE IN A DIFFERENT FILE. THIS IS THE FILE FOR RECORDS ONLY
+
 '101' -- Banan SD, USD, en
 '102' -- Banan ET, ETB, en
 '103' -- Lifan Cars, SAR, en/ar/zh
 '104' -- Walia Steel, ETB, en/am
 */
-INSERT INTO dbo.Lookups
-([DefinitionId],		[Name],			[SortKey]) VALUES
-(N'body-colors',		N'Black',		1),
-(N'body-colors',		N'White',		2),
-(N'body-colors',		N'Silver',		3),
-(N'body-colors',		N'Navy Blue',	4);
+DECLARE @Lookups dbo.LookupList, @DefinitionId NVARCHAR(50);
+IF @DB = N'100' -- ACME, USD, en/ar/zh
+BEGIN
+	SET @DefinitionId = N'body-colors'
+	INSERT INTO @Lookups([Index],
+	[Name],			[Name2]) VALUES
+	(0,N'Black',		N'أزرق'),
+	(1,N'White',		N'أبيض'),
+	(2,N'Silver',		N'فضي'),
+	(3,N'Navy Blue',	N'أزرق');
+END
 
-INSERT INTO dbo.Lookups
-([DefinitionId],		[Name],		[SortKey]) VALUES
-(N'vehicle-makes',		N'Toyota',	1),
-(N'vehicle-makes',		N'Mercedes',2),
-(N'vehicle-makes',		N'Honda',	3),
-(N'vehicle-makes',		N'BMW',		4);
+ELSE IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
+	SET @DefinitionId = N'it-equipment-manufacturers'
+	INSERT INTO @Lookups([Index],
+	[Name]) VALUES
+	(0,	N'Dell'),
+	(1,	N'HP'),
+	(2,	N'Apple'),
+	(3,	N'Microsoft');
 
-INSERT INTO dbo.Lookups
-([DefinitionId],		[Name],	[SortKey]) VALUES
-(N'steel-thicknesses',	N'0.3',	1),
-(N'steel-thicknesses',	N'0.4',	2),
-(N'steel-thicknesses',	N'0.7',	3),
-(N'steel-thicknesses',	N'1.2',	4),
-(N'steel-thicknesses',	N'1.4',	5),
-(N'steel-thicknesses',	N'1.9',	6);
+	EXEC [api].Lookups__Save
+	@DefinitionId = @DefinitionId,
+	@Entities = @Lookups,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
-INSERT INTO dbo.Lookups
-([DefinitionId],				[Name],		[SortKey]) VALUES
-(N'it-equipment-manufacturers',	N'Dell',	1),
-(N'it-equipment-manufacturers',	N'HP',		2),
-(N'it-equipment-manufacturers',	N'Apple',	3),
-(N'it-equipment-manufacturers',	N'Microsoft',4);
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Lookups: Inserting'
+		GOTO Err_Label;
+	END;						
 
-INSERT INTO dbo.Lookups
-([DefinitionId],		[Name],					[SortKey]) VALUES
-(N'operating-systems',	N'Windows XP',			1),
-(N'operating-systems',	N'Windows 10',			2),
-(N'operating-systems',	N'Windows Server 2017',	3),
-(N'operating-systems',	N'iOS 13',				4);
-;
+	DELETE FROM @Lookups;
+	SET @DefinitionId = N'operating-systems'
+	INSERT INTO @Lookups([Index],
+	[Name]) VALUES
+	(0,	N'Windows XP'),
+	(1,	N'Windows 10'),
+	(2,	N'Windows Server 2017'),
+	(3,	N'iOS 13');
+END
+
+ELSE IF @DB = N'102' -- Banan ET, ETB, en
+BEGIN
+	SET @DefinitionId = N'it-equipment-manufacturers'
+	INSERT INTO @Lookups([Index],
+	[Name]) VALUES
+	(0,	N'Dell'),
+	(1,	N'HP'),
+	(2,	N'Apple'),
+	(3,	N'Microsoft');
+
+	EXEC [api].Lookups__Save
+	@DefinitionId = @DefinitionId,
+	@Entities = @Lookups,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Lookups: Inserting'
+		GOTO Err_Label;
+	END;						
+
+	DELETE FROM @Lookups;
+	SET @DefinitionId = N'operating-systems'
+	INSERT INTO @Lookups([Index],
+	[Name]) VALUES
+	(0,	N'Windows XP'),
+	(1,	N'Windows 10'),
+	(2,	N'Windows Server 2017'),
+	(3,	N'iOS 13');
+END
+
+ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+BEGIN
+	SET @DefinitionId = N'body-colors'
+	INSERT INTO @Lookups([Index],
+	[Name],			[Name2]) VALUES
+	(0,N'Black',		N'أزرق'),
+	(1,N'White',		N'أبيض'),
+	(2,N'Silver',		N'فضي'),
+	(3,N'Navy Blue',	N'أزرق');
+
+	EXEC [api].Lookups__Save
+	@DefinitionId = @DefinitionId,
+	@Entities = @Lookups,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	DELETE FROM @Lookups;
+	SET @DefinitionId = N'vehicle-makes'
+	INSERT INTO @Lookups([Index],
+	[Name],			[Name2]) VALUES
+	(0,	N'Toyota',	N'تويوتا'),
+	(1,	N'Mercedes',N'مرسيدس'),
+	(2,	N'Honda',	N'هوندا'),
+	(3,	N'BMW',		N'بي أم دبليو');
+END
+
+ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
+BEGIN
+	SET @DefinitionId = N'steel-thicknesses'
+	INSERT INTO @Lookups([Index],
+	[Name]) VALUES
+	(0,	N'0.3'),
+	(1,	N'0.4'),
+	(2,	N'0.7'),
+	(3,	N'1.2'),
+	(4,	N'1.4'),
+	(5,	N'1.9');
+END
+
+	EXEC [api].Lookups__Save
+	@DefinitionId = @DefinitionId,
+	@Entities = @Lookups,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'Lookups: Inserting'
+	GOTO Err_Label;
+END;						
 
 IF @DebugLookups = 1
 	SELECT * FROM map.Lookups();
