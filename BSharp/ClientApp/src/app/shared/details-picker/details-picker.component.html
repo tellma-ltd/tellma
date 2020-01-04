@@ -2,7 +2,7 @@
 
   <!-- The Search Field -->
   <div class="d-flex">
-    <input class="form-control b-input" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
+    <input class="form-control b-input" style="height: 21px;" #input (blur)="onBlur()" [disabled]="isDisabled" (keydown)="onKeyDown($event)"
       ngbDropdownAnchor autocomplete="off"/>
     &nbsp;
     <button class="btn btn-light btn-sm text-primary b-white-button p-0 px-1" *ngIf="showEditSelected" type="button"
