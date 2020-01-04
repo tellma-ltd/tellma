@@ -21,8 +21,15 @@ BEGIN
 	(10,N'employees',	N'Employee',	N'الموظف',		N'Employees',	N'الموظفون',	N'Required',	 N'Required',			  N'Required',							N'Required');
 END
 
-EXEC dal.AgentDefinitions__Save
-	@Entities = @AgentDefinitions
+EXEC [api].[AgentDefinitions__Save]
+	@Entities = @AgentDefinitions,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+IF @ValidationErrorsJson IS NOT NULL 
+BEGIN
+	Print 'AgentDefinitions: Inserting'
+	GOTO Err_Label;
+END;
 
 IF @DebugAgentDefinitions = 1
-	SELECT * FROM dbo.LookupDefinitions;
+	SELECT * FROM dbo.AgentDefinitions;

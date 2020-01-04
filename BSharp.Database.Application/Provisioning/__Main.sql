@@ -56,7 +56,7 @@ END
 ----:r .\05_Resources\e1_CCE_received-checks.sql
 --:r .\05_Resources\h_PL_employee-benefits.sql
 
---:r .\06_Accounts\a_AccountClassifications.sql
+:r .\06_Accounts\a_AccountClassifications.sql
 --:r .\06_Accounts\b_BasicAccounts.sql
 --:r .\06_Accounts\c_SmartAccounts.sql
 

@@ -26,8 +26,6 @@ SET NOCOUNT ON;
 	JOIN [dbo].[Agents] BE ON FE.Code = BE.Code
 	WHERE ((FE.Id IS NULL) OR (FE.Id <> BE.Id));
 
-	SELECT TOP (@Top) * FROM @ValidationErrors;
-
 		-- Code must not be duplicated in the uploaded list
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT
@@ -42,3 +40,5 @@ SET NOCOUNT ON;
 		GROUP BY [Code]
 		HAVING COUNT(*) > 1
 	) OPTION (HASH JOIN);
+
+	SELECT TOP (@Top) * FROM @ValidationErrors;
