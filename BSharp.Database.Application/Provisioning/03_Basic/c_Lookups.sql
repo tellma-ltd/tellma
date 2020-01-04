@@ -12,7 +12,7 @@ BEGIN
 	SET @DefinitionId = N'body-colors'
 	INSERT INTO @Lookups([Index],
 	[Name],			[Name2]) VALUES
-	(0,N'Black',		N'أزرق'),
+	(0,N'Black',		N'أسود'),
 	(1,N'White',		N'أبيض'),
 	(2,N'Silver',		N'فضي'),
 	(3,N'Navy Blue',	N'أزرق');
