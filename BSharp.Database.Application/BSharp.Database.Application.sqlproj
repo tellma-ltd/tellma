@@ -474,7 +474,7 @@
     <None Include="Provisioning\04_Agents\04_Employees.sql" />
     <None Include="Provisioning\04_Agents\05_Banks.sql" />
     <None Include="Provisioning\04_Agents\06_Custodies.sql" />
-    <None Include="Provisioning\04_Agents\07_Shareholders.sql" />
+    <None Include="Provisioning\04_Agents\07_Owners.sql" />
     <None Include="Provisioning\05_Resources\a1_PPE_motor-vehicles.sql" />
     <None Include="Provisioning\05_Resources\a2_PPE_it-equipment.sql" />
     <None Include="Provisioning\05_Resources\a3_PPE_machineries.sql" />

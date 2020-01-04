@@ -3,6 +3,27 @@
 BEGIN -- Cleanup & Declarations
 	DECLARE @Bank_CBE int, @Bank_AWB int,	@Bank_NIB int;
 END
+IF @DB = N'100' -- ACME, USD, en/ar/zh
+	INSERT INTO @banks([Index],
+		[Name],							[IsRelated], [Code]) VALUES
+	(0, N'HSBC',						0,			'HSBC'),
+	(1, N'Om Durman National Bank',		0,			'OMD');
+ELSE IF @DB = N'101' -- Banan SD, USD, en
+	INSERT INTO @banks([Index],
+		[Name],							[IsRelated], [Code]) VALUES
+	(0, N'Bank of Khartoum',			0,			'BOK'),
+	(1, N'Om Durman National Bank',		0,			'OMD');
+ELSE IF @DB = N'102' -- Banan ET, ETB, en
+	INSERT INTO @banks([Index],
+		[Name],							[IsRelated], [Code]) VALUES
+	(0, N'Commercial Bank of Ethiopia',	0,			'CBE'),
+	(1, N'Awash Bank',					0,			'AWB'),
+	(2, N'NIB',							0,			'NIB');
+ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+	INSERT INTO @banks([Index],
+		[Name],							[IsRelated], [Code]) VALUES
+	(0, N'al-Rajihi Bank',				0,			'RJB');
+ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 	INSERT INTO @banks([Index],
 		[Name],							[IsRelated], [Code]) VALUES
 	(0, N'Commercial Bank of Ethiopia',	0,			'CBE'),
