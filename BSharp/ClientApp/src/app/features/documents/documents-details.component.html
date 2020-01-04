@@ -288,6 +288,7 @@
                                     [(ngModel)]="entry.ResourceId" (ngModelChange)="update.call(null, item);"
                                     [definitionIds]="resourceDefinitionIds(entry)"
                                     additionalSelect="ResourceClassification/Path,CountUnit/Name,CountUnit/Name2,CountUnit/Name3,MassUnit/Name,MassUnit/Name2,MassUnit/Name3,VolumeUnit/Name,VolumeUnit/Name2,VolumeUnit/Name3,TimeUnit/Name,TimeUnit/Name2,TimeUnit/Name3"
+                                    [filter]="resourceFilter(entry)"
                                     required>
                                 </b-resources-picker>
                                 <b-restricted *ngIf="!!account(entry)?.ResourceId"
