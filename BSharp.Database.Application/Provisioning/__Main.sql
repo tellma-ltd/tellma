@@ -40,7 +40,7 @@ END
 		
 :r .\04_Agents\01_ResponsibilityCenters.sql
 :r .\04_Agents\02_Suppliers.sql
---:r .\04_Agents\03_Customers.sql
+:r .\04_Agents\03_Customers.sql
 --:r .\04_Agents\04_Employees.sql
 --:r .\04_Agents\05_Banks.sql
 --:r .\04_Agents\06_Custodies.sql
