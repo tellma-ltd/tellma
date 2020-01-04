@@ -6,9 +6,14 @@ AS
 	SELECT CAST(IIF(@ResponsibilityCenterCount > 1, 1, 0) AS BIT);
 
 	-- The settings
-	SELECT [S].*, IIF(@ResponsibilityCenterCount > 1, 1, 0)  AS [IsMultiResponsibilityCenters]
+	SELECT [S].*, IIF(@ResponsibilityCenterCount > 1, 1, 0) AS [IsMultiResponsibilityCenters]
 	FROM [dbo].[Settings] AS [S]
 
 	-- The functional currency
 	SELECT [C].* FROM [dbo].[Currencies] AS [C] 
 	JOIN [dbo].[Settings] AS [S] ON [C].[Id] = [S].[FunctionalCurrencyId]
+
+	-- Load the mappings
+	SELECT [RC].[Node].ToString() AS [ResourceClassificationPath], [M].[EntryClassificationId]
+	FROM [dbo].[ResourceClassificationsEntryClassifications] AS [M]
+	JOIN [dbo].[ResourceClassifications] AS [RC] ON [M].ResourceClassificationId = [RC].[Id]

@@ -477,14 +477,16 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return result;
         }
 
-        public async Task<(bool, Settings)> Settings__Load()
+        public async Task<(bool, Settings, List<(string, int)>)> Settings__Load()
         {
             // Returns 
             // (1) whether active leaf responsibility centers are multiple or single
             // (2) the settings with the functional currency expanded
+            // (3) mapping from ResourceClassification.Node.toString() to entry classification Id based on [dbo].[ResourceClassificationsEntryClassifications]
 
             bool isMultiResonsibilityCenter = false;
             Settings settings = new Settings();
+            List<(string, int)> mappings = new List<(string, int)>();
 
             var conn = await GetConnectionAsync();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -549,10 +551,20 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                         // Programmer mistake
                         throw new Exception($"The Functional Currency was not returned from SP {nameof(Settings__Load)}");
                     }
+
+                    // Next load the mapping
+                    await reader.NextResultAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        string resourceClassificationPath = reader.GetString(0);
+                        int entityClassificationId = reader.GetInt32(1);
+
+                        mappings.Add((resourceClassificationPath, entityClassificationId));
+                    }
                 }
             }
 
-            return (isMultiResonsibilityCenter, settings);
+            return (isMultiResonsibilityCenter, settings, mappings);
         }
 
         public async Task<(Guid, IEnumerable<AbstractPermission>)> Permissions__Load()

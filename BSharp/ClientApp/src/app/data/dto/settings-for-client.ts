@@ -1,5 +1,5 @@
 // tslint:disable:variable-name
-export class SettingsForClient {
+export interface SettingsForClient {
     ShortCompanyName: string;
     ShortCompanyName2: string;
     ShortCompanyName3: string;
@@ -23,4 +23,10 @@ export class SettingsForClient {
     BrandColor: string;
     CreatedAt: string;
     IsMultiResponsibilityCenter: boolean;
+    ResourceEntryClassificationMap: ResourceToEntryClassification[];
+}
+
+export interface ResourceToEntryClassification {
+    ResourceClassificationPath: string;
+    EntryClassificationId: number;
 }

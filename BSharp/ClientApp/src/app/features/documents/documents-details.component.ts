@@ -15,7 +15,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { of } from 'rxjs';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { AccountForSave } from '~/app/data/entities/account';
-import { Resource, metadata_Resource, ResourceForSave } from '~/app/data/entities/resource';
+import { Resource, metadata_Resource } from '~/app/data/entities/resource';
 import { Currency } from '~/app/data/entities/currency';
 import { metadata_Agent } from '~/app/data/entities/agent';
 import { ResourceClassification } from '~/app/data/entities/resource-classification';
@@ -78,20 +78,15 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   @ViewChild('signModal', { static: true })
   signModal: TemplateRef<any>;
 
-  public expand2 = `CreatedBy,ModifiedBy` +
-    `Lines/Entries/Account/Currency,Lines/Entries/Account/Resource/Currency,
-  Lines/Entries/Account/Agent,Lines/Entries/Account/ResourceClassification,Lines/Entries/Resource/Currency,
-  Signatures/OnBehalfOfUser,Signatures/Role,Signatures/CreatedBy,AssignmentsHistory/Assignee,AssignmentsHistory/CreatedBy`;
-
   public expand = 'CreatedBy,ModifiedBy,' +
     // Entry Account
-    ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit',
-      'Resource/VolumeUnit', 'Resource/TimeUnit', 'Agent', 'ResourceClassification']
+    ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
+      'Resource/TimeUnit', 'Agent', 'EntryClassification', 'Resource/ResourceClassification', 'ResourceClassification']
       .map(prop => `Lines/Entries/Account/${prop}`).join(',') + ',' +
 
     // Entry
-    ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit',
-      'Resource/VolumeUnit', 'Resource/TimeUnit', 'Agent']
+    ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
+      'Resource/TimeUnit', 'Agent', 'EntryClassification', 'Resource/ResourceClassification']
       .map(prop => `Lines/Entries/${prop}`).join(',') + ',' +
 
     // Signatures
@@ -209,8 +204,9 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   onNewLine(item: LineForSave) {
-    item.Entries = [new EntryForSave()];
     item.DefinitionId = 'ManualLine';
+    item.Entries = [new EntryForSave()];
+    item.Entries[0].Direction = 1;
     return item;
   }
 
@@ -527,9 +523,60 @@ Document_State_Closed
     return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
   }
 
+  public get functionalId(): string {
+    return this.ws.settings.FunctionalCurrencyId;
+  }
+
   // Entry Classification
 
-  public showEntryClassification(entry: Entry) {
+  public showEntryClassification(entry: Entry): boolean {
+    if (!entry) {
+      return null;
+    }
 
+    const account = this.account(entry);
+    if (!account) {
+      return false;
+    } else if (!!account.EntryClassificationId) {
+      return true;
+    } else {
+      // There is an account but it doesn't have EntryClassification
+      // We look at whether the resource has a special resource classification
+
+      // Show entry classification if the resource is descended from one of the mapped resource classification paths
+      const resourceClassificationPath = this.resourceClassificationPath(entry);
+      return !!resourceClassificationPath &&
+        this.ws.settings.ResourceEntryClassificationMap.some(e => resourceClassificationPath.startsWith(e.ResourceClassificationPath));
+    }
+  }
+
+  public entryClassificationRoot(entry: Entry): number {
+    if (!entry) {
+      return null;
+    }
+
+    // Show entry classification if the resource is descended from one of the mapped resource classification paths
+    const resourceClassificationPath = this.resourceClassificationPath(entry);
+    const map = this.ws.settings.ResourceEntryClassificationMap
+      .find(e => resourceClassificationPath.startsWith(e.ResourceClassificationPath));
+
+    return !!map ? map.EntryClassificationId : null;
+  }
+
+  private resourceClassificationPath(entry: Entry) {
+    const resource = this.resource(entry) as Resource;
+    const resourceClassificationId = !!resource ? resource.ResourceClassificationId : null;
+    const resourceClassification = this.ws.get('ResourceClassification', resourceClassificationId) as ResourceClassification;
+    const resourceClassificationPath = !!resourceClassification ? resourceClassification.Path : null;
+
+    return resourceClassificationPath;
+  }
+
+  public forDebitCreditFilter(entry: Entry): string {
+    if (!entry) {
+      return '';
+    }
+
+    return entry.Direction === 1 ? ' and ForDebit eq true' : entry.Direction === -1 ? ' and ForCredit eq true' : '';
   }
 }

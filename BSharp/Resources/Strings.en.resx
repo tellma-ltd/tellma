@@ -482,7 +482,7 @@
     <value>Due Date</value>
   </data>
   <data name="Entry_EntryClassification" xml:space="preserve">
-    <value>Entry Classification</value>
+    <value>Purpose</value>
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>External Reference</value>
@@ -1542,6 +1542,9 @@
   </data>
   <data name="TreeParent" xml:space="preserve">
     <value>Parent</value>
+  </data>
+  <data name="TreePath" xml:space="preserve">
+    <value>Path</value>
   </data>
   <data name="Twitter" xml:space="preserve">
     <value>Twitter</value>

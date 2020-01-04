@@ -83,7 +83,7 @@ SET NOCOUNT ON;
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0], [Argument1])
 	SELECT
 		'[' + CAST(E.[DocumentIndex] AS NVARCHAR (255)) + '].Lines[' +
-			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + ']',
+			CAST(E.[LineIndex] AS NVARCHAR (255)) + '].Entries[' + CAST(E.[Index] AS NVARCHAR(255)) + '].EntryClassificationId',
 		N'Error_IncompatibleResourceClassification0AndEntryClassification1',
 		E.[ResourceClassificationCode], E.[EntryClassificationCode]
 	FROM EntryNodes E

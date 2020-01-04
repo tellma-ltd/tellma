@@ -17,6 +17,7 @@ export class ResourceClassificationForSave extends EntityForSave {
 }
 
 export class ResourceClassification extends ResourceClassificationForSave {
+  Path: string;
   Level: number;
   ActiveChildCount: number;
   ChildCount: number;
@@ -65,6 +66,7 @@ export function metadata_ResourceClassification(ws: TenantWorkspace, trx: Transl
         IsAssignable: { control: 'boolean', label: () => trx.instant('IsAssignable') },
 
         // tree stuff
+        Path: { control: 'text', label: () => trx.instant('TreePath') },
         ParentId: {
           control: 'number', label: () => `${trx.instant('TreeParent')} (${trx.instant('Id')})`,
           minDecimalPlaces: 0, maxDecimalPlaces: 0

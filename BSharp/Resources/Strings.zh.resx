@@ -1537,6 +1537,9 @@
   <data name="TreeParent" xml:space="preserve">
     <value>亲</value>
   </data>
+  <data name="TreePath" xml:space="preserve">
+    <value>亲</value>
+  </data>
   <data name="Twitter" xml:space="preserve">
     <value>推特</value>
   </data>

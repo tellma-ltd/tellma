@@ -482,7 +482,7 @@
     <value>تاريخ الاستحقاق</value>
   </data>
   <data name="Entry_EntryClassification" xml:space="preserve">
-    <value>تصيف السطر</value>
+    <value>السبب</value>
   </data>
   <data name="Entry_ExternalReference" xml:space="preserve">
     <value>المرجع الخارجي</value>
@@ -1542,6 +1542,9 @@
   </data>
   <data name="TreeParent" xml:space="preserve">
     <value>الأصل</value>
+  </data>
+  <data name="TreePath" xml:space="preserve">
+    <value>المسار</value>
   </data>
   <data name="Twitter" xml:space="preserve">
     <value>تويتر</value>

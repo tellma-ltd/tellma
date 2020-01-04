@@ -49,6 +49,9 @@ namespace BSharp.Entities
     public class ResourceClassification : ResourceClassificationForSave, ITreeEntity<int>
     {
         [AlwaysAccessible]
+        public string Path { get; set; }
+
+        [AlwaysAccessible]
         public short? Level { get; set; }
 
         [AlwaysAccessible]
