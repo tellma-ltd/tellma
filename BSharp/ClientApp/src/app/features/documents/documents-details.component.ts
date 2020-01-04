@@ -445,6 +445,11 @@ Document_State_Closed
     return !!account && !!account.ResourceClassificationId;
   }
 
+  public resourceFilter(entry: Entry): string {
+    const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
+    return !!account ? `ResourceClassification/Node descof ${account.ResourceClassificationId}` : '';
+  }
+
   public resourceDefinitionIds(entry: Entry): string[] {
     const account = this.ws.get('Account', entry.AccountId) as AccountForSave;
     const resourceClassificationId = !!account ? account.ResourceClassificationId : null;
