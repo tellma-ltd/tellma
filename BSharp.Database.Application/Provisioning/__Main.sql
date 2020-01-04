@@ -42,9 +42,9 @@ END
 :r .\04_Agents\02_Suppliers.sql
 :r .\04_Agents\03_Customers.sql
 :r .\04_Agents\04_Employees.sql
---:r .\04_Agents\05_Banks.sql
---:r .\04_Agents\06_Custodies.sql
---:r .\04_Agents\07_Shareholders.sql
+:r .\04_Agents\05_Banks.sql
+:r .\04_Agents\06_Custodies.sql
+:r .\04_Agents\07_Owners.sql
 
 --:r .\05_Resources\a1_PPE_motor-vehicles.sql
 --:r .\05_Resources\a2_PPE_it-equipment.sql

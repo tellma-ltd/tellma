@@ -1,10 +1,32 @@
 ﻿	DECLARE @Custodies dbo.[AgentList];
 	DECLARE @Warehouse_RM int, @Warehouse_FG int;
+
+IF @DB = N'100' -- ACME, USD, en/ar/zh
 	INSERT INTO @Custodies
-	([Index], [Name],								[StartDate]) VALUES
-	(0,		N'RM Warehouse',						'2017.09.15'),
-	(1,		N'FG Warehouse',						'2018.01.05'),
-	(4,		N'Admin department',					'2019.05.09');
+	([Index], [Name]) VALUES
+	(0,		N'RM Warehouse'),
+	(1,		N'FG Warehouse'),
+	(2,		N'Cashier');
+ELSE IF @DB = N'101' -- Banan SD, USD, en
+	INSERT INTO @Custodies
+	([Index], [Name]) VALUES
+	(0,		N'GM Petty Cash');
+ELSE IF @DB = N'102' -- Banan ET, ETB, en
+	INSERT INTO @Custodies
+	([Index], [Name]) VALUES
+	(0,		N'GM Petty Cash');
+ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+	INSERT INTO @Custodies
+	([Index], [Name]) VALUES
+	(0,		N'RM Warehouse'),
+	(1,		N'FG Warehouse'),
+	(2,		N'Cashier');
+ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
+	INSERT INTO @Custodies
+	([Index], [Name]) VALUES
+	(0,		N'RM Warehouse'),
+	(1,		N'FG Warehouse'),
+	(2,		N'Cashier');
 
 	EXEC [api].[Agents__Save]
 		@DefinitionId = N'custodies',
@@ -13,7 +35,7 @@
 
 	IF @ValidationErrorsJson IS NOT NULL 
 	BEGIN
-		Print 'custodies: Inserting'
+		Print 'Custodies: Inserting'
 		GOTO Err_Label;
 	END;
 	SELECT
