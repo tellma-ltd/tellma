@@ -526,4 +526,10 @@ Document_State_Closed
     const currency = this.ws.get('Currency', currencyId) as Currency;
     return !!currency ? currency.E : this.ws.settings.FunctionalCurrencyDecimals;
   }
+
+  // Entry Classification
+
+  public showEntryClassification(entry: Entry) {
+
+  }
 }
