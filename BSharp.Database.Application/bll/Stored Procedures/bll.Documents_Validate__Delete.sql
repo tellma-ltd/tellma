@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [bll].[Documents_Validate__Delete]
+	@DefinitionId NVARCHAR(50),
 	@Ids [dbo].[IndexedIdList] READONLY,
 	@Top INT = 10
 AS
@@ -13,26 +14,20 @@ SET NOCOUNT ON;
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + '].State',
 		N'Error_TheDocumentState0IsNotDraft',
-		CAST([State] AS NVARCHAR(50))
-	FROM @Ids 
-	WHERE [Id] IN (
-		SELECT [Id] 
-		FROM dbo.[Documents]
-		WHERE [State] > 0
-	);
+		CAST(D.[State] AS NVARCHAR(50))
+	FROM @Ids FE 
+	JOIN dbo.[Documents] D ON FE.[Id] = D.[Id]
+	WHERE D.[State] > 0
 
 	-- Cannot delete If there are completed lines
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP (@Top)
 		'[' + CAST([Index] AS NVARCHAR (255)) + ']',
 		N'Error_TheDocumentHascompletedLines',
-		CAST([State] AS NVARCHAR(50))
-	FROM @Ids 
-	WHERE [Id] IN (
-		SELECT DISTINCT [DocumentId] 
-		FROM dbo.[Lines]
-		WHERE [State] >= 3
-	);
+		CAST(L.[State] AS NVARCHAR(50))
+	FROM @Ids FE 
+	JOIN dbo.[Lines] L ON FE.[Id] = L.[DocumentId]
+	WHERE L.[State] >= 3
 
 
 	SELECT TOP (@Top) * FROM @ValidationErrors;

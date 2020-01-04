@@ -509,6 +509,7 @@
     <Build Include="bll\Stored Procedures\bll.AgentDefinitions_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.AgentDefinitions__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
