@@ -57,7 +57,7 @@ END
 --:r .\05_Resources\h_PL_employee-benefits.sql
 
 :r .\06_Accounts\a_AccountClassifications.sql
---:r .\06_Accounts\b_BasicAccounts.sql
+:r .\06_Accounts\b_BasicAccounts.sql
 --:r .\06_Accounts\c_SmartAccounts.sql
 
 --:r .\07_Entries\01_manual-journal-vouchers.sql
