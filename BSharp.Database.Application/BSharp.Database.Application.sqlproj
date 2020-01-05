@@ -506,6 +506,10 @@
     <Build Include="dbo\User Defined Types\dbo.WorkflowSignatureList.sql" />
     <Build Include="bll\Stored Procedures\bll.AgentDefinitions_Validate__Save.sql" />
     <Build Include="api\Stored Procedures\api.AgentDefinitions__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.AgentDefinitions_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.AgentDefinitions__Delete.sql" />
+    <Build Include="bll\Stored Procedures\bll.Documents_Validate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.Documents__Delete.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

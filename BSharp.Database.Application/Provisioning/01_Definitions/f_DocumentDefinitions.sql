@@ -9,7 +9,7 @@ DECLARE @DocumentDefinitionLineDefinitions dbo.[DocumentDefinitionLineDefinition
 	-- payroll, paysheet (w/loan deduction), loan issue, penalty, overtime, paid leave, unpaid leave
 	-- manual journal, depreciation,  
 
-	IF @DB = N'101' -- Banan SD, USD, en
+IF @DB = N'100' -- ACME, USD, en/ar/zh
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
 		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
@@ -25,7 +25,23 @@ BEGIN
 	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',1);
 END
-IF @DB = N'102' -- Banan ET, ETB, en
+ELSE IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
+	INSERT @DocumentDefinitions([Index],	
+		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
+	(0,	N'manual-journal-vouchers',	N'Manual Journal Voucher',	N'قيد تسوية يدوي',	N'Manual Journal Vouchers',	N'قيود تسوية يدوية',	N'JV'),
+	(1,	N'cash-payment-vouchers',	N'Cash Payment Voucher',	N'ورقة دفع نقدي',	N'Cash Payment Vouchers',	N'أوراق دفع نقدية',	N'CPV'),
+	(2,	N'petty-cash-vouchers',		N'Petty Cash Voucher',		N'ورقة دفع نثرية',	N'Petty Cash Vouchers',		N'أوراق دفع نثريات',	N'PCV');
+
+	INSERT @DocumentDefinitionLineDefinitions([Index], [HeaderIndex],
+			[LineDefinitionId], [IsVisibleByDefault]) VALUES
+	(0,0,	N'ManualLine',		1),
+	(0,1,	N'CashPayment',		1),
+	(1,1,	N'ManualLine',		1),
+	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
+	(0,2,	N'PettyCashPayment',1);
+END
+ELSE IF @DB = N'102' -- Banan ET, ETB, en
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
 		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
@@ -42,8 +58,9 @@ BEGIN
 	(0,1,	N'CashPayment',		1),
 	(1,1,	N'ManualLine',		1),
 	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
-	(0,2,	N'PettyCashPayment',1);END
-IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+	(0,2,	N'PettyCashPayment',1);
+END
+ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
 		[Id],						[TitleSingular],			[TitleSingular2],	[TitlePlural],				[TitlePlural2],			[Prefix]) VALUES
@@ -58,7 +75,7 @@ BEGIN
 	(1,1,	N'ManualLine',		1),
 	(2,1,	N'PurchaseInvoice',	0), -- if goods were received, then fill a separate GRN/GRIV
 	(0,2,	N'PettyCashPayment',1);END
-IF @DB = N'104' -- Walia Steel, ETB, en/am
+ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT @DocumentDefinitions([Index],	
 		[Id],		[IsOriginalDocument],	[TitleSingular],			[TitlePlural],				[Prefix]) VALUES
