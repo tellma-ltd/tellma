@@ -1,5 +1,9 @@
 ﻿-- We look at the specialized Excel files in the IT department, and we define add Resource definitions accordingly
-	INSERT INTO dbo.ResourceDefinitions (
+IF @DB = N'101' -- Banan SD, USD, en
+OR @DB = N'102' -- Banan ET, ETB, en
+BEGIN
+	DELETE FROM @ResourceDefinitions;
+	INSERT INTO @ResourceDefinitions (
 		[Id],			[TitlePlural],		[TitleSingular],
 		[TimeUnitVisibility], [CurrencyVisibility],
 		[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId],
@@ -11,6 +15,16 @@
 		N'Optional', N'Manufacturer', N'it-equipment-manufacturers',
 		N'Optional', N'Operating System', N'operating-systems'
 	);
+		
+	EXEC [api].[ResourceDefinitions__Save]
+		@Entities = @ResourceDefinitions,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Resource Definitions: Inserting'
+		GOTO Err_Label;
+	END;		
 
 	DECLARE @ComputerEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'ComputerEquipment');
 	DECLARE @CommunicationAndNetworkEquipmentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'CommunicationAndNetworkEquipment');
@@ -30,7 +44,7 @@
 	--N'NetworkInfrastructure',					N'/1/1/8/'
 	(6, N'RoutersExtension',	N'Routers',		@NetworkInfrastructureId,	1,				N'it-equipment');
 	
-EXEC [api].[ResourceClassifications__Save]
+	EXEC [api].[ResourceClassifications__Save]
 		@Entities = @ITEquipmentDescendants,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
@@ -69,3 +83,4 @@ EXEC [api].[ResourceClassifications__Save]
 			[Lookup1] AS 'Manufacturer', [Lookup2] AS 'Operating System'
 		FROM rpt.Resources(@ITEquipmentIds);
 	END
+END

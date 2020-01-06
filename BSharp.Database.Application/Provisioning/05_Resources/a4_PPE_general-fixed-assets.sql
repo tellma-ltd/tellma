@@ -1,6 +1,18 @@
-﻿	INSERT INTO dbo.ResourceDefinitions (
+﻿	DELETE FROM @ResourceDefinitions;
+	INSERT INTO @ResourceDefinitions (
 		[Id],					[TitlePlural],				[TitleSingular],	[IdentifierLabel]) VALUES
 	(N'general-fixed-assets',	N'General fixed assets',	N'Geneal fixed asset',	N'Used By');
+
+	EXEC [api].[ResourceDefinitions__Save]
+	@Entities = @ResourceDefinitions,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Resource Definitions: Inserting'
+		GOTO Err_Label;
+	END;		
+
 	UPDATE dbo.ResourceClassifications SET ResourceDefinitionId = N'general-fixed-assets' WHERE [Id] = dbo.fn_RCCode__Id(N'FixturesAndFittings');
 
 	DECLARE @FixedAssets dbo.ResourceList;

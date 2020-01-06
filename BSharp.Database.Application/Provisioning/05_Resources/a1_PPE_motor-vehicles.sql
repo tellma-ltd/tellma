@@ -2,9 +2,10 @@
 DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
 IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
-	INSERT INTO @ResourceDefinitions ([Index],
-		[Id],				[TitlePlural],		[TitleSingular],	[IdentifierLabel],[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
-	(0,N'motor-vehicles',	N'Motor Vehicles',	N'Motor Vehicle',	N'Plate #',			N'Required',		N'Make',		N'vehicle-makes');
+	DELETE FROM @ResourceDefinitions;
+	INSERT INTO @ResourceDefinitions (
+	[Id],				[TitlePlural],		[TitleSingular],	[IdentifierLabel],[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
+	(N'motor-vehicles',	N'Motor Vehicles',	N'Motor Vehicle',	N'Plate #',			N'Required',		N'Make',		N'vehicle-makes');
 	
 	EXEC [api].[ResourceDefinitions__Save]
 		@Entities = @ResourceDefinitions,

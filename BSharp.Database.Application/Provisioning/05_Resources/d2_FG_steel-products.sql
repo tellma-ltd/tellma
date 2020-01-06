@@ -1,21 +1,51 @@
-﻿	INSERT INTO dbo.ResourceDefinitions (
+﻿IF @DB = N'104' -- Walia Steel, ETB, en/am
+BEGIN
+	DELETE FROM @ResourceDefinitions;
+	INSERT INTO @ResourceDefinitions (
 		[Id],				[TitlePlural],			[TitleSingular]) VALUES
 	( N'steel-products',	N'Steel Products',		N'Steel products');
 
-	INSERT INTO dbo.ResourceClassifications ([ResourceDefinitionId], -- N'steel-products'
-						[Name],	[IsLeaf],		[Node]) VALUES
-	(N'steel-products',	N'D',		1,			N'/1/'),
-	(N'steel-products',	N'HSP',		0,			N'/2/'),
-	(N'steel-products',	N'CHS',		1,			N'/2/1/'),
-	(N'steel-products',	N'RHS',		1,			N'/2/2/'),
-	(N'steel-products',	N'SHS',		1,			N'/2/3/'),
-	(N'steel-products',	N'LTZ',		0,			N'/3/'),
-	(N'steel-products',	N'L',		1,			N'/3/1/'),
-	(N'steel-products',	N'T',		1,			N'/3/2/'),
-	(N'steel-products',	N'Z',		1,			N'/3/3/'),
-	(N'steel-products',	N'SM',		1,			N'/4/'),
-	(N'steel-products',	N'CP',		1,			N'/5/'),
-	(N'steel-products',	N'Other',	1,			N'/6/');
+	EXEC [api].[ResourceDefinitions__Save]
+	@Entities = @ResourceDefinitions,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Resource Definitions: Inserting'
+		GOTO Err_Label;
+	END;		
+
+	DELETE FROM @ResourceClassificationsTemp;
+	INSERT INTO @ResourceClassificationsTemp
+	([Code],	[Name],	[IsAssignable], [Node],	[Index]) VALUES
+	(N'D',		N'D',	1,				N'/1/',	0),
+	(N'HSP',	N'HSP',	0,				N'/2/', 1),
+	(N'CHS',	N'CHS',	1,				N'/2/1/', 2),
+	(N'RHS',	N'RHS',	1,				N'/2/2/', 3),
+	(N'SHS',	N'SHS',	1,				N'/2/3/', 4),
+	(N'LTZ',	N'LTZ',	0,				N'/3/', 5),
+	(N'L',		N'L',	1,				N'/3/1/', 6),
+	(N'T',		N'T',	1,				N'/3/2/', 7),
+	(N'Z',		N'Z',	1,				N'/3/3/', 8),
+	(N'SM',		N'SM',	1,				N'/4/', 9),
+	(N'CP',		N'CP',	1,				N'/5/', 10),
+	(N'Other',	N'Other',1,				N'/6/', 11);
+	
+	DELETE FROM @ResourceClassifications
+	INSERT INTO @ResourceClassifications (
+	[ResourceDefinitionId],		[Code], [Name], [ParentIndex], [IsAssignable], [Index])
+	SELECT N'steel-products', [Code], [Name], (SELECT [Index] FROM @ResourceClassificationsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index]
+	FROM @ResourceClassificationsTemp RC
+
+	EXEC [api].[ResourceClassifications__Save]
+		@Entities = @ResourceClassifications,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Resource Classifications: Provisioning'
+		GOTO Err_Label;
+	END;												
 
 	DECLARE @SteelProducts dbo.ResourceList;
 	INSERT INTO @SteelProducts ([Index],
@@ -38,12 +68,14 @@
 		Print 'Inserting steel products'
 		GOTO Err_Label;
 	END;
-IF @DebugResources = 1 
-BEGIN
-	SELECT N'steel-products' AS [Resource Definition]
-	DECLARE @SteelProductsIds dbo.IdList;
-	INSERT INTO @SteelProductsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'steel-products';
 
-	SELECT [Name] AS 'Steel Prooduct', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
-	FROM rpt.Resources(@SteelProductsIds);
+	IF @DebugResources = 1 
+	BEGIN
+		SELECT N'steel-products' AS [Resource Definition]
+		DECLARE @SteelProductsIds dbo.IdList;
+		INSERT INTO @SteelProductsIds SELECT [Id] FROM dbo.Resources WHERE [DefinitionId] = N'steel-products';
+
+		SELECT [Name] AS 'Steel Prooduct', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In'
+		FROM rpt.Resources(@SteelProductsIds);
+	END
 END

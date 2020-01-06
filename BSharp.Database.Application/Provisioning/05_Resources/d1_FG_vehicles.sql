@@ -1,7 +1,20 @@
-﻿	INSERT INTO dbo.ResourceDefinitions (
+﻿IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
+BEGIN
+	DELETE FROM @ResourceDefinitions;
+	INSERT INTO @ResourceDefinitions (
 	[Id],		[TitlePlural],	[TitleSingular], [Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId], [IdentifierVisibility]) VALUES
 	(N'skds',	N'SKDs',		N'SKD',			N'Required',			N'Body Color',	N'body-colors',		N'Required');
 	
+	EXEC [api].[ResourceDefinitions__Save]
+	@Entities = @ResourceDefinitions,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Resource Definitions: Inserting'
+		GOTO Err_Label;
+	END;		
+
 	DECLARE @FGVehiclesDescendantsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT DEFAULT 1, [Index] INT, [ResourceDefinitionId] NVARCHAR (50))
 
 	INSERT INTO @FGVehiclesDescendantsTemp ([Index], -- N'vehicles'
@@ -59,3 +72,4 @@
 		SELECT [Classification], [Name] AS 'SKD', Lookup1 AS 'Body Color'
 		FROM rpt.Resources(@SKDIds);
 	END
+END
