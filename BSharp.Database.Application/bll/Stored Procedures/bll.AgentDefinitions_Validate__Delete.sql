@@ -5,7 +5,7 @@ AS
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
 
-	-- Check that LookupDefinitionId is not used
+	-- Check that AgentDefinitionId is not used
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP(@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -14,7 +14,7 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.Accounts A ON A.[AgentDefinitionId] = FE.[Id]
 
-	-- Check that LookupDefinitionId is not used
+	-- Check that AgentDefinitionId is not used
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP(@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',
@@ -23,7 +23,7 @@ SET NOCOUNT ON;
 	FROM @Ids FE
 	JOIN dbo.LineDefinitions LD ON LD.[AgentDefinitionId] = FE.[Id]
 
-	-- Check that LookupDefinitionId is not used
+	-- Check that AgentDefinitionId is not used
 	INSERT INTO @ValidationErrors([Key], [ErrorName], [Argument0])
 	SELECT TOP(@Top)
 		 '[' + CAST(FE.[Index] AS NVARCHAR (255)) + ']',

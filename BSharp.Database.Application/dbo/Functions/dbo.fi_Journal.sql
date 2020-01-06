@@ -1,6 +1,5 @@
 ﻿CREATE FUNCTION [dbo].[fi_Journal] (-- SELECT * FROM [dbo].[fi_Journal]('01.01.2015','01.01.2020')
 	@fromDate Date = '2000.01.01',
-	--@param int = 0,
 	@toDate Date = '2100.01.01'
 ) RETURNS TABLE
 AS
@@ -23,11 +22,13 @@ RETURN
 		V.[DocumentLookup3Id],
 		V.[DocumentText1],
 		V.[DocumentText2],
+		V.[DocumentState],
 		--D.[Frequency],
 		--D.[Repetitions],
 		--D.[EndDate],
 		V.[LineDefinitionId],
 		V.[Memo],
+		V.[LineState],
 		V.[EntryNumber],
 		V.[Direction],
 		A.[AccountClassificationId],

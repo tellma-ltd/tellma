@@ -28,7 +28,7 @@ BEGIN
 			R.[Lookup1Id], J.[AgentId],
 			SUM(J.Direction * J.[Mass]) AS [Mass],
 			SUM(J.Direction * J.[Count]) AS [Count]
-		FROM [fi_NormalizedJournal](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId) J
+		FROM [map].[DetailsEntries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId) J
 		JOIN dbo.Resources R ON J.ResourceId = R.Id
 		LEFT JOIN dbo.ResourceClassifications RC ON R.ResourceClassificationId = RC.Id
 		WHERE J.[EntryClassificationId] = N'ProductionOfGoods' -- assuming that inventory entries require IfrsNoteExtension

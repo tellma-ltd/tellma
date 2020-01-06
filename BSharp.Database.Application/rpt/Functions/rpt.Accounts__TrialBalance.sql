@@ -12,7 +12,7 @@ RETURN
 		SELECT [AccountClassificationId],
 			AccountId,
 			SUM([Opening]) AS [Opening], SUM([Debit]) AS [Debit], SUM([Credit]) AS [Credit], SUM([Closing]) AS Closing
-		FROM rpt.fi_JournalSummary(
+		FROM [map].[SummaryEntries](
 			--NULL, -- OperatingSegmentId
 			NULL, --@AccountTypeId
 			NULL, -- @AgentDefinitionId

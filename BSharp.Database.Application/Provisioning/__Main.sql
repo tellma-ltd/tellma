@@ -46,7 +46,7 @@ END
 :r .\04_Agents\06_Custodies.sql
 :r .\04_Agents\07_Owners.sql
 
---:r .\05_Resources\a1_PPE_motor-vehicles.sql
+:r .\05_Resources\a1_PPE_motor-vehicles.sql
 --:r .\05_Resources\a2_PPE_it-equipment.sql
 --:r .\05_Resources\a3_PPE_machineries.sql
 --:r .\05_Resources\a4_PPE_general-fixed-assets.sql
