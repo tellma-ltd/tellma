@@ -221,7 +221,6 @@
     <Build Include="dal\Stored Procedures\dal.Lines__Sign.sql" />
     <Build Include="bll\Stored Procedures\bll.Lines_Ready__Select.sql" />
     <Build Include="dal\Stored Procedures\dal.Lines_State__Update.sql" />
-    <Build Include="dbo\Functions\dbo.fi_NormalizedJournal.sql" />
     <Build Include="dal\Stored Procedures\dal.Settings__Save.sql" />
     <Build Include="bll\Stored Procedures\bll.IfrsDisclosureDetails_Validate__Save.sql" />
     <Build Include="dbo\User Defined Types\dbo.LineRoleList.sql" />
@@ -337,7 +336,6 @@
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Save.sql" />
     <Build Include="api\Stored Procedures\api.ResourceClassifications__Select.sql" />
     <Build Include="dbo\Tables\dbo.Accounts.sql" />
-    <Build Include="rpt\Functions\rpt.fi_JournalSummary.sql" />
     <Build Include="rpt\Stored Procedures\rpt.FinishedGoods__TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.RawMaterials__TrialBalance.sql" />
     <Build Include="rpt\Stored Procedures\rpt.MerchandiseInTransit__TrialBalance.sql" />
@@ -510,6 +508,13 @@
     <Build Include="dal\Stored Procedures\dal.AgentDefinitions__Delete.sql" />
     <Build Include="bll\Stored Procedures\bll.Documents_Validate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.Documents__Delete.sql" />
+    <Build Include="Mapping\DetailsEntries.sql" />
+    <Build Include="Mapping\SummaryEntries.sql" />
+    <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_Validate__Save.sql" />
+    <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_VAlidate__Delete.sql" />
+    <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__Delete.sql" />
+    <Build Include="api\Stored Procedures\api.ResourceDefinitions__Save.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />

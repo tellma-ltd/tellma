@@ -32,8 +32,9 @@ END
 ELSE IF @DB = N'104' -- Walia Steel, ETB, en/am
 BEGIN
 	INSERT INTO @LookupDefinitions([Index],
-	[Id],						[TitleSingular],		[TitlePlural]) VALUES
-	(1,N'steel-thicknesses',	N'Thickness',			N'Thicknesses');
+	[Id],								[TitleSingular],	[TitlePlural]) VALUES
+	(0,N'steel-thicknesses',			N'Thickness',		N'Thicknesses'),
+	(1,N'vehicle-makes',				N'Vehicle Make'	,	N'Vehicle Makes');
 END
 
 EXEC dal.LookupDefinitions__Save

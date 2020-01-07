@@ -46,13 +46,13 @@ END
 :r .\04_Agents\06_Custodies.sql
 :r .\04_Agents\07_Owners.sql
 
---:r .\05_Resources\a1_PPE_motor-vehicles.sql
---:r .\05_Resources\a2_PPE_it-equipment.sql
---:r .\05_Resources\a3_PPE_machineries.sql
---:r .\05_Resources\a4_PPE_general-fixed-assets.sql
---:r .\05_Resources\b_Inventories_raw-materials.sql
---:r .\05_Resources\d1_FG_vehicles.sql
-----:r .\05_Resources\d2_FG_steel-products.sql
+:r .\05_Resources\a1_PPE_motor-vehicles.sql
+:r .\05_Resources\a2_PPE_it-equipment.sql
+:r .\05_Resources\a3_PPE_machineries.sql
+:r .\05_Resources\a4_PPE_general-fixed-assets.sql
+:r .\05_Resources\b_Inventories_raw-materials.sql
+:r .\05_Resources\d1_FG_vehicles.sql
+:r .\05_Resources\d2_FG_steel-products.sql
 ----:r .\05_Resources\e1_CCE_received-checks.sql
 --:r .\05_Resources\h_PL_employee-benefits.sql
 

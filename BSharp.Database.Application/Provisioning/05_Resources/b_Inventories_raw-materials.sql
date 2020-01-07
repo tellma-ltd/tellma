@@ -1,6 +1,20 @@
-﻿	INSERT INTO dbo.ResourceDefinitions (
+﻿IF @DB = N'104' -- Walia Steel, ETB, en/am
+BEGIN
+	DELETE FROM @ResourceDefinitions;
+	INSERT INTO @ResourceDefinitions (
 		[Id],			[TitlePlural],		[TitleSingular],	[IdentifierLabel], [IdentifierVisibility]) VALUES
 	( N'raw-materials',	N'Raw Materials',	N'Raw Material',	N'Roll #',			N'Optional');
+
+	EXEC [api].[ResourceDefinitions__Save]
+	@Entities = @ResourceDefinitions,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Resource Definitions: Inserting'
+		GOTO Err_Label;
+	END;		
+
 	DECLARE @RawMaterialsDescendantsTemp TABLE ([Code] NVARCHAR(255), [Name] NVARCHAR(255), [Node] HIERARCHYID, [IsAssignable] BIT DEFAULT 1, [Index] INT, [ResourceDefinitionId] NVARCHAR (50))
 	INSERT INTO @RawMaterialsDescendantsTemp ([Index],
 		[Code],					[Name],			[Node],			[IsAssignable], [ResourceDefinitionId]) VALUES
@@ -50,3 +64,4 @@
 		SELECT [Classification], [Name] AS 'Raw Material', [MassUnit] AS 'Weight In', [CountUnit] AS 'Count In', [Lookup1] As N'Thickness'
 		FROM rpt.Resources(@RawMaterialsIds);
 	END
+END

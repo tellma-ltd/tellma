@@ -1,4 +1,4 @@
-﻿	CREATE FUNCTION [rpt].[fi_JournalSummary] (
+﻿	CREATE FUNCTION [map].[SummaryEntries] (
 	--TODO: make the filtering of these parameters from NormalizedJournal
 	--@OperatingSegmentId INT,
 	@AccountTypeId NVARCHAR(50) = NULL,
@@ -35,7 +35,7 @@ RETURN
 			SUM([Direction] * [Volume]) AS [Volume],
 			SUM([Direction] * [Time]) AS [Time],
 			SUM([Direction] * [Value]) AS [Opening]
-		FROM [dbo].[fi_NormalizedJournal](NULL, DATEADD(DAY, -1, @FromDate),  @CountUnitId, @MassUnitId, @VolumeUnitId)
+		FROM [map].[DetailsEntries](NULL, DATEADD(DAY, -1, @FromDate),  @CountUnitId, @MassUnitId, @VolumeUnitId)
 		WHERE AccountId IN (SELECT Id FROM ReportAccounts)
 		GROUP BY AccountId, [CurrencyId]
 	),
@@ -54,7 +54,7 @@ RETURN
 
 			SUM(CASE WHEN [Direction] > 0 THEN [Value] ELSE 0 END) AS [Debit],
 			SUM(CASE WHEN [Direction] < 0 THEN [Value] ELSE 0 END) AS [Credit]
-		FROM [dbo].[fi_NormalizedJournal](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId)
+		FROM [map].[DetailsEntries](@FromDate, @ToDate, @CountUnitId, @MassUnitId, @VolumeUnitId)
 		WHERE AccountId IN (SELECT Id FROM ReportAccounts)
 		GROUP BY AccountId, [EntryClassificationId], [CurrencyId]
 	),

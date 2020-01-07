@@ -116,6 +116,20 @@ BEGIN
 	(3,	N'1.2'),
 	(4,	N'1.4'),
 	(5,	N'1.9');
+
+	EXEC [api].Lookups__Save
+	@DefinitionId = @DefinitionId,
+	@Entities = @Lookups,
+	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	DELETE FROM @Lookups;
+	SET @DefinitionId = N'vehicle-makes'
+	INSERT INTO @Lookups([Index],
+	[Name],			[Name2]) VALUES
+	(0,	N'Toyota',	N'تويوتا'),
+	(1,	N'Mercedes',N'مرسيدس'),
+	(2,	N'Honda',	N'هوندا'),
+	(3,	N'BMW',		N'بي أم دبليو');
 END
 
 	EXEC [api].Lookups__Save

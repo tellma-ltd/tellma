@@ -1,8 +1,22 @@
 ﻿	-- We look at the specialized Excel files in the General Services department, and we add Resource definitions accordingly
-	INSERT INTO dbo.ResourceDefinitions (
-		[Id],			[TitlePlural],		[TitleSingular],	[IdentifierLabel],[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
+DECLARE @ResourceDefinitions dbo.ResourceDefinitionList;
+IF @DB = N'104' -- Walia Steel, ETB, en/am
+BEGIN
+	DELETE FROM @ResourceDefinitions;
+	INSERT INTO @ResourceDefinitions (
+	[Id],				[TitlePlural],		[TitleSingular],	[IdentifierLabel],[Lookup1Visibility], [Lookup1Label], [Lookup1DefinitionId]) VALUES
 	(N'motor-vehicles',	N'Motor Vehicles',	N'Motor Vehicle',	N'Plate #',			N'Required',		N'Make',		N'vehicle-makes');
 	
+	EXEC [api].[ResourceDefinitions__Save]
+		@Entities = @ResourceDefinitions,
+		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
+
+	IF @ValidationErrorsJson IS NOT NULL 
+	BEGIN
+		Print 'Resource Definitions: Inserting'
+		GOTO Err_Label;
+	END;		
+
 	DECLARE @ParentId INT = (SELECT Id FROM dbo.ResourceClassifications WHERE Code = N'MotorVehicles');
 	 
 	DECLARE @MotorVehicleDescendants ResourceClassificationList;
@@ -54,3 +68,4 @@
 
 		--Select * from resources;
 	END
+END

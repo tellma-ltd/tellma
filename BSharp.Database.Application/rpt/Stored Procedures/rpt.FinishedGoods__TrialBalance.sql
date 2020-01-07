@@ -13,7 +13,7 @@ BEGIN
 		SELECT ResourceId,
 			SUM(OpeningCount) AS OpeningCount, SUM(CountIn) AS CountIn, SUM(CountOut) AS CountOut, SUM(EndingCount) AS EndingCount,
 			SUM(OpeningMass) AS OpeningMass, SUM(MassIn) AS MassIn, SUM(MassOut) AS MassOut, SUM(EndingMass) AS EndingMass
-		FROM rpt.fi_JournalSummary(
+		FROM [map].[SummaryEntries](
 			--@OperatingSegmentId,
 			N'NonFinancialAsset',
 			N'storage-custodies',

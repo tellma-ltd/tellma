@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [dbo].[fi_NormalizedJournal] (
+﻿CREATE FUNCTION [map].[DetailsEntries] (
 	@fromDate Date = '2000.01.01', 
 	@toDate Date = '2100.01.01',
 	@CountUnitId INT,
@@ -58,4 +58,9 @@ RETURN
 	LEFT JOIN dbo.Resources R ON J.ResourceId = R.Id
 	LEFT JOIN UnitRatios CR ON R.CountUnitId = CR.Id
 	LEFT JOIN UnitRatios MR ON R.MassUnitId = MR.Id
-	LEFT JOIN UnitRatios CV ON R.VolumeUnitId = CV.Id;
+	LEFT JOIN UnitRatios CV ON R.VolumeUnitId = CV.Id
+		--WHERE
+		--J.[DocumentState] = 5 -- N'Closed'
+		--AND J.[DocumentState] = 4; -- N'Reviewed';
+	
+	;

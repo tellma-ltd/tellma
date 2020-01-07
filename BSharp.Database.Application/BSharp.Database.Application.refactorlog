@@ -536,4 +536,30 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[LineDefinitionStateReasons]" />
   </Operation>
+  <Operation Name="Move Schema" Key="c6d9b396-cf5a-460c-b10b-3f6bbec34663" ChangeDateTime="01/06/2020 06:42:01">
+    <Property Name="ElementName" Value="[dbo].[fi_NormalizedJournal]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="NewSchema" Value="map" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b3765f21-8199-43df-aaf2-349dc4b74637" ChangeDateTime="01/06/2020 06:42:57">
+    <Property Name="ElementName" Value="[map].[fi_NormalizedJournal]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[DetailsEntries]" />
+  </Operation>
+  <Operation Name="Move Schema" Key="cb9888c5-6698-4251-a1ae-203d7c37d5df" ChangeDateTime="01/06/2020 06:43:50">
+    <Property Name="ElementName" Value="[rpt].[fi_JournalSummary]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="NewSchema" Value="map" />
+    <Property Name="IsNewSchemaExternal" Value="False" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a83d429b-2e4d-486f-a78f-fe6d782f0cff" ChangeDateTime="01/06/2020 06:44:14">
+    <Property Name="ElementName" Value="[map].[fi_JournalSummary]" />
+    <Property Name="ElementType" Value="SqlInlineTableValuedFunction" />
+    <Property Name="ParentElementName" Value="[map]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[SummaryEntries]" />
+  </Operation>
 </Operations>
