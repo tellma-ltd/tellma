@@ -5,13 +5,7 @@ import { addToWorkspace } from '~/app/data/util';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
-import { ActivatedRoute } from '@angular/router';
-import {
-  AccountClassificationForSave, metadata_AccountClassification,
-  AccountClassification
-} from '~/app/data/entities/account-classification';
-import { SelectorChoice } from '~/app/shared/selector/selector.component';
+import { AccountClassificationForSave, AccountClassification } from '~/app/data/entities/account-classification';
 
 @Component({
   selector: 'b-account-classifications-details',
@@ -20,13 +14,12 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 })
 export class AccountClassificationsDetailsComponent extends DetailsBaseComponent {
 
-  private _decimalPlacesChoices: SelectorChoice[];
   private accountClassificationsApi = this.api.accountClassificationsApi(this.notifyDestruct$); // for intellisense
 
   public expand = 'Parent';
 
   create = () => {
-    const result = new AccountClassificationForSave();
+    const result: AccountClassificationForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -39,8 +32,7 @@ export class AccountClassificationsDetailsComponent extends DetailsBaseComponent
   }
 
   constructor(
-    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService,
-    private route: ActivatedRoute) {
+    private workspace: WorkspaceService, private api: ApiService, private translate: TranslateService) {
     super();
 
     this.accountClassificationsApi = this.api.accountClassificationsApi(this.notifyDestruct$);

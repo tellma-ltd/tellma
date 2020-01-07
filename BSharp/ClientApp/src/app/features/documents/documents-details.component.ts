@@ -7,7 +7,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { DocumentForSave, Document, serialNumber } from '~/app/data/entities/document';
 import { DocumentDefinitionForClient, ResourceDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { LineForSave } from '~/app/data/entities/line';
-import { EntryForSave, Entry } from '~/app/data/entities/entry';
+import { Entry } from '~/app/data/entities/entry';
 import { DocumentAssignment } from '~/app/data/entities/document-assignment';
 import { addToWorkspace } from '~/app/data/util';
 import { tap, catchError } from 'rxjs/operators';
@@ -62,7 +62,6 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   public roleId: number;
   public signedAt: string = null;
 
-
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
@@ -78,7 +77,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   @ViewChild('signModal', { static: true })
   signModal: TemplateRef<any>;
 
-  public expand = 'CreatedBy,ModifiedBy,' +
+  public expand = 'CreatedBy,ModifiedBy,Assignee,' +
     // Entry Account
     ['Currency', 'Resource/Currency', 'Resource/CountUnit', 'Resource/MassUnit', 'Resource/VolumeUnit',
       'Resource/TimeUnit', 'Agent', 'EntryClassification', 'Resource/ResourceClassification', 'ResourceClassification']
@@ -133,12 +132,12 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
   }
 
   create = () => {
-    const result = new DocumentForSave();
-    result.Memo = this.initialText;
-    result.DocumentDate = new Date().toISOString().split('T')[0];
-    result.MemoIsCommon = true;
-
-    result.Lines = [];
+    const result: DocumentForSave = {
+      Memo: this.initialText,
+      DocumentDate: new Date().toISOString().split('T')[0],
+      MemoIsCommon: true,
+      Lines: []
+    };
 
     // const defs = this.definition;
     // TODO: Set defaults
@@ -163,6 +162,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
       }
 
       clone.AssignmentsHistory = [];
+      clone.Signatures = [];
 
       delete clone.AssigneeId;
       delete clone.CreatedById;
@@ -205,7 +205,7 @@ export class DocumentsDetailsComponent extends DetailsBaseComponent implements O
 
   onNewLine(item: LineForSave) {
     item.DefinitionId = 'ManualLine';
-    item.Entries = [new EntryForSave()];
+    item.Entries = [{ }];
     item.Entries[0].Direction = 1;
     return item;
   }

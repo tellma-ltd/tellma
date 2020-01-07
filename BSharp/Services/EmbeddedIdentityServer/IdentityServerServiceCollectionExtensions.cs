@@ -3,7 +3,6 @@ using BSharp.Services.Utilities;
 using IdentityModel;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -94,22 +93,21 @@ namespace Microsoft.Extensions.DependencyInjection
                 var certThumbprint = config?.X509Certificate2Thumbprint ??
                     throw new Exception("To enable the embedded IdentityServer in production, a valid X509 certificate thumbprint must be specified in a configuration provider");
 
-                using (X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser))
-                {
-                    certStore.Open(OpenFlags.ReadOnly);
-                    X509Certificate2Collection certCollection = certStore.Certificates.Find(
-                                               X509FindType.FindByThumbprint, certThumbprint, validOnly: false);
+                using X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
 
-                    // Get the first cert with the thumbprint
-                    if (certCollection.Count > 0)
-                    {
-                        X509Certificate2 cert = certCollection[0];
-                        builder.AddSigningCredential(cert);
-                    }
-                    else
-                    {
-                        throw new Exception($"The specified X509 certificate thumbprint '{certThumbprint}' was not found");
-                    }
+                certStore.Open(OpenFlags.ReadOnly);
+                X509Certificate2Collection certCollection = certStore.Certificates.Find(
+                                           X509FindType.FindByThumbprint, certThumbprint, validOnly: false);
+
+                // Get the first cert with the thumbprint
+                if (certCollection.Count > 0)
+                {
+                    X509Certificate2 cert = certCollection[0];
+                    builder.AddSigningCredential(cert);
+                }
+                else
+                {
+                    throw new Exception($"The specified X509 certificate thumbprint '{certThumbprint}' was not found");
                 }
             }
 
@@ -148,7 +146,6 @@ namespace Microsoft.Extensions.DependencyInjection
             mvcBuilder.AddViewLocalization()
                     .AddRazorPagesOptions(opt =>
             {
-                opt.AllowAreas = true;
                 opt.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
                 opt.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
             });

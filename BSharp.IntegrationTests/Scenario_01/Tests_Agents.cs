@@ -2,7 +2,6 @@
 using BSharp.Entities;
 using BSharp.IntegrationTests.Utilities;
 using BSharp.Services.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -251,15 +250,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id;
 
             // Query the delete API
-            //var msg = new HttpRequestMessage(HttpMethod.Delete, Url)
-            //{
-            //    Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter(), "application/json")
-            //};
-
-
-            //var deleteResponse = await Client.SendAsync(msg);
-
-            var deleteResponse = await Client.DeleteAsJsonAsync(Url, new List<int> { id });
+            var deleteResponse = await Client.DeleteAsync($"{Url}/{id}");
 
             Output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);

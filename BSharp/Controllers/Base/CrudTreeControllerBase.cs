@@ -56,11 +56,13 @@ namespace BSharp.Controllers
         }
 
         [HttpDelete("with-descendants")]
-        public virtual async Task<ActionResult> DeleteWithDescendants([FromBody] List<TKey> ids)
+        public virtual async Task<ActionResult> DeleteWithDescendants([FromQuery] List<TKey> i)
         {
+            // "i" parameter is given a short name to allow a large number of
+            // ids to be passed in the query string before the url size limit
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                await DeleteWithDescendantsImplAsync(ids);
+                await DeleteWithDescendantsImplAsync(i);
                 return Ok();
             }, _logger);
         }

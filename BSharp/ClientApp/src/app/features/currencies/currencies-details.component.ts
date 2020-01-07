@@ -6,7 +6,7 @@ import { WorkspaceService } from '~/app/data/workspace.service';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ChoicePropDescriptor, getChoices } from '~/app/data/entities/base/metadata';
-import { CurrencyForSave, metadata_Currency, Currency } from '~/app/data/entities/currency';
+import { metadata_Currency, CurrencyForSave, Currency } from '~/app/data/entities/currency';
 import { ActivatedRoute } from '@angular/router';
 import { SelectorChoice } from '~/app/shared/selector/selector.component';
 
@@ -23,7 +23,7 @@ export class CurrenciesDetailsComponent extends DetailsBaseComponent {
   public expand = '';
 
   create = () => {
-    const result = new CurrencyForSave();
+    const result: CurrencyForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

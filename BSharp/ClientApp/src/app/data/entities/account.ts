@@ -6,33 +6,33 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 
-export class AccountForSave extends EntityWithKey {
-    Name: string;
-    Name2: string;
-    Name3: string;
-    Code: string;
-    IsSmart: boolean;
-    AccountTypeId: string;
-    AccountClassificationId: number;
-    CurrencyId: string;
+export interface AccountForSave extends EntityWithKey {
+    Name?: string;
+    Name2?: string;
+    Name3?: string;
+    Code?: string;
+    IsSmart?: boolean;
+    AccountTypeId?: string;
+    AccountClassificationId?: number;
+    CurrencyId?: string;
 
-    ResponsibilityCenterId: number;
-    ContractType: string;
-    AgentDefinitionId: string;
-    ResourceClassificationId: number;
-    IsCurrent: boolean;
-    AgentId: number;
-    ResourceId: number;
-    Identifier: string;
-    EntryClassificationId: number;
+    ResponsibilityCenterId?: number;
+    ContractType?: string;
+    AgentDefinitionId?: string;
+    ResourceClassificationId?: number;
+    IsCurrent?: boolean;
+    AgentId?: number;
+    ResourceId?: number;
+    Identifier?: string;
+    EntryClassificationId?: number;
 }
 
-export class Account extends AccountForSave {
-    IsDeprecated: boolean;
-    CreatedAt: string;
-    CreatedById: number | string;
-    ModifiedAt: string;
-    ModifiedById: number | string;
+export interface Account extends AccountForSave {
+    IsDeprecated?: boolean;
+    CreatedAt?: string;
+    CreatedById?: number | string;
+    ModifiedAt?: string;
+    ModifiedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

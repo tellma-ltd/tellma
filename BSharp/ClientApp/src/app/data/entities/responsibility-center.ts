@@ -6,26 +6,26 @@ import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 
-export class ResponsibilityCenterForSave extends EntityForSave {
-    ParentId: number;
-    ResponsibilityCenterId: string;
-    Name: string;
-    Name2: string;
-    Name3: string;
-    ManagerId: number;
-    Code: string;
-    IsLeaf: boolean;
+export interface ResponsibilityCenterForSave extends EntityForSave {
+    ParentId?: number;
+    ResponsibilityCenterId?: string;
+    Name?: string;
+    Name2?: string;
+    Name3?: string;
+    ManagerId?: number;
+    Code?: string;
+    IsLeaf?: boolean;
 }
 
-export class ResponsibilityCenter extends ResponsibilityCenterForSave {
-    Level: number;
-    ActiveChildCount: number;
-    ChildCount: number;
-    IsActive: boolean;
-    CreatedAt: string;
-    CreatedById: number | string;
-    ModifiedAt: string;
-    ModifiedById: number | string;
+export interface ResponsibilityCenter extends ResponsibilityCenterForSave {
+    Level?: number;
+    ActiveChildCount?: number;
+    ChildCount?: number;
+    IsActive?: boolean;
+    CreatedAt?: string;
+    CreatedById?: number | string;
+    ModifiedAt?: string;
+    ModifiedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

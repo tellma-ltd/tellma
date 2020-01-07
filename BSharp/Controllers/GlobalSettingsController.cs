@@ -4,7 +4,6 @@ using BSharp.Data;
 using BSharp.Services.GlobalSettings;
 using BSharp.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;

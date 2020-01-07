@@ -70,7 +70,7 @@ export class ResourcesDetailsComponent extends DetailsBaseComponent implements O
   }
 
   create = () => {
-    const result = new ResourceForSave();
+    const result: ResourceForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

@@ -7,42 +7,42 @@ import { EntityDescriptor, NavigationPropDescriptor, NumberPropDescriptor } from
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 
-export class ResourceForSave extends EntityWithKey {
-    ResourceClassificationId: number;
-    Name: string;
-    Name2: string;
-    Name3: string;
-    Identifier: string;
-    Code: string;
-    CurrencyId: string;
-    MonetaryValue: number;
-    CountUnitId: number;
-    Count: number;
-    MassUnitId: number;
-    Mass: number;
-    VolumeUnitId: number;
-    Volume: number;
-    TimeUnitId: number;
-    Time: number;
-    Description: string;
-    Description2: string;
-    Description3: string;
-    AvailableSince: string;
-    AvailableTill: string;
-    Lookup1Id: number;
-    Lookup2Id: number;
-    // Lookup3Id: number;
-    // Lookup4Id: number;
-    // Lookup5Id: number;
+export interface ResourceForSave extends EntityWithKey {
+    ResourceClassificationId?: number;
+    Name?: string;
+    Name2?: string;
+    Name3?: string;
+    Identifier?: string;
+    Code?: string;
+    CurrencyId?: string;
+    MonetaryValue?: number;
+    CountUnitId?: number;
+    Count?: number;
+    MassUnitId?: number;
+    Mass?: number;
+    VolumeUnitId?: number;
+    Volume?: number;
+    TimeUnitId?: number;
+    Time?: number;
+    Description?: string;
+    Description2?: string;
+    Description3?: string;
+    AvailableSince?: string;
+    AvailableTill?: string;
+    Lookup1Id?: number;
+    Lookup2Id?: number;
+    // Lookup3Id?: number;
+    // Lookup4Id?: number;
+    // Lookup5Id?: number;
 }
 
-export class Resource extends ResourceForSave {
-    DefinitionId: string;
-    IsActive: boolean;
-    CreatedAt: string;
-    CreatedById: number | string;
-    ModifiedAt: string;
-    ModifiedById: number | string;
+export interface Resource extends ResourceForSave {
+    DefinitionId?: string;
+    IsActive?: boolean;
+    CreatedAt?: string;
+    CreatedById?: number | string;
+    ModifiedAt?: string;
+    ModifiedById?: number | string;
 }
 
 

@@ -12,28 +12,28 @@ import { DocumentAssignment } from './document-assignment';
 
 export type DocumentState = LineState | 5;
 
-export class DocumentForSave<TLine = LineForSave> extends EntityWithKey {
-    DocumentDate: string;
-    Memo: string;
-    MemoIsCommon: boolean;
-    Lines: TLine[];
+export interface DocumentForSave<TLine = LineForSave> extends EntityWithKey {
+    DocumentDate?: string;
+    Memo?: string;
+    MemoIsCommon?: boolean;
+    Lines?: TLine[];
 }
 
-export class Document extends DocumentForSave<Line> {
-    DefinitionId: string;
-    SerialNumber: number;
-    State: DocumentState;
-    Comment: string;
-    AssigneeId: number;
-    AssignedAt: string;
-    AssignedById: number;
-    OpenedAt: string;
-    CreatedAt: string;
-    CreatedById: number;
-    ModifiedAt: string;
-    ModifiedById: number;
-    Signatures: DocumentSignature[];
-    AssignmentsHistory: DocumentAssignment[];
+export interface Document extends DocumentForSave<Line> {
+    DefinitionId?: string;
+    SerialNumber?: number;
+    State?: DocumentState;
+    Comment?: string;
+    AssigneeId?: number;
+    AssignedAt?: string;
+    AssignedById?: number;
+    OpenedAt?: string;
+    CreatedAt?: string;
+    CreatedById?: number;
+    ModifiedAt?: string;
+    ModifiedById?: number;
+    Signatures?: DocumentSignature[];
+    AssignmentsHistory?: DocumentAssignment[];
 }
 
 const _select = ['SerialNumber'];

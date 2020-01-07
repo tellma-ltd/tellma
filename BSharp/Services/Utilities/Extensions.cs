@@ -1,19 +1,13 @@
 ﻿using BSharp.Entities;
 using IdentityModel;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Common;
-using System.Data.SqlClient;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace BSharp.Services.Utilities
 {
@@ -181,14 +175,14 @@ namespace BSharp.Services.Utilities
         /// </summary>
         public static string WithoutTrailingSlash(this string str)
         {
-            if (str == null)
+            if (str is null)
             {
                 return null;
             }
 
             while (str.EndsWith('/'))
             {
-                str = str.Substring(0, str.Length - 1);
+                str = str[0..^1];
             }
 
             return str;
@@ -201,7 +195,7 @@ namespace BSharp.Services.Utilities
         /// <returns></returns>
         public static string WithTrailingSlash(this string str)
         {
-            if (str == null)
+            if (str is null)
             {
                 return null;
             }

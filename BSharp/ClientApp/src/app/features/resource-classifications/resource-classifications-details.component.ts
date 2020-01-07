@@ -31,7 +31,7 @@ export class ResourceClassificationsDetailsComponent extends DetailsBaseComponen
   }
 
   create = () => {
-    const result = new ResourceClassificationForSave();
+    const result: ResourceClassificationForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

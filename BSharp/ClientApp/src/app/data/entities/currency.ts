@@ -6,22 +6,22 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 
-export class CurrencyForSave extends EntityForSave {
-  Name: string;
-  Name2: string;
-  Name3: string;
-  Description: string;
-  Description2: string;
-  Description3: string;
-  E: number;
+export interface CurrencyForSave extends EntityForSave {
+  Name?: string;
+  Name2?: string;
+  Name3?: string;
+  Description?: string;
+  Description2?: string;
+  Description3?: string;
+  E?: number;
 }
 
-export class Currency extends CurrencyForSave {
-  IsActive: boolean;
-  CreatedAt: string;
-  CreatedById: number | string;
-  ModifiedAt: string;
-  ModifiedById: number | string;
+export interface Currency extends CurrencyForSave {
+  IsActive?: boolean;
+  CreatedAt?: string;
+  CreatedById?: number | string;
+  ModifiedAt?: string;
+  ModifiedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

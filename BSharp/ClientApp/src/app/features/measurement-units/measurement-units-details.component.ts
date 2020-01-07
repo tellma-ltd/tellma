@@ -21,7 +21,7 @@ export class MeasurementUnitsDetailsComponent extends DetailsBaseComponent {
   public expand = '';
 
   create = () => {
-    const result = new MeasurementUnitForSave();
+    const result: MeasurementUnitForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

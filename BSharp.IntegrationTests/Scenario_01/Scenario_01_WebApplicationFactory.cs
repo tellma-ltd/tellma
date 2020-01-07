@@ -6,12 +6,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Net.Http;
-using System.Reflection;
 
 namespace BSharp.IntegrationTests.Scenario_01
 {
@@ -35,37 +32,34 @@ namespace BSharp.IntegrationTests.Scenario_01
                 cfg.AddJsonFile(configPath);
                 cfg.AddUserSecrets(typeof(Scenario_01).Assembly);
             });
-        }
 
-        protected override TestServer CreateServer(IWebHostBuilder builder)
-        {
-            // Startup.ConfigureServices is called inside here
-            TestServer server = base.CreateServer(builder);
-
-            // This won't run automatically when using WebApplicationFactory
-            Program.InitDatabase(server.Host.Services);
-
-            // Databases seeding and preparation
-            string connString;
-            string adminEmail;
-            IShardResolver shardResolver;
-
-            using (var scope = server.Host.Services.CreateScope())
+            // This initializes the test database
+            builder.ConfigureServices(services =>
             {
-                var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+                var sp = services.BuildServiceProvider();
 
-                connString = config.GetConnectionString(Constants.AdminConnection);
-                adminEmail = config.Get<GlobalOptions>()?.Admin?.Email ?? "admin@bsharp.online";
-                shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
+                // This won't run automatically when using WebApplicationFactory
+                Program.InitDatabase(sp);
 
-                // Retrieve the access token specific to the developer
-                _token = config.GetValue<string>("AccessToken");
-            }
+                // Databases seeding and preparation
+                string connString;
+                string adminEmail;
+                IShardResolver shardResolver;
 
-            ArrangeDatabasesForTests(connString, adminEmail, shardResolver);
+                using (var scope = sp.CreateScope())
+                {
+                    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-            // Return the server
-            return server;
+                    connString = config.GetConnectionString(Constants.AdminConnection);
+                    adminEmail = config.Get<GlobalOptions>()?.Admin?.Email ?? "admin@bsharp.online";
+                    shardResolver = scope.ServiceProvider.GetRequiredService<IShardResolver>();
+
+                    // Retrieve the access token specific to the developer
+                    _token = config.GetValue<string>("AccessToken");
+                }
+
+                ArrangeDatabasesForTests(connString, adminEmail, shardResolver);
+            });
         }
 
         private void ArrangeDatabasesForTests(string adminConnString, string adminEmail, IShardResolver shardResolver)

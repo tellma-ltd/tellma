@@ -25,7 +25,7 @@ export class ResponsibilityCentersDetailsComponent extends DetailsBaseComponent 
   public expand = 'Parent,Manager';
 
   create = () => {
-    const result = new ResponsibilityCenterForSave();
+    const result: ResponsibilityCenterForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

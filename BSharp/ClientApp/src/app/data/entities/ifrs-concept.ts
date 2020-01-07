@@ -5,21 +5,21 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { EntityForSave } from './base/entity-for-save';
 
-export class IfrsConcept extends EntityForSave {
-    IfrsType: 'Amendment' | 'Extension' | 'Regulatory';
-    Label: string;
-    Label2: string;
-    Label3: string;
-    Documentation: string;
-    Documentation2: string;
-    Documentation3: string;
-    EffectiveDate: string;
-    ExpiryDate: string;
-    IsActive: boolean;
-    CreatedAt: string;
-    CreatedById: number | string;
-    ModifiedAt: string;
-    ModifiedById: number | string;
+export interface IfrsConcept extends EntityForSave {
+    IfrsType?: 'Amendment' | 'Extension' | 'Regulatory';
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    Documentation?: string;
+    Documentation2?: string;
+    Documentation3?: string;
+    EffectiveDate?: string;
+    ExpiryDate?: string;
+    IsActive?: boolean;
+    CreatedAt?: string;
+    CreatedById?: number | string;
+    ModifiedAt?: string;
+    ModifiedById?: number | string;
 }
 
 const _label = ['', '2', '3'].map(pf => 'Label' + pf);

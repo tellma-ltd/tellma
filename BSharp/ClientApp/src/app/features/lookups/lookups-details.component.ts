@@ -59,7 +59,7 @@ export class LookupsDetailsComponent extends DetailsBaseComponent implements OnI
   // UI Binding
 
   create = () => {
-    const result = new LookupForSave();
+    const result: LookupForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

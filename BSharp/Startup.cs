@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -20,7 +21,7 @@ namespace BSharp
         public static readonly string[] SUPPORTED_CULTURES = new string[] { "en", "ar", "zh" };
 
         private readonly IConfiguration _config;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
         /// <summary>
         /// If there is an error in <see cref="ConfigureServices(IServiceCollection)"/>, usually
@@ -44,7 +45,7 @@ namespace BSharp
         /// <summary>
         /// Create a new instance of <see cref="Startup"/>
         /// </summary>
-        public Startup(IConfiguration config, IHostingEnvironment env)
+        public Startup(IConfiguration config, IWebHostEnvironment env)
         {
             _config = config;
             _env = env;
@@ -85,7 +86,7 @@ namespace BSharp
                 });
 
                 // Register MVC using the most up to date version
-                var mvcBuilder = services.AddMvc(opt =>
+                services.AddControllersWithViews(opt =>
                 {
                     // This filter checks version headers (e.g. x-translations-version) supplied by the client and efficiently
                     // sets a response header to 'Fresh' or 'Stale' to prompt the client to refresh its settings if necessary
@@ -96,7 +97,7 @@ namespace BSharp
                         // This allows us to have a single RESX file for all classes and namespaces
                         opt.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(Strings));
                     })
-                    .AddJsonOptions(opt =>
+                    .AddNewtonsoftJson(opt =>
                     {
                         // The JSON options below instruct the serializer to keep property names in PascalCase, 
                         // even though this violates convention, it makes a few things easier since both client and server
@@ -110,11 +111,14 @@ namespace BSharp
                         // and the API allows selecting a small subset of the columns
                         opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     })
-                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
                 // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
                 if (GlobalOptions.EmbeddedIdentityServerEnabled)
                 {
+                    // Tp support the authentication pages
+                    var mvcBuilder = services.AddRazorPages();
+
                     var idServerConfig = _config.GetSection("EmbeddedIdentityServer");
                     var clientAppsConfig = _config.GetSection(nameof(Services.Utilities.GlobalOptions.ClientApplications));
 
@@ -170,7 +174,6 @@ namespace BSharp
                 // The configuration encountered a fatal error, usually a required yet missing configuration
                 // Setting this property instructs the middleware to short-circuit and just return this error in plain text                
                 ConfigurationError = ex.Message;
-
             }
         }
 
@@ -224,12 +227,15 @@ namespace BSharp
                     // UI strings that we have localized
                     opt.AddSupportedUICultures(SUPPORTED_CULTURES);
                 });
-                app.UseStaticFiles();
 
+                app.UseStaticFiles();
                 if (GlobalOptions.EmbeddedClientApplicationEnabled)
                 {
                     app.UseSpaStaticFiles();
                 }
+
+                // The API
+                app.UseRouting();
 
                 // CORS
                 string webClientUri = GlobalOptions.ClientApplications?.WebClientUri.WithoutTrailingSlash();
@@ -253,15 +259,29 @@ namespace BSharp
                 // IdentityServer
                 if (GlobalOptions.EmbeddedIdentityServerEnabled)
                 {
+                    // Note: this already includes a call to app.UseAuthentication()
                     app.UseEmbeddedIdentityServer();
                 }
-
-                // The API
-                app.UseMvc(routes =>
+                else
                 {
-                    routes.MapRoute(
+                    app.UseAuthentication();
+                }
+
+                app.UseAuthorization();
+
+                // Routing
+                app.UseEndpoints(endpoints =>
+                {
+                    // For the API
+                    endpoints.MapControllerRoute(
                         name: "default",
-                        template: "{controller}/{action=Index}/{id?}");
+                        pattern: "{controller}/{action=Index}/{id?}");
+
+                    // For authentication Razor pages
+                    if (GlobalOptions.EmbeddedIdentityServerEnabled)
+                    {
+                        endpoints.MapRazorPages();
+                    }
                 });
 
                 // The Angular client
