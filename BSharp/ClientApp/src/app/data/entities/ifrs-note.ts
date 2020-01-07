@@ -5,14 +5,14 @@ import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { IfrsConcept, metadata_IfrsConceptInner } from './ifrs-concept';
 
-export class IfrsNote extends IfrsConcept {
-  Node: string;
-  Level: number;
-  ParentNode: string;
-  ChildCount: number;
-  IsAggregate: boolean;
-  ForDebit: boolean;
-  ForCredit: boolean;
+export interface IfrsNote extends IfrsConcept {
+  Node?: string;
+  Level?: number;
+  ParentNode?: string;
+  ChildCount?: number;
+  IsAggregate?: boolean;
+  ForDebit?: boolean;
+  ForCredit?: boolean;
 }
 
 // Choice list

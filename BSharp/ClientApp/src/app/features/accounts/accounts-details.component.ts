@@ -38,7 +38,7 @@ export class AccountsDetailsComponent extends DetailsBaseComponent {
   // UI Binding
 
   create = () => {
-    const result = new AccountForSave();
+    const result: AccountForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

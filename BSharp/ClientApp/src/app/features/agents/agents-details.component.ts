@@ -18,7 +18,6 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   private agentsApi = this.api.agentsApi('', this.notifyDestruct$); // for intellisense
   private _definitionId: string;
 
-
   @Input()
   public set definitionId(t: string) {
     if (this._definitionId !== t) {
@@ -34,7 +33,7 @@ export class AgentsDetailsComponent extends DetailsBaseComponent implements OnIn
   public expand = 'User';
 
   create = () => {
-    const result = new AgentForSave();
+    const result: AgentForSave = {};
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

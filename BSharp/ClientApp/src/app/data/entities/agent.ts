@@ -7,32 +7,32 @@ import { EntityDescriptor, NavigationPropDescriptor, NumberPropDescriptor } from
 import { SettingsForClient } from '../dto/settings-for-client';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 
-export class AgentForSave extends EntityWithKey {
+export interface AgentForSave extends EntityWithKey {
 
-  Name: string;
-  Name2: string;
-  Name3: string;
-  Code: string;
-  IsRelated: boolean;
-  TaxIdentificationNumber: string;
-  StartDate: string;
-  JobId: number;
-  BasicSalary: number;
-  TransportationAllowance: number;
-  OvertimeRate: number;
-  BankAccountNumber: number;
-  UserId: number;
-  Image: string;
+  Name?: string;
+  Name2?: string;
+  Name3?: string;
+  Code?: string;
+  IsRelated?: boolean;
+  TaxIdentificationNumber?: string;
+  StartDate?: string;
+  JobId?: number;
+  BasicSalary?: number;
+  TransportationAllowance?: number;
+  OvertimeRate?: number;
+  BankAccountNumber?: number;
+  UserId?: number;
+  Image?: string;
 }
 
-export class Agent extends AgentForSave {
-  DefinitionId: string;
-  ImageId: string;
-  IsActive: boolean;
-  CreatedAt: string;
-  CreatedById: number | string;
-  ModifiedAt: string;
-  ModifiedById: number | string;
+export interface Agent extends AgentForSave {
+  DefinitionId?: string;
+  ImageId?: string;
+  IsActive?: boolean;
+  CreatedAt?: string;
+  CreatedById?: number | string;
+  ModifiedAt?: string;
+  ModifiedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

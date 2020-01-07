@@ -7,21 +7,21 @@ import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 import { DefinitionsForClient } from '../dto/definitions-for-client';
 
-export class LookupForSave extends EntityForSave {
-    Name: string;
-    Name2: string;
-    Name3: string;
-    Code: string;
+export interface LookupForSave extends EntityForSave {
+    Name?: string;
+    Name2?: string;
+    Name3?: string;
+    Code?: string;
 }
 
-export class Lookup extends LookupForSave {
-    DefinitionId: string;
-    SortKey: number;
-    IsActive: boolean;
-    CreatedAt: string;
-    CreatedById: number | string;
-    ModifiedAt: string;
-    ModifiedById: number | string;
+export interface Lookup extends LookupForSave {
+    DefinitionId?: string;
+    SortKey?: number;
+    IsActive?: boolean;
+    CreatedAt?: string;
+    CreatedById?: number | string;
+    ModifiedAt?: string;
+    ModifiedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

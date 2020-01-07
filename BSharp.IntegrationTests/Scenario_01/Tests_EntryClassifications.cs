@@ -222,9 +222,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             var id = entity.Id;
 
             // Query the delete API
-            var msg = new HttpRequestMessage(HttpMethod.Delete, Url);
-            msg.Content = new ObjectContent<List<int>>(new List<int> { id }, new JsonMediaTypeFormatter());
-            var deleteResponse = await Client.SendAsync(msg);
+            var deleteResponse = await Client.DeleteAsync($"{Url}/{id}");
 
             Output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);

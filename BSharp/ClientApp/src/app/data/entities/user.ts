@@ -7,25 +7,25 @@ import { EntityForSave } from './base/entity-for-save';
 import { SettingsForClient } from '../dto/settings-for-client';
 import { supportedCultures } from '../supported-cultures';
 
-export class UserForSave<TRoleMembership = RoleMembershipForSave> extends EntityForSave {
-  Name: string;
-  Name2: string;
-  Name3: string;
-  Email: string;
-  PreferredLanguage: string;
-  Image: string;
-  Roles: TRoleMembership[];
+export interface UserForSave<TRoleMembership = RoleMembershipForSave> extends EntityForSave {
+  Name?: string;
+  Name2?: string;
+  Name3?: string;
+  Email?: string;
+  PreferredLanguage?: string;
+  Image?: string;
+  Roles?: TRoleMembership[];
 }
 
-export class User extends UserForSave<RoleMembership> {
-  ImageId: string;
-  IsActive: boolean;
-  ExternalId: string;
-  LastAccess: string;
-  CreatedAt: string;
-  CreatedById: number | string;
-  ModifiedAt: string;
-  ModifiedById: number | string;
+export interface User extends UserForSave<RoleMembership> {
+  ImageId?: string;
+  IsActive?: boolean;
+  ExternalId?: string;
+  LastAccess?: string;
+  CreatedAt?: string;
+  CreatedById?: number | string;
+  ModifiedAt?: string;
+  ModifiedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

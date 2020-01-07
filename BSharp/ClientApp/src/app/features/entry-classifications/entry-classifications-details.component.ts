@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { DetailsBaseComponent } from '~/app/shared/details-base/details-base.component';
-import {
-  EntryClassificationForSave, EntryClassification, metadata_EntryClassification
-} from '~/app/data/entities/entry-classification';
+import { EntryClassificationForSave, EntryClassification, metadata_EntryClassification } from '~/app/data/entities/entry-classification';
 import { ApiService } from '~/app/data/api.service';
 import { WorkspaceService } from '~/app/data/workspace.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -31,7 +29,7 @@ export class EntryClassificationsDetailsComponent extends DetailsBaseComponent {
   }
 
   create = () => {
-    const result = new EntryClassificationForSave();
+    const result: EntryClassificationForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

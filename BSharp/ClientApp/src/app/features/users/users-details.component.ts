@@ -25,7 +25,7 @@ export class UsersDetailsComponent extends DetailsBaseComponent {
   public expand = 'Roles/Role';
 
   create = () => {
-    const result = new UserForSave();
+    const result: UserForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

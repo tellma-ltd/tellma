@@ -18,108 +18,114 @@ export type MainMenuSection = 'Financials' | 'Administration'; // TODO
 export type MainMenuIcon = 'clipboard' | 'chart-pie';
 export type DefinitionState = 'Draft' | 'Deployed' | 'Archived';
 
-export class ReportDefinitionForSave<
+export interface ReportDefinitionForSave<
     TParameter = ReportParameterDefinitionForSave,
     TRow = ReportRowDefinitionForSave,
     TColumn = ReportColumnDefinitionForSave,
     TMeasure = ReportMeasureDefinitionForSave,
     TSelect = ReportSelectDefinitionForSave> extends EntityForSave {
 
-    Title: string;
+    Title?: string;
     Title2?: string;
     Title3?: string;
     Description?: string;
     Description2?: string;
     Description3?: string;
-    Type: ReportType; // summary or details
+    Type?: ReportType; // summary or details
     Chart?: ChartType;
-    DefaultsToChart: boolean; // ?
-    Collection: string;
+    DefaultsToChart?: boolean; // ?
+    Collection?: string;
     DefinitionId?: string;
     Filter?: string;
     OrderBy?: string;
     Top?: number;
-    ShowColumnsTotal: boolean;
-    ShowRowsTotal: boolean;
-    MainMenuSection: MainMenuSection;
-    MainMenuIcon: MainMenuIcon;
-    MainMenuSortKey: number;
-    State: DefinitionState;
+    ShowColumnsTotal?: boolean;
+    ShowRowsTotal?: boolean;
+    MainMenuSection?: MainMenuSection;
+    MainMenuIcon?: MainMenuIcon;
+    MainMenuSortKey?: number;
+    State?: DefinitionState;
 
-    Select: TSelect[];
+    Select?: TSelect[];
     Parameters?: TParameter[];
-    Rows: TRow[];
-    Columns: TColumn[];
-    Measures: TMeasure[];
+    Rows?: TRow[];
+    Columns?: TColumn[];
+    Measures?: TMeasure[];
 }
 
-export class ReportDefinition extends ReportDefinitionForSave<
+export interface ReportDefinition extends ReportDefinitionForSave<
     ReportParameterDefinition, ReportRowDefinition, ReportColumnDefinition, ReportMeasureDefinition, ReportSelectDefinition> {
-
 }
 
-export class ReportParameterDefinitionForSave extends EntityForSave {
-    ReportDefinitionId: string | number;
-    Key: string; // e.g. 'FromDate'
+export interface ReportParameterDefinitionForSave extends EntityForSave {
+    ReportDefinitionId?: string | number;
+    Key?: string; // e.g. 'FromDate'
     Label?: string;
     Label2?: string;
     Label3?: string;
-    IsRequired: boolean;
+    IsRequired?: boolean;
 }
 
-export class ReportParameterDefinition extends ReportParameterDefinitionForSave {
+// tslint:disable-next-line:no-empty-interface
+export interface ReportParameterDefinition extends ReportParameterDefinitionForSave {
 
 }
 
-export class ReportSelectDefinitionForSave extends EntityForSave {
-    ReportDefinitionId: string | number;
-    Path: string;
+export interface ReportSelectDefinitionForSave extends EntityForSave {
+    ReportDefinitionId?: string | number;
+    Path?: string;
     Label?: string;
     Label2?: string;
     Label3?: string;
 }
 
-export class ReportSelectDefinition extends ReportSelectDefinitionForSave {
+// tslint:disable-next-line:no-empty-interface
+export interface ReportSelectDefinition extends ReportSelectDefinitionForSave {
 
 }
 
-export abstract class ReportDimensionDefinition extends EntityForSave {
-    ReportDefinitionId: string | number;
-    Path: string;
-    Label?: string;
-    Label2?: string;
-    Label3?: string;
-    OrderDirection?: ReportOrderDirection;
-    AutoExpand: boolean;
-}
-
-export class ReportColumnDefinitionForSave extends ReportDimensionDefinition {
-
-}
-
-export class ReportColumnDefinition extends ReportColumnDefinitionForSave {
-
-}
-
-export class ReportRowDefinitionForSave extends ReportDimensionDefinition {
-
-}
-
-export class ReportRowDefinition extends ReportRowDefinitionForSave {
-
-}
-
-export class ReportMeasureDefinitionForSave extends EntityForSave {
-    ReportDefinitionId: string | number;
-    Path: string;
+export interface ReportDimensionDefinition extends EntityForSave {
+    ReportDefinitionId?: string | number;
+    Path?: string;
     Label?: string;
     Label2?: string;
     Label3?: string;
     OrderDirection?: ReportOrderDirection;
-    Aggregation: Aggregation;
+    AutoExpand?: boolean;
 }
 
-export class ReportMeasureDefinition extends ReportMeasureDefinitionForSave {
+// tslint:disable-next-line:no-empty-interface
+export interface ReportColumnDefinitionForSave extends ReportDimensionDefinition {
+
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface ReportColumnDefinition extends ReportColumnDefinitionForSave {
+
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface ReportRowDefinitionForSave extends ReportDimensionDefinition {
+
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface ReportRowDefinition extends ReportRowDefinitionForSave {
+
+}
+
+export interface ReportMeasureDefinitionForSave extends EntityForSave {
+    ReportDefinitionId?: string | number;
+    Path?: string;
+    Label?: string;
+    Label2?: string;
+    Label3?: string;
+    OrderDirection?: ReportOrderDirection;
+    Aggregation?: Aggregation;
+}
+
+// tslint:disable-next-line:no-empty-interface
+export interface ReportMeasureDefinition extends ReportMeasureDefinitionForSave {
 
 }
 

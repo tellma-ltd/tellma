@@ -48,7 +48,7 @@ export class RolesDetailsComponent extends DetailsBaseComponent {
   public expand = 'Permissions,Members/User';
 
   create = () => {
-    const result = new RoleForSave();
+    const result: RoleForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Name = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {

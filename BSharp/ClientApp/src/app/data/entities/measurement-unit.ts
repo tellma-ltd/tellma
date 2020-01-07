@@ -6,25 +6,25 @@ import { SettingsForClient } from '../dto/settings-for-client';
 import { EntityDescriptor } from './base/metadata';
 import { EntityWithKey } from './base/entity-with-key';
 
-export class MeasurementUnitForSave extends EntityForSave {
-  UnitType: 'Pure' | 'Time' | 'Distance' | 'Count' | 'Mass' | 'Volume' | 'MonetaryValue';
-  Name: string;
-  Name2: string;
-  Name3: string;
-  Code: string;
-  Description: string;
-  Description2: string;
-  Description3: string;
-  UnitAmount: number;
-  BaseAmount: number;
+export interface MeasurementUnitForSave extends EntityForSave {
+  UnitType?: 'Pure' | 'Time' | 'Distance' | 'Count' | 'Mass' | 'Volume' | 'MonetaryValue';
+  Name?: string;
+  Name2?: string;
+  Name3?: string;
+  Code?: string;
+  Description?: string;
+  Description2?: string;
+  Description3?: string;
+  UnitAmount?: number;
+  BaseAmount?: number;
 }
 
-export class MeasurementUnit extends MeasurementUnitForSave {
-  IsActive: boolean;
-  CreatedAt: string;
-  CreatedById: number | string;
-  ModifiedAt: string;
-  ModifiedById: number | string;
+export interface MeasurementUnit extends MeasurementUnitForSave {
+  IsActive?: boolean;
+  CreatedAt?: string;
+  CreatedById?: number | string;
+  ModifiedAt?: string;
+  ModifiedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

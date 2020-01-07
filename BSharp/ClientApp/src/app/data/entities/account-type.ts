@@ -6,13 +6,13 @@ import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 
-export class AccountType extends EntityForSave {
-  Name: string;
-  Name2: string;
-  Name3: string;
-  Description: string;
-  Description2: string;
-  Description3: string;
+export interface AccountType extends EntityForSave {
+  Name?: string;
+  Name2?: string;
+  Name3?: string;
+  Description?: string;
+  Description2?: string;
+  Description3?: string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

@@ -105,7 +105,7 @@ export class TableComponent implements OnInit {
 
   private addPlaceholder(updateArray: boolean): void {
 
-    let placeholder: EntityForSave = { Id: null };
+    let placeholder: EntityForSave = { };
     if (this.onNewItem) {
       placeholder = this.onNewItem(placeholder);
     }

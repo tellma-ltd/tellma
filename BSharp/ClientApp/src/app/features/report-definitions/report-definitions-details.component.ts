@@ -88,7 +88,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   private _currentModelModified = false;
 
   create = () => {
-    const result = new ReportDefinitionForSave();
+    const result: ReportDefinitionForSave = { };
     if (this.ws.isPrimaryLanguage) {
       result.Title = this.initialText;
     } else if (this.ws.isSecondaryLanguage) {
@@ -288,7 +288,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       this._currentModel = model;
 
       // The mapping is trivial since the two data structures are identical
-      this.modelForClient = { ...model };
+      this.modelForClient = { ...model } as ReportDefinitionForClient;
     }
 
     return this.modelForClient;

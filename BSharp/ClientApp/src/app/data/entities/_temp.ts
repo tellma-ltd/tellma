@@ -5,37 +5,37 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityDescriptor } from './base/metadata';
 import { SettingsForClient } from '../dto/settings-for-client';
 
-export class VoucherBookletForSave extends EntityWithKey {
-  Name: string;
-  Name2: string;
-  Name3: string;
-  VoucherTypeId: string;
-  StringPrefix: string;
-  NumericLength: number;
-  RangeStarts: number;
-  RangeEnds: number;
+export interface VoucherBookletForSave extends EntityWithKey {
+  Name?: string;
+  Name2?: string;
+  Name3?: string;
+  VoucherTypeId?: string;
+  StringPrefix?: string;
+  NumericLength?: number;
+  RangeStarts?: number;
+  RangeEnds?: number;
 }
 
-export class VoucherBooklet extends VoucherBookletForSave {
-  IsActive: boolean;
+export interface VoucherBooklet extends VoucherBookletForSave {
+  IsActive?: boolean;
 }
 
-export class IfrsAccountClassification extends EntityWithKey {
-  Level: number;
-  ActiveChildCount: number;
-  ChildCount: number;
-  IsLeaf: boolean;
-  Label: string;
-  Label2: string;
-  Label3: string;
-  Documentation: string;
-  Documentation2: string;
-  Documentation3: string;
-  EffectiveDate: string;
-  ExpiryDate: string;
-  IsActive: boolean;
-  Node: string;
-  ParentNode: string;
+export interface IfrsAccountClassification extends EntityWithKey {
+  Level?: number;
+  ActiveChildCount?: number;
+  ChildCount?: number;
+  IsLeaf?: boolean;
+  Label?: string;
+  Label2?: string;
+  Label3?: string;
+  Documentation?: string;
+  Documentation2?: string;
+  Documentation3?: string;
+  EffectiveDate?: string;
+  ExpiryDate?: string;
+  IsActive?: boolean;
+  Node?: string;
+  ParentNode?: string;
 }
 
 let _voucherBookletSettings: SettingsForClient;

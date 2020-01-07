@@ -27,7 +27,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   mode: 'screen' | 'preview' = 'screen';
 
   @Input()
-  previewDefinition: ReportDefinition; // Used in preview mode
+  previewDefinition: ReportDefinitionForClient; // Used in preview mode
 
   @Input()
   get showChart(): boolean {
@@ -149,7 +149,9 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   get definition(): ReportDefinitionForClient {
-    return this.isScreenMode ? this.workspace.current.definitions.Reports[this.definitionId] : this.previewDefinition;
+    return this.isScreenMode ?
+      this.workspace.current.definitions.Reports[this.definitionId] :
+      this.previewDefinition;
   }
 
   get entityDescriptor(): EntityDescriptor {

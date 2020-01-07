@@ -624,10 +624,29 @@ export class ApiService {
         return obs$;
       },
 
+      deleteId: (id: number | string) => {
+        this.showRotator = true;
+
+        const url = appsettings.apiAddress + `api/${endpoint}` + '/' + encodeURIComponent(id);
+        const obs$ = this.http.delete(url).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+
       delete: (ids: (number | string)[]) => {
         this.showRotator = true;
-        const url = appsettings.apiAddress + `api/${endpoint}`;
-        const obs$ = this.http.request('DELETE', url, { body: ids }).pipe(
+
+        const url = appsettings.apiAddress + `api/${endpoint}?` + ids.map(id => `i=${encodeURIComponent(id)}`).join('&');
+        const obs$ = this.http.delete(url).pipe(
           tap(() => this.showRotator = false),
           catchError((error) => {
             this.showRotator = false;
@@ -643,8 +662,8 @@ export class ApiService {
 
       deleteWithDescendants: (ids: (number | string)[]) => {
         this.showRotator = true;
-        const url = appsettings.apiAddress + `api/${endpoint}/with-descendants`;
-        const obs$ = this.http.request('DELETE', url, { body: ids }).pipe(
+        const url = appsettings.apiAddress + `api/${endpoint}/with-descendants?` + ids.map(id => `i=${encodeURIComponent(id)}`).join('&');
+        const obs$ = this.http.delete(url).pipe(
           tap(() => this.showRotator = false),
           catchError((error) => {
             this.showRotator = false;

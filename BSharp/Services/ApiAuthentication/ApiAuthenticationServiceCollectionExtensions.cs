@@ -16,23 +16,22 @@ namespace Microsoft.Extensions.DependencyInjection
             var config = configSection.Get<ApiAuthenticationOptions>();
             var authorityUri = config.AuthorityUri?.WithoutTrailingSlash();
 
+            var authBuilder = services.AddAuthentication();
             if (!string.IsNullOrWhiteSpace(authorityUri))
             {
-                // Add the default scheme for the embedded IdentityServer
-                services.AddAuthentication()
-
-                    // Add the Bearer scheme for the API
-                    .AddIdentityServerAuthentication(JwtBearerDefaults.AuthenticationScheme, options =>
-                    {
-                        options.Authority = authorityUri;
-                        options.ApiName = Constants.ApiResourceName;
-                    });
+                // Add the Bearer scheme for the API
+                // This relies on tokens from an external identity server
+                authBuilder.AddIdentityServerAuthentication(JwtBearerDefaults.AuthenticationScheme, options =>
+                {
+                    options.Authority = authorityUri;
+                    options.ApiName = Constants.ApiResourceName;
+                });
             }
             else
             {
-                // TODO: replace with https://bit.ly/2GQVbFG, as soon as IdentityServer4 version 3.0 stable is released 
-                // IF Authority URI is not supplied assume the embedded identity server instance is enabled and used
-                authorityUri = "https://localhost:44368";
+                // Add the bearer scheme for the local API
+                // This relies on tokens from the embedded identity server
+                authBuilder.AddLocalApi(JwtBearerDefaults.AuthenticationScheme, opt => { });
             }
 
             // Add helper service that provides access to the authenticated user's email and external Id 

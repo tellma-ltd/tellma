@@ -8,23 +8,23 @@ import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 import { SettingsForClient } from '../dto/settings-for-client';
 
-export class RoleForSave<TPermission = PermissionForSave,
+export interface RoleForSave<TPermission = PermissionForSave,
     TRoleMembership = RoleMembershipForSave> extends EntityForSave {
-    Name: string;
-    Name2: string;
-    Name3: string;
-    Code: string;
-    IsPublic: boolean;
-    Permissions: TPermission[];
-    Members: TRoleMembership[];
+    Name?: string;
+    Name2?: string;
+    Name3?: string;
+    Code?: string;
+    IsPublic?: boolean;
+    Permissions?: TPermission[];
+    Members?: TRoleMembership[];
 }
 
-export class Role extends RoleForSave<Permission, RoleMembership> {
-    IsActive: boolean;
-    CreatedAt: string;
-    CreatedById: number | string;
-    ModifiedAt: string;
-    ModifiedById: number | string;
+export interface Role extends RoleForSave<Permission, RoleMembership> {
+    IsActive?: boolean;
+    CreatedAt?: string;
+    CreatedById?: number | string;
+    ModifiedAt?: string;
+    ModifiedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

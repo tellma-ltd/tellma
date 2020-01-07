@@ -1,5 +1,5 @@
 import { EntityWithKey } from './entity-with-key';
 
-export abstract class EntityForSave extends EntityWithKey {
+export interface EntityForSave extends EntityWithKey {
   serverErrors?: { [key: string]: string[] };
 }

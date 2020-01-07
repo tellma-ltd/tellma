@@ -59,10 +59,23 @@ namespace BSharp.Controllers
         }
 
         [HttpDelete]
-        public virtual async Task<ActionResult> Delete([FromBody] List<TKey> ids)
+        public virtual async Task<ActionResult> Delete([FromQuery] List<TKey> i)
+        {
+            // "i" parameter is given a short name to allow a large number of
+            // ids to be passed in the query string before the url size limit
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                await DeleteImplAsync(i);
+                return Ok();
+            }, _logger);
+        }
+
+        [HttpDelete("{id}")]
+        public virtual async Task<ActionResult> DeleteId(TKey id)
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
+                var ids = new List<TKey> { id };
                 await DeleteImplAsync(ids);
                 return Ok();
             }, _logger);

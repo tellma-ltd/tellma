@@ -6,25 +6,25 @@ import { TenantWorkspace } from '../workspace.service';
 import { TranslateService } from '@ngx-translate/core';
 import { EntityWithKey } from './base/entity-with-key';
 
-export class EntryClassificationForSave extends EntityForSave {
-  ParentId: number;
-  Name: string;
-  Name2: string;
-  Name3: string;
-  Code: string;
-  EntryDefinitionId: string;
-  IsAssignable: boolean;
+export interface EntryClassificationForSave extends EntityForSave {
+  ParentId?: number;
+  Name?: string;
+  Name2?: string;
+  Name3?: string;
+  Code?: string;
+  EntryDefinitionId?: string;
+  IsAssignable?: boolean;
 }
 
-export class EntryClassification extends EntryClassificationForSave {
-  Level: number;
-  ActiveChildCount: number;
-  ChildCount: number;
-  IsActive: boolean;
-  CreatedAt: string;
-  CreatedById: number | string;
-  ModifiedAt: string;
-  ModifiedById: number | string;
+export interface EntryClassification extends EntryClassificationForSave {
+  Level?: number;
+  ActiveChildCount?: number;
+  ChildCount?: number;
+  IsActive?: boolean;
+  CreatedAt?: string;
+  CreatedById?: number | string;
+  ModifiedAt?: string;
+  ModifiedById?: number | string;
 }
 
 const _select = ['', '2', '3'].map(pf => 'Name' + pf);

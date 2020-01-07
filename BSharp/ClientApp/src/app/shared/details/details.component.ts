@@ -122,7 +122,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
 
   // Moved below the fields to keep tslint happy
   @Input()
-  createFunc: () => EntityForSave = () => ({ Id: null })
+  createFunc: () => EntityForSave = () => ({ })
 
   @Input()
   isInactive: (model: EntityForSave) => string = (model: EntityForSave) => !!model &&
@@ -132,7 +132,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   cloneFunc: (item: EntityForSave) => EntityForSave = (item: EntityForSave) => {
     if (!!item) {
       const clone = JSON.parse(JSON.stringify(item)) as EntityForSave;
-      clone.Id = null;
+      delete clone.Id;
 
       if (clone['ImageId']) {
         delete clone['ImageId'];
@@ -738,7 +738,7 @@ export class DetailsComponent implements OnInit, OnDestroy, OnChanges, ICanDeact
   onDelete(): void {
     // Assuming the entity is not new
     const id = this.viewModel.Id;
-    this.crud.delete([id]).subscribe(
+    this.crud.deleteId(id).subscribe(
       () => {
         // remove from master and total of the global state
         this.globalState.delete([id], this.workspace.current[this.globalState.collectionName]);
