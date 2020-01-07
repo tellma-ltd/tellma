@@ -23,8 +23,9 @@ BEGIN
 	(1, N'ColdRollExtension',	N'Cold Roll',	N'/1/11/1/1/2/',	1,				N'raw-materials');
 	
 	DECLARE @RawMaterialsDescendants ResourceClassificationList;
-	INSERT INTO @RawMaterialsDescendants ([Code], [Name], [ParentIndex], [IsAssignable], [Index], [ResourceDefinitionId])
-	SELECT [Code], [Name], (SELECT [Index] FROM @RawMaterialsDescendantsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index], [ResourceDefinitionId]
+	SET @PId = (SELECT [Id] FROM dbo.ResourceClassifications WHERE [Code] = N'RawMaterials');
+	INSERT INTO @RawMaterialsDescendants ([ParentId],[Code], [Name], [ParentIndex], [IsAssignable], [Index], [ResourceDefinitionId])
+	SELECT @PId, [Code], [Name], (SELECT [Index] FROM @RawMaterialsDescendantsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index], [ResourceDefinitionId]
 	FROM @RawMaterialsDescendantsTemp RC
 
 	EXEC [api].[ResourceClassifications__Save]

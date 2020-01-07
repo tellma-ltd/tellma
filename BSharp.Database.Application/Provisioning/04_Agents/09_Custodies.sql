@@ -9,8 +9,8 @@ IF @DB = N'100' -- ACME, USD, en/ar/zh
 	(2,		N'Cashier');
 ELSE IF @DB = N'101' -- Banan SD, USD, en
 	INSERT INTO @Custodies
-	([Index], [Name]) VALUES
-	(0,		N'GM Petty Cash');
+	([Index],	[Name],				[Code]) VALUES
+	(0,			N'elAmin alTayyib', N'GM');
 ELSE IF @DB = N'102' -- Banan ET, ETB, en
 	INSERT INTO @Custodies
 	([Index], [Name]) VALUES

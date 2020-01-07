@@ -5,6 +5,21 @@ DECLARE @SA_fuelHR INT, @SA_fuelSalesAdminAG INT, @SA_fuelProduction INT, @SA_fu
 DECLARE @SA_VATInput INT, @SA_VATOutput INT, @SA_SalariesAdmin INT, @SA_SalariesAccrualsTaxable INT, @SA_OvertimeAdmin INT,
 		@SA_SalariesAccrualsNonTaxable INT, @SA_EmployeesPayable INT, @SA_EmployeesIncomeTaxPayable INT;
 DECLARE @SmartAccounts dbo.AccountList;
+IF @DB = N'101' -- Banan SD, USD, en
+BEGIN
+INSERT INTO @SmartAccounts([Index],
+	[AccountTypeId],[AccountClassificationId],	[Name],				[Code],		[ContractType],	[AgentDefinitionId], [ResourceClassificationId], [IsCurrent], [AgentId],			[ResourceId], [EntryClassificationId], [CurrencyId], [ResponsibilityCenterId]) VALUES
+	(0,N'Cash',				@BankAndCash_AC,	N'GM Fund',			N'1010',	N'OnHand',		N'custodies',		dbo.fn_RCCode__Id(N'Cash'),		1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				NULL,		@RC_ExecutiveOffice),
+	(1,N'Cash',				@BankAndCash_AC,	N'BOK -	SDG',		N'1021',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,		dbo.fn_AGCode__Id(N'BOK'),	@R_SDG,			NULL,				NULL,		@RC_ExecutiveOffice),
+	(2,N'OtherCurrentAssets',@Debtors_AC,		N'VAT Input',		N'1301',	N'Receivable',	N'tax-agencies',	NULL,							1,		@VAT,						NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
+	(3,N'AccountsReceivable',@Debtors_AC,		N'Trade Debtors',	N'1101',	N'Receivable',	N'customers',		NULL,							1,		NULL,						NULL,			NULL,				NULL,		@RC_ExecutiveOffice),
+--	(4,N'AccountsReceivable',@Debtors_AC,		N'Trade Debtors/SDG',N'1102',	N'Receivable',	N'customers',		NULL,							1,		NULL,						@NULL,			NULL,				NULL,		@RC_ExecutiveOffice),
+	(5,N'AccountsReceivable',@Debtors_AC,		N'Prepaid Salaries/USD',N'1201',N'Receivable',	N'employees',		NULL,							1,		NULL,						NULL,			NULL,				N'USD',		@RC_ExecutiveOffice)
+	
+	;
+	UPDATE @SmartAccounts SET IsSmart = 1;
+END
+ELSE BEGIN
 INSERT INTO @SmartAccounts([Index], [IsSmart],
 	[AccountTypeId],		[AccountClassificationId],	[Name],								[Code],		[ContractType], [AgentDefinitionId], [ResourceClassificationId], [IsCurrent], [AgentId],	[ResourceId], [Identifier], [EntryClassificationId], [CurrencyId]) VALUES
 --(0,N'Cash',				@BankAndCash_AC,			N'CBE - USD',						N'1101'),
@@ -31,14 +46,14 @@ INSERT INTO @SmartAccounts([Index], [IsSmart],
 --(22,1,N'Expenses',			@Expenses_AC,				N'fuel - Sales - distribution - AG',1,N'5201'),
 --(23,1,N'Expenses',			@Expenses_AC,				N'Salaries - Admin',				N'5212',	N'Expense',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense')),
 (24,1,N'Expenses',			@Expenses_AC,				N'Overtime - Admin',				N'5213',	N'Expense',		N'cost-centers',	dbo.fn_RCCode__Id(N'WagesAndSalaries'),	1,	NULL,			NULL,			NULL,		dbo.fn_ECCode__Id('AdministrativeExpense'),				N'ETB');
-
+END
 EXEC [api].[Accounts__Save] --  N'cash-and-cash-equivalents',
 	@Entities = @SmartAccounts,
 	@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;
 
 IF @ValidationErrorsJson IS NOT NULL 
 BEGIN
-	Print 'Inserting Smart Accounts'
+	Print 'Inserting Smart Accounts' + @ValidationErrorsJson
 	GOTO Err_Label;
 END;
 

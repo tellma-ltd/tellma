@@ -14,29 +14,24 @@ BEGIN
 		Print 'Resource Definitions: Inserting'
 		GOTO Err_Label;
 	END;		
-
-	DELETE FROM @ResourceClassificationsTemp;
-	INSERT INTO @ResourceClassificationsTemp
-	([Code],	[Name],	[IsAssignable], [Node],	[Index]) VALUES
-	(N'D',		N'D',	1,				N'/1/',	0),
-	(N'HSP',	N'HSP',	0,				N'/2/', 1),
-	(N'CHS',	N'CHS',	1,				N'/2/1/', 2),
-	(N'RHS',	N'RHS',	1,				N'/2/2/', 3),
-	(N'SHS',	N'SHS',	1,				N'/2/3/', 4),
-	(N'LTZ',	N'LTZ',	0,				N'/3/', 5),
-	(N'L',		N'L',	1,				N'/3/1/', 6),
-	(N'T',		N'T',	1,				N'/3/2/', 7),
-	(N'Z',		N'Z',	1,				N'/3/3/', 8),
-	(N'SM',		N'SM',	1,				N'/4/', 9),
-	(N'CP',		N'CP',	1,				N'/5/', 10),
-	(N'Other',	N'Other',1,				N'/6/', 11);
+	SET @PId= (SELECT [Id] FROM dbo.ResourceClassifications WHERE [Code] = N'FinishedGoods');
+	DELETE FROM @ResourceClassifications;
+	INSERT INTO @ResourceClassifications([ResourceDefinitionId],[ParentId],[Index], [ParentIndex],
+									[Code],		[Name],	[IsAssignable]--, [Node]
+																	) VALUES
+	(N'steel-products',@PId,0,NULL,	N'D',		N'D',	1),--				N'/1/11/5/1/'),
+	(N'steel-products',@PId,1,NULL,	N'HSP',		N'HSP',	0),--				N'/1/11/5/2/'),
+	(N'steel-products',NULL,2,1,	N'CHS',		N'CHS',	1),--				N'/1/11/5/2/1/'),
+	(N'steel-products',NULL,3,1,	N'RHS',		N'RHS',	1),--				N'/1/11/5/2/2/'),
+	(N'steel-products',NULL,4,1,	N'SHS',		N'SHS',	1),--				N'/1/11/5/2/3/'),
+	(N'steel-products',@PId,5,NULL,	N'LTZ',		N'LTZ',	0),--			N'/1/11/5/3/'),
+	(N'steel-products',NULL,6,5,	N'L',		N'L',	1),--			N'/1/11/5/3/1/'),
+	(N'steel-products',NULL,7,5,	N'T',		N'T',	1),--			N'/1/11/5/3/2/'),
+	(N'steel-products',NULL,8,5,	N'Z',		N'Z',	1),--			N'/1/11/5/3/3/'),
+	(N'steel-products',@PId,9,NULL,	N'SM',		N'SM',	1),--			N'/1/11/5/4/'),
+	(N'steel-products',@PId,10,NULL,N'CP',		N'CP',	1),--			N'/1/11/5/5/'),
+	(N'steel-products',@PId,11,NULL,N'Other',	N'Other',1);--			N'/1/11/5/6/');
 	
-	DELETE FROM @ResourceClassifications
-	INSERT INTO @ResourceClassifications (
-	[ResourceDefinitionId],		[Code], [Name], [ParentIndex], [IsAssignable], [Index])
-	SELECT N'steel-products', [Code], [Name], (SELECT [Index] FROM @ResourceClassificationsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index]
-	FROM @ResourceClassificationsTemp RC
-
 	EXEC [api].[ResourceClassifications__Save]
 		@Entities = @ResourceClassifications,
 		@ValidationErrorsJson = @ValidationErrorsJson OUTPUT;

@@ -466,13 +466,13 @@
     <None Include="Provisioning\03_Basic\a_Currencies.sql" />
     <None Include="Provisioning\03_Basic\b_MeasurementUnits.sql" />
     <None Include="Provisioning\03_Basic\c_Lookups.sql" />
-    <None Include="Provisioning\04_Agents\01_ResponsibilityCenters.sql" />
-    <None Include="Provisioning\04_Agents\02_Suppliers.sql" />
+    <None Include="Provisioning\04_Agents\00_ResponsibilityCenters.sql" />
+    <None Include="Provisioning\04_Agents\06_Suppliers.sql" />
     <None Include="Provisioning\04_Agents\03_Customers.sql" />
-    <None Include="Provisioning\04_Agents\04_Employees.sql" />
-    <None Include="Provisioning\04_Agents\05_Banks.sql" />
-    <None Include="Provisioning\04_Agents\06_Custodies.sql" />
-    <None Include="Provisioning\04_Agents\07_Owners.sql" />
+    <None Include="Provisioning\04_Agents\10_Employees.sql" />
+    <None Include="Provisioning\04_Agents\08_Banks.sql" />
+    <None Include="Provisioning\04_Agents\09_Custodies.sql" />
+    <None Include="Provisioning\04_Agents\05_Owners.sql" />
     <None Include="Provisioning\05_Resources\a1_PPE_motor-vehicles.sql" />
     <None Include="Provisioning\05_Resources\a2_PPE_it-equipment.sql" />
     <None Include="Provisioning\05_Resources\a3_PPE_machineries.sql" />
@@ -515,6 +515,7 @@
     <Build Include="bll\Stored Procedures\bll.ResourceDefinitions_VAlidate__Delete.sql" />
     <Build Include="dal\Stored Procedures\dal.ResourceDefinitions__Delete.sql" />
     <Build Include="api\Stored Procedures\api.ResourceDefinitions__Save.sql" />
+    <Build Include="dbo\Functions\dbo.fn_AGCode__Id.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tests\12_ManualMisc.sql" />
@@ -537,6 +538,10 @@
     <None Include="Provisioning\02_Security\a_Users.sql" />
     <None Include="Provisioning\01_Definitions\b_ResourceDefinitions.sql" />
     <None Include="Provisioning\01_Definitions\c_AgentDefinitions.sql" />
+    <None Include="Provisioning\04_Agents\01_CostObjects.sql" />
+    <None Include="Provisioning\04_Agents\02_Creditors.sql" />
+    <None Include="Provisioning\04_Agents\04_Debtors.sql" />
+    <None Include="Provisioning\04_Agents\07_TaxAgencies.sql" />
   </ItemGroup>
   <ItemGroup>
     <SqlCmdVariable Include="DeployEmail">
