@@ -111,18 +111,6 @@ namespace BSharp
                         // and the API allows selecting a small subset of the columns
                         opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                     })
-                    //.AddJsonOptions(opt =>
-                    //{
-                    //    // The JSON serializer options below instruct the serializer to keep property names in PascalCase, 
-                    //    // even though this violates convention, it makes a few things easier since both client and server
-                    //    // sides get to see and communicate identical property names, for example 'api/customers?orderby=Name
-                    //    opt.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-                    //    opt.JsonSerializerOptions.PropertyNamingPolicy = null;
-
-                    //    // To reduce response size, since some of the Entities we use are humongously wide
-                    //    // and the API allows selecting a small subset of the columns
-                    //    opt.JsonSerializerOptions.IgnoreNullValues = true;
-                    //})
                     .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
                 // Setup an embedded instance of identity server in the same domain as the API if it is enabled in the configuration
