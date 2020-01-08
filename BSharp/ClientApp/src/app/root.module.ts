@@ -1,6 +1,5 @@
 import { NgModule, Component } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-
 import { RootComponent } from './root.component';
 import { CompaniesComponent } from './features/companies/companies.component';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -114,7 +113,6 @@ export const routes: Routes = [
       // those paths always end in a redirect
       { path: 'sign-in-callback', component: PlaceholderComponent, canActivate: [SignInCallbackGuard] },
       { path: '', component: PlaceholderComponent, canActivate: [BaseAddressGuard] },
-
     ]
   },
 
@@ -129,66 +127,6 @@ export const routes: Routes = [
     redirectTo: 'error/page-not-found',
   }
 ];
-
-// export const routes: Routes = [
-//   {
-//     path: 'root',
-//     component: RootShellComponent,
-//     canActivate: [GlobalResolverGuard],
-//     children: [
-//       {
-//         path: 'welcome',
-//         component: LandingComponent,
-//       },
-//       {
-//         path: 'companies',
-//         component: CompaniesComponent,
-//         canActivate: [AuthGuard]
-//       },
-//       {
-//         path: 'error/:error',
-//         component: ErrorComponent
-//       },
-//       {
-//         path: '',
-//         redirectTo: 'welcome',
-//         pathMatch: 'full'
-//       },
-//       {
-//         path: '**',
-//         redirectTo: 'error/page-not-found',
-//         // component: PageNotFoundComponent
-//       }
-//     ]
-//   },
-
-//   // Lazy loaded modules,
-//   {
-//     path: 'app',
-//     canActivate: [AuthGuard, GlobalResolverGuard], // otherwise the tenant resolver can't work
-//     loadChildren: LoadApplicationModule,
-//     data: { preload: true }
-//   },
-//   {
-//     path: 'admin',
-//     canActivate: [AuthGuard, GlobalResolverGuard],
-//     loadChildren: LoadAdminModule,
-//     data: { preload: false }
-//   },
-
-//   // global error screen
-//   { path: 'error/:error', component: ErrorComponent },
-
-//   // those paths always end in a redirect
-//   { path: 'sign-in-callback', component: PlaceholderComponent, canActivate: [SignInCallbackGuard] },
-//   { path: '', component: PlaceholderComponent, canActivate: [BaseAddressGuard] },
-
-//   // page not found
-//   {
-//     path: '**',
-//     redirectTo: 'error/page-not-found',
-//   }
-// ];
 
 @NgModule({
   declarations: [

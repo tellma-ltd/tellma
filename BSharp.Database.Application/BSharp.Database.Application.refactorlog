@@ -562,4 +562,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[SummaryEntries]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="155d5989-a475-4e7a-a99c-32c50e18296a" ChangeDateTime="01/08/2020 13:28:29">
+    <Property Name="ElementName" Value="[dal].[Users__SettingsForClient]" />
+    <Property Name="ElementType" Value="SqlProcedure" />
+    <Property Name="ParentElementName" Value="[dal]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[UserSettings__Load]" />
+  </Operation>
 </Operations>

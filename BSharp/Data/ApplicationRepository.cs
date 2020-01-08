@@ -477,7 +477,56 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
             return result;
         }
 
-        public async Task<(bool, Settings, List<(string, int)>)> Settings__Load()
+        public async Task<(Guid, User, IEnumerable<(string Key, string Value)>)> UserSettings__Load()
+        {
+            Guid version;
+            var user = new User();
+            var customSettings = new List<(string, string)>();
+
+            var conn = await GetConnectionAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                // Command
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = $"[dal].[{nameof(UserSettings__Load)}]";
+
+                // Execute
+                using var reader = await cmd.ExecuteReaderAsync();
+                // User Settings
+                if (await reader.ReadAsync())
+                {
+                    int i = 0;
+
+                    user.Id = reader.GetInt32(i++);
+                    user.Name = reader.String(i++);
+                    user.Name2 = reader.String(i++);
+                    user.Name3 = reader.String(i++);
+                    user.PreferredLanguage = reader.String(i++);
+                    user.ImageId = reader.String(i++);
+
+                    version = reader.GetGuid(i++);
+                }
+                else
+                {
+                    // Developer mistake
+                    throw new InvalidOperationException("No settings for client were found");
+                }
+
+                // Custom settings
+                await reader.NextResultAsync();
+                while (await reader.ReadAsync())
+                {
+                    string key = reader.GetString(0);
+                    string val = reader.GetString(1);
+
+                    customSettings.Add((key, val));
+                }
+            }
+
+            return (version, user, customSettings);
+        }
+
+        public async Task<(bool, Settings, IEnumerable<(string, int)>)> Settings__Load()
         {
             // Returns 
             // (1) whether active leaf responsibility centers are multiple or single
@@ -1075,56 +1124,6 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
         #endregion
 
         #region Users
-
-        public async Task<UserSettings> Users__SettingsForClient()
-        {
-            var result = new UserSettings()
-            {
-                CustomSettings = new Dictionary<string, string>()
-            };
-
-            var conn = await GetConnectionAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                // Command
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = $"[dal].[{nameof(Users__SettingsForClient)}]";
-
-                // Execute
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    // User Settings
-                    if (await reader.ReadAsync())
-                    {
-                        int i = 0;
-
-                        result.UserId = reader.GetInt32(i++);
-                        result.Name = reader.String(i++);
-                        result.Name2 = reader.String(i++);
-                        result.Name3 = reader.String(i++);
-                        result.ImageId = reader.String(i++);
-                        result.UserSettingsVersion = reader.GetGuid(i++);
-                    }
-                    else
-                    {
-                        // Developer mistake
-                        throw new InvalidOperationException("No settings for client were found");
-                    }
-
-                    // Custom settings
-                    await reader.NextResultAsync();
-                    while (await reader.ReadAsync())
-                    {
-                        string key = reader.GetString(0);
-                        string val = reader.GetString(1);
-
-                        result.CustomSettings[key] = val;
-                    }
-                }
-            }
-
-            return result;
-        }
 
         public async Task Users__SaveSettings(string key, string value)
         {

@@ -84,23 +84,24 @@ namespace BSharp.Controllers
         {
             return await ControllerUtilities.InvokeActionImpl(async () =>
             {
-                UserSettings userSettings = await _appRepo.Users__SettingsForClient();
+                var (version, user, customSettings) = await _appRepo.UserSettings__Load();
 
                 // prepare the result
-                var forClient = new UserSettingsForClient
+                var userSettingsForClient = new UserSettingsForClient
                 {
-                    UserId = userSettings.UserId,
-                    Name = userSettings.Name,
-                    Name2 = userSettings.Name2,
-                    Name3 = userSettings.Name3,
-                    ImageId = userSettings.ImageId,
-                    CustomSettings = userSettings.CustomSettings
+                    UserId = user.Id,
+                    Name = user.Name,
+                    Name2 = user.Name2,
+                    Name3 = user.Name3,
+                    ImageId = user.ImageId,
+                    PreferredLanguage = user.PreferredLanguage,
+                    CustomSettings = customSettings.ToDictionary(e => e.Key, e=> e.Value)
                 };
 
                 var result = new DataWithVersion<UserSettingsForClient>
                 {
-                    Version = userSettings.UserSettingsVersion.ToString(),
-                    Data = forClient
+                    Version = version.ToString(),
+                    Data = userSettingsForClient
                 };
 
                 return Ok(result);

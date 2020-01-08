@@ -220,24 +220,22 @@
     <!-- Sidebar -->
     <div *ngIf="showSidebar" class="b-sidebar bg-white">
       <div class="bg-white">
-          <ng-container *ngTemplateOutlet="sidebarTemplate;context: { model: activeModel, isEdit: isEdit }">
-            </ng-container>
+        <ng-container *ngTemplateOutlet="sidebarTemplate;context: { model: activeModel, isEdit: isEdit }">
+        </ng-container>
       </div>
     </div>
 
   </div>
 
   <!-- Popup Mode Footer -->
-  <div *ngIf="isPopupMode">
-    <div class="pt-3 pb-3 d-flex justify-content-end">
-      <button class="btn btn-primary b-toolbar-button" (click)="onSave()">
-        <fa-icon icon="save"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate }}
-      </button>
+  <div class="row p-3 justify-content-end bg-white" *ngIf="isPopupMode">
+    <button class="btn btn-primary b-toolbar-button" (click)="onSave()">
+      <fa-icon icon="save"></fa-icon>&nbsp;&nbsp;{{ 'Save' | translate }}
+    </button>
 
-      <button class="btn btn-light text-primary b-white-button b-toolbar-button" (click)="onCancel()">
-        <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
-      </button>
-    </div>
+    <button class="btn btn-light text-primary b-white-button b-toolbar-button" (click)="onCancel()">
+      <fa-icon icon="times"></fa-icon>&nbsp;&nbsp;{{ 'Cancel' | translate }}
+    </button>
   </div>
 </div>
 

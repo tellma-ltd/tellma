@@ -42,7 +42,6 @@ export class ErrorComponent implements OnInit {
           this._title = `Error_LoadingGlobalSettings`;
           break;
 
-
         case 'page-not-found':
           this._title = `Error_PageNotFound`;
           this._generalErrorMessage = `Error_PageNotFoundMessage`;

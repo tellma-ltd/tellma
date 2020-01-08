@@ -135,22 +135,6 @@
           </button>
           <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
             [class.dropdown-menu-right]="!isRtl">
-            <ng-container *ngIf="ws?.settings?.SecondaryLanguageId">
-              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isPrimaryLanguage"
-                (click)="onPrimary();onCollapse()">
-                {{ settings?.PrimaryLanguageName }}
-              </button>
-              <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isSecondaryLanguage && !!ws.settings?.SecondaryLanguageId"
-                (click)="onSecondary();onCollapse()">
-                {{ settings?.SecondaryLanguageName }}
-              </button>
-              <button type="button" class="dropdown-item btn-light"
-                *ngIf="!ws.isTernaryLanguage && !!ws.settings?.TernaryLanguageId" (click)="onTernary();onCollapse()">
-                {{ settings?.TernaryLanguageName }}
-              </button>
-              <hr />
-            </ng-container>
 
             <button type="button" class="dropdown-item btn-light" routerLink="/root/companies" (click)="onCollapse()">
               {{ 'ChangeCompany' | translate }}
@@ -167,6 +151,23 @@
             <button type="button" class="dropdown-item btn-light" (click)="onSignOut();onCollapse()">
               {{ 'SignOut' | translate }}
             </button>
+            <!-- Company languages -->
+            <ng-container *ngIf="settings?.SecondaryLanguageId || settings?.TernaryLanguageId">
+              <hr />
+              <button type="button" class="dropdown-item btn-light" *ngIf="!ws.isPrimaryLanguage"
+                (click)="onPrimary();onCollapse()">
+                {{ settings?.PrimaryLanguageName }}
+              </button>
+              <button type="button" class="dropdown-item btn-light"
+                *ngIf="!ws.isSecondaryLanguage && !!settings?.SecondaryLanguageId"
+                (click)="onSecondary();onCollapse()">
+                {{ settings?.SecondaryLanguageName }}
+              </button>
+              <button type="button" class="dropdown-item btn-light"
+                *ngIf="!ws.isTernaryLanguage && !!settings?.TernaryLanguageId" (click)="onTernary();onCollapse()">
+                {{ settings?.TernaryLanguageName }}
+              </button>
+            </ng-container>
           </div>
         </li>
       </ol>
