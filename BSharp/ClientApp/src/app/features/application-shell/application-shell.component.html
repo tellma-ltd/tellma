@@ -1,9 +1,10 @@
 <div class="d-flex flex-column h-100">
-  <!-- <b-error-message>The system license has expired. If the license is not renewed the system will become read-only in <b>22 days.</b></b-error-message> -->
+  <!-- <b-warning-message>The license has expired. The system will become read-only in <b>22 days.</b></b-warning-message> -->
+  <!-- <b-error-message>The system is readonly, please renew your license</b-error-message> -->
   <nav class="navbar navbar-dark b-dark navbar-expand-lg p-0 align-items-lg-stretch"
     [style.background-color]="settings?.BrandColor">
     <a class="b-brand-link b-navbar-button" routerLink="main-menu" [title]="'Home' | translate">
-      <b-brand [scale]="1.2"></b-brand>
+      <b-brand [scale]="1.0"></b-brand>
     </a>
     <div class="mx-2 d-flex">
       <button class="b-navbar-button nav-link" (click)="onCollapse();nav.onBack();" [disabled]="!nav.canBack"
@@ -39,7 +40,7 @@
             {{ 'Users' | translate }}
           </a>
         </li>
-        
+
         <!-- <li class="nav-item">
           <a class="b-navbar-button nav-link d-flex flex-column justify-content-center h-100"
             routerLink="./resources/raw-materials" (click)="onCollapse()">

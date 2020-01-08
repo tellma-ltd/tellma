@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[IfrsAccountClassifications] ( -- managed by Banan IT
+﻿CREATE TABLE [dbo].[IfrsAccountClassifications] ( -- managed by Tellma
 	[Id]						NVARCHAR (255)			CONSTRAINT [PK_IfrsAccountClassifications] PRIMARY KEY NONCLUSTERED CONSTRAINT [FK_IfrsAccountClassifications__Id] REFERENCES [dbo].[IfrsConcepts] ([Id]) ON DELETE CASCADE,
 	[Node]						HIERARCHYID				NOT NULL CONSTRAINT [CK_IfrsClassifications__Node] UNIQUE INDEX [IX_IfrsAccountClassifications__Node] CLUSTERED,
 	[ParentNode]				AS [Node].GetAncestor(1),
