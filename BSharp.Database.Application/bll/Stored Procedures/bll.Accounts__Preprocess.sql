@@ -14,9 +14,9 @@ WHERE [Q].[AgentId] IS NOT NULL;
 
 -- If ResourceId is set, then CurrencyId is auto determined
 UPDATE [Q]
-SET [Q].[CurrencyId] = [R].[CurrencyId]
+SET [Q].[CurrencyId] = COALESCE([Q].[CurrencyId], [R].[CurrencyId])
 FROM @ProcessedEntities [Q] JOIN [dbo].[Resources] [R] ON [Q].[ResourceId] = [R].[Id]
-WHERE [Q].[IsSmart] = 1 AND [R].[CurrencyId] IS NOT NULL
+WHERE [Q].[IsSmart] = 1
 
 -- If ResourceId is set, then ResourceClassificationId is auto determined
 UPDATE [Q]

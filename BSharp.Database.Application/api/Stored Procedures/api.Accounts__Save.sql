@@ -6,10 +6,16 @@ AS
 BEGIN
 SET NOCOUNT ON;
 	DECLARE @ValidationErrors [dbo].[ValidationErrorList];
+	DECLARE @ProcessedAccounts [dbo].[AccountList];
+
+	INSERT INTO @ProcessedAccounts
+	EXEC bll.[Accounts__Preprocess]
+		@Entities = @Entities;
+
 
 	INSERT INTO @ValidationErrors
 	EXEC [bll].[Accounts_Validate__Save]
-		@Entities = @Entities;
+		@Entities = @ProcessedAccounts;
 
 	SELECT @ValidationErrorsJson = 
 	(
@@ -22,6 +28,6 @@ SET NOCOUNT ON;
 		RETURN;
 
 	EXEC [dal].[Accounts__Save]
-		@Entities = @Entities,
+		@Entities = @ProcessedAccounts,
 		@ReturnIds = @ReturnIds;
 END;

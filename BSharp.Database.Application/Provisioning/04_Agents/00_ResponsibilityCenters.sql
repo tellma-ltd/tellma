@@ -78,7 +78,7 @@ END;
 IF @DebugResponsibilityCenters = 1
 	SELECT * FROM [dbo].ResponsibilityCenters;
 SELECT @OS_Steel = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'1';
-SELECT @RC_ExecutiveOffice = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'10';
+SELECT @RC_ExecutiveOffice = [Id] FROM dbo.ResponsibilityCenters WHERE [Name] = N'Executive/Shared';
 SELECT @RC_SalesAG =  [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'141';
 SELECT @RC_SalesBole = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'142';
 SELECT @RC_HR = [Id] FROM dbo.ResponsibilityCenters WHERE Code = N'15';

@@ -38,13 +38,18 @@ END
 :r .\03_Basic\b_MeasurementUnits.sql
 :r .\03_Basic\c_Lookups.sql
 		
-:r .\04_Agents\01_ResponsibilityCenters.sql
-:r .\04_Agents\02_Suppliers.sql
+:r .\04_Agents\00_ResponsibilityCenters.sql
+:r .\04_Agents\01_CostObjects.sql
+:r .\04_Agents\02_Creditors.sql
 :r .\04_Agents\03_Customers.sql
-:r .\04_Agents\04_Employees.sql
-:r .\04_Agents\05_Banks.sql
-:r .\04_Agents\06_Custodies.sql
-:r .\04_Agents\07_Owners.sql
+:r .\04_Agents\04_Debtors.sql
+:r .\04_Agents\05_Owners.sql
+:r .\04_Agents\06_Suppliers.sql
+:r .\04_Agents\07_TaxAgencies.sql
+:r .\04_Agents\08_Banks.sql
+:r .\04_Agents\09_Custodies.sql
+:r .\04_Agents\10_Employees.sql
+
 
 :r .\05_Resources\a1_PPE_motor-vehicles.sql
 :r .\05_Resources\a2_PPE_it-equipment.sql
@@ -58,7 +63,7 @@ END
 
 :r .\06_Accounts\a_AccountClassifications.sql
 :r .\06_Accounts\b_BasicAccounts.sql
---:r .\06_Accounts\c_SmartAccounts.sql
+:r .\06_Accounts\c_SmartAccounts.sql
 
 --:r .\07_Entries\01_manual-journal-vouchers.sql
 
