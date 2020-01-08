@@ -31,7 +31,7 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT ([Id], [Name], [Name2], [Name3], [Description], [Description2], [Description3], [E])
 		VALUES (s.[Id], s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], s.[E]);
-
+/*
 	MERGE INTO [dbo].[Resources] AS t
 	USING (
 		SELECT
@@ -54,3 +54,4 @@ SET NOCOUNT ON;
 	WHEN NOT MATCHED THEN
 		INSERT ([Code], [DefinitionId],	[ResourceClassificationId],	[Name], [Name2], [Name3],		[Description], [Description2],	[Description3],	[Count],[CurrencyId])
 		VALUES (s.[Id],  N'currencies',	@Cash,			s.[Name], s.[Name2], s.[Name3], s.[Description], s.[Description2], s.[Description3], 1,		s.[Id]);
+		*/

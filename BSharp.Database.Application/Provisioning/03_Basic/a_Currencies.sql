@@ -40,7 +40,7 @@ ELSE IF @DB = N'103' -- Lifan Cars, SAR, en/ar/zh
 INSERT INTO @Currencies([Index],
 	[Id],	[Name],			[Name2],			[Description],			[Description2],		[E]) VALUES
 (0, N'USD', N'USD',			N'دولار',			N'United States Dollar',N'دولار أمريكي',		2),
---(1, N'ETB', N'Birr',		N'بر',				N'Ethiopian Birr',		N'بر أثيوبي',		2),
+(1, N'ETB', N'Birr',		N'بر',				N'Ethiopian Birr',		N'بر أثيوبي',		2),
 --(2, N'GBP', N'Pound',		N'جنيه',			N'Sterling Pound',		N'جنيه استرليني',	2),
 --(3, N'AED', N'Dirham',		N'درهم',			N'Emirates Dirham',		N'درهم إماراتي',	2),
 (4, N'SAR', N'Riyal',		N'ريال',				N'Saudi Riyal',			N'ريال سعودي',			2),

@@ -9,12 +9,14 @@ IF @DB = N'101' -- Banan SD, USD, en
 BEGIN
 INSERT INTO @SmartAccounts([Index],
 	[AccountTypeId],[AccountClassificationId],	[Name],				[Code],		[ContractType],	[AgentDefinitionId], [ResourceClassificationId], [IsCurrent], [AgentId],			[ResourceId], [EntryClassificationId], [CurrencyId], [ResponsibilityCenterId]) VALUES
-	(0,N'Cash',				@BankAndCash_AC,	N'GM Fund',			N'1010',	N'OnHand',		N'custodies',		dbo.fn_RCCode__Id(N'Cash'),		1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				NULL,		@RC_ExecutiveOffice),
-	(1,N'Cash',				@BankAndCash_AC,	N'BOK -	SDG',		N'1021',	N'OnHand',		N'banks',			dbo.fn_RCCode__Id(N'Cash'),		1,		dbo.fn_AGCode__Id(N'BOK'),	@R_SDG,			NULL,				NULL,		@RC_ExecutiveOffice),
-	(2,N'OtherCurrentAssets',@Debtors_AC,		N'VAT Input',		N'1301',	N'Receivable',	N'tax-agencies',	NULL,							1,		@VAT,						NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
-	(3,N'AccountsReceivable',@Debtors_AC,		N'Trade Debtors',	N'1101',	N'Receivable',	N'customers',		NULL,							1,		NULL,						NULL,			NULL,				NULL,		@RC_ExecutiveOffice),
---	(4,N'AccountsReceivable',@Debtors_AC,		N'Trade Debtors/SDG',N'1102',	N'Receivable',	N'customers',		NULL,							1,		NULL,						@NULL,			NULL,				NULL,		@RC_ExecutiveOffice),
-	(5,N'AccountsReceivable',@Debtors_AC,		N'Prepaid Salaries/USD',N'1201',N'Receivable',	N'employees',		NULL,							1,		NULL,						NULL,			NULL,				N'USD',		@RC_ExecutiveOffice)
+	(0,N'Cash',				@BankAndCash_AC,	N'GM Fund/USD',		N'1011',	N'OnHand',		N'custodies',		NULL,							1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				N'USD',		@RC_ExecutiveOffice),
+	(1,N'Cash',				@BankAndCash_AC,	N'GM Fund/SDG',		N'1012',	N'OnHand',		N'custodies',		NULL,							1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
+	--(2,N'Cash',				@BankAndCash_AC,	N'GM Fund',			N'1013',	N'OnHand',		N'custodies',		NULL,							1,		dbo.fn_AGCode__Id(N'GM'),	NULL,			NULL,				NULL,		@RC_ExecutiveOffice),
+	(3,N'Cash',				@BankAndCash_AC,	N'BOK -	SDG',		N'1021',	N'OnHand',		N'banks',			NULL,							1,		dbo.fn_AGCode__Id(N'BOK'),	NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
+	(4,N'OtherCurrentAssets',@Debtors_AC,		N'VAT Input',		N'1301',	N'Receivable',	N'tax-agencies',	NULL,							1,		@VAT,						NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
+	(5,N'AccountsReceivable',@Debtors_AC,		N'Trade Debtors/USD',	N'1101',	N'Receivable',	N'customers',		NULL,							1,		NULL,						NULL,			NULL,			N'USD',		@RC_ExecutiveOffice),
+	(6,N'AccountsReceivable',@Debtors_AC,		N'Trade Debtors/SDG',N'1102',	N'Receivable',	N'customers',		NULL,							1,		NULL,						NULL,			NULL,				N'SDG',		@RC_ExecutiveOffice),
+	(7,N'AccountsReceivable',@Debtors_AC,		N'Prepaid Salaries/USD',N'1201',N'Receivable',	N'employees',		NULL,							1,		NULL,						NULL,			NULL,				N'USD',		@RC_ExecutiveOffice)
 	
 	;
 	UPDATE @SmartAccounts SET IsSmart = 1;
