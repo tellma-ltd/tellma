@@ -7,6 +7,7 @@ import { AuthService } from '~/app/data/auth.service';
 import { appsettings } from '~/app/data/global-resolver.guard';
 import { DOCUMENT } from '@angular/common';
 import { supportedCultures } from '~/app/data/supported-cultures';
+import { StorageService } from '~/app/data/storage.service';
 
 @Component({
   selector: 'b-root-shell',
@@ -20,8 +21,10 @@ export class RootShellComponent implements OnInit, OnDestroy {
   private _activeLanguages: string[];
 
   constructor(
-    public workspace: WorkspaceService, public nav: NavigationService, @Inject(DOCUMENT) private document: Document,
-    private translate: TranslateService, private progress: ProgressOverlayService, private auth: AuthService) {
+    public workspace: WorkspaceService, public nav: NavigationService,
+    @Inject(DOCUMENT) private document: Document,
+    private translate: TranslateService, private progress: ProgressOverlayService,
+    private auth: AuthService, private storage: StorageService) {
   }
 
   ngOnInit() {
@@ -66,6 +69,7 @@ export class RootShellComponent implements OnInit, OnDestroy {
   public onSetLanguage(lang: string) {
     this.onCollapse();
     this.translate.use(lang);
+    this.storage.setItem('user_culture', lang);
   }
 
   public languageName(id: string): string {

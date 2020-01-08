@@ -2,7 +2,7 @@
 $enable-rounded: false; // Square corners
 $font-size-base: 0.9rem; // The default font (1rem) is too big
 // $font-family-base: Calibri, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-
+$light: #f9f9f9;
 $gray-500: #adb5bd;
 $gray-600: #6c757d;
 $gray-650: #5a636a;
@@ -262,7 +262,7 @@ $hover-highlight-color: #f8f9fa; // When you hover with the mouse of something
 // scroll even the navbar out of view and not just the content area
 .b-body {
   height: 100% !important;
-  background-color: #f9f9f9;
+  background-color: $light;
 }
 
 // these are buttons that only have an icon in them
@@ -1175,6 +1175,9 @@ tr.b-highlight {
 .b-master-modal {
   .modal-dialog {
     max-width: 1050px;
+  }
+  .modal-body {
+    background-color: $light;
   }
   .modal-body,
   .model-footer {

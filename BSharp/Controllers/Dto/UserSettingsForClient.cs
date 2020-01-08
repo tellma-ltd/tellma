@@ -17,6 +17,8 @@ namespace BSharp.Controllers.Dto
 
         public string Name3 { get; set; }
 
+        public string PreferredLanguage { get; set; }
+
         public Dictionary<string, string> CustomSettings { get; set; } = new Dictionary<string, string>();
     }
 }

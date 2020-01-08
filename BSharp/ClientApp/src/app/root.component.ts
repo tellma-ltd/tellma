@@ -1,14 +1,16 @@
-import { Component, ApplicationRef } from '@angular/core';
+import { Component, ApplicationRef, Inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { WorkspaceService } from './data/workspace.service';
 import { ApiService } from './data/api.service';
 import { StorageService } from './data/storage.service';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, Params, ActivatedRoute } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { interval, concat } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { ProgressOverlayService } from './data/progress-overlay.service';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
+import { appsettings } from './data/global-resolver.guard';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'b-root',
@@ -47,13 +49,14 @@ export class RootComponent {
   constructor(
     private translate: TranslateService, private workspace: WorkspaceService, private router: Router,
     private api: ApiService, private storage: StorageService, private progress: ProgressOverlayService,
-    private serviceWorker: SwUpdate, appRef: ApplicationRef, dropdownConfig: NgbDropdownConfig) {
+    private serviceWorker: SwUpdate, appRef: ApplicationRef, dropdownConfig: NgbDropdownConfig,
+    @Inject(DOCUMENT) private document: Document) {
 
     // This came at long last with ng-bootstrap v4.1.0 allowing us to specify that
     // all dropdowns should be appended to the body by default
     dropdownConfig.container = 'body';
 
-    // If the user navigates to the base address '/', s/he
+    // If the user navigates to the base address '/', she
     // gets automatically redirected to the last visited url
     this.router.events.subscribe(e => {
       if (e instanceof NavigationEnd && e.url.indexOf('/app/') !== -1) {
@@ -91,25 +94,20 @@ export class RootComponent {
       this.setWorkspaceCulture(culture);
       if (!!document) {
         // TODO Load from configuration instead
-        document.title = this.translate.instant('AppName');
+        this.document.title = this.translate.instant('AppName');
       }
-
-      this.storage.setItem('user_culture', culture);
     });
 
-    // TODO load from app configuration
-    // Fallback culture
-    const defaultCulture = 'en';
+    // IMPORTANT: also in application-shell.component.ts, keep in sync
+    const defaultCulture = this.document.documentElement.lang || 'en';
     this.translate.setDefaultLang(defaultCulture);
 
     const userCulture = this.storage.getItem('user_culture') || defaultCulture;
-    if (!!userCulture) {
-      this.translate.use(userCulture);
-    }
+    this.translate.use(userCulture);
   }
 
   public onRefresh() {
-    document.location.reload();
+    this.document.location.reload();
   }
 
   public onDismissIEWarning() {
@@ -146,9 +144,9 @@ export class RootComponent {
 
     // set RTL on the DOM document
     if (isRtl && !!document) {
-      document.body.classList.add('b-rtl');
+      this.document.body.classList.add('b-rtl');
     } else {
-      document.body.classList.remove('b-rtl');
+      this.document.body.classList.remove('b-rtl');
     }
   }
 

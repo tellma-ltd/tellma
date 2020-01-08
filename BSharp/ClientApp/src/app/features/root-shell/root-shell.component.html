@@ -4,22 +4,9 @@
 
       <!-- Brand -->
       <a class="b-brand-link b-navbar-button" routerLink="/root/welcome" [title]="'Home' | translate">
-        <table class="h-100">
-          <tbody>
-            <tr>
-              <th>
-                <img src="/favicon.ico" width="30">
-              </th>
-              <th>
-                <span style="font-size:120%">
-                  <span
-                    class="font-weight-normal2 text-white2 font-weight-bold text-black-50">&nbsp;{{ 'AppName' | translate }}</span><span
-                    class="font-weight-bold b-brand">ERP</span>
-                </span>
-              </th>
-            </tr>
-          </tbody>
-        </table>
+        <div class="d-flex flex-column align-items-center justify-content-center px-1" style="height: 34px;">
+          <img src="/assets/tellma-light.png" width="64">
+        </div>
       </a>
 
       <!-- Back and Forward -->
@@ -46,14 +33,14 @@
 
         </ol>
         <ol class="nav navbar-nav p-0 px-4 px-sm-0">
-          <li class="nav-item" ngbDropdown container=""
-            *ngIf="activeLanguages.length > 1">
+          <li class="nav-item" ngbDropdown container="" *ngIf="activeLanguages.length > 1">
             <button class="h-100 w-100 b-navbar-button b-no-arrow" ngbDropdownToggle>
               <span class="px-1">
-                  {{ currentLanguageDisplay }}
+                {{ currentLanguageDisplay }}
               </span>
             </button>
-            <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action" [class.dropdown-menu-right]="!isRtl">
+            <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
+              [class.dropdown-menu-right]="!isRtl">
               <ng-container *ngFor="let lang of activeLanguages">
                 <button type="button" class="dropdown-item btn-light" *ngIf="lang !== currentLanguage"
                   (click)="onSetLanguage(lang)">
@@ -70,14 +57,14 @@
               </span>
             </button>
           </li>
-          <li class="nav-item" ngbDropdown container=""
-            *ngIf="isAuthenticated">
+          <li class="nav-item" ngbDropdown container="" *ngIf="isAuthenticated">
             <button class="h-100 w-100 b-navbar-button b-no-arrow" ngbDropdownToggle>
               <span class="px-1">
                 {{ userName }}
               </span>
             </button>
-            <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action" [class.dropdown-menu-right]="!isRtl">
+            <div class="dropdown-menu shadow m-0" ngbDropdownMenu aria-labelledby="action"
+              [class.dropdown-menu-right]="!isRtl">
               <button type="button" class="dropdown-item btn-light" routerLink="/root/companies" (click)="onCollapse()">
                 {{ 'MyCompanies' | translate }}
               </button>

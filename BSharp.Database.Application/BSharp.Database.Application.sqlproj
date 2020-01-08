@@ -260,7 +260,7 @@
     <Build Include="dal\Stored Procedures\dal.AddUserPermissionsVersion.sql" />
     <Build Include="dal\Stored Procedures\dal.Users__SaveSettings.sql" />
     <Build Include="dbo\Tables\dbo.UserSettings.sql" />
-    <Build Include="dal\Stored Procedures\dal.Users__SettingsForClient.sql" />
+    <Build Include="dal\Stored Procedures\dal.UserSettings__Load.sql" />
     <Build Include="Mapping\MeasurementUnits__AsQuery.sql" />
     <Build Include="Mapping\MeasurementUnits.sql" />
     <Build Include="Mapping\Users__AsQuery.sql" />

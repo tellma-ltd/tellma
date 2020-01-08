@@ -1511,29 +1511,6 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
 }
 
 /*
-  [Reporting Framework TODO]
-  - Implement the backend API
-  - Add the State commands to the UI
-  - Implement dimension properties
-  - Add flat report totals
-  - Support tree dimensions
-  - Implement dashboard framework
-  - Localize report definition error messages
-  - Protect against huge number of pivot table columns
-  - Protect against huge number of data points for charts
-  - Handle mismatching of aggregation function and data type before SQL
-  - Handle mismatching of aggregation function in the UI
-  - Allow Top in Summary reports
-  - Support Date parts in paths
-  - Support special date filter operators
-  - Add copy to clipboard to the fields list
-  - Show validation on the remaining fields
-  - Add the remaining parameter controls, especially the details pickers
-  - The gauge chart displays total sum even when the aggregation is avg, max or min
-  - Special handling for Lookups where the definitionId is required
-  - Handle the bug in charts with duplicate names
-  - Rename Select to Columns
-
   [Dimension Properties Steps]
   - Add field to ReportDimensionDefinition  (C#)
   - Add field to ReportDimensionDefinition  (TS)
