@@ -47,6 +47,7 @@ import { EntryClassification } from './entities/entry-classification';
 import { Document } from './entities/document';
 import { SignArguments } from './dto/sign-arguments';
 import { AssignArguments } from './dto/assign-arguments';
+import { MyUserForSave } from './dto/my-user';
 
 
 @Injectable({
@@ -319,6 +320,37 @@ export class ApiService {
         const obs$ = this.http.put(url, null).pipe(
           tap(() => this.showRotator = false),
           catchError(error => {
+            this.showRotator = false;
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$),
+          finalize(() => this.showRotator = false)
+        );
+
+        return obs$;
+      },
+      getMyUser: () => {
+        const url = appsettings.apiAddress + `api/users/me`;
+        const obs$ = this.http.get<GetByIdResponse<User>>(url).pipe(
+          catchError(error => {
+            const friendlyError = friendlify(error, this.trx);
+            return throwError(friendlyError);
+          }),
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+      saveMyUser: (entity: MyUserForSave) => {
+        this.showRotator = true;
+        const url = appsettings.apiAddress + `api/users/me`;
+
+        const obs$ = this.http.post<GetByIdResponse<User>>(url, entity, {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }).pipe(
+          tap(() => this.showRotator = false),
+          catchError((error) => {
             this.showRotator = false;
             const friendlyError = friendlify(error, this.trx);
             return throwError(friendlyError);

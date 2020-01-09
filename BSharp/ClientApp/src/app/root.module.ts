@@ -12,7 +12,6 @@ import { ApiService } from './data/api.service';
 import { Router, RouterModule, Routes, PreloadAllModules } from '@angular/router';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { CleanerService } from './data/cleaner.service';
-import { SignOutComponent } from './features/sign-out/sign-out.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons';
@@ -133,7 +132,6 @@ export const routes: Routes = [
     RootComponent,
     CompaniesComponent,
     PlaceholderComponent,
-    SignOutComponent,
     RootShellComponent,
     LandingComponent,
     ErrorComponent

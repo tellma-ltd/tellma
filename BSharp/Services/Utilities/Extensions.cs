@@ -1,6 +1,8 @@
 ﻿using BSharp.Entities;
 using IdentityModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -427,6 +429,22 @@ namespace BSharp.Services.Utilities
         public static Type GetRootType(this Type type)
         {
             return type.GetCustomAttribute<StrongEntityAttribute>()?.Type ?? type;
+        }
+
+        public static void Set(this IHeaderDictionary dic, string key, StringValues value)
+        {
+            if (dic is null)
+            {
+                throw new ArgumentNullException(nameof(dic));
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("message", nameof(key));
+            }
+
+            dic.Remove(key);
+            dic.Add(key, value);
         }
     }
 }

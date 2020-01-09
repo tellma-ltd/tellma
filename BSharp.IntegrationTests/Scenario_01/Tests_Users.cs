@@ -281,7 +281,7 @@ namespace BSharp.IntegrationTests.Scenario_01
             Output.WriteLine(await deleteResponse.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
-        
+
         [Fact(DisplayName = "08 Getting an Id that was just deleted returns a 404 Not Found")]
         public async Task Test10()
         {
@@ -294,6 +294,52 @@ namespace BSharp.IntegrationTests.Scenario_01
             // Assert that the response is correct
             Output.WriteLine(await getResponse.Content.ReadAsStringAsync());
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        }
+
+        [Fact(DisplayName = "09 Saving my user returns a 200 OK result")]
+        public async Task Test11()
+        {
+            var myUser = new MyUserForSave
+            {
+                Name = "Ahmad Akra",
+                Name2 = "أحمد عكره",
+                PreferredLanguage = "en"
+            };
+
+            // Verify that the id was deleted by calling get        
+            var response = await Client.PostAsJsonAsync($"{Url}/me", myUser);
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var responseData = await response.Content.ReadAsAsync<GetByIdResponse<User>>();
+
+            // Assert that the response is correct
+            Assert.Equal(nameof(User), responseData.CollectionName);
+            Assert.Equal(myUser.Name, responseData.Result.Name);
+            Assert.Equal(myUser.Name2, responseData.Result.Name2);
+            Assert.Equal(myUser.Name3, responseData.Result.Name3);
+            Assert.Equal(myUser.PreferredLanguage, responseData.Result.PreferredLanguage);
+
+            Shared.Set("MyUser", myUser);
+        }
+
+        [Fact(DisplayName = "10 Getting my user returns a 200 OK result")]
+        public async Task Test12()
+        {
+            var myUser = Shared.Get<MyUserForSave>("MyUser");
+
+            // Verify that the id was deleted by calling get        
+            var response = await Client.GetAsync($"{Url}/me");
+            Output.WriteLine(await response.Content.ReadAsStringAsync());
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var responseData = await response.Content.ReadAsAsync<GetByIdResponse<User>>();
+
+            // Assert that the response is correct
+            Assert.Equal(myUser.Name, responseData.Result.Name);
+            Assert.Equal(myUser.Name2, responseData.Result.Name2);
+            Assert.Equal(myUser.Name3, responseData.Result.Name3);
+            Assert.Equal(myUser.PreferredLanguage, responseData.Result.PreferredLanguage);
         }
     }
 }

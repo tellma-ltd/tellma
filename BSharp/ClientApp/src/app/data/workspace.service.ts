@@ -859,6 +859,10 @@ export class WorkspaceService {
   public globalSettings: GlobalSettingsForClient;
   public globalSettingsVersion: string;
 
+  // This is to tell components that auto-capture user input (main menu, master screens etc...)
+  // that user input is needed for something else so do not capture
+  public ignoreKeyDownEvents = false;
+
   /**
    * Notifies that something has changed in workspace.
    * Used by OnPush components to mark for check

@@ -95,7 +95,7 @@ namespace BSharp.Controllers
                     Name3 = user.Name3,
                     ImageId = user.ImageId,
                     PreferredLanguage = user.PreferredLanguage,
-                    CustomSettings = customSettings.ToDictionary(e => e.Key, e=> e.Value)
+                    CustomSettings = customSettings.ToDictionary(e => e.Key, e => e.Value)
                 };
 
                 var result = new DataWithVersion<UserSettingsForClient>
@@ -205,6 +205,101 @@ namespace BSharp.Controllers
             }, _logger);
         }
 
+        [HttpGet("me")]
+        public async Task<ActionResult<GetByIdResponse<User>>> GetMyUser()
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                GetByIdResponse<User> result = await GetMyUserImpl();
+                return Ok(result);
+            },
+            _logger);
+        }
+
+        [HttpPost("me")]
+        public async Task<ActionResult<GetByIdResponse<User>>> SaveMyUser([FromBody] MyUserForSave me)
+        {
+            return await ControllerUtilities.InvokeActionImpl(async () =>
+            {
+                GetByIdResponse<User> result = await SaveMyUserImpl(me);
+                Response.Headers.Set("x-user-settings-version", Constants.Stale);
+                return Ok(result);
+
+            }, _logger);
+        }
+
+        private async Task<GetByIdResponse<User>> GetMyUserImpl()
+        {
+            int myId = _appRepo.GetUserInfo().UserId.Value;
+            var response = await GetByIdImplAsync(myId, null);
+            return response;
+        }
+
+        private async Task<GetByIdResponse<User>> SaveMyUserImpl([FromBody] MyUserForSave me)
+        {
+            int myId = _appRepo.GetUserInfo().UserId.Value;
+            var user = await _appRepo.Users.Expand("Roles").FilterByIds(myId).FirstOrDefaultAsync();
+
+            // Create a user for save
+            var userForSave = new UserForSave
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = me.Name?.Trim(),
+                Name2 = me.Name2?.Trim(),
+                Name3 = me.Name3?.Trim(),
+                PreferredLanguage = me.PreferredLanguage?.Trim(),
+                Image = me.Image,
+                EntityMetadata = new EntityMetadata
+                {
+                    [nameof(UserForSave.Id)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.Email)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.Name)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.Name2)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.Name3)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.PreferredLanguage)] = FieldMetadata.Loaded,
+                    [nameof(UserForSave.Image)] = FieldMetadata.Loaded
+                },
+
+                // The roles must remain the way they are
+                Roles = user.Roles?.Select(e => new RoleMembershipForSave
+                {
+                    Id = e.Id,
+                    Memo = e.Memo,
+                    RoleId = e.RoleId,
+                    UserId = e.UserId,
+                    EntityMetadata = new EntityMetadata
+                    {
+                        [nameof(RoleMembershipForSave.Id)] = FieldMetadata.Loaded,
+                        [nameof(RoleMembershipForSave.Memo)] = FieldMetadata.Loaded,
+                        [nameof(RoleMembershipForSave.RoleId)] = FieldMetadata.Loaded,
+                        [nameof(RoleMembershipForSave.UserId)] = FieldMetadata.Loaded
+                    },
+                })
+                .ToList()
+            };
+
+            var entities = new List<UserForSave>() { userForSave };
+
+            // Start a transaction scope for save since it causes data modifications
+            using var trx = ControllerUtilities.CreateTransaction(null, GetSaveTransactionOptions());
+
+            // Validation
+            await SaveValidateAsync(entities);
+            if (!ModelState.IsValid)
+            {
+                // TODO map the errors
+                throw new UnprocessableEntityException(ModelState);
+            }
+
+            // Save and retrieve response
+            await SaveExecuteAsync(entities, null, false);
+            var response = await GetMyUserImpl();
+
+            // Commit and return
+            trx.Complete();
+            return response;
+        }
 
         [HttpPut("activate")]
         public async Task<ActionResult<EntitiesResponse<User>>> Activate([FromBody] List<int> ids, [FromQuery] ActivateArguments args)
@@ -242,22 +337,20 @@ namespace BSharp.Controllers
             await CheckActionPermissions("IsActive", idsArray);
 
             // Execute and return
-            using (var trx = ControllerUtilities.CreateTransaction())
+            using var trx = ControllerUtilities.CreateTransaction();
+            await _appRepo.Users__Activate(ids, isActive);
+
+            if (returnEntities)
             {
-                await _appRepo.Users__Activate(ids, isActive);
+                var response = await GetByIdListAsync(idsArray, expandExp);
 
-                if (returnEntities)
-                {
-                    var response = await GetByIdListAsync(idsArray, expandExp);
-
-                    trx.Complete();
-                    return Ok(response);
-                }
-                else
-                {
-                    trx.Complete();
-                    return Ok();
-                }
+                trx.Complete();
+                return Ok(response);
+            }
+            else
+            {
+                trx.Complete();
+                return Ok();
             }
         }
 
@@ -267,8 +360,8 @@ namespace BSharp.Controllers
             var info = await _appRepo.GetTenantInfoAsync();
 
             // Use the recipient's preferred Language
-            CultureInfo culture = string.IsNullOrWhiteSpace(preferredLang) ? 
-                CultureInfo.CurrentUICulture : new CultureInfo(preferredLang); 
+            CultureInfo culture = string.IsNullOrWhiteSpace(preferredLang) ?
+                CultureInfo.CurrentUICulture : new CultureInfo(preferredLang);
             var localizer = _localizer.WithCulture(culture);
 
             // Prepare the parameters
@@ -556,22 +649,18 @@ namespace BSharp.Controllers
             {
                 // It's unfortunate that EF Core does not support distributed transactions, so there is no
                 // guarantee that deletes to both the application and the admin will run one without the other
-                using (var appTrx = ControllerUtilities.CreateTransaction())
-                {
-                    _appRepo.EnlistTransaction(Transaction.Current);
-                    var oldEmails = await _appRepo.Users__Delete(ids);
+                using var appTrx = ControllerUtilities.CreateTransaction();
+                _appRepo.EnlistTransaction(Transaction.Current);
+                var oldEmails = await _appRepo.Users__Delete(ids);
 
-                    using (var adminTrx = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew))
-                    {
-                        var newEmails = new List<string>();
-                        var tenantId = _tenantIdAccessor.GetTenantId();
+                using var adminTrx = ControllerUtilities.CreateTransaction(TransactionScopeOption.RequiresNew);
+                var newEmails = new List<string>();
+                var tenantId = _tenantIdAccessor.GetTenantId();
 
-                        await _adminRepo.GlobalUsers__Save(newEmails, oldEmails, tenantId);
+                await _adminRepo.GlobalUsers__Save(newEmails, oldEmails, tenantId);
 
-                        appTrx.Complete();
-                        adminTrx.Complete();
-                    }
-                }
+                appTrx.Complete();
+                adminTrx.Complete();
             }
             catch (ForeignKeyViolationException)
             {

@@ -46,8 +46,8 @@ namespace BSharp.Controllers
         protected virtual async Task<GetByIdResponse<TEntity>> GetByIdImplAsync(TKey id, [FromQuery] GetByIdArguments args)
         {
             // Parse the parameters
-            var expand = ExpandExpression.Parse(args.Expand);
-            var select = SelectExpression.Parse(args.Select);
+            var expand = ExpandExpression.Parse(args?.Expand);
+            var select = SelectExpression.Parse(args?.Select);
 
             // Prepare the odata query
             var repo = GetRepository();

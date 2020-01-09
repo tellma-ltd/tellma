@@ -501,8 +501,8 @@ FROM [dbo].[IfrsAccountClassifications] AS [Q])");
                     user.Name = reader.String(i++);
                     user.Name2 = reader.String(i++);
                     user.Name3 = reader.String(i++);
-                    user.PreferredLanguage = reader.String(i++);
                     user.ImageId = reader.String(i++);
+                    user.PreferredLanguage = reader.String(i++);
 
                     version = reader.GetGuid(i++);
                 }

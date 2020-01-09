@@ -72,7 +72,8 @@ a {
 }
 
 // make the alternating color of tables a little lighter
-.table-striped tbody tr:nth-of-type(odd), .b-biege {
+.table-striped tbody tr:nth-of-type(odd),
+.b-biege {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
@@ -650,7 +651,8 @@ li.b-text-whitish:hover {
   resize: none;
 }
 
-table tr .b-input, .b-borderless-input .b-input {
+table tr .b-input,
+.b-borderless-input .b-input {
   border-bottom-width: 0px;
 }
 
@@ -1197,6 +1199,10 @@ tr.b-highlight {
   }
 }
 
+.b-myuser-modal .modal-dialog {
+  max-width: 850px;
+}
+
 @media (min-width: 576px) {
   .b-master-modal {
     .modal-content {
@@ -1206,6 +1212,10 @@ tr.b-highlight {
       height: calc(100% - 3.5rem);
     }
   }
+}
+
+.modal-content {
+  padding: 1px;
 }
 
 .b-document-header {

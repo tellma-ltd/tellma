@@ -369,7 +369,11 @@ const routes: Routes = [
         canDeactivate: [SaveInProgressGuard, UnsavedChangesGuard]
       },
       // Misc
-      { path: 'main-menu', component: MainMenuComponent },
+      {
+        path: 'main-menu',
+        component: MainMenuComponent,
+        canDeactivate: [SaveInProgressGuard] // for saving my user
+      },
       { path: '', redirectTo: 'main-menu', pathMatch: 'full' },
       { path: '**', component: ApplicationPageNotFoundComponent },
     ]

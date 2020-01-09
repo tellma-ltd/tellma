@@ -225,15 +225,13 @@ namespace BSharp.Controllers
                 throw new FormatException(_localizer["Error_UnknownFileFormat"]);
             }
 
-            using (var fileStream = file.OpenReadStream())
-            {
-                // Use the handler to unpack the file into an abstract grid and return it
-                AbstractDataGrid abstractGrid = handler.ToAbstractGrid(fileStream);
-                return abstractGrid;
-            }
+            using var fileStream = file.OpenReadStream();
+            // Use the handler to unpack the file into an abstract grid and return it
+            AbstractDataGrid abstractGrid = handler.ToAbstractGrid(fileStream);
+            return abstractGrid;
         }
 
-        protected Task<(List<TEntityForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid grid, ParseArguments args)
+        protected Task<(List<TEntityForSave>, Func<string, int?>)> ToEntitiesForSave(AbstractDataGrid _1, ParseArguments _2)
         {
             throw new NotImplementedException();
         }
@@ -246,7 +244,7 @@ namespace BSharp.Controllers
         private async Task<List<TEntityForSave>> ApplyUpdatePermissionsMask(List<TEntityForSave> entities)
         {
           //  var entityMasks = GetMasksForSavedEntities(entities);
-            var permissions = await UserPermissions(Constants.Update);
+            // var permissions = await UserPermissions(Constants.Update);
 
             // TODO
 
@@ -457,8 +455,8 @@ return the entities
             try
             {
                 // Parse arguments
-                var expand = ExpandExpression.Parse(args.Expand);
-                var returnEntities = args.ReturnEntities ?? false;
+                var expand = ExpandExpression.Parse(args?.Expand);
+                var returnEntities = args?.ReturnEntities ?? false;
 
                 // Trim all strings as a preprocessing step
                 entities.ForEach(e => TrimStringProperties(e));
@@ -467,39 +465,38 @@ return the entities
                 entities = await ApplyUpdatePermissionsMask(entities);
 
                 // Start a transaction scope for save since it causes data modifications
-                using (var trx = ControllerUtilities.CreateTransaction(null, GetSaveTransactionOptions()))
+                using var trx = ControllerUtilities.CreateTransaction(null, GetSaveTransactionOptions());
+
+                // Optional preprocessing
+                await SavePreprocessAsync(entities);
+
+                // Validate
+                // Basic validation that applies to all entities
+                ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
+
+                // Actual Validation
+                await SaveValidateAsync(entities);
+                if (!ModelState.IsValid)
                 {
-                    // Validate
-                    // Optional preprocessing
-                    await SavePreprocessAsync(entities);
-
-                    // Basic validation that applies to all entities
-                    ControllerUtilities.ValidateUniqueIds(entities, ModelState, _localizer);
-
-                    // Actual Validation
-                    await SaveValidateAsync(entities);
-                    if (!ModelState.IsValid)
-                    {
-                        throw new UnprocessableEntityException(ModelState);
-                    }
-
-                    // Save and retrieve Ids
-                    var ids = await SaveExecuteAsync(entities, expand, returnEntities);
-
-                    // Use the Ids to retrieve the items
-                    EntitiesResponse<TEntity> result = null;
-                    if (returnEntities && ids != null)
-                    {
-                        result = await GetByIdListAsync(ids.ToArray(), expand);
-                    }
-
-                    await PostProcess(result);
-
-                    // Commit and return
-                    await OnSaveCompleted();
-                    trx.Complete();
-                    return result;
+                    throw new UnprocessableEntityException(ModelState);
                 }
+
+                // Save and retrieve Ids
+                var ids = await SaveExecuteAsync(entities, expand, returnEntities);
+
+                // Use the Ids to retrieve the items
+                EntitiesResponse<TEntity> result = null;
+                if (returnEntities && ids != null)
+                {
+                    result = await GetByIdListAsync(ids.ToArray(), expand);
+                }
+
+                await PostProcess(result);
+
+                // Commit and return
+                await OnSaveCompleted();
+                trx.Complete();
+                return result;
             }
             catch (Exception ex)
             {
