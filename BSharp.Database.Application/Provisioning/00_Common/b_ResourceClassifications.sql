@@ -2,7 +2,7 @@
 BEGIN
 	INSERT INTO dbo.ResourceDefinitions
 	([Id],				[TitlePlural],		[TitleSingular]) VALUES
-	(N'currencies',		N'Currencies',		N'Currency'),
+	--(N'currencies',		N'Currencies',		N'Currency'),
 	(N'general-items',	N'General Items',	N'General Item');
 END
 IF NOT EXISTS(SELECT * FROM dbo.ResourceClassifications)
@@ -53,10 +53,10 @@ BEGIN
 	-- Financial resources
 	(N'FinancialAssets',							N'Financial assets',							N'/2/',			1,38),
 	(N'CashAndCashEquivalents',						N'Cash and cash equivalents',					N'/3/',			0,39),
-		(N'Cash',									N'Cash',										N'/3/1/',		1,40),
+		--(N'Cash',									N'Cash',										N'/3/1/',		1,40),
 		(N'CashEquivalents',						N'Cash equivalents',							N'/3/2/',		1,41),
 	-- Equitiy and Liabilities and 
-	(N'Equity',										N'Expenses, by nature',							N'/4/',			0,42),
+	(N'Equity',										N'Equity',										N'/4/',			0,42),
 	(N'OtherLongtermProvisions',					N'Other non-current provisions',				N'/5/',			0,43),
 	-- Consumables and services
 	(N'ExpenseByNature',							N'Expenses, by nature',							N'/6/',			0,44),
@@ -136,7 +136,7 @@ BEGIN
 	INSERT INTO @ResourceClassifications ([Code], [Name], [ParentIndex], [IsAssignable], [Index])
 	SELECT [Code], [Name], (SELECT [Index] FROM @ResourceClassificationsTemp WHERE [Node] = RC.[Node].GetAncestor(1)) AS ParentIndex, [IsAssignable], [Index]
 	FROM @ResourceClassificationsTemp RC
-	UPDATE @ResourceClassifications SET ResourceDefinitionId = N'currencies' WHERE [Code] = N'Cash';
+	--UPDATE @ResourceClassifications SET ResourceDefinitionId = N'currencies' WHERE [Code] = N'Cash';
 
 	--select * from 	@ResourceClassifications;			
 	EXEC [api].[ResourceClassifications__Save]

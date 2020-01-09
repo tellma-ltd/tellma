@@ -5,13 +5,20 @@
 );
 INSERT INTO @ResourceClassificationsEntryClassificationsParents
 ([ResourceClassificationParentCode],	[EntryClassificationParentCode]) VALUES
-(N'PropertyPlantAndEquipment',			N'ChangesInPropertyPlantAndEquipment'),
-(N'InvestmentProperty',					N'ChangesInInvestmentProperty'), 
-(N'Goodwill',							N'ChangesInGoodwill'), 
-(N'IntangibleAssetsOtherThanGoodwill',	N'ChangesInIntangibleAssetsOtherThanGoodwill'), 
-(N'BiologicalAssets',					N'ChangesInBiologicalAssets'), 
-(N'Inventories',						N'ChangesInInventories'),		
-(N'CashAndCashEquivalents',				N'IncreaseDecreaseInCashAndCashEquivalents'), 
+(N'PropertyPlantAndEquipment',			N'ChangesInPropertyPlantAndEquipment'), --1/1/1
+(N'InvestmentProperty',					N'ChangesInInvestmentProperty'), --1/1/2
+(N'Goodwill',							N'ChangesInGoodwill'), --1/1/3
+(N'IntangibleAssetsOtherThanGoodwill',	N'ChangesInIntangibleAssetsOtherThanGoodwill'), --1/1/4
+--N'InvestmentAccountedForUsingEquityMethod'. 1/1/5
+-- InvestmentsInSubsidiariesJointVenturesAndAssociates, 1/1/6
+(N'BiologicalAssets',					N'ChangesInBiologicalAssets'), --1/1/7
+--  N'Receivables',1/1/8
+(N'Inventories',						N'ChangesInInventories'),	
+-- N'TaxAssets'
+-- OtherFinancialAssets
+-- OtherNonFinancialAssets
+-- TradeAndOtherReceivables
+(N'CashAndCashEquivalents',				N'IncreaseDecreaseInCashAndCashEquivalents'), --1/2/1/7
 (N'Equity',								N'ChangesInEquity'), 
 (N'OtherLongtermProvisions',			N'ChangesInOtherProvisions'), 
 (N'RawMaterialsAndConsumablesUsed',		N'ExpenseByFunctionExtension'),

@@ -29,9 +29,9 @@
 	[ResourceId]					INT,
 	CONSTRAINT [FK_Accounts__ResourceClassificationId_ResourceId] FOREIGN KEY ([ResourceId], [ResourceClassificationId]) REFERENCES [dbo].[Resources] ([Id], [ResourceClassificationId]),
 	-- Especially needed for non-smart accounts to support multi-currencies
-	[CurrencyId]					NCHAR (3)			CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
+	[CurrencyId]					NCHAR (3)			NOT NULL CONSTRAINT [FK_Accounts__CurrencyId] REFERENCES [dbo].[Currencies] ([Id]),
 	CONSTRAINT [FK_Accounts__ResourceId_CurrencyId] FOREIGN KEY ([ResourceId],[CurrencyId]) REFERENCES [dbo].[Resources] ([Id], [CurrencyId]),
-	CONSTRAINT [CK_Accounts__IsSmart_CurrencyId] CHECK (([IsSmart] = 1) OR ([CurrencyId] IS NOT NULL)),
+	--CONSTRAINT [CK_Accounts__IsSmart_CurrencyId] CHECK (([IsSmart] = 1) OR ([CurrencyId] IS NOT NULL)),
 	[Identifier]					NVARCHAR (10)		CONSTRAINT [FK_Accounts__Identifier] REFERENCES dbo.[AccountIdentifiers]([Id]), -- to resolve Uniqueness Constraint
 -- Entry Property
 	[EntryClassificationId]			INT					CONSTRAINT [FK_Accounts__EntryClassificationId] REFERENCES dbo.[EntryClassifications],
@@ -45,14 +45,15 @@
 GO
 CREATE UNIQUE INDEX [IX_Accounts__Code] ON dbo.Accounts([Code]) WHERE [Code] IS NOT NULL;
 GO
-CREATE UNIQUE INDEX [IX_Accounts__Id_AccountTypeId_AgentDefinitionId_ResourceClassificationId] ON dbo.Accounts(
-			[AccountTypeId],
-			[AgentDefinitionId],
-			[ResourceClassificationId],
-			[IsCurrent],
-			[AgentId],
-			[ResourceId],
-			[ResponsibilityCenterId],
-			[Identifier],
-			[EntryClassificationId]
-) WHERE [IsSmart] = 1;
+-- TODO: Rethink the Index below considering currencies
+--CREATE UNIQUE INDEX [IX_Accounts__Id_AccountTypeId_AgentDefinitionId_ResourceClassificationId] ON dbo.Accounts(
+--			[AccountTypeId],
+--			[AgentDefinitionId],
+--			[ResourceClassificationId],
+--			[IsCurrent],
+--			[AgentId],
+--			[ResourceId],
+--			[ResponsibilityCenterId],
+--			[Identifier],
+--			[EntryClassificationId]
+--) WHERE [IsSmart] = 1;
