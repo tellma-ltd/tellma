@@ -11,12 +11,12 @@ namespace BSharp.Data.Queries
     public class SqlSelectGroupByClause
     {
         private readonly int _top;
-        private readonly List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation)> _columns;
+        private readonly List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation, string Function)> _columns;
 
         /// <summary>
         /// Create a new instance of <see cref="SqlSelectGroupByClause"/> using the supplied column definitions
         /// </summary>
-        public SqlSelectGroupByClause(List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation)> columns, int top)
+        public SqlSelectGroupByClause(List<(string Symbol, ArraySegment<string> Path, string PropName, string Aggregation, string Function)> columns, int top)
         {
             _top = top;
             _columns = columns ?? throw new ArgumentNullException(nameof(columns));
@@ -28,7 +28,7 @@ namespace BSharp.Data.Queries
         public string ToSelectSql()
         {
             string top = _top == 0 ? "" : $"TOP {_top} ";
-            return $"SELECT {top}" + string.Join(", ", _columns.Select(e => QueryTools.AtomSql(e.Symbol, e.PropName, e.Aggregation)));
+            return $"SELECT {top}" + string.Join(", ", _columns.Select(e => QueryTools.AtomSql(e.Symbol, e.PropName, e.Aggregation, e.Function)));
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace BSharp.Data.Queries
             var nonAggregateSelects = _columns.Where(e => string.IsNullOrWhiteSpace(e.Aggregation));
             if (nonAggregateSelects.Any())
             {
-                return "GROUP BY " + string.Join(", ", nonAggregateSelects.Select(e => QueryTools.AtomSql(e.Symbol, e.PropName, e.Aggregation)));
+                return "GROUP BY " + string.Join(", ", nonAggregateSelects.Select(e => QueryTools.AtomSql(e.Symbol, e.PropName, e.Aggregation, e.Function)));
             }
             else
             {
@@ -58,7 +58,8 @@ namespace BSharp.Data.Queries
             {
                 Path = e.Path,
                 Property = e.PropName,
-                Aggregation = e.Aggregation
+                Aggregation = e.Aggregation,
+                Function = e.Function
             })
             .ToList();
 

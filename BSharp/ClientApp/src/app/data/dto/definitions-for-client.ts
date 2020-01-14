@@ -1,4 +1,4 @@
-import { ReportOrderDirection, Aggregation, ReportType, ChartType } from '../entities/report-definition';
+import { ReportOrderDirection, Aggregation, ReportType, ChartType, PathFunction } from '../entities/report-definition';
 
 // tslint:disable:variable-name
 export class DefinitionsForClient {
@@ -75,6 +75,7 @@ export interface ReportMeasureDefinitionForClient {
 
 export interface ReportDimensionDefinitionForClient {
     Path: string;
+    Function?: PathFunction;
     Label?: string;
     Label2?: string;
     Label3?: string;

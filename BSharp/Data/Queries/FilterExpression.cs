@@ -41,13 +41,13 @@ namespace BSharp.Data.Queries
         /// </summary>
         private static string Preprocess(string filter)
         {
-            if(filter == null)
+            if (filter == null)
             {
                 return null;
             }
 
             // Reduce all enters to a single space
-            filter = filter.Replace(System.Environment.NewLine, " ");
+            filter = filter.Replace(Environment.NewLine, " ");
 
             // Ensure no spaces are repeated
             Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
@@ -60,15 +60,10 @@ namespace BSharp.Data.Queries
             return filter;
         }
 
-        /// <summary>
-        /// Lexical Analysis: Turns the filter expression into a stream of recognized tokens
-        /// </summary>
-        private static IEnumerable<string> Tokenize(string preprocessedFilter)
-        {
-            // All the symbols, we use spaces before and after the operators to tell them apart
-            // Special handling for "not(E)" we need to allow for no space before or after it, and at
-            // the same time cannot get confused with property names like "Notes"
-            List<string> symbols = new List<string>(new string[] { // the order matters
+        // All the symbols, we use spaces before and after the operators to tell them apart
+        // Special handling for "not(E)" we need to allow for no space before or after it, and at
+        // the same time cannot get confused with property names like "Notes"
+        private static readonly List<string> _symbols = new List<string>(new string[] { // the order matters
 
                     // Logical Operators
                     " and ", " or ", "not",
@@ -77,19 +72,26 @@ namespace BSharp.Data.Queries
                     "(", ")",
                 });
 
+        private static readonly IEnumerable<string> _trimmedSymbols = _symbols.Select(e => e.Trim());
+
+        /// <summary>
+        /// Lexical Analysis: Turns the filter expression into a stream of recognized tokens
+        /// </summary>
+        private static IEnumerable<string> Tokenize(string preprocessedFilter)
+        {
             // For performance: decompose the filter into a char array and use a string builder to accumulate the characters examined so far
             char[] filterArray = preprocessedFilter.ToCharArray();
             bool insideQuotes = false;
-            StringBuilder acc = new StringBuilder();            
+            StringBuilder acc = new StringBuilder();
             int index = 0;
 
             string MatchingOperator(int i)
             {
                 // This basically finds the first symbol that matches the beginning of the current index at filterArray
-                var matchingSymbol = symbols.FirstOrDefault(symbol => (filterArray.Length - i) >= symbol.Length && 
+                var matchingSymbol = _symbols.FirstOrDefault(symbol => (filterArray.Length - i) >= symbol.Length &&
                     Enumerable.Range(0, symbol.Length).All(j => char.ToLower(symbol[j]) == char.ToLower(filterArray[i + j])));
 
-                if(matchingSymbol == "not")
+                if (matchingSymbol == "not")
                 {
                     // The operator "not" requires more elaborate handling, since it may not necessarily be preceded or superseded by a space
                     // but we don't want to confuse it with properties that contain "not" in their name like "Notes"
@@ -195,7 +197,7 @@ namespace BSharp.Data.Queries
                     case "and":
                         if (output.Count < 2)
                         {
-                            throw new InvalidOperationException("Badly formatted filter parameter, a conjunction 'and' was missing one or both of its 2 operands");
+                            throw new InvalidOperationException("Incorrectly formatted filter parameter, a conjunction 'and' was missing one or both of its 2 operands");
                         }
 
                         output.Push(FilterConjunction.Make(left: output.Pop(), right: output.Pop()));
@@ -203,7 +205,7 @@ namespace BSharp.Data.Queries
                     case "or":
                         if (output.Count < 2)
                         {
-                            throw new InvalidOperationException("Badly formatted filter parameter, a disjunction 'or' was missing one or both of its 2 operands");
+                            throw new InvalidOperationException("Incorrectly formatted filter parameter, a disjunction 'or' was missing one or both of its 2 operands");
                         }
 
                         output.Push(FilterDisjunction.Make(left: output.Pop(), right: output.Pop()));
@@ -211,7 +213,7 @@ namespace BSharp.Data.Queries
                     case "not":
                         if (output.Count < 1)
                         {
-                            throw new InvalidOperationException("Badly formatted filter parameter, a negation 'not' was missing its operand");
+                            throw new InvalidOperationException("Incorrectly formatted filter parameter, a negation 'not' was missing its operand");
                         }
 
                         output.Push(FilterNegation.Make(inner: output.Pop()));
@@ -222,9 +224,56 @@ namespace BSharp.Data.Queries
                 }
             }
 
-            // The shunting-yard implementation
-            foreach (var token in tokens)
+            string atomAcc = null; // When this is not null, we are inside an atom with a function applied 
+            FnAtomStage stage = FnAtomStage.None; //
+            
+            foreach (var t in tokens)
             {
+                // The tokenizer will take a functioned atom that looks like this "day(Date) eq 1" and erroneously 
+                // split it into the following tokens ["day", "(", "Date", ")", "eq 1"] because of the parenthesis
+                // The logic below uses a state machine to put such atoms back together
+                var token = t;
+                if (stage == FnAtomStage.None)
+                {
+                    var loweredAndTrimmed = token?.ToLower()?.Trim();
+                    if (Functions.AllHash.Contains(loweredAndTrimmed))
+                    {
+                        stage = FnAtomStage.Function;
+                        atomAcc = loweredAndTrimmed;
+                        continue;
+                    }
+                } 
+                else if (stage == FnAtomStage.Function && token == "(")
+                {
+                    stage = FnAtomStage.LeftParen;
+                    atomAcc = $"{atomAcc}(";
+                    continue;
+                }
+                else if (stage == FnAtomStage.LeftParen && _trimmedSymbols.All(s => s != token))
+                {
+                    stage = FnAtomStage.Path;
+                    atomAcc = $"{atomAcc}{token}";
+                    continue;
+                }
+                else if (stage == FnAtomStage.Path && token == ")")
+                {
+                    stage = FnAtomStage.RightParen;
+                    atomAcc = $"{atomAcc})";
+                    continue;
+                }
+                else if (stage == FnAtomStage.RightParen && _trimmedSymbols.All(s => s != token))
+                {
+                    token = $"{atomAcc} {token}";
+
+                    stage = FnAtomStage.None;
+                    atomAcc = null;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Incorrectly formatted filter parameter at '{atomAcc}'");
+                }
+
+                // Shunting-yard implementation
                 if (token == "not")
                 {
                     // if it is a logical negation push it on the operators stack
@@ -305,6 +354,11 @@ namespace BSharp.Data.Queries
                 }
             }
 
+            if (atomAcc != null)
+            {
+                throw new InvalidOperationException($"Incorrectly formatted filter parameter at '{atomAcc}'");
+            }
+
             // Anything left in the operators queue, add it to the output
             while (ops.Count > 0)
             {
@@ -326,7 +380,7 @@ namespace BSharp.Data.Queries
             // If the filter expression is valid, there should be exactly one item in the output stack at this stage
             if (output.Count != 1)
             {
-                throw new InvalidOperationException("Badly formatted filter parameter");
+                throw new InvalidOperationException("Incorrectly formatted filter parameter");
             }
 
             return output.Pop();
@@ -385,5 +439,7 @@ namespace BSharp.Data.Queries
         /// https://bit.ly/2Kp2Yvl
         /// </summary>
         private enum Associativity { Left, Right }
+
+        private enum FnAtomStage { None, Function, LeftParen, Path, RightParen };
     }
 }

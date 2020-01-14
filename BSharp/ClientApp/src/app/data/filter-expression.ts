@@ -50,6 +50,7 @@ export class FilterAtom extends FilterExpressionBase {
     type: 'atom';
     path: string[];
     property: string;
+    function: string;
     op: string;
     value: string;
 
@@ -59,7 +60,18 @@ export class FilterAtom extends FilterExpressionBase {
             throw new Error(`One of the atomic expressions (${atom}) does not have the valid form: 'Path op Value'`);
         } else {
             // get the path and the prop
-            const steps = pieces.shift().split('/').map(e => !e ? '' : e.trim());
+            const funcPath = pieces.shift();
+            const func = Object.keys(pathFunctions).find(fn => funcPath.startsWith(fn + '(')); // all spaces are removed by the tokenizer
+            let fullPath = funcPath;
+
+            if (!!func) {
+                fullPath = fullPath.substring(func.length + 1);
+                if (fullPath.endsWith(')')) {
+                    fullPath = fullPath.substring(0, fullPath.length - 1);
+                }
+            }
+
+            const steps = fullPath.split('/').map(e => !e ? '' : e.trim());
             const property = steps.pop();
             const path = steps;
 
@@ -73,6 +85,7 @@ export class FilterAtom extends FilterExpressionBase {
                 type: 'atom',
                 path,
                 property,
+                function: func,
                 op,
                 value
             };
@@ -104,31 +117,31 @@ export class FilterTools {
         or: new OperatorInfo(7, 'left'),
     };
 
-    public static areEquivalent(exp1: FilterExpression, exp2: FilterExpression) {
-        if (exp1 === exp2) {
-            return true;
-        } else if (!exp1) {
-            return !exp2;
-        } else if (!exp2) {
-            return !exp1;
-        } else {
-            switch (exp1.type) {
-                case 'conjunction':
-                    return exp2.type === 'conjunction' && FilterTools.areEquivalent(exp1.left, exp2.left)
-                        && FilterTools.areEquivalent(exp1.right, exp2.right);
+    // public static areEquivalent(exp1: FilterExpression, exp2: FilterExpression) {
+    //     if (exp1 === exp2) {
+    //         return true;
+    //     } else if (!exp1) {
+    //         return !exp2;
+    //     } else if (!exp2) {
+    //         return !exp1;
+    //     } else {
+    //         switch (exp1.type) {
+    //             case 'conjunction':
+    //                 return exp2.type === 'conjunction' && FilterTools.areEquivalent(exp1.left, exp2.left)
+    //                     && FilterTools.areEquivalent(exp1.right, exp2.right);
 
-                case 'disjunction':
-                    return exp2.type === 'disjunction' && FilterTools.areEquivalent(exp1.left, exp2.left)
-                        && FilterTools.areEquivalent(exp1.right, exp2.right);
+    //             case 'disjunction':
+    //                 return exp2.type === 'disjunction' && FilterTools.areEquivalent(exp1.left, exp2.left)
+    //                     && FilterTools.areEquivalent(exp1.right, exp2.right);
 
-                case 'negation':
-                    return exp2.type === 'negation' && FilterTools.areEquivalent(exp1.inner, exp2.inner);
+    //             case 'negation':
+    //                 return exp2.type === 'negation' && FilterTools.areEquivalent(exp1.inner, exp2.inner);
 
-                case 'atom':
-                    return exp2.type === 'atom' && exp1.value === exp2.value;
-            }
-        }
-    }
+    //             case 'atom':
+    //                 return exp2.type === 'atom' && exp1.value === exp2.value; // Wrong
+    //         }
+    //     }
+    // }
 
     public static placeholderAtoms(exp: FilterExpression): FilterAtom[] {
         if (!exp) {
@@ -143,9 +156,9 @@ export class FilterTools {
                 return FilterTools.placeholderAtoms(exp.inner);
             case 'atom':
                 return !!exp.value && exp.value.startsWith('@') ? [exp] : [];
+            default:
+                return [];
         }
-
-        return [];
     }
 
     /**
@@ -182,7 +195,8 @@ export class FilterTools {
             }
             case 'atom': {
                 const stringPath = exp.path.concat([exp.property]).join('/');
-                return `${stringPath} ${exp.op} ${exp.value}`;
+                const functionedStringPath = !!exp.function ? `${exp.function}(${stringPath})` : stringPath;
+                return `${functionedStringPath} ${exp.op} ${exp.value}`;
             }
         }
     }
@@ -226,7 +240,6 @@ export class FilterTools {
     }
 
     private static tokenize(prerocessedFilter: string): string[] {
-        const symbols = [' and ', ' or ', 'not', '(', ')'];
         const filterArray = prerocessedFilter.split('');
         let insideQuotes = false;
         let acc: string[] = [];
@@ -311,21 +324,21 @@ export class FilterTools {
             switch (token) {
                 case 'and':
                     if (output.length < 2) {
-                        throw new Error(`Badly formatted filter parameter, a conjunction 'and' was missing one or both of its 2 operands`);
+                        throw new Error(`Incorrectly formatted filter, a conjunction 'and' is missing one or both of its 2 operands`);
                     }
 
                     output.push({ type: 'conjunction', left: output.pop(), right: output.pop() });
                     break;
                 case 'or':
                     if (output.length < 2) {
-                        throw new Error(`Badly formatted filter parameter, a disjunction 'or' was missing one or both of its 2 operands`);
+                        throw new Error(`Incorrectly formatted filter, a disjunction 'or' is missing one or both of its 2 operands`);
                     }
 
                     output.push({ type: 'disjunction', left: output.pop(), right: output.pop() });
                     break;
                 case 'not':
                     if (output.length < 1) {
-                        throw new Error(`Badly formatted filter parameter, a negation 'not' was missing its operand`);
+                        throw new Error(`Incorrectly formatted filter, a negation 'not' was missing its operand`);
                     }
 
                     output.push({ type: 'negation', inner: output.pop() });
@@ -336,7 +349,39 @@ export class FilterTools {
             }
         }
 
-        for (const token of tokens) {
+        let atomAcc: string;
+        let stage: 'none' | 'function' | 'leftParen' | 'path' | 'rightParen' = 'none';
+
+        for (const t of tokens) {
+
+            let token = t;
+            if (stage === 'none') {
+                const loweredAndTrimmed = token.toLowerCase().trim();
+                if (pathFunctions[loweredAndTrimmed]) {
+                    stage = 'function';
+                    atomAcc = loweredAndTrimmed;
+                    continue;
+                }
+            } else if (stage === 'function' && token === '(') {
+                stage = 'leftParen';
+                atomAcc = `${atomAcc}(`;
+                continue;
+            } else if (stage === 'leftParen' && !trimmedSymbols[token]) {
+                stage = 'path';
+                atomAcc = `${atomAcc}${token}`;
+                continue;
+            } else if (stage === 'path' && token === ')') {
+                stage = 'rightParen';
+                atomAcc = `${atomAcc})`;
+                continue;
+            } else if (stage === 'rightParen' && !trimmedSymbols[token]) {
+                token = `${atomAcc} ${token}`;
+
+                stage = 'none';
+                atomAcc = null;
+            } else {
+                throw new Error(`Incorrectly formatted filter parameter at '${atomAcc}'`);
+            }
 
             if (token === 'not') {
                 ops.push(token);
@@ -394,9 +439,28 @@ export class FilterTools {
         }
 
         if (output.length !== 1) {
-            throw new Error(`Badly formatted filter parameter`);
+            throw new Error(`Incorrectly formatted filter parameter`);
         }
 
         return output.pop();
     }
 }
+
+const symbols = [' and ', ' or ', 'not', '(', ')'];
+
+const trimmedSymbols: { [key: string]: boolean } = {};
+symbols.forEach(symbol => {
+    trimmedSymbols[symbol.trim()] = true;
+});
+
+const pathFunctions: { [key: string]: boolean } = {
+    year: true,
+    quarter: true,
+    month: true,
+    dayofyear: true,
+    day: true,
+    week: true,
+    weekday: true
+};
+
+export const pathFunctionsArray = Object.keys(pathFunctions);

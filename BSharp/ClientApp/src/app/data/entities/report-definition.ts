@@ -17,6 +17,7 @@ export type ChartType = 'Card' | 'BarsVertical' | 'BarsVerticalGrouped' | 'BarsV
 export type MainMenuSection = 'Financials' | 'Administration'; // TODO
 export type MainMenuIcon = 'clipboard' | 'chart-pie';
 export type DefinitionState = 'Draft' | 'Deployed' | 'Archived';
+export type PathFunction = 'year' | 'quarter' | 'month' | 'dayofyear' | 'day' | 'week' | 'weekday';
 
 export interface ReportDefinitionForSave<
     TParameter = ReportParameterDefinitionForSave,
@@ -87,6 +88,7 @@ export interface ReportSelectDefinition extends ReportSelectDefinitionForSave {
 export interface ReportDimensionDefinition extends EntityForSave {
     ReportDefinitionId?: string | number;
     Path?: string;
+    Function?: string;
     Label?: string;
     Label2?: string;
     Label3?: string;

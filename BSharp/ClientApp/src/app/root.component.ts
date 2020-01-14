@@ -155,6 +155,10 @@ export class RootComponent {
     return this.api.showRotator || this.progress.asyncOperationInProgress;
   }
 
+  get showOfflineIndicator(): boolean {
+    return this.workspace.offline;
+  }
+
   get labelNames(): string[] {
     return this.progress.labelNames;
   }

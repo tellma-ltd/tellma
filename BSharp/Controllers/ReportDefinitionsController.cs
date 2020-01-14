@@ -61,21 +61,19 @@ namespace BSharp.Controllers
             await CheckActionPermissions("UpdateState", idsArray);
 
             // Execute and return
-            using (var trx = ControllerUtilities.CreateTransaction())
+            using var trx = ControllerUtilities.CreateTransaction();
+            // TODO: UPDATE state in DB
+            if (returnEntities)
             {
-                // await _repo.ReportDefinitions__Activate(ids, isActive);
-                if (returnEntities)
-                {
-                    var response = await GetByIdListAsync(idsArray, expandExp);
+                var response = await GetByIdListAsync(idsArray, expandExp);
 
-                    trx.Complete();
-                    return Ok(response);
-                }
-                else
-                {
-                    trx.Complete();
-                    return Ok();
-                }
+                trx.Complete();
+                return Ok(response);
+            }
+            else
+            {
+                trx.Complete();
+                return Ok();
             }
         }
         
@@ -180,6 +178,7 @@ namespace BSharp.Controllers
                             ReportDefinitionId = e.ReportDefinitionId,
                             AutoExpand = e.AutoExpand,
                             Path = e.Path,
+                            Function = e.Function,
                             OrderDirection = e.OrderDirection
                         });
                     }
@@ -199,6 +198,7 @@ namespace BSharp.Controllers
                             ReportDefinitionId = e.ReportDefinitionId,
                             AutoExpand = e.AutoExpand,
                             Path = e.Path,
+                            Function = e.Function,
                             OrderDirection = e.OrderDirection
                         });
                     }
@@ -370,7 +370,7 @@ namespace BSharp.Controllers
         }
 
         private static int _id = 1000;
-        private static Dictionary<string, ReportDefinition> _db = new Dictionary<string, ReportDefinition>
+        private static readonly Dictionary<string, ReportDefinition> _db = new Dictionary<string, ReportDefinition>
         {
             ["my-amazing-report"] = new ReportDefinition
             {

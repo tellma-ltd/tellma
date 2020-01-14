@@ -739,6 +739,27 @@
   <data name="ForgotYourPassword" xml:space="preserve">
     <value>نسيت كلمة المرور؟</value>
   </data>
+  <data name="Function_day" xml:space="preserve">
+    <value>يوم الشهر</value>
+  </data>
+  <data name="Function_dayofyear" xml:space="preserve">
+    <value>يوم السنة</value>
+  </data>
+  <data name="Function_month" xml:space="preserve">
+    <value>الشهر</value>
+  </data>
+  <data name="Function_quarter" xml:space="preserve">
+    <value>الربع</value>
+  </data>
+  <data name="Function_week" xml:space="preserve">
+    <value>الأسبوع</value>
+  </data>
+  <data name="Function_weekday" xml:space="preserve">
+    <value>يوم الأسبوع</value>
+  </data>
+  <data name="Function_year" xml:space="preserve">
+    <value>السنة</value>
+  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>توليد أكواد الاسترداد</value>
   </data>
@@ -1189,6 +1210,9 @@
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>المصفاة</value>
   </data>
+  <data name="ReportDefinition_Function" xml:space="preserve">
+    <value>الدالة</value>
+  </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>معامل مطلوب</value>
   </data>
@@ -1437,6 +1461,75 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>رمز اللغة الثالثة</value>
+  </data>
+  <data name="ShortDay1" xml:space="preserve">
+    <value>الإثنين</value>
+  </data>
+  <data name="ShortDay2" xml:space="preserve">
+    <value>الثلاثاء</value>
+  </data>
+  <data name="ShortDay3" xml:space="preserve">
+    <value>الأربعاء</value>
+  </data>
+  <data name="ShortDay4" xml:space="preserve">
+    <value>الخميس</value>
+  </data>
+  <data name="ShortDay5" xml:space="preserve">
+    <value>الجمعة</value>
+  </data>
+  <data name="ShortDay6" xml:space="preserve">
+    <value>السبت</value>
+  </data>
+  <data name="ShortDay7" xml:space="preserve">
+    <value>الأحد</value>
+  </data>
+  <data name="ShortMonth1" xml:space="preserve">
+    <value>يناير</value>
+  </data>
+  <data name="ShortMonth10" xml:space="preserve">
+    <value>أكتوبر</value>
+  </data>
+  <data name="ShortMonth11" xml:space="preserve">
+    <value>نوفمبر</value>
+  </data>
+  <data name="ShortMonth12" xml:space="preserve">
+    <value>ديسمبر</value>
+  </data>
+  <data name="ShortMonth2" xml:space="preserve">
+    <value>فبراير</value>
+  </data>
+  <data name="ShortMonth3" xml:space="preserve">
+    <value>مارس</value>
+  </data>
+  <data name="ShortMonth4" xml:space="preserve">
+    <value>أبريل</value>
+  </data>
+  <data name="ShortMonth5" xml:space="preserve">
+    <value>مايو</value>
+  </data>
+  <data name="ShortMonth6" xml:space="preserve">
+    <value>يونيو</value>
+  </data>
+  <data name="ShortMonth7" xml:space="preserve">
+    <value>يوليو</value>
+  </data>
+  <data name="ShortMonth8" xml:space="preserve">
+    <value>أغسطس</value>
+  </data>
+  <data name="ShortMonth9" xml:space="preserve">
+    <value>سبتمبر</value>
+  </data>
+  <data name="ShortQuarter1" xml:space="preserve">
+    <value>الربع 1</value>
+  </data>
+  <data name="ShortQuarter2" xml:space="preserve">
+    <value>الربع 2</value>
+  </data>
+  <data name="ShortQuarter3" xml:space="preserve">
+    <value>الربع 3</value>
+  </data>
+  <data name="ShortQuarter4" xml:space="preserve">
+    <value>الربع 4</value>
   </data>
   <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>بالنيابة عن</value>

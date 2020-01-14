@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BSharp.Data.Queries;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -237,6 +238,28 @@ namespace BSharp.Entities
         [StringLength(1024, ErrorMessage = nameof(StringLengthAttribute))]
         [AlwaysAccessible]
         public string Path { get; set; }
+
+        [Display(Name = "ReportDefinition_Function")]
+        [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]
+        [AlwaysAccessible]
+        [ChoiceList(new object[] { 
+            Functions.year, 
+            Functions.quarter, 
+            Functions.month, 
+            Functions.dayofyear, 
+            Functions.day,
+            Functions.week,
+            Functions.weekday
+        }, new string[] {
+            "Function_year",
+            "Function_quarter",
+            "Function_month",
+            "Function_dayofyear",
+            "Function_day",
+            "Function_week",
+            "Function_weekday"
+        })]
+        public string Function { get; set; }
 
         [MultilingualDisplay(Name = "Label", Language = Language.Primary)]
         [StringLength(255, ErrorMessage = nameof(StringLengthAttribute))]

@@ -11,12 +11,10 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-
 
 namespace BSharp.Controllers
 {
@@ -387,7 +385,7 @@ namespace BSharp.Controllers
         /// <returns>Ordered query</returns>
         protected virtual Query<TEntity> OrderBy(Query<TEntity> query, OrderByExpression orderby)
         {
-            orderby = orderby ?? DefaultOrderBy();
+            orderby ??= DefaultOrderBy();
             return query.OrderBy(orderby);
         }
 

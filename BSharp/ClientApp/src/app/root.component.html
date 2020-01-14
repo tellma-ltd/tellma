@@ -1,9 +1,13 @@
 <div class="h-100 d-flex flex-column">
+
+  <!-- New version indicator -->
   <div class="alert alert-success m-0 p-2 d-flex justify-content-center align-items-center" role="alert"
     *ngIf="showNewUpdateIsAvailable">
     {{ 'NewVersionIsAvailable' | translate }} &nbsp;&nbsp;<button class="btn btn-primary py-0"
       (click)="onRefresh()">{{ 'Refresh' | translate }}</button>
   </div>
+
+  <!-- IE warning -->
   <div class="alert alert-warning m-0 p-2 d-flex justify-content-center align-items-center" role="alert"
     *ngIf="showIEWarning">
     <div class="d-inline mx-3" style="font-size:1.5rem">
@@ -19,6 +23,17 @@
     </div>
     <button class="btn btn-primary py-1 mx-3" (click)="onDismissIEWarning()">{{ 'Dismiss' | translate }}</button>
   </div>
+
+  <!-- Offline indicator -->
+  <div class="alert alert-danger m-0 p-2 d-flex justify-content-center align-items-center" role="alert"
+    *ngIf="showOfflineIndicator">
+    <div class="d-inline mx-3" style="font-size:1.5rem">
+      <fa-icon icon="wifi"></fa-icon>
+    </div>
+    {{ 'Error_ConnectionLostReconnecting' | translate }}
+  </div>
+
+  <!-- The app -->
   <div class="b-rest-of-screen">
     <router-outlet></router-outlet>
   </div>

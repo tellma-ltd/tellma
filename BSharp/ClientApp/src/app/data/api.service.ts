@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, throwError } from 'rxjs';
@@ -199,7 +199,6 @@ export class ApiService {
           paramsArray.push(`signedAt=${encodeURIComponent(args.signedAt)}`);
         }
 
-
         if (!!args.returnEntities) {
           paramsArray.push(`returnEntities=${args.returnEntities}`);
         }
@@ -399,6 +398,19 @@ export class ApiService {
       ping: () => {
         const url = appsettings.apiAddress + `api/global-settings/ping`;
         const obs$ = this.http.get(url).pipe(
+          takeUntil(cancellationToken$)
+        );
+
+        return obs$;
+      },
+    };
+  }
+
+  public pingApi(cancellationToken$: Observable<void>) {
+    return {
+      ping: () => {
+        const url = appsettings.apiAddress + `api/ping`;
+        const obs$ = this.http.get<void>(url).pipe(
           takeUntil(cancellationToken$)
         );
 

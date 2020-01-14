@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { ReportView } from '../report-results/report-results.component';
+import { ReportView, functionPropDesc } from '../report-results/report-results.component';
 import { WorkspaceService, ReportArguments, ReportStore, DEFAULT_PAGE_SIZE, TenantWorkspace } from '~/app/data/workspace.service';
 import {
   ChoicePropDescriptor, StatePropDescriptor, PropDescriptor, entityDescriptorImpl, EntityDescriptor, metadata, getChoices
@@ -251,12 +251,18 @@ export class ReportComponent implements OnInit, OnDestroy {
             throw new Error(`Cannot terminate a filter path with a navigation property like '${atom.property}'`);
           }
 
-          const propDesc: PropDescriptor = Object.keys(entityDesc.properties)
+          let propDesc: PropDescriptor = Object.keys(entityDesc.properties)
             .map(e => entityDesc.properties[e])
             .find(e => e.control === 'navigation' && e.foreignKeyName === atom.property)
             || immediatePropDesc; // Else rely on the descriptor of the prop itself
+
           if (!propDesc) {
             throw new Error(`Property '${atom.property}' does not exist on '${entityDesc.titlePlural()}'`);
+          }
+
+          if (!!atom.function) {
+            // A modified function specified, the prop descriptor is hardcoded per function
+            propDesc = functionPropDesc(propDesc, atom.function, this.translate);
           }
 
           paramsFromFilterPlaceholders[keyLower] = {

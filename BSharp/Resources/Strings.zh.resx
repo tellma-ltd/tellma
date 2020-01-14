@@ -739,6 +739,27 @@
   <data name="ForgotYourPassword" xml:space="preserve">
     <value>忘记密码了吗？</value>
   </data>
+  <data name="Function_day" xml:space="preserve">
+    <value>月日</value>
+  </data>
+  <data name="Function_dayofyear" xml:space="preserve">
+    <value>年度日</value>
+  </data>
+  <data name="Function_month" xml:space="preserve">
+    <value>月</value>
+  </data>
+  <data name="Function_quarter" xml:space="preserve">
+    <value>美分硬币</value>
+  </data>
+  <data name="Function_week" xml:space="preserve">
+    <value>周</value>
+  </data>
+  <data name="Function_weekday" xml:space="preserve">
+    <value>本周日</value>
+  </data>
+  <data name="Function_year" xml:space="preserve">
+    <value>年</value>
+  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>生成恢复代码</value>
   </data>
@@ -1189,6 +1210,9 @@
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>过滤</value>
   </data>
+  <data name="ReportDefinition_Function" xml:space="preserve">
+    <value>功能</value>
+  </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>是必须的</value>
   </data>
@@ -1431,6 +1455,75 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>三元语言符号</value>
+  </data>
+  <data name="ShortDay1" xml:space="preserve">
+    <value>莫</value>
+  </data>
+  <data name="ShortDay2" xml:space="preserve">
+    <value>涂</value>
+  </data>
+  <data name="ShortDay3" xml:space="preserve">
+    <value>我们</value>
+  </data>
+  <data name="ShortDay4" xml:space="preserve">
+    <value>钍</value>
+  </data>
+  <data name="ShortDay5" xml:space="preserve">
+    <value>神父</value>
+  </data>
+  <data name="ShortDay6" xml:space="preserve">
+    <value>萨</value>
+  </data>
+  <data name="ShortDay7" xml:space="preserve">
+    <value>苏</value>
+  </data>
+  <data name="ShortMonth1" xml:space="preserve">
+    <value>一月</value>
+  </data>
+  <data name="ShortMonth10" xml:space="preserve">
+    <value>十月</value>
+  </data>
+  <data name="ShortMonth11" xml:space="preserve">
+    <value>十一月</value>
+  </data>
+  <data name="ShortMonth12" xml:space="preserve">
+    <value>十二月</value>
+  </data>
+  <data name="ShortMonth2" xml:space="preserve">
+    <value>二月</value>
+  </data>
+  <data name="ShortMonth3" xml:space="preserve">
+    <value>损伤</value>
+  </data>
+  <data name="ShortMonth4" xml:space="preserve">
+    <value>四月</value>
+  </data>
+  <data name="ShortMonth5" xml:space="preserve">
+    <value>可以</value>
+  </data>
+  <data name="ShortMonth6" xml:space="preserve">
+    <value>君</value>
+  </data>
+  <data name="ShortMonth7" xml:space="preserve">
+    <value>七月</value>
+  </data>
+  <data name="ShortMonth8" xml:space="preserve">
+    <value>八月</value>
+  </data>
+  <data name="ShortMonth9" xml:space="preserve">
+    <value>九月</value>
+  </data>
+  <data name="ShortQuarter1" xml:space="preserve">
+    <value>1季度</value>
+  </data>
+  <data name="ShortQuarter2" xml:space="preserve">
+    <value>2季度</value>
+  </data>
+  <data name="ShortQuarter3" xml:space="preserve">
+    <value>3季度</value>
+  </data>
+  <data name="ShortQuarter4" xml:space="preserve">
+    <value>4季度</value>
   </data>
   <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>代表</value>

@@ -315,7 +315,7 @@ namespace BSharp.Services.Utilities
             }
             catch (Exception)
             {
-                throw new InvalidOperationException($"Failed to convert value: {obj?.ToString()} to type: {t.Name}");
+                throw new InvalidOperationException($"Failed to convert value: '{obj?.ToString()}' to type: {t.Name}");
             }
 
         }

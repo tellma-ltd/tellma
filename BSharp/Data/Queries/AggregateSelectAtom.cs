@@ -20,6 +20,11 @@ namespace BSharp.Data.Queries
         public string Property { get; set; }
 
         /// <summary>
+        /// An optional function applied directly to the path
+        /// </summary>
+        public string Function { get; set; }
+
+        /// <summary>
         /// An optional aggregation function applied on the <see cref="Property"/> if any,
         /// the aggregation functions are found in <see cref="Aggregations"/>
         /// </summary>
@@ -49,10 +54,25 @@ namespace BSharp.Data.Queries
             // item comes in the general formats:
             // - "Customer/Name asc"
             // - "sum(Amount) desc"
+            // - "sum(day(Customer/DateOfBirth)) desc
 
             if (string.IsNullOrWhiteSpace(atom))
             {
                 throw new ArgumentNullException(nameof(atom));
+            }
+
+            atom = atom.Trim();
+
+            // Extract the order by direction if any
+            string[] orderDirKeywords = { " desc", " asc" };
+            string orderDirection = orderDirKeywords.FirstOrDefault(ob =>
+                atom.ToLower().EndsWith(ob) &&
+                atom.Substring(ob.Length).Trim().Length > 0 &&
+                !atom.Substring(ob.Length).Trim().EndsWith("/"));
+            if (orderDirection != null)
+            {
+                atom = atom.Remove(atom.Length - orderDirection.Length).Trim();
+                orderDirection = orderDirection.Trim();
             }
 
             atom = atom.Trim();
@@ -67,34 +87,22 @@ namespace BSharp.Data.Queries
                 atom = atom.Substring(aggregation.Length);
                 atom = atom.TrimStart();
                 atom = atom.Substring(1); // to remove the bracket
+
+                if (atom.EndsWith(")"))
+                {
+                    atom = atom.Remove(atom.Length - 1).Trim();
+                }
             }
 
-            // Extract the order by direction if any
-            string[] orderDirKeywords = { " desc", " asc" };
-            string orderDirection = orderDirKeywords.FirstOrDefault(ob =>
-                atom.ToLower().EndsWith(ob) &&
-                atom.Substring(ob.Length).Trim().Length > 0 &&
-                !atom.Substring(ob.Length).Trim().EndsWith("/"));
-            if (orderDirection != null)
-            {
-                atom = atom.Remove(atom.Length - orderDirection.Length).Trim();
-                orderDirection = orderDirection.Trim();
-            }
-
-            if (aggregation != null && atom.EndsWith(")"))
-            {
-                atom = atom.Remove(atom.Length - 1).Trim();
-            }
-
-
-            // Extrat path and property
-            var (path, property) = QueryTools.ExtractPathAndProperty(atom);
+            // Extrat path, property and function
+            var (function, path, property) = QueryTools.ExtractFunctionPathAndProperty(atom);
 
             // Return the result
             return new AggregateSelectAtom
             {
                 Path = path,
                 Property = property,
+                Function = function,
                 Aggregation = aggregation,
                 OrderDirection = orderDirection
             };

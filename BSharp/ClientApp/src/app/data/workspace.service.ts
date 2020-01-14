@@ -23,7 +23,7 @@ import { AccountType } from './entities/account-type';
 import { Account } from './entities/account';
 import { PropDescriptor, EntityDescriptor } from './entities/base/metadata';
 import { Entity } from './entities/base/entity';
-import { Aggregation, ReportDefinition } from './entities/report-definition';
+import { Aggregation, ReportDefinition, PathFunction } from './entities/report-definition';
 import { ResponsibilityCenter } from './entities/responsibility-center';
 import { EntryClassification } from './entities/entry-classification';
 import { Document } from './entities/document';
@@ -424,6 +424,7 @@ export interface MeasureInfo {
 export interface DimensionInfo {
   key: string;
   path: string;
+  fn: PathFunction;
   propDesc: PropDescriptor;
 
   /**
@@ -440,6 +441,7 @@ export interface DimensionInfo {
 export class DimensionCell {
   type: 'dimension';
   path: string;
+  fn: PathFunction;
   value: any;
   valueId: any;
   propDesc: PropDescriptor;
@@ -462,6 +464,7 @@ export class ChartDimensionCell {
   constructor(
     public display: string,
     public path: string,
+    public fn: PathFunction,
     public valueId: any,
     public propDesc: PropDescriptor,
     public entityDesc: EntityDescriptor,
@@ -862,6 +865,11 @@ export class WorkspaceService {
   // This is to tell components that auto-capture user input (main menu, master screens etc...)
   // that user input is needed for something else so do not capture
   public ignoreKeyDownEvents = false;
+
+  /**
+   * Indicates that the client appears to be offline, signals the root shell to show an offline indicator
+   */
+  public offline = false;
 
   /**
    * Notifies that something has changed in workspace.

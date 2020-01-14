@@ -739,6 +739,27 @@
   <data name="ForgotYourPassword" xml:space="preserve">
     <value>Forgot your password?</value>
   </data>
+  <data name="Function_day" xml:space="preserve">
+    <value>Day of Month</value>
+  </data>
+  <data name="Function_dayofyear" xml:space="preserve">
+    <value>Day of Year</value>
+  </data>
+  <data name="Function_month" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="Function_quarter" xml:space="preserve">
+    <value>Quarter</value>
+  </data>
+  <data name="Function_week" xml:space="preserve">
+    <value>Week</value>
+  </data>
+  <data name="Function_weekday" xml:space="preserve">
+    <value>Week Day</value>
+  </data>
+  <data name="Function_year" xml:space="preserve">
+    <value>Year</value>
+  </data>
   <data name="GenerateRecoveryCodes" xml:space="preserve">
     <value>Generate Recovery Codes</value>
   </data>
@@ -1189,6 +1210,9 @@
   <data name="ReportDefinition_Filter" xml:space="preserve">
     <value>Filter</value>
   </data>
+  <data name="ReportDefinition_Function" xml:space="preserve">
+    <value>Function</value>
+  </data>
   <data name="ReportDefinition_IsRequired" xml:space="preserve">
     <value>Is Required</value>
   </data>
@@ -1437,6 +1461,75 @@
   </data>
   <data name="Settings_TernaryLanguageSymbol" xml:space="preserve">
     <value>Ternary Language Symbol</value>
+  </data>
+  <data name="ShortDay1" xml:space="preserve">
+    <value>Mon</value>
+  </data>
+  <data name="ShortDay2" xml:space="preserve">
+    <value>Tue</value>
+  </data>
+  <data name="ShortDay3" xml:space="preserve">
+    <value>Wed</value>
+  </data>
+  <data name="ShortDay4" xml:space="preserve">
+    <value>Thu</value>
+  </data>
+  <data name="ShortDay5" xml:space="preserve">
+    <value>Fri</value>
+  </data>
+  <data name="ShortDay6" xml:space="preserve">
+    <value>Sat</value>
+  </data>
+  <data name="ShortDay7" xml:space="preserve">
+    <value>Sun</value>
+  </data>
+  <data name="ShortMonth1" xml:space="preserve">
+    <value>Jan</value>
+  </data>
+  <data name="ShortMonth10" xml:space="preserve">
+    <value>Oct</value>
+  </data>
+  <data name="ShortMonth11" xml:space="preserve">
+    <value>Nov</value>
+  </data>
+  <data name="ShortMonth12" xml:space="preserve">
+    <value>Dec</value>
+  </data>
+  <data name="ShortMonth2" xml:space="preserve">
+    <value>Feb</value>
+  </data>
+  <data name="ShortMonth3" xml:space="preserve">
+    <value>Mar</value>
+  </data>
+  <data name="ShortMonth4" xml:space="preserve">
+    <value>Apr</value>
+  </data>
+  <data name="ShortMonth5" xml:space="preserve">
+    <value>May</value>
+  </data>
+  <data name="ShortMonth6" xml:space="preserve">
+    <value>Jun</value>
+  </data>
+  <data name="ShortMonth7" xml:space="preserve">
+    <value>Jul</value>
+  </data>
+  <data name="ShortMonth8" xml:space="preserve">
+    <value>Aug</value>
+  </data>
+  <data name="ShortMonth9" xml:space="preserve">
+    <value>Sep</value>
+  </data>
+  <data name="ShortQuarter1" xml:space="preserve">
+    <value>Q1</value>
+  </data>
+  <data name="ShortQuarter2" xml:space="preserve">
+    <value>Q2</value>
+  </data>
+  <data name="ShortQuarter3" xml:space="preserve">
+    <value>Q3</value>
+  </data>
+  <data name="ShortQuarter4" xml:space="preserve">
+    <value>Q4</value>
   </data>
   <data name="Signature_OnBehalfOfUser" xml:space="preserve">
     <value>On Behalf Of</value>

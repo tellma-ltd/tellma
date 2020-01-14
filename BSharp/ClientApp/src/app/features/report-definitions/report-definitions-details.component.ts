@@ -15,7 +15,7 @@ import { SelectorChoice } from '~/app/shared/selector/selector.component';
 import { ReportDefinitionForClient } from '~/app/data/dto/definitions-for-client';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FilterTools } from '~/app/data/filter-expression';
+import { FilterTools, pathFunctionsArray } from '~/app/data/filter-expression';
 import { NgControl } from '@angular/forms';
 import { highlightInvalid, validationErrors, areServerErrors } from '~/app/shared/form-group-base/form-group-base.component';
 
@@ -56,6 +56,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
   public collapseFields = false;
   public collapseDefinition = false;
 
+  public modelRef: ReportDefinition;
   public itemToEditHasChanged: false;
   public itemToEditNature: 'dimension' | 'measure' | 'select' | 'parameter';
   public itemToEdit: ReportRowDefinition | ReportColumnDefinition |
@@ -483,6 +484,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     const itemToEdit = { ...model.Rows[index] } as ReportRowDefinition;
     this.itemToEdit = itemToEdit;
     this.itemToEditNature = 'dimension';
+    this.modelRef = model;
 
     this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(() => {
       if (this.itemToEditHasChanged) {
@@ -497,6 +499,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     const itemToEdit = { ...model.Columns[index] } as ReportColumnDefinition;
     this.itemToEdit = itemToEdit;
     this.itemToEditNature = 'dimension';
+    this.modelRef = model;
 
     this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(
       () => {
@@ -513,6 +516,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     const itemToEdit = { ...model.Measures[index] } as ReportMeasureDefinition;
     this.itemToEdit = itemToEdit;
     this.itemToEditNature = 'measure';
+    this.modelRef = model;
 
     this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(() => {
       if (this.itemToEditHasChanged) {
@@ -527,6 +531,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     const itemToEdit = { ...model.Select[index] } as ReportSelectDefinition;
     this.itemToEdit = itemToEdit;
     this.itemToEditNature = 'select';
+    this.modelRef = model;
 
     this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(() => {
       if (this.itemToEditHasChanged) {
@@ -541,6 +546,7 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
     const itemToEdit = { ...model.Parameters[index] } as ReportParameterDefinition;
     this.itemToEdit = itemToEdit;
     this.itemToEditNature = 'parameter';
+    this.modelRef = model;
 
     this.modalService.open(this.configureModal, { windowClass: 'b-dark-theme' }).result.then(() => {
       if (this.itemToEditHasChanged) {
@@ -705,5 +711,33 @@ export class ReportDefinitionsDetailsComponent extends DetailsBaseComponent {
       areServerErrors(model.serverErrors.Description2) ||
       areServerErrors(model.serverErrors.Title3) ||
       areServerErrors(model.serverErrors.Description3);
+  }
+
+  public get pathFunctions(): string[] {
+    return pathFunctionsArray;
+  }
+
+  public isDate(path: string, model: ReportDefinitionForSave): boolean {
+    // when this function returns true, the field for date functions becomes visible
+    if (!path || !path.trim()) {
+      return false;
+    }
+
+    try {
+      const steps = path.split('/');
+      const prop = steps.pop();
+      const desc = entityDescriptorImpl(steps, model.Collection, model.DefinitionId, this.ws, this.translate);
+      const propDesc = desc.properties[prop];
+      return propDesc.control === 'date' || propDesc.control === 'datetime';
+    } catch {
+      return false;
+    }
+  }
+
+  public onPathChanged(itemToEdit: ReportRowDefinition | ReportColumnDefinition, model: ReportDefinitionForSave) {
+    // This removes the function property if the field isn't of type date
+    if (!this.isDate(itemToEdit.Path, model)) {
+      delete itemToEdit.Function;
+    }
   }
 }

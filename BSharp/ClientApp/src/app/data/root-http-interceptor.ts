@@ -1,7 +1,7 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse, HttpErrorResponse, HttpClient } from '@angular/common/http';
-import { Observable, Subject, throwError } from 'rxjs';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponseBase } from '@angular/common/http';
+import { Observable, Subject, throwError, timer, of } from 'rxjs';
 import { WorkspaceService } from './workspace.service';
-import { tap, exhaustMap, retry, catchError } from 'rxjs/operators';
+import { tap, exhaustMap, retry, catchError, concatMap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { DataWithVersion } from './dto/data-with-version';
 import { SettingsForClient } from './dto/settings-for-client';
@@ -30,12 +30,14 @@ export class RootHttpInterceptor implements HttpInterceptor {
   private notifyRefreshDefinitions$: Subject<void>;
   private notifyRefreshPermissions$: Subject<void>;
   private notifyRefreshUserSettings$: Subject<void>;
+  private notifyPingAfterOneSecond$: Subject<void>;
   private cancellationToken$: Subject<void>;
   private globalSettingsApi: () => Observable<DataWithVersion<GlobalSettingsForClient>>;
   private settingsApi: () => Observable<DataWithVersion<SettingsForClient>>;
   private definitionsApi: () => Observable<DataWithVersion<DefinitionsForClient>>;
   private permissionsApi: () => Observable<DataWithVersion<PermissionsForClient>>;
   private userSettingsApi: () => Observable<DataWithVersion<UserSettingsForClient>>;
+  private pingApi: () => Observable<void>;
 
   constructor(
     private workspace: WorkspaceService, private api: ApiService,
@@ -70,6 +72,11 @@ export class RootHttpInterceptor implements HttpInterceptor {
       exhaustMap(() => this.doRefreshUserSettings())
     ).subscribe();
 
+    this.notifyPingAfterOneSecond$ = new Subject<void>();
+    this.notifyPingAfterOneSecond$.pipe(
+      exhaustMap(() => this.doPingAfterOneSecond())
+    ).subscribe();
+
     this.cancellationToken$ = new Subject<void>();
 
     this.globalSettingsApi = this.api.globalSettingsApi(this.cancellationToken$).getForClient;
@@ -77,12 +84,13 @@ export class RootHttpInterceptor implements HttpInterceptor {
     this.definitionsApi = this.api.definitionsApi(this.cancellationToken$).getForClient;
     this.permissionsApi = this.api.permissionsApi(this.cancellationToken$).getForClient;
     this.userSettingsApi = this.api.usersApi(this.cancellationToken$).getForClient;
+    this.pingApi = this.api.pingApi(this.cancellationToken$).ping;
   }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     const tenantId = this.workspace.ws.tenantId;
-    if (!req.url.endsWith('/appsettings.json') && !req.url.endsWith('/appsettings.development.json')) {
+    if (!req.url.endsWith('/appsettings.json') && !req.url.endsWith('/appsettings.development.json') && !req.url.endsWith('api/ping')) {
 
       // we accumulate all the headers params in these objects
       const headers: { [key: string]: string } = {};
@@ -139,22 +147,49 @@ export class RootHttpInterceptor implements HttpInterceptor {
       });
     }
 
+    // Here we intercept the response
     return next.handle(req).pipe(
-      tap(e => this.handleServerVersions(e, tenantId)),
-      catchError(e => {
-        this.handleServerVersions(e, tenantId);
-        // If it's a 401 then quickly delete the app state and challenge user
-        if (e instanceof HttpErrorResponse && e.status === 401) {
-          this.router.navigateByUrl('/welcome?error=401').then(() => {
-            this.cleaner.cleanState();
-          });
+      tap(e => {
+        if (e instanceof HttpResponseBase) {
+          this.handleServerVersions(e, tenantId);
+
+          // The client is definitely online
+          if (this.workspace.offline) {
+            this.workspace.offline = false;
+            this.workspace.notifyStateChanged();
+          }
         }
+      }),
+      catchError(e => {
+        if (e instanceof HttpResponseBase) {
+          this.handleServerVersions(e, tenantId);
+
+          // If it's a 401 then quickly delete the app state and challenge user
+          if (e.status === 401) {
+            this.router.navigateByUrl('/welcome?error=401').then(() => {
+              this.cleaner.cleanState();
+            });
+          }
+
+          if (e.status === 0 || e.status === 504) {
+            // The client is probably offline
+            if (!this.workspace.offline) {
+              this.workspace.offline = true;
+              this.workspace.notifyStateChanged();
+            }
+
+            // By the time we reach here, the first observable isnt over yet
+            // if we call ping immediately, the exhaustmap will not run it, therefore we add this timer(1)
+            timer(1).subscribe(() => this.pingAfterOneSecond());
+          }
+        }
+
         return throwError(e);
       })
     );
   }
 
-  handleServerVersions = (e: any, tenantId: number) => {
+  private handleServerVersions = (e: HttpResponseBase, tenantId: number) => {
 
     if (!!e && !!e.headers) {
 
@@ -227,7 +262,7 @@ export class RootHttpInterceptor implements HttpInterceptor {
     }
   }
 
-  refreshGlobalSettings() {
+  private refreshGlobalSettings() {
     this.notifyRefreshGlobalSettings$.next();
   }
 
@@ -239,17 +274,18 @@ export class RootHttpInterceptor implements HttpInterceptor {
         // Cache the permissions and set them in the workspace
         handleFreshGlobalSettings(result, ws, this.storage);
       }),
-      retry(2)
+      retry(2),
+      catchError(_ => of(null))
     );
 
     return obs$;
   }
 
-  refreshDefinitions() {
+  private refreshDefinitions() {
     this.notifyRefreshDefinitions$.next();
   }
 
-  doRefreshDefinitions = () => {
+  private doRefreshDefinitions = () => {
     const current = this.workspace.current;
     const tenantId = this.workspace.ws.tenantId;
 
@@ -266,17 +302,18 @@ export class RootHttpInterceptor implements HttpInterceptor {
           return throwError(err);
         }
       }),
-      retry(2)
+      retry(2),
+      catchError(_ => of(null))
     );
 
     return obs$;
   }
 
-  refreshSettings() {
+  private refreshSettings() {
     this.notifyRefreshSettings$.next();
   }
 
-  doRefreshSettings = () => {
+  private doRefreshSettings = () => {
 
     const current = this.workspace.current;
     const tenantId = this.workspace.ws.tenantId;
@@ -294,17 +331,18 @@ export class RootHttpInterceptor implements HttpInterceptor {
           return throwError(err);
         }
       }),
-      retry(2)
+      retry(2),
+      catchError(_ => of(null))
     );
 
     return obs$;
   }
 
-  refreshPermissions() {
+  private refreshPermissions() {
     this.notifyRefreshPermissions$.next();
   }
 
-  doRefreshPermissions = () => {
+  private doRefreshPermissions = () => {
 
     const current = this.workspace.current;
     const tenantId = this.workspace.ws.tenantId;
@@ -314,17 +352,18 @@ export class RootHttpInterceptor implements HttpInterceptor {
         // Cache the permissions and set them in the workspace
         handleFreshPermissions(result, tenantId, current, this.storage);
       }),
-      retry(2)
+      retry(2),
+      catchError(_ => of(null))
     );
 
     return obs$;
   }
 
-  refreshUserSettings() {
+  private refreshUserSettings() {
     this.notifyRefreshUserSettings$.next();
   }
 
-  doRefreshUserSettings = () => {
+  private doRefreshUserSettings = () => {
 
     const current = this.workspace.current;
     const tenantId = this.workspace.ws.tenantId;
@@ -334,7 +373,21 @@ export class RootHttpInterceptor implements HttpInterceptor {
         // Cache the user settings and set them in the workspace
         handleFreshUserSettings(result, tenantId, current, this.storage);
       }),
-      retry(2)
+      retry(2),
+      catchError(_ => of(null))
+    );
+
+    return obs$;
+  }
+
+  private pingAfterOneSecond(): void {
+    this.notifyPingAfterOneSecond$.next();
+  }
+
+  private doPingAfterOneSecond(): Observable<void> {
+    const obs$ = timer(1000).pipe(
+      concatMap(_ => this.pingApi()),
+      catchError(_ => of(null))
     );
 
     return obs$;
