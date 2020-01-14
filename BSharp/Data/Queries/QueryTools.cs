@@ -254,7 +254,7 @@ namespace BSharp.Data.Queries
                     var valueString = atom.Value;
                     object value;
                     bool isNull = false;
-                    switch(valueString?.ToLower())
+                    switch (valueString?.ToLower())
                     {
                         // This checks all built-in values
                         case "null":
@@ -266,12 +266,67 @@ namespace BSharp.Data.Queries
                             value = currentUserId;
                             break;
 
+                        // Relative DateTime values
+                        case "startofyear":
+                            EnsureNullFunction(atom);
+                            EnsureTypeDateTime(atom, propName, propType);
+
+                            value = StartOfYear(currentUserTimeZone);
+                            break;
+
+                        case "endofyear":
+                            EnsureNullFunction(atom);
+                            EnsureTypeDateTime(atom, propName, propType);
+
+                            value = StartOfYear(currentUserTimeZone).AddYears(1);
+                            break;
+
+                        case "startofquarter":
+                            EnsureNullFunction(atom);
+                            EnsureTypeDateTime(atom, propName, propType);
+
+                            value = StartOfQuarter(currentUserTimeZone);
+                            break;
+
+                        case "endofquarter":
+                            EnsureNullFunction(atom);
+                            EnsureTypeDateTime(atom, propName, propType);
+
+                            value = StartOfQuarter(currentUserTimeZone).AddMonths(3);
+                            break;
+
+                        case "startofmonth":
+                            EnsureNullFunction(atom);
+                            EnsureTypeDateTime(atom, propName, propType);
+
+                            value = StartOfMonth(currentUserTimeZone);
+                            break;
+
+                        case "endofmonth":
+                            EnsureNullFunction(atom);
+                            EnsureTypeDateTime(atom, propName, propType);
+
+                            value = StartOfMonth(currentUserTimeZone).AddMonths(1);
+                            break;
+
                         case "today":
-                            var today = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, currentUserTimeZone).Date;
-                            value = today;
+                            EnsureNullFunction(atom);
+                            EnsureTypeDateTime(atom, propName, propType);
+
+                            value = Today(currentUserTimeZone);
+                            break;
+
+                        case "endofday":
+                            EnsureNullFunction(atom);
+                            EnsureTypeDateTime(atom, propName, propType);
+
+                            value = Today(currentUserTimeZone).AddDays(1);
                             break;
 
                         case "now":
+                            EnsureNullFunction(atom);
+                            EnsureTypeDateTimeOffset(atom, propName, propType);
+
                             var now = DateTimeOffset.Now;
                             value = now;
                             break;
@@ -386,6 +441,30 @@ namespace BSharp.Data.Queries
             return FilterToSqlInner(e);
         }
 
+        private static DateTime Today(TimeZoneInfo zone)
+        {
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zone).Date;
+        }
+
+        private static DateTime StartOfMonth(TimeZoneInfo zone)
+        {
+            var today = Today(zone);
+            return new DateTime(today.Year, today.Month, 1);
+        }
+
+        private static DateTime StartOfQuarter(TimeZoneInfo zone)
+        {
+            var today = Today(zone);
+            int quarter = (today.Month - 1) / 3 + 1;
+            return new DateTime(today.Year, (quarter - 1) * 3 + 1, 1);
+        }
+
+        private static DateTime StartOfYear(TimeZoneInfo zone)
+        {
+            var today = Today(zone);
+            return new DateTime(today.Year, 1, 1);
+        }
+
         /// <summary>
         /// Creates a result column using a symbol, a property name and an aggregation like this Aggregation([Symbol].[PropertyName])
         /// </summary>
@@ -416,13 +495,21 @@ namespace BSharp.Data.Queries
 
             return result;
         }
-        
+
+        private static void EnsureNullFunction(FilterAtom atom)
+        {
+            if (!string.IsNullOrWhiteSpace(atom.Function))
+            {
+                throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with a date function such as '{atom.Function}'");
+            }
+        }
+
         private static void EnsureTypeHierarchyId(FilterAtom atom, string propName, Type propType)
         {
             if (propType != typeof(HierarchyId))
             {
                 // Developer mistake
-                throw new InvalidOperationException($"Property {propName} is not of type hierarchyid, therefore cannot use the operator '{atom.Op}'");
+                throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} since it is not of type HierarchyId");
             }
         }
 
@@ -431,7 +518,25 @@ namespace BSharp.Data.Queries
             if (propType != typeof(string))
             {
                 // Developer mistake
-                throw new InvalidOperationException($"Property {propName} is not of type String, therefore cannot use the operator '{atom.Op}'");
+                throw new InvalidOperationException($"Filter operator '{atom.Op}' cannot be used with Property {propName} since it is not of type String");
+            }
+        }
+
+        private static void EnsureTypeDateTime(FilterAtom atom, string propName, Type propType)
+        {
+            if (propType != typeof(DateTime))
+            {
+                // Developer mistake
+                throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with property {propName} because it is not of type DateTime");
+            }
+        }
+
+        private static void EnsureTypeDateTimeOffset(FilterAtom atom, string propName, Type propType)
+        {
+            if (propType != typeof(DateTimeOffset))
+            {
+                // Developer mistake
+                throw new InvalidOperationException($"Filter keyword '{atom.Value}' cannot be used with property {propName} because it is not of type DateTimeOffset");
             }
         }
 
