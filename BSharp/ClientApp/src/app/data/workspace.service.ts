@@ -27,6 +27,7 @@ import { Aggregation, ReportDefinition, PathFunction } from './entities/report-d
 import { ResponsibilityCenter } from './entities/responsibility-center';
 import { EntryClassification } from './entities/entry-classification';
 import { Document } from './entities/document';
+import { isSpecified } from './util';
 
 export enum MasterStatus {
 
@@ -471,8 +472,10 @@ export class ChartDimensionCell {
     public parent?: ChartDimensionCell) { }
 
   toString() {
-    return this.display;
-    // return isSpecified(this.valueId) ? this.valueId : '';
+    // ngx-charts throws an error if you return null
+    // The value returned must uniquely identify the dimension
+    // formatting will be handled in the tooltip template
+    return isSpecified(this.valueId) ? this.valueId.toString() : '';
   }
 }
 

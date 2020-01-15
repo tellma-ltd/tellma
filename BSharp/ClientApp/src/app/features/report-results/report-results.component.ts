@@ -97,7 +97,7 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
   private _maxVisibleLevel: number;
 
   // NGX-Charts options
-  animations = true;
+  animations = false;
   showXAxis = true;
   showYAxis = true;
   showXAxisLabel = true;
@@ -1219,6 +1219,16 @@ export class ReportResultsComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return this._modifiedRows;
+  }
+
+  public dim(cell: DimensionCell): DimensionCell {
+    // Just to keep the Angular extension happy
+    return cell;
+  }
+
+  public label(cell: LabelCell): LabelCell {
+    // Just to keep the Angular extension happy
+    return cell;
   }
 
   public get showRowDimensionLabel(): boolean {

@@ -58,14 +58,14 @@
                                                     [rotate]="rotateArrow(col)">
                                                 </fa-icon>
                                             </button>&nbsp;</ng-container>
-                                        <b-auto-cell *ngIf="isDefined(col)" [propDescriptor]="col.propDesc"
-                                            [entityDescriptor]="col.entityDesc" [entity]="col.value">
+                                        <b-auto-cell *ngIf="isDefined(col)" [propDescriptor]="dim(col).propDesc"
+                                            [entityDescriptor]="dim(col).entityDesc" [entity]="dim(col).value">
                                         </b-auto-cell>
                                         <span class="font-italic text-muted"
                                             *ngIf="!isDefined(col)">{{ 'Undefined' | translate }}</span>
                                     </ng-container>
                                     <ng-container *ngSwitchCase="'label'">
-                                        {{ col.label() }}
+                                        {{ label(col).label() }}
                                     </ng-container>
                                 </td>
                             </ng-container>
@@ -161,14 +161,10 @@
                     [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
                     [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
-
-                    <!-- <ng-template #tooltipTemplate let-model="model">
-                        <pre class="text-white">{{model|json}}</pre>
-                    </ng-template> -->
-
-                    <!-- <ng-template #seriesTooltipTemplate let-model="model">
-                        <pre>{{model|json}}</pre>
-                    </ng-template> -->
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-bar-vertical>
             </ng-container>
 
@@ -179,6 +175,10 @@
                     [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
                     [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-bar-vertical-2d>
             </ng-container>
 
@@ -189,6 +189,10 @@
                     [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="measureLabel"
                     [xAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-bar-vertical-stacked>
             </ng-container>
 
@@ -200,6 +204,10 @@
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="firstDimensionLabel"
                     [yAxisLabel]="measureLabel + ' %'" [xAxisTickFormatting]="formatChartDimension"
                     (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-bar-vertical-normalized>
             </ng-container>
 
@@ -210,6 +218,10 @@
                     [xAxis]="showXAxis" [yAxis]="showYAxis" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
                     [yAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-bar-horizontal>
             </ng-container>
 
@@ -220,6 +232,10 @@
                     [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
                     [yAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-bar-horizontal-2d>
             </ng-container>
 
@@ -230,6 +246,10 @@
                     [yAxis]="showYAxis" [legend]="false" [showXAxisLabel]="showXAxisLabel"
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel" [yAxisLabel]="firstDimensionLabel"
                     [yAxisTickFormatting]="formatChartDimension" (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-bar-horizontal-stacked>
             </ng-container>
 
@@ -241,6 +261,10 @@
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="measureLabel + ' %'"
                     [yAxisLabel]="firstDimensionLabel" [yAxisTickFormatting]="formatChartDimension"
                     (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-bar-horizontal-normalized>
             </ng-container>
 
@@ -252,6 +276,14 @@
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel || firstDimensionLabel"
                     [yAxisLabel]="measureLabel" [xAxisTickFormatting]="formatChartDimension"
                     (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
+                    <ng-template #seriesTooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="seriesTooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-line-chart>
             </ng-container>
 
@@ -263,6 +295,14 @@
                     [showYAxisLabel]="showYAxisLabel" [xAxisLabel]="secondDimensionLabel || firstDimensionLabel"
                     [yAxisLabel]="measureLabel" [xAxisTickFormatting]="formatChartDimension"
                     (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
+                    <ng-template #seriesTooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="seriesTooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-area-chart>
             </ng-container>
 
@@ -291,6 +331,10 @@
                 <ngx-charts-pie-chart class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" [labelFormatting]="formatChartDimension" [labels]="true"
                     (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-pie-chart>
             </ng-container>
 
@@ -299,6 +343,10 @@
                 <ngx-charts-pie-chart class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" [doughnut]="true" [labelFormatting]="formatChartDimension"
                     [labels]="true" (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-pie-chart>
             </ng-container>
 
@@ -309,6 +357,10 @@
                     [showXAxisLabel]="showXAxisLabel" [legend]="false" [showYAxisLabel]="showYAxisLabel"
                     [xAxisLabel]="firstDimensionLabel" [yAxisLabel]="secondDimensionLabel"
                     (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-heat-map>
             </ng-container>
 
@@ -326,6 +378,10 @@
             <ng-container *ngSwitchCase="'TreeMap'">
                 <ngx-charts-tree-map class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
                     [scheme]="colorful" [results]="single" (select)="onChartSelect($event.name)">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-tree-map>
             </ng-container>
 
@@ -340,7 +396,12 @@
             <!-- Gauge -->
             <ng-container *ngSwitchCase="'Gauge'">
                 <ngx-charts-gauge class="b-ltr" *ngIf="supportsSingle;else notsupported" [animations]="animations"
-                    [scheme]="colorful" [results]="single" [max]="0" (select)="onChartSelect($event.name)" [showText]="false">
+                    [scheme]="colorful" [results]="single" [max]="0" (select)="onChartSelect($event.name)"
+                    [showText]="false">
+                    <ng-template #tooltipTemplate let-model="model">
+                        <ng-container *ngTemplateOutlet="tooltip;context: { model: model }">
+                        </ng-container>
+                    </ng-template>
                 </ngx-charts-gauge>
             </ng-container>
 
@@ -352,8 +413,38 @@
                     {{ 'ChartTypeDoesNotSupportNDimensions' | translate: { count: numberOfDimensions } }}
                 </div>
             </ng-template>
-        </div><!-- End *ngIf="showChart" -->
 
+            <!-- Tooltip template -->
+            <ng-template #tooltip let-model="model">
+                <!-- model: {
+                    name: ChartDimensionCell,
+                    value: number
+                } -->
+                <div class="text-white p-1">
+                    <span>{{ model.name.display }}</span>
+                    <br />
+                    <span style="font-size: 130%;">{{ model.value }}</span>
+                </div>
+            </ng-template>
+
+            <!-- Series tooltip template -->
+            <ng-template #seriesTooltip let-model="model">
+                <div class="area-tooltip-container">
+                    <div *ngFor="let tooltipItem of model" class="tooltip-item">
+                        <!-- tooltipItem: {
+                            name: ChartDimensionCell,
+                            value: number,
+                            series: ChartDimensionCell,
+                            min: number,
+                            max: number,
+                            color: string
+                        } -->
+                        <span class="tooltip-item-color" [style.background-color]="tooltipItem.color"></span>
+                        {{ tooltipItem.series?.display + ': ' + tooltipItem.value }}
+                    </div>
+                </div>
+            </ng-template>
+        </div><!-- End *ngIf="showChart" -->
     </div>
 
     <div class="w-100 p-3 px-4" *ngIf="showSpecifyNumericMeasure">
